@@ -499,7 +499,6 @@ and the number of trials per session.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.analysis.plotting.dataset_bubble_plot.html#moabb.analysis.plotting.dataset_bubble_plot" title="moabb.analysis.plotting.dataset_bubble_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">dataset_bubble_plot</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <a href="../../api/generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a><span class="p">,</span>
@@ -510,11 +509,6 @@ and the number of trials per session.</p>
     <a href="../../api/generated/moabb.datasets.Thielen2021.html#moabb.datasets.Thielen2021" title="moabb.datasets.Thielen2021" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Thielen2021</span></a><span class="p">,</span>
     <a href="../../api/generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Wang2016</span></a><span class="p">,</span>
 <span class="p">)</span>
-
-
-<a href="../../api/generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="visualizing-one-dataset">
@@ -579,18 +573,34 @@ as the number of trials multiplied by the duration of each trial.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_dataset_bubbles_004.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_004.png" alt="plot dataset bubbles" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;#Subj&#39;: 54, &#39;#Chan&#39;: 62, &#39;#Trials / class&#39;: &#39;6900 NT / 1380 T&#39;, &#39;Freq(Hz)&#39;: 1000, &#39;Trials length(s)&#39;: 1.0, &#39;#Sessions&#39;: &#39;2&#39;}
-{&#39;#Subj&#39;: 9, &#39;#Chan&#39;: 22, &#39;#Classes&#39;: 4.0, &#39;#Trials / class&#39;: 144.0, &#39;Trial length(s)&#39;: 4.0, &#39;Freq(Hz)&#39;: 250, &#39;#Session&#39;: &#39;2&#39;, &#39;#Runs&#39;: 6.0, &#39;Total_trials&#39;: 62208.0}
-{&#39;#Subj&#39;: 34, &#39;#Chan&#39;: 62, &#39;#Classes&#39;: 40.0, &#39;#Trials / class&#39;: &#39;6&#39;, &#39;Freq(Hz)&#39;: 250, &#39;Trials length(s)&#39;: &#39;5s&#39;, &#39;#Sessions&#39;: 1}
-{&#39;#Subj&#39;: 30, &#39;#Chan&#39;: 8, &#39;#Trials / class&#39;: &#39;5&#39;, &#39;Freq(Hz)&#39;: 512, &#39;#Sessions&#39;: 1, &#39;Trials length (s)&#39;: 31.5, &#39;#Trial classes&#39;: 20.0, &#39;#Epochs classes&#39;: 2.0, &#39;#Epochs / class&#39;: &#39;18900 NT / 18900 T&#39;, &#39;Codes&#39;: &#39;Gold codes&#39;, &#39;Presentation rate&#39;: &#39;60Hz&#39;}
-{&#39;#Subj&#39;: 15, &#39;#Chan&#39;: 62, &#39;#Classes&#39;: 4.0, &#39;Freq(Hz)&#39;: 250, &#39;Trials length(s)&#39;: 2, &#39;#Sessions&#39;: 1, &#39;#Blocks / class&#39;: 1.0}
-{&#39;#Subj&#39;: 52, &#39;#Chan&#39;: 64, &#39;#Classes&#39;: 2.0, &#39;#Trials / class&#39;: 100.0, &#39;Trial length(s)&#39;: 3.0, &#39;Freq(Hz)&#39;: 512, &#39;#Session&#39;: &#39;1&#39;, &#39;#Runs&#39;: 1.0, &#39;Total_trials&#39;: 9800.0}
-{&#39;#Subj&#39;: 13, &#39;#Chan&#39;: 31, &#39;#Trials / class&#39;: &#39;7500 NT / 1500 T&#39;, &#39;Freq(Hz)&#39;: 1000, &#39;Trials length(s)&#39;: 1.2, &#39;#Sessions&#39;: &#39;1&#39;}
+<img src="../../_images/sphx_glr_plot_dataset_bubbles_004.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_004.png" alt="plot dataset bubbles" class = "sphx-glr-single-img"/><p>We can observe, for example, that the <code class="docutils literal notranslate"><span class="pre">Thielen2021</span></code> contains few trials
+per subject but very long trials (31,5 seconds) while <code class="docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code> contains
+many but short trials (1 second).</p>
+</section>
+<section id="visualizing-a-custom-dataset">
+<h2>Visualizing a custom dataset<a class="headerlink" href="#visualizing-a-custom-dataset" title="Link to this heading">#</a></h2>
+<p>You can also visualize your own dataset by manually specifying the following parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dataset_name</span></code>: name of the dataset</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_subjects</span></code>: number of subjects</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_sessions</span></code>: number of sessions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_trials</span></code>: number of trials per session</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">paradigm</span></code>: paradigm name</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trial_len</span></code>: duration of one trial, in seconds</p></li>
+</ul>
+<p>Here is an example of a custom dataset with 100 subjects, and 10000 trials per session:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../api/generated/moabb.analysis.plotting.dataset_bubble_plot.html#moabb.analysis.plotting.dataset_bubble_plot" title="moabb.analysis.plotting.dataset_bubble_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">dataset_bubble_plot</span></a><span class="p">(</span>
+    <span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;My custom dataset&quot;</span><span class="p">,</span>
+    <span class="n">n_subjects</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">n_sessions</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">n_trials</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+    <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
+    <span class="n">trial_len</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+<span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p>We can observe, for example, that the <code class="docutils literal notranslate"><span class="pre">Thielen2021</span></code> contains few trials
-per subject but very long trials (31,5 seconds).</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.291 seconds)</p>
+<img src="../../_images/sphx_glr_plot_dataset_bubbles_005.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_005.png" alt="plot dataset bubbles" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.663 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  246 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dataset-bubbles-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
@@ -656,6 +666,7 @@ per subject but very long trials (31,5 seconds).</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-one-dataset">Visualizing one dataset</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-multiple-datasets-simultaneously">Visualizing multiple datasets simultaneously</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-a-custom-dataset">Visualizing a custom dataset</a></li>
 </ul>
   </nav></div>
 

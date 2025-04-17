@@ -15,7 +15,6 @@ and the number of trials per session.
 
 import matplotlib.pyplot as plt
 
-import moabb
 from moabb.analysis.plotting import dataset_bubble_plot
 from moabb.datasets import (
     BNCI2014_001,
@@ -27,10 +26,6 @@ from moabb.datasets import (
     Wang2016,
 )
 
-
-moabb.set_log_level("info")
-
-print(__doc__)
 
 ###############################################################################
 # Visualizing one dataset
@@ -109,4 +104,29 @@ plt.show()
 
 ###############################################################################
 # We can observe, for example, that the ``Thielen2021`` contains few trials
-# per subject but very long trials (31,5 seconds).
+# per subject but very long trials (31,5 seconds) while ``Lee2019_ERP`` contains
+# many but short trials (1 second).
+#
+# Visualizing a custom dataset
+# ----------------------------
+#
+# You can also visualize your own dataset by manually specifying the following parameters:
+#
+# - ``dataset_name``: name of the dataset
+# - ``n_subjects``: number of subjects
+# - ``n_sessions``: number of sessions
+# - ``n_trials``: number of trials per session
+# - ``paradigm``: paradigm name
+# - ``trial_len``: duration of one trial, in seconds
+#
+# Here is an example of a custom dataset with 100 subjects, and 10000 trials per session:
+
+dataset_bubble_plot(
+    dataset_name="My custom dataset",
+    n_subjects=100,
+    n_sessions=1,
+    n_trials=10000,
+    paradigm="imagery",
+    trial_len=5.0,
+)
+plt.show()
