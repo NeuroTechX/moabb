@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Sequence, Literal
+from typing import Any, Literal, Sequence
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
-from matplotlib.patches import RegularPolygon, Circle
 import numpy as np
 import pandas as pd
 import seaborn as sea
 from matplotlib import patheffects
+from matplotlib.patches import Circle, RegularPolygon
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import (
