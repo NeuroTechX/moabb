@@ -23,7 +23,7 @@ from moabb.datasets import (
     Hinss2021,
     Lee2019_ERP,
     Sosulski2019,
-    Thielen2015,
+    Thielen2021,
     Wang2016,
 )
 
@@ -39,6 +39,12 @@ print(__doc__)
 # The :func:`moabb.analysis.plotting.dataset_bubble_plot` is fairly simple to use.
 # It takes a :class:`moabb.datasets.base.BaseDataset` as input and plots
 # its characteristics.
+#
+# Each bubble represents one subject. The size of the bubble is
+# proportional to the number of trials per subject on a log scale,
+# the color represents the paradigm, and the alpha is proportional to
+# the number of sessions.
+#
 # You can adjust plotting parameters, such as the scale of the bubbles, but
 # we will leave the default values for this example.
 # More details on the parameters can be found in the doc (:func:`moabb.analysis.plotting.dataset_bubble_plot`).
@@ -46,6 +52,15 @@ print(__doc__)
 
 dataset = Lee2019_ERP()
 dataset_bubble_plot(dataset)
+plt.show()
+
+###############################################################################
+# Alternatively, ou can also plot hexagons instead of circles,
+# using the ``shape`` parameter.
+
+
+dataset = Lee2019_ERP()
+dataset_bubble_plot(dataset, shape="hexagon", gap=0.1)
 plt.show()
 
 
@@ -64,9 +79,34 @@ plt.show()
 ax = plt.gca()
 dataset_bubble_plot(Lee2019_ERP(), ax=ax, center=(10, 10), legend=False)
 dataset_bubble_plot(BNCI2014_001(), ax=ax, center=(-2, 33), legend=False)
-dataset_bubble_plot(Wang2016(), ax=ax, center=(37, 0), legend=True)
-dataset_bubble_plot(Thielen2015(), ax=ax, center=(36, 16), legend=False)
-dataset_bubble_plot(Hinss2021(), ax=ax, center=(31, 22), legend=False)
+dataset_bubble_plot(Wang2016(), ax=ax, center=(37, -1), legend=True)
+dataset_bubble_plot(Thielen2021(), ax=ax, center=(38, 16), legend=False)
+dataset_bubble_plot(Hinss2021(), ax=ax, center=(30, 22), legend=False)
 dataset_bubble_plot(Cho2017(), ax=ax, center=(33, 35), legend=False)
 dataset_bubble_plot(Sosulski2019(), ax=ax, center=(13, 42), legend=False)
 plt.show()
+
+###############################################################################
+# Another parameter available is ``size_mode``. It allows you to choose how the size
+# of the bubbles is calculated. You can choose to use the number of trials per subject
+# (``size_mode="count"``) or the duration of experiment data per subject
+# (``size_mode="duration"``). The experiment data duration is calculated
+# as the number of trials multiplied by the duration of each trial.
+#
+# Here is the same plot as above, but using ``size_mode="duration"``:
+
+ax = plt.gca()
+kwargs = {"size_mode": "duration", "scale": 0.4, "ax": ax}
+dataset_bubble_plot(Lee2019_ERP(), center=(10, 10), legend=False, **kwargs)
+dataset_bubble_plot(BNCI2014_001(), center=(-2, 33), legend=False, **kwargs)
+dataset_bubble_plot(Wang2016(), center=(35, -1), legend=True, **kwargs)
+dataset_bubble_plot(Thielen2021(), center=(39, 16), legend=False, **kwargs)
+dataset_bubble_plot(Hinss2021(), center=(27, 22), legend=False, **kwargs)
+dataset_bubble_plot(Cho2017(), center=(33, 35), legend=False, **kwargs)
+dataset_bubble_plot(Sosulski2019(), center=(13, 42), legend=False, **kwargs)
+plt.show()
+
+
+###############################################################################
+# We can observe, for example, that the ``Thielen2021`` contains few trials
+# per subject but very long trials (31,5 seconds).
