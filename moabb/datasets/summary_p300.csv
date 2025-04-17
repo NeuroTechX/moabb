@@ -15,7 +15,7 @@ Sosulski2019, 13, 31, 7500 NT / 1500 T, 1.2, 1000, 1,https://paperswithcode.com/
 EPFLP300, 8, 32, 2753 NT / 551 T, 1, 2048, 4,https://paperswithcode.com/dataset/epflp300-moabb
 Lee2019_ERP, 54, 62, 6900 NT / 1380 T, 1, 1000, 2,https://paperswithcode.com/dataset/lee2019-erp-moabb-1
 DemonsP300, 60, 8, 935 NT / 50 T, 1, 500, 1,
-ErpCore2021_N170, 40, 30, 240 NT / 80 T , 1, 1024, 1,
+ErpCore2021_N170, 40, 30, 240 NT / 80 T, 1, 1024, 1,
 ErpCore2021_MMN, 40, 30, 800 NT / 200 T, 1, 1024, 1,
 ErpCore2021_N2pc, 40, 30, 160 NT / 160 T, 1, 1024, 1,
 ErpCore2021_P3, 40, 30, 160 NT / 40 T, 1, 1024, 1,
