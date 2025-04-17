@@ -578,7 +578,9 @@ def dataset_bubble_plot(
             float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
         )
     else:
-        if any(x is None for x in [dataset_name,n_subjects, n_sessions, n_trials, trial_len]):
+        if any(
+            x is None for x in [dataset_name, n_subjects, n_sessions, n_trials, trial_len]
+        ):
             raise ValueError(
                 "If dataset is None, then dataset_name, n_subjects, n_sessions, "
                 "n_trials and trial_len must be provided"
