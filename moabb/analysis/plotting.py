@@ -445,7 +445,7 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
     if size_mode == "count":
         sizes = [("100 trials", 100), ("1000 trials", 1000), ("10000 trials", 10000)]
     elif size_mode == "duration":
-        sizes = [("10 minutes", 60 * 10), ("1 hour", 60 * 60), ("6 hours", 60 * 60 * 6)]
+        sizes = [("6 minutes", 60 * 6), ("1 hour", 60 * 60), ("10 hours", 60 * 60 * 10)]
     else:
         raise ValueError(f"Unknown size_mode {size_mode}")
     for desc, size in sizes:
@@ -548,7 +548,6 @@ def dataset_bubble_plot(
         assert match
         n_trials = int(match.group(1)) + int(match.group(2))
     if size_mode == "duration":
-        print(row)
         trial_len = row[
             (
                 "Trial length(s)"

@@ -15,7 +15,6 @@ and the number of trials per session.
 
 import matplotlib.pyplot as plt
 
-import moabb
 from moabb.analysis.plotting import dataset_bubble_plot
 from moabb.datasets import (
     BNCI2014_001,
@@ -27,10 +26,6 @@ from moabb.datasets import (
     Wang2016,
 )
 
-
-moabb.set_log_level("info")
-
-print(__doc__)
 
 ###############################################################################
 # Visualizing one dataset
@@ -109,4 +104,5 @@ plt.show()
 
 ###############################################################################
 # We can observe, for example, that the ``Thielen2021`` contains few trials
-# per subject but very long trials (31,5 seconds).
+# per subject but very long trials (31,5 seconds) while ``Lee2019_ERP`` contains
+# many but short trials (1 second).
