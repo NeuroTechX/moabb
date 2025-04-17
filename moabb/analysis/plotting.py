@@ -504,7 +504,8 @@ def dataset_bubble_plot(
         Scaling factor applied to the bubble sizes.
     size_mode: Literal["count", "duration"]
         Specifies how the size of the bubbles is calculated.
-        Either "count" (number of trials) or "duration" (total duration of trials).
+        Either "count" (number of trials) or "duration"
+        (number of trials times trial duration).
     shape: Literal["circle", "hexagon"]
         Shape of the bubbles. Either "circle" or "hexagon".
     gap: float
