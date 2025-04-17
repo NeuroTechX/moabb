@@ -39,6 +39,12 @@ print(__doc__)
 # The :func:`moabb.analysis.plotting.dataset_bubble_plot` is fairly simple to use.
 # It takes a :class:`moabb.datasets.base.BaseDataset` as input and plots
 # its characteristics.
+#
+# Each bubble represents one subject. The size of the bubble is
+# proportional to the number of trials per subject on a log scale,
+# the color represents the paradigm, and the alpha is proportional to
+# the number of sessions.
+#
 # You can adjust plotting parameters, such as the scale of the bubbles, but
 # we will leave the default values for this example.
 # More details on the parameters can be found in the doc (:func:`moabb.analysis.plotting.dataset_bubble_plot`).
@@ -46,6 +52,15 @@ print(__doc__)
 
 dataset = Lee2019_ERP()
 dataset_bubble_plot(dataset)
+plt.show()
+
+###############################################################################
+# Alternatively, ou can also plot hexagons instead of circles,
+# using the ``shape`` parameter.
+
+
+dataset = Lee2019_ERP()
+dataset_bubble_plot(dataset, shape="hexagon", gap=0.1)
 plt.show()
 
 

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Sequence
+from typing import Any, Sequence, Literal
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+from matplotlib.patches import RegularPolygon, Circle
 import numpy as np
 import pandas as pd
 import seaborn as sea
@@ -411,22 +412,33 @@ def _get_bubble_coordinates(n, diameter, center):
     return x[:n], y[:n]
 
 
+def _plot_shape(shape, *args, **kwargs):
+    if shape == "circle":
+        return Circle(*args, **kwargs)
+    elif shape == "hexagon":
+        return RegularPolygon(*args, numVertices=6, **kwargs)
+    else:
+        raise ValueError(f"Unknown shape {shape}")
+
+
 def _plot_hexa_bubbles(
     *,
     n: int,
     diameter: float,
     center: tuple[float, float] = (0.0, 0.0),
     ax,
+    shape: Literal["circle", "hexagon"] = "circle",
+    gap: float = 0.0,
     **kwargs,
 ):
-    x, y = _get_bubble_coordinates(n, diameter, center)
+    x, y = _get_bubble_coordinates(n, diameter + gap, center)
     for xi, yi in zip(x, y):
-        circle = plt.Circle((xi, yi), diameter / 2, **kwargs)
-        ax.add_patch(circle)
+        bubble = _plot_shape(shape, (xi, yi), radius=diameter / 2, **kwargs)
+        ax.add_patch(bubble)
     return x, y
 
 
-def _add_bubble_legend(scale, color_map, alphas, fontsize, x0, y0, ax):
+def _add_bubble_legend(scale, color_map, alphas, fontsize, shape, x0, y0, ax):
     circles = []  # (text, diameter, alpha, color)
     alpha = alphas[0]
     # sizes
@@ -448,8 +460,10 @@ def _add_bubble_legend(scale, color_map, alphas, fontsize, x0, y0, ax):
             continue
         text, diameter, alpha, color = item
         y = i * fontsize / 2 + y0
-        circle = plt.Circle((x0, y), diameter / 2, alpha=alpha, color=color, lw=0)
-        ax.add_patch(circle)
+        bubble = _plot_shape(
+            shape, (x0, y), radius=diameter / 2, alpha=alpha, color=color, lw=0
+        )
+        ax.add_patch(bubble)
         ax.text(x0 + 5, y, text, ha="left", va="center", fontsize=fontsize)
 
 
@@ -457,6 +471,8 @@ def dataset_bubble_plot(
     dataset,
     center: tuple[float, float] = (0.0, 0.0),
     scale: float = 0.5,
+    shape: Literal["circle", "hexagon"] = "circle",
+    gap: float = 0.0,
     color_map: dict[str, Any] | None = None,
     alphas: Sequence[float] | None = None,
     title: bool = True,
@@ -480,6 +496,10 @@ def dataset_bubble_plot(
         Coordinates of the center of the plot
     scale: float
         Scaling factor applied to the bubble sizes.
+    shape: Literal["circle", "hexagon"]
+        Shape of the bubbles. Either "circle" or "hexagon".
+    gap: float
+        Gap between the bubbles.
     color_map: dict[str, Any] | None
         Dictionary that maps paradigms to colors. If None,
         the tab10 color map is used.
@@ -528,6 +548,8 @@ def dataset_bubble_plot(
         alpha=alphas[min(n_sessions, len(alphas)) - 1],
         lw=0,
         center=center,
+        shape=shape,
+        gap=gap,
     )
     if title:
         ax.text(
@@ -553,6 +575,7 @@ def dataset_bubble_plot(
             x0=legend_position[0],
             y0=legend_position[1],
             ax=ax,
+            shape=shape,
         )
     ax.axis("equal")
     ax.axis("off")
