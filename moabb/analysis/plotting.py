@@ -472,6 +472,40 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
         ax.text(x0 + 5, y, text, ha="left", va="center", fontsize=fontsize)
 
 
+def _get_dataset_parameters(dataset):
+    row = dataset._summary_table
+    dataset_name = dataset.__class__.__name__
+    paradigm = dataset.paradigm
+    n_subjects = len(dataset.subject_list)
+    n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
+    if paradigm in ["imagery", "ssvep"]:
+        n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
+    elif paradigm == "rstate":
+        n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
+    elif paradigm == "cvep":
+        n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
+    else:  # p300
+        match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
+        assert match
+        n_trials = int(match.group(1)) + int(match.group(2))
+    trial_len = row[
+        (
+            "Trial length(s)"
+            if paradigm == "imagery"
+            else "Trials length (s)" if paradigm == "cvep" else "Trials length(s)"
+        )
+    ]
+    trial_len = float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
+    return (
+        dataset_name,
+        paradigm,
+        n_subjects,
+        n_sessions,
+        n_trials,
+        trial_len,
+    )
+
+
 def dataset_bubble_plot(
     dataset=None,
     center: tuple[float, float] = (0.0, 0.0),
@@ -507,7 +541,8 @@ def dataset_bubble_plot(
     you can directly pass the characteristics of the dataset via the
     ``dataset_name``, ``paradigm``, ``n_subjects``, ``n_sessions``,
     ``n_trials``, and ``trial_len`` parameters.
-    If you pass the dataset object, then the other parameters are ignored.
+    If you pass both the dataset object and some parameters, the parameters
+    passed will override the ones extracted from the dataset object.
 
     Parameters
     ----------
@@ -561,31 +596,15 @@ def dataset_bubble_plot(
     alphas = alphas or [0.7, 0.55, 0.4, 0.25, 0.1]
 
     if dataset is not None:
-        row = dataset._summary_table
-        dataset_name = dataset.__class__.__name__
-        paradigm = dataset.paradigm
-        n_subjects = len(dataset.subject_list)
-        n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
-        if paradigm in ["imagery", "ssvep"]:
-            n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
-        elif paradigm == "rstate":
-            n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
-        elif paradigm == "cvep":
-            n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
-        else:  # p300
-            match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
-            assert match
-            n_trials = int(match.group(1)) + int(match.group(2))
-        trial_len = row[
-            (
-                "Trial length(s)"
-                if paradigm == "imagery"
-                else "Trials length (s)" if paradigm == "cvep" else "Trials length(s)"
-            )
-        ]
-        trial_len = (
-            float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
+        _dataset_name, _paradigm, _n_subjects, _n_sessions, _n_trials, _trial_len = (
+            _get_dataset_parameters(dataset)
         )
+        dataset_name = dataset_name or _dataset_name
+        paradigm = paradigm or _paradigm
+        n_subjects = n_subjects or _n_subjects
+        n_sessions = n_sessions or _n_sessions
+        n_trials = n_trials or _n_trials
+        trial_len = trial_len or _trial_len
     else:
         if any(
             x is None for x in [dataset_name, n_subjects, n_sessions, n_trials, trial_len]
