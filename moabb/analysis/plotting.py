@@ -445,7 +445,7 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
     if size_mode == "count":
         sizes = [("100 trials", 100), ("1000 trials", 1000), ("10000 trials", 10000)]
     elif size_mode == "duration":
-        sizes = [("10 minutes", 60 * 10), ("1 hour", 60 * 60), ("6 hours", 60 * 60 * 6)]
+        sizes = [("6 minutes", 60 * 6), ("1 hour", 60 * 60), ("10 hours", 60 * 60 * 10)]
     else:
         raise ValueError(f"Unknown size_mode {size_mode}")
     for desc, size in sizes:
@@ -472,8 +472,42 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
         ax.text(x0 + 5, y, text, ha="left", va="center", fontsize=fontsize)
 
 
+def _get_dataset_parameters(dataset):
+    row = dataset._summary_table
+    dataset_name = dataset.__class__.__name__
+    paradigm = dataset.paradigm
+    n_subjects = len(dataset.subject_list)
+    n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
+    if paradigm in ["imagery", "ssvep"]:
+        n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
+    elif paradigm == "rstate":
+        n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
+    elif paradigm == "cvep":
+        n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
+    else:  # p300
+        match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
+        assert match
+        n_trials = int(match.group(1)) + int(match.group(2))
+    trial_len = row[
+        (
+            "Trial length(s)"
+            if paradigm == "imagery"
+            else "Trials length (s)" if paradigm == "cvep" else "Trials length(s)"
+        )
+    ]
+    trial_len = float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
+    return (
+        dataset_name,
+        paradigm,
+        n_subjects,
+        n_sessions,
+        n_trials,
+        trial_len,
+    )
+
+
 def dataset_bubble_plot(
-    dataset,
+    dataset=None,
     center: tuple[float, float] = (0.0, 0.0),
     scale: float = 0.5,
     size_mode: Literal["count", "duration"] = "count",
@@ -486,6 +520,12 @@ def dataset_bubble_plot(
     legend_position: tuple[float, float] | None = None,
     fontsize: int = 8,
     ax=None,
+    dataset_name: str | None = None,
+    paradigm: str | None = None,
+    n_subjects: int | None = None,
+    n_sessions: int | None = None,
+    n_trials: int | None = None,
+    trial_len: float | None = None,
 ):
     """Plot a bubble plot for a dataset.
 
@@ -493,6 +533,16 @@ def dataset_bubble_plot(
     proportional to the number of trials per subject on a log scale,
     the color represents the paradigm, and the alpha is proportional to
     the number of sessions.
+
+    You may pass a :class:`moabb.datasets.base.BaseDataset` object
+    via the ``dataset`` parameret, and all the characteristics of this dataset
+    will be extracted automatically.
+    Alternatively, if you want to plot a dataset not present in MOABB,
+    you can directly pass the characteristics of the dataset via the
+    ``dataset_name``, ``paradigm``, ``n_subjects``, ``n_sessions``,
+    ``n_trials``, and ``trial_len`` parameters.
+    If you pass both the dataset object and some parameters, the parameters
+    passed will override the ones extracted from the dataset object.
 
     Parameters
     ----------
@@ -527,38 +577,44 @@ def dataset_bubble_plot(
         Font size of the legend text.
     ax: Axes | None
         Axes to plot on. If None, the default axes are used.
+    dataset_name: str | None
+        Name of the dataset. Required if ``dataset`` is None.
+    paradigm: str | None
+        Paradigm name. Required if ``dataset`` is None.
+    n_subjects: int | None
+        Number of subjects. Required if ``dataset`` is None.
+    n_sessions: int | None
+        Number of sessions. Required if ``dataset`` is None.
+    n_trials: int | None
+        Number of trials per session. Required if ``dataset`` is None.
+    trial_len: float | None
+        Duration of one trial, in seconds. Required if ``dataset`` is None.
     """
     p = sea.color_palette("tab10", 5)
     color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
 
     alphas = alphas or [0.7, 0.55, 0.4, 0.25, 0.1]
 
-    row = dataset._summary_table
-    paradigm = dataset.paradigm
-    n_subjects = len(dataset.subject_list)
-    n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
-    if paradigm in ["imagery", "ssvep"]:
-        n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
-    elif paradigm == "rstate":
-        n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
-    elif paradigm == "cvep":
-        n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
-    else:  # p300
-        match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
-        assert match
-        n_trials = int(match.group(1)) + int(match.group(2))
-    if size_mode == "duration":
-        print(row)
-        trial_len = row[
-            (
-                "Trial length(s)"
-                if paradigm == "imagery"
-                else "Trials length (s)" if paradigm == "cvep" else "Trials length(s)"
-            )
-        ]
-        trial_len = (
-            float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
+    if dataset is not None:
+        _dataset_name, _paradigm, _n_subjects, _n_sessions, _n_trials, _trial_len = (
+            _get_dataset_parameters(dataset)
         )
+        dataset_name = dataset_name or _dataset_name
+        paradigm = paradigm or _paradigm
+        n_subjects = n_subjects or _n_subjects
+        n_sessions = n_sessions or _n_sessions
+        n_trials = n_trials or _n_trials
+        trial_len = trial_len or _trial_len
+    else:
+        if any(
+            x is None for x in [dataset_name, n_subjects, n_sessions, n_trials, trial_len]
+        ):
+            raise ValueError(
+                "If dataset is None, then dataset_name, n_subjects, n_sessions, "
+                "n_trials and trial_len must be provided"
+            )
+
+    if size_mode == "duration":
         size = n_trials * n_sessions * trial_len
     elif size_mode == "count":
         size = n_trials * n_sessions
@@ -581,7 +637,7 @@ def dataset_bubble_plot(
         ax.text(
             center[0],
             center[1],
-            dataset.__class__.__name__,
+            dataset_name,
             ha="center",
             va="center",
             fontsize=fontsize,
