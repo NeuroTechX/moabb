@@ -473,7 +473,7 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
 
 
 def dataset_bubble_plot(
-    dataset,
+    dataset=None,
     center: tuple[float, float] = (0.0, 0.0),
     scale: float = 0.5,
     size_mode: Literal["count", "duration"] = "count",
@@ -486,6 +486,12 @@ def dataset_bubble_plot(
     legend_position: tuple[float, float] | None = None,
     fontsize: int = 8,
     ax=None,
+    dataset_name: str | None = None,
+    paradigm: str | None = None,
+    n_subjects: int | None = None,
+    n_sessions: int | None = None,
+    n_trials: int | None = None,
+    trial_len: float | None = None,
 ):
     """Plot a bubble plot for a dataset.
 
@@ -527,27 +533,40 @@ def dataset_bubble_plot(
         Font size of the legend text.
     ax: Axes | None
         Axes to plot on. If None, the default axes are used.
+    dataset_name: str | None
+        Name of the dataset. Required if `dataset` is None.
+    paradigm: str | None
+        Paradigm name. Required if `dataset` is None.
+    n_subjects: int | None
+        Number of subjects. Required if `dataset` is None.
+    n_sessions: int | None
+        Number of sessions. Required if `dataset` is None.
+    n_trials: int | None
+        Number of trials per session. Required if `dataset` is None.
+    trial_len: float | None
+        Duration of one trial, in seconds. Required if `dataset` is None.
     """
     p = sea.color_palette("tab10", 5)
     color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
 
     alphas = alphas or [0.7, 0.55, 0.4, 0.25, 0.1]
 
-    row = dataset._summary_table
-    paradigm = dataset.paradigm
-    n_subjects = len(dataset.subject_list)
-    n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
-    if paradigm in ["imagery", "ssvep"]:
-        n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
-    elif paradigm == "rstate":
-        n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
-    elif paradigm == "cvep":
-        n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
-    else:  # p300
-        match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
-        assert match
-        n_trials = int(match.group(1)) + int(match.group(2))
-    if size_mode == "duration":
+    if dataset is not None:
+        row = dataset._summary_table
+        dataset_name = dataset.__class__.__name__
+        paradigm = dataset.paradigm
+        n_subjects = len(dataset.subject_list)
+        n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
+        if paradigm in ["imagery", "ssvep"]:
+            n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
+        elif paradigm == "rstate":
+            n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
+        elif paradigm == "cvep":
+            n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
+        else:  # p300
+            match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
+            assert match
+            n_trials = int(match.group(1)) + int(match.group(2))
         trial_len = row[
             (
                 "Trial length(s)"
@@ -558,6 +577,14 @@ def dataset_bubble_plot(
         trial_len = (
             float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
         )
+    else:
+        if any(x is None for x in [dataset_name,n_subjects, n_sessions, n_trials, trial_len]):
+            raise ValueError(
+                "If dataset is None, then dataset_name, n_subjects, n_sessions, "
+                "n_trials and trial_len must be provided"
+            )
+
+    if size_mode == "duration":
         size = n_trials * n_sessions * trial_len
     elif size_mode == "count":
         size = n_trials * n_sessions
@@ -580,7 +607,7 @@ def dataset_bubble_plot(
         ax.text(
             center[0],
             center[1],
-            dataset.__class__.__name__,
+            dataset_name,
             ha="center",
             va="center",
             fontsize=fontsize,
