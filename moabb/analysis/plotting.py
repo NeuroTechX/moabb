@@ -438,13 +438,18 @@ def _plot_hexa_bubbles(
     return x, y
 
 
-def _add_bubble_legend(scale, color_map, alphas, fontsize, shape, x0, y0, ax):
+def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0, y0, ax):
     circles = []  # (text, diameter, alpha, color)
     alpha = alphas[0]
     # sizes
-    circles.append(("100 trials", np.log(100) * scale, alpha, "black"))
-    circles.append(("1000 trials", np.log(1000) * scale, alpha, "black"))
-    circles.append(("10000 trials", np.log(10000) * scale, alpha, "black"))
+    if size_mode == "count":
+        sizes = [("100 trials", 100), ("1000 trials", 1000), ("10000 trials", 10000)]
+    elif size_mode == "duration":
+        sizes = [("10 minutes", 60 * 10), ("1 hour", 60 * 60), ("6 hours", 60 * 60 * 6)]
+    else:
+        raise ValueError(f"Unknown size_mode {size_mode}")
+    for desc, size in sizes:
+        circles.append((desc, np.log(size) * scale, alpha, "black"))
     circles.append(None)
     # colour
     for paradigm, c in color_map.items():
@@ -471,6 +476,7 @@ def dataset_bubble_plot(
     dataset,
     center: tuple[float, float] = (0.0, 0.0),
     scale: float = 0.5,
+    size_mode: Literal["count", "duration"] = "count",
     shape: Literal["circle", "hexagon"] = "circle",
     gap: float = 0.0,
     color_map: dict[str, Any] | None = None,
@@ -496,6 +502,9 @@ def dataset_bubble_plot(
         Coordinates of the center of the plot
     scale: float
         Scaling factor applied to the bubble sizes.
+    size_mode: Literal["count", "duration"]
+        Specifies how the size of the bubbles is calculated.
+        Either "count" (number of trials) or "duration" (total duration of trials).
     shape: Literal["circle", "hexagon"]
         Shape of the bubbles. Either "circle" or "hexagon".
     gap: float
@@ -537,14 +546,30 @@ def dataset_bubble_plot(
         match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
         assert match
         n_trials = int(match.group(1)) + int(match.group(2))
-    n_trials = n_trials * n_sessions
+    if size_mode == "duration":
+        print(row)
+        trial_len = row[
+            (
+                "Trial length(s)"
+                if paradigm == "imagery"
+                else "Trials length (s)" if paradigm == "cvep" else "Trials length(s)"
+            )
+        ]
+        trial_len = (
+            float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
+        )
+        size = n_trials * n_sessions * trial_len
+    elif size_mode == "count":
+        size = n_trials * n_sessions
+    else:
+        raise ValueError(f"Unknown size_mode {size_mode}")
 
     ax = ax or plt.gca()
     x, y = _plot_hexa_bubbles(
         n=n_subjects,
         color=color_map[paradigm],
         ax=ax,
-        diameter=np.log(n_trials) * scale,
+        diameter=np.log(size) * scale,
         alpha=alphas[min(n_sessions, len(alphas)) - 1],
         lw=0,
         center=center,
@@ -569,6 +594,7 @@ def dataset_bubble_plot(
         legend_position = legend_position or (x.max() + fontsize, y.min())
         _add_bubble_legend(
             scale=scale,
+            size_mode=size_mode,
             color_map=color_map,
             alphas=alphas,
             fontsize=fontsize,
