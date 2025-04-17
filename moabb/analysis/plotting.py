@@ -471,10 +471,13 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
         ax.add_patch(bubble)
         ax.text(x0 + 5, y, text, ha="left", va="center", fontsize=fontsize)
 
+
 def _match_int(s):
     match = re.search(r"(\d+)", str(s))
     assert match, f"Cannot parse number from '{s}'"
     return int(match.group(1))
+
+
 def _get_dataset_parameters(dataset):
     row = dataset._summary_table
     dataset_name = dataset.__class__.__name__
