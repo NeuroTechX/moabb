@@ -96,16 +96,13 @@ class BaseShin2017(BaseDataset):
                 )
             )
         events = dict()
-        paradigms = []
         n_sessions = 0
         if motor_imagery:
             events.update(dict(left_hand=1, right_hand=2))
-            paradigms.append("imagery")
             n_sessions += 3
 
         if mental_arithmetic:
             events.update(dict(subtraction=3, rest=4))
-            paradigms.append("arithmetic")
             n_sessions += 3
 
         self.motor_imagery = motor_imagery
@@ -119,7 +116,7 @@ class BaseShin2017(BaseDataset):
             code="Shin2017" + suffix,
             # marker is for *task* start not cue start
             interval=[0, 10],
-            paradigm=("/").join(paradigms),
+            paradigm="imagery",  # no arithmetic paradigm in MOABB at the moment
             doi="10.1109/TNSRE.2016.2628057",
         )
 
