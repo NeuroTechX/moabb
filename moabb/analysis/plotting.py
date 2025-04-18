@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sea
 from matplotlib import patheffects
-from matplotlib.patches import Circle, RegularPolygon
 from matplotlib.collections import PatchCollection
+from matplotlib.patches import Circle, RegularPolygon
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import (
