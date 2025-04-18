@@ -136,7 +136,7 @@ plt.show()
 # Visualizing all MOABB datasets
 # ------------------------------
 #
-# Finally, you can visualize all datasets available in MOABB at once 
+# Finally, you can visualize all datasets available in MOABB at once
 # by using the :func:`moabb.datasets.utils.plot_all_datasets` function.
 # The datasets are sorted in alphabetical order and displayed on a grid.
 #
