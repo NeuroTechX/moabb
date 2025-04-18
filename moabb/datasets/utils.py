@@ -8,10 +8,12 @@ import mne_bids
 import numpy as np
 from mne import create_info
 from mne.io import RawArray
+import matplotlib.pyplot as plt
 
 import moabb.datasets as db
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
+from moabb.analysis.plotting import dataset_bubble_plot
 
 
 dataset_list = []
@@ -351,3 +353,52 @@ def bids_metainfo(bids_path: Path) -> dict:
         json_data[uid]["fpath"] = str(path.fpath)
 
     return json_data
+
+
+def plot_all_datasets(height: float = 5, n_col: int = 10, **kwargs):
+    """Plots all the MOABB datasets in one figure.
+
+    This uses the :func:`~moabb.analysis.plotting.dataset_bubble_plot` function to
+    plot the datasets. 
+    The datasets are sorted in alphabetical order and
+    plotted in a grid with n_col columns.
+
+    Parameters
+    ----------
+    height: float
+        Height of each subplot in inches.
+    n_col: int
+        Number of columns in the figure.
+    kwargs: dict
+        Additional arguments to pass to the dataset_bubble_plot function.
+
+    Returns
+    -------
+    fig: Figure
+        Pyplot handle
+    """
+    datasets = sorted(
+        [dataset() for dataset in dataset_list if "Fake" not in dataset.__name__],
+        key=lambda x: x.__class__.__name__,
+    )
+    fig, ax = plt.subplots(
+        1,
+        1,
+        figsize=(
+            height * (n_col),
+            height * (1 + len(datasets)) // n_col,
+        ),
+    )
+    _center = lambda i: ((i % n_col) * height * 10, -(i // n_col) * height * 10)
+    lx, ly = _center((len(datasets) // n_col + 1) * n_col - 1)
+    lx += height * 10
+    for i, dataset in enumerate(datasets):
+        dataset_bubble_plot(
+            dataset,
+            ax=ax,
+            center=_center(i),
+            legend=i == len(datasets) - 1,
+            legend_position=(lx, ly),
+            **(kwargs or {}),
+        )
+    return fig
