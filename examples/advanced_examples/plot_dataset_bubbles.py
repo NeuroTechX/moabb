@@ -16,7 +16,6 @@ and the number of trials per session.
 import matplotlib.pyplot as plt
 
 from moabb.analysis.plotting import dataset_bubble_plot
-from moabb.datasets.utils import plot_all_datasets
 from moabb.datasets import (
     BNCI2014_001,
     Cho2017,
@@ -26,6 +25,7 @@ from moabb.datasets import (
     Thielen2021,
     Wang2016,
 )
+from moabb.datasets.utils import plot_all_datasets
 
 
 ###############################################################################

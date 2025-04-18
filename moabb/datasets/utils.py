@@ -3,17 +3,17 @@
 import inspect
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import mne
 import mne_bids
 import numpy as np
 from mne import create_info
 from mne.io import RawArray
-import matplotlib.pyplot as plt
 
 import moabb.datasets as db
+from moabb.analysis.plotting import dataset_bubble_plot
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
-from moabb.analysis.plotting import dataset_bubble_plot
 
 
 dataset_list = []
@@ -359,7 +359,7 @@ def plot_all_datasets(height: float = 5, n_col: int = 10, **kwargs):
     """Plots all the MOABB datasets in one figure.
 
     This uses the :func:`~moabb.analysis.plotting.dataset_bubble_plot` function to
-    plot the datasets. 
+    plot the datasets.
     The datasets are sorted in alphabetical order and
     plotted in a grid with n_col columns.
 
