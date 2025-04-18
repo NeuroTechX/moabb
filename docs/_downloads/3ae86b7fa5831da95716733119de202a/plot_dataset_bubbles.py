@@ -25,6 +25,7 @@ from moabb.datasets import (
     Thielen2021,
     Wang2016,
 )
+from moabb.datasets.utils import plot_all_datasets
 
 
 ###############################################################################
@@ -129,4 +130,19 @@ dataset_bubble_plot(
     paradigm="imagery",
     trial_len=5.0,
 )
+plt.show()
+
+###############################################################################
+# Visualizing all MOABB datasets
+# ------------------------------
+#
+# Finally, you can visualize all datasets available in MOABB at once
+# by using the :func:`moabb.datasets.utils.plot_all_datasets` function.
+# The datasets are sorted in alphabetical order and displayed on a grid.
+#
+# When using this function, we recommend saving the figure as a PDF or SVG
+# file, as the figure is quite large and may be long to render.
+
+
+fig = plot_all_datasets(n_col=5)
 plt.show()

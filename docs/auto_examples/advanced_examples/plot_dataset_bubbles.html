@@ -509,6 +509,7 @@ and the number of trials per session.</p>
     <a href="../../api/generated/moabb.datasets.Thielen2021.html#moabb.datasets.Thielen2021" title="moabb.datasets.Thielen2021" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Thielen2021</span></a><span class="p">,</span>
     <a href="../../api/generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Wang2016</span></a><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_all_datasets</span>
 </pre></div>
 </div>
 <section id="visualizing-one-dataset">
@@ -600,8 +601,20 @@ many but short trials (1 second).</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_dataset_bubbles_005.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_005.png" alt="plot dataset bubbles" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.744 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  247 MB</p>
+<img src="../../_images/sphx_glr_plot_dataset_bubbles_005.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_005.png" alt="plot dataset bubbles" class = "sphx-glr-single-img"/></section>
+<section id="visualizing-all-moabb-datasets">
+<h2>Visualizing all MOABB datasets<a class="headerlink" href="#visualizing-all-moabb-datasets" title="Link to this heading">#</a></h2>
+<p>Finally, you can visualize all datasets available in MOABB at once
+by using the <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.utils.plot_all_datasets()</span></code> function.
+The datasets are sorted in alphabetical order and displayed on a grid.</p>
+<p>When using this function, we recommend saving the figure as a PDF or SVG
+file, as the figure is quite large and may be long to render.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a> <span class="o">=</span> <span class="n">plot_all_datasets</span><span class="p">(</span><span class="n">n_col</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_plot_dataset_bubbles_006.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_006.png" alt="plot dataset bubbles" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.818 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  246 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dataset-bubbles-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e82374f1e9d8c83e03ba565c2b5a285f/plot_dataset_bubbles.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dataset_bubbles.ipynb</span></code></a></p>
@@ -667,6 +680,7 @@ many but short trials (1 second).</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-one-dataset">Visualizing one dataset</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-multiple-datasets-simultaneously">Visualizing multiple datasets simultaneously</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-a-custom-dataset">Visualizing a custom dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-all-moabb-datasets">Visualizing all MOABB datasets</a></li>
 </ul>
   </nav></div>
 
