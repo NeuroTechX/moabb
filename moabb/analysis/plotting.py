@@ -11,6 +11,7 @@ import pandas as pd
 import seaborn as sea
 from matplotlib import patheffects
 from matplotlib.patches import Circle, RegularPolygon
+from matplotlib.collections import PatchCollection
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import (
@@ -429,12 +430,18 @@ def _plot_hexa_bubbles(
     ax,
     shape: Literal["circle", "hexagon"] = "circle",
     gap: float = 0.0,
+    gid: str | None = None,
     **kwargs,
 ):
     x, y = _get_bubble_coordinates(n, diameter + gap, center)
-    for xi, yi in zip(x, y):
-        bubble = _plot_shape(shape, (xi, yi), radius=diameter / 2, **kwargs)
-        ax.add_patch(bubble)
+    bubbles = [
+        _plot_shape(shape, (xi, yi), radius=diameter / 2, **kwargs)
+        for xi, yi in zip(x, y)
+    ]
+    collection = PatchCollection(bubbles, match_original=True)
+    if gid is not None:
+        collection.set_gid(gid)
+    ax.add_collection(collection)
     return x, y
 
 
@@ -466,10 +473,24 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
         text, diameter, alpha, color = item
         y = i * fontsize / 2 + y0
         bubble = _plot_shape(
-            shape, (x0, y), radius=diameter / 2, alpha=alpha, color=color, lw=0
+            shape,
+            (x0, y),
+            radius=diameter / 2,
+            alpha=alpha,
+            color=color,
+            lw=0,
+            gid=f"legend/bubble/{text}",
         )
         ax.add_patch(bubble)
-        ax.text(x0 + 5, y, text, ha="left", va="center", fontsize=fontsize)
+        ax.text(
+            x0 + 5,
+            y,
+            text,
+            ha="left",
+            va="center",
+            fontsize=fontsize,
+            gid=f"legend/text/{text}",
+        )
 
 
 def _match_int(s):
@@ -634,6 +655,7 @@ def dataset_bubble_plot(
         center=center,
         shape=shape,
         gap=gap,
+        gid=f"bubbles/{dataset_name}",
     )
     if title:
         ax.text(
@@ -648,6 +670,7 @@ def dataset_bubble_plot(
                 patheffects.Stroke(linewidth=3, foreground="white", alpha=0.8),
                 patheffects.Normal(),
             ],
+            gid=f"title/{dataset_name}",
         )
     if legend:
         legend_position = legend_position or (x.max() + fontsize, y.min())
