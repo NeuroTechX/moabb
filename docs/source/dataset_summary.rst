@@ -24,7 +24,7 @@ Columns definitions:
     - **#Subj** is the number of subjects.
     - **#Chan** is the number of EEG channels.
     - **#Trials / class** is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. *The definitions of a **class** and of a **trial** depend on the paradigm used (see sections below)*.
-    - **Trial length** is the duration of trial in seconds.
+    - **Trials length** is the duration of trial in seconds.
     - **Total_trials** is the total number of trials in the dataset (all subjects and classes together).
     - **Freq** is the sampling frequency of the raw data.
     - **#Session** is the number of sessions per subject. Different sessions are often recorded on different days.

@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sea
 from matplotlib import patheffects
+from matplotlib.collections import PatchCollection
 from matplotlib.patches import Circle, RegularPolygon
 from scipy.stats import t
 
@@ -429,12 +430,18 @@ def _plot_hexa_bubbles(
     ax,
     shape: Literal["circle", "hexagon"] = "circle",
     gap: float = 0.0,
+    gid: str | None = None,
     **kwargs,
 ):
     x, y = _get_bubble_coordinates(n, diameter + gap, center)
-    for xi, yi in zip(x, y):
-        bubble = _plot_shape(shape, (xi, yi), radius=diameter / 2, **kwargs)
-        ax.add_patch(bubble)
+    bubbles = [
+        _plot_shape(shape, (xi, yi), radius=diameter / 2, **kwargs)
+        for xi, yi in zip(x, y)
+    ]
+    collection = PatchCollection(bubbles, match_original=True)
+    if gid is not None:
+        collection.set_gid(gid)
+    ax.add_collection(collection)
     return x, y
 
 
@@ -466,10 +473,31 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
         text, diameter, alpha, color = item
         y = i * fontsize / 2 + y0
         bubble = _plot_shape(
-            shape, (x0, y), radius=diameter / 2, alpha=alpha, color=color, lw=0
+            shape,
+            (x0, y),
+            radius=diameter / 2,
+            alpha=alpha,
+            color=color,
+            lw=0,
+            gid=f"legend/bubble/{text}",
         )
         ax.add_patch(bubble)
-        ax.text(x0 + 5, y, text, ha="left", va="center", fontsize=fontsize)
+        ax.text(
+            x0 + 5,
+            y,
+            text,
+            ha="left",
+            va="center",
+            fontsize=fontsize,
+            gid=f"legend/text/{text}",
+        )
+
+
+def _match_int(s):
+    """Match the first integer in a string."""
+    match = re.search(r"(\d+)", str(s))
+    assert match, f"Cannot parse number from '{s}'"
+    return int(match.group(1))
 
 
 def _get_dataset_parameters(dataset):
@@ -477,25 +505,20 @@ def _get_dataset_parameters(dataset):
     dataset_name = dataset.__class__.__name__
     paradigm = dataset.paradigm
     n_subjects = len(dataset.subject_list)
-    n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
+    n_sessions = _match_int(row["#Sessions"])
     if paradigm in ["imagery", "ssvep"]:
-        n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
+        n_trials = _match_int(row["#Trials / class"]) * _match_int(row["#Classes"])
     elif paradigm == "rstate":
-        n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
+        n_trials = _match_int(row["#Classes"]) * _match_int(row["#Blocks / class"])
     elif paradigm == "cvep":
-        n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
+        n_trials = _match_int(row["#Trials / class"]) * _match_int(row["#Trial classes"])
     else:  # p300
         match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
-        assert match
-        n_trials = int(match.group(1)) + int(match.group(2))
-    trial_len = row[
-        (
-            "Trial length(s)"
-            if paradigm == "imagery"
-            else "Trials length (s)" if paradigm == "cvep" else "Trials length(s)"
-        )
-    ]
-    trial_len = float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
+        if match is not None:
+            n_trials = int(match.group(1)) + int(match.group(2))
+        else:
+            n_trials = _match_int(row["#Trials / class"])
+    trial_len = float(row["Trials length (s)"])
     return (
         dataset_name,
         paradigm,
@@ -593,7 +616,7 @@ def dataset_bubble_plot(
     p = sea.color_palette("tab10", 5)
     color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
 
-    alphas = alphas or [0.7, 0.55, 0.4, 0.25, 0.1]
+    alphas = alphas or [0.8, 0.65, 0.5, 0.35, 0.2]
 
     if dataset is not None:
         _dataset_name, _paradigm, _n_subjects, _n_sessions, _n_trials, _trial_len = (
@@ -632,6 +655,7 @@ def dataset_bubble_plot(
         center=center,
         shape=shape,
         gap=gap,
+        gid=f"bubbles/{dataset_name}",
     )
     if title:
         ax.text(
@@ -646,6 +670,7 @@ def dataset_bubble_plot(
                 patheffects.Stroke(linewidth=3, foreground="white", alpha=0.8),
                 patheffects.Normal(),
             ],
+            gid=f"title/{dataset_name}",
         )
     if legend:
         legend_position = legend_position or (x.max() + fontsize, y.min())
