@@ -389,14 +389,17 @@ def plot_all_datasets(height: float = 5, n_col: int = 10, **kwargs):
             height * (1 + len(datasets)) // n_col,
         ),
     )
-    _center = lambda i: ((i % n_col) * height * 10, -(i // n_col) * height * 10)
-    lx, ly = _center((len(datasets) // n_col + 1) * n_col - 1)
+
+    def get_center(i):
+        return ((i % n_col) * height * 10, -(i // n_col) * height * 10)
+
+    lx, ly = get_center((len(datasets) // n_col + 1) * n_col - 1)
     lx += height * 10
     for i, dataset in enumerate(datasets):
         dataset_bubble_plot(
             dataset,
             ax=ax,
-            center=_center(i),
+            center=get_center(i),
             legend=i == len(datasets) - 1,
             legend_position=(lx, ly),
             **(kwargs or {}),
