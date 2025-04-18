@@ -22,4 +22,4 @@ def test_get_dataset_parameters(dataset_class):
     assert isinstance(n_subjects, int)
     assert isinstance(n_sessions, int)
     assert isinstance(n_trials, int)
-    assert isinstance(trial_len, (float, int))
+    assert isinstance(trial_len, float)

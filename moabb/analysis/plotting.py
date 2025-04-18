@@ -473,6 +473,7 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
 
 
 def _match_int(s):
+    """Match the first integer in a string."""
     match = re.search(r"(\d+)", str(s))
     assert match, f"Cannot parse number from '{s}'"
     return int(match.group(1))
@@ -483,27 +484,20 @@ def _get_dataset_parameters(dataset):
     dataset_name = dataset.__class__.__name__
     paradigm = dataset.paradigm
     n_subjects = len(dataset.subject_list)
-    n_sessions = _match_int(row["#Session" if paradigm == "imagery" else "#Sessions"])
+    n_sessions = _match_int(row["#Sessions"])
     if paradigm in ["imagery", "ssvep"]:
         n_trials = _match_int(row["#Trials / class"]) * _match_int(row["#Classes"])
     elif paradigm == "rstate":
         n_trials = _match_int(row["#Classes"]) * _match_int(row["#Blocks / class"])
     elif paradigm == "cvep":
-        n_trials = _match_int(row["#Trial classes"]) * _match_int(row["#Trials / class"])
+        n_trials = _match_int(row["#Trials / class"]) * _match_int(row["#Trial classes"])
     else:  # p300
         match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
         if match is not None:
             n_trials = int(match.group(1)) + int(match.group(2))
         else:
             n_trials = _match_int(row["#Trials / class"])
-    trial_len = row[
-        (
-            "Trial length(s)"
-            if paradigm == "imagery"
-            else "Trials length (s)" if paradigm == "cvep" else "Trials length(s)"
-        )
-    ]
-    trial_len = float(trial_len.strip("s")) if isinstance(trial_len, str) else trial_len
+    trial_len = float(row["Trials length (s)"])
     return (
         dataset_name,
         paradigm,
