@@ -436,7 +436,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <li><p><strong>#Subj</strong> is the number of subjects.</p></li>
 <li><p><strong>#Chan</strong> is the number of EEG channels.</p></li>
 <li><p><strong>#Trials / class</strong> is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. <em>The definitions of a **class*</em> and of a <strong>trial</strong> depend on the paradigm used (see sections below)*.</p></li>
-<li><p><strong>Trial length</strong> is the duration of trial in seconds.</p></li>
+<li><p><strong>Trials length</strong> is the duration of trial in seconds.</p></li>
 <li><p><strong>Total_trials</strong> is the total number of trials in the dataset (all subjects and classes together).</p></li>
 <li><p><strong>Freq</strong> is the sampling frequency of the raw data.</p></li>
 <li><p><strong>#Session</strong> is the number of sessions per subject. Different sessions are often recorded on different days.</p></li>
@@ -463,9 +463,9 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <th class="head"><p>#Chan</p></th>
 <th class="head"><p>#Classes</p></th>
 <th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trial length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
-<th class="head"><p>#Session</p></th>
+<th class="head"><p>Trials length (s)</p></th>
+<th class="head"><p>Freq (Hz)</p></th>
+<th class="head"><p>#Sessions</p></th>
 <th class="head"><p>#Runs</p></th>
 <th class="head"><p>Total_trials</p></th>
 <th class="head"><p>PapersWithCode leaderboard</p></th>
@@ -476,7 +476,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>8</p></td>
 <td><p>16</p></td>
 <td><p>3</p></td>
-<td><p>20.0</p></td>
+<td><p>20</p></td>
 <td><p>3.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -488,7 +488,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>9</p></td>
 <td><p>22</p></td>
 <td><p>4</p></td>
-<td><p>144.0</p></td>
+<td><p>144</p></td>
 <td><p>4.0</p></td>
 <td><p>250</p></td>
 <td><p>2</p></td>
@@ -500,7 +500,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>14</p></td>
 <td><p>15</p></td>
 <td><p>2</p></td>
-<td><p>80.0</p></td>
+<td><p>80</p></td>
 <td><p>5.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -512,7 +512,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>9</p></td>
 <td><p>3</p></td>
 <td><p>2</p></td>
-<td><p>360.0</p></td>
+<td><p>360</p></td>
 <td><p>4.5</p></td>
 <td><p>250</p></td>
 <td><p>5</p></td>
@@ -524,7 +524,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>12</p></td>
 <td><p>13</p></td>
 <td><p>2</p></td>
-<td><p>200.0</p></td>
+<td><p>200</p></td>
 <td><p>5.0</p></td>
 <td><p>512</p></td>
 <td><p>3</p></td>
@@ -536,7 +536,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>9</p></td>
 <td><p>30</p></td>
 <td><p>5</p></td>
-<td><p>80.0</p></td>
+<td><p>80</p></td>
 <td><p>7.0</p></td>
 <td><p>256</p></td>
 <td><p>2</p></td>
@@ -548,7 +548,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>52</p></td>
 <td><p>64</p></td>
 <td><p>2</p></td>
-<td><p>100.0</p></td>
+<td><p>100</p></td>
 <td><p>3.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -560,7 +560,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>54</p></td>
 <td><p>62</p></td>
 <td><p>2</p></td>
-<td><p>100.0</p></td>
+<td><p>100</p></td>
 <td><p>4.0</p></td>
 <td><p>1000</p></td>
 <td><p>2</p></td>
@@ -572,7 +572,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>10</p></td>
 <td><p>128</p></td>
 <td><p>2</p></td>
-<td><p>150.0</p></td>
+<td><p>150</p></td>
 <td><p>7.0</p></td>
 <td><p>500</p></td>
 <td><p>1</p></td>
@@ -584,7 +584,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>14</p></td>
 <td><p>128</p></td>
 <td><p>4</p></td>
-<td><p>120.0</p></td>
+<td><p>120</p></td>
 <td><p>4.0</p></td>
 <td><p>500</p></td>
 <td><p>1</p></td>
@@ -596,7 +596,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>15</p></td>
 <td><p>61</p></td>
 <td><p>7</p></td>
-<td><p>60.0</p></td>
+<td><p>60</p></td>
 <td><p>3.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -608,7 +608,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>109</p></td>
 <td><p>64</p></td>
 <td><p>4</p></td>
-<td><p>23.0</p></td>
+<td><p>23</p></td>
 <td><p>3.0</p></td>
 <td><p>160</p></td>
 <td><p>1</p></td>
@@ -620,7 +620,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>29</p></td>
 <td><p>30</p></td>
 <td><p>2</p></td>
-<td><p>30.0</p></td>
+<td><p>30</p></td>
 <td><p>10.0</p></td>
 <td><p>200</p></td>
 <td><p>3</p></td>
@@ -632,7 +632,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>29</p></td>
 <td><p>30</p></td>
 <td><p>2</p></td>
-<td><p>30.0</p></td>
+<td><p>30</p></td>
 <td><p>10.0</p></td>
 <td><p>200</p></td>
 <td><p>3</p></td>
@@ -644,7 +644,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>10</p></td>
 <td><p>60</p></td>
 <td><p>7</p></td>
-<td><p>80.0</p></td>
+<td><p>80</p></td>
 <td><p>4.0</p></td>
 <td><p>200</p></td>
 <td><p>1</p></td>
@@ -656,7 +656,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>4</p></td>
 <td><p>14</p></td>
 <td><p>3</p></td>
-<td><p>160.0</p></td>
+<td><p>160</p></td>
 <td><p>5.0</p></td>
 <td><p>250</p></td>
 <td><p>3</p></td>
@@ -668,7 +668,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>62</p></td>
 <td><p>64</p></td>
 <td><p>4</p></td>
-<td><p>450.0</p></td>
+<td><p>450</p></td>
 <td><p>3.0</p></td>
 <td><p>1000</p></td>
 <td><p>7 or 11</p></td>
@@ -680,7 +680,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>50</p></td>
 <td><p>29</p></td>
 <td><p>2</p></td>
-<td><p>20.0</p></td>
+<td><p>20</p></td>
 <td><p>4.0</p></td>
 <td><p>500</p></td>
 <td><p>1</p></td>
@@ -692,7 +692,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>4</p></td>
 <td><p>63</p></td>
 <td><p>4</p></td>
-<td></td>
+<td><p>224</p></td>
 <td><p>4.0</p></td>
 <td><p>500</p></td>
 <td><p>1</p></td>
@@ -704,7 +704,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>2</p></td>
 <td><p>32</p></td>
 <td><p>4</p></td>
-<td></td>
+<td><p>160</p></td>
 <td><p>4.0</p></td>
 <td><p>200</p></td>
 <td><p>1</p></td>
@@ -716,7 +716,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>60</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20.0</p></td>
+<td><p>20</p></td>
 <td><p>5.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -728,7 +728,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>21</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20.0</p></td>
+<td><p>20</p></td>
 <td><p>5.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -740,7 +740,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>6</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20.0</p></td>
+<td><p>20</p></td>
 <td><p>5.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -752,7 +752,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>87</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20.0</p></td>
+<td><p>20</p></td>
 <td><p>5.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -780,8 +780,8 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
 <th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
+<th class="head"><p>Trials length (s)</p></th>
+<th class="head"><p>Freq (Hz)</p></th>
 <th class="head"><p>#Sessions</p></th>
 <th class="head"><p>PapersWithCode leaderboard</p></th>
 </tr>
@@ -1015,8 +1015,8 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <th class="head"><p>#Chan</p></th>
 <th class="head"><p>#Classes</p></th>
 <th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
+<th class="head"><p>Trials length (s)</p></th>
+<th class="head"><p>Freq (Hz)</p></th>
 <th class="head"><p>#Sessions</p></th>
 <th class="head"><p>PapersWithCode leaderboard</p></th>
 </tr>
@@ -1027,7 +1027,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>62</p></td>
 <td><p>4</p></td>
 <td><p>50</p></td>
-<td><p>4s</p></td>
+<td><p>4.0</p></td>
 <td><p>1000</p></td>
 <td><p>2</p></td>
 <td><p><a class="reference external" href="https://paperswithcode.com/dataset/lee2019-ssvep-moabb-1">Yes</a></p></td>
@@ -1037,7 +1037,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>8</p></td>
 <td><p>4</p></td>
 <td><p>16</p></td>
-<td><p>2s</p></td>
+<td><p>2.0</p></td>
 <td><p>256</p></td>
 <td><p>1</p></td>
 <td><p><a class="reference external" href="https://paperswithcode.com/dataset/kalunga2016-moabb">Yes</a></p></td>
@@ -1047,7 +1047,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>256</p></td>
 <td><p>5</p></td>
 <td><p>12-15</p></td>
-<td><p>3s</p></td>
+<td><p>3.0</p></td>
 <td><p>250</p></td>
 <td><p>1</p></td>
 <td><p><a class="reference external" href="https://paperswithcode.com/dataset/mamem1-moabb">Yes</a></p></td>
@@ -1057,7 +1057,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>256</p></td>
 <td><p>5</p></td>
 <td><p>20-30</p></td>
-<td><p>3s</p></td>
+<td><p>3.0</p></td>
 <td><p>250</p></td>
 <td><p>1</p></td>
 <td><p><a class="reference external" href="https://paperswithcode.com/dataset/mamem2-moabb">Yes</a></p></td>
@@ -1067,7 +1067,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>14</p></td>
 <td><p>4</p></td>
 <td><p>20-30</p></td>
-<td><p>3s</p></td>
+<td><p>3.0</p></td>
 <td><p>128</p></td>
 <td><p>1</p></td>
 <td><p><a class="reference external" href="https://paperswithcode.com/dataset/mamem3-moabb">Yes</a></p></td>
@@ -1077,7 +1077,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>8</p></td>
 <td><p>12</p></td>
 <td><p>15</p></td>
-<td><p>4.15s</p></td>
+<td><p>4.15</p></td>
 <td><p>256</p></td>
 <td><p>1</p></td>
 <td><p><a class="reference external" href="https://paperswithcode.com/dataset/nakanishi2015-moabb">Yes</a></p></td>
@@ -1087,7 +1087,7 @@ Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, T
 <td><p>62</p></td>
 <td><p>40</p></td>
 <td><p>6</p></td>
-<td><p>5s</p></td>
+<td><p>5.0</p></td>
 <td><p>250</p></td>
 <td><p>1</p></td>
 <td><p><a class="reference external" href="https://paperswithcode.com/dataset/wang2016-moabb">Yes</a></p></td>
@@ -1122,7 +1122,7 @@ DOI: <a class="reference external" href="https://doi.org/10.1088/1741-2552/ac38c
 <tr class="row-odd"><th class="head"><p>Dataset</p></th>
 <th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Sessions</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
+<th class="head"><p>Freq (Hz)</p></th>
 <th class="head"><p>#Chan</p></th>
 <th class="head"><p>Trials length (s)</p></th>
 <th class="head"><p>#Trial classes</p></th>
@@ -1235,8 +1235,8 @@ is a resting state experiment.</p>
 <th class="head"><p>#Chan</p></th>
 <th class="head"><p>#Classes</p></th>
 <th class="head"><p>#Blocks / class</p></th>
-<th class="head"><p>Trials length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
+<th class="head"><p>Trials length (s)</p></th>
+<th class="head"><p>Freq (Hz)</p></th>
 <th class="head"><p>#Sessions</p></th>
 <th class="head"><p>PapersWithCode leaderboard</p></th>
 </tr>
