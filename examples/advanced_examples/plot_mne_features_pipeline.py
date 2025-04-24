@@ -9,6 +9,8 @@ mne-features library
 """
 
 # Authors: Alexander de Ranitz <alexanderderanitz@gmail.com>
+#          Luuk Neervens <luuk.neervens@ru.nl>
+#          Charlynn van Osch <charlynn.vanosch@ru.nl>
 #
 # License: BSD (3-clause)
 
