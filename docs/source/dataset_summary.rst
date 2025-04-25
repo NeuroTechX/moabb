@@ -31,6 +31,15 @@ Columns definitions:
     - **#Runs** is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
     - **PapersWithCode leaderboard** is the link to the dataset on the PapersWithCode leaderboard.
 
+Additionally, a visual overview of all datasets can be generated using the function :func:`moabb.datasets.utils.plot_all_datasets`. 
+This overview allows to quickly compare the number of subjects, trials, and sessions across different datasets.
+The function will generate a figure like this:
+
+.. figure:: ../_static/datasets_overview.png
+   :alt: Datasets overview
+   :width: 100%
+
+
 Motor Imagery
 ======================
 
