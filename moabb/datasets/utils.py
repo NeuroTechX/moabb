@@ -404,4 +404,5 @@ def plot_all_datasets(height: float = 5, n_col: int = 10, **kwargs):
             legend_position=(lx, ly),
             **(kwargs or {}),
         )
+    fig.tight_layout()
     return fig
