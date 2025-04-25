@@ -1,7 +1,7 @@
 """
-==========================
+==============================
 Pipelines using the mne-features library
-==========================
+==============================
 
 This example shows how to evaluate a pipeline constructed using the
 mne-features library
