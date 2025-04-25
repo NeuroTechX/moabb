@@ -38,7 +38,7 @@ This overview allows to quickly compare the number of subjects, trials, and sess
 The function will generate a figure like this:
 
 .. figure:: images/datasets_overview.png
-   :alt: Datasets overview
+   :alt: Visual overview from the datasets used on the `The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark <https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf>`_
    :width: 100%
 
 
