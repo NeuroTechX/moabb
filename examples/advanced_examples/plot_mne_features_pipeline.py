@@ -6,7 +6,7 @@ Pipelines using the mne-features library
 This example shows how to evaluate a pipeline constructed using the
 mne-features library [1]_. This library provides sklearn compatible
 feature extractors for M/EEG data. These features
-can be used directly in your pipelines instead of,
+can be used directly in your pipelines.
 
 A list of available features can be found
 in `the docs <https://mne.tools/mne-features/api.html>`_.
