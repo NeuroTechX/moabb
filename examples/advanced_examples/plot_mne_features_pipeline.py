@@ -4,7 +4,14 @@ Pipelines using the mne-features library
 ==========================
 
 This example shows how to evaluate a pipeline constructed using the
-mne-features library
+mne-features library [1]_. This library provides sklearn compatible
+feature extractors for M/EEG data. These features
+can be used directly in your pipelines instead of,
+
+A list of available features can be found
+in `the docs <https://mne.tools/mne-features/api.html>`_.
+
+Be sure to install mne-features by running ``pip install mne-features``.
 
 """
 
@@ -50,11 +57,12 @@ warnings.filterwarnings("ignore")
 
 # We can specify which features we want to extract as a list of strings, see
 # https://mne.tools/mne-features/generated/mne_features.feature_extraction.FeatureExtractor.html#mne_features.feature_extraction.FeatureExtractor
-variance = FeatureExtractor(250.0, ["variance"])
-ptp_amp = FeatureExtractor(250.0, ["ptp_amp"])
+sfreq = 250.0  # sampling frequency used in the datasets below
+variance = FeatureExtractor(sfreq, ["variance"])
+ptp_amp = FeatureExtractor(sfreq, ["ptp_amp"])
 
 # We can also extract several features by passing more than one feature.
-both = FeatureExtractor(250.0, ["ptp_amp", "variance"])
+both = FeatureExtractor(sfreq, ["ptp_amp", "variance"])
 
 pipelines = {}
 pipelines["var+LDA"] = make_pipeline(variance, LDA())
@@ -95,3 +103,9 @@ g = sns.catplot(
     palette="viridis",
 )
 plt.show()
+
+###############################################################################
+# References
+# -----------
+#
+# .. [1] https://mne.tools/mne-features/index.html
