@@ -271,8 +271,8 @@ def format_row(row: pd.Series, horizontal: bool = True):
         row_sep = f"{tab_sep * w_keys} {tab_sep * w_values}"
         rows = [row_sep]
         for key, val in zip(keys, values):
-            rows.append(f"{key.ljust(w_keys)} {val.rjust(w_values)}")
-            rows.append(row_sep)
+            rows.append(f"{key.rjust(w_keys)} {val.rjust(w_values)}")
+        rows.append(row_sep)
     rows_str = "\n".join([f"{tab_prefix}{row}" for row in rows])
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
     if pwc_link is not None:
