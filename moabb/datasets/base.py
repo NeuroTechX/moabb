@@ -229,7 +229,7 @@ def check_run_names(data):
                 )
 
 
-def format_row(row: pd.Series):
+def format_row(row: pd.Series, horizontal: bool = True):
     pwc_key = "PapersWithCode leaderboard"
     tab_prefix = " " * 8
     tab_sep = "="
@@ -249,11 +249,20 @@ def format_row(row: pd.Series):
             return x
 
     values = [str(to_int(val)) for val in row.values]
-    widths = [max(len(key), len(val)) for key, val in zip(keys, values)]
-    row_sep = " ".join([tab_sep * width for width in widths])
-    keys_str = " ".join([key.rjust(width) for key, width in zip(keys, widths)])
-    values_str = " ".join([val.rjust(width) for val, width in zip(values, widths)])
-    rows = [row_sep, keys_str, row_sep, values_str, row_sep]
+    if horizontal:
+        widths = [max(len(key), len(val)) for key, val in zip(keys, values)]
+        row_sep = " ".join([tab_sep * width for width in widths])
+        keys_str = " ".join([key.rjust(width) for key, width in zip(keys, widths)])
+        values_str = " ".join([val.rjust(width) for val, width in zip(values, widths)])
+        rows = [row_sep, keys_str, row_sep, values_str, row_sep]
+    else:
+        w_keys = max(len(key) for key in keys)
+        w_values = max(len(val) for val in values)
+        row_sep = f"{tab_sep * w_keys} {tab_sep * w_values}"
+        rows = [row_sep]
+        for key, val in zip(keys, values):
+            rows.append(f"{key.ljust(w_keys)} {val.rjust(w_values)}")
+            rows.append(row_sep)
     rows_str = "\n".join([f"{tab_prefix}{row}" for row in rows])
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
     if pwc_link is not None:
@@ -266,7 +275,7 @@ class MetaclassDataset(abc.ABCMeta):
         doc = attrs.get("__doc__", "")
         try:
             row = _summary_table.loc[name]
-            row_str, row = format_row(row)
+            row_str, row = format_row(row, horizontal=False)
             doc_list = doc.split("\n\n")
             if len(doc_list) >= 2:
                 doc_list = [doc_list[0], row_str] + doc_list[1:]
