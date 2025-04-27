@@ -237,7 +237,7 @@ def format_row(row: pd.Series):
     pwc_link = row.get(pwc_key, None)
     if pwc_link is not None:
         row = row.drop(pwc_key)
-    col_names = [str(col) for col in row.index]
+    keys = [str(key) for key in row.index]
 
     def to_int(x):
         try:
@@ -249,11 +249,11 @@ def format_row(row: pd.Series):
             return x
 
     values = [str(to_int(val)) for val in row.values]
-    widths = [max(len(col), len(val)) for col, val in zip(col_names, values)]
+    widths = [max(len(key), len(val)) for key, val in zip(keys, values)]
     row_sep = " ".join([tab_sep * width for width in widths])
-    cols_row = " ".join([col.rjust(width) for col, width in zip(col_names, widths)])
-    values_row = " ".join([val.rjust(width) for val, width in zip(values, widths)])
-    rows = [row_sep, cols_row, row_sep, values_row, row_sep]
+    keys_str = " ".join([key.rjust(width) for key, width in zip(keys, widths)])
+    values_str = " ".join([val.rjust(width) for val, width in zip(values, widths)])
+    rows = [row_sep, keys_str, row_sep, values_str, row_sep]
     rows_str = "\n".join([f"{tab_prefix}{row}" for row in rows])
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
     if pwc_link is not None:
