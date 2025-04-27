@@ -229,6 +229,15 @@ def check_run_names(data):
                 )
 
 
+def _transfer_unit(key: str, value: str):
+    pattern = r"( ?\((\w+)\))$"
+    match = re.search(pattern, key)
+    if match:
+        suffix, unit = match.groups()
+        return key[: -len(suffix)], f"{value} {unit}"
+    return key, value
+
+
 def format_row(row: pd.Series, horizontal: bool = True):
     pwc_key = "PapersWithCode leaderboard"
     tab_prefix = " " * 8
@@ -237,7 +246,6 @@ def format_row(row: pd.Series, horizontal: bool = True):
     pwc_link = row.get(pwc_key, None)
     if pwc_link is not None:
         row = row.drop(pwc_key)
-    keys = [str(key) for key in row.index]
 
     def to_int(x):
         try:
@@ -248,7 +256,9 @@ def format_row(row: pd.Series, horizontal: bool = True):
         except ValueError:
             return x
 
-    values = [str(to_int(val)) for val in row.values]
+    keys, values = zip(
+        *[_transfer_unit(str(key), str(to_int(val))) for key, val in row.items()]
+    )
     if horizontal:
         widths = [max(len(key), len(val)) for key, val in zip(keys, values)]
         row_sep = " ".join([tab_sep * width for width in widths])
