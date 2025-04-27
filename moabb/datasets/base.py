@@ -253,14 +253,9 @@ def format_row(row: pd.Series):
     row_sep = " ".join([tab_sep * width for width in widths])
     cols_row = " ".join([col.rjust(width) for col, width in zip(col_names, widths)])
     values_row = " ".join([val.rjust(width) for val, width in zip(values, widths)])
-    out = (
-        "    .. admonition:: Dataset summary\n\n"
-        f"{tab_prefix}{row_sep}\n"
-        f"{tab_prefix}{cols_row}\n"
-        f"{tab_prefix}{row_sep}\n"
-        f"{tab_prefix}{values_row}\n"
-        f"{tab_prefix}{row_sep}"
-    )
+    rows = [row_sep, cols_row, row_sep, values_row, row_sep]
+    rows_str = "\n".join([f"{tab_prefix}{row}" for row in rows])
+    out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
     if pwc_link is not None:
         out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
     return out, row
