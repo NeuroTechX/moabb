@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from inspect import signature
 from pathlib import Path
 from typing import Any, Dict, Union
+from collections.abc import Sequence
 
 import mne_bids
 import pandas as pd
@@ -256,25 +257,31 @@ def format_row(row: pd.Series, horizontal: bool = True):
         except ValueError:
             return x
 
+    # append the eventual units to the values:
     keys, values = zip(
         *[_transfer_unit(str(key), str(to_int(val))) for key, val in row.items()]
     )
+    # make columns bold:
+    keys: Sequence[str] = [f"**{key}**" for key in keys]
+    #transpose the table if vertical:
+    rows: Sequence[Sequence[str]] = (
+        [keys, values] if horizontal else list(zip(keys, values))
+    )
+    # compute the width of each column:
+    widths = [max(map(len, col)) for col in zip(*rows)]
+    # pad each column with spaces:
+    rows = [[str(col).rjust(width) for col, width in zip(row, widths)] for row in rows]
+    # add separator rows:
+    sep_row = [tab_sep * width for width in widths]
     if horizontal:
-        widths = [max(len(key), len(val)) for key, val in zip(keys, values)]
-        row_sep = " ".join([tab_sep * width for width in widths])
-        keys_str = " ".join([key.rjust(width) for key, width in zip(keys, widths)])
-        values_str = " ".join([val.rjust(width) for val, width in zip(values, widths)])
-        rows = [row_sep, keys_str, row_sep, values_str, row_sep]
-    else:
-        w_keys = max(len(key) for key in keys)
-        w_values = max(len(val) for val in values)
-        row_sep = f"{tab_sep * w_keys} {tab_sep * w_values}"
-        rows = [row_sep]
-        for key, val in zip(keys, values):
-            rows.append(f"{key.rjust(w_keys)} {val.rjust(w_values)}")
-        rows.append(row_sep)
-    rows_str = "\n".join([f"{tab_prefix}{row}" for row in rows])
+        rows.insert(1, sep_row)
+    rows.insert(0, sep_row)
+    rows.append(sep_row)
+    #join the columns and rows into one string:
+    rows_str = "\n".join([f"{tab_prefix}{' '.join(row)}" for row in rows])
+    # add the header:
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
+    # add the PapersWithCode link if it exists:
     if pwc_link is not None:
         out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
     return out, row
