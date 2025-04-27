@@ -6,11 +6,11 @@ import abc
 import logging
 import re
 import traceback
+from collections.abc import Sequence
 from dataclasses import dataclass
 from inspect import signature
 from pathlib import Path
 from typing import Any, Dict, Union
-from collections.abc import Sequence
 
 import mne_bids
 import pandas as pd
@@ -263,7 +263,7 @@ def format_row(row: pd.Series, horizontal: bool = True):
     )
     # make columns bold:
     keys: Sequence[str] = [f"**{key}**" for key in keys]
-    #transpose the table if vertical:
+    # transpose the table if vertical:
     rows: Sequence[Sequence[str]] = (
         [keys, values] if horizontal else list(zip(keys, values))
     )
@@ -277,7 +277,7 @@ def format_row(row: pd.Series, horizontal: bool = True):
         rows.insert(1, sep_row)
     rows.insert(0, sep_row)
     rows.append(sep_row)
-    #join the columns and rows into one string:
+    # join the columns and rows into one string:
     rows_str = "\n".join([f"{tab_prefix}{' '.join(row)}" for row in rows])
     # add the header:
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
