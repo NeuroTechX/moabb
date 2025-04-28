@@ -140,7 +140,8 @@ Base & Utils
     download.fs_get_file_name
     utils.dataset_search
     utils.find_intersecting_channels
-    utils.plot_all_datasets
+    utils.plot_datasets_grid
+    utils.plot_datasets_cluster
 
 
 ====================

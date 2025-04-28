@@ -25,7 +25,7 @@ from moabb.datasets import (
     Thielen2021,
     Wang2016,
 )
-from moabb.datasets.utils import plot_all_datasets
+from moabb.datasets.utils import plot_datasets_cluster, plot_datasets_grid
 
 
 ###############################################################################
@@ -137,12 +137,19 @@ plt.show()
 # ------------------------------
 #
 # Finally, you can visualize all datasets available in MOABB at once
-# by using the :func:`moabb.datasets.utils.plot_all_datasets` function.
+# by using the :func:`moabb.datasets.utils.plot_datasets_grid` function.
 # The datasets are sorted in alphabetical order and displayed on a grid.
 #
 # When using this function, we recommend saving the figure as a PDF or SVG
 # file, as the figure is quite large and may be long to render.
 
 
-fig = plot_all_datasets(n_col=5)
+fig = plot_datasets_grid(n_col=5)
+plt.show()
+
+
+# Alternatively, you can also use the :func:`moabb.datasets.utils.plot_datasets_cluster`
+# function to visualize the datasets in more compact format.
+
+fig = plot_datasets_cluster()
 plt.show()
