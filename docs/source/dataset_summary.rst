@@ -33,7 +33,8 @@ Columns definitions:
 
 **Datasets overview:**
 
-A visual overview of all datasets can be generated using the function :func:`moabb.datasets.utils.plot_all_datasets`.
+A visual overview of all datasets can be generated using the functions :func:`moabb.datasets.utils.plot_datasets_grid`
+or :func:`moabb.datasets.utils.plot_datasets_cluster`.
 This overview allows to quickly compare the number of subjects, trials, and sessions across different datasets.
 The function will generate a figure like this:
 
