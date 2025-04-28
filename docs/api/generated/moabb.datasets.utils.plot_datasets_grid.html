@@ -12,7 +12,7 @@
     <link rel="icon" sizes="144x144" href="../../_static/favicon-144.png" type="image/png">
     <link rel="mask-icon" href="../../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="500x500" href="../../_static/favicon-500.png" type="image/png">
-    <title>moabb.datasets.utils.plot_all_datasets &#8212; moabb 1.2.0-dev documentation</title>
+    <title>moabb.datasets.utils.plot_datasets_grid &#8212; moabb 1.2.0-dev documentation</title>
   
   
   
@@ -71,7 +71,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/moabb.datasets.utils.plot_all_datasets';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/moabb.datasets.utils.plot_datasets_grid';</script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -404,7 +404,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">moabb.datasets.utils.plot_all_datasets</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">moabb.datasets.utils.plot_datasets_grid</span></li>
   </ul>
 </nav>
 </div>
@@ -421,12 +421,12 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="moabb-datasets-utils-plot-all-datasets">
-<h1>moabb.datasets.utils.plot_all_datasets<a class="headerlink" href="#moabb-datasets-utils-plot-all-datasets" title="Link to this heading">#</a></h1>
+  <section id="moabb-datasets-utils-plot-datasets-grid">
+<h1>moabb.datasets.utils.plot_datasets_grid<a class="headerlink" href="#moabb-datasets-utils-plot-datasets-grid" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="moabb.datasets.utils.plot_all_datasets">
-<span class="sig-prename descclassname"><span class="pre">moabb.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">plot_all_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/utils.py#L358-L408"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.utils.plot_all_datasets" title="Link to this definition">#</a></dt>
-<dd><p>Plots all the MOABB datasets in one figure.</p>
+<dt class="sig sig-object py" id="moabb.datasets.utils.plot_datasets_grid">
+<span class="sig-prename descclassname"><span class="pre">moabb.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">plot_datasets_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><span class="pre">BaseDataset</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/utils.py#L474-L550"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.utils.plot_datasets_grid" title="Link to this definition">#</a></dt>
+<dd><p>Plots all the MOABB datasets in one figure, distributed on a grid.</p>
 <p>This uses the <a class="reference internal" href="moabb.analysis.plotting.dataset_bubble_plot.html#moabb.analysis.plotting.dataset_bubble_plot" title="moabb.analysis.plotting.dataset_bubble_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataset_bubble_plot()</span></code></a> function to
 plot the datasets.
 The datasets are sorted in alphabetical order and
@@ -434,6 +434,26 @@ plotted in a grid with n_col columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>datasets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><em>BaseDataset</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>] </em><em>| </em><em>None</em>) – <p>List of datasets to plot. If None, all datasets are plotted.
+If an element of the list is a dictionary, it is assumed to
+have the following keys:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>dataset_name: str</dt><dd><p>Name of the dataset.</p>
+</dd>
+<dt>paradigm: str</dt><dd><p>Paradigm of the dataset (e.g., ‘imagery’, ‘p300’).</p>
+</dd>
+<dt>n_subjects: int</dt><dd><p>Number of subjects in the dataset.</p>
+</dd>
+<dt>n_sessions: int</dt><dd><p>Number of sessions in the dataset.</p>
+</dd>
+<dt>n_trials: int</dt><dd><p>Number of trials in the dataset.</p>
+</dd>
+<dt>trial_len: float</dt><dd><p>Length of each trial in seconds.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p></li>
 <li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Height of each subplot in inches.</p></li>
 <li><p><strong>n_col</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of columns in the figure.</p></li>
 <li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Additional arguments to pass to the dataset_bubble_plot function.</p></li>
@@ -479,7 +499,7 @@ plotted in a grid with n_col columns.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.utils.plot_all_datasets"><code class="docutils literal notranslate"><span class="pre">plot_all_datasets()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.utils.plot_datasets_grid"><code class="docutils literal notranslate"><span class="pre">plot_datasets_grid()</span></code></a></li>
 </ul>
   </nav></div>
 

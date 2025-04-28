@@ -509,7 +509,7 @@ and the number of trials per session.</p>
     <a href="../../api/generated/moabb.datasets.Thielen2021.html#moabb.datasets.Thielen2021" title="moabb.datasets.Thielen2021" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Thielen2021</span></a><span class="p">,</span>
     <a href="../../api/generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Wang2016</span></a><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.datasets.utils.plot_all_datasets.html#moabb.datasets.utils.plot_all_datasets" title="moabb.datasets.utils.plot_all_datasets" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">plot_all_datasets</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.datasets.utils.plot_datasets_cluster.html#moabb.datasets.utils.plot_datasets_cluster" title="moabb.datasets.utils.plot_datasets_cluster" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">plot_datasets_cluster</span></a><span class="p">,</span> <a href="../../api/generated/moabb.datasets.utils.plot_datasets_grid.html#moabb.datasets.utils.plot_datasets_grid" title="moabb.datasets.utils.plot_datasets_grid" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">plot_datasets_grid</span></a>
 </pre></div>
 </div>
 <section id="visualizing-one-dataset">
@@ -605,16 +605,27 @@ many but short trials (1 second).</p>
 <section id="visualizing-all-moabb-datasets">
 <h2>Visualizing all MOABB datasets<a class="headerlink" href="#visualizing-all-moabb-datasets" title="Link to this heading">#</a></h2>
 <p>Finally, you can visualize all datasets available in MOABB at once
-by using the <a class="reference internal" href="../../api/generated/moabb.datasets.utils.plot_all_datasets.html#moabb.datasets.utils.plot_all_datasets" title="moabb.datasets.utils.plot_all_datasets"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.utils.plot_all_datasets()</span></code></a> function.
+by using the <a class="reference internal" href="../../api/generated/moabb.datasets.utils.plot_datasets_grid.html#moabb.datasets.utils.plot_datasets_grid" title="moabb.datasets.utils.plot_datasets_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.utils.plot_datasets_grid()</span></code></a> function.
 The datasets are sorted in alphabetical order and displayed on a grid.</p>
 <p>When using this function, we recommend saving the figure as a PDF or SVG
 file, as the figure is quite large and may be long to render.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a> <span class="o">=</span> <a href="../../api/generated/moabb.datasets.utils.plot_all_datasets.html#moabb.datasets.utils.plot_all_datasets" title="moabb.datasets.utils.plot_all_datasets" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">plot_all_datasets</span></a><span class="p">(</span><span class="n">n_col</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a> <span class="o">=</span> <a href="../../api/generated/moabb.datasets.utils.plot_datasets_grid.html#moabb.datasets.utils.plot_datasets_grid" title="moabb.datasets.utils.plot_datasets_grid" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">plot_datasets_grid</span></a><span class="p">(</span><span class="n">n_col</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+
+
+<span class="c1"># Alternatively, you can also use the :func:`moabb.datasets.utils.plot_datasets_cluster`</span>
+<span class="c1"># function to visualize the datasets in more compact format.</span>
+
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a> <span class="o">=</span> <a href="../../api/generated/moabb.datasets.utils.plot_datasets_cluster.html#moabb.datasets.utils.plot_datasets_cluster" title="moabb.datasets.utils.plot_datasets_cluster" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">plot_datasets_cluster</span></a><span class="p">()</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_dataset_bubbles_006.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_006.png" alt="plot dataset bubbles" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.194 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  249 MB</p>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_plot_dataset_bubbles_006.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_006.png" alt="plot dataset bubbles" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_plot_dataset_bubbles_007.png" srcset="../../_images/sphx_glr_plot_dataset_bubbles_007.png" alt="plot dataset bubbles" class = "sphx-glr-multi-img"/></li>
+</ul>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.917 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  251 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dataset-bubbles-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e82374f1e9d8c83e03ba565c2b5a285f/plot_dataset_bubbles.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dataset_bubbles.ipynb</span></code></a></p>
