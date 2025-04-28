@@ -25,7 +25,7 @@ from moabb.datasets import (
     Thielen2021,
     Wang2016,
 )
-from moabb.datasets.utils import plot_datasets_grid, plot_datasets_cluster
+from moabb.datasets.utils import plot_datasets_cluster, plot_datasets_grid
 
 
 ###############################################################################

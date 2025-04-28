@@ -13,9 +13,9 @@ from mne.io import RawArray
 
 import moabb.datasets as db
 from moabb.analysis.plotting import (
+    _get_dataset_parameters,
     dataset_bubble_plot,
     get_dataset_area,
-    _get_dataset_parameters,
 )
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
