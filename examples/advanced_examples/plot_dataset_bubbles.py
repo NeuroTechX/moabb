@@ -143,11 +143,10 @@ plt.show()
 # When using this function, we recommend saving the figure as a PDF or SVG
 # file, as the figure is quite large and may be long to render.
 
-
 fig = plot_datasets_grid(n_col=5)
 plt.show()
 
-
+###############################################################################
 # Alternatively, you can also use the :func:`moabb.datasets.utils.plot_datasets_cluster`
 # function to visualize the datasets in more compact format.
 
