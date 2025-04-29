@@ -31,7 +31,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014_001, Zhou2016
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -42,7 +42,7 @@ warnings.filterwarnings("ignore")
 
 ##############################################################################
 # Creating Pipelines using mne-features
-# ------------------
+# -------------------------------------
 #
 # Here, we closely follow Tutorial 3, but we create pipelines using features
 # extracted using the mne-features library. We instantiate the three different
@@ -51,13 +51,26 @@ warnings.filterwarnings("ignore")
 # https://mne.tools/mne-features/api.html#api-documentation
 
 
-# mne-feature's FeatureExtractor can be used directly in our pipelines
-# as it implements the fit() and transform() methods
-# (note that fit does not have any effect, but it is implemented for compatibility).
+#######################################################################
+# Feature Details
+# ---------------
+# We will use the ``FeatureExtractor`` to compute features. Here, we select
+# two simple features: ``variance`` and ``ptp_amp`` (peak-to-peak amplitude).
+#
+# **Variance:**
+# Computed per channel (``c``). It measures the spread of the signal values
+# (samples in vector ``x``) around their average value (``mean(x)``).
+# It involves summing the squared differences between each sample and the mean,
+# then normalizing, at mne-features, it is the number of samples minus 1.
+#
+# **Peak-to-Peak Amplitude (ptp_amp):**
+# Computed per channel (``c``). This is simply the difference between the
+# maximum and minimum signal values found within that channel's data vector ``x``.
+# Formula: ``ptp_amp(c) = max(x) - min(x)``
 
-# We can specify which features we want to extract as a list of strings, see
-# https://mne.tools/mne-features/generated/mne_features.feature_extraction.FeatureExtractor.html#mne_features.feature_extraction.FeatureExtractor
+
 sfreq = 250.0  # sampling frequency used in the datasets below
+
 variance = FeatureExtractor(sfreq, ["variance"])
 ptp_amp = FeatureExtractor(sfreq, ["ptp_amp"])
 
@@ -72,7 +85,7 @@ pipelines["var+ptp_amp+LDA"] = make_pipeline(both, LDA())
 ##############################################################################
 # The rest is the same as in previous tutorials!
 
-datasets = [BNCI2014_001(), Zhou2016()]
+datasets = [BNCI2014_001()]
 subj = [1, 2, 3]
 for d in datasets:
     d.subject_list = subj
