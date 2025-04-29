@@ -529,6 +529,34 @@ def _get_dataset_parameters(dataset):
     )
 
 
+def get_bubble_size(size_mode, n_sessions, n_trials, trial_len):
+    if size_mode == "duration":
+        return n_trials * n_sessions * trial_len
+    elif size_mode == "count":
+        return n_trials * n_sessions
+    else:
+        raise ValueError(f"Unknown size_mode {size_mode}")
+
+
+def get_dataset_area(
+    n_subjects: int,
+    n_sessions: int,
+    n_trials: int,
+    trial_len: float,
+    scale: float = 0.5,
+    size_mode: Literal["count", "duration"] = "count",
+    gap: float = 0.0,
+):
+    size = get_bubble_size(
+        size_mode=size_mode,
+        n_sessions=n_sessions,
+        n_trials=n_trials,
+        trial_len=trial_len,
+    )
+    diameter = np.log(size) * scale + gap
+    return n_subjects * 3 * 3**0.5 / 8 * diameter**2  # area of hexagons
+
+
 def dataset_bubble_plot(
     dataset=None,
     center: tuple[float, float] = (0.0, 0.0),
@@ -636,13 +664,12 @@ def dataset_bubble_plot(
                 "If dataset is None, then dataset_name, n_subjects, n_sessions, "
                 "n_trials and trial_len must be provided"
             )
-
-    if size_mode == "duration":
-        size = n_trials * n_sessions * trial_len
-    elif size_mode == "count":
-        size = n_trials * n_sessions
-    else:
-        raise ValueError(f"Unknown size_mode {size_mode}")
+    size = get_bubble_size(
+        size_mode=size_mode,
+        n_sessions=n_sessions,
+        n_trials=n_trials,
+        trial_len=trial_len,
+    )
 
     ax = ax or plt.gca()
     x, y = _plot_hexa_bubbles(
