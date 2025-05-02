@@ -27,7 +27,7 @@ Enhancements
 - Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
 - Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
 - Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
-
+- Using the splitters in the evaluation (:gh:`766` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
