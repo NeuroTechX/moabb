@@ -19,7 +19,10 @@ from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
-from moabb.evaluations.splitters import CrossSessionSplitter, CrossSubjectSplitter
+from moabb.evaluations.splitters import (
+    CrossSessionSplitter,
+    CrossSubjectSplitter,
+)
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 
 
@@ -696,7 +699,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         scorer = get_scorer(self.paradigm.scoring)
 
         # perform leave one subject out CV
-
         if self.n_splits is None:
             cv_class = LeaveOneGroupOut
             cv_kwargs = {}
