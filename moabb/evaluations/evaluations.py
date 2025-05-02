@@ -19,6 +19,7 @@ from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
+from moabb.evaluations.splitters import CrossSessionSplitter, CrossSubjectSplitter
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 
 
@@ -516,7 +517,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                     tracker.start()
 
                 # we want to store a results per session
-                cv = LeaveOneGroupOut()
+                cv = CrossSessionSplitter(random_state=self.random_state)
+
                 inner_cv = StratifiedKFold(
                     3, shuffle=True, random_state=self.random_state
                 )
@@ -538,8 +540,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         grid=False,
                         eval_type="CrossSession",
                     )
-
-                for cv_ind, (train, test) in enumerate(cv.split(X, y, groups)):
+                for cv_ind, (train, test) in enumerate(cv.split(y, metadata)):
                     model_list = []
                     if _carbonfootprint:
                         tracker.start()
@@ -695,11 +696,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
         scorer = get_scorer(self.paradigm.scoring)
 
         # perform leave one subject out CV
+
         if self.n_splits is None:
-            cv = LeaveOneGroupOut()
+            cv_class = LeaveOneGroupOut
+            cv_kwargs = {}
         else:
-            cv = GroupKFold(n_splits=self.n_splits)
+            cv_class = GroupKFold
+            cv_kwargs = {"n_splits": self.n_splits}
             n_subjects = self.n_splits
+
+        cv = CrossSubjectSplitter(
+            cv_class=cv_class, random_state=self.random_state, **cv_kwargs
+        )
 
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
@@ -712,7 +720,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         # Progressbar at subject level
         for cv_ind, (train, test) in enumerate(
             tqdm(
-                cv.split(X, y, groups),
+                cv.split(y, metadata),
                 total=n_subjects,
                 desc=f"{dataset.code}-CrossSubject",
             )
