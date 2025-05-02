@@ -24,12 +24,24 @@ Columns definitions:
     - **#Subj** is the number of subjects.
     - **#Chan** is the number of EEG channels.
     - **#Trials / class** is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. *The definitions of a **class** and of a **trial** depend on the paradigm used (see sections below)*.
-    - **Trial length** is the duration of trial in seconds.
+    - **Trials length** is the duration of trial in seconds.
     - **Total_trials** is the total number of trials in the dataset (all subjects and classes together).
     - **Freq** is the sampling frequency of the raw data.
     - **#Session** is the number of sessions per subject. Different sessions are often recorded on different days.
     - **#Runs** is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
     - **PapersWithCode leaderboard** is the link to the dataset on the PapersWithCode leaderboard.
+
+**Datasets overview:**
+
+A visual overview of all datasets can be generated using the functions :func:`moabb.datasets.utils.plot_datasets_grid`
+or :func:`moabb.datasets.utils.plot_datasets_cluster`.
+This overview allows to quickly compare the number of subjects, trials, and sessions across different datasets.
+The function will generate a figure like this:
+
+.. figure:: images/datasets_overview.png
+   :alt: Visual overview from the datasets used on the `The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark <https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf>`_
+   :width: 100%
+
 
 Motor Imagery
 ======================

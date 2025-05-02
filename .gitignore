@@ -125,3 +125,4 @@ examples/benchmark/
 examples/results/
 # by the tests
 res_test/
+/.conda

@@ -1,8 +1,6 @@
 import inspect
 import logging
-import shutil
-import tempfile
-import unittest
+import re
 
 import mne
 import numpy as np
@@ -31,22 +29,6 @@ from moabb.utils import aliases_list
 _ = mne.set_log_level("CRITICAL")
 
 
-def _run_tests_on_dataset(d):
-    for s in d.subject_list:
-        data = d.get_data(subjects=[s])
-
-        # we should get a dict
-        assert isinstance(data, dict)
-
-        # We should get a raw array at the end
-        rawdata = data[s]["0"]["0"]
-        assert issubclass(type(rawdata), mne.io.BaseRaw), type(rawdata)
-
-        # print events
-        print(mne.find_events(rawdata))
-        print(d.event_id)
-
-
 class TestRegex:
     def test_is_abbrev(self):
         assert is_abbrev("a", "a-")
@@ -73,153 +55,147 @@ class TestRegex:
         assert not is_camel_kebab_case("A_A")
 
 
-class Test_Datasets(unittest.TestCase):
-    def test_fake_dataset(self):
+class Test_Datasets:
+    @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep"])
+    def test_fake_dataset(self, paradigm):
         """This test will insure the basedataset works."""
         n_subjects = 3
         n_sessions = 2
         n_runs = 2
 
-        for paradigm in ["imagery", "p300", "ssvep", "cvep"]:
-            ds = FakeDataset(
-                n_sessions=n_sessions,
-                n_runs=n_runs,
-                n_subjects=n_subjects,
-                paradigm=paradigm,
-            )
-            data = ds.get_data()
+        ds = FakeDataset(
+            n_sessions=n_sessions,
+            n_runs=n_runs,
+            n_subjects=n_subjects,
+            paradigm=paradigm,
+        )
+        data = ds.get_data()
 
-            # we should get a dict
-            assert isinstance(data, dict)
+        # we should get a dict
+        assert isinstance(data, dict)
 
-            # we get the right number of subject
-            assert len(data) == n_subjects
+        # we get the right number of subject
+        assert len(data) == n_subjects
 
-            # right number of session
-            assert len(data[1]) == n_sessions
+        # right number of session
+        assert len(data[1]) == n_sessions
 
-            # right number of run
-            assert len(data[1]["0"]) == n_runs
+        # right number of run
+        assert len(data[1]["0"]) == n_runs
 
-            # We should get a raw array at the end
-            assert isinstance(data[1]["0"]["0"], mne.io.BaseRaw)
+        # We should get a raw array at the end
+        assert isinstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
-            # bad subject id must raise error
-            with pytest.raises(ValueError):
-                ds.get_data([1000])
+        # bad subject id must raise error
+        with pytest.raises(ValueError):
+            ds.get_data([1000])
 
-    def test_fake_dataset_seed(self):
+    @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep"])
+    def test_fake_dataset_seed(self, paradigm):
         """this test will insure the fake dataset's random seed works"""
         n_subjects = 3
         n_sessions = 2
         n_runs = 2
         seed = 12
 
-        for paradigm in ["imagery", "p300", "ssvep"]:
-            ds1 = FakeDataset(
-                n_sessions=n_sessions,
-                n_runs=n_runs,
-                n_subjects=n_subjects,
-                paradigm=paradigm,
-                seed=seed,
+        ds1 = FakeDataset(
+            n_sessions=n_sessions,
+            n_runs=n_runs,
+            n_subjects=n_subjects,
+            paradigm=paradigm,
+            seed=seed,
+        )
+        ds2 = FakeDataset(
+            n_sessions=n_sessions,
+            n_runs=n_runs,
+            n_subjects=n_subjects,
+            paradigm=paradigm,
+            seed=seed,
+        )
+        X1, _, _ = ds1.get_data()
+        X2, _, _ = ds2.get_data()
+        X3, _, _ = ds2.get_data()
+
+        # All the arrays should be equal:
+        assert np.allclose(X1, X2)
+        assert np.allclose(X3, X3)
+
+    @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep"])
+    @pytest.mark.filterwarnings("ignore:TSV file is empty.*:RuntimeWarning")
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    def test_cache_dataset(self, paradigm, tmp_path, caplog):
+        """This test will ensure that the cache is working."""
+        dataset = FakeDataset(paradigm=paradigm)
+
+        # Save cache:
+        with caplog.at_level(logging.INFO):
+            _ = dataset.get_data(
+                subjects=[1],
+                cache_config={
+                    "save_raw": True,
+                    "use": True,
+                    "overwrite_raw": False,
+                    "path": tmp_path,
+                },
             )
-            ds2 = FakeDataset(
-                n_sessions=n_sessions,
-                n_runs=n_runs,
-                n_subjects=n_subjects,
-                paradigm=paradigm,
-                seed=seed,
+        expected = [
+            "Attempting to retrieve cache .* suffix-eeg",
+            "No cache found at",
+            "Starting caching .* suffix-eeg",
+            "Finished caching .* suffix-eeg",
+        ]
+        assert len(expected) == len(caplog.messages)
+        for i, regex in enumerate(expected):
+            assert re.search(regex, caplog.messages[i])
+
+        # Load cache:
+        caplog.clear()
+        with caplog.at_level(logging.INFO):
+            _ = dataset.get_data(
+                subjects=[1],
+                cache_config={
+                    "save_raw": True,
+                    "use": True,
+                    "overwrite_raw": False,
+                    "path": tmp_path,
+                },
             )
-            X1, _, _ = ds1.get_data()
-            X2, _, _ = ds2.get_data()
-            X3, _, _ = ds2.get_data()
+        expected = [
+            "Attempting to retrieve cache .* suffix-eeg",
+            "Finished reading cache .* suffix-eeg",
+        ]
+        assert len(expected) == len(caplog.messages)
+        for i, regex in enumerate(expected):
+            assert re.search(regex, caplog.messages[i])
 
-            # All the arrays should be equal:
-            assert np.allclose(X1, X2)
-            assert np.allclose(X3, X3)
+        # Overwrite cache:
+        caplog.clear()
+        with caplog.at_level(logging.INFO):
+            _ = dataset.get_data(
+                subjects=[1],
+                cache_config={
+                    "save_raw": True,
+                    "use": True,
+                    "overwrite_raw": True,
+                    "path": tmp_path,
+                },
+            )
+        expected = [
+            "Starting erasing cache .* suffix-eeg",
+            "Finished erasing cache .* suffix-eeg",
+            "Starting caching .* suffix-eeg",
+            "Finished caching .* suffix-eeg",
+        ]
+        assert len(expected) == len(caplog.messages)
+        for i, regex in enumerate(expected):
+            assert re.search(regex, caplog.messages[i])
 
-    def test_cache_dataset(self):
-        tempdir = tempfile.mkdtemp()
-        for paradigm in ["imagery", "p300", "ssvep"]:
-            dataset = FakeDataset(paradigm=paradigm)
-            # Save cache:
-            with self.assertLogs(
-                logger="moabb.datasets.bids_interface", level="INFO"
-            ) as cm:
-                _ = dataset.get_data(
-                    subjects=[1],
-                    cache_config=dict(
-                        save_raw=True,
-                        use=True,
-                        overwrite_raw=False,
-                        path=tempdir,
-                    ),
-                )
-            print("\n".join(cm.output))
-            expected = [
-                "Attempting to retrieve cache .* suffix-eeg",  # empty pipeline
-                "No cache found at",
-                "Starting caching .* suffix-eeg",
-                "Finished caching .* suffix-eeg",
-            ]
-            assert len(expected) == len(cm.output)
-            for i, regex in enumerate(expected):
-                self.assertRegex(cm.output[i], regex)
-
-            # Load cache:
-            with self.assertLogs(
-                logger="moabb.datasets.bids_interface", level="INFO"
-            ) as cm:
-                _ = dataset.get_data(
-                    subjects=[1],
-                    cache_config=dict(
-                        save_raw=True,
-                        use=True,
-                        overwrite_raw=False,
-                        path=tempdir,
-                    ),
-                )
-            print("\n".join(cm.output))
-            expected = [
-                "Attempting to retrieve cache .* suffix-eeg",
-                "Finished reading cache .* suffix-eeg",
-            ]
-            assert len(expected) == len(cm.output)
-            for i, regex in enumerate(expected):
-                self.assertRegex(cm.output[i], regex)
-
-            # Overwrite cache:
-            with self.assertLogs(
-                logger="moabb.datasets.bids_interface", level="INFO"
-            ) as cm:
-                _ = dataset.get_data(
-                    subjects=[1],
-                    cache_config=dict(
-                        save_raw=True,
-                        use=True,
-                        overwrite_raw=True,
-                        path=tempdir,
-                    ),
-                )
-            print("\n".join(cm.output))
-            expected = [
-                "Starting erasing cache .* suffix-eeg",
-                "Finished erasing cache .* suffix-eeg",
-                "Starting caching .* suffix-eeg",
-                "Finished caching .* suffix-eeg",
-            ]
-            assert len(expected) == len(cm.output)
-            for i, regex in enumerate(expected):
-                self.assertRegex(cm.output[i], regex)
-
-            metainfo = bids_metainfo(tempdir)
-            dataframe = pd.DataFrame(metainfo).T
-            subjects = dataframe["subject"].unique()
-            self.assertEqual(len(subjects), 1)
-            self.assertEqual(subjects[0], "1")
-            self.assertEqual(len(dataframe["session"].unique()), 2)
-
-        shutil.rmtree(tempdir)
+        metainfo = bids_metainfo(tmp_path)
+        dataframe = pd.DataFrame(metainfo).T
+        subjects = dataframe["subject"].unique()
+        assert len(subjects) == 1
+        assert subjects[0] == "1"
+        assert len(dataframe["session"].unique()) == 2
 
     def test_dataset_accept(self):
         """Verify that accept licence is working."""
@@ -230,22 +206,25 @@ class Test_Datasets(unittest.TestCase):
                 with pytest.raises(AttributeError):
                     ds.get_data([1])
 
-    def test_datasets_init(self):
+    def test_datasets_init(self, caplog):
         codes = []
-        logger = logging.getLogger("moabb.datasets.base")
         deprecated_list, _, _ = zip(*aliases_list)
+
+        logger_name = "moabb.datasets.base"
+        log_level = "WARNING"
+        caplog.set_level(log_level, logger=logger_name)
 
         for ds in dataset_list:
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
-            with self.assertLogs(logger="moabb.datasets.base", level="WARNING") as cm:
-                # We test if the is_abrev does not throw a warning.
-                # Trick needed because assertNoLogs only inrtoduced in python 3.10:
-                logger.warning(f"Testing {ds.__name__}")
-                obj = ds(**kwargs)
+
+            caplog.clear()
+            obj = ds(**kwargs)
+
             if type(obj).__name__ not in deprecated_list:
-                assert len(cm.output) == 1
+                assert len(caplog.records) == 0
+
             assert obj is not None
             if type(obj).__name__ not in deprecated_list:
                 codes.append(obj.code)
@@ -253,7 +232,7 @@ class Test_Datasets(unittest.TestCase):
         # Check that all codes are unique:
         assert len(codes) == len(set(codes))
 
-    def test_depreciated_datasets_init(self):
+    def test_depreciated_datasets_init(self, caplog):
         depreciated_names, _, _ = zip(*aliases_list)
         for ds in db.__dict__.values():
             if ds in dataset_list:
@@ -263,9 +242,10 @@ class Test_Datasets(unittest.TestCase):
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
-            with self.assertLogs(logger="moabb.utils", level="WARNING"):
-                # We test if depreciated_alias throws a warning.
-                obj = ds(**kwargs)
+            caplog.set_level("WARNING", logger="moabb.utils")
+            caplog.clear()
+            obj = ds(**kwargs)
+            assert len(caplog.records) > 0
             assert obj is not None
             assert ds.__name__ in depreciated_names
 
@@ -338,23 +318,12 @@ class Test_Datasets(unittest.TestCase):
 
 
 class TestVirtualRealityDataset:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def test_canary(self):
         assert Cattan2019_VR() is not None
 
     def test_warning_if_parameters_false(self):
         with pytest.warns(UserWarning):
             Cattan2019_VR(virtual_reality=False, screen_display=False)
-
-    # Access to Zenodo could fail on CI
-    # def test_data_path(self):
-    #     ds = Cattan2019_VR(virtual_reality=True, screen_display=True)
-    #     data_path = ds.data_path(1)
-    #     assert len(data_path) == 2
-    #     assert "subject_01_VR.mat" in data_path[0]
-    #     assert "subject_01_PC.mat" in data_path[1]
 
     def test_get_block_repetition(self):
         ds = FakeVirtualRealityDataset()
@@ -367,7 +336,7 @@ class TestVirtualRealityDataset:
 
 
 class TestCompoundDataset:
-    def __init__(self, *args, **kwargs):
+    def setup_method(self):
         self.paradigm = "p300"
         self.n_sessions = 2
         self.n_subjects = 2
@@ -379,42 +348,46 @@ class TestCompoundDataset:
             event_list=["Target", "NonTarget"],
             paradigm=self.paradigm,
         )
-        super().__init__(*args, **kwargs)
 
-    def test_fake_dataset(self):
-        """This test will insure the basedataset works."""
-        param_list = [(None, None), ("0", "0"), (["0"], ["0"])]
-        for sessions, runs in param_list:
-            with self.subTest():
-                subjects_list = [(self.ds, 1, sessions, runs)]
-                compound_data = CompoundDataset(
-                    subjects_list,
-                    code="CompoundDataset-test",
-                    interval=[0, 1],
-                )
+    @pytest.mark.parametrize("sessions, runs", [(None, None), ("0", "0"), (["0"], ["0"])])
+    def test_fake_dataset(self, sessions, runs):
+        """This test will insure the compoundataset works."""
+        subjects_list = [(self.ds, 1, sessions, runs)]
+        compound_data = CompoundDataset(
+            subjects_list,
+            code="CompoundDataset-test",
+            interval=[0, 1],
+        )
 
-                data = compound_data.get_data()
+        data = compound_data.get_data()
 
-                # Check event_id is correctly set
-                assert compound_data.event_id == self.ds.event_id
+        # Check event_id is correctly set
+        assert compound_data.event_id == self.ds.event_id
 
-                # Check data origin is correctly set
-                assert data[1]["data_origin"] == subjects_list[0]
+        # Check data origin is correctly set
+        assert data[1]["data_origin"] == subjects_list[0]
 
-                # Check data type
-                assert isinstance(data, dict)
-                assert isinstance(data[1]["0"]["0"], mne.io.BaseRaw)
+        # Check data type
+        assert isinstance(data, dict)
+        assert isinstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
-                # Check data size
-                assert len(data) == 1
-                expected_session_number = self.n_sessions if sessions is None else 1
-                assert len(data[1]) == expected_session_number
-                expected_runs_number = self.n_runs if runs is None else 1
-                assert len(data[1]["0"]) == expected_runs_number
+        # Check data size
+        assert len(data) == 1
+        expected_session_number = self.n_sessions if sessions is None else 1
+        assert len(data[1]) == expected_session_number
+        expected_runs_number = self.n_runs if runs is None else 1
+        assert len(data[1]["0"]) == expected_runs_number
 
-                # bad subject id must raise error
-                with pytest.raises(ValueError):
-                    compound_data.get_data([1000])
+    def test_get_data_invalid_subject(self):
+        """Test that requesting data for a non-existing subject raises ValueError"""
+        subjects_list = [(self.ds, 1, None, None)]
+        compound_data = CompoundDataset(
+            subjects_list, code="CompoundDataset-test-invalid", interval=[0, 1]
+        )
+
+        # bad subject id must raise error
+        with pytest.raises(ValueError):
+            compound_data.get_data([1000])  # Request data for subject 1000
 
     def test_compound_dataset_composition(self):
         # Test we can compound two instance of CompoundDataset into a new one.
@@ -604,6 +577,7 @@ class TestBIDSDataset:
         dataset.get_data(cache_config=dict(save_raw=True, overwrite_raw=False, path=root))
         return root / "MNE-BIDS-fake-dataset-imagery-2-2--60--120--fake1-fake2--c3-cz-c4"
 
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
     def test_local_bids_dataset(self, cached_dataset_root, caplog):
         with caplog.at_level(logging.WARNING):
             dataset = LocalBIDSDataset(

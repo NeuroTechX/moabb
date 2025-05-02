@@ -1,4 +1,4 @@
-Dataset, #Subj, #Chan, #Trials / class, Trials length(s), Freq(Hz), #Sessions, PapersWithCode leaderboard
+Dataset, #Subj, #Chan, #Trials / class, Trials length (s), Freq (Hz), #Sessions, PapersWithCode leaderboard
 BNCI2014_008, 8, 8, 3500 NT / 700 T, 1, 256, 1,https://paperswithcode.com/dataset/bnci2014-008-moabb-1
 BNCI2014_009, 10, 16, 1440 NT / 288 T, 0.8, 256, 3,https://paperswithcode.com/dataset/bnci2014-009-moabb-1
 BNCI2015_003, 10, 8, 1500 NT / 300 T, 0.8, 256, 1,https://paperswithcode.com/dataset/bnci2015-003-moabb-1
@@ -15,7 +15,7 @@ Sosulski2019, 13, 31, 7500 NT / 1500 T, 1.2, 1000, 1,https://paperswithcode.com/
 EPFLP300, 8, 32, 2753 NT / 551 T, 1, 2048, 4,https://paperswithcode.com/dataset/epflp300-moabb
 Lee2019_ERP, 54, 62, 6900 NT / 1380 T, 1, 1000, 2,https://paperswithcode.com/dataset/lee2019-erp-moabb-1
 DemonsP300, 60, 8, 935 NT / 50 T, 1, 500, 1,
-ErpCore2021_N170, 40, 30, 240 NT / 80 T , 1, 1024, 1,
+ErpCore2021_N170, 40, 30, 240 NT / 80 T, 1, 1024, 1,
 ErpCore2021_MMN, 40, 30, 800 NT / 200 T, 1, 1024, 1,
 ErpCore2021_N2pc, 40, 30, 160 NT / 160 T, 1, 1024, 1,
 ErpCore2021_P3, 40, 30, 160 NT / 40 T, 1, 1024, 1,
