@@ -19,7 +19,11 @@ from sklearn.model_selection import (
 from sklearn.utils import check_random_state
 
 from moabb.datasets.fake import FakeDataset
-from moabb.evaluations.splitters import CrossSessionSplitter, WithinSessionSplitter
+from moabb.evaluations.splitters import (
+    CrossSessionSplitter,
+    CrossSubjectSplitter,
+    WithinSessionSplitter,
+)
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
@@ -63,6 +67,26 @@ def eval_split_within_session(shuffle, random_state, data):
 
             for idx_train, idx_test in cv.split(metadata_, y_):
                 yield indices[idx_train], indices[idx_test]
+
+
+def eval_split_cross_subject(shuffle, random_state, data):
+    rng = check_random_state(random_state) if shuffle else None
+
+    _, y, metadata = data
+    subjects = metadata["subject"].unique()
+
+    if shuffle:
+        splitter = GroupShuffleSplit(random_state=rng)
+    else:
+        splitter = LeaveOneGroupOut()
+
+    for train_subj_idx, test_subj_idx in splitter.split(
+        X=np.zeros(len(subjects)), y=None, groups=subjects
+    ):
+        train_mask = metadata["subject"].isin(subjects[train_subj_idx])
+        test_mask = metadata["subject"].isin(subjects[test_subj_idx])
+
+        yield metadata.index[train_mask].values, metadata.index[test_mask].values
 
 
 def eval_split_cross_session(shuffle, random_state, data):
@@ -117,7 +141,9 @@ def test_is_shuffling(data):
         assert not np.array_equal(test, test_shuffle)
 
 
-@pytest.mark.parametrize("splitter", [WithinSessionSplitter, CrossSessionSplitter])
+@pytest.mark.parametrize(
+    "splitter", [WithinSessionSplitter, CrossSessionSplitter, CrossSubjectSplitter]
+)
 def test_custom_inner_cv(
     splitter,
     data,
@@ -132,16 +158,50 @@ def test_custom_inner_cv(
         assert len(test) >= 20
 
 
+def test_custom_shuffle_group(data):
+    _, y, metadata = data
+
+    n_splits = 5
+    splitter = CrossSubjectSplitter(
+        random_state=42,
+        cv_class=GroupShuffleSplit,
+        n_splits=n_splits,
+    )
+
+    splits = list(splitter.split(y, metadata))
+
+    assert len(splits) == n_splits, f"Expected {n_splits} splits, got {len(splits)}"
+
+    for train, test in splits:
+        train_subjects = metadata.iloc[train]["subject"].unique()
+        test_subjects = metadata.iloc[test]["subject"].unique()
+
+        # Assert no overlap between train and test subjects
+        assert len(set(train_subjects) & set(test_subjects)) == 0
+
+    # Check if shuffling produces different splits
+    splitter_different_seed = CrossSubjectSplitter(
+        cv_class=GroupShuffleSplit,
+        n_splits=n_splits,
+    )
+    splits_different_seed = list(splitter_different_seed.split(y, metadata))
+
+    assert not all(
+        np.array_equal(train, train_alt) and np.array_equal(test, test_alt)
+        for (train, test), (train_alt, test_alt) in zip(splits, splits_different_seed)
+    )
+
+
 @pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
 def test_cross_session(shuffle, random_state, data):
     _, y, metadata = data
 
+    params = {"random_state": random_state}
+    params["shuffle"] = shuffle
     if shuffle:
-        split = CrossSessionSplitter(
-            shuffle=shuffle, random_state=random_state, cv_class=GroupShuffleSplit
-        )
-    else:
-        split = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
+        params["cv_class"] = GroupShuffleSplit
+
+    split = CrossSessionSplitter(**params)
 
     for idx_train_splitter, idx_test_splitter in split.split(y, metadata):
         # Check if the output is the same as the input
@@ -154,20 +214,27 @@ def test_cross_session(shuffle, random_state, data):
         )
 
 
+@pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
 @pytest.mark.parametrize("shuffle, random_state", [(False, None), (True, 0), (True, 42)])
-def test_cross_session_compatibility(shuffle, random_state, data):
+def test_cross_compatibility(splitter, shuffle, random_state, data):
     _, y, metadata = data
 
-    if shuffle:
-        splitter = CrossSessionSplitter(
-            shuffle=shuffle, random_state=random_state, cv_class=GroupShuffleSplit
-        )
+    if splitter == CrossSessionSplitter:
+        function_split = eval_split_cross_session
     else:
-        splitter = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
+        function_split = eval_split_cross_subject
+
+    params = {"random_state": random_state}
+    if splitter == CrossSessionSplitter:
+        params["shuffle"] = shuffle
+    if shuffle:
+        params["cv_class"] = GroupShuffleSplit
+
+    split = splitter(**params)
 
     for (idx_train, idx_test), (idx_train_splitter, idx_test_splitter) in zip(
-        eval_split_cross_session(shuffle=shuffle, random_state=random_state, data=data),
-        splitter.split(y, metadata),
+        function_split(shuffle=shuffle, random_state=random_state, data=data),
+        split.split(y, metadata),
     ):
         assert np.array_equal(idx_train, idx_train_splitter)
         assert np.array_equal(idx_test, idx_test_splitter)
@@ -308,12 +375,23 @@ def test_cross_session_get_n_splits(data, shuffle):
     assert n_splits == 5 * 5  # 5 subjects, 5 sessions each
 
 
-def test_if_split_is_not_random(data):
+def test_cross_subject_get_n_splits(data):
     _, y, metadata = data
 
-    split = CrossSessionSplitter(
-        shuffle=True, random_state=42, cv_class=GroupShuffleSplit
-    )
+    split = CrossSubjectSplitter()
+
+    n_splits = split.get_n_splits(metadata)
+    assert n_splits == 5  # 5 subjects
+
+
+@pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
+def test_if_split_is_not_random(data, splitter):
+    _, y, metadata = data
+
+    if splitter == CrossSessionSplitter:
+        split = splitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)
+    else:
+        split = splitter(random_state=42, cv_class=GroupShuffleSplit)
 
     splits = list(split.split(y, metadata))
     splits_2 = list(split.split(y, metadata))

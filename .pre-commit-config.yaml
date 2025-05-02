@@ -49,12 +49,12 @@ repos:
           exclude: ^.github/
 
   - repo: https://github.com/PyCQA/isort
-    rev: 6.0.0
+    rev: 6.0.1
     hooks:
       - id: isort
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
+    rev: 7.2.0
     hooks:
       - id: flake8
         additional_dependencies: [
@@ -69,7 +69,7 @@ repos:
         exclude: ^docs/ | ^setup\.py$ |
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.5
+    rev: v0.11.4
     hooks:
       - id: ruff
         args: [ --fix, --exit-non-zero-on-fix, --ignore, E501 ]
@@ -86,7 +86,7 @@ repos:
         exclude: ^tests/|generated/
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.35.1
+    rev: v1.37.0
     hooks:
       - id: yamllint
         exclude: >

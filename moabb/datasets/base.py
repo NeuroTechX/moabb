@@ -6,6 +6,7 @@ import abc
 import logging
 import re
 import traceback
+from collections.abc import Sequence
 from dataclasses import dataclass
 from inspect import signature
 from pathlib import Path
@@ -230,7 +231,16 @@ def check_run_names(data):
                 )
 
 
-def format_row(row: pd.Series):
+def _transfer_unit(key: str, value: str):
+    pattern = r"( ?\((\w+)\))$"
+    match = re.search(pattern, key)
+    if match:
+        suffix, unit = match.groups()
+        return key[: -len(suffix)], f"{value} {unit}"
+    return key, value
+
+
+def format_row(row: pd.Series, horizontal: bool = True):
     pwc_key = "PapersWithCode leaderboard"
     tab_prefix = " " * 8
     tab_sep = "="
@@ -238,7 +248,6 @@ def format_row(row: pd.Series):
     pwc_link = row.get(pwc_key, None)
     if pwc_link is not None:
         row = row.drop(pwc_key)
-    col_names = [str(col) for col in row.index]
 
     def to_int(x):
         try:
@@ -249,22 +258,34 @@ def format_row(row: pd.Series):
         except ValueError:
             return x
 
-    values = [str(to_int(val)) for val in row.values]
-    widths = [max(len(col), len(val)) for col, val in zip(col_names, values)]
-    row_sep = " ".join([tab_sep * width for width in widths])
-    cols_row = " ".join([col.rjust(width) for col, width in zip(col_names, widths)])
-    values_row = " ".join([val.rjust(width) for val, width in zip(values, widths)])
-    out = (
-        "    .. admonition:: Dataset summary\n\n"
-        f"{tab_prefix}{row_sep}\n"
-        f"{tab_prefix}{cols_row}\n"
-        f"{tab_prefix}{row_sep}\n"
-        f"{tab_prefix}{values_row}\n"
-        f"{tab_prefix}{row_sep}"
+    # append the eventual units to the values:
+    keys, values = zip(
+        *[_transfer_unit(str(key), str(to_int(val))) for key, val in row.items()]
     )
+    # make columns bold:
+    keys: Sequence[str] = [f"**{key}**" for key in keys]
+    # transpose the table if vertical:
+    rows: Sequence[Sequence[str]] = (
+        [keys, values] if horizontal else list(zip(keys, values))
+    )
+    # compute the width of each column:
+    widths = [max(map(len, col)) for col in zip(*rows)]
+    # pad each column with spaces:
+    rows = [[str(col).rjust(width) for col, width in zip(row, widths)] for row in rows]
+    # add separator rows:
+    sep_row = [tab_sep * width for width in widths]
+    if horizontal:
+        rows.insert(1, sep_row)
+    rows.insert(0, sep_row)
+    rows.append(sep_row)
+    # join the columns and rows into one string:
+    rows_str = "\n".join([f"{tab_prefix}{' '.join(row)}" for row in rows])
+    # add the header:
+    out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
+    # add the PapersWithCode link if it exists:
     if pwc_link is not None:
         out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
-    return out
+    return out, row
 
 
 class MetaclassDataset(abc.ABCMeta):
@@ -272,13 +293,14 @@ class MetaclassDataset(abc.ABCMeta):
         doc = attrs.get("__doc__", "")
         try:
             row = _summary_table.loc[name]
-            row_str = format_row(row)
+            row_str, row = format_row(row, horizontal=False)
             doc_list = doc.split("\n\n")
             if len(doc_list) >= 2:
                 doc_list = [doc_list[0], row_str] + doc_list[1:]
             else:
                 doc_list.append(row_str)
             attrs["__doc__"] = "\n\n".join(doc_list)
+            attrs["_summary_table"] = row.to_dict()
         except KeyError:
             log.debug(
                 f"No description found for dataset {name}. "
@@ -327,6 +349,8 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     doi: DOI for dataset, optional (for now)
     """
+
+    _summary_table: dict[str, Any]
 
     def __init__(
         self,
