@@ -3,7 +3,6 @@ import os
 import os.path as osp
 import shutil
 import zipfile as z
-from distutils.dir_util import copy_tree
 from warnings import warn
 
 import mne
@@ -285,7 +284,7 @@ def _bi_data_path(  # noqa: C901
                 zip_ref = z.ZipFile(path_zip, "r")
                 zip_ref.extractall(path_folder)
                 os.makedirs(osp.join(directory, f"Session{i + 1}"))
-                copy_tree(path_zip.strip(".zip"), directory)
+                shutil.copy_tree(path_zip.strip(".zip"), directory)
                 shutil.rmtree(path_zip.strip(".zip"))
 
         # filter the data regarding the experimental conditions

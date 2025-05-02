@@ -2,7 +2,6 @@ import logging
 from collections import OrderedDict
 from operator import methodcaller
 from typing import Dict, List, Tuple, Union
-from warnings import warn
 
 import mne
 import numpy as np
@@ -237,7 +236,7 @@ class RawToEpochs(FixedTransformer):
                     # Index error can occurs if the channels we add are not part of this epoch montage
                     # Then log a warning
                     montage = raw.info["dig"]
-                    warn(
+                    log.warning(
                         f"Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}"
                     )
                     # and disable the montage
@@ -275,7 +274,6 @@ class RawToEpochs(FixedTransformer):
             event_repeated="drop",
             on_missing="ignore",
         )
-        warn(f"warnEpochs {epochs}")
         return epochs
 
 
