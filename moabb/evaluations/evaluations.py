@@ -14,7 +14,7 @@ from sklearn.model_selection import (
     StratifiedShuffleSplit,
     cross_validate,
 )
-from sklearn.model_selection._validation import _fit_and_score, _score
+from sklearn.model_selection._validation import _score
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -548,35 +548,19 @@ class CrossSessionEvaluation(BaseEvaluation):
                     if _carbonfootprint:
                         tracker.start()
                     t_start = time()
-                    if isinstance(X, BaseEpochs):
-                        cvclf = clone(grid_clf)
-                        cvclf.fit(X[train], y[train])
-                        model_list.append(cvclf)
-                        score = scorer(cvclf, X[test], y[test])
 
-                        if self.hdf5_path is not None and self.save_model:
-                            save_model_cv(
-                                model=cvclf,
-                                save_path=model_save_path,
-                                cv_index=str(cv_ind),
-                            )
-                    else:
-                        result = _fit_and_score(
-                            estimator=clone(grid_clf),
-                            X=X,
-                            y=y,
-                            scorer=scorer,
-                            train=train,
-                            test=test,
-                            verbose=False,
-                            parameters=None,
-                            fit_params=None,
-                            error_score=self.error_score,
-                            return_estimator=True,
-                            score_params={},
+                    cvclf = clone(grid_clf)
+                    cvclf.fit(X[train], y[train])
+                    model_list.append(cvclf)
+                    score = scorer(cvclf, X[test], y[test])
+
+                    if self.hdf5_path is not None and self.save_model:
+                        save_model_cv(
+                            model=cvclf,
+                            save_path=model_save_path,
+                            cv_index=str(cv_ind),
                         )
-                        score = result["test_scores"]
-                        model_list = result["estimator"]
+
                     if _carbonfootprint:
                         emissions = tracker.stop()
                         if emissions is None:
