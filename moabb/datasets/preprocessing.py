@@ -36,6 +36,7 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         for _, t in transformers:
             assert hasattr(t, "transform")
         self.transformers = transformers
+        self._is_fitted = True
 
     def transform(self, X, y=None):
         return OrderedDict([(n, t.transform(X)) for n, t in self.transformers])
@@ -47,11 +48,12 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
     def _sk_visual_block_(self):
         """Tell sklearn’s diagrammer to lay us out in parallel."""
         names, estimators = zip(*self.transformers)
+        print("Estimator types in ForkPipelines:", [type(est) for est in estimators])
         return _VisualBlock(
             kind="parallel",
-            names=list(names),
             estimators=list(estimators),
-            name_details=[repr(est) for est in estimators],
+            names=list(names),
+            name_caption=self.__class__.__name__,
             dash_wrapped=True,
         )
 
@@ -72,7 +74,7 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
             kind="parallel",
             name_caption=str(self.__class__.__name__),
             estimators=[str(self.get_params())],
-            name_details=str(self.__class__.__name__) + "aaaa",
+            name_details=str(self.__class__.__name__),
             dash_wrapped=True,
         )
 
@@ -339,7 +341,7 @@ class NamedFunctionTransformer(FunctionTransformer):
             estimators=self,
             names=self._display_name,
             name_details=str(self._kwargs),
-            dash_wrapped=True,
+            dash_wrapped=False,
         )
 
 
