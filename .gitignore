@@ -112,6 +112,7 @@ analysis/*
 /moabb/tests/orderplot.pdf
 /moabb/tests/orderplot_full.pdf
 /test_context.yml
+res_test/
 
 # mac os x stuff
 *DS_store*
