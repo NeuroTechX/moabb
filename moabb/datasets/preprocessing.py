@@ -7,6 +7,7 @@ import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline
+from sklearn.utils._estimator_html_repr import _VisualBlock
 
 
 log = logging.getLogger(__name__)
@@ -43,10 +44,37 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         for _, t in self.transformers:
             t.fit(X)
 
+    def _sk_visual_block_(self):
+        """Tell sklearn’s diagrammer to lay us out in parallel."""
+        names, estimators = zip(*self.transformers)
+        return _VisualBlock(
+            kind="parallel",
+            names=list(names),
+            estimators=list(estimators),
+            name_details=[repr(est) for est in estimators],
+            dash_wrapped=True,
+        )
+
 
 class FixedTransformer(TransformerMixin, BaseEstimator):
+    def __init__(self):
+        self._is_fitted = True
+        # fixing transformers that are not fitted
+        # to avoid the warning "This estimator has not been fitted yet"
+        # when using the pipeline
+
     def fit(self, X, y=None):
         pass
+
+    def _sk_visual_block_(self):
+        """Tell sklearn’s diagrammer to lay us out in parallel."""
+        return _VisualBlock(
+            kind="parallel",
+            name_caption=str(self.__class__.__name__),
+            estimators=[str(self.get_params())],
+            name_details=str(self.__class__.__name__) + "aaaa",
+            dash_wrapped=True,
+        )
 
 
 class SetRawAnnotations(FixedTransformer):
@@ -89,6 +117,9 @@ class SetRawAnnotations(FixedTransformer):
             log.warning("No events found, skipping setting annotations.")
         return raw
 
+    def __repr__(self):
+        return f"SetRawAnnotations({self.event_id}, {self.interval})"
+
 
 class RawToEvents(FixedTransformer):
     """
@@ -122,6 +153,9 @@ class RawToEvents(FixedTransformer):
         events = self._find_events(raw)
         return _unsafe_pick_events(events, list(self.event_id.values()))
 
+    def __repr__(self):
+        return f"RawToEvents({self.event_id}, {self.interval})"
+
 
 class RawToEventsP300(RawToEvents):
     def transform(self, raw, y=None):
@@ -138,6 +172,9 @@ class RawToEventsP300(RawToEvents):
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
         return _unsafe_pick_events(events, list(event_id.values()))
+
+    def __repr__(self):
+        return f"RawToEventsP300({self.event_id}, {self.interval})"
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
@@ -180,6 +217,9 @@ class RawToFixedIntervalEvents(FixedTransformer):
         events[:, 2] = self.marker
         return events
 
+    def __repr__(self):
+        return f"RawToFixedIntervalEvents(length={self.length}, stride={self.stride}, start_offset={self.start_offset}, stop_offset={self.stop_offset}, marker={self.marker})"
+
 
 class EpochsToEvents(FixedTransformer):
     def transform(self, epochs, y=None):
@@ -194,6 +234,9 @@ class EventsToLabels(FixedTransformer):
         inv_events = {k: v for v, k in self.event_id.items()}
         labels = [inv_events[e] for e in events[:, -1]]
         return labels
+
+    def __repr__(self):
+        return f"EventsToLabels({self.event_id})"
 
 
 class RawToEpochs(FixedTransformer):
@@ -276,10 +319,33 @@ class RawToEpochs(FixedTransformer):
         )
         return epochs
 
+    def __repr__(self):
+        return f"RawToEpochs({self.event_id}, {self.tmin}, {self.tmax}, {self.baseline}, {self.channels})"
+
+
+class NamedFunctionTransformer(FunctionTransformer):
+    def __init__(self, func, *, display_name=None, validate=False, **kwargs):
+        super().__init__(func=func, validate=validate, **kwargs)
+        self.display_name = display_name
+        self._display_name = display_name or getattr(func, "__name__", "<func>")
+        self._kwargs = func.__repr__()
+
+    def __repr__(self):
+        return self._display_name
+
+    def _sk_visual_block_(self):
+        return _VisualBlock(
+            kind="single",
+            estimators=self,
+            names=self._display_name,
+            name_details=str(self._kwargs),
+            dash_wrapped=True,
+        )
+
 
 def get_filter_pipeline(fmin, fmax):
-    return FunctionTransformer(
-        methodcaller(
+    return NamedFunctionTransformer(
+        func=methodcaller(
             "filter",
             l_freq=fmin,
             h_freq=fmax,
@@ -287,16 +353,28 @@ def get_filter_pipeline(fmin, fmax):
             picks="data",
             verbose=False,
         ),
+        display_name=f"Band Pass Filter ({fmin}–{fmax} Hz)",
     )
 
 
 def get_crop_pipeline(tmin, tmax):
-    return FunctionTransformer(
-        methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "crop",
+            tmin=tmin,
+            tmax=tmax,
+            verbose=False,
+        ),
+        display_name=f"Crop ({tmin}–{tmax} s)",
     )
 
 
 def get_resample_pipeline(sfreq):
-    return FunctionTransformer(
-        methodcaller("resample", sfreq=sfreq, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "resample",
+            sfreq=sfreq,
+            verbose=False,
+        ),
+        display_name=f"Resample ({sfreq} Hz)",
     )
