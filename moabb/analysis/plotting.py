@@ -696,12 +696,11 @@ def dataset_bubble_plot(
             va="center",
             fontsize=fontsize,
             color="black",
-            path_effects=[
-                patheffects.Stroke(linewidth=3, foreground="white", alpha=0.8),
-                patheffects.Normal(),
-            ],
+            bbox=dict(facecolor="white", alpha=0.6, linewidth=0, boxstyle="round,pad=0.5"),
             gid=f"title/{dataset_name}",
         )
+        # bbox is better than path_effects as the text is not converted to a path.
+        # we can still select it in a pdf. Also the file is lighter.
     if legend:
         legend_position = legend_position or (x.max() + fontsize, y.min())
         _add_bubble_legend(
