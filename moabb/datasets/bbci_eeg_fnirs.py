@@ -7,11 +7,12 @@ import zipfile as z
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
-from mne.datasets.utils import _get_path
 from mne.io import RawArray
 from pooch import retrieve
 from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
+
+from moabb.datasets.download import get_dataset_path
 
 from .base import BaseDataset
 
@@ -174,8 +175,7 @@ class BaseShin2017(BaseDataset):
         if accept:
             self.accept = True
 
-        key = "MNE_DATASETS_BBCIFNIRS_PATH"
-        path = _get_path(path, key, "BBCI EEG-fNIRS")
+        path = get_dataset_path("BBCIFNIRS", path)
         if not op.isdir(op.join(path, "MNE-eegfnirs-data")):
             os.makedirs(op.join(path, "MNE-eegfnirs-data"))
         if self.fnirs:
