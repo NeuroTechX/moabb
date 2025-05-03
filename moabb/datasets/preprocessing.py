@@ -48,7 +48,6 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
     def _sk_visual_block_(self):
         """Tell sklearn’s diagrammer to lay us out in parallel."""
         names, estimators = zip(*self.transformers)
-        print("Estimator types in ForkPipelines:", [type(est) for est in estimators])
         return _VisualBlock(
             kind="parallel",
             estimators=list(estimators),
@@ -330,7 +329,7 @@ class NamedFunctionTransformer(FunctionTransformer):
         super().__init__(func=func, validate=validate, **kwargs)
         self.display_name = display_name
         self._display_name = display_name or getattr(func, "__name__", "<func>")
-        self._kwargs = func.__repr__()
+        self._kwargs = {"name": getattr(func, "__name__", "<func>")}
 
     def __repr__(self):
         return self._display_name
