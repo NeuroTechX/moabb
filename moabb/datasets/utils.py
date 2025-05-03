@@ -5,7 +5,6 @@ from __future__ import annotations
 import abc
 import inspect
 from pathlib import Path
-from typing import Literal
 
 import matplotlib.pyplot as plt
 import mne

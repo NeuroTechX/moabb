@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sea
-from matplotlib import patheffects
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Circle, RegularPolygon
 from scipy.stats import t
@@ -571,7 +570,7 @@ def dataset_bubble_plot(
     legend_position: tuple[float, float] | None = None,
     fontsize: int = 8,
     ax=None,
-    scale_ax:bool=True,
+    scale_ax: bool = True,
     dataset_name: str | None = None,
     paradigm: str | None = None,
     n_subjects: int | None = None,
@@ -696,7 +695,9 @@ def dataset_bubble_plot(
             va="center",
             fontsize=fontsize,
             color="black",
-            bbox=dict(facecolor="white", alpha=0.6, linewidth=0, boxstyle="round,pad=0.5"),
+            bbox=dict(
+                facecolor="white", alpha=0.6, linewidth=0, boxstyle="round,pad=0.5"
+            ),
             gid=f"title/{dataset_name}",
         )
         # bbox is better than path_effects as the text is not converted to a path.
