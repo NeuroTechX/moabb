@@ -571,6 +571,7 @@ def dataset_bubble_plot(
     legend_position: tuple[float, float] | None = None,
     fontsize: int = 8,
     ax=None,
+    scale_ax:bool=True,
     dataset_name: str | None = None,
     paradigm: str | None = None,
     n_subjects: int | None = None,
@@ -628,6 +629,8 @@ def dataset_bubble_plot(
         Font size of the legend text.
     ax: Axes | None
         Axes to plot on. If None, the default axes are used.
+    scale_ax: bool
+        Whether to scale the axes to be equal and in the correct range.
     dataset_name: str | None
         Name of the dataset. Required if ``dataset`` is None.
     paradigm: str | None
@@ -712,7 +715,8 @@ def dataset_bubble_plot(
             ax=ax,
             shape=shape,
         )
-    ax.axis("equal")
     ax.axis("off")
-    ax.autoscale()
+    if scale_ax:
+        ax.axis("equal")
+        ax.autoscale()
     return ax
