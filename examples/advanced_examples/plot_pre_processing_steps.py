@@ -3,24 +3,22 @@
 Playing with the pre-processing steps
 ======================================
 By default, MOABB uses **fundamental** and **robust** pre-processing steps defined in
-each paradigm. We present some discussion on our largest benchmark paper [1]_ for some
-used steps. Pre-processing steps are known to shape the rank and
-metric results of the EEG Decoding [2]_, [3]_, [4]_.
+each paradigm. 
 
-Here, we follow the philosophical principles of Findability, Accessibility, Interoperability,
-and Reusability - FAIR, that is, the data and the benchmark code are findable, accessible,
-interoperable and reusable.
+Behind the curtains, these steps are defined in a scikit-learn Pipeline.
+This pipeline receives raw signals and applies various signal processing steps
+to construct the final array object and class labels, which will be used 
+to train and evaluate the classifiers.
 
-In other words, we try as much as possible to use raw data, which we apply pre-processing steps
-to construct the epoch object and later convert it to an array to compute the evaluation.
+Pre-processing steps are known to shape the rank and
+metric results of the EEG Decoding [2]_, [3]_, [4]_, 
+and we present some discussion in our largest benchmark paper [1]_ 
+on why we used those specific steps. 
+Using the same pre-processing steps for all datasets also avoids biases 
+and makes results more comparable.
 
-In the pre-processing, all the datasets receive the same pre-processing steps associated with
-the paradigm object is to avoid the bias of the pre-processing steps, which are extremely common
-in the field.
-
-Behind the curtains of the evaluation and paradigm, we have scikit-learn Pipeline steps that
-are applied to construct the final array object with the class labels.
-
+However, there might be cases where these steps are not adequate.
+MOABB allows you to modify the pre-processing pipeline.
 In this example, we will show how to use the `make_process_pipelines` method to create a
 custom pre-processing pipeline. We will use the MinMaxScaler from `sklearn` to scale the
 data channels to the range [0, 1].
@@ -100,7 +98,7 @@ for i, step in enumerate(pre_procesing_filter_bank_steps):
 # How to include extra steps?
 # -------------------------------
 #
-# By default, the paradigm object accepts parameters to configure common
+# The paradigm object accepts parameters to configure common
 # pre-processing and epoching steps applied to the raw data. These include:
 #
 # - Bandpass filtering (`filters`)
@@ -110,9 +108,10 @@ for i, step in enumerate(pre_procesing_filter_bank_steps):
 # - Channel selection (`channels`)
 # - Resampling (`resample`)
 #
-# The following example demonstrates how to add custom processing steps
+# The following example demonstrates how you can surgically add custom processing steps
 # beyond these built-in options.
-# we want to add a min-max function step to the raw data to do this.
+# 
+# In this example, we want to add a min-max function step to the raw data to do this.
 # We need to do pipeline surgery and use the evaluation function.
 ##############################################################################
 
@@ -146,8 +145,7 @@ results = list(generator_results)
 # Plot Results
 # ------------
 #
-# Compare the obtained results with the two pipelines, CSP+LDA and logistic
-# regression computed in the tangent space of the covariance matrices.
+# Then you can follow the common procedure for analyzing the results.
 
 df_results = pd.DataFrame(results)
 
