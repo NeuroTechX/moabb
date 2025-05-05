@@ -5,7 +5,7 @@ concurrency:
 
 on:
   push:
-    branches: [ develop, master ]
+    branches: [ develop, master, pr-749 ]
   pull_request:
     branches: [ develop, master ]
 
