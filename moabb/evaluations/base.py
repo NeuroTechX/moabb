@@ -98,7 +98,7 @@ class BaseEvaluation(ABC):
         return_epochs=False,
         return_raws=False,
         mne_labels=False,
-        n_splits: int = 5,
+        n_splits=None,
         save_model=False,
         cache_config=None,
         optuna=False,
@@ -229,11 +229,9 @@ class BaseEvaluation(ABC):
             )
             for dataset in self.datasets
         ]
-
+        n_jobs = 1
         # Parallel processing...
-        parallel_results = Parallel(
-            n_jobs=self.n_jobs, return_as="generator", verbose=10
-        )(
+        parallel_results = Parallel(n_jobs=n_jobs, return_as="generator", verbose=10)(
             delayed(
                 lambda dataset_processor: list(
                     self.evaluate(

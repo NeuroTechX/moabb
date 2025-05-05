@@ -177,7 +177,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         tracker.start()
                     t_start = time()
                     cv = WithinSessionSplitter(
-                        n_folds=self.n_splits,
+                        n_folds=5,
                         shuffle=True,
                         random_state=self.random_state,
                     )
