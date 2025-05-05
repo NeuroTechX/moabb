@@ -24,6 +24,16 @@ are applied to construct the final array object with the class labels.
 In this example, we will show how to use the `make_process_pipelines` method to create a
 custom pre-processing pipeline. We will use the MinMaxScaler from `sklearn` to scale the
 data channels to the range [0, 1].
+
+References
+----------
+.. [1] Chevallier, S., Carrara, I., Aristimunha, B., Guetschel, P., Sedlar, S., Lopes, B., ... & Moreau, T. (2024). The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark. arXiv preprint arXiv:2404.15319.
+
+.. [2] Kessler, R., Enge, A., & Skeide, M. A. (2024). How EEG preprocessing shapes decoding performance. arXiv preprint arXiv:2410.14453.
+
+.. [3] Delorme, A. (2023). EEG is better left alone. Scientific reports, 13(1), 2372.
+
+.. [4] Clayson, P. E. (2024). Beyond single paradigms, pipelines, and outcomes: Embracing multiverse analyses in psychophysiology. International Journal of Psychophysiology, 197, 112311.
 """
 
 # Authors: Bruno Aristimunha Pinto <b.aristimunha@gmail.com>
