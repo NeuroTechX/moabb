@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import abc
 import inspect
 from pathlib import Path
-from typing import Literal
 
 import matplotlib.pyplot as plt
 import mne
@@ -362,10 +362,12 @@ def bids_metainfo(bids_path: Path) -> dict:
     return json_data
 
 
-class BubbleChart:
+class _BubbleChart:
     def __init__(self, area, bubble_spacing=0.0):
         """
         Setup for bubble collapse.
+
+        From https://matplotlib.org/stable/gallery/misc/packed_bubbles.html
 
         Parameters
         ----------
@@ -471,10 +473,101 @@ class BubbleChart:
         return self.bubbles[:, :2]
 
 
+class _BaseDatasetPlotter:
+    def __init__(self, datasets, meta_gap, kwargs, n_col=None):
+        self.datasets = datasets = (
+            datasets
+            if datasets is not None
+            else sorted(
+                [dataset() for dataset in dataset_list if "Fake" not in dataset.__name__],
+                key=lambda x: x.__class__.__name__,
+            )
+        )
+        areas_list = []
+        for d in datasets:
+            if isinstance(d, dict):
+                n_subjects = d["n_subjects"]
+                n_sessions = d["n_sessions"]
+                n_trials = d["n_trials"]
+                trial_len = d["trial_len"]
+            else:
+                _, _, n_subjects, n_sessions, n_trials, trial_len = (
+                    _get_dataset_parameters(d)
+                )
+            areas_list.append(
+                get_dataset_area(
+                    n_subjects=n_subjects,
+                    n_sessions=n_sessions,
+                    n_trials=n_trials,
+                    trial_len=trial_len,
+                )
+            )
+        self.areas = np.array(areas_list)
+        self.radii = np.sqrt(self.areas / np.pi)
+        self.meta_gap = meta_gap
+        self.kwargs = kwargs
+        self.n_col = n_col
+
+    @abc.abstractmethod
+    def _get_centers(self) -> np.ndarray:
+        pass
+
+    def plot(self):
+
+        centers = self._get_centers()
+
+        rm = self.radii + self.meta_gap
+        xlim = ((centers[:, 0] - rm).min(), (centers[:, 0] + rm).max() + self.meta_gap)
+        ylim = ((centers[:, 1] - rm).min(), (centers[:, 1] + rm).max())
+        lx, ly = xlim[1] - self.meta_gap, ylim[0] + self.meta_gap
+
+        factor = 0.05
+        # No need to expose the factor parameter as users can already
+        # tune the scale and fontsize arguments, which will have the same effect.
+        fig, ax = plt.subplots(
+            subplot_kw={"aspect": "equal"},
+            figsize=(factor * (xlim[1] - xlim[0]), factor * (ylim[1] - ylim[0])),
+        )
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+        for i, dataset in enumerate(self.datasets):
+            dataset_kwargs = (
+                dataset if isinstance(dataset, dict) else {"dataset": dataset}
+            )
+            dataset_bubble_plot(
+                **dataset_kwargs,
+                ax=ax,
+                center=centers[i],
+                legend=i == len(self.datasets) - 1,
+                legend_position=(lx, ly),
+                scale_ax=False,
+                **self.kwargs,
+            )
+        fig.tight_layout()
+        return fig
+
+
+class _ClusterDatasetPlotter(_BaseDatasetPlotter):
+    def _get_centers(self):
+        bubble_chart = _BubbleChart(self.areas, bubble_spacing=self.meta_gap)
+        bubble_chart.collapse(n_iterations=100)
+        return bubble_chart.get_centers()
+
+
+class _GridDatasetPlotter(_BaseDatasetPlotter):
+    def _get_centers(self):
+        assert isinstance(self.n_col, int)
+        height = self.radii.max() * 2
+        i = np.arange(len(self.datasets))
+        x = i % self.n_col
+        y = -(i // self.n_col)
+        return np.stack([x, y], axis=1) * height
+
+
 def plot_datasets_grid(
     datasets: list[BaseDataset | dict] | None = None,
-    height: float = 5,
     n_col: int = 10,
+    margin: float = 10.0,
     **kwargs,
 ):
     """Plots all the MOABB datasets in one figure, distributed on a grid.
@@ -503,10 +596,10 @@ def plot_datasets_grid(
             trial_len: float
                 Length of each trial in seconds.
 
-    height: float
-        Height of each subplot in inches.
     n_col: int
         Number of columns in the figure.
+    margin: float
+        Margin around the plots.
     kwargs: dict
         Additional arguments to pass to the dataset_bubble_plot function.
 
@@ -515,47 +608,18 @@ def plot_datasets_grid(
     fig: Figure
         Pyplot handle
     """
-    datasets = (
-        datasets
-        if datasets is not None
-        else sorted(
-            [dataset() for dataset in dataset_list if "Fake" not in dataset.__name__],
-            key=lambda x: x.__class__.__name__,
-        )
+    plotter = _GridDatasetPlotter(
+        datasets=datasets,
+        meta_gap=margin,
+        n_col=n_col,
+        kwargs=kwargs,
     )
-    fig, ax = plt.subplots(
-        1,
-        1,
-        figsize=(
-            height * (n_col),
-            height * (1 + len(datasets)) // n_col,
-        ),
-    )
-
-    def get_center(i):
-        return ((i % n_col) * height * 10, -(i // n_col) * height * 10)
-
-    lx, ly = get_center((len(datasets) // n_col + 1) * n_col - 1)
-    lx += height * 10
-    for i, dataset in enumerate(datasets):
-        dataset_bubble_plot(
-            dataset,
-            ax=ax,
-            center=get_center(i),
-            legend=i == len(datasets) - 1,
-            legend_position=(lx, ly),
-            **(kwargs or {}),
-        )
-    fig.tight_layout()
-    return fig
+    return plotter.plot()
 
 
 def plot_datasets_cluster(
     datasets: list[BaseDataset | dict] | None = None,
     meta_gap: float = 10.0,
-    scale: float = 0.5,
-    size_mode: Literal["count", "duration"] = "count",
-    gap: float = 0.0,
     **kwargs,
 ):
     """Plots all the MOABB datasets in one figure, grouped in one cluster.
@@ -593,47 +657,9 @@ def plot_datasets_cluster(
     fig: Figure
         Pyplot handle
     """
-    datasets = [dataset() for dataset in dataset_list if "Fake" not in dataset.__name__]
-
-    areas_list = []
-    for d in datasets:
-        if isinstance(d, dict):
-            n_subjects = d["n_subjects"]
-            n_sessions = d["n_sessions"]
-            n_trials = d["n_trials"]
-            trial_len = d["trial_len"]
-        else:
-            _, _, n_subjects, n_sessions, n_trials, trial_len = _get_dataset_parameters(d)
-        areas_list.append(
-            get_dataset_area(
-                n_subjects=n_subjects,
-                n_sessions=n_sessions,
-                n_trials=n_trials,
-                trial_len=trial_len,
-            )
-        )
-    areas = np.array(areas_list)
-    radii = np.sqrt(areas / np.pi)
-    bubble_chart = BubbleChart(areas, bubble_spacing=meta_gap)
-    bubble_chart.collapse(n_iterations=100)
-    centers = bubble_chart.get_centers()
-
-    fig, ax = plt.subplots(figsize=(20, 20))
-
-    lx = (centers[:, 0] + radii).max() + meta_gap
-    ly = (centers[:, 1] - radii).min()
-    for i, dataset in enumerate(datasets):
-        dataset_kwargs = dataset if isinstance(dataset, dict) else {"dataset": dataset}
-        dataset_bubble_plot(
-            **dataset_kwargs,
-            ax=ax,
-            center=centers[i],
-            legend=i == len(datasets) - 1,
-            legend_position=(lx, ly),
-            scale=scale,
-            size_mode=size_mode,
-            gap=gap,
-            **(kwargs or {}),
-        )
-    fig.tight_layout()
-    return fig
+    plotter = _ClusterDatasetPlotter(
+        datasets=datasets,
+        meta_gap=meta_gap,
+        kwargs=kwargs,
+    )
+    return plotter.plot()

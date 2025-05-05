@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sea
-from matplotlib import patheffects
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Circle, RegularPolygon
 from scipy.stats import t
@@ -571,6 +570,7 @@ def dataset_bubble_plot(
     legend_position: tuple[float, float] | None = None,
     fontsize: int = 8,
     ax=None,
+    scale_ax: bool = True,
     dataset_name: str | None = None,
     paradigm: str | None = None,
     n_subjects: int | None = None,
@@ -628,6 +628,8 @@ def dataset_bubble_plot(
         Font size of the legend text.
     ax: Axes | None
         Axes to plot on. If None, the default axes are used.
+    scale_ax: bool
+        Whether to scale the axes to be equal and in the correct range.
     dataset_name: str | None
         Name of the dataset. Required if ``dataset`` is None.
     paradigm: str | None
@@ -693,12 +695,13 @@ def dataset_bubble_plot(
             va="center",
             fontsize=fontsize,
             color="black",
-            path_effects=[
-                patheffects.Stroke(linewidth=3, foreground="white", alpha=0.8),
-                patheffects.Normal(),
-            ],
+            bbox=dict(
+                facecolor="white", alpha=0.6, linewidth=0, boxstyle="round,pad=0.5"
+            ),
             gid=f"title/{dataset_name}",
         )
+        # bbox is better than path_effects as the text is not converted to a path.
+        # we can still select it in a pdf. Also the file is lighter.
     if legend:
         legend_position = legend_position or (x.max() + fontsize, y.min())
         _add_bubble_legend(
@@ -712,7 +715,8 @@ def dataset_bubble_plot(
             ax=ax,
             shape=shape,
         )
-    ax.axis("equal")
     ax.axis("off")
-    ax.autoscale()
+    if scale_ax:
+        ax.axis("equal")
+        ax.autoscale()
     return ax
