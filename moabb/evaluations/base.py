@@ -5,28 +5,21 @@ from warnings import warn
 import pandas as pd
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
-from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
-from moabb.evaluations.utils import _convert_sklearn_params_to_optuna
+from moabb.evaluations.utils import (
+    _convert_sklearn_params_to_optuna,
+    check_search_avaliable,
+)
 from moabb.paradigms.base import BaseParadigm
 
+
+search_methods, optuna_available = check_search_avaliable()
 
 log = logging.getLogger(__name__)
 
 # Making the optuna soft dependency
-try:
-    from optuna.integration import OptunaSearchCV
-
-    optuna_available = True
-except ImportError:
-    optuna_available = False
-
-if optuna_available:
-    search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
-else:
-    search_methods = {"grid": GridSearchCV}
 
 
 class BaseEvaluation(ABC):
@@ -116,6 +109,7 @@ class BaseEvaluation(ABC):
         self.cache_config = cache_config
         self.optuna = optuna
         self.time_out = time_out
+        self.n_jobs_inner = 5
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -231,7 +225,9 @@ class BaseEvaluation(ABC):
         ]
         n_jobs = 1
         # Parallel processing...
-        parallel_results = Parallel(n_jobs=n_jobs, return_as="generator", verbose=10)(
+        parallel_results = Parallel(
+            n_jobs=n_jobs, return_as="generator", verbose=10, backend="loky"
+        )(
             delayed(
                 lambda dataset_processor: list(
                     self.evaluate(

@@ -4,6 +4,7 @@ from time import time
 from typing import Optional, Union
 
 import numpy as np
+from joblib import parallel_backend
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -23,7 +24,12 @@ from moabb.evaluations.splitters import (
     CrossSubjectSplitter,
     WithinSessionSplitter,
 )
-from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
+from moabb.evaluations.utils import (
+    check_search_avaliable,
+    create_save_path,
+    save_model_cv,
+    save_model_list,
+)
 
 
 try:
@@ -32,6 +38,8 @@ try:
     _carbonfootprint = True
 except ImportError:
     _carbonfootprint = False
+
+search_methods, _ = check_search_avaliable()
 
 log = logging.getLogger(__name__)
 
@@ -229,8 +237,15 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     for cv_ind, (train, test) in enumerate(cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
+                        if any(
+                            isinstance(cvclf, search)
+                            for search in search_methods.values()
+                        ):
+                            with parallel_backend("threading", n_jobs=self.n_jobs_inner):
+                                cvclf.fit(X_[train], y_[train])
+                        else:
+                            cvclf.fit(X_[train], y_[train])
 
-                        cvclf.fit(X_[train], y_[train])
                         acc.append(scorer(cvclf, X_[test], y_[test]))
 
                         if self.hdf5_path is not None and self.save_model:

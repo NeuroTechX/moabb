@@ -5,6 +5,7 @@ from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
 from numpy import argmax
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
 
@@ -213,3 +214,20 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
             except Exception as e:
                 raise ValueError(f"Conversion failed for parameter {key}: {e}")
         return optuna_params
+
+
+def check_search_avaliable():
+    """Check if optuna is available"""
+    try:
+        from optuna.integration import OptunaSearchCV
+
+        optuna_available = True
+    except ImportError:
+        optuna_available = False
+
+    if optuna_available:
+        search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+    else:
+        search_methods = {"grid": GridSearchCV}
+
+    return search_methods, optuna_available
