@@ -1,6 +1,7 @@
 import os
 import os.path as osp
 import platform
+import sys
 import warnings
 from collections import OrderedDict
 
@@ -52,19 +53,16 @@ class TestWithinSess:
     run it. Putting this on the future docket...
     """
 
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def setup_method(self, tmp_path):
+        self.hdf5_path = tmp_path
         self.eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            hdf5_path="res_test",
+            hdf5_path=str(tmp_path),
             save_model=True,
             optuna=False,
         )
-
-    def teardown_method(self):
-        path = self.eval.results.filepath
-        if os.path.isfile(path):
-            os.remove(path)
 
     def test_mne_labels(self):
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset])
@@ -140,10 +138,8 @@ class TestWithinSess:
         # We should have 9 columns in the results data frame
         assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
 
+    @pytest.mark.skipif(not optuna_available, reason="Optuna is not available")
     def test_eval_grid_search_optuna(self):
-        if not optuna_available:
-            pytest.skip("Optuna is not available")
-
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
@@ -168,13 +164,20 @@ class TestWithinSess:
         assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
 
     def test_within_session_evaluation_save_model(self):
-        res_test_path = "./res_test"
+        # should all be dummy instead but whatever
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        _ = [
+            r
+            for r in self.eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
+        ]
 
         # Get a list of all subdirectories inside 'res_test'
         subdirectories = [
             d
-            for d in os.listdir(res_test_path)
-            if os.path.isdir(os.path.join(res_test_path, d))
+            for d in os.listdir(self.hdf5_path)
+            if os.path.isdir(os.path.join(self.hdf5_path, d))
         ]
 
         # Check if any of the subdirectories contain the partial name 'Model'
@@ -235,11 +238,11 @@ class TestWithinSessLearningCurve:
     initialization instead of during running the evaluation
     """
 
-    @pytest.mark.skip(reason="This test is not working")
-    def test_correct_results_integrity(self):
+    def test_correct_results_integrity(self, tmp_path):
         learning_curve_eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
+            hdf5_path=str(tmp_path),
             data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
             n_perms=np.array([2, 2]),
         )
@@ -270,24 +273,30 @@ class TestWithinSessLearningCurve:
                 **kwargs,
             )
 
-    @pytest.mark.skip(reason="This test is not working")
-    def test_data_sanity(self):
+    def test_data_sanity(self, tmp_path):
         # need this helper to iterate over the generator
         def run_evaluation(eval, dataset, pipelines):
             process_pipeline = eval.paradigm.make_process_pipelines(dataset)[0]
             list(
                 eval.evaluate(
-                    dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+                    dataset,
+                    pipelines,
+                    param_grid=None,
+                    process_pipeline=process_pipeline,
                 )
             )
 
         # E.g. if number of samples too high -> expect error
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
         should_work = ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 10]}, **kwargs
+            hdf5_path=tmp_path,
+            data_size={"policy": "per_class", "value": [5, 10]},
+            **kwargs,
         )
         too_many_samples = ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 100000]}, **kwargs
+            hdf5_path=tmp_path,
+            data_size={"policy": "per_class", "value": [5, 100000]},
+            **kwargs,
         )
         # This one should run
         run_evaluation(should_work, dataset, pipelines)
@@ -346,11 +355,13 @@ class TestWithinSessLearningCurve:
 
 
 class Test_CrossSubj(TestWithinSess):
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def setup_method(self, tmp_path):
+        self.hdf5_path = tmp_path
         self.eval = ev.CrossSubjectEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            hdf5_path="res_test",
+            hdf5_path=str(tmp_path),
             save_model=True,
         )
 
@@ -365,11 +376,13 @@ class Test_CrossSubj(TestWithinSess):
 
 
 class Test_CrossSess(TestWithinSess):
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def setup_method(self, tmp_path):
+        self.hdf5_path = tmp_path
         self.eval = ev.CrossSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            hdf5_path="res_test",
+            hdf5_path=str(tmp_path),
             save_model=True,
         )
 
@@ -382,10 +395,10 @@ class Test_CrossSess(TestWithinSess):
         assert self.eval.is_valid(dataset=ds)
 
 
-class UtilEvaluation:
-    def test_save_model_cv(self):
+class TestUtilEvaluation:
+    def test_save_model_cv(self, tmp_path):
         model = Dummy()
-        save_path = "test_save_path"
+        save_path = str(tmp_path)
         cv_index = 0
 
         save_model_cv(model, save_path, cv_index)
@@ -393,19 +406,19 @@ class UtilEvaluation:
         # Assert that the saved model file exists
         assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
 
-    def test_save_model_list(self):
+    def test_save_model_list(self, tmp_path):
         step = Dummy()
         model = Pipeline([("step", step)])
         model_list = [model]
         score_list = [0.8]
-        save_path = "test_save_path"
+        save_path = str(tmp_path)
         save_model_list(model_list, score_list, save_path)
 
         # Assert that the saved model file for best model exists
         assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
-    def test_create_save_path(self):
-        hdf5_path = "base_path"
+    def test_create_save_path(self, tmp_path):
+        hdf5_path = str(tmp_path)
         code = "evaluation_code"
         subject = 1
         session = "0"
@@ -434,17 +447,18 @@ class UtilEvaluation:
         )
         assert grid_save_path == expected_grid_path
 
-    def test_save_model_cv_with_pytorch_model(self):
-        try:
-            import torch
-            from skorch import NeuralNetClassifier
-        except ImportError:
-            self.skipTest("skorch library not available")
+    @pytest.mark.skipif(
+        sys.version_info >= (3, 13),
+        reason="known skorch docstring issue(#1080) with py313, remove this skip when skorch > 1.1.0",
+    )
+    def test_save_model_cv_with_pytorch_model(self, tmp_path):
+        skorch = pytest.importorskip("skorch", reason="skorch is not available")
+        import torch
 
-        step = NeuralNetClassifier(module=torch.nn.Linear(10, 2))
+        step = skorch.NeuralNetClassifier(module=torch.nn.Linear(10, 2))
         step.initialize()
         model = Pipeline([("step", step)])
-        save_path = "."
+        save_path = str(tmp_path)
         cv_index = 0
         save_model_cv(model, save_path, cv_index)
 
@@ -454,12 +468,12 @@ class UtilEvaluation:
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_history.json"))
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_criterion.pkl"))
 
-    def test_save_model_list_with_multiple_models(self):
+    def test_save_model_list_with_multiple_models(self, tmp_path):
         model1 = Dummy()
         model2 = Dummy()
         model_list = [model1, model2]
         score_list = [0.8, 0.9]
-        save_path = "test_save_path"
+        save_path = str(tmp_path)
         save_model_list(model_list, score_list, save_path)
 
         # Assert that the saved model files for each model exist
@@ -469,8 +483,8 @@ class UtilEvaluation:
         # Assert that the saved model file for the best model exists
         assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
-    def test_create_save_path_with_cross_session_evaluation(self):
-        hdf5_path = "base_path"
+    def test_create_save_path_with_cross_session_evaluation(self, tmp_path):
+        hdf5_path = str(tmp_path)
         code = "evaluation_code"
         subject = 1
         session = "0"
@@ -516,11 +530,11 @@ class UtilEvaluation:
         with pytest.raises(IOError):
             save_model_cv(model, save_path, cv_index)
 
-    def test_save_model_list_with_single_model(self):
+    def test_save_model_list_with_single_model(self, tmp_path):
         model = Dummy()
         model_list = model
         score_list = [0.8]
-        save_path = "test_save_path"
+        save_path = str(tmp_path)
         save_model_list(model_list, score_list, save_path)
 
         # Assert that the saved model file for the single model exists
@@ -529,8 +543,8 @@ class UtilEvaluation:
         # Assert that the saved model file for the best model exists
         assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
-    def test_create_save_path_with_cross_subject_evaluation(self):
-        hdf5_path = "base_path"
+    def test_create_save_path_with_cross_subject_evaluation(self, tmp_path):
+        hdf5_path = str(tmp_path)
         code = "evaluation_code"
         subject = "1"
         session = ""
@@ -573,8 +587,8 @@ class UtilEvaluation:
 
         assert grid_save_path is None
 
-    def test_create_save_path_with_special_characters(self):
-        hdf5_path = "base_path"
+    def test_create_save_path_with_special_characters(self, tmp_path):
+        hdf5_path = str(tmp_path)
         code = "evaluation_code"
         subject = 1
         session = "0"

@@ -5,7 +5,7 @@ concurrency:
 
 on:
   push:
-    branches: [ develop, master ]
+    branches: [ develop, master, pr-749 ]
   pull_request:
     branches: [ develop, master ]
 
@@ -50,7 +50,7 @@ jobs:
       - name: Run tests
         run: |
           echo "Running tests"
-          pytest -vv -s --tb=long --durations=0 --log-cli-level=INFO --cov=moabb --cov-report=xml moabb/tests --verbose
+          pytest -vv -s --tb=long --durations=0 --log-cli-level=INFO --cov=moabb --cov-report=xml moabb/tests --verbose -n auto
 
       - name: Run pipelines
         run: |

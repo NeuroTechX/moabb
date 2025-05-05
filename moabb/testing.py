@@ -3,9 +3,22 @@ import json
 import os
 import os.path as op
 
+import h5py
 from mne.utils._logging import logger, warn
-from mne.utils.check import _soft_import, _validate_type
-from mne.utils.config import _known_config_types, _known_config_wildcards, get_config_path
+from mne.utils.check import _validate_type
+from mne.utils.config import (
+    _known_config_types,
+    _known_config_wildcards,
+    get_config_path,
+)
+
+
+try:
+    from filelock import FileLock
+
+    _filelock_available = True
+except ImportError:
+    _filelock_available = False
 
 
 @contextlib.contextmanager
@@ -17,32 +30,31 @@ def _open_lock(path, *args, **kwargs):
     based on the given path (by appending '.lock').  Otherwise, a null context is used.
     The file is then opened in the specified mode.
     """
-    filelock = _soft_import("filelock", purpose="parallel integration", strict=False)
-    if filelock is not None:
+    if _filelock_available:
         lock_path = f"{path}.lock"
         try:
-            # Here we set an optional timeout (e.g., 5 sec) so that processes
-            # do not hang indefinitely. Adjust as needed.
-            lock = filelock.FileLock(lock_path, timeout=5)
-        except Exception as e:
-            warn(f"Failed to create a FileLock object for {lock_path}: {e}")
-            lock = None
+            lock_context = FileLock(lock_path, timeout=5)
+        except TimeoutError:
+            # warn(f"Failed to create a FileLock object for {lock_path}: {e}")
+            lock_context = contextlib.nullcontext()
     else:
         # Warn that locking is disabled which might lead to parallel write issues.
-        warn(
-            "File locking is disabled because the filelock package is not installed. "
-            "This might lead to data corruption when multiple processes write simultaneously."
-        )
-        lock = None
-
-    # Use the lock if available; otherwise, use a null context
-    lock_context = lock if lock is not None else contextlib.nullcontext()
+        # warn(
+        #     "File locking is disabled because the filelock package is not installed. "
+        #     "This might lead to data corruption when multiple processes write simultaneously."
+        # )
+        lock_context = contextlib.nullcontext()
 
     # It is important to acquire the lock *before* opening the file to
     # avoid race conditions.
     with lock_context:
-        with open(path, *args, **kwargs) as fid:
-            yield fid
+        # FIX This doesn't seem ideal at all
+        if "hdf5" in str(path):
+            with h5py.File(path, *args, **kwargs) as fid:
+                yield fid
+        else:
+            with open(path, *args, **kwargs) as fid:
+                yield fid
 
 
 def get_config(key=None, default=None, raise_error=False, home_dir=None, use_env=True):
@@ -160,36 +172,44 @@ def set_config(key, value, home_dir=None, set_env=True):
     ):
         warn(f'Setting non-standard config type: "{key}"')
 
-    # Read all previous values
     config_path = get_config_path(home_dir=home_dir)
-    if op.isfile(config_path):
-        config = _load_config(config_path, raise_error=True)
-    else:
-        config = dict()
-        logger.info(
-            f"Attempting to create new mne-python configuration file:\n{config_path}"
-        )
-    if value is None:
-        config.pop(key, None)
-        if set_env and key in os.environ:
-            del os.environ[key]
-    else:
-        config[key] = value
-        if set_env:
-            os.environ[key] = value
-        if key == "MNE_BROWSER_BACKEND":
-            from ..viz._figure import set_browser_backend
+    if _filelock_available:
+        lock_path = f"{config_path}.lock"
+        try:
+            lock = FileLock(lock_path, timeout=5)
+            lock.acquire()
+        except TimeoutError:
+            lock = None
+    try:
+        if op.isfile(config_path) and os.stat(config_path).st_size != 0:
+            with open(config_path, "r") as json_file:
+                config = json.load(json_file)
+        else:
+            config = dict()
+            logger.info(
+                f"Attempting to create new mne-python configuration file:\n{config_path}"
+            )
+        if value is None:
+            config.pop(key, None)
+            if set_env and key in os.environ:
+                del os.environ[key]
+        else:
+            config[key] = value
+            if set_env:
+                os.environ[key] = value
+            if key == "MNE_BROWSER_BACKEND":
+                from ..viz._figure import set_browser_backend
 
-            set_browser_backend(value)
-
-    # Write all values. This may fail if the default directory is not
-    # writeable.
-    directory = op.dirname(config_path)
-    if not op.isdir(directory):
-        os.mkdir(directory)
-    # Write the JSON config file under lock so that concurrent access is serialized.
-    with _open_lock(config_path, "w") as fid:
-        json.dump(config, fid, sort_keys=True, indent=0)
+                set_browser_backend(value)
+        directory = op.dirname(config_path)
+        if not op.isdir(directory):
+            os.mkdir(directory)
+        # Write the JSON config file under lock so that concurrent access is serialized.
+        with open(config_path, "w") as json_file:
+            json.dump(config, json_file, sort_keys=True, indent=0)
+    finally:
+        if _filelock_available and lock is not None:
+            lock.release()
 
 
 def _load_config(config_path, raise_error=False):
