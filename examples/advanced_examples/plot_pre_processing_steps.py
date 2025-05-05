@@ -44,7 +44,7 @@ References
 #
 # Each paradigm defines a set of pre-processing steps that are applied to the raw data
 # in order to construct the numpy arrays and class labels used for classification.
-# In MOABB, the pre-processing steps are divided into three groups: 
+# In MOABB, the pre-processing steps are divided into three groups:
 # the steps which are applied over the `raw` objects, those applied to the `epoch` objects,
 # and those for  the `array` objects.
 #
