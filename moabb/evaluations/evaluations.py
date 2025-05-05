@@ -241,7 +241,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                             isinstance(cvclf, search)
                             for search in search_methods.values()
                         ):
-                            with parallel_backend("threading", n_jobs=self.n_jobs_inner):
+                            with parallel_backend("threading", n_jobs=3):
                                 cvclf.fit(X_[train], y_[train])
                         else:
                             cvclf.fit(X_[train], y_[train])
@@ -553,7 +553,14 @@ class CrossSessionEvaluation(BaseEvaluation):
                     t_start = time()
 
                     cvclf = clone(grid_clf)
-                    cvclf.fit(X[train], y[train])
+                    if any(
+                        isinstance(cvclf, search) for search in search_methods.values()
+                    ):
+                        with parallel_backend("threading", n_jobs=3):
+                            cvclf.fit(X[train], y[train])
+                    else:
+                        cvclf.fit(X[train], y[train])
+
                     model_list.append(cvclf)
                     score = scorer(cvclf, X[test], y[test])
 
@@ -727,7 +734,15 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 clf = self._grid_search(
                     param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
-                model = deepcopy(clf).fit(X[train], y[train])
+
+                model = clone(clf)
+
+                if any(isinstance(model, search) for search in search_methods.values()):
+                    with parallel_backend("threading", n_jobs=3):
+                        model.fit(X[train], y[train])
+                else:
+                    model.fit(X[train], y[train])
+
                 if _carbonfootprint:
                     emissions = tracker.stop()
                     if emissions is None:
