@@ -5,12 +5,20 @@ import os.path as op
 
 import h5py
 from mne.utils._logging import logger, warn
-from mne.utils.check import _soft_import, _validate_type
+from mne.utils.check import _validate_type
 from mne.utils.config import (
     _known_config_types,
     _known_config_wildcards,
     get_config_path,
 )
+
+
+try:
+    from filelock import FileLock
+
+    _filelock_available = True
+except ImportError:
+    _filelock_available = False
 
 
 @contextlib.contextmanager
@@ -22,26 +30,20 @@ def _open_lock(path, *args, **kwargs):
     based on the given path (by appending '.lock').  Otherwise, a null context is used.
     The file is then opened in the specified mode.
     """
-    filelock = _soft_import("filelock", purpose="parallel integration", strict=False)
-    if filelock is not None:
+    if _filelock_available:
         lock_path = f"{path}.lock"
         try:
-            # Here we set an optional timeout (e.g., 5 sec) so that processes
-            # do not hang indefinitely. Adjust as needed.
-            lock = filelock.FileLock(lock_path, timeout=5)
-        except Exception as e:
-            warn(f"Failed to create a FileLock object for {lock_path}: {e}")
-            lock = None
+            lock_context = FileLock(lock_path, timeout=5)
+        except TimeoutError:
+            # warn(f"Failed to create a FileLock object for {lock_path}: {e}")
+            lock_context = contextlib.nullcontext()
     else:
         # Warn that locking is disabled which might lead to parallel write issues.
-        warn(
-            "File locking is disabled because the filelock package is not installed. "
-            "This might lead to data corruption when multiple processes write simultaneously."
-        )
-        lock = None
-
-    # Use the lock if available; otherwise, use a null context
-    lock_context = lock if lock is not None else contextlib.nullcontext()
+        # warn(
+        #     "File locking is disabled because the filelock package is not installed. "
+        #     "This might lead to data corruption when multiple processes write simultaneously."
+        # )
+        lock_context = contextlib.nullcontext()
 
     # It is important to acquire the lock *before* opening the file to
     # avoid race conditions.
@@ -171,10 +173,13 @@ def set_config(key, value, home_dir=None, set_env=True):
         warn(f'Setting non-standard config type: "{key}"')
 
     config_path = get_config_path(home_dir=home_dir)
-    filelock = _soft_import("filelock", purpose="parallel integration", strict=False)
-    lock_path = f"{config_path}.lock"
-    lock = filelock.FileLock(lock_path, timeout=5)
-    lock.acquire()
+    if _filelock_available:
+        lock_path = f"{config_path}.lock"
+        try:
+            lock = FileLock(lock_path, timeout=5)
+            lock.acquire()
+        except TimeoutError:
+            lock = None
     try:
         if op.isfile(config_path) and os.stat(config_path).st_size != 0:
             with open(config_path, "r") as json_file:
@@ -203,7 +208,8 @@ def set_config(key, value, home_dir=None, set_env=True):
         with open(config_path, "w") as json_file:
             json.dump(config, json_file, sort_keys=True, indent=0)
     finally:
-        lock.release()
+        if _filelock_available and lock is not None:
+            lock.release()
 
 
 def _load_config(config_path, raise_error=False):

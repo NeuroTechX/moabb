@@ -316,8 +316,7 @@ def test_parallel_get_set_config(tmp_path):
     )
 
     # Now, read back the config file.
-    with open(config_file, "r") as f:
-        final_config = json.load(f)
+    final_config = get_config(home_dir=home_dir)
 
     # For each worker and iteration, check that the expected key/value pair is present.
     for worker_id in range(n_workers):

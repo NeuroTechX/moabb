@@ -11,9 +11,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from mne import set_log_level as sll
-from mne.utils import get_config_path
-
-from moabb.testing import get_config, set_config
+from mne.utils import get_config, get_config_path, set_config
 
 
 if TYPE_CHECKING:
