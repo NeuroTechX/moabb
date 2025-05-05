@@ -12,7 +12,6 @@ from sklearn.model_selection import (
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
-    cross_validate,
 )
 from sklearn.model_selection._validation import _score
 from sklearn.preprocessing import LabelEncoder
@@ -22,6 +21,7 @@ from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
+    WithinSessionSplitter,
 )
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 
@@ -176,7 +176,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                         tracker = EmissionsTracker(save_to_file=False, log_level="error")
                         tracker.start()
                     t_start = time()
-                    cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
+                    cv = WithinSessionSplitter(
+                        n_folds=self.n_splits,
+                        shuffle=True,
+                        random_state=self.random_state,
+                    )
                     inner_cv = StratifiedKFold(
                         3, shuffle=True, random_state=self.random_state
                     )
@@ -217,43 +221,24 @@ class WithinSessionEvaluation(BaseEvaluation):
                             eval_type="WithinSession",
                         )
 
-                    if isinstance(X, BaseEpochs):
-                        scorer = get_scorer(self.paradigm.scoring)
-                        acc = list()
-                        X_ = X[ix]
-                        y_ = y[ix] if self.mne_labels else y_cv
-                        for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
-                            cvclf = clone(grid_clf)
-                            cvclf.fit(X_[train], y_[train])
-                            acc.append(scorer(cvclf, X_[test], y_[test]))
+                    scorer = get_scorer(self.paradigm.scoring)
+                    acc = list()
+                    X_ = X[ix]
+                    y_ = y[ix] if self.mne_labels else y_cv
+                    for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
+                        cvclf = clone(grid_clf)
+                        cvclf.fit(X_[train], y_[train])
+                        acc.append(scorer(cvclf, X_[test], y_[test]))
 
-                            if self.hdf5_path is not None and self.save_model:
-                                save_model_cv(
-                                    model=cvclf,
-                                    save_path=model_save_path,
-                                    cv_index=cv_ind,
-                                )
-
-                        acc = np.array(acc)
-                        score = acc.mean()
-                    else:
-                        results = cross_validate(
-                            grid_clf,
-                            X[ix],
-                            y_cv,
-                            cv=cv,
-                            scoring=self.paradigm.scoring,
-                            n_jobs=self.n_jobs,
-                            error_score=self.error_score,
-                            return_estimator=True,
-                        )
-                        score = results["test_score"].mean()
                         if self.hdf5_path is not None and self.save_model:
-                            save_model_list(
-                                results["estimator"],
-                                score_list=results["test_score"],
+                            save_model_cv(
+                                model=cvclf,
                                 save_path=model_save_path,
+                                cv_index=cv_ind,
                             )
+
+                    acc = np.array(acc)
+                    score = acc.mean()
 
                     if _carbonfootprint:
                         emissions = tracker.stop()
