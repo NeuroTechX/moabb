@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from warnings import warn
 
 import pandas as pd
+from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
 
@@ -97,7 +98,7 @@ class BaseEvaluation(ABC):
         return_epochs=False,
         return_raws=False,
         mne_labels=False,
-        n_splits=None,
+        n_splits: int = 5,
         save_model=False,
         cache_config=None,
         optuna=False,
@@ -201,7 +202,6 @@ class BaseEvaluation(ABC):
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
 
-
         Returns
         -------
         results: pd.DataFrame
@@ -216,26 +216,49 @@ class BaseEvaluation(ABC):
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
-        res_per_db = []
-        for dataset in self.datasets:
-            log.info("Processing dataset: {}".format(dataset.code))
-            process_pipeline = self.paradigm.make_process_pipelines(
+        # Prepare dataset processing parameters
+        processing_params = [
+            (
                 dataset,
-                return_epochs=self.return_epochs,
-                return_raws=self.return_raws,
-                postprocess_pipeline=postprocess_pipeline,
-            )[0]
-            # (we only keep the pipeline for the first frequency band, better ideas?)
-
-            results = self.evaluate(
-                dataset,
-                pipelines,
-                param_grid=param_grid,
-                process_pipeline=process_pipeline,
-                postprocess_pipeline=postprocess_pipeline,
+                self.paradigm.make_process_pipelines(
+                    dataset,
+                    return_epochs=self.return_epochs,
+                    return_raws=self.return_raws,
+                    postprocess_pipeline=postprocess_pipeline,
+                )[0],
             )
+            for dataset in self.datasets
+        ]
+
+        # Parallel processing...
+        parallel_results = Parallel(
+            n_jobs=self.n_jobs, return_as="generator", verbose=10
+        )(
+            delayed(
+                lambda dataset_processor: list(
+                    self.evaluate(
+                        dataset_processor[0],  # dataset
+                        pipelines,
+                        param_grid=param_grid,
+                        process_pipeline=dataset_processor[1],
+                        # process_pipeline
+                        postprocess_pipeline=postprocess_pipeline,
+                    )
+                )
+            )(
+                params
+            )  # Pass parameters here
+            for params in processing_params
+        )
+
+        res_per_db = []
+        # Process results in order
+        for (dataset, process_pipeline), results in zip(
+            processing_params, parallel_results
+        ):
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
+
             res_per_db.append(
                 self.results.to_dataframe(
                     pipelines=pipelines, process_pipeline=process_pipeline
