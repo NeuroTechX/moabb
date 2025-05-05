@@ -42,12 +42,11 @@ References
 # What is applied precisely to each paradigm?
 # -----------------------------------------------
 #
-# Each paradigm has a set of pre-processing steps that are applied to the raw data that
-# allow the construction of the dataset as numpy arrays.
-#
-# At the moabb, you can apply the pre-processing steps to the `raw` object to the `epoch`
-# object, or to the `array` object outputted after the pre-processing steps.
-# By default, the pre-processing steps are applied as listed above.
+# Each paradigm defines a set of pre-processing steps that are applied to the raw data
+# in order to construct the numpy arrays and class labels used for classification.
+# In MOABB, the pre-processing steps are divided into three groups: 
+# the steps which are applied over the `raw` objects, those applied to the `epoch` objects,
+# and those for  the `array` objects.
 #
 # First things, let's define one dataset and one paradigm.
 # Here, we will use the BNCI2014_001 dataset and the LeftRightImagery paradigm.
