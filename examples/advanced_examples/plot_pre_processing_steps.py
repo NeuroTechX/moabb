@@ -3,18 +3,18 @@
 Playing with the pre-processing steps
 ======================================
 By default, MOABB uses **fundamental** and **robust** pre-processing steps defined in
-each paradigm. 
+each paradigm.
 
 Behind the curtains, these steps are defined in a scikit-learn Pipeline.
 This pipeline receives raw signals and applies various signal processing steps
-to construct the final array object and class labels, which will be used 
+to construct the final array object and class labels, which will be used
 to train and evaluate the classifiers.
 
 Pre-processing steps are known to shape the rank and
-metric results of the EEG Decoding [2]_, [3]_, [4]_, 
-and we present some discussion in our largest benchmark paper [1]_ 
-on why we used those specific steps. 
-Using the same pre-processing steps for all datasets also avoids biases 
+metric results of the EEG Decoding [2]_, [3]_, [4]_,
+and we present some discussion in our largest benchmark paper [1]_
+on why we used those specific steps.
+Using the same pre-processing steps for all datasets also avoids biases
 and makes results more comparable.
 
 However, there might be cases where these steps are not adequate.
@@ -110,7 +110,7 @@ for i, step in enumerate(pre_procesing_filter_bank_steps):
 #
 # The following example demonstrates how you can surgically add custom processing steps
 # beyond these built-in options.
-# 
+#
 # In this example, we want to add a min-max function step to the raw data to do this.
 # We need to do pipeline surgery and use the evaluation function.
 ##############################################################################
