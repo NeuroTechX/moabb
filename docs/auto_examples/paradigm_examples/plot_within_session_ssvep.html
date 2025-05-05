@@ -410,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_pre_processing_steps.html">Playing with the pre-processing steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_select_electrodes_resample.html">Select Electrodes and Resampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_statistical_analysis.html">Statistical Analysis</a></li>
 </ul>
@@ -576,53 +577,55 @@ each subject and pipeline.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Kalunga2016-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-Kalunga2016-WithinSession:  50%|█████     | 1/2 [00:00&lt;00:00,  1.84it/s]
+Kalunga2016-WithinSession:  50%|█████     | 1/2 [00:00&lt;00:00,  1.89it/s]
 
   0%|                                              | 0.00/2.27M [00:00&lt;?, ?B/s]
 
-  0%|▏                                    | 11.3k/2.27M [00:00&lt;00:37, 59.9kB/s]
+  1%|▏                                    | 12.3k/2.27M [00:00&lt;00:25, 87.1kB/s]
 
-  2%|▌                                     | 36.9k/2.27M [00:00&lt;00:19, 113kB/s]
+  2%|▋                                     | 41.0k/2.27M [00:00&lt;00:12, 175kB/s]
 
-  4%|█▌                                    | 93.2k/2.27M [00:00&lt;00:10, 215kB/s]
+  4%|█▋                                    | 97.3k/2.27M [00:00&lt;00:06, 311kB/s]
 
-  8%|███▎                                   | 191k/2.27M [00:00&lt;00:05, 363kB/s]
+  9%|███▎                                   | 194k/2.27M [00:00&lt;00:04, 513kB/s]
 
- 16%|██████▎                                | 365k/2.27M [00:00&lt;00:03, 609kB/s]
+ 14%|█████▌                                 | 324k/2.27M [00:00&lt;00:02, 731kB/s]
 
- 32%|████████████▏                         | 728k/2.27M [00:01&lt;00:01, 1.15MB/s]
+ 30%|███████████▍                          | 681k/2.27M [00:00&lt;00:01, 1.52MB/s]
 
- 59%|█████████████████████▉               | 1.35M/2.27M [00:01&lt;00:00, 2.00MB/s]
+ 48%|█████████████████▋                   | 1.09M/2.27M [00:00&lt;00:00, 2.18MB/s]
+
+ 98%|████████████████████████████████████ | 2.22M/2.27M [00:00&lt;00:00, 4.59MB/s]
 
   0%|                                              | 0.00/2.27M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.27M/2.27M [00:00&lt;00:00, 7.90GB/s]
+100%|█████████████████████████████████████| 2.27M/2.27M [00:00&lt;00:00, 9.77GB/s]
 
 
   0%|                                              | 0.00/2.13M [00:00&lt;?, ?B/s]
 
-  1%|▏                                    | 13.3k/2.13M [00:00&lt;00:30, 70.2kB/s]
+  1%|▏                                    | 12.3k/2.13M [00:00&lt;00:26, 79.7kB/s]
 
-  2%|▋                                     | 41.0k/2.13M [00:00&lt;00:16, 125kB/s]
+  2%|▋                                     | 41.0k/2.13M [00:00&lt;00:12, 165kB/s]
 
-  4%|█▋                                    | 93.2k/2.13M [00:00&lt;00:09, 210kB/s]
+  5%|█▋                                    | 97.3k/2.13M [00:00&lt;00:06, 302kB/s]
 
- 10%|███▊                                   | 205k/2.13M [00:00&lt;00:04, 392kB/s]
+ 10%|███▊                                   | 207k/2.13M [00:00&lt;00:03, 548kB/s]
 
- 20%|███████▊                               | 425k/2.13M [00:00&lt;00:02, 730kB/s]
+ 21%|███████▊                              | 438k/2.13M [00:00&lt;00:01, 1.06MB/s]
 
- 41%|███████████████▍                      | 866k/2.13M [00:01&lt;00:00, 1.39MB/s]
+ 41%|███████████████▋                      | 880k/2.13M [00:00&lt;00:00, 1.99MB/s]
 
- 82%|██████████████████████████████▍      | 1.75M/2.13M [00:01&lt;00:00, 2.69MB/s]
+ 84%|███████████████████████████████▏     | 1.80M/2.13M [00:00&lt;00:00, 3.92MB/s]
 
   0%|                                              | 0.00/2.13M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.13M/2.13M [00:00&lt;00:00, 10.6GB/s]
+100%|█████████████████████████████████████| 2.13M/2.13M [00:00&lt;00:00, 9.68GB/s]
 No hdf5_path provided, models will not be saved.
 
-Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:05&lt;00:00,  2.85s/it]
-Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:05&lt;00:00,  2.51s/it]
+Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:04&lt;00:00,  2.74s/it]
+Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:04&lt;00:00,  2.41s/it]
       score      time  samples  ... n_sessions      dataset  pipeline
-0  0.251111  0.040806     48.0  ...          1  Kalunga2016       CCA
-1  0.331111  0.039631     48.0  ...          1  Kalunga2016       CCA
+0  0.248889  0.041910     48.0  ...          1  Kalunga2016       CCA
+1  0.335556  0.039904     48.0  ...          1  Kalunga2016       CCA
 
 [2 rows x 9 columns]
 </pre></div>
@@ -645,7 +648,7 @@ Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:05&lt;00
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.415 seconds)</p>
+<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.294 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  246 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

@@ -410,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_pre_processing_steps.html">Playing with the pre-processing steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_select_electrodes_resample.html">Select Electrodes and Resampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_statistical_analysis.html">Statistical Analysis</a></li>
 </ul>
@@ -580,20 +581,20 @@ each subject / session of the dataset, and for each pipeline.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou2016-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Zhou2016-CrossSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.56s/it]
-Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.19s/it]
-Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.24s/it]
+Zhou2016-CrossSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.48s/it]
+Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.06s/it]
+Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.12s/it]
 
 BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.88s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.89s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.89s/it]
+BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.82s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.80s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.80s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.851412  0.288348    200.0       1  ...       14           3  Zhou2016  CSP+LDA
-1  0.935200  0.257448    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-2  0.939200  0.295318    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-3  0.908000  0.255374    190.0       2  ...       14           3  Zhou2016  CSP+LDA
-4  0.770370  0.286494    200.0       2  ...       14           3  Zhou2016  CSP+LDA
+0  0.851412  0.257771    200.0       1  ...       14           3  Zhou2016  CSP+LDA
+1  0.935200  0.256930    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+2  0.939200  0.217800    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+3  0.908000  0.219416    190.0       2  ...       14           3  Zhou2016  CSP+LDA
+4  0.770370  0.221310    200.0       2  ...       14           3  Zhou2016  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -614,8 +615,8 @@ BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.645 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  672 MB</p>
+<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.352 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  503 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a236a554370961344b575283a1efbb02/plot_cross_session_multiple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_multiple_datasets.ipynb</span></code></a></p>

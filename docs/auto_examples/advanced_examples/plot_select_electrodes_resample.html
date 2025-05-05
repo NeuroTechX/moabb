@@ -77,7 +77,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Statistical Analysis" href="plot_statistical_analysis.html" />
-    <link rel="prev" title="Spectral analysis of the trials" href="plot_phmd_ml_spectrum.html" />
+    <link rel="prev" title="Playing with the pre-processing steps" href="plot_pre_processing_steps.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.2.0" />
@@ -410,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_pre_processing_steps.html">Playing with the pre-processing steps</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Select Electrodes and Resampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_statistical_analysis.html">Statistical Analysis</a></li>
 </ul>
@@ -551,34 +552,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.81s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.69s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.43s/it]
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.48s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.28s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.34s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.93s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.87s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
 BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.90s/it]
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.91s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.89s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.843434  0.048699    119.0       1  ...        3           3  Zhou2016  csp+lda
-1  0.914000  0.023207    100.0       1  ...        3           3  Zhou2016  csp+lda
-2  0.956000  0.023941    100.0       1  ...        3           3  Zhou2016  csp+lda
-3  0.912000  0.055930    100.0       2  ...        3           3  Zhou2016  csp+lda
-4  0.844444  0.022628     90.0       2  ...        3           3  Zhou2016  csp+lda
+0  0.855682  0.059627    119.0       1  ...        3           3  Zhou2016    ts+lr
+1  0.936000  0.051366    100.0       1  ...        3           3  Zhou2016    ts+lr
+2  0.948000  0.051259    100.0       1  ...        3           3  Zhou2016    ts+lr
+3  0.932000  0.051654    100.0       2  ...        3           3  Zhou2016    ts+lr
+4  0.817284  0.046810     90.0       2  ...        3           3  Zhou2016    ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -608,34 +609,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.78s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.63s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.33s/it]
 Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.39s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.43s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.91s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.85s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.91s/it]
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.91s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.85s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.85s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.842298  0.047710    119.0       1  ...        3           3  Zhou2016  csp+lda
-1  0.896000  0.021070    100.0       1  ...        3           3  Zhou2016  csp+lda
-2  0.934000  0.020991    100.0       1  ...        3           3  Zhou2016  csp+lda
-3  0.934000  0.022350    100.0       2  ...        3           3  Zhou2016  csp+lda
-4  0.839506  0.021055     90.0       2  ...        3           3  Zhou2016  csp+lda
+0  0.861869  0.060332    119.0       1  ...        3           3  Zhou2016    ts+lr
+1  0.916000  0.052617    100.0       1  ...        3           3  Zhou2016    ts+lr
+2  0.950000  0.051688    100.0       1  ...        3           3  Zhou2016    ts+lr
+3  0.924000  0.062819    100.0       2  ...        3           3  Zhou2016    ts+lr
+4  0.829630  0.049176     90.0       2  ...        3           3  Zhou2016    ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -649,8 +650,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 48.560 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  782 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 48.045 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  737 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>
@@ -677,12 +678,12 @@ regression computed in the tangent space of the covariance matrices.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_phmd_ml_spectrum.html"
+       href="plot_pre_processing_steps.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Spectral analysis of the trials</p>
+        <p class="prev-next-title">Playing with the pre-processing steps</p>
       </div>
     </a>
     <a class="right-next"

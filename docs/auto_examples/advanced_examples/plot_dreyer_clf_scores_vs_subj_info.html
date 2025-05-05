@@ -410,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_pre_processing_steps.html">Playing with the pre-processing steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_select_electrodes_resample.html">Select Electrodes and Resampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_statistical_analysis.html">Statistical Analysis</a></li>
 </ul>
@@ -520,28 +521,28 @@ subjects (gender and age) and experimenters (gender).</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
-1it [00:01,  1.27s/it]
-2it [00:02,  1.38s/it]
-3it [00:04,  1.40s/it]
-4it [00:06,  1.75s/it]
-5it [00:07,  1.63s/it]
-6it [00:09,  1.48s/it]
-7it [00:10,  1.44s/it]
-8it [00:12,  1.56s/it]
-9it [00:15,  2.23s/it]
-9it [00:15,  1.77s/it]
+1it [00:01,  1.29s/it]
+2it [00:02,  1.32s/it]
+3it [00:04,  1.42s/it]
+4it [00:05,  1.43s/it]
+5it [00:06,  1.40s/it]
+6it [00:08,  1.34s/it]
+7it [00:09,  1.32s/it]
+8it [00:10,  1.36s/it]
+9it [00:12,  1.57s/it]
+9it [00:12,  1.44s/it]
 
 0it [00:00, ?it/s]
-9it [00:03,  2.46it/s]
-9it [00:03,  2.46it/s]
+9it [00:02,  4.27it/s]
+9it [00:02,  4.27it/s]
 
 0it [00:00, ?it/s]
-9it [00:04,  2.00it/s]
-9it [00:04,  2.00it/s]
+9it [00:02,  4.26it/s]
+9it [00:02,  4.26it/s]
 
 0it [00:00, ?it/s]
-9it [00:03,  2.32it/s]
-9it [00:03,  2.32it/s]
+9it [00:02,  4.27it/s]
+9it [00:02,  4.26it/s]
 
 {1: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-01_task-R1acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-01_task-R2acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-01_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-01_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-01_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 5: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-05_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-05_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-05_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-05_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-05_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 7: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-07_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-07_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-07_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-07_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-07_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 35: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-35_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-35_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-35_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-35_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-35_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}}
 </pre></div>
@@ -568,28 +569,28 @@ subjects (gender and age) and experimenters (gender).</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Dreyer2023A-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 11295.25it/s]
+9it [00:00, 11031.19it/s]
 No hdf5_path provided, models will not be saved.
 
-Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:02&lt;00:07,  2.42s/it]
+Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:02&lt;00:07,  2.48s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 12204.57it/s]
+9it [00:00, 11752.41it/s]
 No hdf5_path provided, models will not be saved.
 
-Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:04&lt;00:04,  2.36s/it]
+Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:04&lt;00:04,  2.39s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 12570.34it/s]
+9it [00:00, 12260.06it/s]
 No hdf5_path provided, models will not be saved.
 
 Dreyer2023A-WithinSession:  75%|███████▌  | 3/4 [00:07&lt;00:02,  2.34s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 12466.56it/s]
+9it [00:00, 12018.06it/s]
 No hdf5_path provided, models will not be saved.
 
-Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:09&lt;00:00,  2.33s/it]
+Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:09&lt;00:00,  2.32s/it]
 Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:09&lt;00:00,  2.34s/it]
 </pre></div>
 </div>
@@ -665,7 +666,7 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:09&lt;00
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fc0db175f60&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f0ad918dea0&gt;
 </pre></div>
 </div>
 <p>5.3 Plotting subject AUC ROC scores vs experimenter’s gender</p>
@@ -713,8 +714,8 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:09&lt;00
 <img alt="4_selected_subjects" class="align-center" src="auto_examples/images/Dreyer_clf_scores_vs_subj_info/4_selected_subjects.png" />
 <p>Obtained results for all subjects correspond to the following figure.</p>
 <img alt="all_subjects" class="align-center" src="auto_examples/images/Dreyer_clf_scores_vs_subj_info/all_subjects.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 52.134 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1938 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 39.440 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1908 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dreyer-clf-scores-vs-subj-info-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ae04c51e0e1c520116e934f140abe39b/plot_dreyer_clf_scores_vs_subj_info.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dreyer_clf_scores_vs_subj_info.ipynb</span></code></a></p>
