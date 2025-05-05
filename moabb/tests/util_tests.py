@@ -29,11 +29,8 @@ class TestDownload(unittest.TestCase):
         set_download_dir(original_path)
 
 
-@pytest.mark.skip(
-    reason="This test is only when you have already " "download the datasets."
-)
+@pytest.mark.skip(reason="This test is only when you have already download the datasets.")
 class Test_Utils(unittest.TestCase):
-
     def test_channel_intersection_fun(self):
         print(utils.find_intersecting_channels([d() for d in utils.dataset_list])[0])
 
@@ -193,11 +190,7 @@ def reset_mne_config():
     """Fixture to reset MNE_DATA config before and after each test."""
     original_config = get_config("MNE_DATA")
     yield
-    if original_config is not None:
-        set_config("MNE_DATA", original_config, set_env=True)
-    else:
-        # Remove the config if it was not set originally
-        set_config("MNE_DATA", None, set_env=True)
+    set_config("MNE_DATA", original_config, set_env=True)
 
 
 def test_set_download_dir_none_not_set(capsys):
@@ -317,7 +310,7 @@ def test_parallel_get_set_config(tmp_path):
     iterations = 20
 
     # Launch multiple workers concurrently using joblib.
-    Parallel(n_jobs=25, backend="multiprocessing")(
+    Parallel(n_jobs=25)(
         delayed(worker_update_config_loop)(home_dir, worker_id, iterations)
         for worker_id in range(n_workers)
     )

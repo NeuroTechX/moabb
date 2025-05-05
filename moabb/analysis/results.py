@@ -12,7 +12,7 @@ from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
 
-from moabb.testing import get_config, set_config
+from moabb.testing import _open_lock, get_config, set_config
 
 
 try:
@@ -112,7 +112,7 @@ class Results:
             os.remove(self.filepath)
 
         if not osp.isfile(self.filepath):
-            with h5py.File(self.filepath, "w") as f:
+            with _open_lock(self.filepath, "w") as f:
                 f.attrs["create_time"] = np.bytes_(
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
                 )
@@ -125,8 +125,9 @@ class Results:
                 return [res]
             elif not isinstance(res, list):
                 raise ValueError(
-                    "Results are given as neither dict nor"
-                    "list but {}".format(type(res).__name__)
+                    "Results are given as neither dict norlist but {}".format(
+                        type(res).__name__
+                    )
                 )
             else:
                 return res
@@ -138,7 +139,7 @@ class Results:
         else:
             n_cols = 3
 
-        with h5py.File(self.filepath, "r+") as f:
+        with _open_lock(self.filepath, "r+") as f:
             for name, data_dict in results.items():
                 digest = get_pipeline_digest(process_pipeline, pipelines[name])
                 if digest not in f.keys():
@@ -214,7 +215,7 @@ class Results:
                 "Either both of none of pipelines and process_pipeline must be specified."
             )
 
-        with h5py.File(self.filepath, "r") as f:
+        with _open_lock(self.filepath, "r") as f:
             for digest, p_group in f.items():
                 # skip if not in pipeline list
                 if (pipelines is not None) and (digest not in digests):
@@ -289,7 +290,7 @@ class Results:
             True if the pipeline has already been computed for the given
             dataset and subject, False otherwise.
         """
-        with h5py.File(self.filepath, "r") as f:
+        with _open_lock(self.filepath, "r") as f:
             # get the digest from repr
             digest = get_pipeline_digest(process_pipeline, pipeline)
 

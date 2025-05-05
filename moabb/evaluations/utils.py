@@ -7,6 +7,8 @@ from typing import Sequence
 from numpy import argmax
 from sklearn.pipeline import Pipeline
 
+from moabb.testing import _open_lock
+
 
 try:
     from optuna.distributions import CategoricalDistribution
@@ -83,10 +85,10 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                     f_criterion=Path(save_path) / f"{file_step}_criterion.pkl",
                 )
             else:
-                with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
+                with _open_lock((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
                     dump(step, file, protocol=HIGHEST_PROTOCOL)
     else:
-        with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
+        with _open_lock((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
             dump(model, file, protocol=HIGHEST_PROTOCOL)
 
 
@@ -200,7 +202,7 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
     """
     if not optuna_available:
         raise ImportError(
-            "Optuna is not available. Please install it optuna " "and optuna-integration."
+            "Optuna is not available. Please install it optuna and optuna-integration."
         )
     else:
         optuna_params = {}

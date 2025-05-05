@@ -3,9 +3,14 @@ import json
 import os
 import os.path as op
 
+import h5py
 from mne.utils._logging import logger, warn
 from mne.utils.check import _soft_import, _validate_type
-from mne.utils.config import _known_config_types, _known_config_wildcards, get_config_path
+from mne.utils.config import (
+    _known_config_types,
+    _known_config_wildcards,
+    get_config_path,
+)
 
 
 @contextlib.contextmanager
@@ -41,8 +46,13 @@ def _open_lock(path, *args, **kwargs):
     # It is important to acquire the lock *before* opening the file to
     # avoid race conditions.
     with lock_context:
-        with open(path, *args, **kwargs) as fid:
-            yield fid
+        # FIX This doesn't seem ideal at all
+        if "hdf5" in str(path):
+            with h5py.File(path, *args, **kwargs) as fid:
+                yield fid
+        else:
+            with open(path, *args, **kwargs) as fid:
+                yield fid
 
 
 def get_config(key=None, default=None, raise_error=False, home_dir=None, use_env=True):
@@ -160,36 +170,40 @@ def set_config(key, value, home_dir=None, set_env=True):
     ):
         warn(f'Setting non-standard config type: "{key}"')
 
-    # Read all previous values
     config_path = get_config_path(home_dir=home_dir)
-    if op.isfile(config_path):
-        config = _load_config(config_path, raise_error=True)
-    else:
-        config = dict()
-        logger.info(
-            f"Attempting to create new mne-python configuration file:\n{config_path}"
-        )
-    if value is None:
-        config.pop(key, None)
-        if set_env and key in os.environ:
-            del os.environ[key]
-    else:
-        config[key] = value
-        if set_env:
-            os.environ[key] = value
-        if key == "MNE_BROWSER_BACKEND":
-            from ..viz._figure import set_browser_backend
+    filelock = _soft_import("filelock", purpose="parallel integration", strict=False)
+    lock_path = f"{config_path}.lock"
+    lock = filelock.FileLock(lock_path, timeout=5)
+    lock.acquire()
+    try:
+        if op.isfile(config_path) and os.stat(config_path).st_size != 0:
+            with open(config_path, "r") as json_file:
+                config = json.load(json_file)
+        else:
+            config = dict()
+            logger.info(
+                f"Attempting to create new mne-python configuration file:\n{config_path}"
+            )
+        if value is None:
+            config.pop(key, None)
+            if set_env and key in os.environ:
+                del os.environ[key]
+        else:
+            config[key] = value
+            if set_env:
+                os.environ[key] = value
+            if key == "MNE_BROWSER_BACKEND":
+                from ..viz._figure import set_browser_backend
 
-            set_browser_backend(value)
-
-    # Write all values. This may fail if the default directory is not
-    # writeable.
-    directory = op.dirname(config_path)
-    if not op.isdir(directory):
-        os.mkdir(directory)
-    # Write the JSON config file under lock so that concurrent access is serialized.
-    with _open_lock(config_path, "w") as fid:
-        json.dump(config, fid, sort_keys=True, indent=0)
+                set_browser_backend(value)
+        directory = op.dirname(config_path)
+        if not op.isdir(directory):
+            os.mkdir(directory)
+        # Write the JSON config file under lock so that concurrent access is serialized.
+        with open(config_path, "w") as json_file:
+            json.dump(config, json_file, sort_keys=True, indent=0)
+    finally:
+        lock.release()
 
 
 def _load_config(config_path, raise_error=False):
