@@ -222,18 +222,20 @@ class BaseEvaluation(ABC):
             )
             for dataset in self.datasets
         ]
+
         # Parallel processing...
         parallel_results = Parallel(
-            n_jobs=self.n_jobs, return_as="generator",
+            n_jobs=self.n_jobs,
+            return_as="generator",
         )(
-```suggestion
             delayed(self.evaluate)(
                 dataset,
                 pipelines,
                 param_grid=param_grid,
                 process_pipeline=process_pipeline,
                 postprocess_pipeline=postprocess_pipeline,
-            ) for dataset, process_pipeline in processing_params
+            )
+            for dataset, process_pipeline in processing_params
         )
 
         res_per_db = []
