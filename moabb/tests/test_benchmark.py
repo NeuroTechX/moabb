@@ -1,4 +1,3 @@
-import shutil
 from pathlib import Path
 
 import pytest
@@ -9,16 +8,10 @@ from moabb.evaluations.base import optuna_available
 
 
 class TestBenchmark:
-    @classmethod
-    def setup_class(cls):
-        cls.pp_dir = Path.cwd() / Path("moabb/tests/test_pipelines/")
+    def setup_method(self):
+        self.pp_dir = Path.cwd() / Path("moabb/tests/test_pipelines/")
 
-    @classmethod
-    def teardown_class(cls):
-        rep_dir = Path.cwd() / Path("benchmark/")
-        shutil.rmtree(rep_dir)
-
-    def test_benchmark_strdataset(self):
+    def test_benchmark_strdataset(self, tmp_path):
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
@@ -29,10 +22,12 @@ class TestBenchmark:
                 "FakeDataset-cvep-10-2--60-60--120-120--10-00--c3-cz-c4",
             ],
             overwrite=True,
+            results=str(tmp_path / "results"),
+            output=str(tmp_path / "benchmark"),
         )
         assert len(res) == 80
 
-    def test_benchmark_objdataset(self):
+    def test_benchmark_objdataset(self, tmp_path):
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
@@ -43,6 +38,8 @@ class TestBenchmark:
                 FakeDataset(["1.0", "0.0"], paradigm="cvep"),
             ],
             overwrite=True,
+            results=str(tmp_path / "results"),
+            output=str(tmp_path / "benchmark"),
         )
         assert len(res) == 80
 
@@ -54,13 +51,16 @@ class TestBenchmark:
                 overwrite=True,
             )
 
-    def test_selectparadigm(self):
+    def test_selectparadigm(self, tmp_path):
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             paradigms=["FakeImageryParadigm"],
             overwrite=True,
+            results=str(tmp_path / "results"),
+            output=str(tmp_path / "benchmark"),
         )
+
         assert len(res) == 40
 
     def test_include_exclude(self):
@@ -72,7 +72,7 @@ class TestBenchmark:
                 overwrite=True,
             )
 
-    def test_optuna(self):
+    def test_optuna(self, tmp_path):
         if not optuna_available:
             pytest.skip("Optuna is not installed")
         res = benchmark(
@@ -81,5 +81,7 @@ class TestBenchmark:
             paradigms=["FakeImageryParadigm"],
             overwrite=True,
             optuna=True,
+            results=str(tmp_path / "results"),
+            output=str(tmp_path / "benchmark"),
         )
         assert len(res) == 40

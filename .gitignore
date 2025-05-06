@@ -93,6 +93,7 @@ ENV/
 
 # PyCharm
 .idea/
+.vscode/
 
 # Rope project settings
 .ropeproject
@@ -125,4 +126,6 @@ docs/source/api/
 examples/advanced_examples/Results/
 examples/benchmark/
 examples/results/
+# by the tests
+res_test/
 /.conda
