@@ -109,7 +109,6 @@ class BaseEvaluation(ABC):
         self.cache_config = cache_config
         self.optuna = optuna
         self.time_out = time_out
-        self.n_jobs_inner = 5
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -223,10 +222,9 @@ class BaseEvaluation(ABC):
             )
             for dataset in self.datasets
         ]
-        n_jobs = 1
         # Parallel processing...
         parallel_results = Parallel(
-            n_jobs=n_jobs, return_as="generator", verbose=10, backend="loky"
+            n_jobs=self.n_jobs, return_as="generator", verbose=10, backend="loky"
         )(
             delayed(
                 lambda dataset_processor: list(
