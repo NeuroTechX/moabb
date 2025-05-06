@@ -216,7 +216,7 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
         return optuna_params
 
 
-def check_search_avaliable():
+def check_search_available():
     """Check if optuna is available"""
     try:
         from optuna.integration import OptunaSearchCV

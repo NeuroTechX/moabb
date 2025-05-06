@@ -10,12 +10,12 @@ from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import (
     _convert_sklearn_params_to_optuna,
-    check_search_avaliable,
+    check_search_available,
 )
 from moabb.paradigms.base import BaseParadigm
 
 
-search_methods, optuna_available = check_search_avaliable()
+search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
@@ -224,23 +224,16 @@ class BaseEvaluation(ABC):
         ]
         # Parallel processing...
         parallel_results = Parallel(
-            n_jobs=self.n_jobs, return_as="generator", verbose=10, backend="loky"
+            n_jobs=self.n_jobs, return_as="generator",
         )(
-            delayed(
-                lambda dataset_processor: list(
-                    self.evaluate(
-                        dataset_processor[0],  # dataset
-                        pipelines,
-                        param_grid=param_grid,
-                        process_pipeline=dataset_processor[1],
-                        # process_pipeline
-                        postprocess_pipeline=postprocess_pipeline,
-                    )
-                )
-            )(
-                params
-            )  # Pass parameters here
-            for params in processing_params
+```suggestion
+            delayed(self.evaluate)(
+                dataset,
+                pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+                postprocess_pipeline=postprocess_pipeline,
+            ) for dataset, process_pipeline in processing_params
         )
 
         res_per_db = []
