@@ -543,7 +543,6 @@ class _BaseDatasetPlotter:
                 scale_ax=False,
                 **self.kwargs,
             )
-        fig.tight_layout()
         return fig
 
 

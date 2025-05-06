@@ -7,6 +7,7 @@ import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline
+from sklearn.utils._estimator_html_repr import _VisualBlock
 
 
 log = logging.getLogger(__name__)
@@ -35,6 +36,7 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         for _, t in transformers:
             assert hasattr(t, "transform")
         self.transformers = transformers
+        self._is_fitted = True
 
     def transform(self, X, y=None):
         return OrderedDict([(n, t.transform(X)) for n, t in self.transformers])
@@ -43,10 +45,37 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         for _, t in self.transformers:
             t.fit(X)
 
+    def _sk_visual_block_(self):
+        """Tell sklearn’s diagrammer to lay us out in parallel."""
+        names, estimators = zip(*self.transformers)
+        return _VisualBlock(
+            kind="parallel",
+            estimators=list(estimators),
+            names=list(names),
+            name_caption=self.__class__.__name__,
+            dash_wrapped=True,
+        )
+
 
 class FixedTransformer(TransformerMixin, BaseEstimator):
+    def __init__(self):
+        self._is_fitted = True
+        # fixing transformers that are not fitted
+        # to avoid the warning "This estimator has not been fitted yet"
+        # when using the pipeline
+
     def fit(self, X, y=None):
         pass
+
+    def _sk_visual_block_(self):
+        """Tell sklearn’s diagrammer to lay us out in parallel."""
+        return _VisualBlock(
+            kind="parallel",
+            name_caption=str(self.__class__.__name__),
+            estimators=[str(self.get_params())],
+            name_details=str(self.__class__.__name__),
+            dash_wrapped=True,
+        )
 
 
 class SetRawAnnotations(FixedTransformer):
@@ -277,9 +306,29 @@ class RawToEpochs(FixedTransformer):
         return epochs
 
 
+class NamedFunctionTransformer(FunctionTransformer):
+    def __init__(self, func, *, display_name=None, validate=False, **kwargs):
+        super().__init__(func=func, validate=validate, **kwargs)
+        self.display_name = display_name
+        self._display_name = display_name or getattr(func, "__name__", "<func>")
+        self._kwargs = {"name": getattr(func, "__name__", "<func>")}
+
+    def __repr__(self):
+        return self._display_name
+
+    def _sk_visual_block_(self):
+        return _VisualBlock(
+            kind="single",
+            estimators=self,
+            names=self._display_name,
+            name_details=str(self._kwargs),
+            dash_wrapped=False,
+        )
+
+
 def get_filter_pipeline(fmin, fmax):
-    return FunctionTransformer(
-        methodcaller(
+    return NamedFunctionTransformer(
+        func=methodcaller(
             "filter",
             l_freq=fmin,
             h_freq=fmax,
@@ -287,16 +336,28 @@ def get_filter_pipeline(fmin, fmax):
             picks="data",
             verbose=False,
         ),
+        display_name=f"Band Pass Filter ({fmin}–{fmax} Hz)",
     )
 
 
 def get_crop_pipeline(tmin, tmax):
-    return FunctionTransformer(
-        methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "crop",
+            tmin=tmin,
+            tmax=tmax,
+            verbose=False,
+        ),
+        display_name=f"Crop ({tmin}–{tmax} s)",
     )
 
 
 def get_resample_pipeline(sfreq):
-    return FunctionTransformer(
-        methodcaller("resample", sfreq=sfreq, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "resample",
+            sfreq=sfreq,
+            verbose=False,
+        ),
+        display_name=f"Resample ({sfreq} Hz)",
     )
