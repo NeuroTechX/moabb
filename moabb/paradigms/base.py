@@ -284,7 +284,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             A dataframe containing the metadata.
         """
 
-        if not return_epochs and not return_raws and process_pipelines is not None:
+        if (return_epochs or return_raws) and process_pipelines is not None:
             message = "The process_pipelines parameter can not used when return_epochs and \
                         return_raws are not the default values"
 
