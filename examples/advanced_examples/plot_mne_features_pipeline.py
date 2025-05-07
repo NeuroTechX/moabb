@@ -109,16 +109,17 @@ results = evaluation.process(pipelines)
 # ----------------
 #
 # The following plot shows a comparison of the three classification pipelines
-# for each subject. We can see that for all subjects, the pipeline using
+# for each subject. We can see that subjects 1 and 3, the pipeline using
 # only the variance performs best. Perhaps this is because the variance is
 # less sensitive to noise than the peak-to-peak amplitude, as the variance
 # is computed over the whole epoch, whereas the peak-to-peak amplitude
 # only considers the two most extreme data points (which could be outliers).
-# The pipeline using both peak-to-peak amplitude and variance outperforms
-# the pipeline with only peak-to-peak amplitude, but still does worse than
-# the pipeline using only variance. This might be because using both
+# For subject 2, the peak-to-peak amplitude pipeline works best.
+# In general, the pipeline using both peak-to-peak amplitude and variance
+# has a mediocre performance, never beating the best single-feature pipeline
+# in this experiment. This might be because using both
 # variance and peak-to-peak amplitude increases the data dimensionality,
-# resulting in increased overfitting.
+# without adding a lot of new information, resulting in increased overfitting.
 
 results["subj"] = [str(resi).zfill(2) for resi in results["subject"]]
 g = sns.catplot(
