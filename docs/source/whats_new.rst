@@ -28,7 +28,7 @@ Enhancements
 - Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
 - Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
 - Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_ and `Bruno Aristimunha`_)
-
+- Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
