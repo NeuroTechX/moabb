@@ -232,6 +232,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         return_raws=False,
         cache_config=None,
         postprocess_pipeline=None,
+        process_pipelines=None,
     ):
         """
         Return the data for a list of subject.
@@ -265,6 +266,11 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             This pipeline must return an ``np.ndarray``.
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
+        process_pipelines: Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This is mutually exclusive with the default return_epochs and
+            return_raws parameters. You can not use it if you have return_epochs or
+            return_raws set to True. Only use it if you know what you are doing.
 
         Returns
         -------
@@ -278,6 +284,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             A dataframe containing the metadata.
         """
 
+        if not return_epochs and not return_raws and process_pipelines is not None:
+            message = "The process_pipelines parameter can not used when return_epochs and \
+                        return_raws are not the default values"
+
+            raise ValueError(message)
+
         if not self.is_valid(dataset):
             message = f"Dataset {dataset.code} is not valid for paradigm"
             raise AssertionError(message)
@@ -285,9 +297,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         if subjects is None:
             subjects = dataset.subject_list
 
-        process_pipelines = self.make_process_pipelines(
-            dataset, return_epochs, return_raws, postprocess_pipeline
-        )
+        if process_pipelines is None:
+
+            process_pipelines = self.make_process_pipelines(
+                dataset, return_epochs, return_raws, postprocess_pipeline
+            )
+
         labels_pipeline = self.make_labels_pipeline(dataset, return_epochs, return_raws)
 
         data = [
