@@ -45,7 +45,7 @@ warnings.filterwarnings("ignore")
 # -------------------------------------
 #
 # Here, we closely follow Tutorial 3, but we create pipelines using features
-# extracted using the mne-features library. We instantiate the three different
+# extracted using the mne-features library [1]_. We instantiate the three different
 # classiciation pipelines to be considered in the analysis.
 # See the mne-features docs to learn more about the available features:
 # https://mne.tools/mne-features/api.html#api-documentation
@@ -54,8 +54,9 @@ warnings.filterwarnings("ignore")
 #######################################################################
 # Feature Details
 # ---------------
-# We will use the ``FeatureExtractor`` to compute features. Here, we select
-# two simple features: ``variance`` and ``ptp_amp`` (peak-to-peak amplitude).
+# We will use the `FeatureExtractor <https://mne.tools/mne-features/generated/mne_features.feature_extraction.FeatureExtractor.html>`__
+# to compute features. Here, we select two simple features:
+# ``variance`` and ``ptp_amp`` (peak-to-peak amplitude).
 #
 # **Variance:**
 # Computed per channel (``c``). It measures the spread of the signal values
@@ -77,6 +78,14 @@ ptp_amp = FeatureExtractor(sfreq, ["ptp_amp"])
 # We can also extract several features by passing more than one feature.
 both = FeatureExtractor(sfreq, ["ptp_amp", "variance"])
 
+#######################################################################
+# Pipelines with ``FeatureExtractor``
+# ---------------
+# The ``FeatureExtractor``from mne-features is scikit-learn compatible and
+# can therefore be used directly in our pipelines. Here, these transformer
+# steps perform feature extraction, reducing the dimensionality of the data.
+# We train an LDA classifier to classify our data as left- or right hand
+# based on the extracted signal.
 pipelines = {}
 pipelines["var+LDA"] = make_pipeline(variance, LDA())
 pipelines["ptp_amp+LDA"] = make_pipeline(ptp_amp, LDA())
@@ -100,7 +109,16 @@ results = evaluation.process(pipelines)
 # ----------------
 #
 # The following plot shows a comparison of the three classification pipelines
-# for each subject of each dataset.
+# for each subject. We can see that for all subjects, the pipeline using
+# only the variance performs best. Perhaps this is because the variance is
+# less sensitive to noise than the peak-to-peak amplitude, as the variance
+# is computed over the whole epoch, whereas the peak-to-peak amplitude
+# only considers the two most extreme data points (which could be outliers).
+# The pipeline using both peak-to-peak amplitude and variance outperforms
+# the pipeline with only peak-to-peak amplitude, but still does worse than
+# the pipeline using only variance. This might be because using both
+# variance and peak-to-peak amplitude increases the data dimensionality,
+# resulting in increased overfitting.
 
 results["subj"] = [str(resi).zfill(2) for resi in results["subject"]]
 g = sns.catplot(
@@ -121,4 +139,4 @@ plt.show()
 # References
 # -----------
 #
-# .. [1] https://mne.tools/mne-features/index.html
+# .. [1] Schiratti, J. B., Le Douget, J. E., Le Van Quyen, M., Essid, S., & Gramfort, A. (2018, April). An ensemble learning approach to detect epileptic seizures from long intracranial EEG recordings. In 2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) (pp. 856-860). IEEE.
