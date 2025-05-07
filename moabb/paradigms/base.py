@@ -285,18 +285,19 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             A dataframe containing the metadata.
         """
 
+
 if process_pipelines is not None:
     output_step_type, _ = process_pipelines[0].steps[-1]
     if (
-            (output_step_type==StepType.ARRAY and (return_epochs or return_raws)) or
-            (output_step_type==StepType.EPOCH and not return_epochs) or
-            (output_step_type==StepType.RAW and not return_raws)
+        (output_step_type == StepType.ARRAY and (return_epochs or return_raws))
+        or (output_step_type == StepType.EPOCH and not return_epochs)
+        or (output_step_type == StepType.RAW and not return_raws)
     ):
         raise ValueError(
             f"process_pipeline output step type {output_step_type} incompatible with "
             f"arguments {return_epochs=} and {return_raws=}."
         )
-        
+
         if not self.is_valid(dataset):
             message = f"Dataset {dataset.code} is not valid for paradigm"
             raise AssertionError(message)
