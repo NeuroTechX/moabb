@@ -268,9 +268,10 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             i.e. no call to ``fit`` will be made.
         process_pipelines: Pipeline | None
             Optional pipeline to apply to the data after the preprocessing.
-            This is mutually exclusive with the default return_epochs and
-            return_raws parameters. You can not use it if you have return_epochs or
-            return_raws set to True. Only use it if you know what you are doing.
+            You must set the ``return_epochs`` and ``return_raws` parameters
+            accordingly, i.e., if your custom pipeline returns raw objects,
+            you must also set ``return_raws=True``, otherwise you will get unexpected results.
+            Only use it if you know what you are doing.
 
         Returns
         -------
@@ -284,12 +285,18 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             A dataframe containing the metadata.
         """
 
-        if (return_epochs or return_raws) and process_pipelines is not None:
-            message = "The process_pipelines parameter can not used when return_epochs and \
-                        return_raws are not the default values"
-
-            raise ValueError(message)
-
+if process_pipelines is not None:
+    output_step_type, _ = process_pipelines[0].steps[-1]
+    if (
+            (output_step_type==StepType.ARRAY and (return_epochs or return_raws)) or
+            (output_step_type==StepType.EPOCH and not return_epochs) or
+            (output_step_type==StepType.RAW and not return_raws)
+    ):
+        raise ValueError(
+            f"process_pipeline output step type {output_step_type} incompatible with "
+            f"arguments {return_epochs=} and {return_raws=}."
+        )
+        
         if not self.is_valid(dataset):
             message = f"Dataset {dataset.code} is not valid for paradigm"
             raise AssertionError(message)
@@ -298,7 +305,6 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             subjects = dataset.subject_list
 
         if process_pipelines is None:
-
             process_pipelines = self.make_process_pipelines(
                 dataset, return_epochs, return_raws, postprocess_pipeline
             )
