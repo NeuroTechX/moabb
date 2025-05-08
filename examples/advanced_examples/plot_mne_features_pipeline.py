@@ -81,7 +81,7 @@ both = FeatureExtractor(sfreq, ["ptp_amp", "variance"])
 #######################################################################
 # Pipelines with ``FeatureExtractor``
 # ---------------
-# The ``FeatureExtractor``from mne-features is scikit-learn compatible and
+# The ``FeatureExtractor`` from mne-features is scikit-learn compatible and
 # can therefore be used directly in our pipelines. Here, these transformer
 # steps perform feature extraction, reducing the dimensionality of the data.
 # We train an LDA classifier to classify our data as left- or right hand
@@ -115,6 +115,7 @@ results = evaluation.process(pipelines)
 # is computed over the whole epoch, whereas the peak-to-peak amplitude
 # only considers the two most extreme data points (which could be outliers).
 # For subject 2, the peak-to-peak amplitude pipeline works best.
+#
 # In general, the pipeline using both peak-to-peak amplitude and variance
 # has a mediocre performance, never beating the best single-feature pipeline
 # in this experiment. This might be because using both
