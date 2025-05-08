@@ -115,6 +115,7 @@ results = evaluation.process(pipelines)
 # is computed over the whole epoch, whereas the peak-to-peak amplitude
 # only considers the two most extreme data points (which could be outliers).
 # For subject 2, the peak-to-peak amplitude pipeline works best.
+#
 # In general, the pipeline using both peak-to-peak amplitude and variance
 # has a mediocre performance, never beating the best single-feature pipeline
 # in this experiment. This might be because using both
