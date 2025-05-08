@@ -68,8 +68,8 @@ dataset = BNCI2014_001()
 # Restrict to a few subjects to keep runtime reasonable for demonstration
 dataset.subject_list = [1, 2, 3]
 
-# Define the paradigm: here, left vs right hand imagery, filtered 8–35 Hz
-paradigm = LeftRightImagery(fmin=8, fmax=35)
+# Define the paradigm: here, left vs right hand imagery
+paradigm = LeftRightImagery()
 
 ###############################################################################
 #  Extract data: epochs (X), labels (y), and trial metadata (meta)
