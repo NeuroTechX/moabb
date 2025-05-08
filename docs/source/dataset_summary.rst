@@ -15,6 +15,11 @@ documentation.
 Do not hesitate to help us complete this list. It is also possible to add new datasets,
 there is a tutorial explaining how to do so, and we welcome warmly any new contributions!
 
+It is possible to use an external dataset within MOABB as long as it is in Brain Imaging Data Structure (BIDS) format.
+See this `guide <https://bids-specification.readthedocs.io/en/stable/#:~:text=The%20Brain%20Imaging%20Data%20Structure%20(BIDS)%20is%20a%20simple%20and,to%20help%20implement%20the%20standard.>` for more information on how to structure your data according to BIDS
+You can use this `class <https://moabb.neurotechx.com/docs/api/generated/moabb.datasets.base.LocalBIDSDataset.html#moabb.datasets.base.LocalBIDSDataset>` to convert your local dataset to work within MOABB without creating a new dataset class.
+
+git push origin your-branch-name
 See also `Datasets-Support <https://github.com/NeuroTechX/moabb/wiki/Datasets-Support>`__ for supplementary
 detail on datasets (class name, size, licence, etc.)
 Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials, PapersWithCode leaderboard
