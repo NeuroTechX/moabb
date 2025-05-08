@@ -289,7 +289,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             output_step_type, _ = process_pipelines.steps[-1]
             if (
                 (output_step_type == StepType.ARRAY and (return_epochs or return_raws))
-                or (output_step_type == StepType.EPOCH and not return_epochs)
+                or (output_step_type == StepType.EPOCHS and not return_epochs)
                 or (output_step_type == StepType.RAW and not return_raws)
             ):
                 raise ValueError(
