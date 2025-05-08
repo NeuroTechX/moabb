@@ -27,6 +27,7 @@ Enhancements
 - Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
 - Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
 - Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
+- Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch` and `Bruno Aristimunha`_)
 - Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
 
 Bugs
@@ -36,6 +37,7 @@ Bugs
 - Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
 - Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
 - Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
+- Fix code carbon example code (:gh:`777` by `Amar Enkhbat`_)
 
 API changes
 ~~~~~~~~~~~
@@ -553,3 +555,7 @@ API changes
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
 .. _Samuel Boehm: https://github.com/Samuel-Boehm
+.. _Amar Enkhbat https://github.com/amar-enkhbat
+.. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
+.. _Luuk Neervens: https://github.com/LuukNeervens
+.. _Charlynn van Osch: https://github.com/charlynnvanosch
