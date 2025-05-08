@@ -10,21 +10,13 @@ In this notebook, we demonstrate how to:
   3. Build a CSP+LDA pipeline for classification
   4. Use WithinSessionSplitter to create train/test splits _within_ each session
   5. Manually run a training/testing loop and collect fold-wise scores
+  6. Visualize 
 
-# Authors: G5
+# Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven
 # License: BSD (3-clause)
 """
-
-#: Suppress warnings and enable informative logging
 import warnings
-
-
-warnings.filterwarnings("ignore")
 import moabb
-
-
-moabb.set_log_level("info")
-
 import matplotlib.pyplot as plt
 
 #: Standard imports
@@ -41,6 +33,9 @@ from moabb.datasets import BNCI2014_001
 from moabb.evaluations.splitters import WithinSessionSplitter
 from moabb.paradigms import LeftRightImagery
 
+#: Suppress warnings and enable informative logging
+warnings.filterwarnings("ignore")
+moabb.set_log_level("info")
 
 ###############################################################################
 #: 1. Load the dataset and paradigm
