@@ -81,7 +81,7 @@ both = FeatureExtractor(sfreq, ["ptp_amp", "variance"])
 #######################################################################
 # Pipelines with ``FeatureExtractor``
 # ---------------
-# The ``FeatureExtractor``from mne-features is scikit-learn compatible and
+# The ``FeatureExtractor`` from mne-features is scikit-learn compatible and
 # can therefore be used directly in our pipelines. Here, these transformer
 # steps perform feature extraction, reducing the dimensionality of the data.
 # We train an LDA classifier to classify our data as left- or right hand
