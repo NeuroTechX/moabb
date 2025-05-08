@@ -1,29 +1,39 @@
 """
-:meta public:
 =====================================================
 Tutorial: Within-Session Splitting on Real MI Dataset
 =====================================================
-
-In this notebook, we demonstrate how to:
-  1. Why would i want to Split my data within a session?
-  2. Load a real motor imagery dataset (BNCI2014_001)
-  3. Extract epochs, labels, and metadata via a paradigm
-  4. Build a CSP+LDA pipeline for classification
-  5. Use WithinSessionSplitter to create train/test splits _within_ each session
-  6. Manually run a training/testing loop and collect fold-wise scores
-  7  Summary of results
-  8. Plot results
-
 # Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven
 # License: BSD (3-clause)
 """
 
 ###############################################################################
-# 1. Why would i want to Split my data within a session?
+#  Why would I want to split my data within a session?
 ###############################################################################
-# In short beacause we want to prevent the model recognizing the subject and learning the subject representation instead of the task at hand.
+# In short, because we want to prevent the model from recognizing the subject
+# and learning subject-specific representations instead of focusing on the task at hand.
 #
-
+# In brain-computer interface (BCI) research, careful data splitting is critical.
+# A naive train_test_split can easily lead to misleading results, especially in small EEG datasets,
+# where models may accidentally learn to recognize subjects instead of decoding the actual brain task.
+# Each brain produces unique signals, and unless we're careful, the model can exploit these as shortcuts —
+# leading to artificially high test accuracy that doesn’t generalize in practice.
+#
+# To avoid this, we use within-session splitting, where training and testing are done
+# on different trials from the same session. This ensures the model is evaluated under realistic,
+# consistent conditions while still preventing overfitting to trial-specific noise.
+#
+# This approach forms a critical foundation in the MOABB evaluation framework,
+# which supports three levels of model generalization:
+#
+#     - Within-session: test generalization across trials within a single session
+#     - Cross-session: test generalization across different recording sessions
+#     - Cross-subject: test generalization across different brains
+#
+# Each level decreases in specialization, moving from highly subject-specific models
+# to those that can generalize across individuals.
+#
+# This tutorial focuses on within-session evaluation to establish a reliable
+# baseline for model performance before attempting more challenging generalization tasks.
 
 import warnings
 
@@ -51,7 +61,7 @@ warnings.filterwarnings("ignore")
 moabb.set_log_level("info")
 
 ###############################################################################
-# 2. Load the dataset and paradigm
+#  Load the dataset and paradigm
 ###############################################################################
 # We use the BNCI2014_001 dataset: BCI Comp IV dataset 2a (motor imagery)
 dataset = BNCI2014_001()
@@ -62,7 +72,7 @@ dataset.subject_list = [1, 2, 3]
 paradigm = LeftRightImagery(fmin=8, fmax=35)
 
 ###############################################################################
-# 3. Extract data: epochs (X), labels (y), and trial metadata (meta)
+#  Extract data: epochs (X), labels (y), and trial metadata (meta)
 ###############################################################################
 # This call downloads (if needed), preprocesses, epochs, and labels the data
 X, y, meta = paradigm.get_data(dataset=dataset, subjects=dataset.subject_list)
@@ -74,7 +84,7 @@ print("meta shape (trials, info columns):", meta.shape)
 print(meta.head())  # shows subject/session for each trial
 
 ###############################################################################
-# 4. Build a classification pipeline: CSP to LDA
+#  Build a classification pipeline: CSP to LDA
 ###############################################################################
 # CSP finds spatial filters that maximize variance difference between classes
 # LDA is a simple linear classifier on the CSP features
@@ -85,7 +95,7 @@ pipe = make_pipeline(
 print("Pipeline steps:", pipe.named_steps)
 
 ###############################################################################
-# 5. Instantiate WithinSessionSplitter
+#  Instantiate WithinSessionSplitter
 ###############################################################################
 # We want 5-fold CV _within_ each subject × session grouping
 wss = WithinSessionSplitter(n_folds=5, shuffle=True, random_state=404)
@@ -100,7 +110,7 @@ if wss.get_n_splits(meta) == 0:
     raise RuntimeError("No splits generated: check that each subject has ≥2 sessions.")
 
 ###############################################################################
-# 6. Manual evaluation loop: train/test each fold
+#  Manual evaluation loop: train/test each fold
 ###############################################################################
 # We'll collect one row per fold: which subject/session was held out and its score
 records = []
@@ -136,7 +146,7 @@ df = pd.DataFrame(records)
 print(df.head())
 
 ###############################################################################
-# 7. Summary of results
+#  Summary of results
 ###############################################################################
 # We can quickly see per-subject, per-session performance:
 summary = df.groupby(["subject", "session"])["score"].agg(["mean", "std"]).reset_index()
@@ -147,7 +157,7 @@ print(summary)
 # but here we print them to focus on the splitting logic itself.
 
 ##########################################################################
-# 6. Plot results
+#  Plot results
 ##########################################################################
 
 
