@@ -3,29 +3,23 @@ from abc import ABC, abstractmethod
 from warnings import warn
 
 import pandas as pd
+from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
-from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
-from moabb.evaluations.utils import _convert_sklearn_params_to_optuna
+from moabb.evaluations.utils import (
+    _convert_sklearn_params_to_optuna,
+    check_search_available,
+)
 from moabb.paradigms.base import BaseParadigm
 
+
+search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
 # Making the optuna soft dependency
-try:
-    from optuna.integration import OptunaSearchCV
-
-    optuna_available = True
-except ImportError:
-    optuna_available = False
-
-if optuna_available:
-    search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
-else:
-    search_methods = {"grid": GridSearchCV}
 
 
 class BaseEvaluation(ABC):
@@ -201,7 +195,6 @@ class BaseEvaluation(ABC):
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
 
-
         Returns
         -------
         results: pd.DataFrame
@@ -216,26 +209,43 @@ class BaseEvaluation(ABC):
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
-        res_per_db = []
-        for dataset in self.datasets:
-            log.info("Processing dataset: {}".format(dataset.code))
-            process_pipeline = self.paradigm.make_process_pipelines(
+        # Prepare dataset processing parameters
+        processing_params = [
+            (
                 dataset,
-                return_epochs=self.return_epochs,
-                return_raws=self.return_raws,
-                postprocess_pipeline=postprocess_pipeline,
-            )[0]
-            # (we only keep the pipeline for the first frequency band, better ideas?)
+                self.paradigm.make_process_pipelines(
+                    dataset,
+                    return_epochs=self.return_epochs,
+                    return_raws=self.return_raws,
+                    postprocess_pipeline=postprocess_pipeline,
+                )[0],
+            )
+            for dataset in self.datasets
+        ]
 
-            results = self.evaluate(
+        # Parallel processing...
+        parallel_results = Parallel(
+            n_jobs=self.n_jobs,
+            return_as="generator",
+        )(
+            delayed(self.evaluate)(
                 dataset,
                 pipelines,
                 param_grid=param_grid,
                 process_pipeline=process_pipeline,
                 postprocess_pipeline=postprocess_pipeline,
             )
+            for dataset, process_pipeline in processing_params
+        )
+
+        res_per_db = []
+        # Process results in order
+        for (dataset, process_pipeline), results in zip(
+            processing_params, parallel_results
+        ):
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
+
             res_per_db.append(
                 self.results.to_dataframe(
                     pipelines=pipelines, process_pipeline=process_pipeline
