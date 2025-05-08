@@ -4,7 +4,7 @@ Tutorial 6: Setting BIDS Metainfo
 ====================================
 """
 
-# Authors: Inga Schöyen, Femke, Loekie
+# Authors: Inga Schöyen, Loekie Slütter, Femke van Venrooij
 # 
 # In this tutorial, we will show how to use the bids_metainfo function 
 # to set the metadata for a BIDS dataset using json
@@ -12,7 +12,7 @@ Tutorial 6: Setting BIDS Metainfo
 #  and returns the metainfo as a json dictionary
 # 
 # 
-# [github link]
+#
 
 import tempfile
 import Path
