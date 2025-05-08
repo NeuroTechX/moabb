@@ -5,57 +5,66 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 =====================================================
 
 In this notebook, we demonstrate how to:
-  1. Load a real motor imagery dataset (BNCI2014_001)
-  2. Extract epochs, labels, and metadata via a paradigm
-  3. Build a CSP+LDA pipeline for classification
-  4. Use WithinSessionSplitter to create train/test splits _within_ each session
-  5. Manually run a training/testing loop and collect fold-wise scores
-  6. Visualize
+  1. Why would i want to Split my data within a session?
+  2. Load a real motor imagery dataset (BNCI2014_001)
+  3. Extract epochs, labels, and metadata via a paradigm
+  4. Build a CSP+LDA pipeline for classification
+  5. Use WithinSessionSplitter to create train/test splits _within_ each session
+  6. Manually run a training/testing loop and collect fold-wise scores
+  7  Summary of results
+  8. Plot results
 
 # Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven
 # License: BSD (3-clause)
 """
 
+###############################################################################
+# 1. Why would i want to Split my data within a session?
+###############################################################################
+# In short beacause we want to prevent the model recognizing the subject and learning the subject representation instead of the task at hand.
+#
+
+
 import warnings
 
 import matplotlib.pyplot as plt
 
-#: Standard imports
+# Standard imports
 import pandas as pd
 import seaborn as sns
 
-#: MNE + sklearn for pipeline
+# MNE + sklearn for pipeline
 from mne.decoding import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
 
-#: MOABB components
+# MOABB components
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations.splitters import WithinSessionSplitter
 from moabb.paradigms import LeftRightImagery
 
 
-#: Suppress warnings and enable informative logging
+# Suppress warnings and enable informative logging
 warnings.filterwarnings("ignore")
 moabb.set_log_level("info")
 
 ###############################################################################
-#: 1. Load the dataset and paradigm
+# 2. Load the dataset and paradigm
 ###############################################################################
-#: We use the BNCI2014_001 dataset: BCI Comp IV dataset 2a (motor imagery)
+# We use the BNCI2014_001 dataset: BCI Comp IV dataset 2a (motor imagery)
 dataset = BNCI2014_001()
-#: Restrict to a few subjects to keep runtime reasonable for demonstration
+# Restrict to a few subjects to keep runtime reasonable for demonstration
 dataset.subject_list = [1, 2, 3]
 
-#: Define the paradigm: here, left vs right hand imagery, filtered 8–35 Hz
+# Define the paradigm: here, left vs right hand imagery, filtered 8–35 Hz
 paradigm = LeftRightImagery(fmin=8, fmax=35)
 
 ###############################################################################
-#: 2. Extract data: epochs (X), labels (y), and trial metadata (meta)
+# 3. Extract data: epochs (X), labels (y), and trial metadata (meta)
 ###############################################################################
-#: This call downloads (if needed), preprocesses, epochs, and labels the data
+# This call downloads (if needed), preprocesses, epochs, and labels the data
 X, y, meta = paradigm.get_data(dataset=dataset, subjects=dataset.subject_list)
 
 # Inspect the shapes: X is trials × channels × timepoints; y is labels; meta is info
@@ -65,10 +74,10 @@ print("meta shape (trials, info columns):", meta.shape)
 print(meta.head())  # shows subject/session for each trial
 
 ###############################################################################
-#: 3. Build a classification pipeline: CSP to LDA
+# 4. Build a classification pipeline: CSP to LDA
 ###############################################################################
-#: CSP finds spatial filters that maximize variance difference between classes
-#: LDA is a simple linear classifier on the CSP features
+# CSP finds spatial filters that maximize variance difference between classes
+# LDA is a simple linear classifier on the CSP features
 pipe = make_pipeline(
     CSP(n_components=6, reg=None),  # reduce to 6 CSP components
     LDA(),  # classify based on these features
@@ -76,41 +85,41 @@ pipe = make_pipeline(
 print("Pipeline steps:", pipe.named_steps)
 
 ###############################################################################
-#: 4. Instantiate WithinSessionSplitter
+# 5. Instantiate WithinSessionSplitter
 ###############################################################################
-#: We want 5-fold CV _within_ each subject × session grouping
+# We want 5-fold CV _within_ each subject × session grouping
 wss = WithinSessionSplitter(n_folds=5, shuffle=True, random_state=404)
 print(f"Splitter config: folds={wss.n_folds}, shuffle={wss.shuffle}")
 
-#: How many total splits? equals n_folds × (num_subjects × sessions per subject)
+# How many total splits? equals n_folds × (num_subjects × sessions per subject)
 total_folds = wss.get_n_splits(meta)
 print("Total folds (num_subjects × sessions × n_folds):", total_folds)
-#: If wss is applied to a dataset where a subject has only one session,
-#: the splitter will skip that subject silently. Therefore, we raise an error.
+# If wss is applied to a dataset where a subject has only one session,
+# the splitter will skip that subject silently. Therefore, we raise an error.
 if wss.get_n_splits(meta) == 0:
     raise RuntimeError("No splits generated: check that each subject has ≥2 sessions.")
 
 ###############################################################################
-#: 5. Manual evaluation loop: train/test each fold
+# 6. Manual evaluation loop: train/test each fold
 ###############################################################################
-#: We'll collect one row per fold: which subject/session was held out and its score
+# We'll collect one row per fold: which subject/session was held out and its score
 records = []
 for fold_id, (train_idx, test_idx) in enumerate(wss.split(y, meta)):
-    #: Slice our epoch array and labels
+    # Slice our epoch array and labels
     X_train, X_test = X[train_idx], X[test_idx]
     y_train, y_test = y[train_idx], y[test_idx]
 
-    #: Fit the CSP+LDA pipeline on the training fold
+    # Fit the CSP+LDA pipeline on the training fold
     pipe.fit(X_train, y_train)
-    #: Evaluate on the held-out trials
+    # Evaluate on the held-out trials
     score = pipe.score(X_test, y_test)
 
-    #: Identify which subject & session these test trials come from
-    #: (all test_idx in one fold share the same subject/session)
+    # Identify which subject & session these test trials come from
+    # (all test_idx in one fold share the same subject/session)
     subject_held = meta.iloc[test_idx]["subject"].iat[0]
     session_held = meta.iloc[test_idx]["session"].iat[0]
 
-    #: Record information for later analysis
+    # Record information for later analysis
     records.append(
         {
             "fold": fold_id,
@@ -127,18 +136,18 @@ df = pd.DataFrame(records)
 print(df.head())
 
 ###############################################################################
-#: 6. Summary of results
+# 7. Summary of results
 ###############################################################################
-#: We can quickly see per-subject, per-session performance:
+# We can quickly see per-subject, per-session performance:
 summary = df.groupby(["subject", "session"])["score"].agg(["mean", "std"]).reset_index()
 print("\nSummary of within-session fold scores (mean ± std):")
 print(summary)
-#: We see subject 2’s Session 1 has lower mean accuracy, suggesting session variability.
-#: Note: you could plot these numbers to visually compare sessions,
-#: but here we print them to focus on the splitting logic itself.
+# We see subject 2’s Session 1 has lower mean accuracy, suggesting session variability.
+# Note: you could plot these numbers to visually compare sessions,
+# but here we print them to focus on the splitting logic itself.
 
-
-#: 6. Plot results
+##########################################################################
+# 6. Plot results
 ##########################################################################
 
 
