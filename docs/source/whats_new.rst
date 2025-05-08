@@ -555,8 +555,8 @@ API changes
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
 .. _Samuel Boehm: https://github.com/Samuel-Boehm
-.. _Paul Verhoeven: https://github.com/PaulusBoskabouter 
-.. _Thomas Kooiman: https://github.com/jellymace 
+.. _Paul Verhoeven: https://github.com/PaulusBoskabouter
+.. _Thomas Kooiman: https://github.com/jellymace
 .. _Jorge Sanmartin Martinez: https://github.com/jorgesanmar
 .. _Radovan Vodila: https://github.com/rvodila
 .. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
