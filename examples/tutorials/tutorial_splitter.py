@@ -17,13 +17,18 @@ In this notebook, we demonstrate how to:
 
 #: Suppress warnings and enable informative logging
 import warnings
-warnings.filterwarnings('ignore')
+
+
+warnings.filterwarnings("ignore")
 import moabb
-moabb.set_log_level('info')
+
+
+moabb.set_log_level("info")
+
+import matplotlib.pyplot as plt
 
 #: Standard imports
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 #: MNE + sklearn for pipeline
@@ -33,8 +38,9 @@ from sklearn.pipeline import make_pipeline
 
 #: MOABB components
 from moabb.datasets import BNCI2014_001
-from moabb.paradigms import LeftRightImagery
 from moabb.evaluations.splitters import WithinSessionSplitter
+from moabb.paradigms import LeftRightImagery
+
 
 ###############################################################################
 #: 1. Load the dataset and paradigm
@@ -66,7 +72,7 @@ print(meta.head())  # shows subject/session for each trial
 #: LDA is a simple linear classifier on the CSP features
 pipe = make_pipeline(
     CSP(n_components=6, reg=None),  # reduce to 6 CSP components
-    LDA()                          # classify based on these features
+    LDA(),  # classify based on these features
 )
 print("Pipeline steps:", pipe.named_steps)
 
@@ -74,17 +80,13 @@ print("Pipeline steps:", pipe.named_steps)
 #: 4. Instantiate WithinSessionSplitter
 ###############################################################################
 #: We want 5-fold CV _within_ each subject × session grouping
-wss = WithinSessionSplitter(
-    n_folds=5,
-    shuffle=True,
-    random_state=404
-)
+wss = WithinSessionSplitter(n_folds=5, shuffle=True, random_state=404)
 print(f"Splitter config: folds={wss.n_folds}, shuffle={wss.shuffle}")
 
 #: How many total splits? equals n_folds × (num_subjects × sessions per subject)
 total_folds = wss.get_n_splits(meta)
 print("Total folds (num_subjects × sessions × n_folds):", total_folds)
-#: If wss is applied to a dataset where a subject has only one session, 
+#: If wss is applied to a dataset where a subject has only one session,
 #: the splitter will skip that subject silently. Therefore, we raise an error.
 if wss.get_n_splits(meta) == 0:
     raise RuntimeError("No splits generated: check that each subject has ≥2 sessions.")
@@ -106,16 +108,18 @@ for fold_id, (train_idx, test_idx) in enumerate(wss.split(y, meta)):
 
     #: Identify which subject & session these test trials come from
     #: (all test_idx in one fold share the same subject/session)
-    subject_held = meta.iloc[test_idx]['subject'].iat[0]
-    session_held = meta.iloc[test_idx]['session'].iat[0]
+    subject_held = meta.iloc[test_idx]["subject"].iat[0]
+    session_held = meta.iloc[test_idx]["session"].iat[0]
 
     #: Record information for later analysis
-    records.append({
-        'fold': fold_id,
-        'subject': subject_held,
-        'session': session_held,
-        'score': score
-    })
+    records.append(
+        {
+            "fold": fold_id,
+            "subject": subject_held,
+            "session": session_held,
+            "score": score,
+        }
+    )
 
 # Create a DataFrame of fold results
 df = pd.DataFrame(records)
@@ -127,12 +131,7 @@ print(df.head())
 #: 6. Summary of results
 ###############################################################################
 #: We can quickly see per-subject, per-session performance:
-summary = (
-    df
-    .groupby(['subject','session'])['score']
-    .agg(['mean','std'])
-    .reset_index()
-)
+summary = df.groupby(["subject", "session"])["score"].agg(["mean", "std"]).reset_index()
 print("\nSummary of within-session fold scores (mean ± std):")
 print(summary)
 #: We see subject 2’s Session 1 has lower mean accuracy, suggesting session variability.
@@ -144,18 +143,11 @@ print(summary)
 ##########################################################################
 
 
-df['subject'] = df['subject'].astype(str)
+df["subject"] = df["subject"].astype(str)
 plt.figure(figsize=(8, 6))
-sns.barplot(
-    x='score',
-    y='subject',
-    hue='session',
-    data=df,
-    orient='h',
-    palette='viridis'
-)
-plt.xlabel('Classification accuracy')
-plt.ylabel('Subject')
-plt.title('Within-session CSP+LDA performance')
+sns.barplot(x="score", y="subject", hue="session", data=df, orient="h", palette="viridis")
+plt.xlabel("Classification accuracy")
+plt.ylabel("Subject")
+plt.title("Within-session CSP+LDA performance")
 plt.tight_layout()
 plt.show()
