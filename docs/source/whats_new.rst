@@ -37,6 +37,7 @@ Bugs
 - Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
 - Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
 - Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
+- Fix code carbon example code (:gh:`777` by `Amar Enkhbat`_)
 
 API changes
 ~~~~~~~~~~~
@@ -554,6 +555,7 @@ API changes
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
 .. _Samuel Boehm: https://github.com/Samuel-Boehm
+.. _Amar Enkhbat https://github.com/amar-enkhbat
 .. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
 .. _Luuk Neervens: https://github.com/LuukNeervens
 .. _Charlynn van Osch: https://github.com/charlynnvanosch
