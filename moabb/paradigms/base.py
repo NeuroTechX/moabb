@@ -286,7 +286,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         """
 
         if process_pipelines is not None:
-            output_step_type, _ = process_pipelines[0].steps[-1]
+            output_step_type, _ = process_pipelines.steps[-1]
             if (
                 (output_step_type == StepType.ARRAY and (return_epochs or return_raws))
                 or (output_step_type == StepType.EPOCH and not return_epochs)
