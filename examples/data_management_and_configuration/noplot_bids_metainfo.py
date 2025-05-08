@@ -5,20 +5,22 @@ Tutorial 6: Setting BIDS Metainfo
 """
 
 # Authors: Inga Schöyen, Loekie Slütter, Femke van Venrooij
-# 
-# In this tutorial, we will show how to use the bids_metainfo function 
+#
+# In this tutorial, we will show how to use the bids_metainfo function
 # to set the metadata for a BIDS dataset using json
 # The function is shown below (commented out) and takes a BIDS path as input
 #  and returns the metainfo as a json dictionary
-# 
-# 
+#
+#
 #
 
 import tempfile
+
 import Path
 
-import moabb
+from moabb.datasets import AlexMI
 from moabb.datasets.utils import bids_metainfo
+
 
 ##############################################################################
 # Outline of the Tutorial
@@ -30,8 +32,8 @@ from moabb.datasets.utils import bids_metainfo
 
 # ##############################################################################
 #  Below is the function bids_metainfo as defined in moabb.datasets.utils
-# 
-# 
+#
+#
 # def bids_metainfo(bids_path: Path) -> dict:
 #     """Create metadata for the BIDS dataset.
 
@@ -57,20 +59,19 @@ from moabb.datasets.utils import bids_metainfo
 
 #     return json_data
 
-# as we can see, the function takes a BIDS path as input, collects all matching datasets 
+# as we can see, the function takes a BIDS path as input, collects all matching datasets
 # and fills a dictionary with the metadata gathered from each matching dataset
 
 # to use the function, we first need to create a BIDS dataset, either by sourcing it
-# from a local path or by using the moabb.datasets module to fetch a dataset and convert 
+# from a local path or by using the moabb.datasets module to fetch a dataset and convert
 # it to BIDS using the get_data() method
 
 
 ##############################################################################
 # 1. Fetch a moabb dataset
 
-from moabb.datasets import AlexMI()
 
-dataset = AlexMI() 
+dataset = AlexMI()
 
 ##############################################################################
 # 2. Tranform the dataset to BIDS format, using a temporary directory
@@ -81,7 +82,7 @@ temp_dir = Path(tempfile.mkdtemp())
 # saving the raw data to and consequently overcluttering the disk
 
 # if you want to save the raw data, set save_raw to True
-# and set the path to a directory of your choice 
+# and set the path to a directory of your choice
 
 _ = dataset.get_data(cache_config = dict(path=temp_dir, save_raw=False))
 
@@ -141,5 +142,5 @@ print(metadata)
 
 # as we can see, the metadata dictionary contains the metadata for each dataset
 # in the BIDS dataset, including the path to the raw data file
-# since we did not specify the samplifng configuration when calling the dataset (line 73), 
+# since we did not specify the samplifng configuration when calling the dataset (line 73),
 # the configuration is set to None
