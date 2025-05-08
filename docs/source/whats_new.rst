@@ -28,6 +28,7 @@ Enhancements
 - Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
 - Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
 - Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
+- Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch` and `Bruno Aristimunha`_)
 - Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
 
 Bugs
@@ -558,3 +559,6 @@ API changes
 .. _Thomas Kooiman: https://github.com/jellymace 
 .. _Jorge Sanmartin Martinez: https://github.com/jorgesanmar
 .. _Radovan Vodila: https://github.com/rvodila
+.. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
+.. _Luuk Neervens: https://github.com/LuukNeervens
+.. _Charlynn van Osch: https://github.com/charlynnvanosch
