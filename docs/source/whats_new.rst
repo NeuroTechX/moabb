@@ -1,4 +1,14 @@
-.. _whats_new:
+FIND THE OPTIMAL STARTTIME WHILST NOT WASTING TOO MUCH ENERGY.
+
+Go over the regression problem.
+
+
+
+
+optimise the boiler temperature. for the opening of the building.
+
+
+temperatuur waardes zijn "samenvat.. _whats_new:
 
 .. currentmodule:: moabb
 
@@ -17,6 +27,7 @@ Develop branch  - 1.2.1
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding a tutorial for :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`776` by `Thomas Kooiman`_, `Paul Verhoeven`_, `Jorge Sanmartin Martinez`_, and `Radovan Vodila`_ )
 - Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
 - Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
 - Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
@@ -555,10 +566,11 @@ API changes
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
 .. _Samuel Boehm: https://github.com/Samuel-Boehm
+.. _Amar Enkhbat https://github.com/amar-enkhbat
+.. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
+.. _Luuk Neervens: https://github.com/LuukNeervens
+.. _Charlynn van Osch: https://github.com/charlynnvanosch
 .. _Paul Verhoeven: https://github.com/PaulusBoskabouter
 .. _Thomas Kooiman: https://github.com/jellymace
 .. _Jorge Sanmartin Martinez: https://github.com/jorgesanmar
 .. _Radovan Vodila: https://github.com/rvodila
-.. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
-.. _Luuk Neervens: https://github.com/LuukNeervens
-.. _Charlynn van Osch: https://github.com/charlynnvanosch
