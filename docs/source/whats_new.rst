@@ -17,7 +17,6 @@ Develop branch  - 1.2.1
 
 Enhancements
 ~~~~~~~~~~~~
-- Adding a tutorial for :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`776` by `Thomas Kooiman`_, `Paul Verhoeven`_, `Jorge Sanmartin Martinez`_, and `Radovan Vodila`_ )
 - Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
 - Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
 - Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
@@ -38,6 +37,7 @@ Bugs
 - Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
 - Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
 - Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
+- Fix code carbon example code (:gh:`777` by `Amar Enkhbat`_)
 
 API changes
 ~~~~~~~~~~~
