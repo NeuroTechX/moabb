@@ -88,6 +88,16 @@ print("y shape (trials,):", y.shape)
 print("meta shape (trials, info columns):", meta.shape)
 print(meta.head())  # shows subject/session for each trial
 
+# Plot a small epoch (e.g., the first trial) (3 channels for simplicity sake)
+plt.figure(figsize=(10, 4))
+plt.plot(X[0][0:3].T)  # Transpose to plot channels over time
+plt.title("Epoch 0: EEG Channels Over Time")
+plt.xlabel("Timepoints")
+plt.ylabel("Amplitude")
+plt.legend([f"Channel {i+1}" for i in range(3)], loc="upper right")
+plt.tight_layout()
+plt.show()
+
 ###############################################################################
 #  Build a classification pipeline: CSP to LDA
 ###############################################################################
@@ -147,8 +157,37 @@ for fold_id, (train_idx, test_idx) in enumerate(wss.split(y, meta)):
 # Create a DataFrame of fold results
 df = pd.DataFrame(records)
 
+# Add a new column to indicate whether the data is train or test
+df["split"] = df["session"].apply(lambda x: "test" if "test" in x else "train")
+
 # Show the first few rows: one entry per fold
 print(df.head())
+
+
+###############################################################################
+#  Summary of results
+###############################################################################
+# We can quickly see per-subject, per-session performance:
+summary = df.groupby(["subject", "session"])["score"].agg(["mean", "std"]).reset_index()
+print("\nSummary of within-session fold scores (mean ± std):")
+print(summary)
+# We see subject 2’s Session 1 has lower mean accuracy, suggesting session variability.
+# Note: you could plot these numbers to visually compare sessions,
+# but here we print them to focus on the splitting logic itself.
+
+##########################################################################
+#  Plot results
+##########################################################################
+
+
+df["subject"] = df["subject"].astype(str)
+plt.figure(figsize=(8, 6))
+sns.barplot(x="score", y="subject", hue="session", data=df, orient="h", palette="viridis")
+plt.xlabel("Classification accuracy")
+plt.ylabel("Subject")
+plt.title("Within-session CSP+LDA performance")
+plt.tight_layout()
+plt.show()
 
 ###############################################################################
 #  Visualisation of the data split
@@ -185,27 +224,4 @@ plot_subject_split(ax, df)
 
 # For our 3 subjects, we see that each subject has 5 folds of training data.
 
-###############################################################################
-#  Summary of results
-###############################################################################
-# We can quickly see per-subject, per-session performance:
-summary = df.groupby(["subject", "session"])["score"].agg(["mean", "std"]).reset_index()
-print("\nSummary of within-session fold scores (mean ± std):")
-print(summary)
-# We see subject 2’s Session 1 has lower mean accuracy, suggesting session variability.
-# Note: you could plot these numbers to visually compare sessions,
-# but here we print them to focus on the splitting logic itself.
 
-##########################################################################
-#  Plot results
-##########################################################################
-
-
-df["subject"] = df["subject"].astype(str)
-plt.figure(figsize=(8, 6))
-sns.barplot(x="score", y="subject", hue="session", data=df, orient="h", palette="viridis")
-plt.xlabel("Classification accuracy")
-plt.ylabel("Subject")
-plt.title("Within-session CSP+LDA performance")
-plt.tight_layout()
-plt.show()
