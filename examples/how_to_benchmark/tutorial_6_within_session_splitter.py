@@ -2,9 +2,12 @@
 =====================================================
 Tutorial: Within-Session Splitting on Real MI Dataset
 =====================================================
-# Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven
-# License: BSD (3-clause)
 """
+
+# Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven
+#
+# License: BSD (3-clause)
+
 
 ###############################################################################
 #  Why would I want to split my data within a session?
@@ -144,6 +147,41 @@ df = pd.DataFrame(records)
 
 # Show the first few rows: one entry per fold
 print(df.head())
+
+###############################################################################
+#  Visualisation of the data split
+###############################################################################
+def plot_subject_split(ax, df):
+    """Create a bar plot showing the split of subject data into train and test."""
+    colors = ["#3A6190", "#DDF2FF"]  # Colors for train and test
+
+    # Count the number of train and test samples for each subject
+    subject_counts = df.groupby(["subject", "split"]).size().unstack(fill_value=0)
+
+    # Plot the train and test counts for each subject
+    subject_counts.plot(
+        kind="barh",
+        stacked=True,
+        color=colors,
+        ax=ax,
+        width=0.7,
+    )
+
+    ax.set(
+        xlabel="Number of samples",
+        ylabel="Subject",
+        title="Train-Test Split by Subject",
+    )
+    ax.legend(["Train", "Test"], loc="lower right")
+    ax.invert_yaxis()
+    return ax
+
+# Create a new figure for the subject split plot
+fig, ax = plt.subplots(figsize=(8, 6))
+# Add the subject split plot to the figure
+plot_subject_split(ax, df)
+
+# For our 3 subjects, we see that each subject has 5 folds of training data.
 
 ###############################################################################
 #  Summary of results
