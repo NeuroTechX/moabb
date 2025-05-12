@@ -227,5 +227,3 @@ fig, ax = plt.subplots(figsize=(8, 6))
 plot_subject_split(ax, df)
 
 # For our 3 subjects, we see that each subject has 5 folds of training data.
-
-
