@@ -164,6 +164,7 @@ df["split"] = df["session"].apply(lambda x: "test" if "test" in x else "train")
 print(df.head())
 
 
+<<<<<<< HEAD
 ###############################################################################
 #  Summary of results
 ###############################################################################
@@ -189,6 +190,8 @@ plt.title("Within-session CSP+LDA performance")
 plt.tight_layout()
 plt.show()
 
+=======
+>>>>>>> e04448d76e639e8d75b1c12ba5bfd49b3d788cb6
 ###############################################################################
 #  Visualisation of the data split
 ###############################################################################
@@ -216,6 +219,7 @@ def plot_subject_split(ax, df):
     ax.legend(["Train", "Test"], loc="lower right")
     ax.invert_yaxis()
     return ax
+
 
 # Create a new figure for the subject split plot
 fig, ax = plt.subplots(figsize=(8, 6))
