@@ -148,6 +148,7 @@ df = pd.DataFrame(records)
 # Show the first few rows: one entry per fold
 print(df.head())
 
+
 ###############################################################################
 #  Visualisation of the data split
 ###############################################################################
@@ -175,6 +176,7 @@ def plot_subject_split(ax, df):
     ax.legend(["Train", "Test"], loc="lower right")
     ax.invert_yaxis()
     return ax
+
 
 # Create a new figure for the subject split plot
 fig, ax = plt.subplots(figsize=(8, 6))
