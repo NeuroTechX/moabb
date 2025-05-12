@@ -189,6 +189,7 @@ plt.title("Within-session CSP+LDA performance")
 plt.tight_layout()
 plt.show()
 
+
 ###############################################################################
 #  Visualisation of the data split
 ###############################################################################
