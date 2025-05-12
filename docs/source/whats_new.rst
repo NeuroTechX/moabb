@@ -1,14 +1,4 @@
-FIND THE OPTIMAL STARTTIME WHILST NOT WASTING TOO MUCH ENERGY.
-
-Go over the regression problem.
-
-
-
-
-optimise the boiler temperature. for the opening of the building.
-
-
-temperatuur waardes zijn "samenvat.. _whats_new:
+.. _whats_new:
 
 .. currentmodule:: moabb
 

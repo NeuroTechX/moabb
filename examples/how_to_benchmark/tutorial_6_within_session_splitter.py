@@ -22,7 +22,7 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 # leading to artificially high test accuracy that doesn’t generalize in practice.
 #
 # To avoid this, we use within-session splitting, where training and testing are done
-# on different trials from the same session. This ensures the model is evaluated under realistic,
+# on different trials from the same session. This ensures the model is evaluated under commonly used,
 # consistent conditions while still preventing overfitting to trial-specific noise.
 #
 # This approach forms a critical foundation in the MOABB evaluation framework,
@@ -31,6 +31,8 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 #     - Within-session: test generalization across trials within a single session
 #     - Cross-session: test generalization across different recording sessions
 #     - Cross-subject: test generalization across different brains
+#
+# Where Within-session and cross-session are generalized across the same subject, cross-subject is generalized between (groups of) subjects.
 #
 # Each level decreases in specialization, moving from highly subject-specific models
 # to those that can generalize across individuals.
@@ -89,13 +91,13 @@ print(meta.head())  # shows subject/session for each trial
 ###############################################################################
 #  Build a classification pipeline: CSP to LDA
 ###############################################################################
-# CSP finds spatial filters that maximize variance difference between classes
-# LDA is a simple linear classifier on the CSP features
+# Common Spatial Patterns (CSP) finds spatial filters that maximize variance difference between classes
+# Linear Discriminant Analysis (LDA) is a simple linear classifier on the CSP features
 pipe = make_pipeline(
     CSP(n_components=6, reg=None),  # reduce to 6 CSP components
     LDA(),  # classify based on these features
 )
-print("Pipeline steps:", pipe.named_steps)
+pipe
 
 ###############################################################################
 #  Instantiate WithinSessionSplitter
