@@ -4,14 +4,15 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 =====================================================
 """
 
+
 # Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven
 #
 # License: BSD (3-clause)
 
 
 ###############################################################################
-#  Why would I want to split my data within a session?
-###############################################################################
+#  The justification and goal for within-session splitting
+# -----------------------
 # In short, because we want to prevent the model from recognizing the subject
 # and learning subject-specific representations instead of focusing on the task at hand.
 #
@@ -28,20 +29,25 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 # This approach forms a critical foundation in the MOABB evaluation framework,
 # which supports three levels of model generalization:
 #
-#     - Within-session: test generalization across trials within a single session
-#     - Cross-session: test generalization across different recording sessions
-#     - Cross-subject: test generalization across different brains
+# - Within-session: test generalization across trials within a single session
+# - Cross-session: test generalization across different recording sessions
+# - Cross-subject: test generalization across different brains
 #
 # Where Within-session and cross-session are generalized across the same subject, cross-subject is generalized between (groups of) subjects.
 #
-# Each level decreases in specialization, moving from highly subject-specific models
+# Each level decreases in specialization, moving from highly subject-specific models,
 # to those that can generalize across individuals.
 #
 # This tutorial focuses on within-session evaluation to establish a reliable
 # baseline for model performance before attempting more challenging generalization tasks.
 
-import warnings
 
+###############################################################################
+# Importing the necessary libraries
+# -----------------------
+
+
+import warnings
 import matplotlib.pyplot as plt
 
 # Standard imports
@@ -65,20 +71,25 @@ from moabb.paradigms import LeftRightImagery
 warnings.filterwarnings("ignore")
 moabb.set_log_level("info")
 
+
 ###############################################################################
-#  Load the dataset and paradigm
-###############################################################################
-# We use the BNCI2014_001 dataset: BCI Comp IV dataset 2a (motor imagery)
+# Load the dataset
+# -----------------------
+# In this example we use 3 subjects of the :class:`moabb.datasets.BNCI2014_001` dataset.
+
+
 dataset = BNCI2014_001()
-# Restrict to a few subjects to keep runtime reasonable for demonstration
 dataset.subject_list = [1, 2, 3]
 
-# Define the paradigm: here, left vs right hand imagery
-paradigm = LeftRightImagery()
 
 ###############################################################################
-#  Extract data: epochs (X), labels (y), and trial metadata (meta)
-###############################################################################
+# Extract data: epochs (X), labels (y), and trial metadata (meta)
+# -----------------------
+# For this dataset we use the :class:`moabb.paradigms.LeftRightImagery` paradigm.
+# Additionally, we use the `get_data` method to download, preprocess, epoch, and label the data.
+
+
+paradigm = LeftRightImagery()
 # This call downloads (if needed), preprocesses, epochs, and labels the data
 X, y, meta = paradigm.get_data(dataset=dataset, subjects=dataset.subject_list)
 
@@ -88,7 +99,13 @@ print("y shape (trials,):", y.shape)
 print("meta shape (trials, info columns):", meta.shape)
 print(meta.head())  # shows subject/session for each trial
 
-# Plot a small epoch (e.g., the first trial) (3 channels for simplicity sake)
+
+###############################################################################
+# Vizualising a single epoch.
+# -----------------------
+# Plot a single epoch (e.g., the first trial), to see what's in this dataset. (limiting to 3 channels for simplicity sake).
+
+
 plt.figure(figsize=(10, 4))
 plt.plot(X[0][0:3].T)  # Transpose to plot channels over time
 plt.title("Epoch 0: EEG Channels Over Time")
@@ -98,21 +115,27 @@ plt.legend([f"Channel {i+1}" for i in range(3)], loc="upper right")
 plt.tight_layout()
 plt.show()
 
+
 ###############################################################################
-#  Build a classification pipeline: CSP to LDA
-###############################################################################
-# Common Spatial Patterns (CSP) finds spatial filters that maximize variance difference between classes
-# Linear Discriminant Analysis (LDA) is a simple linear classifier on the CSP features
+# Build a classification pipeline: CSP to LDA
+# -----------------------
+# We use Common Spatial Patterns (CSP) finds spatial filters that maximize variance difference between classes.
+# And then use Linear Discriminant Analysis (LDA) as a simple linear classifier on the extracted CSP features.
+
+
 pipe = make_pipeline(
     CSP(n_components=6, reg=None),  # reduce to 6 CSP components
     LDA(),  # classify based on these features
 )
 pipe
 
+
 ###############################################################################
-#  Instantiate WithinSessionSplitter
-###############################################################################
-# We want 5-fold CV _within_ each subject × session grouping
+# Instantiate WithinSessionSplitter
+# -----------------------
+# We want 5-fold cross-validation (CV) within each subject × session grouping
+
+
 wss = WithinSessionSplitter(n_folds=5, shuffle=True, random_state=404)
 print(f"Splitter config: folds={wss.n_folds}, shuffle={wss.shuffle}")
 
@@ -124,10 +147,13 @@ print("Total folds (num_subjects × sessions × n_folds):", total_folds)
 if wss.get_n_splits(meta) == 0:
     raise RuntimeError("No splits generated: check that each subject has ≥2 sessions.")
 
+
 ###############################################################################
 #  Manual evaluation loop: train/test each fold
-###############################################################################
+# -----------------------
 # We'll collect one row per fold: which subject/session was held out and its score
+
+
 records = []
 for fold_id, (train_idx, test_idx) in enumerate(wss.split(y, meta)):
     # Slice our epoch array and labels
@@ -166,18 +192,22 @@ print(df.head())
 
 ###############################################################################
 #  Summary of results
-###############################################################################
+# -----------------------
 # We can quickly see per-subject, per-session performance:
-summary = df.groupby(["subject", "session"])["score"].agg(["mean", "std"]).reset_index()
-print("\nSummary of within-session fold scores (mean ± std):")
-print(summary)
 # We see subject 2’s Session 1 has lower mean accuracy, suggesting session variability.
 # Note: you could plot these numbers to visually compare sessions,
 # but here we print them to focus on the splitting logic itself.
 
+
+summary = df.groupby(["subject", "session"])["score"].agg(["mean", "std"]).reset_index()
+print("\nSummary of within-session fold scores (mean ± std):")
+print(summary)
+
+
+
 ##########################################################################
-#  Plot results
-##########################################################################
+#  Visualisation of the results
+# -----------------------
 
 
 df["subject"] = df["subject"].astype(str)
@@ -192,7 +222,10 @@ plt.show()
 
 ###############################################################################
 #  Visualisation of the data split
-###############################################################################
+# -----------------------
+# For our 3 subjects, we see that each subject has 5 folds of training data.
+
+
 def plot_subject_split(ax, df):
     """Create a bar plot showing the split of subject data into train and test."""
     colors = ["#3A6190", "#DDF2FF"]  # Colors for train and test
@@ -224,4 +257,3 @@ fig, ax = plt.subplots(figsize=(8, 6))
 # Add the subject split plot to the figure
 plot_subject_split(ax, df)
 
-# For our 3 subjects, we see that each subject has 5 folds of training data.
