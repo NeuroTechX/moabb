@@ -4,7 +4,6 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 =====================================================
 """
 
-
 # Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven
 #
 # License: BSD (3-clause)
@@ -48,6 +47,7 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 
 
 import warnings
+
 import matplotlib.pyplot as plt
 
 # Standard imports
@@ -204,7 +204,6 @@ print("\nSummary of within-session fold scores (mean ± std):")
 print(summary)
 
 
-
 ##########################################################################
 #  Visualisation of the results
 # -----------------------
@@ -256,4 +255,3 @@ def plot_subject_split(ax, df):
 fig, ax = plt.subplots(figsize=(8, 6))
 # Add the subject split plot to the figure
 plot_subject_split(ax, df)
-
