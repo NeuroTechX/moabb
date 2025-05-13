@@ -101,7 +101,7 @@ print(meta.head())  # shows subject/session for each trial
 
 
 ###############################################################################
-# Vizualising a single epoch.
+# Visualising a single epoch.
 # -----------------------
 # Plot a single epoch (e.g., the first trial), to see what's in this dataset. (limiting to 3 channels for simplicity sake).
 
