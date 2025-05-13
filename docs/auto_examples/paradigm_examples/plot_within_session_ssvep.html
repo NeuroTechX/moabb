@@ -400,6 +400,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_examples/index.html">Advanced examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -578,43 +579,43 @@ each subject and pipeline.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Kalunga2016-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-Kalunga2016-WithinSession:  50%|█████     | 1/2 [00:00&lt;00:00,  1.89it/s]
+Kalunga2016-WithinSession:  50%|█████     | 1/2 [00:00&lt;00:00,  1.86it/s]
 
   0%|                                              | 0.00/2.27M [00:00&lt;?, ?B/s]
 
-  1%|▏                                     | 12.3k/2.27M [00:00&lt;00:22, 102kB/s]
+  1%|▏                                    | 12.3k/2.27M [00:00&lt;00:24, 93.1kB/s]
 
-  4%|█▌                                    | 93.2k/2.27M [00:00&lt;00:06, 325kB/s]
+  4%|█▌                                    | 94.2k/2.27M [00:00&lt;00:06, 315kB/s]
 
- 19%|███████                               | 424k/2.27M [00:00&lt;00:01, 1.02MB/s]
+ 18%|██████▉                                | 406k/2.27M [00:00&lt;00:01, 946kB/s]
 
- 58%|█████████████████████▌               | 1.32M/2.27M [00:00&lt;00:00, 3.18MB/s]
+ 45%|████████████████▊                    | 1.03M/2.27M [00:00&lt;00:00, 2.35MB/s]
+
+ 96%|███████████████████████████████████▌ | 2.19M/2.27M [00:00&lt;00:00, 4.88MB/s]
 
   0%|                                              | 0.00/2.27M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.27M/2.27M [00:00&lt;00:00, 8.46GB/s]
+100%|█████████████████████████████████████| 2.27M/2.27M [00:00&lt;00:00, 9.96GB/s]
 
 
   0%|                                              | 0.00/2.13M [00:00&lt;?, ?B/s]
 
-  1%|▏                                    | 12.3k/2.13M [00:00&lt;00:23, 90.9kB/s]
+  0%|▏                                    | 10.2k/2.13M [00:00&lt;00:26, 80.1kB/s]
 
-  2%|▋                                     | 41.0k/2.13M [00:00&lt;00:11, 188kB/s]
+  4%|█▌                                    | 87.0k/2.13M [00:00&lt;00:06, 295kB/s]
 
- 10%|███▊                                   | 207k/2.13M [00:00&lt;00:03, 596kB/s]
+ 21%|███████▊                              | 439k/2.13M [00:00&lt;00:01, 1.04MB/s]
 
- 23%|████████▋                             | 484k/2.13M [00:00&lt;00:01, 1.25MB/s]
-
- 59%|█████████████████████▋               | 1.25M/2.13M [00:00&lt;00:00, 3.19MB/s]
+ 52%|███████████████████▎                 | 1.11M/2.13M [00:00&lt;00:00, 2.56MB/s]
 
   0%|                                              | 0.00/2.13M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.13M/2.13M [00:00&lt;00:00, 9.07GB/s]
+100%|█████████████████████████████████████| 2.13M/2.13M [00:00&lt;00:00, 5.80GB/s]
 No hdf5_path provided, models will not be saved.
 
-Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00:00,  1.98s/it]
-Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00:00,  1.76s/it]
+Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00:00,  2.04s/it]
+Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00:00,  1.81s/it]
       score      time  samples  ... n_sessions      dataset  pipeline
-0  0.251111  0.041996     48.0  ...          1  Kalunga2016       CCA
-1  0.333333  0.041004     48.0  ...          1  Kalunga2016       CCA
+0  0.253333  0.043238     48.0  ...          1  Kalunga2016       CCA
+1  0.333333  0.041656     48.0  ...          1  Kalunga2016       CCA
 
 [2 rows x 9 columns]
 </pre></div>
@@ -637,7 +638,7 @@ Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.854 seconds)</p>
+<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.421 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  294 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
