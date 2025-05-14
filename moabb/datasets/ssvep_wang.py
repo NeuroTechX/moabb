@@ -134,7 +134,7 @@ class Wang2016(BaseDataset):
         buff = (data.shape[0], n_channels + 1, 50)
         data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
 
-        ch_types = ["eeg"] * 59 + ["misc"] + 3 * ["eeg"] + ["misc", "stim"]
+        ch_types = ["eeg"] * 64 + ["stim"]
         sfreq = 250
         info = create_info(self._ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
