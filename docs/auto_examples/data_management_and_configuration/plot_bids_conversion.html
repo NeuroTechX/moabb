@@ -538,20 +538,21 @@ people and one that can be downloaded quickly.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/17.3M [00:00&lt;?, ?B/s]
-  0%|                                     | 12.3k/17.3M [00:00&lt;03:01, 95.3kB/s]
-  0%|▏                                     | 82.9k/17.3M [00:00&lt;01:02, 275kB/s]
-  2%|▋                                      | 289k/17.3M [00:00&lt;00:19, 867kB/s]
-  3%|█▎                                    | 582k/17.3M [00:00&lt;00:10, 1.53MB/s]
-  5%|██                                    | 932k/17.3M [00:00&lt;00:07, 2.15MB/s]
- 10%|███▋                                 | 1.75M/17.3M [00:00&lt;00:03, 4.01MB/s]
- 17%|██████▍                              | 3.01M/17.3M [00:00&lt;00:02, 6.65MB/s]
- 33%|████████████▏                        | 5.70M/17.3M [00:00&lt;00:00, 12.8MB/s]
- 47%|█████████████████▍                   | 8.17M/17.3M [00:01&lt;00:00, 16.4MB/s]
- 63%|███████████████████████▎             | 10.9M/17.3M [00:01&lt;00:00, 19.8MB/s]
- 77%|████████████████████████████▍        | 13.3M/17.3M [00:01&lt;00:00, 21.1MB/s]
- 93%|██████████████████████████████████▍  | 16.1M/17.3M [00:01&lt;00:00, 23.1MB/s]
+  0%|                                      | 12.3k/17.3M [00:00&lt;02:44, 105kB/s]
+  0%|                                      | 36.9k/17.3M [00:00&lt;01:35, 182kB/s]
+  1%|▏                                     | 92.2k/17.3M [00:00&lt;00:50, 343kB/s]
+  1%|▍                                      | 174k/17.3M [00:00&lt;00:32, 524kB/s]
+  2%|▊                                      | 345k/17.3M [00:00&lt;00:18, 941kB/s]
+  4%|█▌                                    | 720k/17.3M [00:00&lt;00:08, 1.87MB/s]
+  8%|███                                  | 1.46M/17.3M [00:00&lt;00:04, 3.63MB/s]
+ 17%|██████▎                              | 2.94M/17.3M [00:00&lt;00:02, 7.15MB/s]
+ 34%|████████████▌                        | 5.90M/17.3M [00:00&lt;00:00, 14.1MB/s]
+ 48%|█████████████████▊                   | 8.37M/17.3M [00:01&lt;00:00, 17.3MB/s]
+ 64%|███████████████████████▌             | 11.1M/17.3M [00:01&lt;00:00, 20.1MB/s]
+ 82%|██████████████████████████████▏      | 14.1M/17.3M [00:01&lt;00:00, 23.0MB/s]
+ 98%|████████████████████████████████████ | 16.9M/17.3M [00:01&lt;00:00, 24.4MB/s]
   0%|                                              | 0.00/17.3M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.3M/17.3M [00:00&lt;00:00, 69.0GB/s]
+100%|█████████████████████████████████████| 17.3M/17.3M [00:00&lt;00:00, 80.9GB/s]
 </pre></div>
 </div>
 </section>
@@ -610,13 +611,13 @@ standard and can vary from one dataset to another.</p>
    ├──participants.tsv
    ├──sub-1
    │  ├──ses-0
-   │  │  ├──eeg
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_events.tsv
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_events.json
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_eeg.edf
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_channels.tsv
-   │  │  │  └──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_eeg.json
-   │  │  └──sub-1_ses-0_scans.tsv
+   │  │  ├──sub-1_ses-0_scans.tsv
+   │  │  └──eeg
+   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_channels.tsv
+   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_eeg.json
+   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_events.json
+   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_eeg.edf
+   │  │     └──sub-1_ses-0_task-imagery_run-0_desc-2f4a2e6207d30d406bb04b5b1aae5195_events.tsv
    │  └──sub-1_desc-2f4a2e6207d30d406bb04b5b1aae5195_lockfile.json
    └──README
 </pre></div>
@@ -668,8 +669,8 @@ Université de Grenoble).
 <a class="reference external" href="https://tel.archives-ouvertes.fr/tel-01196752">https://tel.archives-ouvertes.fr/tel-01196752</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.550 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  494 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.128 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  596 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-plot-bids-conversion-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/c3ebeb9988635652b155b2686d2f88b7/plot_bids_conversion.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bids_conversion.ipynb</span></code></a></p>

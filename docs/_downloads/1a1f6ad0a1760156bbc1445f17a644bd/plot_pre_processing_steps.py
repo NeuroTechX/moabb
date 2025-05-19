@@ -52,7 +52,7 @@ References
 # Here, we will use the BNCI2014_001 dataset and the LeftRightImagery paradigm.
 import pandas as pd
 from sklearn.dummy import DummyClassifier
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import FunctionTransformer, minmax_scale
 
 from moabb.datasets import BNCI2014_001
 from moabb.datasets.bids_interface import StepType
@@ -112,12 +112,22 @@ for i, step in enumerate(pre_procesing_filter_bank_steps):
 #
 # In this example, we want to add a min-max function step to the raw data to do this.
 # We need to do pipeline surgery and use the evaluation function.
+# We will use the `FunctionTransformer` instead of the `MinMaxScaler` to avoid
+# the need to fit the raw data. The `FunctionTransformer` will apply the function
+# to the data without fitting it.
 ##############################################################################
+
+
+def minmax_raw(raw):
+    """Apply min-max scaling to the raw data."""
+    return raw.apply_function(
+        minmax_scale, picks="eeg", n_jobs=1, verbose=True, channel_wise=True
+    )
 
 
 process_pipeline = paradigm.make_process_pipelines(dataset)[0]
 
-process_pipeline.steps.insert(2, (StepType.RAW, MinMaxScaler()))
+process_pipeline.steps.insert(2, (StepType.RAW, FunctionTransformer(minmax_raw)))
 
 
 ##############################################################################
