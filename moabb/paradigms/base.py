@@ -286,7 +286,9 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         """
 
         if process_pipelines is not None:
-            output_step_type, _ = process_pipelines.steps[-1]
+            assert isinstance(process_pipelines, list)
+            assert isinstance(process_pipelines[0], Pipeline)
+            output_step_type, _ = process_pipelines[0].steps[-1]
             if (
                 (output_step_type == StepType.ARRAY and (return_epochs or return_raws))
                 or (output_step_type == StepType.EPOCHS and not return_epochs)
