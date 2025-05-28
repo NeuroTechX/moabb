@@ -114,7 +114,7 @@ codecarbon_plot(results, order_list, country="(France)")
 # The result expected will be the following image, but varying depending on the
 # machine and the country used to run the example.
 #
-# .. image:: ../images/example_codecarbon.png
+# .. image:: ../../images/example_codecarbon.png
 #    :align: center
 #    :alt: carbon_example
 #

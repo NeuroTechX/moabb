@@ -46,7 +46,7 @@ set_log_level("info")
 
 ##############################################################################
 # Create util transformer
-# ----------------------
+# -----------------------
 #
 # Let's create a scikit transformer mixin, that will
 # select electrodes based on the covariance information

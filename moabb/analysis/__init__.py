@@ -22,7 +22,7 @@ def analyze(results, out_path, name="analysis", plot=False):
     results and a dataframe of the exact data used to generate those results,
     as well as introspection to return information on the computer
 
-    parameters
+    Parameters
     ----------
     out_path: location to store analysis folder
 

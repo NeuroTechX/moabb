@@ -115,7 +115,6 @@ for i, step in enumerate(pre_procesing_filter_bank_steps):
 # We will use the `FunctionTransformer` instead of the `MinMaxScaler` to avoid
 # the need to fit the raw data. The `FunctionTransformer` will apply the function
 # to the data without fitting it.
-##############################################################################
 
 
 def minmax_raw(raw):
