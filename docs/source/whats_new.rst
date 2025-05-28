@@ -41,6 +41,7 @@ Bugs
 - Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
 - Fix code carbon example code (:gh:`777` by `Amar Enkhbat`_)
 - Including the fix_bad_channels for the :class:`moabb.datasets.Stieger2021` (:gh:`783` by `Bruno Aristimunha`_)
+- Fix the :class:`moabb.datasets.Wang2016` (:gh:`781` by `Ulysse Durand`_)
 
 API changes
 ~~~~~~~~~~~
@@ -558,7 +559,7 @@ API changes
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
 .. _Samuel Boehm: https://github.com/Samuel-Boehm
-.. _Amar Enkhbat https://github.com/amar-enkhbat
+.. _Amar Enkhbat: https://github.com/amar-enkhbat
 .. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
 .. _Luuk Neervens: https://github.com/LuukNeervens
 .. _Charlynn van Osch: https://github.com/charlynnvanosch
@@ -566,3 +567,4 @@ API changes
 .. _Thomas Kooiman: https://github.com/jellymace
 .. _Jorge Sanmartin Martinez: https://github.com/jorgesanmar
 .. _Radovan Vodila: https://github.com/rvodila
+.. _UlysseDurand: https://github.com/UlysseDurand
