@@ -25,7 +25,7 @@ We report the results of the benchmark study performed in:
    :alt: MOABB Benchmark datasets
    :align: center
 
-    Visualization of the MOABB datasets, with Motor Imagery (MI) in green, ERP in pink/purple and SSVEP in orange/brown. The size of the circle is proportional to the number of subjects and the contrast depends on the number of electrodes.
+   Visualization of the MOABB datasets, with Motor Imagery (MI) in green, ERP in pink/purple and SSVEP in orange/brown. The size of the circle is proportional to the number of subjects and the contrast depends on the number of electrodes.
 
 This study conducts an extensive Brain-computer interfaces (BCI) reproducibility analysis on open electroencephalography datasets,
 aiming to assess existing solutions and establish open and reproducible benchmarks for effective comparison within the field. Please note that the results are obtained using `Within-Session evaluation <http://moabb.neurotechx.com/docs/api/generated/moabb.evaluations.WithinSessionEvaluation.html>`_.
@@ -52,6 +52,7 @@ All the results here are for **within-session evaluation**, a 5-fold cross-valid
 Motor Imagery - Left vs Right Hand
 ===================================
 .. raw:: html
+
    <hr>
 
 **Left vs Right Hand**: We use only the classes Left Hand and Right Hand.
@@ -143,6 +144,7 @@ Motor Imagery - Right Hand vs Feet
 Motor Imagery - All classes
 ===================================
 .. raw:: html
+
    <p></p>
    <hr>
 

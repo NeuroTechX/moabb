@@ -124,7 +124,7 @@ class CacheConfig:
         Create a CacheConfig object from a dict or another CacheConfig object.
 
         Examples
-        -------
+        --------
         Using default parameters:
 
         >>> CacheConfig.make()

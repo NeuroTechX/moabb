@@ -12,12 +12,14 @@ BUILDDIR      = build
 # Default target: run copy-readme then build HTML.
 all: copy-readme html
 
-# Copy target: copy README.md and CONTRIBUTING.md from the project root (../)
+# Copy target: copy README.md from the project root (../)
 # into docs/source.
 copy-readme:
-	@echo "Copying README.md and CONTRIBUTING.md into $(SOURCEDIR)..."
+	@echo "Copying README.md into $(SOURCEDIR)..."
 	@cp ../README.md $(SOURCEDIR)/README.md
-	@cp ../CONTRIBUTING.md $(SOURCEDIR)/CONTRIBUTING.md
+
+clean:
+	-rm -rf build source/auto_examples source/generated
 
 # Help target.
 help: copy-readme

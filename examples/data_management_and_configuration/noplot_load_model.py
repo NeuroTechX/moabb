@@ -22,6 +22,7 @@ set_log_level("info")
 # In this example, we will use the results computed by the following examples
 #
 # - plot_benchmark
+#
 # ---------------------
 
 # Set up reproducibility of Tensorflow and PyTorch
