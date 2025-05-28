@@ -425,7 +425,7 @@
 <h1>moabb.datasets.Wang2016<a class="headerlink" href="#moabb-datasets-wang2016" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2016">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Wang2016</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_wang.py#L23-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2016" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Wang2016</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_wang.py#L23-L167"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2016" title="Link to this definition">#</a></dt>
 <dd><p>SSVEP Wang 2016 dataset.</p>
 <p><strong>PapersWithCode leaderboard:</strong> <a class="reference external" href="https://paperswithcode.com/dataset/wang2016-moabb">https://paperswithcode.com/dataset/wang2016-moabb</a></p>
 <div class="admonition-dataset-summary admonition">
@@ -436,7 +436,7 @@
 <td><p>34</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>#Chan</strong></p></td>
-<td><p>62</p></td>
+<td><p>64</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>#Classes</strong></p></td>
 <td><p>40</p></td>
@@ -500,6 +500,19 @@ subject, there are five factors including ‘Subject Index’, ‘Gender’, ‘
 ‘Handedness’, and ‘Group’. Subjects were divided into an ‘experienced’
 group (eight subjects, S01-S08) and a ‘naive’ group (27 subjects, S09-S35)
 according to their experience in SSVEP-based BCIs.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The original dataset includes two channels labeled ‘CB1’ and ‘CB2’,
+which are <strong>not part of the standard 10-20 EEG montage</strong>.
+Although the authors of Wang2016 state that the 10-20 layout was used,
+the provided channel location file suggests that ‘CB1’ and ‘CB2’
+may correspond approximately to ‘P9’ and ‘P10’. However, this mapping is
+<strong>not confirmed</strong>, and the exact locations remain uncertain.</p>
+<p>In this implementation, we treat ‘CB1’ and ‘CB2’ as standard EEG channels,
+following the approach used by the authors.</p>
+<p>Users should be aware of this ambiguity when interpreting spatial analyses
+or when comparing to other datasets with strictly standard montages.</p>
+</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rd6745bf218a6-1" role="doc-biblioentry">
@@ -512,7 +525,7 @@ doi: 10.1109/TNSRE.2016.2627556.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2016.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_wang.py#L145-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2016.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_wang.py#L161-L167"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2016.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
