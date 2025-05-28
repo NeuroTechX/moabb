@@ -33,12 +33,14 @@ Enhancements
 
 Bugs
 ~~~~
+- Fix regression in evaluations ignoring ``process_pipeline`` flag (:gh:`774` by `Bruno Aristimunha`_)
 - Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 - Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
 - Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
 - Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
 - Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
 - Fix code carbon example code (:gh:`777` by `Amar Enkhbat`_)
+- Including the fix_bad_channels for the :class:`moabb.datasets.Stieger2021` (:gh:`783` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
