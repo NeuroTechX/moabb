@@ -397,8 +397,7 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
-
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
@@ -501,12 +500,12 @@ to download the full example code.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Cattan2019_VR</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.braininvaders</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BI2014a</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.compound_dataset</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Cattan2019_VR</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.braininvaders</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BI2014a</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.compound_dataset</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">blocks_reps</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms.p300</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms.p300</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a>
 </pre></div>
 </div>
 <section id="initialization">
@@ -517,7 +516,7 @@ to download the full example code.</p>
 3) … and finally use this new dataset on a pipeline
 (this steps is not specific to CompoundDataset)</p>
 <p>Let’s define a paradigm and a pipeline for evaluation first.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../api/generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../api/generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;MDM&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;lwf&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;riemann&quot;</span><span class="p">))</span>
 </pre></div>
@@ -527,29 +526,28 @@ to download the full example code.</p>
 <h2>Creation a selection of subject<a class="headerlink" href="#creation-a-selection-of-subject" title="Link to this heading">#</a></h2>
 <p>We are going to great two CompoundDataset, namely CustomDataset1 &amp;  2.
 A CompoundDataset accepts a subjects_list of subjects.
-It is a list of tuple. A tuple contains 4 values:
-- the original dataset
-- the subject number to select
-- the sessions. It can be:</p>
-<blockquote>
-<div><ul class="simple">
+It is a list of tuple. A tuple contains 4 values:</p>
+<ul class="simple">
+<li><p>the original dataset</p></li>
+<li><p>the subject number to select</p></li>
+<li><p>the sessions. It can be:</p>
+<ul>
 <li><p>a session name (‘0’)</p></li>
 <li><p>a list of sessions ([‘0’, ‘1’])</p></li>
 <li><p><cite>None</cite> to select all the sessions attributed to a subject</p></li>
 </ul>
-</div></blockquote>
-<ul class="simple">
+</li>
 <li><p>the runs. As for sessions, it can be a single run name, a list or <cite>None`</cite> (to select all runs).</p></li>
 </ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset1</span><span class="p">(</span><a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset1</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">biVR</span> <span class="o">=</span> <a href="../../api/generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Cattan2019_VR</span></a><span class="p">(</span><span class="n">virtual_reality</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">screen_display</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">biVR</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Cattan2019_VR</span></a><span class="p">(</span><span class="n">virtual_reality</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">screen_display</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">runs</span> <span class="o">=</span> <span class="n">blocks_reps</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">biVR</span><span class="o">.</span><span class="n">n_repetitions</span><span class="p">)</span>
         <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="n">biVR</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;0VR&quot;</span><span class="p">,</span> <span class="n">runs</span><span class="p">),</span>
             <span class="p">(</span><span class="n">biVR</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;0VR&quot;</span><span class="p">,</span> <span class="n">runs</span><span class="p">),</span>
         <span class="p">]</span>
-        <a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;CustomDataset1&quot;</span><span class="p">,</span>
@@ -557,14 +555,14 @@ It is a list of tuple. A tuple contains 4 values:
         <span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset2</span><span class="p">(</span><a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset2</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">bi2014</span> <span class="o">=</span> <a href="../../api/generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BI2014a</span></a><span class="p">()</span>
+        <span class="n">bi2014</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BI2014a</span></a><span class="p">()</span>
         <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="n">bi2014</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="p">(</span><span class="n">bi2014</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">]</span>
-        <a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;CustomDataset2&quot;</span><span class="p">,</span>
@@ -579,10 +577,10 @@ It is a list of tuple. A tuple contains 4 values:
 The implementation is straight forward. Instead of providing a list of subjects,
 you should provide a list of CompoundDataset.
 subjects_list = [CustomDataset1(), CustomDataset2()]</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset3</span><span class="p">(</span><a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset3</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset1</span></a><span class="p">(),</span> <a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset2</span></a><span class="p">()]</span>
-        <a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset1</span></a><span class="p">(),</span> <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset2</span></a><span class="p">()]</span>
+        <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;CustomDataset3&quot;</span><span class="p">,</span>
@@ -596,153 +594,149 @@ subjects_list = [CustomDataset1(), CustomDataset2()]</p>
 <p>Let’s use a WithinSessionEvaluation to evaluate our new dataset.
 If you already new how to do this, nothing changed:
 The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><a href="../../api/generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset3</span></a><span class="p">()]</span>
-<a href="../../api/generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../api/generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span>
-    <a href="../../api/generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../api/generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;newdataset&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset3</span></a><span class="p">()]</span>
+<a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span>
+    <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;newdataset&quot;</span>
 <span class="p">)</span>
-<span class="n">scores</span> <span class="o">=</span> <a href="../../api/generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
+<span class="n">scores</span> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>CustomDataset3-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:08&lt;00:26,  8.72s/it]No hdf5_path provided, models will not be saved.
+CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:08&lt;00:26,  8.69s/it]No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:17&lt;00:17,  8.54s/it]
-
-  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
-
-  0%|                                     | 12.3k/46.4M [00:00&lt;11:55, 64.8kB/s]
-
-  0%|                                      | 41.0k/46.4M [00:00&lt;06:09, 125kB/s]
-
-  0%|                                      | 82.9k/46.4M [00:00&lt;04:13, 183kB/s]
-
-  0%|▏                                      | 196k/46.4M [00:00&lt;02:02, 376kB/s]
-
-  1%|▎                                      | 419k/46.4M [00:00&lt;01:05, 706kB/s]
-
-  2%|▌                                     | 762k/46.4M [00:01&lt;00:39, 1.16MB/s]
-
-  3%|█▏                                   | 1.56M/46.4M [00:01&lt;00:19, 2.35MB/s]
-
-  7%|██▍                                  | 3.07M/46.4M [00:01&lt;00:09, 4.49MB/s]
-
- 13%|████▉                                | 6.17M/46.4M [00:01&lt;00:04, 8.94MB/s]
-
- 18%|██████▌                              | 8.27M/46.4M [00:01&lt;00:03, 10.1MB/s]
-
- 25%|█████████                            | 11.4M/46.4M [00:01&lt;00:02, 12.9MB/s]
-
- 30%|██████████▉                          | 13.7M/46.4M [00:02&lt;00:02, 13.2MB/s]
-
- 38%|██████████████                       | 17.6M/46.4M [00:02&lt;00:01, 16.4MB/s]
-
- 43%|███████████████▉                     | 20.0M/46.4M [00:02&lt;00:01, 15.7MB/s]
-
- 50%|██████████████████▋                  | 23.4M/46.4M [00:02&lt;00:01, 17.3MB/s]
-
- 56%|████████████████████▉                | 26.2M/46.4M [00:02&lt;00:01, 17.2MB/s]
-
- 64%|███████████████████████▊             | 29.8M/46.4M [00:02&lt;00:00, 18.6MB/s]
-
- 70%|██████████████████████████           | 32.6M/46.4M [00:03&lt;00:00, 18.2MB/s]
-
- 76%|████████████████████████████▏        | 35.4M/46.4M [00:03&lt;00:00, 17.7MB/s]
-
- 82%|██████████████████████████████▍      | 38.2M/46.4M [00:03&lt;00:00, 17.5MB/s]
-
- 89%|████████████████████████████████▊    | 41.1M/46.4M [00:03&lt;00:00, 17.5MB/s]
-
- 96%|███████████████████████████████████▋ | 44.7M/46.4M [00:03&lt;00:00, 18.8MB/s]
+CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:17&lt;00:17,  8.79s/it]
 
   0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 46.4M/46.4M [00:00&lt;00:00, 192GB/s]
+
+  0%|                                     | 12.3k/46.4M [00:00&lt;12:33, 61.6kB/s]
+
+  0%|                                      | 41.0k/46.4M [00:00&lt;06:22, 121kB/s]
+
+  0%|                                      | 95.2k/46.4M [00:00&lt;07:24, 104kB/s]
+
+  0%|▏                                      | 205k/46.4M [00:01&lt;03:17, 235kB/s]
+
+  1%|▎                                      | 418k/46.4M [00:01&lt;01:32, 497kB/s]
+
+  2%|▋                                     | 876k/46.4M [00:01&lt;00:41, 1.09MB/s]
+
+  4%|█▎                                   | 1.71M/46.4M [00:01&lt;00:20, 2.16MB/s]
+
+  7%|██▋                                  | 3.44M/46.4M [00:01&lt;00:09, 4.47MB/s]
+
+ 14%|█████▏                               | 6.50M/46.4M [00:01&lt;00:04, 8.42MB/s]
+
+ 19%|███████                              | 8.79M/46.4M [00:02&lt;00:03, 9.95MB/s]
+
+ 26%|█████████▋                           | 12.1M/46.4M [00:02&lt;00:02, 12.9MB/s]
+
+ 31%|███████████▌                         | 14.5M/46.4M [00:02&lt;00:02, 13.2MB/s]
+
+ 38%|██████████████▏                      | 17.8M/46.4M [00:02&lt;00:01, 15.2MB/s]
+
+ 44%|████████████████▏                    | 20.3M/46.4M [00:02&lt;00:01, 15.2MB/s]
+
+ 50%|██████████████████▋                  | 23.4M/46.4M [00:02&lt;00:01, 16.0MB/s]
+
+ 56%|████████████████████▋                | 26.0M/46.4M [00:03&lt;00:01, 15.9MB/s]
+
+ 63%|███████████████████████▏             | 29.0M/46.4M [00:03&lt;00:01, 16.5MB/s]
+
+ 69%|█████████████████████████▌           | 32.0M/46.4M [00:03&lt;00:00, 16.9MB/s]
+
+ 76%|███████████████████████████▉         | 35.1M/46.4M [00:03&lt;00:00, 17.1MB/s]
+
+ 83%|██████████████████████████████▌      | 38.4M/46.4M [00:03&lt;00:00, 17.8MB/s]
+
+ 89%|████████████████████████████████▊    | 41.2M/46.4M [00:03&lt;00:00, 17.6MB/s]
+
+ 95%|███████████████████████████████████  | 44.0M/46.4M [00:04&lt;00:00, 17.3MB/s]
+
+  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 46.4M/46.4M [00:00&lt;00:00, 215GB/s]
 No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:33&lt;00:12, 12.21s/it]
+CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:34&lt;00:12, 12.62s/it]
 
   0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
 
-  0%|                                   | 1.02k/74.3M [00:00&lt;3:42:45, 5.56kB/s]
+  0%|                                     | 7.17k/74.3M [00:00&lt;32:15, 38.4kB/s]
 
-  0%|                                      | 32.8k/74.3M [00:00&lt;11:12, 110kB/s]
+  0%|                                      | 39.9k/74.3M [00:00&lt;09:41, 128kB/s]
 
-  0%|                                      | 92.2k/74.3M [00:00&lt;05:35, 221kB/s]
+  0%|                                      | 97.3k/74.3M [00:00&lt;05:29, 225kB/s]
 
-  0%|                                       | 211k/74.3M [00:00&lt;02:58, 415kB/s]
+  0%|                                       | 179k/74.3M [00:00&lt;03:44, 330kB/s]
 
-  1%|▏                                      | 440k/74.3M [00:00&lt;01:36, 763kB/s]
+  1%|▏                                      | 377k/74.3M [00:00&lt;01:57, 631kB/s]
 
-  1%|▍                                     | 882k/74.3M [00:01&lt;00:52, 1.41MB/s]
+  1%|▍                                     | 770k/74.3M [00:01&lt;01:00, 1.21MB/s]
 
-  2%|▉                                    | 1.80M/74.3M [00:01&lt;00:26, 2.76MB/s]
+  2%|▊                                    | 1.57M/74.3M [00:01&lt;00:30, 2.39MB/s]
 
-  5%|█▊                                   | 3.63M/74.3M [00:01&lt;00:13, 5.39MB/s]
+  4%|█▌                                   | 3.17M/74.3M [00:01&lt;00:15, 4.69MB/s]
 
- 10%|███▌                                 | 7.26M/74.3M [00:01&lt;00:06, 10.6MB/s]
+  9%|███▏                                 | 6.36M/74.3M [00:01&lt;00:07, 9.23MB/s]
 
- 14%|█████▎                               | 10.6M/74.3M [00:01&lt;00:04, 13.4MB/s]
+ 14%|█████▏                               | 10.4M/74.3M [00:01&lt;00:04, 13.7MB/s]
 
- 18%|██████▊                              | 13.7M/74.3M [00:01&lt;00:04, 14.9MB/s]
+ 18%|██████▋                              | 13.5M/74.3M [00:01&lt;00:04, 15.1MB/s]
 
- 22%|████████▏                            | 16.4M/74.3M [00:02&lt;00:03, 15.4MB/s]
+ 20%|███████▍                             | 15.0M/74.3M [00:02&lt;00:04, 13.0MB/s]
 
- 26%|█████████▋                           | 19.3M/74.3M [00:02&lt;00:03, 16.0MB/s]
+ 24%|████████▊                            | 17.6M/74.3M [00:02&lt;00:04, 13.9MB/s]
 
- 31%|███████████▌                         | 23.1M/74.3M [00:02&lt;00:02, 17.6MB/s]
+ 29%|██████████▊                          | 21.7M/74.3M [00:02&lt;00:03, 16.9MB/s]
 
- 35%|████████████▊                        | 25.8M/74.3M [00:02&lt;00:02, 17.3MB/s]
+ 33%|████████████▎                        | 24.6M/74.3M [00:02&lt;00:02, 17.2MB/s]
 
- 40%|██████████████▋                      | 29.5M/74.3M [00:02&lt;00:02, 18.6MB/s]
+ 37%|█████████████▊                       | 27.7M/74.3M [00:02&lt;00:02, 17.5MB/s]
 
- 43%|████████████████                     | 32.2M/74.3M [00:02&lt;00:02, 17.9MB/s]
+ 41%|███████████████▎                     | 30.8M/74.3M [00:02&lt;00:02, 17.9MB/s]
 
- 47%|█████████████████▌                   | 35.2M/74.3M [00:03&lt;00:02, 17.9MB/s]
+ 46%|█████████████████▏                   | 34.5M/74.3M [00:03&lt;00:02, 19.2MB/s]
 
- 51%|██████████████████▉                  | 38.0M/74.3M [00:03&lt;00:02, 17.6MB/s]
+ 51%|██████████████████▉                  | 38.0M/74.3M [00:03&lt;00:01, 19.9MB/s]
 
- 55%|████████████████████▎                | 40.7M/74.3M [00:03&lt;00:01, 17.2MB/s]
+ 56%|████████████████████▋                | 41.6M/74.3M [00:03&lt;00:01, 20.5MB/s]
 
- 59%|█████████████████████▋               | 43.5M/74.3M [00:03&lt;00:01, 17.3MB/s]
+ 61%|██████████████████████▍              | 45.0M/74.3M [00:03&lt;00:01, 20.4MB/s]
 
- 62%|███████████████████████              | 46.2M/74.3M [00:03&lt;00:01, 17.0MB/s]
+ 64%|███████████████████████▊             | 47.8M/74.3M [00:03&lt;00:01, 19.3MB/s]
 
- 66%|████████████████████████▍            | 49.2M/74.3M [00:03&lt;00:01, 17.2MB/s]
+ 69%|█████████████████████████▋           | 51.5M/74.3M [00:03&lt;00:01, 20.2MB/s]
 
- 70%|█████████████████████████▊           | 51.9M/74.3M [00:04&lt;00:01, 16.9MB/s]
+ 74%|███████████████████████████▏         | 54.6M/74.3M [00:04&lt;00:00, 20.0MB/s]
 
- 74%|███████████████████████████▎         | 54.7M/74.3M [00:04&lt;00:01, 17.1MB/s]
+ 77%|████████████████████████████▋        | 57.5M/74.3M [00:04&lt;00:00, 19.0MB/s]
 
- 77%|████████████████████████████▌        | 57.5M/74.3M [00:04&lt;00:00, 16.9MB/s]
+ 83%|██████████████████████████████▌      | 61.3M/74.3M [00:04&lt;00:00, 20.0MB/s]
 
- 81%|██████████████████████████████       | 60.3M/74.3M [00:04&lt;00:00, 16.9MB/s]
+ 87%|████████████████████████████████     | 64.4M/74.3M [00:04&lt;00:00, 19.6MB/s]
 
- 85%|███████████████████████████████▌     | 63.4M/74.3M [00:04&lt;00:00, 17.4MB/s]
+ 92%|██████████████████████████████████   | 68.4M/74.3M [00:04&lt;00:00, 21.0MB/s]
 
- 89%|████████████████████████████████▊    | 65.7M/74.3M [00:04&lt;00:00, 16.5MB/s]
-
- 93%|██████████████████████████████████▌  | 69.3M/74.3M [00:05&lt;00:00, 18.0MB/s]
-
- 97%|████████████████████████████████████ | 72.3M/74.3M [00:05&lt;00:00, 18.1MB/s]
+ 97%|███████████████████████████████████▊ | 72.0M/74.3M [00:04&lt;00:00, 21.1MB/s]
 
   0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 74.3M/74.3M [00:00&lt;00:00, 344GB/s]
+100%|██████████████████████████████████████| 74.3M/74.3M [00:00&lt;00:00, 240GB/s]
 No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:04&lt;00:00, 19.70s/it]
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:04&lt;00:00, 16.22s/it]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:05&lt;00:00, 19.75s/it]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:05&lt;00:00, 16.35s/it]
       score      time  samples  ... n_sessions         dataset  pipeline
-0  0.662500  0.331781    120.0  ...          1  CustomDataset3       MDM
-1  0.580000  0.325623    120.0  ...          1  CustomDataset3       MDM
-2  0.615010  2.078550    768.0  ...          1  CustomDataset3       MDM
-3  0.562023  4.521108   1356.0  ...          1  CustomDataset3       MDM
+0  0.632500  0.330028    120.0  ...          1  CustomDataset3       MDM
+1  0.520000  0.323644    120.0  ...          1  CustomDataset3       MDM
+2  0.631404  2.106163    768.0  ...          1  CustomDataset3       MDM
+3  0.544479  4.460083   1356.0  ...          1  CustomDataset3       MDM
 
 [4 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 5.477 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 6.006 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  711 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-5-build-a-custom-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">

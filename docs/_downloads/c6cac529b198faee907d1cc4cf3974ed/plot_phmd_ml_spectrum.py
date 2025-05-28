@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 
 ###############################################################################
 # Initialization
-# ---------------
+# --------------
 #
 # 1) Specify the channel and subject to compute the power spectrum.
 # 2) Create an instance of the :class:`moabb.datasets.Cattan2019_PHMD` dataset.
@@ -44,7 +44,7 @@ paradigm = RestingStateToP300Adapter(events=events, channels=[channel])
 
 ###############################################################################
 # Estimate Power Spectral Density
-# ---------------
+# -------------------------------
 # 1) Obtain the epochs for the specified subject.
 # 2) Use Welch's method to estimate the power spectral density.
 
@@ -52,7 +52,7 @@ f, S, _, y = paradigm.psd(subject, dataset)
 
 ###############################################################################
 # Display of the data
-# ---------------
+# -------------------
 #
 # Plot the averaged Power Spectral Density (PSD) for each label condition,
 # using the selected channel specified at the beginning of the script.

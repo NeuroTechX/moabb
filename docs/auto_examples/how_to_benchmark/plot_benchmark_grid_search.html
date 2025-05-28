@@ -77,7 +77,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Tutorial: Within-Session Splitting on Real MI Dataset" href="tutorial_6_within_session_splitter.html" />
-    <link rel="prev" title="Examples of how to use MOABB to benchmark pipelines." href="plot_benchmark.html" />
+    <link rel="prev" title="Benchmarking with MOABB" href="plot_benchmark.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.2.0" />
@@ -397,8 +397,7 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Benchmarking and Pipeline Evaluation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
-
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Benchmarking with MOABB with Grid Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
@@ -504,11 +503,11 @@ to easily scale to many datasets.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">,</span> <a href="../../api/generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">,</span> <a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a>
 
 
-<a href="../../api/generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In this example, we will use only the dataset ‘Zhou 2016’.</p>
@@ -530,7 +529,7 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 <span class="c1"># be in lower case (no capital letters allowed).</span>
 <span class="c1"># If the grid search is already implemented it will load the previous results</span>
 
-<span class="n">results</span> <span class="o">=</span> <a href="../../api/generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">(</span>
+<span class="n">results</span> <span class="o">=</span> <a href="../../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">(</span>
     <span class="n">pipelines</span><span class="o">=</span><span class="s2">&quot;./pipelines_grid/&quot;</span><span class="p">,</span>
     <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;WithinSession&quot;</span><span class="p">],</span>
     <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;LeftRightImagery&quot;</span><span class="p">],</span>
@@ -543,11 +542,11 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou2016-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Zhou2016-WithinSession:  25%|██▌       | 1/4 [00:22&lt;01:08, 22.69s/it]
-Zhou2016-WithinSession:  50%|█████     | 2/4 [00:43&lt;00:43, 21.87s/it]
-Zhou2016-WithinSession:  75%|███████▌  | 3/4 [01:05&lt;00:21, 21.64s/it]
-Zhou2016-WithinSession: 100%|██████████| 4/4 [01:26&lt;00:00, 21.39s/it]
-Zhou2016-WithinSession: 100%|██████████| 4/4 [01:26&lt;00:00, 21.59s/it]
+Zhou2016-WithinSession:  25%|██▌       | 1/4 [00:22&lt;01:08, 22.78s/it]
+Zhou2016-WithinSession:  50%|█████     | 2/4 [00:44&lt;00:43, 21.93s/it]
+Zhou2016-WithinSession:  75%|███████▌  | 3/4 [01:05&lt;00:21, 21.69s/it]
+Zhou2016-WithinSession: 100%|██████████| 4/4 [01:26&lt;00:00, 21.45s/it]
+Zhou2016-WithinSession: 100%|██████████| 4/4 [01:26&lt;00:00, 21.65s/it]
     dataset     evaluation   pipeline  avg score
 0  Zhou2016  WithinSession    EN Grid   0.943531
 1  Zhou2016  WithinSession  CSP + LDA   0.937954
@@ -557,12 +556,12 @@ Zhou2016-WithinSession: 100%|██████████| 4/4 [01:26&lt;00:00
 <p>Benchmark prints a summary of the results. Detailed results are saved in a
 pandas dataframe, and can be used to generate figures. The analysis &amp; figures
 are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../api/generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" srcset="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 27.365 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  593 MB</p>
+<img src="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" srcset="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 27.660 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  606 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-plot-benchmark-grid-search-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/d296b17ab4e4deaa68df6cc8f3f5c727/plot_benchmark_grid_search.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark_grid_search.ipynb</span></code></a></p>
@@ -594,7 +593,7 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Examples of how to use MOABB to benchmark pipelines.</p>
+        <p class="prev-next-title">Benchmarking with MOABB</p>
       </div>
     </a>
     <a class="right-next"

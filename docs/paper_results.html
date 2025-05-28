@@ -419,8 +419,11 @@
 <h1>The largest EEG-based Benchmark for Open Science<a class="headerlink" href="#the-largest-eeg-based-benchmark-for-open-science" title="Link to this heading">#</a></h1>
 <p>We report the results of the benchmark study performed in:
 <a class="reference external" href="https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf">The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark</a></p>
-<figure class="align-center">
+<figure class="align-center" id="id1">
 <img alt="MOABB Benchmark datasets" src="_images/datasets_largest.png" />
+<figcaption>
+<p><span class="caption-text">Visualization of the MOABB datasets, with Motor Imagery (MI) in green, ERP in pink/purple and SSVEP in orange/brown. The size of the circle is proportional to the number of subjects and the contrast depends on the number of electrodes.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
 </figure>
 <p>This study conducts an extensive Brain-computer interfaces (BCI) reproducibility analysis on open electroencephalography datasets,
 aiming to assess existing solutions and establish open and reproducible benchmarks for effective comparison within the field. Please note that the results are obtained using <a class="reference external" href="http://moabb.neurotechx.com/docs/api/generated/moabb.evaluations.WithinSessionEvaluation.html">Within-Session evaluation</a>.
@@ -442,7 +445,7 @@ Each imagery task is associated with a different class, and each task has its di
 </section>
 <section id="motor-imagery-left-vs-right-hand">
 <h1>Motor Imagery - Left vs Right Hand<a class="headerlink" href="#motor-imagery-left-vs-right-hand" title="Link to this heading">#</a></h1>
-<p><strong>Left vs Right Hand</strong>: We use only the classes Left Hand and Right Hand.</p>
+<hr><p><strong>Left vs Right Hand</strong>: We use only the classes Left Hand and Right Hand.</p>
   <table id="mileftvsright" class="hover row-border order-column" style="width:100%">
       <thead>
       <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
@@ -508,7 +511,8 @@ Each imagery task is associated with a different class, and each task has its di
 </script></section>
 <section id="motor-imagery-all-classes">
 <h1>Motor Imagery - All classes<a class="headerlink" href="#motor-imagery-all-classes" title="Link to this heading">#</a></h1>
-<p><strong>All classes</strong>: We use all the classes in the dataset, when there are more than classes that are not Left Hand and Right Hand.</p>
+<p></p>
+<hr><p><strong>All classes</strong>: We use all the classes in the dataset, when there are more than classes that are not Left Hand and Right Hand.</p>
  <table id="mi-all" class="hover row-border order-column" style="width:100%">
      <thead>
      <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
