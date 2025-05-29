@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
+
 pipelines_files = {
     "SSVEP_CCA": "CCA-SSVEP.yml",
     "SSVEP_MsetCCA": "MsetCCA-SSVEP.yml",
