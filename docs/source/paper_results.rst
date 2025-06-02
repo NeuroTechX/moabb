@@ -26,6 +26,11 @@
     table.dataTable td {
       text-align: left;
     }
+    html[data-theme="dark"] .dtfc-fixed-left,
+    html[data-theme="dark"] .dtfc-fixed-start {
+      background-color: #1e1e1e !important;
+      color: #ffffff !important;
+    }
    </style>
 
 .. currentmodule:: moabb.datasets
