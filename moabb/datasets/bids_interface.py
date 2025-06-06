@@ -40,6 +40,15 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
+def get_bids_path(dataset, path=None):
+
+    code = dataset.code
+    mne_path = Path(dl.get_dataset_path(code, path))
+    cache_dir = f"MNE-BIDS-{camel_to_kebab_case(code)}"
+    cache_path = mne_path / cache_dir
+    return cache_path
+
+
 def camel_to_kebab_case(name):
     """Converts a CamelCase string to kebab-case."""
     name = re.sub("(.)([A-Z][a-z]+)", r"\1-\2", name)
@@ -127,11 +136,7 @@ class BIDSInterfaceBase(abc.ABC):
     @property
     def root(self):
         """Return the root path of the BIDS dataset."""
-        code = self.dataset.code
-        mne_path = Path(dl.get_dataset_path(code, self.path))
-        cache_dir = f"MNE-BIDS-{camel_to_kebab_case(code)}"
-        cache_path = mne_path / cache_dir
-        return cache_path
+        return get_bids_path(self.dataset, self.path)
 
     @property
     def lock_file(self):
