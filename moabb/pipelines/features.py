@@ -3,6 +3,7 @@ import numpy as np
 import scipy.signal as signal
 from numpy import ndarray
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.preprocessing import StandardScaler
 
 
@@ -158,3 +159,34 @@ class Convert_Epoch_Array(BaseEstimator, TransformerMixin):
 
     def transform(self, X: mne.Epochs):
         return X.get_data()
+
+
+class MutualInfo(BaseEstimator, TransformerMixin):
+    """Mutual Information based Best Individual Feature (MIBIF) from Ang et al. (2008) [1]_ .
+
+    Bla bla bla of the formula..
+
+    References
+    ----------
+    .. [1] Ang, Kai Keng, et al.  (2008).
+           Filter bank common spatial pattern (FBCSP) in brain-computer interface.
+           IEEE international joint conference on neural networks. IEEE, 2008
+    """
+
+    def __init__(self, n_selected_features) -> None:
+
+        super().__init__()
+
+        self.n_selected_features = n_selected_features
+        self.feature_index = None
+
+    def fit(self, X, y=None):
+
+        selector = SelectKBest(score_func=mutual_info_classif, k=self.n_selected_features)
+        selector.fit(X, y)
+        self.feature_index = selector.get_support(indices=True)
+
+        return self
+
+    def transform(self, X):
+        return X[:, self.feature_index]

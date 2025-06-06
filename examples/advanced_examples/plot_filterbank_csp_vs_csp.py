@@ -8,6 +8,7 @@ very popular dataset 2a from the BCI competition IV.
 """
 
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
 #
 # License: BSD (3-clause)
 
@@ -22,6 +23,7 @@ import moabb
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import FilterBankLeftRightImagery, LeftRightImagery
+from moabb.pipelines.features import MutualInfo
 from moabb.pipelines.utils import FilterBank
 
 
@@ -45,8 +47,11 @@ pipelines = {}
 pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
 pipelines_fb = {}
-pipelines_fb["FBCSP+LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA())
-
+pipelines_fb["FBCSP+LDA"] = make_pipeline(
+    FilterBank(CSP(n_components=4, reg="oas")),
+    MutualInfo(n_selected_features=8),
+    LDA(solver="eigen", shrinkage="auto"),
+)
 ##############################################################################
 # Evaluation
 # ----------
@@ -76,8 +81,18 @@ evaluation = CrossSessionEvaluation(
 )
 results = evaluation.process(pipelines)
 
-# Bank of 2 filters
-filters = [[8, 24], [16, 32]]
+# Bank of 9 filters following the original methodology.
+filters = (
+    [4, 8],
+    [8, 12],
+    [12, 16],
+    [16, 20],
+    [20, 24],
+    [24, 28],
+    [28, 32],
+    [32, 36],
+    [36, 40],
+)
 paradigm = FilterBankLeftRightImagery(filters=filters)
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
