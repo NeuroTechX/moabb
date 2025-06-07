@@ -6,9 +6,11 @@ What's new
 ==========
 
 .. NOTE: there are 3 separate sections for changes, based on type:
+
 - "Enhancements" for new features
 - "Bugs" for bug fixes
 - "API changes" for backward-incompatible changes
+
 .. _current:
 
 
@@ -18,18 +20,19 @@ Develop branch  - 1.2.1
 Enhancements
 ~~~~~~~~~~~~
 - Adding a tutorial for :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`776` by `Thomas Kooiman`_, `Paul Verhoeven`_, `Jorge Sanmartin Martinez`_, and `Radovan Vodila`_ )
-- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
-- Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
+- Adding new motor imagery dataset, Dreyer2023 (:gh:`404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
+- Reordering the examples in the documentation (:gh:`706` by `Bruno Aristimunha`_)
 - Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
-- Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
+- Adding :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B` (:gh:`675` by `Samuel Boehm`_)
 - Adding :class:`moabb.evaluations.splitters.CrossSubjectSplitter` (:gh:`722` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
 - Adding :class:`moabb.evaluations.splitters.CrossSessionSplitter` (:gh:`720` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
-- Adding :class:`moabb.dataset.base.BaseBIDSDataset` and :class:`moabb.dataset.base.LocalBIDSDataset` (:gh:`724` by `Pierre Guetschel`_)
+- Adding :class:`moabb.datasets.base.BaseBIDSDataset` and :class:`moabb.datasets.base.LocalBIDSDataset` (:gh:`724` by `Pierre Guetschel`_)
 - Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
 - Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
 - Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
-- Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch` and `Bruno Aristimunha`_)
+- Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch`_ and `Bruno Aristimunha`_)
 - Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
+- Add function to auto-generate tables for the paper results documentation page (:gh:`785` by `Lucas Heck`_)
 
 Bugs
 ~~~~
@@ -40,6 +43,9 @@ Bugs
 - Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
 - Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
 - Fix code carbon example code (:gh:`777` by `Amar Enkhbat`_)
+- Including the fix_bad_channels for the :class:`moabb.datasets.Stieger2021` (:gh:`783` by `Bruno Aristimunha`_)
+- Fix the :class:`moabb.datasets.Wang2016` (:gh:`781` by `Ulysse Durand`_)
+- Fix warnings raised when building the documentation (:gh:`784` by `Lucas Heck`_)
 
 API changes
 ~~~~~~~~~~~
@@ -68,7 +74,7 @@ Bugs
 - Creating stimulus channels in :class:`moabb.datasets.Zhou2016` and :class:`moabb.datasets.PhysionetMI` to allow braindecode compatibility (:gh:`669` by `Bruno Aristimunha`_)
 - Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
 - Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
-- Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
+- Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>`__ (:gh:`685` by `AFF`)
 - Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_)
 - Change the way of creating the path to the folder (:gh:`697` by `Sebastien Velut`_)
 - Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
@@ -175,10 +181,10 @@ Enhancements
 - Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Add resting state paradigm with dataset and example (:gh:`400` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Speeding the augmentation method by 400% with NumPy vectorization  (:gh:`419` by `Bruno Aristimunha`_)
-- Add possibility to convert datasets to BIDS, plus `example <examples/example_bids_conversion.py>`_ (PR :gh:`408`, PR :gh:`391` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
-- Allow caching intermediate processing steps on disk, plus `example <examples/example_disk_cache.py>`_ (PR :gh:`408`, issue :gh:`385` by `Pierre Guetschel`_)
+- Add possibility to convert datasets to BIDS, plus `example <examples/example_bids_conversion.py>`__ (PR :gh:`408`, PR :gh:`391` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Allow caching intermediate processing steps on disk, plus `example <examples/example_disk_cache.py>`__ (PR :gh:`408`, issue :gh:`385` by `Pierre Guetschel`_)
 - Restructure the paradigms and datasets to move all preprocessing steps to :mod:`moabb.datasets.preprocessing` and as sklearn pipelines (PR :gh:`408` by `Pierre Guetschel`_)
-- Add :func:`moabb.paradigms.FixedIntervalWindowsProcessing` and :func:`moabb.paradigms.FilterBankFixedIntervalWindowsProcessing`, plus `example <examples/example_fixed_interval_windows.py>`_ (PR :gh:`408`, issue :gh:`424` by `Pierre Guetschel`_)
+- Add :func:`moabb.paradigms.FixedIntervalWindowsProcessing` and :func:`moabb.paradigms.FilterBankFixedIntervalWindowsProcessing`, plus `example <examples/example_fixed_interval_windows.py>`__ (PR :gh:`408`, issue :gh:`424` by `Pierre Guetschel`_)
 - Define :func:`moabb.paradigms.base.BaseProcessing`, common parent to :func:`moabb.paradigms.base.BaseParadigm` and :func:`moabb.paradigms.BaseFixedIntervalWindowsProcessing` (PR :gh:`408` by `Pierre Guetschel`_)
 - Allow passing a fixed processing pipeline to :func:`moabb.paradigms.base.BaseProcessing.get_data` and cache its result on disk (PR :gh:`408`, issue :gh:`367` by `Pierre Guetschel`_)
 - Update :func:`moabb.datasets.fake.FakeDataset`'s code to be unique for each parameter combination (PR :gh:`408` by `Pierre Guetschel`_)
@@ -521,6 +527,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
@@ -557,7 +564,7 @@ API changes
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
 .. _Samuel Boehm: https://github.com/Samuel-Boehm
-.. _Amar Enkhbat https://github.com/amar-enkhbat
+.. _Amar Enkhbat: https://github.com/amar-enkhbat
 .. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
 .. _Luuk Neervens: https://github.com/LuukNeervens
 .. _Charlynn van Osch: https://github.com/charlynnvanosch
@@ -565,3 +572,5 @@ API changes
 .. _Thomas Kooiman: https://github.com/jellymace
 .. _Jorge Sanmartin Martinez: https://github.com/jorgesanmar
 .. _Radovan Vodila: https://github.com/rvodila
+.. _Ulysse Durand: https://github.com/UlysseDurand
+.. _Lucas Heck: https://github.com/lucas-heck

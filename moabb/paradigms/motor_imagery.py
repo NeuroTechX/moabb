@@ -211,7 +211,7 @@ class FilterBankMotorImagery(FilterBank):
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
-    -----------
+    ----------
 
     events: List of str
         event labels used to filter datasets (e.g. if only motor imagery is
@@ -294,7 +294,7 @@ class MotorImagery(SinglePass):
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
-    -----------
+    ----------
 
     events: List of str
         event labels used to filter datasets (e.g. if only motor imagery is

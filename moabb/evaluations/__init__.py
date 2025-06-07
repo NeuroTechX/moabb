@@ -9,5 +9,5 @@ from .evaluations import (
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
 )
-from .splitters import CrossSessionSplitter, WithinSessionSplitter
+from .splitters import CrossSessionSplitter, CrossSubjectSplitter, WithinSessionSplitter
 from .utils import create_save_path, save_model_cv, save_model_list
