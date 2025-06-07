@@ -49,7 +49,7 @@ pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 pipelines_fb = {}
 pipelines_fb["FBCSP+LDA"] = make_pipeline(
     FilterBank(CSP(n_components=4, reg="oas")),
-    MutualInfo(n_selected_features=8),
+    MutualInfo(n_selected_features=3),
     LDA(solver="eigen", shrinkage="auto"),
 )
 ##############################################################################
@@ -81,18 +81,13 @@ evaluation = CrossSessionEvaluation(
 )
 results = evaluation.process(pipelines)
 
-# Bank of 9 filters following the original methodology.
-filters = (
-    [4, 8],
-    [8, 12],
-    [12, 16],
-    [16, 20],
-    [20, 24],
-    [24, 28],
-    [28, 32],
-    [32, 36],
-    [36, 40],
-)
+# Bank with smaller filter range following the original methodology.
+filters = [
+    [8, 24],
+    [16, 32],
+    [24, 40],  # high-beta / low-gamma
+    [32, 48],  # low-/mid-gamma
+]
 paradigm = FilterBankLeftRightImagery(filters=filters)
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
