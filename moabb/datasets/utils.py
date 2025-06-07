@@ -85,6 +85,9 @@ def dataset_search(  # noqa: C901
     """
     if len(dataset_list) == 0:
         _init_dataset_list()
+
+    if not dataset_dict:
+        _init_dataset_dict()
     deprecated_names, _, _ = zip(*aliases_list)
 
     channels = set(channels)
