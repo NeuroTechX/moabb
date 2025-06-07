@@ -174,7 +174,7 @@ sphinx_gallery_conf = {
             "../../examples/learning_curve",
         ]
     ),
-    "within_subsection_order": FileNameSortKey,
+    "within_subsection_order": "FileNameSortKey",
 }
 
 
@@ -184,7 +184,7 @@ autosummary_generate = True
 
 numpydoc_show_class_members = False
 
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
+exclude_patterns = ["build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -207,15 +207,10 @@ language = "en"
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
-
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
 
 
 html_theme = "pydata_sphinx_theme"
@@ -438,11 +433,6 @@ intersphinx_mapping = {
     "moabb": ("https://neurotechx.github.io/moabb/", None),
 }
 
-# -- Options for todo extension ----------------------------------------------
-
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
-
 # -- Options for sphinx-gallery ----------------------------------------------
 favicons = [
     {
@@ -455,3 +445,7 @@ favicons = [
     {"rel": "mask-icon", "href": "favicon_mask-icon.svg", "color": "#222832"},
     {"rel": "apple-touch-icon", "sizes": "500x500", "href": "favicon-500.png"},
 ]
+
+# -- Options for MyST --------------------------------------------------------
+# Required due to README.md file starting at H2 not H1
+suppress_warnings = ["myst.header"]

@@ -11,7 +11,7 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 
 ###############################################################################
 #  The justification and goal for within-session splitting
-# -----------------------
+# --------------------------------------------------------
 # In short, because we want to prevent the model from recognizing the subject
 # and learning subject-specific representations instead of focusing on the task at hand.
 #
@@ -43,8 +43,7 @@ Tutorial: Within-Session Splitting on Real MI Dataset
 
 ###############################################################################
 # Importing the necessary libraries
-# -----------------------
-
+# ---------------------------------
 
 import warnings
 
@@ -74,7 +73,7 @@ moabb.set_log_level("info")
 
 ###############################################################################
 # Load the dataset
-# -----------------------
+# ----------------
 # In this example we use 3 subjects of the :class:`moabb.datasets.BNCI2014_001` dataset.
 
 
@@ -84,7 +83,7 @@ dataset.subject_list = [1, 2, 3]
 
 ###############################################################################
 # Extract data: epochs (X), labels (y), and trial metadata (meta)
-# -----------------------
+# ---------------------------------------------------------------
 # For this dataset we use the :class:`moabb.paradigms.LeftRightImagery` paradigm.
 # Additionally, we use the `get_data` method to download, preprocess, epoch, and label the data.
 
@@ -102,7 +101,7 @@ print(meta.head())  # shows subject/session for each trial
 
 ###############################################################################
 # Visualising a single epoch.
-# -----------------------
+# ---------------------------
 # Plot a single epoch (e.g., the first trial), to see what's in this dataset. (limiting to 3 channels for simplicity sake).
 
 
@@ -111,14 +110,14 @@ plt.plot(X[0][0:3].T)  # Transpose to plot channels over time
 plt.title("Epoch 0: EEG Channels Over Time")
 plt.xlabel("Timepoints")
 plt.ylabel("Amplitude")
-plt.legend([f"Channel {i+1}" for i in range(3)], loc="upper right")
+plt.legend([f"Channel {i + 1}" for i in range(3)], loc="upper right")
 plt.tight_layout()
 plt.show()
 
 
 ###############################################################################
 # Build a classification pipeline: CSP to LDA
-# -----------------------
+# -------------------------------------------
 # We use Common Spatial Patterns (CSP) finds spatial filters that maximize variance difference between classes.
 # And then use Linear Discriminant Analysis (LDA) as a simple linear classifier on the extracted CSP features.
 
@@ -132,7 +131,7 @@ pipe
 
 ###############################################################################
 # Instantiate WithinSessionSplitter
-# -----------------------
+# ---------------------------------
 # We want 5-fold cross-validation (CV) within each subject × session grouping
 
 
@@ -150,7 +149,7 @@ if wss.get_n_splits(meta) == 0:
 
 ###############################################################################
 #  Manual evaluation loop: train/test each fold
-# -----------------------
+# ---------------------------------------------
 # We'll collect one row per fold: which subject/session was held out and its score
 
 
@@ -192,7 +191,7 @@ print(df.head())
 
 ###############################################################################
 #  Summary of results
-# -----------------------
+# -------------------
 # We can quickly see per-subject, per-session performance:
 # We see subject 2’s Session 1 has lower mean accuracy, suggesting session variability.
 # Note: you could plot these numbers to visually compare sessions,
@@ -206,7 +205,7 @@ print(summary)
 
 ##########################################################################
 #  Visualisation of the results
-# -----------------------
+# -----------------------------
 
 
 df["subject"] = df["subject"].astype(str)
@@ -221,7 +220,7 @@ plt.show()
 
 ###############################################################################
 #  Visualisation of the data split
-# -----------------------
+# --------------------------------
 # For our 3 subjects, we see that each subject has 5 folds of training data.
 
 

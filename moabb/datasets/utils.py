@@ -582,6 +582,7 @@ def plot_datasets_grid(
         List of datasets to plot. If None, all datasets are plotted.
         If an element of the list is a dictionary, it is assumed to
         have the following keys:
+
             dataset_name: str
                 Name of the dataset.
             paradigm: str
@@ -634,6 +635,7 @@ def plot_datasets_cluster(
         List of datasets to plot. If None, all datasets are plotted.
         If an element of the list is a dictionary, it is assumed to
         have the following keys:
+
             dataset_name: str
                 Name of the dataset.
             paradigm: str
@@ -646,6 +648,7 @@ def plot_datasets_cluster(
                 Number of trials in the dataset.
             trial_len: float
                 Length of each trial in seconds.
+
     meta_gap: float
         Gap between the different datasets in the cluster.
     kwargs: dict
