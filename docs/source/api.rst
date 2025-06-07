@@ -329,7 +329,7 @@ for more info.
     features.ExtendedSSVEPSignal
     features.AugmentedDataset
     features.StandardScaler_Epoch
-    features.MutualInfo
+    features.MutualInfoBasedFeat
     csp.TRCSP
     classification.SSVEP_CCA
     classification.SSVEP_TRCA
