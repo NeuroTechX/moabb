@@ -42,9 +42,9 @@ log = logging.getLogger(__name__)
 
 def get_bids_root(dataset, path=None):
         """Path to the root of the BIDS structure used for caching.
-        
+
         See :class:`moabb.datasets.base.BaseDataset` and
-        :class:`moabb.datasets.base.CacheConfig` for more information 
+        :class:`moabb.datasets.base.CacheConfig` for more information
          on the MOABB caching mechanism.
 
         Parameters
@@ -58,7 +58,7 @@ def get_bids_root(dataset, path=None):
             "~/mne_data" directory is used. If the dataset
             is not found under the given path, the data
             will be automatically downloaded to the specified folder.
- 
+
         Returns
         -------
         root : Path
