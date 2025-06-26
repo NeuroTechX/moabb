@@ -46,6 +46,7 @@ Bugs
 - Including the fix_bad_channels for the :class:`moabb.datasets.Stieger2021` (:gh:`783` by `Bruno Aristimunha`_)
 - Fix the :class:`moabb.datasets.Wang2016` (:gh:`781` by `Ulysse Durand`_)
 - Fix warnings raised when building the documentation (:gh:`784` by `Lucas Heck`_)
+- Remove an unnecessary line in the README.md (:gh:`791` by `Lionel Kusch`_)
 
 API changes
 ~~~~~~~~~~~
