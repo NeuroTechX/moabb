@@ -413,9 +413,29 @@
                   
   <!-- Must import jquery before the datatables css and js files. -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-<div style="font-size: 1em;"><section id="the-largest-eeg-based-benchmark-for-open-science">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.3.1/css/dataTables.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
+
+<style>
+ table.dataTable {
+   font-size: 1.05rem;
+ }
+ div.dt-scroll-head div table.dataTable thead th {
+   padding-right: 5px !important;
+   font-size: 1.05rem;
+ }
+ table.dataTable td {
+   text-align: left;
+ }
+ html[data-theme="dark"] .dtfc-fixed-left,
+ html[data-theme="dark"] .dtfc-fixed-start {
+   background-color: #1e1e1e !important;
+   color: #ffffff !important;
+ }
+</style><section id="the-largest-eeg-based-benchmark-for-open-science">
 <h1>The largest EEG-based Benchmark for Open Science<a class="headerlink" href="#the-largest-eeg-based-benchmark-for-open-science" title="Link to this heading">#</a></h1>
 <p>We report the results of the benchmark study performed in:
 <a class="reference external" href="https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf">The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark</a></p>
@@ -445,178 +465,865 @@ Each imagery task is associated with a different class, and each task has its di
 </section>
 <section id="motor-imagery-left-vs-right-hand">
 <h1>Motor Imagery - Left vs Right Hand<a class="headerlink" href="#motor-imagery-left-vs-right-hand" title="Link to this heading">#</a></h1>
-<hr><p><strong>Left vs Right Hand</strong>: We use only the classes Left Hand and Right Hand.</p>
-  <table id="mileftvsright" class="hover row-border order-column" style="width:100%">
-      <thead>
-      <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2014_004.html#moabb.datasets.BNCI2014_004" title="moabb.datasets.BNCI2014_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_004</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Cho2017.html#moabb.datasets.Cho2017" title="moabb.datasets.Cho2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cho2017</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.GrosseWentrup2009.html#moabb.datasets.GrosseWentrup2009" title="moabb.datasets.GrosseWentrup2009"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrosseWentrup2009</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017A</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></th>
-      <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></th>
-      </tr>
-      </thead>
-  </table>
- <script type="text/javascript">
-      $(document).ready(function() {
-         $('#mileftvsright').DataTable( {
-            "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_left_vs_right_hand.json',
-            "order": [[ 1, "desc" ]],
-            "bJQueryUI": true,
-            "scrollX": true,
-            "paging": false,
-            "info": false,
-            "searching": false,
-         } );
-      } );
- </script>
- <hr></section>
+<p><strong>Left vs Right Hand</strong>: We use only Left Hand and Right Hand classes.</p>
+<table border="1" class="dataframe moabb-table sortable hover row-border order-column" id="within_session_mi_left_vs_right_hand">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Pipeline</th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2014_004.html#moabb.datasets.BNCI2014_004" title="moabb.datasets.BNCI2014_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_004</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Cho2017.html#moabb.datasets.Cho2017" title="moabb.datasets.Cho2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cho2017</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.GrosseWentrup2009.html#moabb.datasets.GrosseWentrup2009" title="moabb.datasets.GrosseWentrup2009"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrosseWentrup2009</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017A</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/AUG_TANG_SVM_grid.yml">ACM+TS+SVM</a></td>
+      <td>91.71±10.30</td>
+      <td>82.67±15.33</td>
+      <td>73.56±14.54</td>
+      <td>86.60±15.12</td>
+      <td>83.05±13.97</td>
+      <td>63.55±21.24</td>
+      <td>85.82±13.98</td>
+      <td>68.97±23.45</td>
+      <td>84.78±13.33</td>
+      <td>95.03±4.76</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CSP.yml">CSP+LDA</a></td>
+      <td>82.34±17.26</td>
+      <td>80.10±14.93</td>
+      <td>71.38±14.54</td>
+      <td>76.44±20.95</td>
+      <td>76.88±17.41</td>
+      <td>65.75±17.37</td>
+      <td>77.23±18.43</td>
+      <td>72.30±21.79</td>
+      <td>80.72±15.29</td>
+      <td>93.15±6.88</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CSP_SVM_grid.yml">CSP+SVM</a></td>
+      <td>83.07±16.53</td>
+      <td>79.27±15.68</td>
+      <td>71.92±14.25</td>
+      <td>77.81±21.27</td>
+      <td>77.27±16.73</td>
+      <td>65.71±17.90</td>
+      <td>79.24±20.07</td>
+      <td>70.11±22.19</td>
+      <td>79.84±15.86</td>
+      <td>92.96±7.86</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/regCSP%2BshLDA.yml">DLCSPauto+shLDA</a></td>
+      <td>82.75±16.69</td>
+      <td>79.87±15.11</td>
+      <td>71.16±14.53</td>
+      <td>76.40±20.83</td>
+      <td>76.69±17.23</td>
+      <td>65.07±17.68</td>
+      <td>77.02±18.48</td>
+      <td>70.34±23.30</td>
+      <td>80.16±15.23</td>
+      <td>92.56±7.21</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_DeepConvNet.yml">DeepConvNet</a></td>
+      <td>82.07±15.52</td>
+      <td>72.36±18.53</td>
+      <td>71.67±12.91</td>
+      <td>82.38±15.39</td>
+      <td>70.65±15.76</td>
+      <td>59.57±16.77</td>
+      <td>81.23±17.39</td>
+      <td>56.03±19.18</td>
+      <td>73.64±15.78</td>
+      <td>94.42±6.21</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGITNet.yml">EEGITNet</a></td>
+      <td>75.27±16.37</td>
+      <td>65.10±15.32</td>
+      <td>57.20±12.21</td>
+      <td>72.19±14.71</td>
+      <td>59.17±11.72</td>
+      <td>52.71±11.11</td>
+      <td>74.66±20.52</td>
+      <td>52.18±16.78</td>
+      <td>59.35±14.06</td>
+      <td>69.41±14.66</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGNeX.yml">EEGNeX</a></td>
+      <td>66.28±13.22</td>
+      <td>66.53±17.10</td>
+      <td>53.28±10.60</td>
+      <td>57.00±7.52</td>
+      <td>55.12±10.05</td>
+      <td>51.20±10.63</td>
+      <td>68.58±19.37</td>
+      <td>49.02±17.58</td>
+      <td>57.97±15.65</td>
+      <td>61.56±14.60</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGNet_8_2.yml">EEGNet_8_2</a></td>
+      <td>77.15±19.33</td>
+      <td>69.50±19.50</td>
+      <td>66.79±16.34</td>
+      <td>83.02±18.08</td>
+      <td>65.67±16.43</td>
+      <td>59.55±15.95</td>
+      <td>80.20±18.13</td>
+      <td>57.99±17.28</td>
+      <td>66.46±21.78</td>
+      <td>94.84±2.83</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGITNet.yml">EEGTCNet</a></td>
+      <td>67.46±20.81</td>
+      <td>69.70±19.55</td>
+      <td>58.34±12.63</td>
+      <td>68.45±16.27</td>
+      <td>55.68±12.75</td>
+      <td>55.90±12.74</td>
+      <td>75.62±22.33</td>
+      <td>51.26±16.77</td>
+      <td>63.16±18.32</td>
+      <td>82.24±9.40</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/FBCSP.py">FilterBank+SVM</a></td>
+      <td>84.44±16.00</td>
+      <td>80.39±16.05</td>
+      <td>67.91±15.63</td>
+      <td>79.65±18.63</td>
+      <td>75.07±16.97</td>
+      <td>58.45±13.93</td>
+      <td>81.44±17.89</td>
+      <td>65.63±21.64</td>
+      <td>76.81±18.88</td>
+      <td>92.64±5.01</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/FgMDM.yml">FgMDM</a></td>
+      <td>86.53±12.14</td>
+      <td>79.28±15.25</td>
+      <td>72.90±12.70</td>
+      <td>87.02±13.20</td>
+      <td>81.34±13.93</td>
+      <td>68.46±19.06</td>
+      <td>86.71±13.79</td>
+      <td>70.86±23.36</td>
+      <td>78.41±14.85</td>
+      <td>92.54±6.67</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/LogVar_grid.yml">LogVariance+LDA</a></td>
+      <td>77.96±15.09</td>
+      <td>78.51±15.25</td>
+      <td>64.49±10.08</td>
+      <td>78.71±11.69</td>
+      <td>66.21±12.06</td>
+      <td>61.94±14.41</td>
+      <td>78.44±13.76</td>
+      <td>61.78±22.77</td>
+      <td>74.13±10.40</td>
+      <td>88.39±8.57</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/LogVar_grid.yml#L7">LogVariance+SVM</a></td>
+      <td>75.86±16.45</td>
+      <td>78.30±15.18</td>
+      <td>65.46±11.71</td>
+      <td>81.73±12.40</td>
+      <td>73.83±13.85</td>
+      <td>62.35±16.87</td>
+      <td>79.42±13.66</td>
+      <td>61.38±22.68</td>
+      <td>74.85±11.33</td>
+      <td>88.47±8.50</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MDM.yml">MDM</a></td>
+      <td>81.69±14.94</td>
+      <td>77.66±15.78</td>
+      <td>63.39±13.69</td>
+      <td>64.29±8.04</td>
+      <td>70.23±13.87</td>
+      <td>54.76±16.79</td>
+      <td>61.53±16.41</td>
+      <td>62.99±21.25</td>
+      <td>58.80±16.13</td>
+      <td>90.70±7.11</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_ShallowConvNet.yml">ShallowConvNet</a></td>
+      <td>86.17±13.74</td>
+      <td>72.36±18.05</td>
+      <td>73.84±14.95</td>
+      <td>86.53±13.00</td>
+      <td>75.83±15.04</td>
+      <td>65.19±15.80</td>
+      <td>84.82±15.29</td>
+      <td>60.80±19.27</td>
+      <td>79.10±12.63</td>
+      <td>95.65±5.55</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/WTRCSP.py">TRCSP+LDA</a></td>
+      <td>79.84±16.28</td>
+      <td>79.78±15.22</td>
+      <td>71.85±13.84</td>
+      <td>78.29±16.66</td>
+      <td>76.26±15.41</td>
+      <td>67.24±17.23</td>
+      <td>79.14±15.91</td>
+      <td>67.30±23.19</td>
+      <td>79.33±14.43</td>
+      <td>93.53±6.38</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/EN_grid.yml">TS+EL</a></td>
+      <td>86.44±13.20</td>
+      <td>79.75±15.44</td>
+      <td>76.23±14.21</td>
+      <td>89.25±12.00</td>
+      <td>84.74±13.19</td>
+      <td>67.91±20.03</td>
+      <td>88.65±12.98</td>
+      <td>68.68±23.64</td>
+      <td>85.29±12.10</td>
+      <td>94.35±6.04</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSLR.yml">TS+LR</a></td>
+      <td>87.41±12.58</td>
+      <td>80.09±15.01</td>
+      <td>75.01±13.71</td>
+      <td>87.60±13.20</td>
+      <td>83.09±13.46</td>
+      <td>67.28±19.19</td>
+      <td>87.22±13.83</td>
+      <td>69.31±23.06</td>
+      <td>83.62±13.88</td>
+      <td>94.16±6.33</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSSVM_grid.yml">TS+SVM</a></td>
+      <td>86.48±13.58</td>
+      <td>79.41±15.26</td>
+      <td>74.62±14.19</td>
+      <td>88.08±13.58</td>
+      <td>83.57±14.08</td>
+      <td>68.18±19.92</td>
+      <td>87.64±13.48</td>
+      <td>68.45±24.25</td>
+      <td>83.72±14.28</td>
+      <td>93.37±6.30</td>
+    </tr>
+  </tbody>
+</table><hr></section>
 <section id="motor-imagery-right-hand-vs-feet">
 <h1>Motor Imagery - Right Hand vs Feet<a class="headerlink" href="#motor-imagery-right-hand-vs-feet" title="Link to this heading">#</a></h1>
 <p><strong>Right Hand vs Feet</strong>: We use only Right Hand and Feet classes.</p>
- <table id="mirightvsfeet" class="hover row-border order-column" style="width:100%">
-     <thead>
-     <tr class="row-odd"><th class="head"><p>Pipeline</p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2014_002.html#moabb.datasets.BNCI2014_002" title="moabb.datasets.BNCI2014_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_002</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2015_001.html#moabb.datasets.BNCI2015_001" title="moabb.datasets.BNCI2015_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_001</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2015_004.html#moabb.datasets.BNCI2015_004" title="moabb.datasets.BNCI2015_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_004</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></th>
-     </tr>
-     </thead>
- </table>
-
-
-<script type="text/javascript">
-     $(document).ready(function() {
-        $('#mirightvsfeet').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_right_hand_vs_feet.json',
-           "order": [[ 1, "desc" ]],
-           "bJQueryUI": true,
-           "scrollX": true,
-           "paging": false,
-           "info": false,
-           "searching": false,
-        } );
-     } );
-</script></section>
+<table border="1" class="dataframe moabb-table sortable hover row-border order-column" id="within_session_mi_right_hand_vs_feet">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Pipeline</th>
+      <th><a class="reference internal" href="generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2014_002.html#moabb.datasets.BNCI2014_002" title="moabb.datasets.BNCI2014_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_002</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2015_001.html#moabb.datasets.BNCI2015_001" title="moabb.datasets.BNCI2015_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_001</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2015_004.html#moabb.datasets.BNCI2015_004" title="moabb.datasets.BNCI2015_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_004</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/AUG_TANG_SVM_grid.yml">ACM+TS+SVM</a></td>
+      <td>86.56±12.26</td>
+      <td>97.32±3.35</td>
+      <td>88.60±10.71</td>
+      <td>93.01±8.09</td>
+      <td>62.60±14.62</td>
+      <td>93.33±8.46</td>
+      <td>98.67±3.06</td>
+      <td>93.25±4.12</td>
+      <td>97.18±3.00</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CSP.yml">CSP+LDA</a></td>
+      <td>77.19±17.58</td>
+      <td>91.52±10.39</td>
+      <td>80.98±14.79</td>
+      <td>88.52±10.75</td>
+      <td>54.02±11.33</td>
+      <td>86.41±13.96</td>
+      <td>97.02±5.17</td>
+      <td>88.59±6.36</td>
+      <td>95.20±3.17</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CSP_SVM_grid.yml">CSP+SVM</a></td>
+      <td>78.59±20.14</td>
+      <td>91.04±10.35</td>
+      <td>81.21±15.30</td>
+      <td>89.19±10.08</td>
+      <td>52.08±11.05</td>
+      <td>88.04±12.57</td>
+      <td>97.50±4.90</td>
+      <td>88.64±5.90</td>
+      <td>94.95±3.53</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/regCSP%2BshLDA.yml">DLCSPauto+shLDA</a></td>
+      <td>77.03±18.93</td>
+      <td>91.54±10.37</td>
+      <td>80.45±15.52</td>
+      <td>88.87±10.42</td>
+      <td>53.02±10.75</td>
+      <td>86.81±13.34</td>
+      <td>96.95±5.22</td>
+      <td>88.48±6.53</td>
+      <td>94.43±3.41</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_DeepConvNet.yml">DeepConvNet</a></td>
+      <td>61.88±19.05</td>
+      <td>88.27±12.19</td>
+      <td>87.56±11.25</td>
+      <td>88.12±13.19</td>
+      <td>57.08±12.29</td>
+      <td>71.49±15.88</td>
+      <td>95.90±7.14</td>
+      <td>79.29±12.63</td>
+      <td>95.92±3.66</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGITNet.yml">EEGITNet</a></td>
+      <td>47.50±9.46</td>
+      <td>75.98±13.09</td>
+      <td>70.90±17.50</td>
+      <td>71.95±16.76</td>
+      <td>51.41±6.40</td>
+      <td>54.69±11.97</td>
+      <td>96.04±8.62</td>
+      <td>62.54±12.32</td>
+      <td>80.40±17.12</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGNeX.yml">EEGNeX</a></td>
+      <td>52.34±14.81</td>
+      <td>64.36±13.49</td>
+      <td>69.95±20.12</td>
+      <td>72.34±19.83</td>
+      <td>53.02±9.69</td>
+      <td>51.77±12.06</td>
+      <td>89.49±16.91</td>
+      <td>60.18±11.70</td>
+      <td>64.80±16.64</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGNet_8_2.yml">EEGNet_8_2</a></td>
+      <td>64.22±16.01</td>
+      <td>88.55±14.92</td>
+      <td>83.93±16.31</td>
+      <td>90.43±11.75</td>
+      <td>54.20±8.20</td>
+      <td>73.78±15.59</td>
+      <td>96.50±8.07</td>
+      <td>78.15±14.46</td>
+      <td>94.58±3.21</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGITNet.yml">EEGTCNet</a></td>
+      <td>61.09±22.06</td>
+      <td>75.21±18.53</td>
+      <td>73.92±19.02</td>
+      <td>77.21±18.55</td>
+      <td>51.22±5.84</td>
+      <td>57.03±13.25</td>
+      <td>97.15±7.70</td>
+      <td>62.37±12.42</td>
+      <td>85.46±16.42</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/FBCSP.py">FilterBank+SVM</a></td>
+      <td>80.78±18.86</td>
+      <td>93.55±6.29</td>
+      <td>80.39±16.83</td>
+      <td>91.57±7.66</td>
+      <td>52.51±9.82</td>
+      <td>83.97±12.43</td>
+      <td>97.40±4.18</td>
+      <td>88.27±7.91</td>
+      <td>94.63±3.94</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/FgMDM.yml">FgMDM</a></td>
+      <td>79.84±17.80</td>
+      <td>93.52±8.18</td>
+      <td>84.77±11.26</td>
+      <td>90.18±9.77</td>
+      <td>58.31±12.63</td>
+      <td>89.67±10.65</td>
+      <td>98.48±3.45</td>
+      <td>88.56±4.63</td>
+      <td>96.04±2.67</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MDM.yml">MDM</a></td>
+      <td>74.22±21.19</td>
+      <td>89.13±10.38</td>
+      <td>77.48±14.11</td>
+      <td>86.20±12.99</td>
+      <td>48.45±9.62</td>
+      <td>81.78±11.64</td>
+      <td>84.67±13.13</td>
+      <td>65.18±9.75</td>
+      <td>92.21±4.31</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_ShallowConvNet.yml">ShallowConvNet</a></td>
+      <td>64.22±18.33</td>
+      <td>93.00±8.05</td>
+      <td>87.60±12.05</td>
+      <td>91.41±10.88</td>
+      <td>57.23±12.36</td>
+      <td>74.75±14.98</td>
+      <td>98.06±4.35</td>
+      <td>88.70±5.60</td>
+      <td>97.06±1.86</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/EN_grid.yml">TS+EL</a></td>
+      <td>81.41±21.36</td>
+      <td>94.45±6.74</td>
+      <td>85.98±11.38</td>
+      <td>91.19±8.49</td>
+      <td>58.70±13.37</td>
+      <td>94.09±7.17</td>
+      <td>98.56±3.01</td>
+      <td>92.32±3.98</td>
+      <td>96.59±2.82</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSLR.yml">TS+LR</a></td>
+      <td>83.75±17.47</td>
+      <td>94.45±7.06</td>
+      <td>85.86±11.01</td>
+      <td>91.09±8.71</td>
+      <td>61.01±14.22</td>
+      <td>93.15±7.40</td>
+      <td>98.60±3.08</td>
+      <td>91.53±4.53</td>
+      <td>96.76±2.58</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSSVM_grid.yml">TS+SVM</a></td>
+      <td>82.66±18.16</td>
+      <td>94.01±7.60</td>
+      <td>86.19±11.50</td>
+      <td>90.81±8.95</td>
+      <td>62.55±15.30</td>
+      <td>94.27±7.19</td>
+      <td>98.72±2.92</td>
+      <td>91.84±4.25</td>
+      <td>96.11±2.99</td>
+    </tr>
+  </tbody>
+</table><hr></section>
 <section id="motor-imagery-all-classes">
 <h1>Motor Imagery - All classes<a class="headerlink" href="#motor-imagery-all-classes" title="Link to this heading">#</a></h1>
-<p></p>
-<hr><p><strong>All classes</strong>: We use all the classes in the dataset, when there are more than classes that are not Left Hand and Right Hand.</p>
- <table id="mi-all" class="hover row-border order-column" style="width:100%">
-     <thead>
-     <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></th>
-     </tr>
-     </thead>
- </table>
- <script type="text/javascript">
-     $(document).ready(function() {
-        $('#mi-all').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_all_classes.json',
-           "order": [[ 1, "desc" ]],
-           "bJQueryUI": true,
-           "scrollX": true,
-           "paging": false,
-           "searching": false,
-           "info": false,
-        } );
-     } );
- </script></section>
+<p><strong>All classes</strong>: We use all the classes in the dataset, when there are more classes that are not Left Hand and Right Hand.</p>
+<table border="1" class="dataframe moabb-table sortable hover row-border order-column" id="within_session_mi_all_classes">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Pipeline</th>
+      <th><a class="reference internal" href="generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/AUG_TANG_SVM_grid.yml">ACM+TS+SVM</a></td>
+      <td>69.37±15.07</td>
+      <td>77.82±12.23</td>
+      <td>55.44±14.87</td>
+      <td>82.50±10.20</td>
+      <td>63.89±11.01</td>
+      <td>85.25±4.06</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CSP.yml">CSP+LDA</a></td>
+      <td>61.04±17.22</td>
+      <td>65.99±15.47</td>
+      <td>47.73±14.35</td>
+      <td>72.97±10.42</td>
+      <td>39.45±11.87</td>
+      <td>82.96±5.20</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CSP_SVM_grid.yml">CSP+SVM</a></td>
+      <td>62.92±16.89</td>
+      <td>66.88±15.22</td>
+      <td>48.52±14.62</td>
+      <td>75.89±10.55</td>
+      <td>44.08±11.95</td>
+      <td>83.08±5.33</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/regCSP%2BshLDA.yml">DLCSPauto+shLDA</a></td>
+      <td>60.63±17.91</td>
+      <td>66.31±15.36</td>
+      <td>46.85±14.65</td>
+      <td>72.82±10.44</td>
+      <td>38.84±11.97</td>
+      <td>82.06±5.57</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_DeepConvNet.yml">DeepConvNet</a></td>
+      <td>37.71±4.56</td>
+      <td>35.29±8.26</td>
+      <td>27.68±3.91</td>
+      <td>56.78±18.11</td>
+      <td>24.17±9.80</td>
+      <td>55.69±5.61</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGITNet.yml">EEGITNet</a></td>
+      <td>36.04±3.43</td>
+      <td>35.55±6.35</td>
+      <td>26.15±4.95</td>
+      <td>70.44±14.68</td>
+      <td>25.78±8.00</td>
+      <td>50.68±16.27</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGNeX.yml">EEGNeX</a></td>
+      <td>37.71±9.64</td>
+      <td>45.62±15.29</td>
+      <td>26.69±5.64</td>
+      <td>67.56±14.15</td>
+      <td>30.22±11.02</td>
+      <td>56.42±11.29</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGNet_8_2.yml">EEGNet_8_2</a></td>
+      <td>43.96±8.62</td>
+      <td>60.46±20.20</td>
+      <td>29.04±7.03</td>
+      <td>76.99±13.05</td>
+      <td>35.35±14.05</td>
+      <td>83.34±3.58</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_EEGITNet.yml">EEGTCNet</a></td>
+      <td>34.17±1.86</td>
+      <td>41.65±13.73</td>
+      <td>25.79±3.85</td>
+      <td>71.11±11.96</td>
+      <td>17.95±3.88</td>
+      <td>37.19±2.57</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/FBCSP.py">FilterBank+SVM</a></td>
+      <td>65.00±17.56</td>
+      <td>66.53±12.05</td>
+      <td>45.49±12.54</td>
+      <td>75.94±8.59</td>
+      <td>45.21±10.05</td>
+      <td>81.99±4.65</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/FgMDM.yml">FgMDM</a></td>
+      <td>65.63±15.63</td>
+      <td>70.14±15.13</td>
+      <td>55.04±14.17</td>
+      <td>82.97±10.08</td>
+      <td>56.94±9.26</td>
+      <td>83.07±4.96</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MDM.yml">MDM</a></td>
+      <td>60.62±13.69</td>
+      <td>61.60±14.20</td>
+      <td>42.96±12.98</td>
+      <td>52.03±10.11</td>
+      <td>33.41±8.67</td>
+      <td>76.05±7.10</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/v1.1.2/pipelines/Keras_ShallowConvNet.yml">ShallowConvNet</a></td>
+      <td>50.00±12.94</td>
+      <td>72.47±16.50</td>
+      <td>41.87±12.50</td>
+      <td>85.13±9.57</td>
+      <td>48.94±10.36</td>
+      <td>85.02±3.78</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/EN_grid.yml">TS+EL</a></td>
+      <td>69.79±13.75</td>
+      <td>72.38±14.85</td>
+      <td>59.93±14.07</td>
+      <td>85.53±9.40</td>
+      <td>63.84±8.77</td>
+      <td>84.54±4.93</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSLR.yml">TS+LR</a></td>
+      <td>69.17±14.79</td>
+      <td>71.97±15.46</td>
+      <td>58.55±14.06</td>
+      <td>84.60±9.28</td>
+      <td>62.76±8.39</td>
+      <td>84.88±4.63</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSSVM_grid.yml">TS+SVM</a></td>
+      <td>67.92±12.74</td>
+      <td>70.76±15.08</td>
+      <td>58.46±15.15</td>
+      <td>84.41±9.56</td>
+      <td>61.47±9.62</td>
+      <td>83.66±4.55</td>
+    </tr>
+  </tbody>
+</table><hr></section>
 <section id="ssvep-all-classes">
 <h1>SSVEP (All classes)<a class="headerlink" href="#ssvep-all-classes" title="Link to this heading">#</a></h1>
 <p>Here, we have the results of the within-session evaluation, a 5-fold cross-validation, over the subject’s session.
 We use all the classes available in the dataset.</p>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<link href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" rel="stylesheet">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
-
- <table id="ssvep" class="hover row-border order-column" style="width:100%">
-     <thead>
-     <tr class="row-odd"><th class="head"><p>Pipeline</p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.MAMEM2.html#moabb.datasets.MAMEM2" title="moabb.datasets.MAMEM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM2</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM3</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Nakanishi2015.html#moabb.datasets.Nakanishi2015" title="moabb.datasets.Nakanishi2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nakanishi2015</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2016</span></code></a></p></th>
-     </tr>
-     </thead>
- </table>
-
-
-<script type="text/javascript">
-     $(document).ready(function() {
-        $('#ssvep').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_ssvep_all_classes.json',
-           "order": [[ 1, "desc" ]],
-           "bJQueryUI": true,
-           "scrollX": true,
-           "paging": false,
-           "searching": false,
-           "info": false,
-                       "buttons": ["copyHtml5","csvHtml5"],
-        } );
-     } );
-</script></section>
+<table border="1" class="dataframe moabb-table sortable hover row-border order-column" id="within_session_ssvep_all_classes">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Pipeline</th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.MAMEM2.html#moabb.datasets.MAMEM2" title="moabb.datasets.MAMEM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM2</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM3</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Nakanishi2015.html#moabb.datasets.Nakanishi2015" title="moabb.datasets.Nakanishi2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nakanishi2015</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2016</span></code></a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CCA-SSVEP.yml">SSVEP_CCA</a></td>
+      <td>25.40±2.51</td>
+      <td>23.86±3.72</td>
+      <td>19.17±5.01</td>
+      <td>23.60±4.10</td>
+      <td>13.80±7.47</td>
+      <td>8.15±0.74</td>
+      <td>2.48±1.01</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MsetCCA-SSVEP.yml">SSVEP_MsetCCA</a></td>
+      <td>22.67±4.23</td>
+      <td>25.10±3.81</td>
+      <td>20.50±2.37</td>
+      <td>22.08±1.76</td>
+      <td>27.60±3.01</td>
+      <td>7.10±1.50</td>
+      <td>4.00±1.10</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MDM-SSVEP.yml">SSVEP_MDM</a></td>
+      <td>70.89±13.44</td>
+      <td>75.38±18.38</td>
+      <td>27.31±11.64</td>
+      <td>23.12±6.29</td>
+      <td>34.40±9.96</td>
+      <td>78.77±19.06</td>
+      <td>54.77±21.95</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSLR-SSVEP.yml">SSVEP_TS+LR</a></td>
+      <td>70.86±11.64</td>
+      <td>89.44±13.84</td>
+      <td>53.71±24.25</td>
+      <td>39.36±12.06</td>
+      <td>42.10±14.33</td>
+      <td>87.22±15.96</td>
+      <td>67.52±20.04</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSSVM_grid.yml">SSVEP_TS+SVM</a></td>
+      <td>68.95±13.73</td>
+      <td>88.58±14.47</td>
+      <td>50.58±23.34</td>
+      <td>34.80±11.76</td>
+      <td>40.20±14.41</td>
+      <td>86.30±15.88</td>
+      <td>59.58±20.57</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TRCA-SSVEP.yml">SSVEP_TRCA</a></td>
+      <td>24.84±7.24</td>
+      <td>64.01±15.27</td>
+      <td>24.24±6.65</td>
+      <td>24.24±2.93</td>
+      <td>23.70±3.49</td>
+      <td>83.21±10.80</td>
+      <td>2.79±1.03</td>
+    </tr>
+  </tbody>
+</table><hr></section>
 <section id="p300-erp-all-classes">
 <h1>P300/ERP (All classes)<a class="headerlink" href="#p300-erp-all-classes" title="Link to this heading">#</a></h1>
 <p>Here, we have the results of the within-session evaluation, a 5-fold cross-validation, over the subject’s session.
 We use all the classes available in the dataset.</p>
- <table id="p300" class="hover row-border order-column" style="width:100%">
-     <thead>
-     <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2014_008.html#moabb.datasets.BNCI2014_008" title="moabb.datasets.BNCI2014_008"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_008</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_009</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BNCI2015_003.html#moabb.datasets.BNCI2015_003" title="moabb.datasets.BNCI2015_003"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_003</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BI2012.html#moabb.datasets.BI2012" title="moabb.datasets.BI2012"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2012</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BI2014b.html#moabb.datasets.BI2014b" title="moabb.datasets.BI2014b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.BI2015b.html#moabb.datasets.BI2015b" title="moabb.datasets.BI2015b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a></p></th>
-     <th class="head"><p><a class="reference internal" href="api/generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></p></th>
-     </tr>
-     </thead>
- </table>
-
+<table border="1" class="dataframe moabb-table sortable hover row-border order-column" id="within_session_erp_p300_all_classes">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Pipeline</th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2014_008.html#moabb.datasets.BNCI2014_008" title="moabb.datasets.BNCI2014_008"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_008</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_009</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BNCI2015_003.html#moabb.datasets.BNCI2015_003" title="moabb.datasets.BNCI2015_003"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_003</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BI2012.html#moabb.datasets.BI2012" title="moabb.datasets.BI2012"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2012</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BI2014b.html#moabb.datasets.BI2014b" title="moabb.datasets.BI2014b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.BI2015b.html#moabb.datasets.BI2015b" title="moabb.datasets.BI2015b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a></th>
+      <th><a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/ERPCov_MDM.yml">ERPCov+MDM</a></td>
+      <td>74.30±9.77</td>
+      <td>81.16±10.13</td>
+      <td>76.79±10.95</td>
+      <td>78.77±10.32</td>
+      <td>80.59±9.36</td>
+      <td>71.62±11.17</td>
+      <td>78.57±12.36</td>
+      <td>80.02±10.07</td>
+      <td>75.04±15.85</td>
+      <td>80.76±10.07</td>
+      <td>71.97±10.88</td>
+      <td>94.47±8.26</td>
+      <td>95.15±3.72</td>
+      <td>74.43±13.26</td>
+      <td>68.17±13.59</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/ERPCov_MDM.yml">ERPCov(svd_n=4)+MDM</a></td>
+      <td>75.42±9.91</td>
+      <td>84.52±8.83</td>
+      <td>76.93±11.26</td>
+      <td>79.02±10.53</td>
+      <td>82.07±8.46</td>
+      <td>72.11±11.64</td>
+      <td>76.48±12.83</td>
+      <td>77.92±10.33</td>
+      <td>77.09±15.81</td>
+      <td>80.67±9.47</td>
+      <td>71.44±10.20</td>
+      <td>96.21±6.50</td>
+      <td>96.61±1.89</td>
+      <td>82.47±12.56</td>
+      <td>70.63±13.79</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/xDAWN_LDA.yml">XDAWN+LDA</a></td>
+      <td>82.24±5.26</td>
+      <td>64.03±3.91</td>
+      <td>78.62±7.19</td>
+      <td>64.41±4.14</td>
+      <td>76.74±7.16</td>
+      <td>66.60±7.54</td>
+      <td>83.73±10.62</td>
+      <td>76.02±10.46</td>
+      <td>77.22±13.73</td>
+      <td>67.16±6.11</td>
+      <td>62.98±5.38</td>
+      <td>97.74±2.84</td>
+      <td>97.54±1.58</td>
+      <td>96.45±3.93</td>
+      <td>67.49±7.44</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/XdawnCov_MDM.yml">XDAWNCov+MDM</a></td>
+      <td>77.62±9.81</td>
+      <td>92.04±5.97</td>
+      <td>83.08±7.55</td>
+      <td>88.22±5.90</td>
+      <td>90.97±5.52</td>
+      <td>80.88±11.01</td>
+      <td>91.58±10.02</td>
+      <td>92.57±5.03</td>
+      <td>83.48±12.05</td>
+      <td>88.53±7.34</td>
+      <td>83.20±9.05</td>
+      <td>98.07±2.09</td>
+      <td>97.78±1.04</td>
+      <td>97.70±2.68</td>
+      <td>86.07±7.15</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/NeuroTechX/moabb/blob/develop/pipelines/XdawnCov_TS_SVM.yml">XDAWNCov+TS+SVM</a></td>
+      <td>85.61±4.43</td>
+      <td>93.43±5.11</td>
+      <td>82.95±8.57</td>
+      <td>90.99±4.79</td>
+      <td>92.71±4.92</td>
+      <td>85.77±9.75</td>
+      <td>91.88±9.94</td>
+      <td>93.05±4.98</td>
+      <td>84.56±12.09</td>
+      <td>90.68±6.29</td>
+      <td>84.29±8.53</td>
+      <td>98.69±1.78</td>
+      <td>98.47±0.97</td>
+      <td>98.41±2.03</td>
+      <td>87.28±6.92</td>
+    </tr>
+  </tbody>
+</table> <hr>
 
 <script type="text/javascript">
-     $(document).ready(function() {
-        $('#p300').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_erp_p300_all_classes.json',
-           "order": [[ 1, "desc" ]],
-           "bJQueryUI": true,
-           "scrollX": true,
-           "paging": false,
-           "searching": false,
-           "info": false,
-                       "buttons": ["copyHtml5","csvHtml5"],
-        } );
-     } );
-</script>
-<p></p><div class="toctree-wrapper compound">
+   $(document).ready(function() {
+     $(".sortable").each(function() {
+       const $table = $(this);
+
+       $table.DataTable({
+         fixedColumns: true,
+         order: [[1, "desc"]],
+         bJQueryUI: true,
+         scrollX: true,
+         paging: false,
+         scrollCollapse: true,
+         info: false,
+         searching: false,
+       });
+     });
+   });
+ </script><div class="toctree-wrapper compound">
 </div>
 </section>
 
