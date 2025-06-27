@@ -47,6 +47,7 @@ Bugs
 - Fix the :class:`moabb.datasets.Wang2016` (:gh:`781` by `Ulysse Durand`_)
 - Fix warnings raised when building the documentation (:gh:`784` by `Lucas Heck`_)
 - Remove an unnecessary line in the README.md (:gh:`791` by `Lionel Kusch`_)
+- Update the dead link about the tutorial of GitHub in CONTRIBUTING.md (:gh:`792` by `Lionel Kusch`_)
 
 API changes
 ~~~~~~~~~~~
