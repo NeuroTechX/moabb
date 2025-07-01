@@ -27,7 +27,11 @@ dataset_list = []
 dataset_dict = {}
 
 
-def _init_dataset_dict():
+def _init_dataset():
+
+    for ds in inspect.getmembers(db, inspect.isclass):
+        if issubclass(ds[1], BaseDataset):
+            dataset_list.append(ds[1])
 
     dataset_class = {
         dataset.__name__: dataset
@@ -37,14 +41,6 @@ def _init_dataset_dict():
 
     if not dataset_dict:
         dataset_dict.update(dataset_class)
-
-
-def _init_dataset_list():
-    for ds in inspect.getmembers(db, inspect.isclass):
-        if issubclass(ds[1], BaseDataset):
-            dataset_list.append(ds[1])
-
-    _init_dataset_dict()
 
 
 def dataset_search(  # noqa: C901
@@ -84,10 +80,11 @@ def dataset_search(  # noqa: C901
         list or set of channels
     """
     if len(dataset_list) == 0:
-        _init_dataset_list()
+        _init_dataset()
 
     if not dataset_dict:
-        _init_dataset_dict()
+        _init_dataset()
+
     deprecated_names, _, _ = zip(*aliases_list)
 
     channels = set(channels)
