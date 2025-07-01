@@ -27,7 +27,7 @@ behavior.
 
 If you're new to Git and want to learn how to fork this repo, make your own additions, and
 include those additions in the master version of this project, check out this
-[great tutorial](http://blog.davidecoppola.com/2016/11/howto-contribute-to-open-source-project-on-github/).
+[great tutorial](https://hackerbits.com/how-to-contribute-to-an-open-source-project-on-github-davide-coppola/).
 
 ### Community
 
