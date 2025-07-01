@@ -71,6 +71,22 @@ class Wang2016(BaseDataset):
     group (eight subjects, S01-S08) and a ‘naive’ group (27 subjects, S09-S35)
     according to their experience in SSVEP-based BCIs.
 
+    Warning
+    -------
+    The original dataset includes two channels labeled 'CB1' and 'CB2',
+    which are **not part of the standard 10-20 EEG montage**.
+    Although the authors of Wang2016 state that the 10-20 layout was used,
+    the provided channel location file suggests that 'CB1' and 'CB2'
+    may correspond approximately to 'P9' and 'P10'. However, this mapping is
+    **not confirmed**, and the exact locations remain uncertain.
+
+    In this implementation, we treat 'CB1' and 'CB2' as standard EEG channels,
+    following the approach used by the authors.
+
+    Users should be aware of this ambiguity when interpreting spatial analyses
+    or when comparing to other datasets with strictly standard montages.
+
+
     References
     ----------
     .. [1] Y. Wang, X. Chen, X. Gao and S. Gao, 2017, "A Benchmark Dataset for
@@ -134,7 +150,7 @@ class Wang2016(BaseDataset):
         buff = (data.shape[0], n_channels + 1, 50)
         data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
 
-        ch_types = ["eeg"] * 59 + ["misc"] + 3 * ["eeg"] + ["misc", "stim"]
+        ch_types = ["eeg"] * 64 + ["stim"]
         sfreq = 250
         info = create_info(self._ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)

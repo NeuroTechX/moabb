@@ -126,8 +126,6 @@ fetch(endpoint)
   });
 </script>
 
-<div id="contributors-container"></div>
-
 Special acknowledge for the extra MOABB contributors:
 
 <table style="text-align: center;">
