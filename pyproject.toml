@@ -32,6 +32,7 @@ edfio = "^0.4.2"
 pytest = "^8.3.5"
 mne-bids = ">=0.14"
 scikit-learn = "<1.6"
+medusa-kernel = ">=1.4"
 
 # Optional dependencies for carbon emission
 codecarbon = { version = "^2.1.4", optional = true }
