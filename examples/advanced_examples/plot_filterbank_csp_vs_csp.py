@@ -17,13 +17,13 @@ import pandas as pd
 import seaborn as sns
 from mne.decoding import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.pipeline import make_pipeline
 
 import moabb
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import FilterBankLeftRightImagery, LeftRightImagery
-from moabb.pipelines.features import MutualInfoBasedFeat
 from moabb.pipelines.utils import FilterBank
 
 
@@ -49,7 +49,7 @@ pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 pipelines_fb = {}
 pipelines_fb["FBCSP+LDA"] = make_pipeline(
     FilterBank(CSP(n_components=4, reg="oas")),
-    MutualInfoBasedFeat(n_selected_features=3),
+    SelectKBest(function=mutual_info_classif, k=3),
     LDA(solver="eigen", shrinkage="auto"),
 )
 ##############################################################################
