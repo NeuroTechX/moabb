@@ -3,7 +3,6 @@ import numpy as np
 import scipy.signal as signal
 from numpy import ndarray
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.preprocessing import StandardScaler
 
 
@@ -159,60 +158,3 @@ class Convert_Epoch_Array(BaseEstimator, TransformerMixin):
 
     def transform(self, X: mne.Epochs):
         return X.get_data()
-
-
-class MutualInfoBasedFeat(BaseEstimator, TransformerMixin):
-    """Mutual Information based Best Individual Feature (MIBIF) from Ang et al. (2008) [1]_.
-
-    The MIBIF algorithm is performed as follows:
-
-    **Step 1: Initialization**
-
-    Initialize the set of `d` features $F = \\{f_1, f_2, \\dots, f_d\\}$ and an
-    empty set for the selected features $S = \\emptyset$.
-
-    **Step 2: Compute Mutual Information**
-
-    Compute the Mutual Information (MI) of each feature with the output class
-    `Ω`. This is calculated as $I(f_i; \\Omega)$ for all $f_i \\in F$.
-
-    **Step 3: Select the best `k` features**
-
-    This step is a loop that repeats until `k` features are selected. In each
-    iteration, it selects the feature $f_i$ that maximizes the mutual
-    information with the output class using the following equation:
-
-    .. math::
-
-        I(f_i; \\Omega) = \\max_{f_j \\in F} I(f_j; \\Omega)
-
-    The selected feature $f_i$ is then moved from the set of available
-    features `F` to the set of selected features `S`. This process continues
-    until the number of features in `S` is equal to `k` (i.e., $|S| = k$).
-
-    References
-    ----------
-    .. [1] Ang, K. K., Chin, Z. Y., Zhang, H., & Guan, C. (2008).
-        Filter bank common spatial pattern (FBCSP) in brain-computer interface.
-        In *2008 IEEE international joint conference on neural networks (IEEE
-        world congress on computational intelligence)* (pp. 2390-2397). IEEE.
-
-    """
-
-    def __init__(self, n_selected_features) -> None:
-
-        super().__init__()
-
-        self.n_selected_features = n_selected_features
-        self.feature_index = None
-
-    def fit(self, X, y=None):
-
-        selector = SelectKBest(score_func=mutual_info_classif, k=self.n_selected_features)
-        selector.fit(X, y)
-        self.feature_index = selector.get_support(indices=True)
-
-        return self
-
-    def transform(self, X):
-        return X[:, self.feature_index]

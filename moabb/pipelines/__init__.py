@@ -13,7 +13,6 @@ from .features import (
     AugmentedDataset,
     ExtendedSSVEPSignal,
     LogVariance,
-    MutualInfoBasedFeat,
 )
 from .utils import FilterBank, create_pipeline_from_config
 
