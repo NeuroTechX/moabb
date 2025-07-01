@@ -1,12 +1,13 @@
+import tempfile
+import traceback
+import zipfile
+from datetime import timezone
+from glob import glob
+
 import mne
 import numpy as np
-import zipfile, tempfile
-import traceback
-from glob import glob
-from medusa import components
-from medusa.bci import cvep_spellers
 from dateutil import parser
-from datetime import timezone
+from medusa import components
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -31,16 +32,11 @@ SUBJECTS = (
     "pqgs",
     "opqm",
     "fjax",
-    "zdvm"
+    "zdvm",
 )
 
-CONDITIONS = (
-    "2",
-    "3",
-    "5",
-    "7",
-    "11"
-)
+CONDITIONS = ("2", "3", "5", "7", "11")
+
 
 class MartinezCagigal2023P(BaseDataset):
     """P-ary m-sequence-based c-VEP dataset from Martínez-Cagigal et al. (2023)
@@ -150,9 +146,9 @@ class MartinezCagigal2023P(BaseDataset):
             sessions_per_subject=len(CONDITIONS),
             events={},
             code="MartinezCagigal2023Parycvep",
-            interval=(0, 1),    # Don't use this, it depends on the condition
+            interval=(0, 1),  # Don't use this, it depends on the condition
             paradigm="cvep",
-            doi="https://doi.org/10.71569/025s-eq10"
+            doi="https://doi.org/10.71569/025s-eq10",
         )
 
     def _get_single_subject_data(self, subject):
@@ -177,17 +173,20 @@ class MartinezCagigal2023P(BaseDataset):
                 for i, train_path in enumerate(train_paths):
                     try:
                         print(f"> Loading {user}, base {base}, train {i + 1}")
-                        sessions[str(base)][f"{i + 1}train"] = \
+                        sessions[str(base)][f"{i + 1}train"] = (
                             self.__convert_to_mne_format(train_path)
-                    except Exception as e:
-                        print(f"[EXCEPTION] Cannot convert signal {train_path}."
-                              f" More information: {traceback.format_exc()}")
+                        )
+                    except Exception:
+                        print(
+                            f"[EXCEPTION] Cannot convert signal {train_path}."
+                            f" More information: {traceback.format_exc()}"
+                        )
                 n = len(train_paths)
 
                 # Load the true labels for testing
                 test_labels = glob(f"{tempdir}/{user}/*{base}_labels*")
                 assert len(test_labels) == 1
-                with open(test_labels[0], 'r', encoding='utf-8') as f:
+                with open(test_labels[0], "r", encoding="utf-8") as f:
                     true_labels = [line.strip() for line in f.readlines()]
 
                 # Testing signals
@@ -196,12 +195,14 @@ class MartinezCagigal2023P(BaseDataset):
                 for i, test_path in enumerate(test_paths):
                     try:
                         print(f"> Loading {user}, base {base}, test {i+n+1}")
-                        sessions[str(base)][f"{i + n + 1}test"] = \
-                            self.__convert_to_mne_format(
-                                test_path, true_labels[i])
-                    except Exception as e:
-                        print(f"[EXCEPTION] Cannot convert signal {test_path}."
-                              f" More information: {traceback.format_exc()}")
+                        sessions[str(base)][f"{i + n + 1}test"] = (
+                            self.__convert_to_mne_format(test_path, true_labels[i])
+                        )
+                    except Exception:
+                        print(
+                            f"[EXCEPTION] Cannot convert signal {test_path}."
+                            f" More information: {traceback.format_exc()}"
+                        )
 
         return sessions
 
@@ -218,34 +219,34 @@ class MartinezCagigal2023P(BaseDataset):
         # Get subject data
         url = f"{HANDLE_URI}/{sub}.zip"
         subject_paths = list()
-        subject_paths.append(
-            dl.data_dl(url, self.code, path, force_update, verbose)
-        )
+        subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
 
         return subject_paths
 
     @staticmethod
     def __get_camel_case_labels(ch_labels):
-        """ Converts a given list of channel labels to the common camel-case
+        """Converts a given list of channel labels to the common camel-case
         format (e.g., 'FPZ' -> 'FPz').
         """
         assert isinstance(ch_labels, list)
         camel_case_labels = []
         for ch in ch_labels:
-            new_ch = ch.replace('Z', 'z').replace('H', 'h').replace('FP', 'Fp')
+            new_ch = ch.replace("Z", "z").replace("H", "h").replace("FP", "Fp")
             camel_case_labels.append(new_ch)
         return camel_case_labels
 
     @staticmethod
     def __trim_unfinished_trial(rec):
-        if np.max(rec.cvepspellerdata.cycle_idx) != \
-                rec.cvepspellerdata.cycle_idx[-1]:
-            last_idx = np.where(rec.cvepspellerdata.cycle_idx == np.max(
-                rec.cvepspellerdata.cycle_idx))[0][-1] + 1
+        if np.max(rec.cvepspellerdata.cycle_idx) != rec.cvepspellerdata.cycle_idx[-1]:
+            last_idx = (
+                np.where(
+                    rec.cvepspellerdata.cycle_idx == np.max(rec.cvepspellerdata.cycle_idx)
+                )[0][-1]
+                + 1
+            )
             rec.cvepspellerdata.cycle_idx = rec.cvepspellerdata.cycle_idx[:last_idx]
             rec.cvepspellerdata.level_idx = rec.cvepspellerdata.level_idx[:last_idx]
-            rec.cvepspellerdata.matrix_idx = rec.cvepspellerdata.matrix_idx[
-                                             :last_idx]
+            rec.cvepspellerdata.matrix_idx = rec.cvepspellerdata.matrix_idx[:last_idx]
             rec.cvepspellerdata.onsets = rec.cvepspellerdata.onsets[:last_idx]
             rec.cvepspellerdata.trial_idx = rec.cvepspellerdata.trial_idx[:last_idx]
             rec.cvepspellerdata.unit_idx = rec.cvepspellerdata.unit_idx[:last_idx]
@@ -257,26 +258,21 @@ class MartinezCagigal2023P(BaseDataset):
 
         # Trim unfinished trials
         rec = self.__trim_unfinished_trial(rec)
-        signal = rec.get_biosignals_with_class_name('EEG')['eeg']
+        signal = rec.get_biosignals_with_class_name("EEG")["eeg"]
 
         # Create the info
         ch_names = self.__get_camel_case_labels(signal.channel_set.l_cha)
-        ch_types = ['eeg'] * len(ch_names)
+        ch_types = ["eeg"] * len(ch_names)
         sampling_freq = signal.fs
         meas_date = parser.parse(rec.date)
-        info = mne.create_info(
-            ch_names=ch_names,
-            ch_types=ch_types,
-            sfreq=sampling_freq
-        )
+        info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sampling_freq)
         info["subject_info"] = {"his_id": str(rec.subject_id)}
         info["description"] = str(rec.recording_id)
         info.set_meas_date(meas_date.replace(tzinfo=timezone.utc))
-        info.set_montage('standard_1005', match_case=False, on_missing='warn')
+        info.set_montage("standard_1005", match_case=False, on_missing="warn")
 
         # Set data
-        raw_data = mne.io.RawArray(np.array(signal.signal).T, info,
-                                   verbose=False)
+        raw_data = mne.io.RawArray(np.array(signal.signal).T, info, verbose=False)
         exp_annotations = {}
 
         # Cycle onsets
@@ -292,7 +288,7 @@ class MartinezCagigal2023P(BaseDataset):
                 m_ = int(rec.cvepspellerdata.matrix_idx[idx])
                 c_ = str(int(rec.cvepspellerdata.command_idx[idx]))
                 seqs_by_cycle.append(
-                    rec.cvepspellerdata.commands_info[m_][c_]['sequence']
+                    rec.cvepspellerdata.commands_info[m_][c_]["sequence"]
                 )
         else:
             assert true_labels is not None
@@ -310,8 +306,9 @@ class MartinezCagigal2023P(BaseDataset):
 
         # Annotate bit-wise
         for o_idx in range(len(sample_onsets)):
-            bw_onsets = [sample_onsets[o_idx] + i / fps for i in range(
-                len(seqs_by_cycle[o_idx]))]
+            bw_onsets = [
+                sample_onsets[o_idx] + i / fps for i in range(len(seqs_by_cycle[o_idx]))
+            ]
             bw_duration = [1 / fps] * len(bw_onsets)
             bw_desc = seqs_by_cycle[o_idx]
             exp_annotations["onset"] += bw_onsets
@@ -322,11 +319,12 @@ class MartinezCagigal2023P(BaseDataset):
         annotations = mne.Annotations(
             onset=exp_annotations["onset"],
             duration=exp_annotations["duration"],
-            description=exp_annotations["description"]
+            description=exp_annotations["description"],
         )
         raw_data.set_annotations(annotations)
 
         return raw_data
+
 
 if __name__ == "__main__":
     dataset = MartinezCagigal2023P()
