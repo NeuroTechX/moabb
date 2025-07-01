@@ -1,7 +1,6 @@
 """BIDS Interface for MOABB.
 
 ========================
-
 This module contains the BIDS interface for MOABB, which allows to convert
 any MOABB dataset to BIDS with Cache.
 We can convert at the Raw, Epochs or Array level.
@@ -41,29 +40,29 @@ log = logging.getLogger(__name__)
 
 
 def get_bids_root(dataset, path=None):
-        """Path to the root of the BIDS structure used for caching.
+    """Path to the root of the BIDS structure used for caching.
 
-        See :class:`moabb.datasets.base.BaseDataset` and
-        :class:`moabb.datasets.base.CacheConfig` for more information
-         on the MOABB caching mechanism.
+    See :class:`moabb.datasets.base.BaseDataset` and
+    :class:`moabb.datasets.base.CacheConfig` for more information
+     on the MOABB caching mechanism.
 
-        Parameters
-        ----------
-        dataset : BaseDataset
-            The dataset object
-        path : None | str
-            Location of where to look for the data storing location.
-            If None, the environment variable or config parameter
-            ``MNE_DATASETS_(dataset)_PATH`` is used. If it doesn't exist, the
-            "~/mne_data" directory is used. If the dataset
-            is not found under the given path, the data
-            will be automatically downloaded to the specified folder.
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The dataset object
+    path : None | str
+        Location of where to look for the data storing location.
+        If None, the environment variable or config parameter
+        ``MNE_DATASETS_(dataset)_PATH`` is used. If it doesn't exist, the
+        "~/mne_data" directory is used. If the dataset
+        is not found under the given path, the data
+        will be automatically downloaded to the specified folder.
 
-        Returns
-        -------
-        root : Path
-            Path to the root of the BIDS structure.
-        """
+    Returns
+    -------
+    root : Path
+        Path to the root of the BIDS structure.
+    """
 
     code = dataset.code
     mne_path = Path(dl.get_dataset_path(code, path))
