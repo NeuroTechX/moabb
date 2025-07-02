@@ -90,11 +90,11 @@ from .stieger2021 import Stieger2021
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .upper_limb import Ofner2017
-from .utils import _init_dataset_list
+from .utils import _init_dataset
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
 
 
-# Call this last in order to make sure the dataset list is populated with
+# Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.
-_init_dataset_list()
+_init_dataset()
