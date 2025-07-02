@@ -49,7 +49,7 @@ pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 pipelines_fb = {}
 pipelines_fb["FBCSP+LDA"] = make_pipeline(
     FilterBank(CSP(n_components=4, reg="oas")),
-    SelectKBest(function=mutual_info_classif, k=3),
+    SelectKBest(score_func=mutual_info_classif, k=3),
     LDA(solver="eigen", shrinkage="auto"),
 )
 ##############################################################################
