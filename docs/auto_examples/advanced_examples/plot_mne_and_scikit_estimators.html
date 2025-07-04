@@ -519,8 +519,8 @@ and to embed EEG specific code inside sklearn pipelines.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.meta_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: E501</span>
-    <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.compute_dataset_statistics.html#moabb.analysis.meta_analysis.compute_dataset_statistics" title="moabb.analysis.meta_analysis.compute_dataset_statistics" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">compute_dataset_statistics</span></a><span class="p">,</span>
-    <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.find_significant_differences.html#moabb.analysis.meta_analysis.find_significant_differences" title="moabb.analysis.meta_analysis.find_significant_differences" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">find_significant_differences</span></a><span class="p">,</span>
+    <span class="n">compute_dataset_statistics</span><span class="p">,</span>
+    <span class="n">find_significant_differences</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.analysis.plotting.paired_plot.html#moabb.analysis.plotting.paired_plot" title="moabb.analysis.plotting.paired_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">paired_plot</span></a><span class="p">,</span> <a href="../../generated/moabb.analysis.plotting.summary_plot.html#moabb.analysis.plotting.summary_plot" title="moabb.analysis.plotting.summary_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">summary_plot</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_009</span></a>
@@ -554,8 +554,8 @@ default, the EEG is return as a Numpy array. With <code class="docutils literal 
 Epochs are returned.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_list</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a> <span class="o">=</span> <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.get_data" title="moabb.datasets.base.BaseDataset.get_data" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_list</span></a><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="../../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_list</span></a><span class="p">)</span>
-<a href="https://mne.tools/stable/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="../../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_list</span></a><span class="p">)</span>
+<a href="https://mne.tools/stable/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
     <a href="../../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="../../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_list</span></a><span class="p">,</span> <span class="n">return_epochs</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 </pre></div>
@@ -604,10 +604,10 @@ ROC-AUC metric.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:06,  3.33s/it]
-BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:03,  3.01s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.60s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.47s/it]
+BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:06,  3.35s/it]
+BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:02,  3.00s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.58s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.46s/it]
 </pre></div>
 </div>
 </section>
@@ -637,10 +637,10 @@ then apply a logistic regression.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:07,  3.55s/it]
-BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:03,  3.10s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.65s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.54s/it]
+BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:07,  3.60s/it]
+BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:03,  3.13s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.67s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.57s/it]
 </pre></div>
 </div>
 </section>
@@ -665,10 +665,10 @@ on the tangent space and classified with a logistic regression.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:04&lt;00:09,  4.88s/it]
-BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:09&lt;00:04,  4.80s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:14&lt;00:00,  4.79s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:14&lt;00:00,  4.80s/it]
+BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:04&lt;00:09,  4.83s/it]
+BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:09&lt;00:04,  4.76s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:14&lt;00:00,  4.77s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:14&lt;00:00,  4.78s/it]
 </pre></div>
 </div>
 </section>
@@ -689,14 +689,14 @@ results.</p>
 </div>
 <p>All the results could be compared and statistical analysis could highlight the
 differences between pipelines.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.compute_dataset_statistics.html#moabb.analysis.meta_analysis.compute_dataset_statistics" title="moabb.analysis.meta_analysis.compute_dataset_statistics" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">compute_dataset_statistics</span></a><span class="p">(</span><span class="n">all_res</span><span class="p">)</span>
-<span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.find_significant_differences.html#moabb.analysis.meta_analysis.find_significant_differences" title="moabb.analysis.meta_analysis.find_significant_differences" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">find_significant_differences</span></a><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <span class="n">compute_dataset_statistics</span><span class="p">(</span><span class="n">all_res</span><span class="p">)</span>
+<span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">find_significant_differences</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
 <a href="../../generated/moabb.analysis.plotting.summary_plot.html#moabb.analysis.plotting.summary_plot" title="moabb.analysis.plotting.summary_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">summary_plot</span></a><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 38.845 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  653 MB</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 39.004 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  644 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b9f56e19f2500dad10214cc29a2a24e4/plot_mne_and_scikit_estimators.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_mne_and_scikit_estimators.ipynb</span></code></a></p>

@@ -511,8 +511,8 @@ they can be used.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">moabb_plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.meta_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: E501</span>
-    <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.compute_dataset_statistics.html#moabb.analysis.meta_analysis.compute_dataset_statistics" title="moabb.analysis.meta_analysis.compute_dataset_statistics" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">compute_dataset_statistics</span></a><span class="p">,</span>
-    <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.find_significant_differences.html#moabb.analysis.meta_analysis.find_significant_differences" title="moabb.analysis.meta_analysis.find_significant_differences" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">find_significant_differences</span></a><span class="p">,</span>
+    <span class="n">compute_dataset_statistics</span><span class="p">,</span>
+    <span class="n">find_significant_differences</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a>
@@ -571,11 +571,11 @@ be overwritten if necessary.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-CrossSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession:  25%|██▌       | 1/4 [00:07&lt;00:21,  7.28s/it]
+BNCI2014-001-CrossSession:  25%|██▌       | 1/4 [00:07&lt;00:22,  7.49s/it]
 BNCI2014-001-CrossSession:  50%|█████     | 2/4 [00:14&lt;00:14,  7.44s/it]
-BNCI2014-001-CrossSession:  75%|███████▌  | 3/4 [00:22&lt;00:07,  7.37s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:29&lt;00:00,  7.25s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:29&lt;00:00,  7.30s/it]
+BNCI2014-001-CrossSession:  75%|███████▌  | 3/4 [00:22&lt;00:07,  7.38s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:29&lt;00:00,  7.22s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:29&lt;00:00,  7.29s/it]
 </pre></div>
 </div>
 </section>
@@ -604,8 +604,8 @@ compute_dataset_statistics allows one to show a meta-analysis style plot as
 well. For an overview of how all algorithms perform in comparison with each
 other, the method find_significant_differences and the summary_plot are
 possible.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.compute_dataset_statistics.html#moabb.analysis.meta_analysis.compute_dataset_statistics" title="moabb.analysis.meta_analysis.compute_dataset_statistics" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">compute_dataset_statistics</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-<span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.find_significant_differences.html#moabb.analysis.meta_analysis.find_significant_differences" title="moabb.analysis.meta_analysis.find_significant_differences" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">find_significant_differences</span></a><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <span class="n">compute_dataset_statistics</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">find_significant_differences</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The meta-analysis style plot shows the standardized mean difference within
@@ -622,8 +622,8 @@ the x-axis over all datasets</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.821 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  700 MB</p>
+<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.985 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  704 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-statistical-analysis-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/33bee7d7204a7cb56293bd1d838b63f8/plot_statistical_analysis.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_statistical_analysis.ipynb</span></code></a></p>
