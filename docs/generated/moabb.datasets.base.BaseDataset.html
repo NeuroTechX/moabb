@@ -661,7 +661,7 @@ will be automatically downloaded to the specified folder.</p></li>
 <li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
 config to the given path. If None, the user is prompted.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -695,7 +695,7 @@ will be automatically downloaded to the specified folder.</p></li>
 config to the given path. If None, the user is prompted.</p></li>
 <li><p><strong>accept</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Accept licence term to download the data, if any. Default: False</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
 </dl>
@@ -722,7 +722,7 @@ contiguous recording. Some dataset break session in multiple runs.</p>
 following order: <code class="docutils literal notranslate"><span class="pre">raw_pipeline</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">epochs_pipeline</span></code> -&gt;
 <code class="docutils literal notranslate"><span class="pre">array_pipeline</span></code>. If a <code class="docutils literal notranslate"><span class="pre">*_pipeline</span></code> argument is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 the step will be skipped. Therefore, the <code class="docutils literal notranslate"><span class="pre">array_pipeline</span></code> may
-either receive a <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> or a <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object
+either receive a <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> or a <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object
 as input depending on whether <code class="docutils literal notranslate"><span class="pre">epochs_pipeline</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> or not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -733,10 +733,10 @@ for details.</p></li>
 <li><p><strong>process_pipeline</strong> (<em>Pipeline</em><em> | </em><em>None</em>) – Optional processing pipeline to apply to the data.
 To generate an adequate pipeline, we recommend using
 <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.utils.make_process_pipelines()</span></code>.
-This pipeline will receive <a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a> objects.
+This pipeline will receive <a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a> objects.
 The steps names of this pipeline should be elements of <code class="xref py py-class docutils literal notranslate"><span class="pre">StepType</span></code>.
 According to their name, the steps should either return a
-<a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a>, a <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, or a <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.ndarray()</span></code>.
+<a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a>, a <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, or a <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.ndarray()</span></code>.
 This pipeline must be “fixed” because it will not be trained,
 i.e. no call to <code class="docutils literal notranslate"><span class="pre">fit</span></code> will be made.</p></li>
 </ul>
