@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Sometimes we have the data in the format X y and not a continous signal. We
-data in the form of epochs, not a continous signal. This creates a problem
-becase MOABB is designed for continous data from subjects and sessions.
+=====================================================================
+Tutorial 6: Using X y data (epoched data) instead of continous signal
+=====================================================================
+Sometimes we have the data in the format X y and not as a continous signal. It 
+means that we have the data in the form of epochs. This creates a problem,
+because MOABB is designed for continous data from subjects and sessions.
 
 The following example provides a special paradigm that uses an extra method on
 a dataset in order MOABB to be able to process data that comes as epochs.
@@ -11,25 +14,23 @@ a dataset in order MOABB to be able to process data that comes as epochs.
 
 """
 import numpy as np
-import pandas as pd
-from pyriemann.estimation import XdawnCovariances
-from pyriemann.tangentspace import TangentSpace
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, make_scorer
-from sklearn.pipeline import make_pipeline
-
 from moabb.datasets.base import BaseDataset
+from moabb.paradigms.base import BaseParadigm
+import pandas as pd
+from sklearn.metrics import make_scorer, accuracy_score
+from pyriemann.estimation import XdawnCovariances
+from sklearn.pipeline import make_pipeline
 from moabb.evaluations import (
     WithinSessionEvaluation,
 )
-from moabb.paradigms.base import BaseParadigm
-
+from sklearn.linear_model import LogisticRegression
+from pyriemann.tangentspace import TangentSpace
 
 class RawEpochParadigm(BaseParadigm):
     """
     A minimal paradigm that directly uses dataset.get_epoch_data()
     with no filtering, epoching, or signal processing.
-
+    
     Useful when your data is in the format X, y.
     """
 
@@ -37,39 +38,35 @@ class RawEpochParadigm(BaseParadigm):
         # filters=None indicates no filtering is done
         super().__init__(filters=[])
         self.return_epochs = False
-
+        
     def get_data(self, dataset, subjects, return_epochs=False, **kwargs):
         X_all, y_all, meta_all = [], [], []
-
+    
         for subject in subjects:
-            X, y = dataset.get_epoch_data(
-                subject
-            )  # (n_trials, n_channels, n_times), (n_trials,)
-
+            X, y = dataset.get_epoch_data(subject)  # (n_trials, n_channels, n_times), (n_trials,)
+            
             if isinstance(y, pd.Series):
                 y = y.values
-
+    
             n_trials = len(y)
             X_all.append(X)
             y_all.append(y)
-
+    
             # Build metadata for each trial, filling defaults for session and run
-            meta = pd.DataFrame(
-                {
-                    "subject": [subject] * n_trials,
-                    "session": [1] * n_trials,  # Default to 1 if sessions unknown
-                    "run": [1] * n_trials,  # Default to 1 if runs unknown
-                    "trial": list(range(n_trials)),
-                    "label": y,
-                }
-            )
-
+            meta = pd.DataFrame({
+                "subject": [subject] * n_trials,
+                "session": [1] * n_trials,  # Default to 1 if sessions unknown
+                "run": [1] * n_trials,      # Default to 1 if runs unknown
+                "trial": list(range(n_trials)),
+                "label": y
+            })
+    
             meta_all.append(meta)
-
+    
         X = np.concatenate(X_all, axis=0)
         y = np.concatenate(y_all, axis=0)
         meta = pd.concat(meta_all, ignore_index=True)
-
+    
         return X, y, meta
 
     def is_valid(self, dataset):
@@ -78,20 +75,19 @@ class RawEpochParadigm(BaseParadigm):
     @property
     def scoring(self):
         return make_scorer(accuracy_score)
-
+    
     def used_events(self, dataset):
-        # Return event dict if needed, or {} if irrelevant
+    # Return event dict if needed, or {} if irrelevant
         return {}
 
     @property
     def datasets(self):
         return []
-
+    
     def make_process_pipelines(self, dataset, **kwargs):
-        # Return a dummy no-op processing pipeline
+    # Return a dummy no-op processing pipeline
         return [lambda raw: raw]
-
-
+    
 class DummyRawEpochsDataset(BaseDataset):
     """
     Minimal custom dataset compatible with RawEpochParadigm.
@@ -104,16 +100,14 @@ class DummyRawEpochsDataset(BaseDataset):
             events={"left": 0, "right": 1},  # required dummy event map
             code="DummyRawEpochsDataset",
             interval=[0, 1],
-            paradigm="RawEpochParadigm",
+            paradigm="RawEpochParadigm"
         )
         self.n_channels = 8
         self.n_times = 128
         self.n_trials = 100
         self.n_classes = 2
 
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=True, verbose=None
-    ):
+    def data_path(self, subject, path=None, force_update=False, update_path=True, verbose=None):
         return None  # Not needed since we generate synthetic data
 
     def _get_single_subject_data(self, subject):
@@ -127,11 +121,10 @@ class DummyRawEpochsDataset(BaseDataset):
         X = rng.standard_normal((self.n_trials, self.n_channels, self.n_times))
         y = rng.integers(low=0, high=self.n_classes, size=self.n_trials)
         return X, y
-
-
+    
 dataset = DummyRawEpochsDataset()
 
-paradigm = RawEpochParadigm()  # using the new special RawEpochParadigm paradigm
+paradigm = RawEpochParadigm() #using the new special RawEpochParadigm paradigm
 
 X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
 
@@ -139,7 +132,7 @@ X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
 # if (X.shape[0] != len(dataset.get_epoch_data()[1])):
 #     raise Exception("Error in dataset/paradigm!")
 
-print("Epochs count before classfication", len(labels))
+print("Epochs count before classfication",len(labels))
 
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm, datasets=dataset, overwrite=True, suffix="motan"
@@ -147,14 +140,14 @@ evaluation = WithinSessionEvaluation(
 
 pipelines = {}
 
-pipelines["XD+TS+LR"] = make_pipeline(
-    XdawnCovariances(nfilter=4, estimator="oas", xdawn_estimator="scm"),
-    TangentSpace(),
-    LogisticRegression(),
-)
+pipelines["XD+TS+LR"]  = make_pipeline(
+                                    XdawnCovariances(nfilter=4, estimator="oas", xdawn_estimator="scm"),
+                                    TangentSpace(), 
+                                    LogisticRegression()
+                                    )
 
 print("Start classification ...")
 scores = evaluation.process(pipelines)
 
-# print results
-print(scores[["score", "time", "samples", "dataset", "pipeline"]])
+#print results
+print(scores[['score', 'time','samples','dataset', 'pipeline']])
