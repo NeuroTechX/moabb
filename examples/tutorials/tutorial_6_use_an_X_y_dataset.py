@@ -3,14 +3,14 @@
 =====================================================================
 Tutorial 6: Using X y data (epoched data) instead of continous signal
 =====================================================================
-Sometimes we have the data in the format X y and not as a continous signal. 
-The data in the form of epochs. This creates a problem, because MOABB is 
+Sometimes we have the data in the format X y and not as a continous signal.
+The data in the form of epochs. This creates a problem, because MOABB is
 designed for continous data from subjects and sessions.
 
-The following tutorial creates a dataset that has data as epochs. A special 
+The following tutorial creates a dataset that has data as epochs. A special
 paradigm is provided that uses an extra method on this dataset in order MOABB
-to be able to process this dataset. Next, a standard classification is 
-performed.  
+to be able to process this dataset. Next, a standard classification is
+performed.
 
 @author: Anton ANDREEV
 
