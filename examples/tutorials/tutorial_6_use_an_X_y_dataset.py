@@ -115,7 +115,7 @@ class DummyRawEpochsDataset(BaseDataset):
         )
         self.n_channels = 8
         self.n_times = 128
-        self.n_trials = 100 # number of epochs
+        self.n_trials = 100  # number of epochs
         self.n_classes = 2
 
     def data_path(
