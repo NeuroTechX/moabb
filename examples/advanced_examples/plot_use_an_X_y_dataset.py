@@ -15,9 +15,9 @@ classification is performed.
 
 The dataset provides the X y data as a single user and a single session.
 
-@author: Anton ANDREEV
-
 """
+# Authors: Anton ANDREEV
+
 import numpy as np
 import pandas as pd
 from pyriemann.estimation import XdawnCovariances
@@ -143,10 +143,6 @@ dataset = DummyRawEpochsDataset()
 paradigm = RawEpochParadigm()  # using the new special RawEpochParadigm paradigm
 
 X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
-
-# verify the correct number of trials (epochs)
-# if (X.shape[0] != len(dataset.get_epoch_data()[1])):
-#     raise Exception("Error in dataset/paradigm!")
 
 print("Epochs count before classification", len(labels))
 
