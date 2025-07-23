@@ -3,14 +3,14 @@
 =====================================================================
 Tutorial 6: Using X y data (epoched data) instead of continous signal
 =====================================================================
-Sometimes, we have data in the format of X and y, rather than as a continuous 
+Sometimes, we have data in the format of X and y, rather than as a continuous
 signal. In such cases, the data is already segmented into epochs. This creates
 a problem, because MOABB is designed to work with continuous data organized by
 subjects and sessions.
 
-The following tutorial creates a dataset that contains data in the form of 
+The following tutorial creates a dataset that contains data in the form of
 epochs. A special paradigm is provided, which calls an additional method on
-the dataset so that MOABB can process it correctly. After this, a standard 
+the dataset so that MOABB can process it correctly. After this, a standard
 classification is performed.
 
 The dataset provides the X y data as a single user and a single session.
@@ -116,7 +116,7 @@ class DummyRawEpochsDataset(BaseDataset):
         )
         self.n_channels = 8
         self.n_times = 128
-        self.n_trials = 100 # number of epochs
+        self.n_trials = 100  # number of epochs
         self.n_classes = 2
 
     def data_path(
