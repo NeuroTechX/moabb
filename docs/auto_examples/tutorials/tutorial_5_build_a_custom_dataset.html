@@ -414,6 +414,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_pre_processing_steps.html">Playing with the pre-processing steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_select_electrodes_resample.html">Select Electrodes and Resampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_statistical_analysis.html">Statistical Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_use_an_X_y_dataset.html">Tutorial 6: Using X y data (epoched data) instead of continuous signal</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../learning_curve/index.html">Evaluation with learning curve</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -604,11 +605,11 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>CustomDataset3-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:00&lt;00:00,  8.79it/s]
-CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:00&lt;00:00,  9.05it/s]
-CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:00&lt;00:00,  9.13it/s]
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.20it/s]
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.13it/s]
+CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:00&lt;00:00,  9.26it/s]
+CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:00&lt;00:00,  9.44it/s]
+CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:00&lt;00:00,  9.52it/s]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.55it/s]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.50it/s]
       score      time  samples  ... n_sessions         dataset  pipeline
 0  0.605000  0.329276    120.0  ...          1  CustomDataset3       MDM
 1  0.590000  0.319106    120.0  ...          1  CustomDataset3       MDM
@@ -618,8 +619,8 @@ CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt
 [4 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.153 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  293 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.068 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  294 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-5-build-a-custom-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/275776a57e5f58879d57ccb28b4daf54/tutorial_5_build_a_custom_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_5_build_a_custom_dataset.ipynb</span></code></a></p>

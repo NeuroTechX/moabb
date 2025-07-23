@@ -414,6 +414,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_pre_processing_steps.html">Playing with the pre-processing steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_select_electrodes_resample.html">Select Electrodes and Resampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_statistical_analysis.html">Statistical Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_use_an_X_y_dataset.html">Tutorial 6: Using X y data (epoched data) instead of continuous signal</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../learning_curve/index.html">Evaluation with learning curve</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -579,7 +580,7 @@ paradigm (note that BNCI2014_001 is in it)</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f1bbdd924a0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f1bbdd91240&gt;, &lt;moabb.datasets.beetl.Beetl2021_A object at 0x7f1bbdd90f40&gt;, &lt;moabb.datasets.beetl.Beetl2021_B object at 0x7f1bbd7dc640&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f1bbdbfa7a0&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7f1bbdbfab30&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7f1bbdbf9360&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7f1bbdbfa800&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7f1beb6b2410&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f1beb6b23e0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f1beb6b2680&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7f1beb6b2d10&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f1beb6b21d0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f1beb6b35e0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f1beb6b2590&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7f1beb6b3130&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f1beb6b26b0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f1beb6b2ce0&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f61a9495c30&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f61a9496f80&gt;, &lt;moabb.datasets.beetl.Beetl2021_A object at 0x7f61a9495000&gt;, &lt;moabb.datasets.beetl.Beetl2021_B object at 0x7f61a99b8460&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f61a94974f0&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7f61a9496e00&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7f61a9495d50&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7f61a9497c10&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7f61a94976a0&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f61a9496cb0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f61a9496bf0&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7f61a9496e60&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f61a9496c80&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f61a9496e90&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f61a9496d70&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7f61a9496ec0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f61a9495c90&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f61a9497730&gt;]
 </pre></div>
 </div>
 <p>The data from a list of subjects could be preprocessed and return as a 3D
@@ -628,14 +629,14 @@ partition and the remaining one as testing partition.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  33%|███▎      | 1/3 [00:06&lt;00:13,  6.90s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  33%|███▎      | 1/3 [00:06&lt;00:13,  6.75s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  67%|██████▋   | 2/3 [00:13&lt;00:06,  6.75s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  67%|██████▋   | 2/3 [00:13&lt;00:06,  6.74s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|██████████| 3/3 [00:20&lt;00:00,  6.70s/it]
-BNCI2014-001-WithinSession: 100%|██████████| 3/3 [00:20&lt;00:00,  6.73s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 3/3 [00:19&lt;00:00,  6.62s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 3/3 [00:19&lt;00:00,  6.65s/it]
 </pre></div>
 </div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
@@ -663,8 +664,8 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.859 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1087 MB</p>
+<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.168 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1090 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b5e20655a202770c185990e75afbe3cd/tutorial_1_simple_example_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.ipynb</span></code></a></p>
