@@ -49,6 +49,7 @@ Bugs
 - Fix warnings raised when building the documentation (:gh:`784` by `Lucas Heck`_)
 - Remove an unnecessary line in the README.md (:gh:`791` by `Lionel Kusch`_)
 - Update the dead link about the tutorial of GitHub in CONTRIBUTING.md (:gh:`792` by `Lionel Kusch`_)
+- Fix: number of trial per class for PHMD_ML dataset (:gh:`797` by `Gregoire Cattan`_)
 
 API changes
 ~~~~~~~~~~~
