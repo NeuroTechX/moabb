@@ -12,6 +12,8 @@ paradigm is provided that uses an extra method on this dataset in order MOABB
 to be able to process this dataset. Next, a standard classification is
 performed.
 
+The dataset provides a signle user, single session with all the data.
+
 @author: Anton ANDREEV
 
 """
@@ -113,7 +115,7 @@ class DummyRawEpochsDataset(BaseDataset):
         )
         self.n_channels = 8
         self.n_times = 128
-        self.n_trials = 100
+        self.n_trials = 100 # number of epochs
         self.n_classes = 2
 
     def data_path(
@@ -127,6 +129,7 @@ class DummyRawEpochsDataset(BaseDataset):
     def get_epoch_data(self, subject=None):
         """
         Simulates epochs: shape (trials, channels, time), and labels
+        Trials is the number of epochs to generate.
         """
         rng = np.random.default_rng(seed=subject)
         X = rng.standard_normal((self.n_trials, self.n_channels, self.n_times))
@@ -144,7 +147,7 @@ X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
 # if (X.shape[0] != len(dataset.get_epoch_data()[1])):
 #     raise Exception("Error in dataset/paradigm!")
 
-print("Epochs count before classfication", len(labels))
+print("Epochs count before classification", len(labels))
 
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm, datasets=dataset, overwrite=True, suffix="motan"
