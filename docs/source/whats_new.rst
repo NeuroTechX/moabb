@@ -33,6 +33,7 @@ Enhancements
 - Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch`_ and `Bruno Aristimunha`_)
 - Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
 - Add function to auto-generate tables for the paper results documentation page (:gh:`785` by `Lucas Heck`_)
+- A tutorial on how to create and use a MOABB dataset from X y (non continuous, epoched) data (:gh:`800` by `Anton Andreev`_)
 
 Bugs
 ~~~~
@@ -48,6 +49,7 @@ Bugs
 - Fix warnings raised when building the documentation (:gh:`784` by `Lucas Heck`_)
 - Remove an unnecessary line in the README.md (:gh:`791` by `Lionel Kusch`_)
 - Update the dead link about the tutorial of GitHub in CONTRIBUTING.md (:gh:`792` by `Lionel Kusch`_)
+- Fix: number of trial per class for PHMD_ML dataset (:gh:`797` by `Gregoire Cattan`_)
 
 API changes
 ~~~~~~~~~~~
