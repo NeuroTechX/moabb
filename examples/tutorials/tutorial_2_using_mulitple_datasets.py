@@ -22,7 +22,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014_001, Zhou2016
+from moabb.datasets import BNCI2014_001, Dreyer2023C
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -39,7 +39,7 @@ warnings.filterwarnings("ignore")
 # (with left-hand/right-hand classes) but were recorded with different number
 # of electrodes, different number of trials, etc.
 
-datasets = [Zhou2016(), BNCI2014_001()]
+datasets = [Dreyer2023C(), BNCI2014_001()]
 subj = [1, 2, 3]
 for d in datasets:
     d.subject_list = subj

@@ -23,7 +23,7 @@ from moabb.analysis.plotting import score_plot
 set_log_level("info")
 
 ###############################################################################
-# In this example, we will use only the dataset 'Zhou 2016'.
+# In this example, we will use only the dataset 'Dreyer2023C'.
 #
 # Running the benchmark
 # ---------------------
@@ -51,7 +51,7 @@ results = benchmark(
     pipelines="./pipelines_grid/",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
-    include_datasets=["Zhou2016"],
+    include_datasets=["Dreyer2023C"],
     results="./results/",
     overwrite=False,
     plot=False,

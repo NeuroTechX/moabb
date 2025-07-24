@@ -74,7 +74,7 @@ import time
 from pathlib import Path
 
 from moabb import set_log_level
-from moabb.datasets import Zhou2016
+from moabb.datasets import Dreyer2023C
 from moabb.paradigms import LeftRightImagery
 
 
@@ -108,14 +108,14 @@ default_cache_config = dict(
 temp_dir = Path(tempfile.mkdtemp())
 
 ###############################################################################
-# We will use the Zhou2016 dataset and the LeftRightImagery paradigm in this
+# We will use the Dreyer2023C dataset and the LeftRightImagery paradigm in this
 # example, but this works for any dataset and paradigm pair.:
-dataset = Zhou2016()
+dataset = Dreyer2023C()
 paradigm = LeftRightImagery()
 
 ###############################################################################
 # And we will only use the first subject for this example:
-subjects = [1]
+subjects = [83]
 
 ###############################################################################
 # Then, saving a cache can simply be done by setting the desired parameters

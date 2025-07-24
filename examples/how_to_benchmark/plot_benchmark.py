@@ -64,7 +64,7 @@ for d in paradigm.datasets:
     print(d.code)
 
 ###############################################################################
-# In this example, we will use only the last dataset, 'Zhou 2016'.
+# In this example, we will use only the last dataset, 'Dreyer2023C'.
 #
 # Running the benchmark
 # ---------------------
@@ -86,7 +86,7 @@ results = benchmark(
     pipelines="./sample_pipelines/",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
-    include_datasets=["Zhou2016"],
+    include_datasets=["Dreyer2023C"],
     results="./results/",
     overwrite=False,
     plot=False,
