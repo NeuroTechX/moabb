@@ -841,7 +841,7 @@ class BNCI2014_002(MNEBNCI):
     medical or neurological diseases.
 
     References
-    -----------
+    ----------
     .. [1] Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
            Random forests in non-invasive sensorimotor rhythm brain-computer
            interfaces: a practical and convenient non-linear classifier.

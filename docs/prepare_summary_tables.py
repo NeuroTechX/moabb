@@ -10,7 +10,7 @@ def prepare_table(df: pd.DataFrame):
     df.loc[no_pwc, "PapersWithCode leaderboard"] = "No"
     df.loc[~no_pwc, "PapersWithCode leaderboard"] = df.loc[
         ~no_pwc, "PapersWithCode leaderboard"
-    ].apply(lambda x: f"`Yes <{x}>`_")
+    ].apply(lambda x: f"`Yes <{x}>`__")
     df["Dataset"] = df["Dataset"].apply(lambda x: f":class:`{x}`")
 
 

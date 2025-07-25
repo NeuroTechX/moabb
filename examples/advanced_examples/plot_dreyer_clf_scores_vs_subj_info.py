@@ -59,7 +59,6 @@ results["subject"] = results["subject"].astype(int)
 results_info = results.merge(info, on="subject", how="left")
 
 ########################################################################################
-########################################################################################
 # 5.1 Plotting subject AUC ROC scores vs subject's gender
 fig, ax = plt.subplots(nrows=2, ncols=2, facecolor="white", figsize=[16, 8], sharey=True)
 fig.subplots_adjust(wspace=0.0, hspace=0.5)
@@ -153,13 +152,13 @@ plt.show()
 # 5.5 Obtained results for four selected subjects correspond to the following figure.
 # --------------------------------------------------------------------------------------
 #
-# .. image:: ../images/Dreyer_clf_scores_vs_subj_info/4_selected_subjects.png
+# .. image:: ../../images/Dreyer_clf_scores_vs_subj_info/4_selected_subjects.png
 #    :align: center
 #    :alt: 4_selected_subjects
 
 ########################################################################################
 # Obtained results for all subjects correspond to the following figure.
 #
-# .. image:: ../images/Dreyer_clf_scores_vs_subj_info/all_subjects.png
+# .. image:: ../../images/Dreyer_clf_scores_vs_subj_info/all_subjects.png
 #    :align: center
 #    :alt: all_subjects
