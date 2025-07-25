@@ -685,19 +685,23 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 postprocess_pipeline=postprocess_pipeline,
                 process_pipelines=[process_pipeline],
             )
+            le = LabelEncoder()
+            y = y if self.mne_labels else le.fit_transform(y)
             Path(memmap_path).mkdir(parents=True, exist_ok=True)
             np.save(f"{memmap_path}/X_memmap.npy", X)
             np.save(f"{memmap_path}/y_memmap.npy", y)
             metadata.to_pickle(f"{memmap_path}/metadata.pkl")
         else:
             # load the data from memmap
-            X = np.load(f"{memmap_path}/X_memmap.npy", mmap_mode="r")
-            y = np.load(f"{memmap_path}/y_memmap.npy", mmap_mode="r")
-            metadata = pd.read_pickle(f"{memmap_path}/metadata.pkl")
+            dataset_memmap = MemmapEEGDataset(
+                x_path=f"{memmap_path}/X_memmap.npy",
+                y_path=f"{memmap_path}/y_memmap.npy",
+                metadata_path=f"{memmap_path}/metadata.pkl",
+            )
 
-        # encode labels
-        le = LabelEncoder()
-        y = y if self.mne_labels else le.fit_transform(y)
+            X = dataset_memmap.X
+            y = dataset_memmap.y
+            metadata = dataset_memmap.metadata
 
         # extract metadata
         groups = metadata.subject.values
@@ -722,7 +726,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
         # Implement Grid Search
-
         if _carbonfootprint:
             # Initialise CodeCarbon
             tracker = EmissionsTracker(save_to_file=False, log_level="error")
@@ -750,7 +753,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 )
 
                 model = clone(clf)
-                model.fit(X[train], y[train])
+
+                train_dataset = torch.utils.data.Subset(dataset_memmap, train)
+
+                model.fit(train_dataset, y=None)
 
                 if _carbonfootprint:
                     emissions = tracker.stop()
@@ -775,6 +781,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
+
+                    # Extract number of channels from dataset
                     score = _score(
                         estimator=model,
                         X_test=X[test[ix]],
@@ -782,6 +790,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         scorer=scorer,
                         score_params={},
                     )
+
+                    nchan = X.shape[1]  # since X is memmapped already
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -804,17 +814,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
 
 class MemmapEEGDataset(torch.utils.data.Dataset):
-    def __init__(self, x_path, y_path, transform=None):
+    def __init__(self, x_path, y_path, metadata_path, transform=None):
         self.X = np.load(x_path, mmap_mode="r")
         self.y = np.load(y_path, mmap_mode="r")
+        self.metadata = pd.read_pickle(metadata_path)
         self.transform = transform
 
     def __getitem__(self, index):
         x = self.X[index]
-        y = self.y[index]
+        y = int(self.y[index])
         if self.transform:
             x = self.transform(x)
-        return torch.from_numpy(x).float(), int(y)
+        return torch.from_numpy(x).float(), y
 
     def __len__(self):
         return len(self.y)
