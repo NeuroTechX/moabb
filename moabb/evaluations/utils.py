@@ -4,10 +4,9 @@ from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+from mne.utils import _open_lock
 from numpy import argmax
 from sklearn.pipeline import Pipeline
-
-from moabb.testing import _open_lock
 
 
 try:

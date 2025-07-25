@@ -1,15 +1,11 @@
-import json
 import os.path as osp
-import random
 import tempfile
-import time
 import unittest
 
 import pytest
-from joblib import Parallel, delayed
+from mne.utils import get_config, set_config
 
 from moabb.datasets import utils
-from moabb.testing import get_config, get_config_path, set_config
 from moabb.utils import aliases_list, depreciated_alias, set_download_dir
 
 
@@ -246,86 +242,6 @@ def test_set_download_dir_nonexistent_path(capsys):
         assert "The path given does not exist, creating it.." in captured.out
         assert osp.isdir(non_existent_path)
         assert get_config("MNE_DATA") == non_existent_path
-
-
-@pytest.mark.parametrize("path_exists", [True, False])
-def test_set_download_dir_parallel(path_exists, tmp_path, capsys):
-    """Test setting download directory in parallel with joblib."""
-    if path_exists:
-        path = tmp_path / "existing_dir"
-        path.mkdir()
-    else:
-        path = tmp_path / "non_existing_dir"
-
-    def worker(p):
-        set_download_dir(p)
-        mne_data_value = get_config("MNE_DATA")
-        return mne_data_value
-
-    results = Parallel(n_jobs=10)(delayed(worker)(path) for _ in range(100))
-
-    for mne_data_value in results:
-        assert mne_data_value == str(path)
-
-
-def worker_update_config_loop(home_dir, worker_id, iterations=10):
-    """
-    Worker function that repeatedly reads the config (via get_config)
-    and then updates it (via set_config) with a unique key/value pair.
-    A short random sleep is added to encourage interleaving.
-    """
-    for i in range(iterations):
-        # Read current configuration (to simulate a read-modify cycle)
-        _ = get_config(home_dir=home_dir)
-        # Create a unique key/value pair.
-        new_key = f"worker_{worker_id}_{i}"
-        new_value = f"value_{worker_id}_{i}"
-        # Update the configuration (our set_config holds the lock over the full cycle)
-        set_config(new_key, new_value, home_dir=home_dir)
-        time.sleep(random.uniform(0, 0.05))
-    return worker_id
-
-
-def test_parallel_get_set_config(tmp_path):
-    """
-    This test uses joblib to run many parallel workers that read and update the same
-    configuration file concurrently. In a correct implementation with proper file locking,
-    the final config file remains valid JSON and includes all expected updates.
-    """
-    # Use the temporary directory as our home directory.
-    home_dir = str(tmp_path)
-    # get_config_path will return home_dir/.mne/mne-python.json
-    config_file = get_config_path(home_dir=home_dir)
-
-    # Ensure that the .mne directory exists.
-    config_dir = tmp_path / ".mne"
-    config_dir.mkdir(exist_ok=True)
-
-    # Write an initial (valid) config file.
-    initial_config = {"initial": "True"}
-    with open(config_file, "w") as f:
-        json.dump(initial_config, f)
-
-    n_workers = 50
-    iterations = 20
-
-    # Launch multiple workers concurrently using joblib.
-    Parallel(n_jobs=25)(
-        delayed(worker_update_config_loop)(home_dir, worker_id, iterations)
-        for worker_id in range(n_workers)
-    )
-
-    # Now, read back the config file.
-    final_config = get_config(home_dir=home_dir)
-
-    # For each worker and iteration, check that the expected key/value pair is present.
-    for worker_id in range(n_workers):
-        for i in range(iterations):
-            expected_key = f"worker_{worker_id}_{i}"
-            expected_value = f"value_{worker_id}_{i}"
-            assert (
-                final_config.get(expected_key) == expected_value
-            ), f"Missing or incorrect value for key {expected_key}"
 
 
 if __name__ == "__main__":

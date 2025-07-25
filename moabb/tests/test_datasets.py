@@ -6,6 +6,7 @@ import mne
 import numpy as np
 import pandas as pd
 import pytest
+from mne.utils import get_config
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
@@ -22,7 +23,6 @@ from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
-from moabb.testing import get_config
 from moabb.utils import aliases_list
 
 

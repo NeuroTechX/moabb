@@ -9,10 +9,9 @@ import h5py
 import numpy as np
 import pandas as pd
 from mne.datasets.utils import _get_path
+from mne.utils import _open_lock, get_config, set_config
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
-
-from moabb.testing import _open_lock, get_config, set_config
 
 
 try:
