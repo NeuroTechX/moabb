@@ -11,10 +11,10 @@ keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.10"
 numpy = "^1.22"
 scipy = "^1.9.3"
-mne = "^1.7.0"
+mne = ">=1.10.0"
 pandas = ">=1.5.2"
 h5py = "^3.10.0"
 matplotlib = "^3.6.2"
@@ -30,8 +30,9 @@ memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
 edfio = "^0.4.2"
 pytest = "^8.3.5"
-mne-bids = ">=0.14"
+mne-bids = ">=0.16"
 scikit-learn = "<1.6"
+lmdb = ">=1.7.2"
 
 # Optional dependencies for carbon emission
 codecarbon = { version = "^2.1.4", optional = true }
