@@ -92,7 +92,7 @@ class Weibo2014(BaseDataset):
     tasks was randomized. Intersection break was about 5 to 10 minutes.
 
     References
-    -----------
+    ----------
     .. [1] Yi, Weibo, et al. "Evaluation of EEG oscillatory patterns and
            cognitive process during simple and compound limb motor imagery."
            PloS one 9.12 (2014). https://doi.org/10.1371/journal.pone.0114853

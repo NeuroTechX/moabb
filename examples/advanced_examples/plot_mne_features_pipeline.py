@@ -1,7 +1,7 @@
 """
-==============================
+========================================
 Pipelines using the mne-features library
-==============================
+========================================
 
 This example shows how to evaluate a pipeline constructed using the
 mne-features library [1]_. This library provides sklearn compatible
@@ -80,7 +80,7 @@ both = FeatureExtractor(sfreq, ["ptp_amp", "variance"])
 
 #######################################################################
 # Pipelines with ``FeatureExtractor``
-# ---------------
+# -----------------------------------
 # The ``FeatureExtractor`` from mne-features is scikit-learn compatible and
 # can therefore be used directly in our pipelines. Here, these transformer
 # steps perform feature extraction, reducing the dimensionality of the data.

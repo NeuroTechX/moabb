@@ -170,6 +170,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 return_raws=self.return_raws,
                 cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
+                process_pipelines=[process_pipeline],
             )
             # iterate over sessions
             for session in np.unique(metadata.session):
@@ -351,6 +352,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
                 postprocess_pipeline=postprocess_pipeline,
+                process_pipelines=[process_pipeline],
             )
             # shuffle_data = True if self.n_perms > 1 else False
             for session in np.unique(metadata_all.session):
@@ -501,6 +503,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 return_raws=self.return_raws,
                 cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
+                process_pipelines=[process_pipeline],
             )
             le = LabelEncoder()
             y = y if self.mne_labels else le.fit_transform(y)
@@ -665,6 +668,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             return_raws=self.return_raws,
             cache_config=self.cache_config,
             postprocess_pipeline=postprocess_pipeline,
+            process_pipelines=[process_pipeline],
         )
 
         # encode labels

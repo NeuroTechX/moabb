@@ -24,12 +24,23 @@ from moabb.utils import aliases_list
 
 
 dataset_list = []
+dataset_dict = {}
 
 
-def _init_dataset_list():
+def _init_dataset():
+
     for ds in inspect.getmembers(db, inspect.isclass):
         if issubclass(ds[1], BaseDataset):
             dataset_list.append(ds[1])
+
+    dataset_class = {
+        dataset.__name__: dataset
+        for dataset in dataset_list
+        if dataset.__name__ not in list(zip(*aliases_list))[0]
+    }
+
+    if not dataset_dict:
+        dataset_dict.update(dataset_class)
 
 
 def dataset_search(  # noqa: C901
@@ -69,7 +80,11 @@ def dataset_search(  # noqa: C901
         list or set of channels
     """
     if len(dataset_list) == 0:
-        _init_dataset_list()
+        _init_dataset()
+
+    if not dataset_dict:
+        _init_dataset()
+
     deprecated_names, _, _ = zip(*aliases_list)
 
     channels = set(channels)
@@ -582,6 +597,7 @@ def plot_datasets_grid(
         List of datasets to plot. If None, all datasets are plotted.
         If an element of the list is a dictionary, it is assumed to
         have the following keys:
+
             dataset_name: str
                 Name of the dataset.
             paradigm: str
@@ -634,6 +650,7 @@ def plot_datasets_cluster(
         List of datasets to plot. If None, all datasets are plotted.
         If an element of the list is a dictionary, it is assumed to
         have the following keys:
+
             dataset_name: str
                 Name of the dataset.
             paradigm: str
@@ -646,6 +663,7 @@ def plot_datasets_cluster(
                 Number of trials in the dataset.
             trial_len: float
                 Length of each trial in seconds.
+
     meta_gap: float
         Gap between the different datasets in the cluster.
     kwargs: dict
