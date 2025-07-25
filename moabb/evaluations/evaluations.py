@@ -693,15 +693,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
             metadata.to_pickle(f"{memmap_path}/metadata.pkl")
         else:
             # load the data from memmap
-            dataset_memmap = MemmapEEGDataset(
-                x_path=f"{memmap_path}/X_memmap.npy",
-                y_path=f"{memmap_path}/y_memmap.npy",
-                metadata_path=f"{memmap_path}/metadata.pkl",
-            )
-
-            X = dataset_memmap.X
-            y = dataset_memmap.y
-            metadata = dataset_memmap.metadata
+            X = np.load(f"{memmap_path}/X_memmap.npy", mmap_mode="r")
+            y = np.load(f"{memmap_path}/y_memmap.npy", mmap_mode="r")
+            metadata = pd.read_pickle(f"{memmap_path}/metadata.pkl")
 
         # extract metadata
         groups = metadata.subject.values
@@ -754,9 +748,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                 model = clone(clf)
 
-                train_dataset = torch.utils.data.Subset(dataset_memmap, train)
-
-                model.fit(train_dataset, y=None)
+                model.fit(X[train], y[train])
 
                 if _carbonfootprint:
                     emissions = tracker.stop()
