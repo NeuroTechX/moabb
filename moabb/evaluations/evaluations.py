@@ -1,10 +1,16 @@
+import hashlib
+import inspect
 import logging
 from copy import deepcopy
+from pathlib import Path
 from time import time
 from typing import Optional, Union
 
 import numpy as np
+import pandas as pd
+import torch
 from mne.epochs import BaseEpochs
+from mne.utils import get_config
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
@@ -14,7 +20,8 @@ from sklearn.model_selection import (
     StratifiedShuffleSplit,
 )
 from sklearn.model_selection._validation import _score
-from sklearn.preprocessing import LabelEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer, LabelEncoder
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
@@ -661,15 +668,32 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if len(run_pipes) == 0:
             return
 
-        # get the data
-        X, y, metadata = self.paradigm.get_data(
+        memmap_path = get_memmap_path(
             dataset=dataset,
+            process_pipeline=process_pipeline,
+            postprocess_pipeline=postprocess_pipeline,
             return_epochs=self.return_epochs,
             return_raws=self.return_raws,
-            cache_config=self.cache_config,
-            postprocess_pipeline=postprocess_pipeline,
-            process_pipelines=[process_pipeline],
         )
+        if not Path(memmap_path).exists():
+            # get the data
+            X, y, metadata = self.paradigm.get_data(
+                dataset=dataset,
+                return_epochs=self.return_epochs,
+                return_raws=self.return_raws,
+                cache_config=self.cache_config,
+                postprocess_pipeline=postprocess_pipeline,
+                process_pipelines=[process_pipeline],
+            )
+            Path(memmap_path).mkdir(parents=True, exist_ok=True)
+            np.save(f"{memmap_path}/X_memmap.npy", X)
+            np.save(f"{memmap_path}/y_memmap.npy", y)
+            metadata.to_pickle(f"{memmap_path}/metadata.pkl")
+        else:
+            # load the data from memmap
+            X = np.load(f"{memmap_path}/X_memmap.npy", mmap_mode="r")
+            y = np.load(f"{memmap_path}/y_memmap.npy", mmap_mode="r")
+            metadata = pd.read_pickle(f"{memmap_path}/metadata.pkl")
 
         # encode labels
         le = LabelEncoder()
@@ -726,7 +750,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 )
 
                 model = clone(clf)
-
                 model.fit(X[train], y[train])
 
                 if _carbonfootprint:
@@ -778,3 +801,74 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     def is_valid(self, dataset):
         return len(dataset.subject_list) > 1
+
+
+class MemmapEEGDataset(torch.utils.data.Dataset):
+    def __init__(self, x_path, y_path, transform=None):
+        self.X = np.load(x_path, mmap_mode="r")
+        self.y = np.load(y_path, mmap_mode="r")
+        self.transform = transform
+
+    def __getitem__(self, index):
+        x = self.X[index]
+        y = self.y[index]
+        if self.transform:
+            x = self.transform(x)
+        return torch.from_numpy(x).float(), int(y)
+
+    def __len__(self):
+        return len(self.y)
+
+
+def get_pipeline_name(pipeline):
+    """Create a unique name for a pipeline or list of (name, transform) steps."""
+    steps = []
+
+    if isinstance(pipeline, Pipeline):
+        steps = pipeline.steps
+    elif isinstance(pipeline, list):  # raw list of (name, transform)
+        steps = pipeline
+    else:
+        return "noop"
+
+    names = []
+    for name, step in steps:
+        if isinstance(step, FunctionTransformer):
+            try:
+                source = inspect.getsource(step.func)
+                hashed = hashlib.md5(source.encode()).hexdigest()[:8]
+                step_name = f"FunctionTransformer_{hashed}"
+            except Exception:
+                step_name = f"FunctionTransformer_{id(step.func)}"
+        else:
+            step_name = getattr(step, "__class__", str(step)).__name__
+        names.append(step_name)
+
+    return "_".join(names)
+
+
+def get_memmap_path(
+    dataset,
+    process_pipeline,
+    postprocess_pipeline=None,
+    return_epochs=False,
+    return_raws=False,
+):
+    """Generate a clean path to store/load memmap data."""
+    # Handle None safely
+    postprocess_pipeline = postprocess_pipeline or []
+
+    # Convert pipeline names to unique strings
+    process_name = get_pipeline_name(process_pipeline)
+    postprocess_name = get_pipeline_name(postprocess_pipeline)
+
+    # Compose full path
+    memmap_path = Path(get_config("MNE_DATA")) / Path(
+        dataset.code,
+        process_name,
+        postprocess_name,
+        "memmap",
+        "epochs" if return_epochs else "raws" if return_raws else "data",
+    )
+
+    return str(memmap_path)
