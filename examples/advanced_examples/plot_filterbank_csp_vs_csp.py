@@ -8,6 +8,7 @@ very popular dataset 2a from the BCI competition IV.
 """
 
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
 #
 # License: BSD (3-clause)
 
@@ -16,6 +17,7 @@ import pandas as pd
 import seaborn as sns
 from mne.decoding import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.pipeline import make_pipeline
 
 import moabb
@@ -45,8 +47,11 @@ pipelines = {}
 pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
 pipelines_fb = {}
-pipelines_fb["FBCSP+LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA())
-
+pipelines_fb["FBCSP+LDA"] = make_pipeline(
+    FilterBank(CSP(n_components=4, reg="oas")),
+    SelectKBest(score_func=mutual_info_classif, k=3),
+    LDA(solver="eigen", shrinkage="auto"),
+)
 ##############################################################################
 # Evaluation
 # ----------
@@ -76,8 +81,13 @@ evaluation = CrossSessionEvaluation(
 )
 results = evaluation.process(pipelines)
 
-# Bank of 2 filters
-filters = [[8, 24], [16, 32]]
+# Bank with smaller filter range following the original methodology.
+filters = [
+    [8, 24],
+    [16, 32],
+    [24, 40],  # high-beta / low-gamma
+    [32, 48],  # low-/mid-gamma
+]
 paradigm = FilterBankLeftRightImagery(filters=filters)
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite

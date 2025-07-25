@@ -56,7 +56,7 @@ _ = dataset.get_data(cache_config=dict(path=temp_dir, save_raw=True))
 
 ###############################################################################
 # Before / after folder structure
-# -----------------------------
+# -------------------------------
 #
 # To investigate what was saved, we will first define a function to print
 # the folder structure of a given path:
