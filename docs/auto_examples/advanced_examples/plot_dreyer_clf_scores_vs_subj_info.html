@@ -399,7 +399,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Advanced examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -504,8 +504,8 @@ subjects (gender and age) and experimenters (gender).</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpatches</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sb</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.spatialfilters</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.spatialfilters</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
@@ -523,16 +523,16 @@ subjects (gender and age) and experimenters (gender).</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
-9it [00:00, 10445.14it/s]
+9it [00:00, 10095.94it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 13277.78it/s]
+9it [00:00, 11911.88it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 11964.73it/s]
+9it [00:00, 11543.96it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 12304.02it/s]
+9it [00:00, 11463.33it/s]
 
 {1: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-01_task-R1acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-01_task-R2acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-01_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-01_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-01_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 5: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-05_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-05_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-05_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-05_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-05_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 7: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-07_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-07_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-07_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-07_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-07_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 35: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-35_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-35_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-35_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-35_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-35_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}}
 </pre></div>
@@ -543,7 +543,7 @@ subjects (gender and age) and experimenters (gender).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.MotorImagery.html#moabb.paradigms.MotorImagery" title="moabb.paradigms.MotorImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.MotorImagery.html#moabb.paradigms.MotorImagery" title="moabb.paradigms.MotorImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">MotorImagery</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;oas&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">6</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lsqr&quot;</span><span class="p">,</span> <span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;oas&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">6</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lsqr&quot;</span><span class="p">,</span> <span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -557,11 +557,11 @@ subjects (gender and age) and experimenters (gender).</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Dreyer2023A-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:00&lt;00:00,  8.38it/s]
-Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:00&lt;00:00,  8.69it/s]
-Dreyer2023A-WithinSession:  75%|███████▌  | 3/4 [00:00&lt;00:00,  8.81it/s]
-Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  8.85it/s]
-Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  8.78it/s]
+Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:00&lt;00:00,  8.81it/s]
+Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:00&lt;00:00,  8.99it/s]
+Dreyer2023A-WithinSession:  75%|███████▌  | 3/4 [00:00&lt;00:00,  9.06it/s]
+Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.07it/s]
+Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.03it/s]
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -637,7 +637,7 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:00&lt;00
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fe12aeb3970&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f5ca244cbe0&gt;
 </pre></div>
 </div>
 <p>5.3 Plotting subject AUC ROC scores vs experimenter’s gender</p>
@@ -685,8 +685,8 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:00&lt;00
 <img alt="4_selected_subjects" class="align-center" src="../../_images/4_selected_subjects.png" />
 <p>Obtained results for all subjects correspond to the following figure.</p>
 <img alt="all_subjects" class="align-center" src="../../_images/all_subjects.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.216 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1365 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.655 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1423 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dreyer-clf-scores-vs-subj-info-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ae04c51e0e1c520116e934f140abe39b/plot_dreyer_clf_scores_vs_subj_info.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dreyer_clf_scores_vs_subj_info.ipynb</span></code></a></p>

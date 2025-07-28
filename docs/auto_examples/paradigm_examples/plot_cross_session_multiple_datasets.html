@@ -399,7 +399,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_examples/index.html">Advanced examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -525,10 +525,13 @@ session.</p>
 <section id="loading-dataset">
 <h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Link to this heading">#</a></h2>
 <p>Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_list</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Zhou2016</span></a><span class="p">(),</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a><span class="p">()]</span>
+
 <span class="k">for</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a>
+    <span class="c1"># replace the subject list</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_list</span></a>
 </pre></div>
 </div>
 </section>
@@ -584,19 +587,19 @@ each subject / session of the dataset, and for each pipeline.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou2016-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
 Zhou2016-CrossSession:  50%|█████     | 1/2 [00:02&lt;00:02,  2.19s/it]
-Zhou2016-CrossSession: 100%|██████████| 2/2 [00:04&lt;00:00,  1.97s/it]
-Zhou2016-CrossSession: 100%|██████████| 2/2 [00:04&lt;00:00,  2.00s/it]
+Zhou2016-CrossSession: 100%|██████████| 2/2 [00:04&lt;00:00,  2.09s/it]
+Zhou2016-CrossSession: 100%|██████████| 2/2 [00:04&lt;00:00,  2.11s/it]
 
 BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.83s/it]
+BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.86s/it]
 BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.85s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.85s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.86s/it]
      score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.85113  0.264364    200.0       1  ...       14           3  Zhou2016  CSP+LDA
-1  0.93640  0.244433    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-2  0.93960  0.247156    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-3  0.90800  0.220206    190.0       2  ...       14           3  Zhou2016  CSP+LDA
-4  0.77037  0.214454    200.0       2  ...       14           3  Zhou2016  CSP+LDA
+0  0.85113  0.256007    200.0       1  ...       14           3  Zhou2016  CSP+LDA
+1  0.93640  0.264195    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+2  0.93960  0.334805    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+3  0.90800  0.302169    190.0       2  ...       14           3  Zhou2016  CSP+LDA
+4  0.77037  0.307332    200.0       2  ...       14           3  Zhou2016  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -617,8 +620,8 @@ BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.267 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  566 MB</p>
+<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.273 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  721 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a236a554370961344b575283a1efbb02/plot_cross_session_multiple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_multiple_datasets.ipynb</span></code></a></p>

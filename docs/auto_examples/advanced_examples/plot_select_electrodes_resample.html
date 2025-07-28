@@ -399,7 +399,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Advanced examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -502,8 +502,8 @@ This tutorial demonstrates how to use this functionality.</p>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.decoding</span><span class="w"> </span><span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LR</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
@@ -541,7 +541,7 @@ a sampling rate of 200 Hz.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">)</span>
 <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">csp_lda</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
 <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ts_lr</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;oas&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;riemann&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LR</span></a><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;oas&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;riemann&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LR</span></a><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">results</span> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">({</span><span class="s2">&quot;csp+lda&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">csp_lda</span></a><span class="p">,</span> <span class="s2">&quot;ts+lr&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ts_lr</span></a><span class="p">})</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
@@ -554,34 +554,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.50s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.19s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.21s/it]
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.25s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.01s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.04s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.93s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.95s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.94s/it]
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.94s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.86s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.88s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.857449  0.059879    119.0       1  ...        3           3  Zhou2016    ts+lr
-1  0.910000  0.051838    100.0       1  ...        3           3  Zhou2016    ts+lr
-2  0.946000  0.050748    100.0       1  ...        3           3  Zhou2016    ts+lr
-3  0.902000  0.051487    100.0       2  ...        3           3  Zhou2016    ts+lr
-4  0.804938  0.047079     90.0       2  ...        3           3  Zhou2016    ts+lr
+0  0.858207  0.054981    119.0       1  ...        3           3  Zhou2016    ts+lr
+1  0.930000  0.047478    100.0       1  ...        3           3  Zhou2016    ts+lr
+2  0.948000  0.047109    100.0       1  ...        3           3  Zhou2016    ts+lr
+3  0.944000  0.047319    100.0       2  ...        3           3  Zhou2016    ts+lr
+4  0.819753  0.043414     90.0       2  ...        3           3  Zhou2016    ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -611,34 +611,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.31s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.20s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.17s/it]
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.19s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.01s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.04s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.91s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.89s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.89s/it]
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.89s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.80s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.82s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.856692  0.059652    119.0       1  ...        3           3  Zhou2016    ts+lr
-1  0.902000  0.051954    100.0       1  ...        3           3  Zhou2016    ts+lr
-2  0.950000  0.050701    100.0       1  ...        3           3  Zhou2016    ts+lr
-3  0.916000  0.050536    100.0       2  ...        3           3  Zhou2016    ts+lr
-4  0.812346  0.045833     90.0       2  ...        3           3  Zhou2016    ts+lr
+0  0.842172  0.056469    119.0       1  ...        3           3  Zhou2016    ts+lr
+1  0.916000  0.059794    100.0       1  ...        3           3  Zhou2016    ts+lr
+2  0.940000  0.048253    100.0       1  ...        3           3  Zhou2016    ts+lr
+3  0.928000  0.047885    100.0       2  ...        3           3  Zhou2016    ts+lr
+4  0.807407  0.043946     90.0       2  ...        3           3  Zhou2016    ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -652,8 +652,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 42.619 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  772 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 41.266 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  825 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>

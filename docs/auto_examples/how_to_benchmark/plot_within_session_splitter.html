@@ -71,7 +71,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/how_to_benchmark/tutorial_6_within_session_splitter';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/how_to_benchmark/plot_within_session_splitter';</script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -488,11 +488,11 @@
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="#sphx-glr-download-auto-examples-how-to-benchmark-tutorial-6-within-session-splitter-py"><span class="std std-ref">Go to the end</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-how-to-benchmark-plot-within-session-splitter-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="tutorial-within-session-splitting-on-real-mi-dataset">
-<span id="sphx-glr-auto-examples-how-to-benchmark-tutorial-6-within-session-splitter-py"></span><h1>Tutorial: Within-Session Splitting on Real MI Dataset<a class="headerlink" href="#tutorial-within-session-splitting-on-real-mi-dataset" title="Link to this heading">#</a></h1>
+<span id="sphx-glr-auto-examples-how-to-benchmark-plot-within-session-splitter-py"></span><h1>Tutorial: Within-Session Splitting on Real MI Dataset<a class="headerlink" href="#tutorial-within-session-splitting-on-real-mi-dataset" title="Link to this heading">#</a></h1>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Thomas, Kooiman, Radovan Vodila, Jorge Sanmartin Martinez, and Paul Verhoeven</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
@@ -600,7 +600,7 @@ meta shape (trials, info columns): (864, 3)
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_6_within_session_splitter_001.png" srcset="../../_images/sphx_glr_tutorial_6_within_session_splitter_001.png" alt="Epoch 0: EEG Channels Over Time" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_plot_within_session_splitter_001.png" srcset="../../_images/sphx_glr_plot_within_session_splitter_001.png" alt="Epoch 0: EEG Channels Over Time" class = "sphx-glr-single-img"/></section>
 <section id="build-a-classification-pipeline-csp-to-lda">
 <h2>Build a classification pipeline: CSP to LDA<a class="headerlink" href="#build-a-classification-pipeline-csp-to-lda" title="Link to this heading">#</a></h2>
 <p>We use Common Spatial Patterns (CSP) finds spatial filters that maximize variance difference between classes.
@@ -1125,7 +1125,7 @@ but here we print them to focus on the splitting logic itself.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_6_within_session_splitter_002.png" srcset="../../_images/sphx_glr_tutorial_6_within_session_splitter_002.png" alt="Within-session CSP+LDA performance" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_plot_within_session_splitter_002.png" srcset="../../_images/sphx_glr_plot_within_session_splitter_002.png" alt="Within-session CSP+LDA performance" class = "sphx-glr-single-img"/></section>
 <section id="visualisation-of-the-data-split">
 <h2>Visualisation of the data split<a class="headerlink" href="#visualisation-of-the-data-split" title="Link to this heading">#</a></h2>
 <p>For our 3 subjects, we see that each subject has 5 folds of training data.</p>
@@ -1161,20 +1161,20 @@ but here we print them to focus on the splitting logic itself.</p>
 <span class="n">plot_subject_split</span><span class="p">(</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_6_within_session_splitter_003.png" srcset="../../_images/sphx_glr_tutorial_6_within_session_splitter_003.png" alt="Train-Test Split by Subject" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;Train-Test Split by Subject&#39;}, xlabel=&#39;Number of samples&#39;, ylabel=&#39;Subject&#39;&gt;
+<img src="../../_images/sphx_glr_plot_within_session_splitter_003.png" srcset="../../_images/sphx_glr_plot_within_session_splitter_003.png" alt="Train-Test Split by Subject" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;Train-Test Split by Subject&#39;}, xlabel=&#39;Number of samples&#39;, ylabel=&#39;Subject&#39;&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.009 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  653 MB</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-tutorial-6-within-session-splitter-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.610 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  746 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-plot-within-session-splitter-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/9a027266ab0a5aefa49c15dd4baf28f9/tutorial_6_within_session_splitter.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_6_within_session_splitter.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/76a7e21707cc400783ec53b8312a3b30/plot_within_session_splitter.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_within_session_splitter.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/41c49d69e77990ef030a7160d61ddfea/tutorial_6_within_session_splitter.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_6_within_session_splitter.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/8d85d634662256bb74728906a66da6ca/plot_within_session_splitter.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_within_session_splitter.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-zip docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/133d3ed0ebccb971d0399898864dfc35/tutorial_6_within_session_splitter.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">tutorial_6_within_session_splitter.zip</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/c94d5fe370a870d999ee62c64ebcc59b/plot_within_session_splitter.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_within_session_splitter.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>

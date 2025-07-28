@@ -399,7 +399,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_examples/index.html">Advanced examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -497,8 +497,8 @@ to download the full example code.</p>
 <span class="c1">#</span>
 <span class="c1"># https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.classification</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.classification</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Cattan2019_VR</span></a>
@@ -519,7 +519,7 @@ to download the full example code.</p>
 <p>Let’s define a paradigm and a pipeline for evaluation first.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;MDM&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;lwf&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;riemann&quot;</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;MDM&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;lwf&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;riemann&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -605,11 +605,11 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>CustomDataset3-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:00&lt;00:00,  8.70it/s]
-CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:00&lt;00:00,  8.97it/s]
-CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:00&lt;00:00,  9.07it/s]
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.11it/s]
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.04it/s]
+CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:00&lt;00:00,  8.86it/s]
+CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:00&lt;00:00,  9.09it/s]
+CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:00&lt;00:00,  9.14it/s]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.16it/s]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt;00:00,  9.12it/s]
       score      time  samples  ... n_sessions         dataset  pipeline
 0  0.605000  0.329276    120.0  ...          1  CustomDataset3       MDM
 1  0.590000  0.319106    120.0  ...          1  CustomDataset3       MDM
@@ -619,8 +619,8 @@ CustomDataset3-WithinSession: 100%|██████████| 4/4 [00:00&lt
 [4 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.206 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  294 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.022 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  296 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-5-build-a-custom-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/275776a57e5f58879d57ccb28b4daf54/tutorial_5_build_a_custom_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_5_build_a_custom_dataset.ipynb</span></code></a></p>

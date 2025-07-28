@@ -399,7 +399,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/tutorial_6_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Advanced examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -511,8 +511,8 @@ and to embed EEG specific code inside sklearn pipelines.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.decoding</span><span class="w"> </span><span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="mne.decoding.Vectorizer" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">Vectorizer</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.preprocessing</span><span class="w"> </span><span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.preprocessing.Xdawn.html#mne.preprocessing.Xdawn" title="mne.preprocessing.Xdawn" class="sphx-glr-backref-module-mne-preprocessing sphx-glr-backref-type-py-class"><span class="n">Xdawn</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">BaseEstimator</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TransformerMixin</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
@@ -605,10 +605,10 @@ ROC-AUC metric.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:06,  3.43s/it]
-BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:03,  3.06s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.66s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.54s/it]
+BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:06,  3.34s/it]
+BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:02,  3.00s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.57s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.45s/it]
 </pre></div>
 </div>
 </section>
@@ -638,10 +638,10 @@ then apply a logistic regression.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:07,  3.75s/it]
-BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:03,  3.28s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:11&lt;00:00,  3.80s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:11&lt;00:00,  3.70s/it]
+BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:03&lt;00:07,  3.61s/it]
+BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:06&lt;00:03,  3.12s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.65s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:10&lt;00:00,  3.55s/it]
 </pre></div>
 </div>
 </section>
@@ -652,8 +652,8 @@ pyriemann to estimate XDAWN-extended covariance matrices that are projected
 on the tangent space and classified with a logistic regression.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sk_ppl</span></a> <span class="o">=</span> <span class="p">{}</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sk_ppl</span></a><span class="p">[</span><span class="s2">&quot;RG LR&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;lwf&quot;</span><span class="p">,</span> <span class="n">xdawn_estimator</span><span class="o">=</span><span class="s2">&quot;scm&quot;</span><span class="p">),</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span>
+    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;lwf&quot;</span><span class="p">,</span> <span class="n">xdawn_estimator</span><span class="o">=</span><span class="s2">&quot;scm&quot;</span><span class="p">),</span>
+    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span>
     <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s2">&quot;l1&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;liblinear&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sk_eval</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a><span class="p">(</span>
@@ -666,10 +666,10 @@ on the tangent space and classified with a logistic regression.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:04&lt;00:09,  4.99s/it]
-BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:09&lt;00:04,  4.95s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:15&lt;00:00,  5.11s/it]
-BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:15&lt;00:00,  5.07s/it]
+BNCI2014-009-CrossSession:  33%|███▎      | 1/3 [00:04&lt;00:09,  4.68s/it]
+BNCI2014-009-CrossSession:  67%|██████▋   | 2/3 [00:09&lt;00:04,  4.62s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:14&lt;00:00,  4.73s/it]
+BNCI2014-009-CrossSession: 100%|██████████| 3/3 [00:14&lt;00:00,  4.71s/it]
 </pre></div>
 </div>
 </section>
@@ -696,8 +696,8 @@ differences between pipelines.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 40.878 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  635 MB</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 38.611 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  677 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b9f56e19f2500dad10214cc29a2a24e4/plot_mne_and_scikit_estimators.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_mne_and_scikit_estimators.ipynb</span></code></a></p>
