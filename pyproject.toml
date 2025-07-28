@@ -11,7 +11,6 @@ keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
-antio = ">=0.5.0"
 python = ">=3.10"
 numpy = "^2.0"
 scipy = "^1.9.3"
