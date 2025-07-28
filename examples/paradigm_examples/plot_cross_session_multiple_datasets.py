@@ -25,7 +25,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014_001, Dreyer2023C
+from moabb.datasets import BNCI2014_001, Zhou2016
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -38,18 +38,16 @@ moabb.set_log_level("info")
 # Loading Dataset
 # ---------------
 #
-# Load 2 subjects of BNCI 2014-004 and Dreyer2023C datasets, with 2 session each
+# Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
 
-subj_bcni = [1, 2]
-subj_dreyer = [83, 84]
+subjects_list = [1, 2]
 
-datasets = [Dreyer2023C(), BNCI2014_001()]
+datasets = [Zhou2016(), BNCI2014_001()]
 
 for d in datasets:
-    if d.code == "Dreyer2023C":
-        d.subject_list = subj_dreyer
-    elif d.code == "BNCI2014_001":
-        d.subject_list = subj_bcni
+    # replace the subject list
+    d.subject_list = subjects_list
+
 
 ###############################################################################
 # Choose Paradigm

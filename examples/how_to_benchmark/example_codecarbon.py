@@ -20,7 +20,7 @@ replicated on your infrastructure.
 ###############################################################################
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import codecarbon_plot
-from moabb.datasets import BNCI2014_001, Dreyer2023C
+from moabb.datasets import BNCI2014_001, Zhou2016
 from moabb.paradigms import LeftRightImagery
 
 
@@ -69,7 +69,7 @@ for d in paradigm.datasets:
 # ``results`` folder, and the analysis & figures are saved in the ``benchmark``
 # folder.
 
-dataset = Dreyer2023C()
+dataset = Zhou2016()
 dataset2 = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:1]
 dataset2.subject_list = dataset2.subject_list[:1]
