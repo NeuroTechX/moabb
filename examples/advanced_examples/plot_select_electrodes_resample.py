@@ -21,7 +21,7 @@ from sklearn.linear_model import LogisticRegression as LR
 from sklearn.pipeline import make_pipeline
 
 import moabb.analysis.plotting as moabb_plt
-from moabb.datasets import BNCI2014_001, Dreyer2023C
+from moabb.datasets import BNCI2014_001, Zhou2016
 from moabb.datasets.utils import find_intersecting_channels
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
@@ -31,10 +31,10 @@ from moabb.paradigms import LeftRightImagery
 # Datasets
 # --------
 #
-# Load 2 subjects of BNCI 2014-004 and Dreyer2023C datasets, with 2 sessions each
+# Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 sessions each
 
 subj = [1, 2]
-datasets = [Dreyer2023C(), BNCI2014_001()]
+datasets = [Zhou2016(), BNCI2014_001()]
 for d in datasets:
     d.subject_list = subj
 

@@ -26,7 +26,7 @@ import mne
 import numpy as np
 
 from moabb import set_log_level
-from moabb.datasets import Dreyer2023C
+from moabb.datasets import Zhou2016
 from moabb.paradigms import FixedIntervalWindowsProcessing, MotorImagery
 
 
@@ -48,8 +48,8 @@ set_log_level("info")
 # ``start_offset=0``, and ``stop_offset=None`` (i.e. end of the run).
 #
 # An example usage of :class:`moabb.paradigms.FixedIntervalWindowsProcessing`
-# with the :class:`moabb.datasets.Dreyer2023C` dataset:
-dataset = Dreyer2023C()
+# with the :class:`moabb.datasets.Zhou2016` dataset:
+dataset = Zhou2016()
 processing = FixedIntervalWindowsProcessing(
     # new parameters:
     length=100,
@@ -104,7 +104,7 @@ paradigm = MotorImagery(
 # ``_get_events_pipeline`` method:
 events_pipeline_dataset = paradigm._get_events_pipeline(dataset)
 events_pipeline_fixed = processing._get_events_pipeline(dataset)
-raw = dataset.get_data(subjects=[83])[83]["0"]["0R1acquisition"]
+raw = dataset.get_data(subjects=[1])[1]["0"]["1"]
 events_dataset = events_pipeline_dataset.transform(raw)
 events_fixed = events_pipeline_fixed.transform(raw)
 events = np.concatenate([events_dataset, events_fixed])

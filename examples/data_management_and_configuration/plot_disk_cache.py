@@ -74,7 +74,7 @@ import time
 from pathlib import Path
 
 from moabb import set_log_level
-from moabb.datasets import Dreyer2023C
+from moabb.datasets import Zhou2016
 from moabb.paradigms import LeftRightImagery
 
 
@@ -108,9 +108,9 @@ default_cache_config = dict(
 temp_dir = Path(tempfile.mkdtemp())
 
 ###############################################################################
-# We will use the Dreyer2023C dataset and the LeftRightImagery paradigm in this
+# We will use the Zhou2016 dataset and the LeftRightImagery paradigm in this
 # example, but this works for any dataset and paradigm pair.:
-dataset = Dreyer2023C()
+dataset = Zhou2016()
 paradigm = LeftRightImagery()
 
 ###############################################################################
