@@ -131,3 +131,5 @@ examples/benchmark/
 examples/results/
 examples/tutorials/*.mat
 /.conda
+
+.vscode/
