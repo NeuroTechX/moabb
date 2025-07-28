@@ -64,7 +64,7 @@ for d in paradigm.datasets:
     print(d.code)
 
 ###############################################################################
-# In this example, we will use only the last dataset, 'Dreyer2023C'.
+# In this example, we will use only the last dataset, 'Zhou2016'.
 #
 # Running the benchmark
 # ---------------------

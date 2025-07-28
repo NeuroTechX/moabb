@@ -25,7 +25,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 
 import moabb
-from moabb.datasets import BNCI2014_001, Dreyer2023C
+from moabb.datasets import BNCI2014_001, Zhou2016
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -55,7 +55,7 @@ pipelines["MDM"] = make_pipeline(Covariances("oas"), MDM(metric="riemann"))
 ##############################################################################
 # The following lines go exactly as in the previous tutorial, where we end up
 # obtaining a pandas dataframe containing the results of the evaluation.
-datasets = [BNCI2014_001(), Dreyer2023C()]
+datasets = [BNCI2014_001(), Zhou2016()]
 subj = [1, 2, 3]
 for d in datasets:
     d.subject_list = subj

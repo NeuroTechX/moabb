@@ -32,7 +32,7 @@ setup_seed(42)
 # Loading the Scikit-learn pipelines
 
 with open(
-    "../how_to_benchmark/results/Models_WithinSession/Dreyer2023C/1/0/csp+svm/fitted_model_best.pkl",
+    "../how_to_benchmark/results/Models_WithinSession/Zhou2016/1/0/csp+svm/fitted_model_best.pkl",
     "rb",
 ) as pickle_file:
     CSP_SVM_Trained = load(pickle_file)

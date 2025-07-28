@@ -115,7 +115,7 @@ paradigm = LeftRightImagery()
 
 ###############################################################################
 # And we will only use the first subject for this example:
-subjects = [83]
+subjects = [1]
 
 ###############################################################################
 # Then, saving a cache can simply be done by setting the desired parameters

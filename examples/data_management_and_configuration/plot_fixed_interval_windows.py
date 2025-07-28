@@ -12,7 +12,7 @@ this paradigm is not compatible with the MOABB evaluation
 framework. However, it can be used to process datasets
 for unsupervised algorithms.
 
-In this example, we will use the Dreyer2023C dataset because
+In this example, we will use the Zhou2016 dataset because
 it is relatively small and can be downloaded quickly.
 """
 
@@ -63,7 +63,7 @@ processing = FixedIntervalWindowsProcessing(
     baseline=None,
     channels=None,
 )
-X, labels, metadata = processing.get_data(dataset=dataset, subjects=[83])
+X, labels, metadata = processing.get_data(dataset=dataset, subjects=[1])
 
 ###############################################################################
 # In this dataset, there are three sessions per subject and two runs per
@@ -104,7 +104,7 @@ paradigm = MotorImagery(
 # ``_get_events_pipeline`` method:
 events_pipeline_dataset = paradigm._get_events_pipeline(dataset)
 events_pipeline_fixed = processing._get_events_pipeline(dataset)
-raw = dataset.get_data(subjects=[1])[1]["0"]["1"]
+raw = dataset.get_data(subjects=[1])[1]["0"]["0"]
 events_dataset = events_pipeline_dataset.transform(raw)
 events_fixed = events_pipeline_fixed.transform(raw)
 events = np.concatenate([events_dataset, events_fixed])
