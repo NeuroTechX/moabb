@@ -494,7 +494,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 pipelines, dataset, subject, process_pipeline
             )
             if len(run_pipes) == 0:
-                print(f"Subject {subject} already processed")
+                log.info(f"Subject {subject} already processed")
                 continue
 
             # get the data

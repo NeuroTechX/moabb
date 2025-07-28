@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
@@ -7,6 +8,9 @@ from typing import Sequence
 from mne.utils.config import _open_lock
 from numpy import argmax
 from sklearn.pipeline import Pipeline
+
+
+log = logging.getLogger(__name__)
 
 
 try:
@@ -180,7 +184,7 @@ def create_save_path(
 
         return str(path_save)
     else:
-        print("No hdf5_path provided, models will not be saved.")
+        log.warning("No hdf5_path provided, models will not be saved.")
 
 
 def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
