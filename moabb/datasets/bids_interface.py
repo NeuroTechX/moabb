@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-def get_bids_root(dataset, path=None):
+def get_bids_root(code, path=None):
     """Path to the root of the BIDS structure used for caching.
 
     See :class:`moabb.datasets.base.BaseDataset` and
@@ -48,8 +48,8 @@ def get_bids_root(dataset, path=None):
 
     Parameters
     ----------
-    dataset : BaseDataset
-        The dataset object
+    code : str
+        The dataset code from the MOABB dataset.
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
@@ -64,7 +64,6 @@ def get_bids_root(dataset, path=None):
         Path to the root of the BIDS structure.
     """
 
-    code = dataset.code
     mne_path = Path(dl.get_dataset_path(code, path))
     cache_dir = f"MNE-BIDS-{camel_to_kebab_case(code)}"
     root = mne_path / cache_dir
@@ -158,7 +157,7 @@ class BIDSInterfaceBase(abc.ABC):
     @property
     def root(self):
         """Return the root path of the BIDS dataset."""
-        return get_bids_root(self.dataset, self.path)
+        return get_bids_root(self.dataset.code, self.path)
 
     @property
     def lock_file(self):

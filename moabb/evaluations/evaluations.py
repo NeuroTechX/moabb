@@ -492,7 +492,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 pipelines, dataset, subject, process_pipeline
             )
             if len(run_pipes) == 0:
-                print(f"Subject {subject} already processed")
+                log.info(f"Subject {subject} already processed")
                 continue
 
             # get the data
@@ -747,14 +747,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
 
-                    # Extract number of channels from dataset
-                    score = _score(
-                        estimator=model,
-                        X_test=X[test[ix]],
-                        y_test=y[test[ix]],
-                        scorer=scorer,
-                        score_params={},
-                    )
+                    score = scorer(model, X[test[ix]], y[test[ix]])
 
                     nchan = X.shape[1]  # since X is memmapped already
 

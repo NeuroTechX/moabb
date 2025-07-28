@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moabb"
-version = "1.2.0"
+version = "1.3.0"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>"]
@@ -12,14 +12,14 @@ license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
 python = ">=3.10"
-numpy = "^1.22"
+numpy = "^2.0"
 scipy = "^1.9.3"
-mne = ">=1.10.0"
+mne = "^1.10.0"
 pandas = ">=1.5.2"
 h5py = "^3.10.0"
 matplotlib = "^3.6.2"
 seaborn = "^0.12.1"
-pyriemann = "^0.7"
+pyriemann = "^0.9"
 PyYAML = "^6.0"
 pooch = "^1.6.0"
 requests = "^2.28.1"
@@ -46,6 +46,7 @@ braindecode = { version = ">=0.8.1", optional = true }
 pytest-cov = { version = ">=5.0.0", optional = true }
 codecov = { version = ">=2.1.0", optional = true }
 pytest_cases = { version = ">=3.0.0", optional = true }
+pytest-xdist = { version = ">=3.6.1", optional = true }
 
 # Optional dependencies for documentation
 sphinx = { version = "^8.1.3", optional = true }
@@ -59,7 +60,6 @@ sphinx-rtd-theme = { version = "^3.0.2", optional = true }
 sphinx_copybutton = { version = "^0.5.2", optional = true }
 sphinxcontrib-bibtex = { version = "^2.6.3", optional = true }
 sphinx-favicon = { version = "^1.0.1", optional = true }
-toeplitzlda = { version = "^0.4", optional = true }
 mne-features = { version = "^0.3", optional = true }
 snowballstemmer = { version = "<3", optional = true }
 
@@ -67,8 +67,8 @@ snowballstemmer = { version = "<3", optional = true }
 carbonemission = ["codecarbon"]
 deeplearning = ["braindecode"]
 optuna = ["optuna", "optuna-integration"]
-tests = ["pytest", "pytest-cov", "codecov", "pytest_cases"]
-docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "myst-parser", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon", "toeplitz", "toeplitzlda", "mne-features", "snowballstemmer"]
+tests = ["pytest", "pytest-cov", "codecov", "pytest_cases", "pytest-xdist"]
+docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "myst-parser", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon", "mne-features", "snowballstemmer"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

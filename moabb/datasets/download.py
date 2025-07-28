@@ -4,9 +4,9 @@
 # License: BSD Style.
 
 import json
+import logging
 import os
 import os.path as osp
-import urllib
 from pathlib import Path
 
 import pandas as pd
@@ -17,6 +17,9 @@ from mne.utils import _url_to_local_path, verbose, warn
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_dataset_path(sign, path):
@@ -44,7 +47,7 @@ def get_dataset_path(sign, path):
     if get_config(key) is None:
         if get_config("MNE_DATA") is None:
             path_def = Path.home() / "mne_data"
-            print(
+            logger.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
                 + str(path_def)
@@ -199,8 +202,8 @@ def fs_issue_request(method, url, headers, data=None, binary=False):
         except ValueError:
             response_data = response.content
     except HTTPError as error:
-        print("Caught an HTTPError: {}".format(error))
-        print("Body:\n", response.text)
+        logger.error("Caught an HTTPError: {}".format(error))
+        logger.error("Body:\n{}".format(response.text))
         raise
 
     return response_data
@@ -282,7 +285,7 @@ def fs_get_file_name(filelist):
     return {str(f["id"]): f["name"] for f in filelist}
 
 
-def download_if_missing(file_path, url, warn_missing=True):
+def download_if_missing(file_path, url, warn_missing=True, verbose=True):
     """Download file from url to a specified path if it is not already there."""
 
     folder_path = osp.dirname(file_path)
@@ -297,7 +300,18 @@ def download_if_missing(file_path, url, warn_missing=True):
     if not osp.exists(file_path):
         if warn_missing:
             warn(f"{file_path} not found. Downloading from {url}")
-        urllib.request.urlretrieve(url, file_path)
+
+        downloader = choose_downloader(url, progressbar=verbose)
+
+        path = retrieve(
+            url,
+            None,
+            fname=osp.basename(file_path),
+            path=osp.dirname(file_path),
+            downloader=downloader,
+        )
+
+        return path
 
 
 def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
@@ -315,7 +329,7 @@ def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
             response = requests.get(url)
             data = response.json()
         except Exception as e:
-            print(f"Failed to fetch {url}: {e}")
+            logger.error(f"Failed to fetch {url}: {e}")
             continue
 
         # Loop through items in this page

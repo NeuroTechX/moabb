@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import abc
 import inspect
+import logging
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -22,6 +23,8 @@ from moabb.analysis.plotting import (
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
 
+
+logger = logging.getLogger(__name__)
 
 dataset_list = []
 dataset_dict = {}
@@ -151,7 +154,7 @@ def find_intersecting_channels(datasets, verbose=False):
     dset_chans = []
     keep_datasets = []
     for d in datasets:
-        print("Searching dataset: {:s}".format(type(d).__name__))
+        logger.info("Searching dataset: {:s}".format(type(d).__name__))
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
@@ -165,11 +168,11 @@ def find_intersecting_channels(datasets, verbose=False):
         allchans.update(processed)
         if len(processed) > 0:
             if verbose:
-                print("Found EEG channels: {}".format(processed))
+                logger.info("Found EEG channels: {}".format(processed))
             dset_chans.append(processed)
             keep_datasets.append(d)
         else:
-            print(
+            logger.warning(
                 "Dataset {:s} has no recognizable EEG channels".format(type(d).__name__)
             )  # noqa
     allchans.intersection_update(*dset_chans)
