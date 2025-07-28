@@ -51,6 +51,7 @@ Bugs
 - Remove an unnecessary line in the README.md (:gh:`791` by `Lionel Kusch`_)
 - Update the dead link about the tutorial of GitHub in CONTRIBUTING.md (:gh:`792` by `Lionel Kusch`_)
 - Fix: number of trial per class for PHMD_ML dataset (:gh:`797` by `Gregoire Cattan`_)
+- Converting the :class:`moabb.datasets.Zhou2016` to BIDS (:gh:`798` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
