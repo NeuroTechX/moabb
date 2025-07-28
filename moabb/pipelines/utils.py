@@ -8,6 +8,7 @@ from glob import glob
 import numpy as np
 import scipy.signal as scp
 import yaml
+from mne.utils import _open_lock
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
 
@@ -104,7 +105,7 @@ def parse_pipelines_from_directory(dir_path):
 
     pipeline_configs = []
     for yaml_file in yaml_files:
-        with open(yaml_file, "r") as _file:
+        with _open_lock(yaml_file, "r") as _file:
             content = _file.read()
 
             # load config

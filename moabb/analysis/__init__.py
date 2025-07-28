@@ -3,6 +3,8 @@ import os
 import platform
 from datetime import datetime
 
+from mne.utils import _open_lock
+
 from moabb.analysis import plotting as plt
 from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
@@ -50,7 +52,7 @@ def analyze(results, out_path, name="analysis", plot=False):
 
     os.makedirs(analysis_path, exist_ok=True)
     # TODO: no good cross-platform way of recording CPU info?
-    with open(os.path.join(analysis_path, "info.txt"), "a") as f:
+    with _open_lock(os.path.join(analysis_path, "info.txt"), "a") as f:
         dt = datetime.now()
         f.write("Date: {:%Y-%m-%d}\n Time: {:%H:%M}\n".format(dt, dt))
         f.write("System: {}\n".format(platform.system()))
