@@ -9,9 +9,11 @@ import zipfile as ZipFile
 from pathlib import Path
 
 import requests
+from mne import get_config
 
 from .base import BaseBIDSDataset
-from .download import download_if_missing, get_dataset_path
+from .bids_interface import get_bids_root
+from .download import download_if_missing
 
 
 log = logging.getLogger(__name__)
@@ -66,30 +68,22 @@ class Zhou2016(BaseBIDSDataset):
         )
         self.zenodo_record_id = ZENODO_RECORD_ID
 
-    def get_metainfo(record_id, path=None):
-        """Fetch a Zenodo record by its ID."""
-        # first thing try to get the record from the path if already downloaded
-        file_path = f"{path}/{record_id}.json"
-        if not Path(file_path).exists():
-            # If not found, fetch from Zenodo
-            response = requests.get(ZENODO_URL)
-            response.raise_for_status()
-            # Save the response to a file
-            with open(file_path, "w") as f:
-                json.dump(response.json(), f, indent=4)
-            return response.json()
-        else:
-            with open(file_path, "r") as f:
-                return json.load(f)
-
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject data."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        dataset_path = get_dataset_path(self.code, path=path)
+        if not path:
+            path = get_config("MNE_DATA")
 
-        metainfo = self.get_metainfo(self.zenodo_record_id, path=dataset_path)
+        path = Path(update_path) if update_path else Path(path)
+        dataset_path = get_bids_root(code=self.code, path=path)
+
+        if not dataset_path.exists():
+            log.info(f"Creating dataset path: {dataset_path}")
+            dataset_path.mkdir(parents=True, exist_ok=True)
+
+        metainfo = self.get_metainfo(path=dataset_path)
 
         for file in metainfo["files"]:
             file_name = file["key"]
@@ -101,9 +95,11 @@ class Zhou2016(BaseBIDSDataset):
                 if file_name == f"sub-{subject}.zip":
 
                     if not file_path.exists():
-                        print(f"Downloading {file_name} for subject {subject}")
+                        log.info(
+                            f"Downloading {file_name} for subject {subject} to {file_path}"
+                        )
                         download_if_missing(
-                            file_path=file_path, url=file_url, warn_missing=True
+                            file_path=file_path, url=file_url, warn_missing=False
                         )
 
                         folder_path = file_path.with_suffix("")
@@ -112,6 +108,24 @@ class Zhou2016(BaseBIDSDataset):
                             with ZipFile(file_path, "r") as zip_ref:
                                 zip_ref.extractall(folder_path)
             else:
-                download_if_missing(file_path=file_path, url=file_url, warn_missing=True)
+                download_if_missing(file_path=file_path, url=file_url, warn_missing=False)
 
             return dataset_path
+
+    def get_metainfo(self, path=None):
+        """Fetch a Zenodo record by its ID."""
+        # first thing try to get the record from the path if already downloaded
+
+        file_path = f"{path}/{self.zenodo_record_id}.json"
+
+        if not Path(file_path).exists():
+            # If not found, fetch from Zenodo
+            response = requests.get(ZENODO_URL)
+            response.raise_for_status()
+            # Save the response to a file
+            with open(file_path, "w") as f:
+                json.dump(response.json(), f, indent=4)
+            return response.json()
+        else:
+            with open(file_path, "r") as f:
+                return json.load(f)
