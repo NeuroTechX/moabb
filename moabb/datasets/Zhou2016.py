@@ -68,6 +68,15 @@ class Zhou2016(BaseDataset):
     tasks of the left hand, right hand or foot movement respectively according
     to the cue direction, and try to relax during the black screen.
 
+    Notes
+    -----
+    The dataset was re-downloaded from Zenodo on 2025-07-28 and converted to BIDS
+    format. The original data was downloaded from
+    https://ndownloader.figshare.com/files/3662952. The original data
+    was in ant format that had some issues with the
+    `mne.io.read_raw_ant` function. More investigations are needed to
+    understand the issues with the original data.
+
     References
     ----------
 
