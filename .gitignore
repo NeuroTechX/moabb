@@ -133,3 +133,6 @@ examples/tutorials/*.mat
 /.conda
 
 .vscode/
+
+results/results*
+/moabb/tests/test_pipelines/*.lock
