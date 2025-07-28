@@ -5,8 +5,8 @@ https://doi.org/10.1371/journal.pone.0114853
 
 import json
 import logging
-import zipfile as ZipFile
 from pathlib import Path
+from zipfile import ZipFile
 
 import requests
 from mne import get_config
@@ -93,24 +93,29 @@ class Zhou2016(BaseBIDSDataset):
             if "sub" in file_name:
                 # Check if the file corresponds to the current subject
                 if file_name == f"sub-{subject}.zip":
+                    folder_path = file_path.with_suffix("")
 
-                    if not file_path.exists():
+                    if not folder_path.exists():
                         log.info(
                             f"Downloading {file_name} for subject {subject} to {file_path}"
                         )
                         download_if_missing(
-                            file_path=file_path, url=file_url, warn_missing=False
+                            file_path=file_path,
+                            url=file_url,
+                            warn_missing=False,
+                            verbose=verbose,
                         )
 
-                        folder_path = file_path.with_suffix("")
+                        log.info(f"Extracting {file_name} to {folder_path}")
+                        with ZipFile(str(file_path), "r") as zip_ref:
+                            zip_ref.extractall(folder_path.parent)
 
-                        if not folder_path.exists():
-                            with ZipFile(file_path, "r") as zip_ref:
-                                zip_ref.extractall(folder_path)
             else:
-                download_if_missing(file_path=file_path, url=file_url, warn_missing=False)
+                download_if_missing(
+                    file_path=file_path, url=file_url, warn_missing=False, verbose=verbose
+                )
 
-            return dataset_path
+        return dataset_path
 
     def get_metainfo(self, path=None):
         """Fetch a Zenodo record by its ID."""
