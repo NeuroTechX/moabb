@@ -6,7 +6,6 @@
 import json
 import os
 import os.path as osp
-import urllib
 from pathlib import Path
 
 import pandas as pd
@@ -282,7 +281,7 @@ def fs_get_file_name(filelist):
     return {str(f["id"]): f["name"] for f in filelist}
 
 
-def download_if_missing(file_path, url, warn_missing=True):
+def download_if_missing(file_path, url, warn_missing=True, verbose=True):
     """Download file from url to a specified path if it is not already there."""
 
     folder_path = osp.dirname(file_path)
@@ -297,7 +296,18 @@ def download_if_missing(file_path, url, warn_missing=True):
     if not osp.exists(file_path):
         if warn_missing:
             warn(f"{file_path} not found. Downloading from {url}")
-        urllib.request.urlretrieve(url, file_path)
+
+        downloader = choose_downloader(url, progressbar=verbose)
+
+        path = retrieve(
+            url,
+            None,
+            fname=osp.basename(file_path),
+            path=osp.dirname(file_path),
+            downloader=downloader,
+        )
+
+        return path
 
 
 def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
