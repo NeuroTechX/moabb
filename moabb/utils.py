@@ -1,5 +1,6 @@
 """Util functions for moabb."""
 
+import contextlib
 import inspect
 import logging
 import os
@@ -9,10 +10,12 @@ import re
 import sys
 from typing import TYPE_CHECKING
 
+import filelock
+import h5py
 import numpy as np
 from mne import get_config, set_config
 from mne import set_log_level as sll
-from mne.utils import get_config_path
+from mne.utils import get_config_path, warn
 
 
 if TYPE_CHECKING:
@@ -207,3 +210,41 @@ def depreciated_alias(name, expire_version):
         return func
 
     return factory
+
+
+@contextlib.contextmanager
+def _open_lock_hdf5(path, *args, **kwargs):
+    """
+    Context manager that opens a file with an optional file lock.
+
+    If the `filelock` package is available, a lock is acquired on a lock file
+    based on the given path (by appending '.lock').
+
+    Otherwise, a null context is used. The path is then opened in the
+    specified mode.
+
+    Parameters
+    ----------
+    path : str
+        The path to the file to be opened.
+    *args, **kwargs : optional
+        Additional arguments and keyword arguments to be passed to the
+        `open` function.
+
+    """
+    lock_context = contextlib.nullcontext()  # default to no lock
+
+    if filelock:
+        lock_path = f"{path}.lock"
+        try:
+            lock_context = filelock.FileLock(lock_path, timeout=5)
+            lock_context.acquire()
+        except TimeoutError:
+            warn(
+                "Could not acquire lock file after 5 seconds, consider deleting it "
+                f"if you know the corresponding file is usable:\n{lock_path}"
+            )
+            lock_context = contextlib.nullcontext()
+
+    with lock_context, h5py.File(path, *args, **kwargs) as fid:
+        yield fid
