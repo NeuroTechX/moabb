@@ -224,17 +224,18 @@ class BaseEvaluation(ABC):
         ]
 
         # Parallel processing...
-        parallel_results = Parallel(
-            n_jobs=self.n_jobs,
-            return_as="generator",
-        )(
-            delayed(self.evaluate)(
-                dataset,
-                pipelines,
-                param_grid=param_grid,
-                process_pipeline=process_pipeline,
-                postprocess_pipeline=postprocess_pipeline,
-            )
+        parallel_results = Parallel(n_jobs=self.n_jobs)(
+            delayed(
+                lambda d, p: list(
+                    self.evaluate(
+                        d,
+                        pipelines,
+                        param_grid=param_grid,
+                        process_pipeline=p,
+                        postprocess_pipeline=postprocess_pipeline,
+                    )
+                )
+            )(dataset, process_pipeline)
             for dataset, process_pipeline in processing_params
         )
 
