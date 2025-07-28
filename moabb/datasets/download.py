@@ -19,8 +19,7 @@ from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
 
 
-logger = logging.getLogger("moabb")  # one selection here used across moabb
-logger.propagate = False  # don't propagate (in case of multiple imports)
+logger = logging.getLogger(__name__)
 
 
 def get_dataset_path(sign, path):
