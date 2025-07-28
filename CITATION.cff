@@ -1,4 +1,4 @@
-cff-version: 1.2.0
+cff-version: 1.3.0
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Aristimunha"
@@ -70,7 +70,7 @@ authors:
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
 title: "Mother of all BCI Benchmarks"
-version: 1.2.0
+version: 1.3.0
 doi: 10.5281/zenodo.10034223
-date-released: 2025-03-05
+date-released: 2025-08-28
 url: "https://github.com/NeuroTechX/moabb"
