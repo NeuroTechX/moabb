@@ -749,8 +749,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     score = scorer(model, X[test[ix]], y[test[ix]])
 
-                    nchan = X.shape[1]  # since X is memmapped already
-
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
                         "time": duration,
