@@ -758,13 +758,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    score = _score(
-                        estimator=model,
-                        X_test=X[test[ix]],
-                        y_test=y[test[ix]],
-                        scorer=scorer,
-                        score_params={},
-                    )
+
+                    score = scorer(model, X[test[ix]], y[test[ix]])
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
