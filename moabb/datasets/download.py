@@ -4,6 +4,7 @@
 # License: BSD Style.
 
 import json
+import logging
 import os
 import os.path as osp
 from pathlib import Path
@@ -16,6 +17,9 @@ from mne.utils import _url_to_local_path, verbose, warn
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_dataset_path(sign, path):
@@ -43,7 +47,7 @@ def get_dataset_path(sign, path):
     if get_config(key) is None:
         if get_config("MNE_DATA") is None:
             path_def = Path.home() / "mne_data"
-            print(
+            logger.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
                 + str(path_def)
@@ -198,8 +202,8 @@ def fs_issue_request(method, url, headers, data=None, binary=False):
         except ValueError:
             response_data = response.content
     except HTTPError as error:
-        print("Caught an HTTPError: {}".format(error))
-        print("Body:\n", response.text)
+        logger.error("Caught an HTTPError: {}".format(error))
+        logger.error("Body:\n{}".format(response.text))
         raise
 
     return response_data
@@ -325,7 +329,7 @@ def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
             response = requests.get(url)
             data = response.json()
         except Exception as e:
-            print(f"Failed to fetch {url}: {e}")
+            logger.error(f"Failed to fetch {url}: {e}")
             continue
 
         # Loop through items in this page

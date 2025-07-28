@@ -10,6 +10,7 @@ from zipfile import ZipFile
 
 import requests
 from mne import get_config
+from mne.utils import _open_lock
 
 from .base import BaseBIDSDataset
 from .bids_interface import get_bids_root
@@ -128,9 +129,9 @@ class Zhou2016(BaseBIDSDataset):
             response = requests.get(ZENODO_URL)
             response.raise_for_status()
             # Save the response to a file
-            with open(file_path, "w") as f:
+            with _open_lock(file_path, "w") as f:
                 json.dump(response.json(), f, indent=4)
             return response.json()
         else:
-            with open(file_path, "r") as f:
+            with _open_lock(file_path, "r") as f:
                 return json.load(f)

@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import yaml
 from mne.channels import make_standard_montage
+from mne.utils import _open_lock
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
@@ -289,7 +290,7 @@ def _bi_data_path(  # noqa: C901
 
         # filter the data regarding the experimental conditions
         meta_file = directory + os.sep + "meta.yml"
-        with open(meta_file, "r") as stream:
+        with _open_lock(meta_file, "r") as stream:
             meta = yaml.load(stream, Loader=yaml.FullLoader)
         conditions = []
         if ds.adaptive:
