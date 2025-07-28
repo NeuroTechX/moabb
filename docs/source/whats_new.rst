@@ -14,8 +14,20 @@ What's new
 .. _current:
 
 
-Develop branch  - 1.2.1
-------------------------
+Develop branch  - 1.4  (dev)
+--------------------------------------
+Enhancements
+~~~~~~~~~~~~
+
+Bugs
+~~~~
+
+API changes
+~~~~~~~~~~~
+
+
+Develop branch  - 1.3  (Stable - PyPi)
+--------------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -59,8 +71,8 @@ API changes
 - Removing the deep learning module from inside moabb in favour of braindecode integration (:gh:`692` by `Bruno Aristimunha`_ )
 
 
-Version - 1.2.0  (Stable - PyPi)
----------------------------------
+Version - 1.2.0
+----------------
 
 
 Enhancements
