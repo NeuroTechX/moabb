@@ -1,5 +1,6 @@
 """Util functions for moabb."""
 
+import contextlib
 import inspect
 import logging
 import os
@@ -9,10 +10,12 @@ import re
 import sys
 from typing import TYPE_CHECKING
 
+import filelock
+import h5py
 import numpy as np
 from mne import get_config, set_config
 from mne import set_log_level as sll
-from mne.utils import get_config_path
+from mne.utils import warn
 
 
 if TYPE_CHECKING:
@@ -70,75 +73,34 @@ def set_log_level(level="INFO"):
     )
 
 
-# Cross-platform file-locking
-if sys.platform.startswith("win"):
-    import msvcrt
-
-    def lock_file(f):
-        msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
-
-    def unlock_file(f):
-        msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
-
-else:
-    import fcntl
-
-    def lock_file(f):
-        fcntl.flock(f, fcntl.LOCK_EX)
-
-    def unlock_file(f):
-        fcntl.flock(f, fcntl.LOCK_UN)
-
-
 def set_download_dir(path):
-    """Set the download directory if required to change from default MNE path.
+    """Set the download directory if required to change from default mne path.
 
     Parameters
     ----------
     path : None | str
-        The new storage location. If it does not exist, a warning is raised and the
-        path is created.
-        If None, and MNE_DATA config does not exist, a warning is raised and the
-        storage location is set to the MNE default directory.
+    The new storage location, if it does not exist, a warning is raised and the
+    path is created
+    If None, and MNE_DATA config does not exist, a warning is raised and the
+    storage location is set to the MNE default directory
     """
-    config_path = get_config_path()
-    # Use the config file itself as the lock file
-    lock_file_path = config_path + ".lock"
+    if path is None:
+        if get_config("MNE_DATA") is None:
+            log.info(
+                "MNE_DATA is not already configured. It will be set to "
+                "default location in the home directory - "
+                + osp.join(osp.expanduser("~"), "mne_data")
+                + "All datasets will be downloaded to this location, if anything is "
+                "already downloaded, please move manually to this location"
+            )
 
-    # Ensure the config directory exists
-    config_dir = osp.dirname(config_path)
-    if not osp.exists(config_dir):
-        os.makedirs(config_dir)
-
-    # Open the lock file
-    with open(lock_file_path, "w") as lock_file_obj:
-        # Acquire the lock
-        lock_file(lock_file_obj)
-        try:
-            # Critical section: read and write config
-            if path is None:
-                if get_config("MNE_DATA") is None:
-                    print(
-                        "MNE_DATA is not already configured. It will be set to "
-                        "default location in the home directory - "
-                        + osp.join(osp.expanduser("~"), "mne_data")
-                        + ". All datasets will be downloaded to this location. "
-                        "If anything is already downloaded, please move manually to this location."
-                    )
-                    default_path = osp.join(osp.expanduser("~"), "mne_data")
-                    set_config("MNE_DATA", default_path)
-            else:
-                # Create the directory if it doesn't exist
-                if not osp.isdir(path):
-                    print("The path given does not exist, creating it..")
-                    os.makedirs(path, exist_ok=True)
-                # Only set the config if it's different
-                current_mne_data = get_config("MNE_DATA")
-                if current_mne_data != path:
-                    set_config("MNE_DATA", path)
-        finally:
-            # Release the lock
-            unlock_file(lock_file_obj)
+            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
+    else:
+        # Check if the path exists, if not, create it
+        if not osp.isdir(path):
+            log.info("The path given does not exist, creating it..")
+            os.makedirs(path)
+        set_config("MNE_DATA", path)
 
 
 def make_process_pipelines(
@@ -207,3 +169,41 @@ def depreciated_alias(name, expire_version):
         return func
 
     return factory
+
+
+@contextlib.contextmanager
+def _open_lock_hdf5(path, *args, **kwargs):
+    """
+    Context manager that opens a file with an optional file lock.
+
+    If the `filelock` package is available, a lock is acquired on a lock file
+    based on the given path (by appending '.lock').
+
+    Otherwise, a null context is used. The path is then opened in the
+    specified mode.
+
+    Parameters
+    ----------
+    path : str
+        The path to the file to be opened.
+    *args, **kwargs : optional
+        Additional arguments and keyword arguments to be passed to the
+        `open` function.
+
+    """
+    lock_context = contextlib.nullcontext()  # default to no lock
+
+    if filelock:
+        lock_path = f"{path}.lock"
+        try:
+            lock_context = filelock.FileLock(lock_path, timeout=5)
+            lock_context.acquire()
+        except TimeoutError:
+            warn(
+                "Could not acquire lock file after 5 seconds, consider deleting it "
+                f"if you know the corresponding file is usable:\n{lock_path}"
+            )
+            lock_context = contextlib.nullcontext()
+
+    with lock_context, h5py.File(path, *args, **kwargs) as fid:
+        yield fid

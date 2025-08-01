@@ -3,52 +3,29 @@
 https://doi.org/10.1371/journal.pone.0114853
 """
 
-import os
-import shutil
-import zipfile as z
+import json
+import logging
+from pathlib import Path
+from zipfile import ZipFile
 
-import numpy as np
-from mne.channels import make_standard_montage
-from mne.io import read_raw_cnt
-from pooch import retrieve
+import requests
+from mne import get_config
+from mne.utils import _open_lock
 
-from .base import BaseDataset
-from .download import get_dataset_path
-from .utils import stim_channels_with_selected_ids
-
-
-DATA_PATH = "https://ndownloader.figshare.com/files/3662952"
+from .base import BaseBIDSDataset
+from .bids_interface import get_bids_root
+from .download import download_if_missing
 
 
-def local_data_path(base_path, subject):
-    if not os.path.isdir(os.path.join(base_path, "subject_{}".format(subject))):
-        if not os.path.isdir(os.path.join(base_path, "data")):
-            retrieve(DATA_PATH, None, fname="data.zip", path=base_path, progressbar=True)
-            with z.ZipFile(os.path.join(base_path, "data.zip"), "r") as f:
-                f.extractall(base_path)
-            os.remove(os.path.join(base_path, "data.zip"))
-        datapath = os.path.join(base_path, "data")
-        for i in range(1, 5):
-            os.makedirs(os.path.join(base_path, "subject_{}".format(i)))
-            for session in range(1, 4):
-                for run in ["A", "B"]:
-                    os.rename(
-                        os.path.join(datapath, "S{}_{}{}.cnt".format(i, session, run)),
-                        os.path.join(
-                            base_path,
-                            "subject_{}".format(i),
-                            "{}{}.cnt".format(session, run),
-                        ),
-                    )
-        shutil.rmtree(os.path.join(base_path, "data"))
-    subjpath = os.path.join(base_path, "subject_{}".format(subject))
-    return [
-        [os.path.join(subjpath, "{}{}.cnt".format(y, x)) for x in ["A", "B"]]
-        for y in ["1", "2", "3"]
-    ]
+log = logging.getLogger(__name__)
 
 
-class Zhou2016(BaseDataset):
+ZENODO_RECORD_ID = 16534752
+# Zenodo API endpoint for published records
+ZENODO_URL = f"https://zenodo.org/api/records/{ZENODO_RECORD_ID}"
+
+
+class Zhou2016(BaseBIDSDataset):
     """Motor Imagery dataset from Zhou et al 2016.
 
     Dataset from the article *A Fully Automated Trial Selection Method for
@@ -78,6 +55,7 @@ class Zhou2016(BaseDataset):
     """
 
     def __init__(self):
+        """Initialize the BIDS dataset."""
         super().__init__(
             subjects=list(range(1, 5)),
             sessions_per_subject=3,
@@ -89,37 +67,71 @@ class Zhou2016(BaseDataset):
             paradigm="imagery",
             doi="10.1371/journal.pone.0162657",
         )
-        self.events = dict(left_hand=1, right_hand=2, feet=3)
+        self.zenodo_record_id = ZENODO_RECORD_ID
 
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        files = self.data_path(subject)
-
-        out = {}
-        for sess_ind, runlist in enumerate(files):
-            sess_key = str(sess_ind)
-            out[sess_key] = {}
-            for run_ind, fname in enumerate(runlist):
-                run_key = str(run_ind)
-                raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
-                stim = raw.annotations.description.astype(np.dtype("<10U"))
-                stim[stim == "1"] = "left_hand"
-                stim[stim == "2"] = "right_hand"
-                stim[stim == "3"] = "feet"
-                raw.annotations.description = stim
-                out[sess_key][run_key] = stim_channels_with_selected_ids(
-                    raw, desired_event_id=self.events
-                )
-                out[sess_key][run_key].set_montage(make_standard_montage("standard_1005"))
-        return out
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
+    def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
+        """Download the subject data."""
         if subject not in self.subject_list:
-            raise (ValueError("Invalid subject number"))
-        path = get_dataset_path("ZHOU", path)
-        basepath = os.path.join(path, "MNE-zhou-2016")
-        if not os.path.isdir(basepath):
-            os.makedirs(basepath)
-        return local_data_path(basepath, subject)
+            raise ValueError("Invalid subject number")
+
+        if not path:
+            path = get_config("MNE_DATA")
+
+        path = Path(update_path) if update_path else Path(path)
+        dataset_path = get_bids_root(code=self.code, path=path)
+
+        if not dataset_path.exists():
+            log.info(f"Creating dataset path: {dataset_path}")
+            dataset_path.mkdir(parents=True, exist_ok=True)
+
+        metainfo = self.get_metainfo(path=dataset_path)
+
+        for file in metainfo["files"]:
+            file_name = file["key"]
+            file_url = file["links"]["self"]
+
+            file_path = dataset_path / file_name
+            if "sub" in file_name:
+                # Check if the file corresponds to the current subject
+                if file_name == f"sub-{subject}.zip":
+                    folder_path = file_path.with_suffix("")
+
+                    if not folder_path.exists():
+                        log.info(
+                            f"Downloading {file_name} for subject {subject} to {file_path}"
+                        )
+                        download_if_missing(
+                            file_path=file_path,
+                            url=file_url,
+                            warn_missing=False,
+                            verbose=verbose,
+                        )
+
+                        log.info(f"Extracting {file_name} to {folder_path}")
+                        with ZipFile(str(file_path), "r") as zip_ref:
+                            zip_ref.extractall(folder_path.parent)
+
+            else:
+                download_if_missing(
+                    file_path=file_path, url=file_url, warn_missing=False, verbose=verbose
+                )
+
+        return dataset_path
+
+    def get_metainfo(self, path=None):
+        """Fetch a Zenodo record by its ID."""
+        # first thing try to get the record from the path if already downloaded
+
+        file_path = f"{path}/{self.zenodo_record_id}.json"
+
+        if not Path(file_path).exists():
+            # If not found, fetch from Zenodo
+            response = requests.get(ZENODO_URL)
+            response.raise_for_status()
+            # Save the response to a file
+            with _open_lock(file_path, "w") as f:
+                json.dump(response.json(), f, indent=4)
+            return response.json()
+        else:
+            with _open_lock(file_path, "r") as f:
+                return json.load(f)

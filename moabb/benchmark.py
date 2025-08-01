@@ -6,6 +6,7 @@ from pathlib import Path
 import mne
 import pandas as pd
 import yaml
+from mne.utils import _open_lock
 
 from moabb import paradigms as moabb_paradigms
 from moabb.analysis import analyze
@@ -136,7 +137,7 @@ def benchmark(  # noqa: C901
 
     context_params = {}
     if contexts is not None:
-        with open(contexts, "r") as cfile:
+        with _open_lock(contexts, "r") as cfile:
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     prdgms = generate_paradigms(pipeline_configs, context_params, log)

@@ -8,6 +8,7 @@ from glob import glob
 import numpy as np
 import scipy.signal as scp
 import yaml
+from mne.utils import _open_lock
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
 
@@ -104,7 +105,7 @@ def parse_pipelines_from_directory(dir_path):
 
     pipeline_configs = []
     for yaml_file in yaml_files:
-        with open(yaml_file, "r") as _file:
+        with _open_lock(yaml_file, "r") as _file:
             content = _file.read()
 
             # load config
@@ -311,7 +312,8 @@ def filterbank(X, sfreq, idx_fb, peaks):
         num_chans = X.shape[0]
         num_trials = 1
     else:
-        print("error")
+        log.error("Invalid input shape")
+        raise ValueError("Input data must be 2D or 3D array")
 
     sfreq = sfreq / 2
 
@@ -355,8 +357,8 @@ def filterbank(X, sfreq, idx_fb, peaks):
                     padlen=3 * (max(len(B), len(A)) - 1),
                 )
             except Exception as e:
-                print(e)
-                print(num_chans)
+                log.error(e)
+                log.info(num_chans)
     else:
         for trial_i in range(num_trials):  # Filter each trial sequentially
             for ch_i in range(num_chans):  # Filter each channel sequentially

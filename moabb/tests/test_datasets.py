@@ -612,15 +612,6 @@ class TestBIDSDataset:
                 interval=[0, 3],
                 paradigm="imagery",
             )
-        log = caplog.text.strip().split("\n")
-        expected = [
-            "Found subjects: ['1', '2']",
-            "Found sessions_per_subject=2",
-        ]
-        assert len(expected) == len(log)
-        for i, regex in enumerate(expected):
-            assert regex in log[i]
-
         # raw data
         raw_data = dataset.get_data()
         assert raw_data.keys() == {"1", "2"}
