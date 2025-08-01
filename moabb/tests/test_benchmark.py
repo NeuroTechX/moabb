@@ -37,7 +37,9 @@ class TestBenchmark:
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             include_datasets=[
-                FakeDataset(["left_hand", "right_hand"], paradigm="imagery", n_subjects=2),
+                FakeDataset(
+                    ["left_hand", "right_hand"], paradigm="imagery", n_subjects=2
+                ),
                 FakeDataset(["Target", "NonTarget"], paradigm="p300", n_subjects=2),
                 FakeDataset(["13", "15"], paradigm="ssvep", n_subjects=2),
                 FakeDataset(["1.0", "0.0"], paradigm="cvep", n_subjects=2),
