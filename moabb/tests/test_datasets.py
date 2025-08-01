@@ -566,6 +566,33 @@ class TestData:
         assert all([a == b for a, b in zip(raw.annotations.description[:3], description)])
 
 
+class TestWeibo2014:
+    @pytest.mark.parametrize("subject", [1])
+    def test_get_data(self, subject, dl_data):
+        if not dl_data:
+            pytest.skip("Skipping download test")
+        ds = db.Weibo2014()
+        data = ds.get_data(subjects=[subject])
+
+        # we should get a dict
+        assert isinstance(data, dict)
+
+        # we get the right number of subject
+        assert len(data) == 1
+        assert subject in data
+
+        # right number of session
+        assert len(data[subject]) == 1
+        assert "0" in data[subject]
+
+        # right number of run
+        assert len(data[subject]["0"]) == 1
+        assert "0" in data[subject]["0"]
+
+        # We should get a raw array at the end
+        assert isinstance(data[subject]["0"]["0"], mne.io.BaseRaw)
+
+
 class TestBIDSDataset:
     @pytest.fixture(scope="class")
     def cached_dataset_root(self, tmpdir_factory):
