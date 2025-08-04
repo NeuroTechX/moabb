@@ -7,6 +7,7 @@ from typing import Sequence
 
 from mne.utils.config import _open_lock
 from numpy import argmax
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
 
@@ -53,7 +54,7 @@ def _check_if_is_pytorch_steps(model):
         return skorch_valid
 
 
-def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
+def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     """Save a model fitted to a given fold from cross-validation.
 
     Parameters
@@ -95,7 +96,7 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
             dump(model, file, protocol=HIGHEST_PROTOCOL)
 
 
-def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
+def _save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
     """Save a list of models fitted to a folder.
 
     Parameters
@@ -119,14 +120,14 @@ def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path
         model_list = [model_list]
 
     for cv_index, model in enumerate(model_list):
-        save_model_cv(model, save_path, str(cv_index))
+        _save_model_cv(model, save_path, str(cv_index))
 
     best_model = model_list[argmax(score_list)]
 
-    save_model_cv(best_model, save_path, "best")
+    _save_model_cv(best_model, save_path, "best")
 
 
-def create_save_path(
+def _create_save_path(
     hdf5_path,
     code: str,
     subject: int | str,
@@ -166,7 +167,7 @@ def create_save_path(
         if grid:
             path_save = (
                 Path(hdf5_path)
-                / f"GridSearch_{eval_type}"
+                / f"Search_{eval_type}"
                 / code
                 / f"{str(subject)}"
                 / str(session)
@@ -218,3 +219,20 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
             except Exception as e:
                 raise ValueError(f"Conversion failed for parameter {key}: {e}")
         return optuna_params
+
+
+def check_search_available():
+    """Check if optuna is available"""
+    try:
+        from optuna.integration import OptunaSearchCV
+
+        optuna_available = True
+    except ImportError:
+        optuna_available = False
+
+    if optuna_available:
+        search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+    else:
+        search_methods = {"grid": GridSearchCV}
+
+    return search_methods, optuna_available

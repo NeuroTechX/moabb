@@ -9,7 +9,6 @@ are compared, one "vanilla" model with model tuned via grid search.
 """
 
 import os
-from pickle import load
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -132,44 +131,3 @@ sns.stripplot(
 )
 sns.pointplot(data=result, y="score", x="pipeline", ax=axes, palette="Set1")
 axes.set_ylabel("ROC AUC")
-
-##########################################################
-# Load Best Model Parameter
-# -------------------------
-# The best model are automatically saved in a pickle file, in the
-# results directory. It is possible to load those model for each
-# dataset, subject and session. Here, we could see that the grid
-# search found a l1_ratio that is different from the baseline
-# value.
-
-with open(
-    "./Results/Models_WithinSession/BNCI2014-001/1/1test/GridSearchEN/fitted_model_best.pkl",
-    "rb",
-) as pickle_file:
-    GridSearchEN_Session_E = load(pickle_file)
-
-print(
-    "Best Parameter l1_ratio Session_E GridSearchEN ",
-    GridSearchEN_Session_E.best_params_["LogistReg__l1_ratio"],
-)
-
-print(
-    "Best Parameter l1_ratio Session_E VanillaEN: ",
-    pipelines["VanillaEN"].steps[2][1].l1_ratio,
-)
-
-with open(
-    "./Results/Models_WithinSession/BNCI2014-001/1/0train/GridSearchEN/fitted_model_best.pkl",
-    "rb",
-) as pickle_file:
-    GridSearchEN_Session_T = load(pickle_file)
-
-print(
-    "Best Parameter l1_ratio Session_T GridSearchEN ",
-    GridSearchEN_Session_T.best_params_["LogistReg__l1_ratio"],
-)
-
-print(
-    "Best Parameter l1_ratio Session_T VanillaEN: ",
-    pipelines["VanillaEN"].steps[2][1].l1_ratio,
-)
