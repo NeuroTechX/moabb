@@ -215,8 +215,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                             grid=self.search,
                             eval_type="WithinSession",
                         )
-                    else:
-                        model_save_path = None
 
                     scorer = get_scorer(self.paradigm.scoring)
                     acc = list()
@@ -229,7 +227,9 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                         cvclf.fit(X_[train], y_[train])
 
-                        acc.append(scorer(cvclf, X_[test], y_[test]))
+                        score = scorer(cvclf, X_[test], y_[test])
+
+                        acc.append(score)
 
                         if self.hdf5_path is not None and self.save_model:
                             _save_model_cv(
