@@ -24,9 +24,8 @@ from moabb.evaluations.splitters import (
     WithinSessionSplitter,
 )
 from moabb.evaluations.utils import (
-    create_save_path,
-    save_model_cv,
-    save_model_list,
+    _create_save_path,
+    _save_model_cv,
 )
 
 
@@ -143,7 +142,6 @@ class WithinSessionEvaluation(BaseEvaluation):
             super().__init__(**kwargs)
 
     # flake8: noqa: C901
-
     def _evaluate(
         self,
         dataset,
@@ -181,8 +179,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                         # Initialize CodeCarbon
                         tracker = EmissionsTracker(save_to_file=False, log_level="error")
                         tracker.start()
+
                     t_start = time()
-                    cv = WithinSessionSplitter(
+                    self.cv = WithinSessionSplitter(
                         n_folds=5,
                         shuffle=True,
                         random_state=self.random_state,
@@ -198,17 +197,6 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     grid_clf = clone(clf)
 
-                    # Create folder for grid search results
-                    create_save_path(
-                        self.hdf5_path,
-                        dataset.code,
-                        subject,
-                        session,
-                        name,
-                        grid=True,
-                        eval_type="WithinSession",
-                    )
-
                     # Implement Grid Search
                     grid_clf = self._grid_search(
                         param_grid=param_grid,
@@ -216,16 +204,19 @@ class WithinSessionEvaluation(BaseEvaluation):
                         grid_clf=grid_clf,
                         inner_cv=inner_cv,
                     )
+
                     if self.hdf5_path is not None and self.save_model:
-                        model_save_path = create_save_path(
+                        model_save_path = _create_save_path(
                             self.hdf5_path,
                             dataset.code,
                             subject,
                             session,
                             name,
-                            grid=False,
+                            grid=self.search,
                             eval_type="WithinSession",
                         )
+                    else:
+                        model_save_path = None
 
                     scorer = get_scorer(self.paradigm.scoring)
                     acc = list()
@@ -233,7 +224,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     y_ = y[ix] if self.mne_labels else y_cv
                     meta_ = metadata[ix].reset_index(drop=True)
 
-                    for cv_ind, (train, test) in enumerate(cv.split(y_, meta_)):
+                    for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
 
                         cvclf.fit(X_[train], y_[train])
@@ -241,7 +232,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         acc.append(scorer(cvclf, X_[test], y_[test]))
 
                         if self.hdf5_path is not None and self.save_model:
-                            save_model_cv(
+                            _save_model_cv(
                                 model=cvclf,
                                 save_path=model_save_path,
                                 cv_index=cv_ind,
@@ -255,10 +246,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                         if emissions is None:
                             emissions = np.nan
                     duration = time() - t_start
-
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
-                        "time": duration / 5.0,  # 5 fold CV
+                        "time": duration / self.cv.n_folds,  # 5 fold CV
                         "dataset": dataset,
                         "subject": subject,
                         "session": session,
@@ -517,7 +507,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     tracker.start()
 
                 # we want to store a results per session
-                cv = CrossSessionSplitter(random_state=self.random_state)
+                self.cv = CrossSessionSplitter(random_state=self.random_state)
 
                 inner_cv = StratifiedKFold(
                     3, shuffle=True, random_state=self.random_state
@@ -531,16 +521,17 @@ class CrossSessionEvaluation(BaseEvaluation):
                 )
 
                 if self.hdf5_path is not None and self.save_model:
-                    model_save_path = create_save_path(
+                    model_save_path = _create_save_path(
                         hdf5_path=self.hdf5_path,
                         code=dataset.code,
                         subject=subject,
                         session="",
                         name=name,
-                        grid=False,
+                        grid=self.search,
                         eval_type="CrossSession",
                     )
-                for cv_ind, (train, test) in enumerate(cv.split(y, metadata)):
+
+                for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
                     model_list = []
                     if _carbonfootprint:
                         tracker.start()
@@ -554,7 +545,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     score = scorer(cvclf, X[test], y[test])
 
                     if self.hdf5_path is not None and self.save_model:
-                        save_model_cv(
+                        _save_model_cv(
                             model=cvclf,
                             save_path=model_save_path,
                             cv_index=str(cv_ind),
@@ -566,12 +557,6 @@ class CrossSessionEvaluation(BaseEvaluation):
                             emissions = 0
 
                     duration = time() - t_start
-                    if self.hdf5_path is not None and self.save_model:
-                        save_model_list(
-                            model_list=model_list,
-                            score_list=score,
-                            save_path=model_save_path,
-                        )
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -688,7 +673,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             cv_kwargs = {"n_splits": self.n_splits}
             n_subjects = self.n_splits
 
-        cv = CrossSubjectSplitter(
+        self.cv = CrossSubjectSplitter(
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
 
@@ -702,7 +687,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         # Progressbar at subject level
         for cv_ind, (train, test) in enumerate(
             tqdm(
-                cv.split(y, metadata),
+                self.cv.split(y, metadata),
                 total=n_subjects,
                 desc=f"{dataset.code}-CrossSubject",
             )
@@ -721,6 +706,23 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
 
+                if self.hdf5_path is not None and self.save_model:
+                    # Save the best model from grid search
+                    model_save_path = _create_save_path(
+                        hdf5_path=self.hdf5_path,
+                        code=dataset.code,
+                        subject=subject,
+                        session="",
+                        name=name,
+                        grid=self.search,
+                        eval_type="CrossSubject",
+                    )
+                    _save_model_cv(
+                        model=clf,
+                        save_path=model_save_path,
+                        cv_index=str(cv_ind),
+                    )
+
                 model = deepcopy(clf).fit(X[train], y[train])
 
                 if _carbonfootprint:
@@ -730,17 +732,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 duration = time() - t_start
 
                 if self.hdf5_path is not None and self.save_model:
-                    model_save_path = create_save_path(
+
+                    model_save_path = _create_save_path(
                         hdf5_path=self.hdf5_path,
                         code=dataset.code,
                         subject=subject,
                         session="",
                         name=name,
-                        grid=False,
+                        grid=self.search,
                         eval_type="CrossSubject",
                     )
 
-                    save_model_cv(
+                    _save_model_cv(
                         model=model, save_path=model_save_path, cv_index=str(cv_ind)
                     )
                 # we eval on each session

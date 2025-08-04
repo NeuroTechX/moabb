@@ -77,6 +77,8 @@ class BaseEvaluation(ABC):
        optuna, time_out parameters.
     """
 
+    search = False
+
     def __init__(
         self,
         paradigm,
@@ -327,9 +329,12 @@ class BaseEvaluation(ABC):
                     return_train_score=True,
                     **extra_params,
                 )
+                self.search = True
                 return search
             else:
+                self.search = True
                 return grid_clf
 
         else:
+            self.search = False
             return grid_clf
