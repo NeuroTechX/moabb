@@ -71,6 +71,7 @@ from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
+from .kojima2024b import Kojima2024B_2stream, Kojima2024B_4stream
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .liu2024 import Liu2024
 from .mpi_mi import MunichMI  # noqa: F401

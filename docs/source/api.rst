@@ -88,6 +88,8 @@ ERP/P300 Datasets
     ErpCore2021_N170
     ErpCore2021_N400
     ErpCore2021_P3
+    Kojima2024B_2stream
+    Kojima2024B_4stream
 
 --------------
 SSVEP Datasets
