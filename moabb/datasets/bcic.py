@@ -1,17 +1,15 @@
-import zipfile
 import io
+import zipfile
+from pathlib import Path
+
 import numpy as np
-
-
-from mne import create_info, Annotations
+from mne import Annotations, create_info
 from mne.io import RawArray
 from mne.utils import verbose
 from scipy.io import loadmat
-from pathlib import Path
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
-
 
 BCIC_URL = "https://www.bbci.de/competition/"
 
