@@ -19,7 +19,7 @@ Develop branch  - 1.4  (dev)
 Enhancements
 ~~~~~~~~~~~~
 
-- Add new dataset :class:`moabb.datasets.BCICIII_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+- Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
 
 Bugs
 ~~~~
