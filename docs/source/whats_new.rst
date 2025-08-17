@@ -19,6 +19,8 @@ Develop branch  - 1.4  (dev)
 Enhancements
 ~~~~~~~~~~~~
 
+- Add new dataset :class:`moabb.datasets.BCICIII_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+
 Bugs
 ~~~~
 
@@ -594,3 +596,4 @@ API changes
 .. _Radovan Vodila: https://github.com/rvodila
 .. _Ulysse Durand: https://github.com/UlysseDurand
 .. _Lucas Heck: https://github.com/lucas-heck
+.. _Griffin Keeler: https://github.com/griffinkeeler
