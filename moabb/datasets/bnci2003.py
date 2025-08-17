@@ -12,11 +12,11 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
-BCIC_URL = "https://www.bbci.de/competition/"
+BNCI_2003_URL = "https://www.bbci.de/competition/"
 
 
-class MNEBCIC(BaseDataset):
-    """Base BCIC Dataset"""
+class MNEBNCI_2003(BaseDataset):
+    """Base BNCI 2003 Dataset"""
 
     def _get_single_subject_data(self, subject):
         session = load_data(subject=subject, dataset=self.code, verbose=False)
@@ -36,9 +36,9 @@ class MNEBCIC(BaseDataset):
         )
 
 
-class BCICIII_IVa(MNEBCIC):
+class BNCI2003_IVa(MNEBNCI_2003):
     """
-    BCICIII-IVa Motor Imagery dataset.
+    BNCI2003_IVa Motor Imagery dataset.
 
     Dataset IVa from BCI Competition III [1]_.
 
@@ -74,7 +74,7 @@ class BCICIII_IVa(MNEBCIC):
             subjects=list(range(1, 6)),
             sessions_per_subject=1,
             events={"right_hand": 0, "feet": 1},
-            code="BCICIII-IVa",
+            code="BNCI2003-IVa",
             interval=[0, 3.5],
             paradigm="imagery",
             doi="",
@@ -88,11 +88,11 @@ def data_path(url, path=None, force_update=False, update_path=None, verbose=None
 @verbose
 def load_data(
     subject,
-    dataset="BCICIII-IVa",
+    dataset="BNCI2003-IVa",
     path=None,
     force_update=False,
     update_path=None,
-    base_url=BCIC_URL,
+    base_url=BNCI_2003_URL,
     only_filenames=False,
     verbose=None,
 ):
@@ -108,10 +108,10 @@ def load_data(
         dataset (str):
             The dataset name.
         path (str):
-            Location of where to look for the BCIC data storing
+            Location of where to look for the BNCI data storing
             location. If None, the environment variable or config parameter
             ``MNE_DATASETS_BNCI_PATH`` is used. If it doesn't exist, the
-            "~/mne_data" directory is used. If the BCIC dataset is not
+            "~/mne_data" directory is used. If the BNCI dataset is not
             found under the given path, the data will be automatically
             downloaded to the specified folder.
         force_update (bool):
@@ -137,14 +137,14 @@ def load_data(
             Dictionary containing events and their code.
     """
 
-    dataset_list = {"BCICIII-IVa": _load_data_iva_III}
+    dataset_list = {"BNCI2003-IVa": _load_data_iva_III}
 
-    baseurl_list = {"BCICIII-IVa": BCIC_URL}
+    baseurl_list = {"BNCI2003-IVa": BNCI_2003_URL}
 
     # Raises ValueError if dataset is not found
     if dataset not in dataset_list.keys():
         raise ValueError(
-            f"Dataset {dataset} is not a valid BCIC dataset ID. "
+            f"Dataset {dataset} is not a valid BNCI dataset ID. "
             f"Valid datasets are: {', '.join(dataset_list.keys())}."
         )
 
@@ -165,11 +165,11 @@ def _load_data_iva_III(
     path=None,
     force_update=False,
     update_path=None,
-    base_url=BCIC_URL,
+    base_url=BNCI_2003_URL,
     only_filenames=False,
     verbose=None,
 ):
-    """Loads data for the BCICIII-IVa dataset."""
+    """Loads data for the BNCI2003-IVa dataset."""
     # Raises ValueError is subject is not between 1 and 5
     if (subject < 1) or (subject > 5):
         raise ValueError(f"Subject must be between 1 and 5. Got {subject}")
