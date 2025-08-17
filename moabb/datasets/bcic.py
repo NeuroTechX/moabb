@@ -37,7 +37,7 @@ class MNEBCIC(BaseDataset):
 
 class BCICIII_IVa(MNEBCIC):
     """
-    BCIC 2008-IVa Motor Imagery dataset.
+    BCICIII-IVa Motor Imagery dataset.
 
     Dataset IVa from BCI Competition III [1]_.
 
@@ -73,7 +73,7 @@ class BCICIII_IVa(MNEBCIC):
             subjects=list(range(1, 6)),
             sessions_per_subject=1,
             events={"right_hand": 0, "feet": 1},
-            code="BCIC2008-IVa",
+            code="BCICIII-IVa",
             interval=[0, 3.5],
             paradigm="imagery",
             doi="",
@@ -87,7 +87,7 @@ def data_path(url, path=None, force_update=False, update_path=None, verbose=None
 @verbose
 def load_data(
     subject,
-    dataset="BCIC2008-IVa",
+    dataset="BCICIII-IVa",
     path=None,
     force_update=False,
     update_path=None,
@@ -136,9 +136,9 @@ def load_data(
             Dictionary containing events and their code.
     """
 
-    dataset_list = {"BCIC2008-IVa": _load_data_iva_2008}
+    dataset_list = {"BCICIII-IVa": _load_data_iva_III}
 
-    baseurl_list = {"BCIC2008-IVa": BCIC_URL}
+    baseurl_list = {"BCICIII-IVa": BCIC_URL}
 
     # Raises ValueError if dataset is not found
     if dataset not in dataset_list.keys():
@@ -159,7 +159,7 @@ def load_data(
 
 
 @verbose
-def _load_data_iva_2008(
+def _load_data_iva_III(
     subject,
     path=None,
     force_update=False,
@@ -168,7 +168,7 @@ def _load_data_iva_2008(
     only_filenames=False,
     verbose=None,
 ):
-    """Loads data for IVa-2008 dataset."""
+    """Loads data for the BCICIII-IVa dataset."""
     # Raises ValueError is subject is not between 1 and 5
     if (subject < 1) or (subject > 5):
         raise ValueError(f"Subject must be between 1 and 5. Got {subject}")
