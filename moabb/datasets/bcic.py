@@ -11,6 +11,7 @@ from scipy.io import loadmat
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
+
 BCIC_URL = "https://www.bbci.de/competition/"
 
 
