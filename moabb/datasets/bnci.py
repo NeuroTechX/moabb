@@ -1,12 +1,14 @@
 """BNCI 2014-001 Motor imagery dataset."""
 
+import io
+import zipfile
+from pathlib import Path
+
 import numpy as np
-import zipfile, io
-from mne import create_info, Annotations
+from mne import Annotations, create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 from mne.utils import verbose
-from pathlib import Path
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
