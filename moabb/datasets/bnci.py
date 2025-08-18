@@ -77,7 +77,7 @@ def load_data(
         dictionary containing events and their code.
     """
     dataset_list = {
-        "BNCI2003-IVa": _load_data_iva_2003,
+        "BNCI2003-004": _load_data_iva_2003,
         "BNCI2014-001": _load_data_001_2014,
         "BNCI2014-002": _load_data_002_2014,
         "BNCI2014-004": _load_data_004_2014,
@@ -93,7 +93,7 @@ def load_data(
     }
 
     baseurl_list = {
-        "BNCI2003-IVa": "https://www.bbci.de/competition/",
+        "BNCI2003-004": "https://www.bbci.de/competition/",
         "BNCI2014-001": BNCI_URL,
         "BNCI2014-002": BNCI_URL,
         "BNCI2015-001": BNCI_URL,
@@ -905,7 +905,7 @@ class MNEBNCI(BaseDataset):
         )
 
 
-class BNCI2003_IVa(MNEBNCI):
+class BNCI2003_004(MNEBNCI):
     """
     BNCI2003_IVa Motor Imagery dataset.
 
@@ -943,10 +943,10 @@ class BNCI2003_IVa(MNEBNCI):
             subjects=list(range(1, 6)),
             sessions_per_subject=1,
             events={"right_hand": 0, "feet": 1},
-            code="BNCI2003-IVa",
+            code="BNCI2003-004",
             interval=[0, 3.5],
             paradigm="imagery",
-            doi="",
+            doi="10.1109/TBME.2004.827088",
         )
 
 
