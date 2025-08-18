@@ -25,6 +25,7 @@ from .bnci import BNCI2015001  # noqa: F401
 from .bnci import BNCI2015003  # noqa: F401
 from .bnci import BNCI2015004  # noqa: F401
 from .bnci import (
+    BNCI2003_004,
     BNCI2014_001,
     BNCI2014_002,
     BNCI2014_004,
@@ -33,7 +34,6 @@ from .bnci import (
     BNCI2015_001,
     BNCI2015_003,
     BNCI2015_004,
-    BNCI2003_004,
 )
 from .braininvaders import VirtualReality  # noqa: F401
 from .braininvaders import bi2012  # noqa: F401
