@@ -1,10 +1,12 @@
 """BNCI 2014-001 Motor imagery dataset."""
 
 import numpy as np
-from mne import create_info
+import zipfile, io
+from mne import create_info, Annotations
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 from mne.utils import verbose
+from pathlib import Path
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
@@ -73,6 +75,7 @@ def load_data(
         dictionary containing events and their code.
     """
     dataset_list = {
+        "BNCI2003-IVa": _load_data_iva_2003,
         "BNCI2014-001": _load_data_001_2014,
         "BNCI2014-002": _load_data_002_2014,
         "BNCI2014-004": _load_data_004_2014,
@@ -88,6 +91,7 @@ def load_data(
     }
 
     baseurl_list = {
+        "BNCI2003-IVa": "https://www.bbci.de/competition/",
         "BNCI2014-001": BNCI_URL,
         "BNCI2014-002": BNCI_URL,
         "BNCI2015-001": BNCI_URL,
@@ -117,6 +121,57 @@ def load_data(
         only_filenames,
         verbose,
     )
+
+
+@verbose
+def _load_data_iva_2003(
+    subject,
+    path=None,
+    force_update=False,
+    update_path=None,
+    base_url=None,
+    only_filenames=False,
+    verbose=None,
+):
+    """Loads data for the BNCI2003-IVa dataset."""
+    # Raises ValueError is subject is not between 1 and 5
+    if (subject < 1) or (subject > 5):
+        raise ValueError(f"Subject must be between 1 and 5. Got {subject}")
+
+    subject_names = ["aa", "al", "av", "aw", "ay"]
+
+    # fmt: off
+    ch_names = ['Fp1', 'AFp1', 'Fpz', 'AFp2', 'Fp2', 'AF7', 'AF3',
+                'AF4', 'AF8', 'FAF5', 'FAF1', 'FAF2', 'FAF6', 'F7',
+                'F5', 'F3', 'F1', 'Fz', 'F2', 'F4', 'F6', 'F8', 'FFC7',
+                'FFC5', 'FFC3', 'FFC1', 'FFC2', 'FFC4', 'FFC6', 'FFC8',
+                'FT9', 'FT7', 'FC5', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4',
+                'FC6', 'FT8', 'FT10', 'CFC7', 'CFC5', 'CFC3', 'CFC1',
+                'CFC2', 'CFC4', 'CFC6', 'CFC8', 'T7', 'C5', 'C3', 'C1',
+                'Cz','C2', 'C4', 'C6', 'T8', 'CCP7', 'CCP5', 'CCP3', 'CCP1',
+                'CCP2', 'CCP4', 'CCP6', 'CCP8', 'TP9', 'TP7', 'CP5', 'CP3',
+                'CP1', 'CPz', 'CP2', 'CP4', 'CP6', 'TP8', 'TP10', 'PCP7',
+                'PCP5', 'PCP3', 'PCP1', 'PCP2', 'PCP4', 'PCP6', 'PCP8', 'P9',
+                'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'P10',
+                'PPO7', 'PPO5', 'PPO1', 'PPO2', 'PPO6', 'PPO8', 'PO7', 'PO3',
+                'PO1', 'POz', 'PO2', 'PO4', 'PO8', 'OPO1', 'OPO2', 'O1',
+                'Oz', 'O2', 'OI1', 'OI2', 'I1', 'I2']
+    # fmt: on
+    ch_type = ["eeg"] * 118
+
+    url = "{u}download/competition_iii/berlin/100Hz/data_set_IVa_{r}_mat.zip".format(
+        u=base_url, r=subject_names[subject - 1]
+    )
+
+    filename = data_path(url, path, force_update, update_path)
+
+    if only_filenames:
+        return filename
+
+    runs, ev = _convert_bbci2003(filename[0], ch_names, ch_type)
+
+    session = {"0train": {"0": runs}}
+    return session
 
 
 @verbose
@@ -698,6 +753,102 @@ def _convert_run_bbci(run, ch_types, verbose=None):
     return raw, event_id
 
 
+def _convert_bbci2003(filename, ch_names, ch_type):
+    """
+    Process motor imagery data from MAT files.
+
+     Parameters
+     ----------
+        filename (str):
+            Path to the MAT file.
+        ch_names (list of str):
+            List of channel names.
+        ch_type (list of str):
+            List of channel types.
+
+    Returns
+    -------
+        raw (instance of RawArray):
+            returns MNE Raw object.
+    """
+    zip_path = Path(filename)
+
+    with zipfile.ZipFile(zip_path, "r") as z:
+        mat_files = [f for f in z.namelist() if f.endswith(".mat")]
+
+        if not mat_files:
+            raise FileNotFoundError("No .mat file found in zip archive.")
+
+        with z.open(mat_files[0]) as f:
+            data = loadmat(io.BytesIO(f.read()))
+
+        run = data
+        raw, ev = _convert_run_bbci2003(run, ch_names, ch_type)
+        return raw, ev
+
+
+@verbose
+def _convert_run_bbci2003(run, ch_names, ch_types, verbose=None):
+    """
+    Converts one run to a raw MNE object.
+
+    Parameters
+    ----------
+        run (ndarray):
+            The continuous EEG signal.
+        ch_names (list of str):
+            List of channel names.
+        ch_types (list of str):
+            List of channel types.
+        verbose (bool, str, int, or None):
+            If not None, override default verbose level (see :func:`mne.verbose`
+            and :ref:`Logging documentation <tut_logging>` for more).
+
+    Returns:
+        raw (instance of RawArray):
+            MNE Raw object.
+        event_id (dict):
+            Dictionary containing class names.
+    """
+    class_map = {
+        "right": "right_hand",
+        "foot": "feet",
+    }
+
+    raw_labels = run["mrk"]["y"][0, 0][0]
+    labels_mask = ~np.isnan(raw_labels)
+    valid_labels = raw_labels[labels_mask]
+    labels = valid_labels.astype(int) - 1
+
+    raw_positions = run["mrk"][0][0]["pos"][0]
+    positions = raw_positions[labels_mask]
+
+    sfreq = float(run["nfo"][0, 0]["fs"][0, 0])
+    eeg_data = run["cnt"]
+    raw_classes = run["mrk"]["className"]
+
+    while isinstance(raw_classes, (list, np.ndarray)) and len(raw_classes) == 1:
+        raw_classes = raw_classes[0]
+    class_names = [cls[0] for cls in raw_classes]
+
+    for i, word in enumerate(class_names):
+        if word in class_map:
+            class_names[i] = class_map[word]
+
+    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
+
+    onset = positions / sfreq
+    duration = 0
+    description = [class_names[i] for i in labels]
+    annotations = Annotations(onset=onset, duration=duration, description=description)
+
+    event_id = {name: i for i, name in enumerate(class_names)}
+    raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
+    raw.set_annotations(annotations)
+
+    return raw, event_id
+
+
 @verbose
 def _convert_run_epfl(run, verbose=None):
     """Convert one run to raw."""
@@ -749,6 +900,51 @@ class MNEBNCI(BaseDataset):
             path=path,
             force_update=force_update,
             only_filenames=True,
+        )
+
+
+class BNCI2003_IVa(MNEBNCI):
+    """
+    BNCI2003_IVa Motor Imagery dataset.
+
+    Dataset IVa from BCI Competition III [1]_.
+
+    **Dataset Description**
+
+    This data set was recorded from five healthy subjects. Subjects sat in
+    a comfortable chair with arms resting on armrests. This data set
+    contains only data from the 4 initial sessions without feedback.
+    Visual cues indicated for 3.5 s which of the following 3 motor
+    imageries the subject should perform: (L) left hand, (R) right hand,
+    (F) right foot. The presentation of target cues were intermitted by
+    periods of random length, 1.75 to 2.25 s, in which the subject could
+    relax.
+
+    There were two types of visual stimulation: (1) where targets were
+    indicated by letters appearing behind a fixation cross (which might
+    nevertheless induce little target-correlated eye movements), and (2)
+    where a randomly moving object indicated targets (inducing target-
+    uncorrelated eye movements). From subjects al and aw 2 sessions of
+    both types were recorded, while from the other subjects 3 sessions
+    of type (2) and 1 session of type (1) were recorded.
+
+    References
+    ----------
+    .. [1] Guido Dornhege, Benjamin Blankertz, Gabriel Curio, and Klaus-Robert
+           Müller. Boosting bit rates in non-invasive EEG single-trial
+           classifications by feature combination and multi-class paradigms.
+           IEEE Trans. Biomed. Eng., 51(6):993-1002, June 2004.
+    """
+
+    def __init__(self):
+        super().__init__(
+            subjects=list(range(1, 6)),
+            sessions_per_subject=1,
+            events={"right_hand": 0, "feet": 1},
+            code="BNCI2003-IVa",
+            interval=[0, 3.5],
+            paradigm="imagery",
+            doi="",
         )
 
 
