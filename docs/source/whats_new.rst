@@ -18,6 +18,7 @@ Develop branch  - 1.4  (dev)
 --------------------------------------
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
 
 - Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
 
@@ -596,4 +597,5 @@ API changes
 .. _Radovan Vodila: https://github.com/rvodila
 .. _Ulysse Durand: https://github.com/UlysseDurand
 .. _Lucas Heck: https://github.com/lucas-heck
+.. _Simon Kojima: https://github.com/simonkojima
 .. _Griffin Keeler: https://github.com/griffinkeeler
