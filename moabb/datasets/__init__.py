@@ -25,6 +25,7 @@ from .bnci import BNCI2015001  # noqa: F401
 from .bnci import BNCI2015003  # noqa: F401
 from .bnci import BNCI2015004  # noqa: F401
 from .bnci import (
+    BNCI2003_004,
     BNCI2014_001,
     BNCI2014_002,
     BNCI2014_004,
