@@ -18,6 +18,7 @@ Develop branch  - 1.4  (dev)
 --------------------------------------
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
 - Adding :class:`moabb.datasets.Kojima2024B_2stream` and :class:`moabb.datasets.Kojima2024B_4stream` (:gh:`806` by `Simon Kojima`_)
 - Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
 
