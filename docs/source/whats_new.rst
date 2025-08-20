@@ -19,6 +19,8 @@ Develop branch  - 1.4  (dev)
 Enhancements
 ~~~~~~~~~~~~
 
+- Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+
 Bugs
 ~~~~
 
@@ -42,6 +44,7 @@ Enhancements
 - Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
 - Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
 - Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
+- Refactor :class:`moabb.evaluation.CrossSessionEvaluation`, :class:`moabb.evaluation.CrossSubjectEvaluation` and  :class:`moabb.evaluation.WithinSessionEvaluation` to use the new splitter classes (:gh:`769` by `Bruno Aristimunha`_)
 - Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch`_ and `Bruno Aristimunha`_)
 - Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
 - Add function to auto-generate tables for the paper results documentation page (:gh:`785` by `Lucas Heck`_)
@@ -593,3 +596,4 @@ API changes
 .. _Radovan Vodila: https://github.com/rvodila
 .. _Ulysse Durand: https://github.com/UlysseDurand
 .. _Lucas Heck: https://github.com/lucas-heck
+.. _Griffin Keeler: https://github.com/griffinkeeler
