@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+from mne.utils.config import _open_lock
 from pyriemann.classification import MDM
 from pyriemann.estimation import XdawnCovariances
 from sklearn.pipeline import make_pipeline
@@ -38,7 +39,10 @@ def test_decoding_performance_stable(dataset_class):
     folder_path = Path(__file__).parent / "reference_results_dataset_{}.csv".format(
         dataset_name
     )
-    reference_performance = pd.read_csv(folder_path)
+    # Serialize access if filelock is available; otherwise just open normally.
+    with _open_lock(folder_path, "r", encoding="utf-8") as f:
+        reference_performance = pd.read_csv(f)
+
     reference_performance.drop(columns=["time", "Unnamed: 0"], inplace=True)
     reference_performance["score"] = reference_performance["score"].astype(np.float32)
     reference_performance["samples"] = reference_performance["samples"].astype(int)
