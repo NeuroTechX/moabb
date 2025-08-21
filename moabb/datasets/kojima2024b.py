@@ -1,11 +1,3 @@
-"""
-URL PATH: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/1UJDV6
-
-check the following note for development
-https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md
-
-"""
-
 import json
 import os
 import re
@@ -225,7 +217,7 @@ class _Kojima2024BBase(BaseDataset):
         path : None | str
             Location of where to look for the data storing location. If None,
             the environment variable or config parameter MNE_(dataset) is used.
-            If it doesn’t exist, the “~/mne_data” directory is used. If the
+            If it doesn't exist, the “~/mne_data” directory is used. If the
             dataset is not found under the given path, the data
             will be automatically downloaded to the specified folder.
 
