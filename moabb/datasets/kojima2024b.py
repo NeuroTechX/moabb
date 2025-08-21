@@ -357,6 +357,10 @@ class Kojima2024B_2stream(_Kojima2024BBase):
         :meth:`moabb.evaluations.base.BaseEvaluation.evaluate` or
         :meth:`moabb.evaluations.base.BaseEvaluation.process` etc...
 
+        .. note::
+            Using ``keep_trial_structure=True`` requires the external package
+            :mod:`tag-mne` (available on PyPI).
+
     References
     ----------
 
@@ -437,6 +441,10 @@ class Kojima2024B_4stream(_Kojima2024BBase):
         argument to the :meth:`moabb.paradigms.base.BaseProcessing.get_data`,
         :meth:`moabb.evaluations.base.BaseEvaluation.evaluate` or
         :meth:`moabb.evaluations.base.BaseEvaluation.process` etc...
+
+        .. note::
+            Using ``keep_trial_structure=True`` requires the external package
+            :mod:`tag-mne` (available on PyPI).
 
     References
     ----------
