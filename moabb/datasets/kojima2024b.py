@@ -364,6 +364,8 @@ class Kojima2024B_2stream(_Kojima2024BBase):
         Frontiers in Human Neuroscience 18:1461960. DOI: https://doi.org/10.3389/fnhum.2024.1461960
     """
 
+    convert_subject_to_subject_id = _Kojima2024BBase.convert_subject_to_subject_id
+
     def __init__(self, keep_trial_structure=False):
         super().__init__(
             task="2stream",
@@ -448,6 +450,8 @@ class Kojima2024B_4stream(_Kojima2024BBase):
         Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing.
         Frontiers in Human Neuroscience 18:1461960. DOI: https://doi.org/10.3389/fnhum.2024.1461960
     """
+
+    convert_subject_to_subject_id = _Kojima2024BBase.convert_subject_to_subject_id
 
     def __init__(self, keep_trial_structure=False):
         super().__init__(
