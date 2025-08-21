@@ -5,6 +5,7 @@ import string
 from pathlib import Path
 
 import mne
+import numpy as np
 from tqdm import tqdm
 
 from moabb.datasets import download as dl
@@ -19,6 +20,74 @@ _api_base_url = "https://dataverse.harvard.edu/api/access/datafile/"
 def _extract_run_number(path):
     match = re.search(r"run-(\d+)", path.name)
     return int(match.group(1)) if match else -1
+
+
+def markers_from_events(events, event_id):
+
+    event_desc = {v: k for k, v in event_id.items()}
+
+    samples = np.array(events)[:, 0]
+
+    markers = list()
+    for val in np.array(events)[:, 2]:
+        """
+        if "marker:" in str(event_desc[val]):
+            markers.append(event_desc[val])
+        else:
+            markers.append(event_desc[val])
+        """
+        markers.append(int(event_desc[val]))
+
+    return samples, markers
+
+
+def split_trials(markers, events=[201, 202, 203, 204], n_events_trial=601, n_trials=4):
+    trials = []
+    for idx_trial in range(n_trials):
+
+        idx_start = idx_trial * n_events_trial
+        idx_end = idx_start + n_events_trial
+
+        trial = markers[idx_start:idx_end]
+
+        # idx 0 is events for trial start
+        del trial[0]
+
+        trials.append(trial)
+
+    return trials
+
+
+def encode_events(markers_trial, run, trial):
+    """
+
+    event encoding:
+
+    {run}{trial}{D:1, S:0}{T:1, NT:0}{stim_num}
+
+    e.g.,
+    run-1, trial-1, D1, Target: 11111
+    run-2, trial-3, S3, NonTarget: 23003
+
+    """
+
+    markers_trial = [run * 10000 + trial * 1000 + m for m in markers_trial]
+
+    return markers_trial
+
+
+def events_from_markers(samples, markers, offset=0):
+    unique_markers = np.unique(markers)
+
+    event_id = dict()
+    events = list()
+    for marker, sample in zip(markers, samples):
+        id = np.argwhere(unique_markers == marker)[0][0] + 1 + offset
+        events.append([sample, 0, int(id)])
+        event_id[marker] = int(id)
+    events = np.array(events)
+
+    return events, event_id
 
 
 def _get_run_num_for_task(run, task):
@@ -151,6 +220,39 @@ class _Kojima2024BBase(BaseDataset):
 
             raw = raw.set_montage("standard_1020")
 
+            events, event_id = mne.events_from_annotations(raw)
+
+            bv_to_marker_mapping = {}
+            for key in list(event_id.keys()):
+                bv_to_marker_mapping[key] = str(int(key.split("/")[1][1:]))
+
+            raw.annotations.rename(bv_to_marker_mapping)
+
+            events, event_id = mne.events_from_annotations(raw)
+            samples, markers = markers_from_events(events, event_id)
+
+            markers = split_trials(markers)
+
+            new_markers = []
+            for idx_trial, markers_trial in enumerate(markers):
+                new_markers.append(
+                    encode_events(markers[0], run=run, trial=idx_trial + 1)
+                )
+
+            markers = [f"{m}" for markers_trial in new_markers for m in markers_trial]
+            events, event_id = events_from_markers(samples, markers)
+
+            event_desc = {v: k for k, v in event_id.items()}
+
+            annotations = mne.annotations_from_events(
+                events=events, sfreq=raw.info["sfreq"], event_desc=event_desc
+            )
+
+            raw = raw.set_annotations(annotations)
+
+            runs.update({f"{run}{task}": raw})
+
+            """
             if self.keep_trial_structure:
                 try:
                     import tag_mne as tm
@@ -220,7 +322,7 @@ class _Kojima2024BBase(BaseDataset):
 
                 raw.annotations.rename(annotations_mapping)
 
-            runs.update({f"{run}{task}": raw})
+            """
 
         sessions = {"0": runs}
 
