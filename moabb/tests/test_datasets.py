@@ -9,7 +9,15 @@ import pytest
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
-from moabb.datasets import BNCI2014_001, Cattan2019_VR, Kojima2024A, Shin2017A, Shin2017B
+from moabb.datasets import (
+    BNCI2014_001,
+    Cattan2019_VR,
+    Kojima2024A,
+    Kojima2024B_2stream,
+    Kojima2024B_4stream,
+    Shin2017A,
+    Shin2017B,
+)
 from moabb.datasets.base import (
     BaseDataset,
     LocalBIDSDataset,
@@ -626,3 +634,53 @@ class TestKojima2024A:
 
         # number of samples
         assert X.shape[0] == len(labels)
+
+
+class TestKojima2024B:
+    def test_convert_subject_to_subject_id(self):
+        ds = Kojima2024A()
+        assert ds.convert_subject_to_subject_id(1) == "A"
+        assert ds.convert_subject_to_subject_id(3) == "C"
+        assert ds.convert_subject_to_subject_id(list(range(1, 16))) == [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+            "O",
+        ]
+        with pytest.raises(TypeError):
+            ds.convert_subject_to_subject_id(1.5)
+
+    def test_data_shape_2tream(self):
+        ds = Kojima2024B_2stream()
+        paradigm = P300()
+        X, labels, meta = paradigm.get_data(dataset=ds, subjects=[1])
+
+        # number of channels
+        assert X.shape[1] == 64
+
+        # number of samples
+        assert X.shape[0] == len(labels)
+        assert X.shape[0] == 1440
+
+    def test_data_shape_4tream(self):
+        ds = Kojima2024B_4stream()
+        paradigm = P300()
+        X, labels, meta = paradigm.get_data(dataset=ds, subjects=[1])
+
+        # number of channels
+        assert X.shape[1] == 64
+
+        # number of samples
+        assert X.shape[0] == len(labels)
+        assert X.shape[0] == 1440
