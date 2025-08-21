@@ -21,6 +21,51 @@ def _extract_run_number(path):
     return int(match.group(1)) if match else -1
 
 
+def _get_run_num_for_task(run, task):
+    """
+    Get the sequential run number for a given task.
+
+    In this dataset, experimental runs were conducted in the order:
+    run-1, run-2, run-3, run-4, run-5, run-6, run-7, ...
+    where different tasks (e.g., "2stream", "4stream") alternated across runs.
+    For example:
+        - Task "2stream" corresponds to runs 1, 3, 5, 8, 10, 12
+        - Task "4stream" corresponds to runs 2, 4, 6, 7, 9, 11
+
+    This function converts the original run index into a task-specific
+    sequential run number (starting from 1), so that each task has its own
+    independent ascending run numbering.
+
+    Parameters
+    ----------
+    run : int
+        The original run index in the experiment (e.g., 1, 2, 3, ...).
+    task : {"2stream", "4stream"}
+        The task name.
+
+    Returns
+    -------
+    int
+        The sequential run number for the specified task.
+
+    Examples
+    --------
+    >>> _get_run_num_for_task(1, "2stream")
+    1
+    >>> _get_run_num_for_task(3, "2stream")
+    2
+    >>> _get_run_num_for_task(4, "4stream")
+    2
+    """
+
+    mapping = {
+        "2stream": {1: 1, 3: 2, 5: 3, 8: 4, 10: 5, 12: 6},
+        "4stream": {2: 1, 4: 2, 6: 3, 7: 4, 9: 5, 11: 6},
+    }
+
+    return mapping[task][run]
+
+
 class _Kojima2024BBase(BaseDataset):
     """
     Parent class of Kojima2024_2 and Kojima2024_4
@@ -96,8 +141,10 @@ class _Kojima2024BBase(BaseDataset):
         for file in files_path:
 
             fname = file.name
-            run_id = fname.split("_")[2].split("-")[1]
             task = self.task
+
+            run = int(fname.split("_")[2].split("-")[1])
+            run = _get_run_num_for_task(run, task)
 
             raw = mne.io.read_raw_brainvision(file, eog=["vEOG", "hEOG"])
             raw = raw.load_data()
@@ -138,7 +185,7 @@ class _Kojima2024BBase(BaseDataset):
 
                 markers = tm.add_event_names(markers, event_names)
                 markers = tm.add_tag(markers, f"task:{self.task}")
-                markers = tm.add_tag(markers, f"run:{run_id}")
+                markers = tm.add_tag(markers, f"run:{run}")
 
                 markers = tm.split_trials(markers, trial=["201", "202", "203", "204"])
 
@@ -173,7 +220,7 @@ class _Kojima2024BBase(BaseDataset):
 
                 raw.annotations.rename(annotations_mapping)
 
-            runs.update({f"{run_id}{task}": raw})
+            runs.update({f"{run}{task}": raw})
 
         sessions = {"0": runs}
 
