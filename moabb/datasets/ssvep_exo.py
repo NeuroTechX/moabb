@@ -53,7 +53,7 @@ class Kalunga2016(BaseDataset):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
-            events={"13": 2, "17": 3, "21": 4, "rest": 1},
+            events={"13": 2, "17": 4, "21": 3, "rest": 1},
             code="Kalunga2016",
             interval=[2, 4],
             paradigm="ssvep",
