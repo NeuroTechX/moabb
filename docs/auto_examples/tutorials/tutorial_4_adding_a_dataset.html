@@ -645,15 +645,66 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>ExampleDataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-ExampleDataset-WithinSession:  33%|███▎      | 1/3 [00:00&lt;00:00,  9.04it/s]
-ExampleDataset-WithinSession:  67%|██████▋   | 2/3 [00:00&lt;00:00,  9.26it/s]
-ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:00&lt;00:00,  9.35it/s]
-ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:00&lt;00:00,  9.30it/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|▏                                    | 12.3k/2.77M [00:00&lt;00:30, 91.6kB/s]
+  2%|▌                                     | 45.1k/2.77M [00:00&lt;00:13, 201kB/s]
+  4%|█▍                                     | 104k/2.77M [00:00&lt;00:07, 346kB/s]
+  8%|███▏                                   | 227k/2.77M [00:00&lt;00:03, 636kB/s]
+ 17%|██████▍                               | 471k/2.77M [00:00&lt;00:01, 1.18MB/s]
+ 35%|█████████████▍                        | 978k/2.77M [00:00&lt;00:00, 2.31MB/s]
+ 71%|██████████████████████████▏          | 1.96M/2.77M [00:00&lt;00:00, 4.41MB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 15.6GB/s]
+
+ExampleDataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
+ExampleDataset-WithinSession:  33%|███▎      | 1/3 [00:00&lt;00:00,  4.13it/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+
+  0%|▏                                    | 12.3k/2.77M [00:00&lt;00:29, 93.7kB/s]
+
+  1%|▌                                     | 41.0k/2.77M [00:00&lt;00:14, 183kB/s]
+
+  3%|█▎                                    | 96.3k/2.77M [00:00&lt;00:08, 320kB/s]
+
+  7%|██▋                                    | 195k/2.77M [00:00&lt;00:04, 536kB/s]
+
+ 15%|█████▊                                | 424k/2.77M [00:00&lt;00:02, 1.07MB/s]
+
+ 31%|███████████▉                          | 865k/2.77M [00:00&lt;00:00, 2.04MB/s]
+
+ 64%|███████████████████████▌             | 1.76M/2.77M [00:00&lt;00:00, 3.99MB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 13.5GB/s]
+
+ExampleDataset-WithinSession:  67%|██████▋   | 2/3 [00:01&lt;00:00,  1.02it/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+
+  0%|▏                                    | 12.3k/2.77M [00:00&lt;00:31, 88.7kB/s]
+
+  2%|▋                                     | 51.2k/2.77M [00:00&lt;00:12, 224kB/s]
+
+  4%|█▍                                     | 104k/2.77M [00:00&lt;00:08, 330kB/s]
+
+  8%|███▎                                   | 232k/2.77M [00:00&lt;00:04, 633kB/s]
+
+ 17%|██████▌                               | 478k/2.77M [00:00&lt;00:01, 1.17MB/s]
+
+ 34%|█████████████                         | 952k/2.77M [00:00&lt;00:00, 2.17MB/s]
+
+ 70%|█████████████████████████▊           | 1.93M/2.77M [00:00&lt;00:00, 4.25MB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 12.5GB/s]
+
+ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.21s/it]
+ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.08s/it]
    score      time  samples  ... n_sessions         dataset  pipeline
-0    1.0  0.021344     40.0  ...          1  ExampleDataset       MDM
-1    1.0  0.020994     40.0  ...          1  ExampleDataset       MDM
-2    1.0  0.021018     40.0  ...          1  ExampleDataset       MDM
+0    1.0  0.021186     40.0  ...          1  ExampleDataset       MDM
+1    1.0  0.020608     40.0  ...          1  ExampleDataset       MDM
+2    1.0  0.020671     40.0  ...          1  ExampleDataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
@@ -665,8 +716,8 @@ ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:00&lt
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.017 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  295 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.676 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  294 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>
