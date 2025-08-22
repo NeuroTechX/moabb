@@ -42,6 +42,13 @@ class Kalunga2016(BaseDataset):
     days, by the same operators, on the same hardware and in the same
     conditions.
 
+    Notes
+    -----
+    The events notation 17Hz and 21Hz were swapped after an investigation conducted 
+    by @ponpopon.
+    
+    .. versionadded:: 1.2.0
+
     references
     ----------
     .. [1] Emmanuel K. Kalunga, Sylvain Chevallier, Quentin Barthelemy. "Online
