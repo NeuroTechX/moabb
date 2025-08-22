@@ -36,12 +36,12 @@ def markers_from_events(events, event_id):
         else:
             markers.append(event_desc[val])
         """
-        markers.append(int(event_desc[val]))
+        markers.append(f"marker:{event_desc[val]}")
 
     return samples, markers
 
 
-def split_trials(markers, events=[201, 202, 203, 204], n_events_trial=601, n_trials=4):
+def split_trials(markers, n_events_trial, n_trials):
     trials = []
     for idx_trial in range(n_trials):
 
@@ -58,22 +58,112 @@ def split_trials(markers, events=[201, 202, 203, 204], n_events_trial=601, n_tri
     return trials
 
 
-def encode_events(markers_trial, run, trial):
-    """
+def add_info_to_markers(markers, key, value, append=True):
 
-    event encoding:
+    if append:
+        new_markers = [f"{marker}/{key}:{value}" for marker in markers]
+    else:
+        new_markers = [f"{key}:{value}/{marker}" for marker in markers]
 
-    {run}{trial}{D:1, S:0}{T:1, NT:0}{stim_num}
+    return new_markers
 
-    e.g.,
-    run-1, trial-1, D1, Target: 11111
-    run-2, trial-3, S3, NonTarget: 23003
 
-    """
+def split_sequences(markers_trial, len_sequence, n_sequences):
 
-    markers_trial = [run * 10000 + trial * 1000 + m for m in markers_trial]
+    new_markers_trial = []
+    for idx_sequence in range(n_sequences):
+        sequence = idx_sequence + 1
 
-    return markers_trial
+        idx_start = idx_sequence * len_sequence
+        idx_end = idx_start + len_sequence
+
+        markers_sequence = markers_trial[idx_start:idx_end]
+        markers_sequence = add_info_to_markers(markers_sequence, "sequence", sequence)
+
+        for m in markers_sequence:
+            new_markers_trial.append(m)
+
+    return new_markers_trial
+
+
+def add_events_names(markers, events_names):
+
+    new_markers = []
+    for m in markers:
+        marker = int(m.split(":")[1])
+        if marker in list(events_names.keys()):
+            name = events_names[marker]
+        else:
+            name = "misc"
+
+        new_markers.append(f"{m}/event:{name}")
+
+    return new_markers
+
+
+def get_marker(marker_desc):
+    for m in marker_desc.split("/"):
+        if "marker" == m.split(":")[0]:
+            return int(m.split(":")[1])
+    return None
+
+
+def add_events_types(markers, events_types):
+
+    new_markers = []
+    for m in markers:
+
+        marker = get_marker(m)
+        if marker is None:
+            raise RuntimeError(f'marker could not be parsed: "{m}"')
+
+        if marker in list(events_types.keys()):
+            name = events_types[marker]
+        else:
+            name = "misc"
+
+        new_markers.append(f"{m}/{name}")
+
+    return new_markers
+
+
+def convert_marker_to_dict(marker):
+    marker_dict = {}
+    for m in marker.split("/"):
+        marker_dict[m.split(":")[0]] = m.split(":")[1]
+
+    return marker_dict
+
+
+def reorder_markers(markers, order):
+
+    new_markers = []
+    for marker in markers:
+        marker_dict = convert_marker_to_dict(marker)
+
+        new_marker = [f"{k}:{marker_dict[k]}" for k in order]
+
+        new_markers.append("/".join(new_marker))
+
+    return new_markers
+
+
+def add_events_info(markers_trials, len_sequence, n_sequences, events_types, order):
+
+    new_markers_trials = []
+    for idx_trial, markers_trial in enumerate(markers_trials):
+        trial = idx_trial + 1
+        markers_trial = add_info_to_markers(markers_trial, "trial", trial)
+
+        markers_trial = split_sequences(markers_trial, len_sequence, n_sequences)
+
+        markers_trial = reorder_markers(markers_trial, order)
+
+        markers_trial = add_events_types(markers_trial, events_types)
+
+        new_markers_trials.append(markers_trial)
+
+    return new_markers_trials
 
 
 def events_from_markers(samples, markers, offset=0):
@@ -144,14 +234,20 @@ class _Kojima2024BBase(BaseDataset):
     def __init__(
         self,
         task,
-        keep_trial_structure=False,
     ):
 
         self.task = task
 
+        if self.task == "2stream":
+            self.len_sequence = 20
+        elif self.task == "4stream":
+            self.len_sequence = 40
+        else:
+            raise ValueError(f"Unknown task: {self.task}")
+
+        self.n_sequences = 15
         self.subject_list = list(range(1, 16))
         self.n_channels = 64
-        self.keep_trial_structure = keep_trial_structure
 
         super().__init__(
             self.subject_list,
@@ -220,6 +316,55 @@ class _Kojima2024BBase(BaseDataset):
 
             raw = raw.set_montage("standard_1020")
 
+            annotations_mapping = {
+                "Stimulus/S111": "Target",
+                "Stimulus/S112": "Target",
+                "Stimulus/S113": "Target",
+                "Stimulus/S114": "Target",
+                "Stimulus/S101": "NonTarget",
+                "Stimulus/S102": "NonTarget",
+                "Stimulus/S103": "NonTarget",
+                "Stimulus/S104": "NonTarget",
+            }
+
+            raw.annotations.rename(annotations_mapping)
+
+            runs.update({f"{run}{task}": raw})
+
+        sessions = {"0": runs}
+
+        return sessions
+
+    def _get_single_subject_data_with_events_info(self, subject):
+        """Return the data of a single subject.
+
+        Parameters
+        ----------
+        subject : int
+            The subject number to fetch data for.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the raw data for the subject.
+        """
+
+        # Get the file path for the subject's data
+        files_path = self.data_path(subject)
+        runs = {}
+        for file in files_path:
+
+            fname = file.name
+            task = self.task
+
+            run = int(fname.split("_")[2].split("-")[1])
+            run = _get_run_num_for_task(run, task)
+
+            raw = mne.io.read_raw_brainvision(file, eog=["vEOG", "hEOG"])
+            raw = raw.load_data()
+
+            raw = raw.set_montage("standard_1020")
+
             events, event_id = mne.events_from_annotations(raw)
 
             bv_to_marker_mapping = {}
@@ -231,15 +376,57 @@ class _Kojima2024BBase(BaseDataset):
             events, event_id = mne.events_from_annotations(raw)
             samples, markers = markers_from_events(events, event_id)
 
-            markers = split_trials(markers)
+            events_names = {
+                101: "D1",
+                102: "D2",
+                103: "D3",
+                104: "D4",
+                111: "D1",
+                112: "D2",
+                113: "D3",
+                114: "D4",
+                1: "S1",
+                2: "S2",
+                3: "S3",
+                4: "S4",
+            }
 
-            new_markers = []
-            for idx_trial, markers_trial in enumerate(markers):
-                new_markers.append(
-                    encode_events(markers[0], run=run, trial=idx_trial + 1)
-                )
+            markers = add_events_names(markers, events_names)
 
-            markers = [f"{m}" for markers_trial in new_markers for m in markers_trial]
+            markers = add_info_to_markers(markers, "task", self.task, False)
+            markers = add_info_to_markers(markers, "run", run, False)
+            markers = add_info_to_markers(markers, "subject", subject, False)
+
+            markers_trials = split_trials(
+                markers=markers,
+                n_events_trial=self.len_sequence * self.n_sequences + 1,
+                n_trials=4,
+            )
+
+            events_types = {
+                101: "NonTarget",
+                102: "NonTarget",
+                103: "NonTarget",
+                104: "NonTarget",
+                111: "Target",
+                112: "Target",
+                113: "Target",
+                114: "Target",
+                1: "Standard",
+                2: "Standard",
+                3: "Standard",
+                4: "Standard",
+            }
+            markers_trials = add_events_info(
+                markers_trials,
+                len_sequence=self.len_sequence,
+                n_sequences=self.n_sequences,
+                events_types=events_types,
+                order=["subject", "run", "task", "trial", "sequence", "event", "marker"],
+            )
+
+            markers = [m for markers_trial in markers_trials for m in markers_trial]
+
             events, event_id = events_from_markers(samples, markers)
 
             event_desc = {v: k for k, v in event_id.items()}
@@ -252,81 +439,60 @@ class _Kojima2024BBase(BaseDataset):
 
             runs.update({f"{run}{task}": raw})
 
-            """
-            if self.keep_trial_structure:
-                try:
-                    import tag_mne as tm
-                except ImportError:
-                    raise ImportError(
-                        "Package tag_mne is required when keep_trial_structure=True. Install it with pip install tag-mne"
-                    )
-
-                events, event_id = mne.events_from_annotations(raw)
-
-                bv_to_marker_mapping = {}
-                for key in list(event_id.keys()):
-                    bv_to_marker_mapping[key] = str(int(key.split("/")[1][1:]))
-
-                raw.annotations.rename(bv_to_marker_mapping)
-
-                events, event_id = mne.events_from_annotations(raw)
-                samples, markers = tm.markers_from_events(events, event_id)
-
-                event_names = {
-                    "D1": ["101", "111"],
-                    "D2": ["102", "112"],
-                    "D3": ["103", "113"],
-                    "D4": ["104", "114"],
-                    "S1": ["1"],
-                    "S2": ["2"],
-                }
-
-                if self.task == "4stream":
-                    event_names["S3"] = ["3"]
-                    event_names["S4"] = ["4"]
-
-                markers = tm.add_event_names(markers, event_names)
-                markers = tm.add_tag(markers, f"task:{self.task}")
-                markers = tm.add_tag(markers, f"run:{run}")
-
-                markers = tm.split_trials(markers, trial=["201", "202", "203", "204"])
-
-                markers = tm.add_tag_to_markers(
-                    markers,
-                    Target=["111", "112", "113", "114"],
-                    NonTarget=["101", "102", "103", "104"],
-                    Standard=["1", "2", "3", "4"],
-                )
-
-                events, event_id = tm.events_from_markers(samples, markers)
-
-                event_desc = {v: k for k, v in event_id.items()}
-
-                annotations = mne.annotations_from_events(
-                    events=events, sfreq=raw.info["sfreq"], event_desc=event_desc
-                )
-
-                raw = raw.set_annotations(annotations)
-
-            else:
-                annotations_mapping = {
-                    "Stimulus/S111": "Target",
-                    "Stimulus/S112": "Target",
-                    "Stimulus/S113": "Target",
-                    "Stimulus/S114": "Target",
-                    "Stimulus/S101": "NonTarget",
-                    "Stimulus/S102": "NonTarget",
-                    "Stimulus/S103": "NonTarget",
-                    "Stimulus/S104": "NonTarget",
-                }
-
-                raw.annotations.rename(annotations_mapping)
-
-            """
-
         sessions = {"0": runs}
 
         return sessions
+
+    def get_data_with_events_info(self, subjects):
+        """
+        Retrieve MNE Raw objects with detailed event annotations for the given subjects.
+
+        Parameters
+        ----------
+        subjects : list of int
+            A list of subject numbers to load data for.
+
+        Returns
+        -------
+        dict
+            A dictionary mapping each subject ID to its corresponding
+            :class:`mne.io.Raw` instance.
+
+            Each Raw object contains EEG recordings with detailed event
+            metadata stored in its ``annotations`` attribute.
+            The annotation descriptions encode hierarchical metadata in the
+            following format:
+
+            ``subject:<id>/run:<id>/task:<name>/trial:<id>/sequence:<id>/event:<label>/marker:<id>/<Target|NonTarget|Standard>``
+
+            where
+              - **subject** : subject ID
+              - **run** : run number
+              - **task** : experimental task ("2stream" or "4stream")
+              - **trial** : trial number within the run
+              - **sequence** : stimulus sequence number
+              - **event** : stimulus/event label (e.g., "D1", "D2", "D3", "D4", "S1", "S2")
+              - **marker** : event marker ID
+              - **Target | NonTarget | Standard** : stimulus type classification
+
+            Example
+            -------
+            >>> dataset = Kojima2024B_2stream
+            >>> sessions = dataset.get_data_with_events_info([1])
+            >>> raw = sessions[1]["0"]["12stream"]
+            >>> raw.annotations[0]["description"]
+            subject:1/run:1/task:2stream/trial:1/sequence:1/event:S1/marker:1/Standard
+            >>> raw.annotations[3]["description"]
+            subject:1/run:1/task:2stream/trial:1/sequence:1/event:D4/marker:114/Target
+        """
+
+        if not isinstance(subjects, list):
+            raise ValueError("subjects must be a list")
+
+        return {
+            subject: self._get_single_subject_data_with_events_info(subject)
+            for subject in subjects
+        }
 
     def convert_subject_to_subject_id(self, subjects):
         """
@@ -484,24 +650,6 @@ class Kojima2024B_2stream(_Kojima2024BBase):
         - EOG was recorded using 2 electrodes (vEOG and hEOG), placed above/below and
           lateral to one eye.
 
-    Parameters
-    ----------
-
-    keep_trial_structure : bool, default=False
-        In MOABB, all classification tasks are performed as binary classification problems for P300 datasets.
-        If you want to perform 4-class classification for each trial, set ``keep_trial_structure=True``.
-
-        Note that this is only compatible with the :meth:`base.BaseDataset.get_data` method.
-        It cannot be used with :class:`moabb.paradigms.base.BaseParadigm` or :class:`moabb.paradigms.P300`.
-        To make it compatible with these, you need to provide an appropriate ``process_pipelines`` and ``postprocess_pipeline``
-        argument to the :meth:`moabb.paradigms.base.BaseProcessing.get_data`,
-        :meth:`moabb.evaluations.base.BaseEvaluation.evaluate` or
-        :meth:`moabb.evaluations.base.BaseEvaluation.process` etc...
-
-        .. note::
-            Using ``keep_trial_structure=True`` requires the external package
-            :mod:`tag-mne` (available on PyPI).
-
     References
     ----------
 
@@ -514,11 +662,11 @@ class Kojima2024B_2stream(_Kojima2024BBase):
     """
 
     convert_subject_to_subject_id = _Kojima2024BBase.convert_subject_to_subject_id
+    get_data_with_events_info = _Kojima2024BBase.get_data_with_events_info
 
-    def __init__(self, keep_trial_structure=False):
+    def __init__(self):
         super().__init__(
             task="2stream",
-            keep_trial_structure=keep_trial_structure,
         )
 
 
@@ -571,24 +719,6 @@ class Kojima2024B_4stream(_Kojima2024BBase):
         - EOG was recorded using 2 electrodes (vEOG and hEOG), placed above/below and
           lateral to one eye.
 
-    Parameters
-    ----------
-
-    keep_trial_structure : bool, default=False
-        In MOABB, all classification tasks are performed as binary classification problems for P300 datasets.
-        If you want to perform 4-class classification for each trial, set ``keep_trial_structure=True``.
-
-        Note that this is only compatible with the :meth:`base.BaseDataset.get_data` method.
-        It cannot be used with :class:`moabb.paradigms.base.BaseParadigm` or :class:`moabb.paradigms.P300`.
-        To make it compatible with these, you need to provide an appropriate ``process_pipelines`` and ``postprocess_pipeline``
-        argument to the :meth:`moabb.paradigms.base.BaseProcessing.get_data`,
-        :meth:`moabb.evaluations.base.BaseEvaluation.evaluate` or
-        :meth:`moabb.evaluations.base.BaseEvaluation.process` etc...
-
-        .. note::
-            Using ``keep_trial_structure=True`` requires the external package
-            :mod:`tag-mne` (available on PyPI).
-
     References
     ----------
 
@@ -601,9 +731,9 @@ class Kojima2024B_4stream(_Kojima2024BBase):
     """
 
     convert_subject_to_subject_id = _Kojima2024BBase.convert_subject_to_subject_id
+    get_data_with_events_info = _Kojima2024BBase.get_data_with_events_info
 
-    def __init__(self, keep_trial_structure=False):
+    def __init__(self):
         super().__init__(
             task="4stream",
-            keep_trial_structure=keep_trial_structure,
         )
