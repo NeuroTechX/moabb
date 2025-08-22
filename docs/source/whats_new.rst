@@ -4,6 +4,11 @@
 
 What's new
 ==========
+Notes
+-----
+The events notation 17Hz and 21Hz were swapped after an investigation conducted by @ponpopon.
+.. versionadded:: 1.2.0
+
 
 .. NOTE: there are 3 separate sections for changes, based on type:
 
