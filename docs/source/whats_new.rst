@@ -5,6 +5,7 @@
 What's new
 ==========
 
+
 .. NOTE: there are 3 separate sections for changes, based on type:
 
 - "Enhancements" for new features
@@ -24,6 +25,7 @@ Enhancements
 
 Bugs
 ~~~~
+- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
 
 API changes
 ~~~~~~~~~~~
@@ -599,3 +601,4 @@ API changes
 .. _Lucas Heck: https://github.com/lucas-heck
 .. _Simon Kojima: https://github.com/simonkojima
 .. _Griffin Keeler: https://github.com/griffinkeeler
+.. _ Kosei Nakada: https://github.com/ponpopon
