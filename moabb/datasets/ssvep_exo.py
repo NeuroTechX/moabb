@@ -44,9 +44,9 @@ class Kalunga2016(BaseDataset):
 
     Notes
     -----
-    The events notation 17Hz and 21Hz were swapped after an investigation conducted 
+    The events notation 17Hz and 21Hz were swapped after an investigation conducted
     by @ponpopon.
-    
+
     .. versionadded:: 1.2.0
 
     references
