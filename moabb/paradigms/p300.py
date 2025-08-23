@@ -170,9 +170,11 @@ class P300(SinglePass):
     """
 
     def __init__(self, **kwargs):
-        if "events" in kwargs.keys():
-            raise (ValueError("P300 dont accept events"))
-        super().__init__(events=["Target", "NonTarget"], **kwargs)
+        if "events" not in kwargs.keys():
+            super().__init__(events=["Target", "NonTarget"], **kwargs)
+        else:
+            super().__init__(**kwargs)
+        
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
