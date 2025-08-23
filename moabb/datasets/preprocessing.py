@@ -86,6 +86,8 @@ class SetRawAnnotations(FixedTransformer):
     def __init__(self, event_id, interval: Tuple[float, float]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
+        values = list(event_id.values())
+        print(values)
         if len(set(event_id.values())) != len(event_id):
             raise ValueError("Duplicate event code")
         self.event_desc = dict((code, desc) for desc, code in self.event_id.items())

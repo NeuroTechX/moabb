@@ -177,7 +177,14 @@ class P300(SinglePass):
         
 
     def used_events(self, dataset):
-        return {ev: dataset.event_id[ev] for ev in self.events}
+        ret = {}
+        for ev in self.events:
+            codes = dataset.event_id[ev]
+            if not isinstance(codes, list):
+                codes = [codes]
+            for code in codes:
+                ret[code] = ev
+        return ret
 
     @property
     def scoring(self):

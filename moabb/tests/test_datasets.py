@@ -13,8 +13,7 @@ from moabb.datasets import (
     BNCI2014_001,
     Cattan2019_VR,
     Kojima2024A,
-    Kojima2024B_2stream,
-    Kojima2024B_4stream,
+    Kojima2024B,
     Shin2017A,
     Shin2017B,
 )
@@ -662,7 +661,7 @@ class TestKojima2024B:
             ds.convert_subject_to_subject_id(1.5)
 
     def test_data_shape_2tream(self):
-        ds = Kojima2024B_2stream()
+        ds = Kojima2024B()
         paradigm = P300()
         X, labels, meta = paradigm.get_data(dataset=ds, subjects=[1])
 
