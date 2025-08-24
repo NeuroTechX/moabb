@@ -54,6 +54,9 @@ class Kojima2024B(BaseDataset):
             doi="10.7910/DVN/1UJDV6",
         )
 
+    def _block_rep(self, block, repetition):
+        return f"{repetition}{block}"
+
     def _get_files_list(self, subject, manifest):
 
         subject_id = self.convert_subject_to_subject_id(subject)
