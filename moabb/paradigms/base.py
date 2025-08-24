@@ -322,6 +322,8 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             for process_pipeline in process_pipelines
         ]
 
+        print(data)
+
         X = []
         labels = []
         metadata = []

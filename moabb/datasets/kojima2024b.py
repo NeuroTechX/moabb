@@ -39,6 +39,7 @@ class Kojima2024B(BaseDataset):
 
     def __init__(
         self,
+        events
     ):
         self.subject_list = list(range(1, 16))
         self.n_channels = 64
@@ -46,7 +47,7 @@ class Kojima2024B(BaseDataset):
         super().__init__(
             self.subject_list,
             sessions_per_subject=1,
-            events=EVENTS,
+            events=events,
             code=f"Kojima2024B",
             interval=[-0.5, 1.2],
             paradigm="p300",
@@ -224,23 +225,37 @@ class Kojima2024B(BaseDataset):
 
                 raw = raw.set_montage("standard_1020")
 
-                # annotations_mapping = {
-                #     "Stimulus/S111": "Target",
-                #     "Stimulus/S112": "Target",
-                #     "Stimulus/S113": "Target",
-                #     "Stimulus/S114": "Target",
-                #     "Stimulus/S101": "NonTarget",
-                #     "Stimulus/S102": "NonTarget",
-                #     "Stimulus/S103": "NonTarget",
-                #     "Stimulus/S104": "NonTarget",
-                # }
+                # Get events from annotations and create a stimulus channel
+                events, _ = mne.events_from_annotations(raw)
+                print(f"Found {len(events)} events with codes: {np.unique(events[:, 2])}")
 
-                # raw.annotations.rename(annotations_mapping)
+                # Create stimulus channel data from events
+                stim_data = np.zeros(raw.n_times)
+                
+                # Set stimulus channel values directly from events
+                event_samples = events[:, 0]
+                event_codes = events[:, 2]
+                stim_data[event_samples] = event_codes
+
+                # Create stimulus channel info
+                stim_info = mne.create_info(
+                    ch_names=['STI'],
+                    sfreq=raw.info['sfreq'],
+                    ch_types=['stim']
+                )
+                
+                # Create RawArray for stimulus channel
+                stim_raw = mne.io.RawArray(stim_data[np.newaxis, :], stim_info)
+                
+                # Add stimulus channel to raw data
+                raw.add_channels([stim_raw], force_update_info=True)
+                
+                print(f"Added stimulus channel with events: {np.unique(stim_data[stim_data > 0])}")
 
                 runs.update({f"{run}{task}": raw})
 
         sessions = {"0": runs}
-
+        print(f"session: {sessions}")
         return sessions
 
 def _get_run_num_for_task(run, task):
