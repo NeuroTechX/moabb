@@ -107,7 +107,6 @@ class SetRawAnnotations(FixedTransformer):
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
         offset = int(self.interval[0] * raw.info["sfreq"])
-        print(raw.info)
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
             log.warning(
@@ -115,10 +114,7 @@ class SetRawAnnotations(FixedTransformer):
             )
             return raw
         events = mne.find_events(raw, shortest_event=0, verbose=False)
-        print(f"events are {events}")
-        print(f"event_id are {self.event_id}")
         events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
-        # print(f"found events {events}")
         events[:, 0] += offset
         if len(events) != 0:
             annotations = mne.annotations_from_events(
@@ -188,7 +184,6 @@ class RawToEventsP300(RawToEvents):
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
         ret = _unsafe_pick_events(events, _get_event_id_values(self.event_id))
-        print(f"RawToEventsP300 {ret}")
         return ret
 
 
@@ -312,7 +307,6 @@ class RawToEpochs(FixedTransformer):
             )
             assert len(picks) == len(self.channels)
 
-        print(f"RawToEpochs self.event_id{self.event_id}")
         epochs = mne.Epochs(
             raw,
             events,

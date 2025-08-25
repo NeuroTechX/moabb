@@ -17,14 +17,14 @@ _manifest_link = "https://dataverse.harvard.edu/api/datasets/export?exporter=dat
 _api_base_url = "https://dataverse.harvard.edu/api/access/datafile/"
 
 EVENTS =  {
-                    "D1": ["101", "111"],
-                    "D2": ["102", "112"],
-                    "D3": ["103", "113"],
-                    "D4": ["104", "114"],
-                    "S1": ["1"],
-                    "S2": ["2"],
-                    "Target": ["111", "112", "113", "114"],
-                    "NonTarget": ["101", "102", "103", "104"],
+                    "D1": [101, 111],
+                    "D2": [102, 112],
+                    "D3": [103, 113],
+                    "D4": [104, 114],
+                    "S1": [1],
+                    "S2": [2],
+                    "Target": [111, 112, 113, 114],
+                    "NonTarget": [101, 102, 103, 104],
                 }
 
 def _extract_run_number(path):
@@ -39,7 +39,7 @@ class Kojima2024B(BaseDataset):
 
     def __init__(
         self,
-        events
+        events,
     ):
         self.subject_list = list(range(1, 16))
         self.n_channels = 64
@@ -54,8 +54,11 @@ class Kojima2024B(BaseDataset):
             doi="10.7910/DVN/1UJDV6",
         )
 
-    def _block_rep(self, block, repetition):
-        return f"{repetition}{block}"
+    def _block_rep(self, task, run):
+        assert task == "2stream" or task == "4stream"
+        assert run >= 0 and run <= 6
+        assert int(run) == run # run should be integer
+        return f"{run}{task}"
 
     def _get_files_list(self, subject, manifest):
 
@@ -230,7 +233,6 @@ class Kojima2024B(BaseDataset):
 
                 # Get events from annotations and create a stimulus channel
                 events, _ = mne.events_from_annotations(raw)
-                print(f"Found {len(events)} events with codes: {np.unique(events[:, 2])}")
 
                 # Create stimulus channel data from events
                 stim_data = np.zeros(raw.n_times)
@@ -252,13 +254,10 @@ class Kojima2024B(BaseDataset):
                 
                 # Add stimulus channel to raw data
                 raw.add_channels([stim_raw], force_update_info=True)
-                
-                print(f"Added stimulus channel with events: {np.unique(stim_data[stim_data > 0])}")
 
                 runs.update({f"{run}{task}": raw})
 
         sessions = {"0": runs}
-        print(f"session: {sessions}")
         return sessions
 
 def _get_run_num_for_task(run, task):

@@ -437,7 +437,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         meta_select = []
         for block in block_list:
             for repetition in repetition_list:
-                run = self._block_rep(block, repetition, self.n_repetitions)
+                run = self._block_rep(block, repetition)
                 X_select.append(X[meta["run"] == run])
                 labels_select.append(labels[meta["run"] == run])
                 meta_select.append(meta[meta["run"] == run])
