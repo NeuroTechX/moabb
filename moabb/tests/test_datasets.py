@@ -682,11 +682,13 @@ class TestKojima2024B:
     def test_other_events_than_target(self):
         ds = Kojima2024B(events={
             "D1": EVENTS["D1"],
-            "D2": EVENTS["D2"]
+            "D2": EVENTS["D2"],
+            "S1": EVENTS["S1"]
         })
-        paradigm = P300(events=["D1", "D2"])
+        paradigm = P300(events=["D1", "D2", "S1"])
         _X, Y, _meta = paradigm.get_data(dataset=ds, subjects=[1])
-        assert len(np.unique(Y)) == 2
+        assert len(np.unique(Y)) == 3
         assert "D1" in Y
         assert "D2" in Y
+        assert "S1" in Y
 
