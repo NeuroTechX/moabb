@@ -224,8 +224,6 @@ class Kojima2024B(BaseDataset):
                 if(run == -1):
                     continue
 
-                print(f'run is {run}, task is {task}')
-
                 raw = mne.io.read_raw_brainvision(file, eog=["vEOG", "hEOG"])
                 raw = raw.load_data()
 
