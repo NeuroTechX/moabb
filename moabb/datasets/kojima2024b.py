@@ -16,20 +16,22 @@ from .base import BaseDataset
 _manifest_link = "https://dataverse.harvard.edu/api/datasets/export?exporter=dataverse_json&persistentId=doi%3A10.7910/DVN/1UJDV6"
 _api_base_url = "https://dataverse.harvard.edu/api/access/datafile/"
 
-EVENTS =  {
-                    "D1": [101, 111],
-                    "D2": [102, 112],
-                    "D3": [103, 113],
-                    "D4": [104, 114],
-                    "S1": [1],
-                    "S2": [2],
-                    "Target": [111, 112, 113, 114],
-                    "NonTarget": [101, 102, 103, 104],
-                }
+EVENTS = {
+    "D1": [101, 111],
+    "D2": [102, 112],
+    "D3": [103, 113],
+    "D4": [104, 114],
+    "S1": [1],
+    "S2": [2],
+    "Target": [111, 112, 113, 114],
+    "NonTarget": [101, 102, 103, 104],
+}
+
 
 def _extract_run_number(path):
     match = re.search(r"run-(\d+)", path.name)
     return int(match.group(1)) if match else -1
+
 
 class Kojima2024B(BaseDataset):
     """
@@ -48,7 +50,7 @@ class Kojima2024B(BaseDataset):
             self.subject_list,
             sessions_per_subject=1,
             events=events,
-            code=f"Kojima2024B",
+            code="Kojima2024B",
             interval=[-0.5, 1.2],
             paradigm="p300",
             doi="10.7910/DVN/1UJDV6",
@@ -57,7 +59,7 @@ class Kojima2024B(BaseDataset):
     def _block_rep(self, task, run):
         assert task == "2stream" or task == "4stream"
         assert run >= 0 and run <= 6
-        assert int(run) == run # run should be integer
+        assert int(run) == run  # run should be integer
         return f"{run}{task}"
 
     def _get_files_list(self, subject, manifest):
@@ -213,15 +215,15 @@ class Kojima2024B(BaseDataset):
         runs = {}
         for file in files_path:
 
-            for task in ['2stream', '4stream']:
+            for task in ["2stream", "4stream"]:
 
                 fname = file.name
 
                 run = int(fname.split("_")[2].split("-")[1])
-                
+
                 run = _get_run_num_for_task(run, task)
 
-                if(run == -1):
+                if run == -1:
                     continue
 
                 raw = mne.io.read_raw_brainvision(file, eog=["vEOG", "hEOG"])
@@ -234,7 +236,7 @@ class Kojima2024B(BaseDataset):
 
                 # Create stimulus channel data from events
                 stim_data = np.zeros(raw.n_times)
-                
+
                 # Set stimulus channel values directly from events
                 event_samples = events[:, 0]
                 event_codes = events[:, 2]
@@ -242,14 +244,12 @@ class Kojima2024B(BaseDataset):
 
                 # Create stimulus channel info
                 stim_info = mne.create_info(
-                    ch_names=['STI'],
-                    sfreq=raw.info['sfreq'],
-                    ch_types=['stim']
+                    ch_names=["STI"], sfreq=raw.info["sfreq"], ch_types=["stim"]
                 )
-                
+
                 # Create RawArray for stimulus channel
                 stim_raw = mne.io.RawArray(stim_data[np.newaxis, :], stim_info)
-                
+
                 # Add stimulus channel to raw data
                 raw.add_channels([stim_raw], force_update_info=True)
 
@@ -257,6 +257,7 @@ class Kojima2024B(BaseDataset):
 
         sessions = {"0": runs}
         return sessions
+
 
 def _get_run_num_for_task(run, task):
     """
@@ -300,6 +301,6 @@ def _get_run_num_for_task(run, task):
         "4stream": {2: 1, 4: 2, 6: 3, 7: 4, 9: 5, 11: 6},
     }
 
-    if(run not in mapping[task]):
+    if run not in mapping[task]:
         return -1
     return mapping[task][run]

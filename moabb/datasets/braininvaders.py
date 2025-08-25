@@ -7,7 +7,6 @@ from warnings import warn
 
 import mne
 import numpy as np
-import pandas as pd
 import yaml
 from mne.channels import make_standard_montage
 from mne.utils import _open_lock
@@ -851,6 +850,6 @@ class Cattan2019_VR(BaseDataset):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
-    
+
     def _block_rep(self, block, repetition):
         return block_rep(block, repetition, self.n_repetitions)

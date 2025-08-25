@@ -77,18 +77,21 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
             dash_wrapped=True,
         )
 
+
 def _get_event_id_values(event_id):
-        return np.concatenate(list(event_id.values())).tolist()
+    return np.concatenate(list(event_id.values())).tolist()
+
 
 def _compute_events_desc(event_id):
-        ret = {}
-        for ev in event_id:
-            codes = event_id[ev]
-            if not isinstance(codes, list):
-                codes = [codes]
-            for code in codes:
-                ret[code] = ev
-        return ret
+    ret = {}
+    for ev in event_id:
+        codes = event_id[ev]
+        if not isinstance(codes, list):
+            codes = [codes]
+        for code in codes:
+            ret[code] = ev
+    return ret
+
 
 class SetRawAnnotations(FixedTransformer):
     """
