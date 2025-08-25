@@ -196,38 +196,3 @@ class FakeVirtualRealityDataset(FakeDataset):
                         block_rep(block, repetition, self.n_repetitions)
                     ] = self._generate_raw(n, d)
         return data
-
-    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
-        """Select data for all provided subjects, blocks and repetitions. Each
-        subject has 5 blocks of 12 repetitions.
-
-        The returned data is a dictionary with the following structure::
-
-            data = {'subject_id' :
-                        {'session_id':
-                            {'run_id': raw}
-                        }
-                    }
-
-        See also
-        --------
-        BaseDataset.get_data
-        Cattan2019_VR.get_block_repetition
-
-        Parameters
-        ----------
-        subjects: List of int
-            List of subject number
-        block_list: List of int
-            List of block number (from 1 to 5)
-        repetition_list: List of int
-            List of repetition number inside a block (from 1 to 12)
-
-        Returns
-        -------
-        data: Dict
-            dict containing the raw data
-        """
-        return Cattan2019_VR.get_block_repetition(
-            self, paradigm, subjects, block_list, repetition_list
-        )

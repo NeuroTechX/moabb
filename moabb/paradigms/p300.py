@@ -62,7 +62,9 @@ class BaseP300(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
+        ignore_relabelling=False
     ):
+        self.ignore_relabelling = ignore_relabelling
         super().__init__(
             filters=filters,
             events=events,
@@ -88,7 +90,7 @@ class BaseP300(BaseParadigm):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        return RawToEventsP300(event_id=event_id, interval=dataset.interval)
+        return RawToEventsP300(event_id=event_id, interval=dataset.interval, ignore_relabelling=self.ignore_relabelling)
 
     @property
     def datasets(self):
@@ -170,10 +172,22 @@ class P300(SinglePass):
     """
 
     def __init__(self, **kwargs):
-        if "events" in kwargs.keys():
-            raise (ValueError("P300 dont accept events"))
-        super().__init__(events=["Target", "NonTarget"], **kwargs)
+        if "events" not in kwargs.keys():
+            super().__init__(events=["Target", "NonTarget"], **kwargs)
+        else:
+            super().__init__(**kwargs)
+        
 
+    # def used_events(self, dataset):
+    #     ret = {}
+    #     for ev in self.events:
+    #         codes = dataset.event_id[ev]
+    #         if not isinstance(codes, list):
+    #             codes = [codes]
+    #         for code in codes:
+    #             ret[code] = ev
+    #     return ret
+    
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
 

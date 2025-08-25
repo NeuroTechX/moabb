@@ -6,6 +6,7 @@ import abc
 import logging
 import re
 import traceback
+import numpy as np
 from collections.abc import Sequence
 from dataclasses import dataclass
 from inspect import signature
@@ -403,6 +404,50 @@ class BaseDataset(metaclass=MetaclassDataset):
                 ),
             ]
         )
+    
+    def _block_rep(self, block, repetition):
+        raise NotImplementedError()
+    
+    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
+        """Select data for all provided subjects, blocks and repetitions. 
+
+        subject -> session -> run -> block -> repetition
+
+        See also
+        --------
+        BaseDataset.get_data
+
+        Parameters
+        ----------
+        subjects: List of int
+            List of subject number
+        block_list: List of int
+            List of block number
+        repetition_list: List of int
+            List of repetition number inside a block
+
+        Returns
+        -------
+        data: Dict
+            dict containing the raw data
+        """
+        X, labels, meta = paradigm.get_data(self, subjects)
+        X_select = []
+        labels_select = []
+        meta_select = []
+        for block in block_list:
+            for repetition in repetition_list:
+                run = self._block_rep(block, repetition)
+                X_select.append(X[meta["run"] == run])
+                labels_select.append(labels[meta["run"] == run])
+                meta_select.append(meta[meta["run"] == run])
+        X_select = np.concatenate(X_select)
+        labels_select = np.concatenate(labels_select)
+        meta_select = np.concatenate(meta_select)
+        df = pd.DataFrame(meta_select, columns=meta.columns)
+        meta_select = df
+
+        return X_select, labels_select, meta_select
 
     def get_data(
         self,
@@ -596,6 +641,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
             # Apply remaining steps and save:
             for step_idx, (step_type, process_pipeline) in enumerate(remaining_steps):
+                print (process_pipeline)
                 # apply one step:
                 sessions_data = {
                     session: {

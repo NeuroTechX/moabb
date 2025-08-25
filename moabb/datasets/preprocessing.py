@@ -77,6 +77,18 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
             dash_wrapped=True,
         )
 
+def _get_event_id_values(event_id):
+        return np.concatenate(list(event_id.values())).tolist()
+
+def _compute_events_desc(event_id):
+        ret = {}
+        for ev in event_id:
+            codes = event_id[ev]
+            if not isinstance(codes, list):
+                codes = [codes]
+            for code in codes:
+                ret[code] = ev
+        return ret
 
 class SetRawAnnotations(FixedTransformer):
     """
@@ -86,15 +98,15 @@ class SetRawAnnotations(FixedTransformer):
     def __init__(self, event_id, interval: Tuple[float, float]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
-        if len(set(event_id.values())) != len(event_id):
+        values = _get_event_id_values(self.event_id)
+        if len(np.unique(values)) != len(values):
             raise ValueError("Duplicate event code")
-        self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
+        self.event_desc = _compute_events_desc(self.event_id)
         self.interval = interval
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
         offset = int(self.interval[0] * raw.info["sfreq"])
-
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
             log.warning(
@@ -102,7 +114,7 @@ class SetRawAnnotations(FixedTransformer):
             )
             return raw
         events = mne.find_events(raw, shortest_event=0, verbose=False)
-        events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+        events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
         events[:, 0] += offset
         if len(events) != 0:
             annotations = mne.annotations_from_events(
@@ -153,11 +165,16 @@ class RawToEvents(FixedTransformer):
 
 
 class RawToEventsP300(RawToEvents):
+    def __init__(self, event_id, interval, ignore_relabelling=False):
+        self.ignore_relabelling = ignore_relabelling
+        super().__init__(event_id, interval)
+
     def transform(self, raw, y=None):
         events = self._find_events(raw)
         event_id = self.event_id
         if (
-            "Target" in event_id
+            not self.ignore_relabelling
+            and "Target" in event_id
             and "NonTarget" in event_id
             and isinstance(event_id["Target"], list)
             and isinstance(event_id["NonTarget"], list)
@@ -166,7 +183,8 @@ class RawToEventsP300(RawToEvents):
             events = mne.merge_events(events, event_id["Target"], 1)
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
-        return _unsafe_pick_events(events, list(event_id.values()))
+        ret = _unsafe_pick_events(events, _get_event_id_values(self.event_id))
+        return ret
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
@@ -220,7 +238,7 @@ class EventsToLabels(FixedTransformer):
         self.event_id = event_id
 
     def transform(self, events, y=None):
-        inv_events = {k: v for v, k in self.event_id.items()}
+        inv_events = _compute_events_desc(self.event_id)
         labels = [inv_events[e] for e in events[:, -1]]
         return labels
 
@@ -292,7 +310,7 @@ class RawToEpochs(FixedTransformer):
         epochs = mne.Epochs(
             raw,
             events,
-            event_id=self.event_id,
+            event_id=_get_event_id_values(self.event_id),
             tmin=self.tmin,
             tmax=self.tmax,
             proj=False,
