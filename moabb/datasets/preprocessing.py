@@ -82,7 +82,8 @@ def _get_event_id_values(event_id):
     event_id_values = list(event_id.values())
     if len(event_id_values) == 0:
         return []
-    return np.concatenate(event_id_values).tolist()
+    arrays = [np.atleast_1d(val) for val in event_id_values]
+    return np.concatenate(arrays).tolist()
 
 
 def _compute_events_desc(event_id):
