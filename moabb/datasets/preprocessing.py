@@ -78,7 +78,10 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
         )
 
 def _get_event_id_values(event_id):
-        return np.concatenate(list(event_id.values())).tolist()
+        event_id_values = list(event_id.values())
+        if(len(event_id_values) == 0):
+            return []
+        return np.concatenate(event_id_values).tolist()
 
 def _compute_events_desc(event_id):
         ret = {}
