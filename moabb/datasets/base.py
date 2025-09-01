@@ -6,7 +6,6 @@ import abc
 import logging
 import re
 import traceback
-import numpy as np
 from collections.abc import Sequence
 from dataclasses import dataclass
 from inspect import signature
@@ -14,6 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, Union
 
 import mne_bids
+import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
@@ -404,12 +404,12 @@ class BaseDataset(metaclass=MetaclassDataset):
                 ),
             ]
         )
-    
+
     def _block_rep(self, block, repetition):
         raise NotImplementedError()
-    
+
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
-        """Select data for all provided subjects, blocks and repetitions. 
+        """Select data for all provided subjects, blocks and repetitions.
 
         subject -> session -> run -> block -> repetition
 
@@ -641,7 +641,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
             # Apply remaining steps and save:
             for step_idx, (step_type, process_pipeline) in enumerate(remaining_steps):
-                print (process_pipeline)
+                print(process_pipeline)
                 # apply one step:
                 sessions_data = {
                     session: {

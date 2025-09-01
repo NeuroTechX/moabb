@@ -8,7 +8,6 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.braininvaders import Cattan2019_VR
 from moabb.datasets.utils import block_rep
 
 
