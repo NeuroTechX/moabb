@@ -641,7 +641,6 @@ class BaseDataset(metaclass=MetaclassDataset):
 
             # Apply remaining steps and save:
             for step_idx, (step_type, process_pipeline) in enumerate(remaining_steps):
-                print(process_pipeline)
                 # apply one step:
                 sessions_data = {
                     session: {
