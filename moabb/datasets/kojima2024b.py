@@ -113,7 +113,7 @@ class Kojima2024B(BaseDataset):
 
     def __init__(
         self,
-        events,
+        events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]},
     ):
         self.subject_list = list(range(1, 16))
         self.n_channels = 64
