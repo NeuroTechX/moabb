@@ -46,7 +46,7 @@ class Kojima2024B(BaseDataset):
     The dataset includes both 2-stream and 4-stream conditions:
 
     **4-stream condition:**
-    Participants focused on one of four auditory streams. Each stream contained 
+    Participants focused on one of four auditory streams. Each stream contained
     a two-stimulus oddball sequence composed of one deviant stimulus and one standard stimulus.
 
     The sequence below illustrates an example trial. For instance, when D3 is the target
@@ -61,7 +61,7 @@ class Kojima2024B(BaseDataset):
         Stream1  S1 -------- D1 -------- S1 -------- S1 -------- S1 -----------
 
     **2-stream condition:**
-    Participants focused on one of two auditory streams. Each stream contained 
+    Participants focused on one of two auditory streams. Each stream contained
     a three-stimulus oddball sequence composed of two deviant stimuli and one standard stimulus.
 
     The sequence below illustrates an example trial. For instance, when D4 is the target
