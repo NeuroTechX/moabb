@@ -34,9 +34,81 @@ def _extract_run_number(path):
 
 
 class Kojima2024B(BaseDataset):
-    """
-    Parent class of Kojima2024_2 and Kojima2024_4
-    Should not be instantiated.
+    """Class for Kojima2024B dataset management. P300 dataset.
+
+    **Dataset description**
+
+    This dataset [1]_ originates from a study investigating a four-class auditory BCI
+    based on auditory stream segregation (ASME-BCI) [2]_.
+
+    In the experiment, participants focused on auditory streams, leveraging
+    auditory stream segregation to selectively attend to stimuli in the target stream.
+    The dataset includes both 2-stream and 4-stream conditions:
+
+    **4-stream condition:**
+    Participants focused on one of four auditory streams. Each stream contained 
+    a two-stimulus oddball sequence composed of one deviant stimulus and one standard stimulus.
+
+    The sequence below illustrates an example trial. For instance, when D3 is the target
+    stimulus, the participant attended to Stream3 and selectively listened for D3.
+    In this case, D3 is the target, and D1, D2, and D4 are considered non-target stimuli.
+
+    .. code-block:: text
+
+        Stream4  -------- S4 -------- S4 -------- D4 -------- S4 -------- S4 --
+        Stream3  ----- S3 -------- S3 -------- S3 -------- D3 -------- S3 -----
+        Stream2  -- S2 -------- S2 -------- D2 -------- S2 -------- S2 --------
+        Stream1  S1 -------- D1 -------- S1 -------- S1 -------- S1 -----------
+
+    **2-stream condition:**
+    Participants focused on one of two auditory streams. Each stream contained 
+    a three-stimulus oddball sequence composed of two deviant stimuli and one standard stimulus.
+
+    The sequence below illustrates an example trial. For instance, when D4 is the target
+    stimulus, the participant attended to Stream2 and selectively listened for D4.
+    In this case, D4 is the target, and D1, D2, and D3 are considered non-target stimuli.
+
+    .. code-block:: text
+
+        Stream2  -- S2 --- D3 --- S2 --- S2 --- S2 --- S2 --- D4 ---
+        Stream1  S1 --- S1 --- D1 --- S1 --- S1 --- D2 --- S1 --- S1
+
+    Each participant completed 1 session consisting of 6 runs.
+    Each run included 4 trials, each with a different target stimulus.
+    In each trial, all deviant stimuli (D1--D4) were presented 15 times.
+
+    Recording Details:
+        - EEG signals were recorded using a BrainAmp system (Brain Products, Germany)
+          at a sampling rate of 1000 Hz.
+
+        - Data were collected in Tokyo, Japan, where the power line frequency is 50 Hz.
+
+        - EEG was recorded from 64 scalp electrodes according to the international 10--20 system:
+          Fp1, Fp2, AF7, AF3, AFz, AF4, AF8, F7, F5, F3, F1, Fz, F2, F4, F6, F8,
+          FT9, FT7, FC5, FC3, FC1, FCz, FC2, FC4, FC6, FT8, FT10, T7, C5, C3, C1,
+          Cz, C2, C4, C6, T8, TP9, TP7, CP5, CP3, CP1, CPz, CP2, CP4, CP6, TP8,
+          TP10, P7, P5, P3, P1, Pz, P2, P4, P6, P8, PO7, PO3, POz, PO4, PO8,
+          O1, Oz, O2
+
+          EEG signals were referenced to the right mastoid and grounded to the left mastoid.
+
+        - EOG was recorded using 2 electrodes (vEOG and hEOG), placed above/below and
+          lateral to one eye.
+
+    Parameters
+    ----------
+    events : dict
+        Event mapping for the dataset.
+
+    References
+    ----------
+
+    .. [1] Kojima, S. (2024).
+        Replication Data for: Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing.
+        Harvard Dataverse, V1. DOI: https://doi.org/10.7910/DVN/1UJDV6
+    .. [2] Kojima, S. & Kanoh, S. (2024).
+        Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing.
+        Frontiers in Human Neuroscience 18:1461960. DOI: https://doi.org/10.3389/fnhum.2024.1461960
     """
 
     def __init__(
