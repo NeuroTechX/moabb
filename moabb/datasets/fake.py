@@ -195,7 +195,6 @@ class FakeVirtualRealityDataset(FakeDataset):
                         block_rep(block, repetition, self.n_repetitions)
                     ] = self._generate_raw(n, d)
         return data
-    
+
     def _block_rep(self, block, repetition):
         return block_rep(block, repetition, self.n_repetitions)
-
