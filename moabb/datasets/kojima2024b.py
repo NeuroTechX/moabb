@@ -16,6 +16,12 @@ from .base import BaseDataset
 _manifest_link = "https://dataverse.harvard.edu/api/datasets/export?exporter=dataverse_json&persistentId=doi%3A10.7910/DVN/1UJDV6"
 _api_base_url = "https://dataverse.harvard.edu/api/access/datafile/"
 
+# The description of the events is available in https://dataverse.harvard.edu/file.xhtml?fileId=10649473&version=1.0.
+# This dataset contains the data of an oddball experiment where
+# S1-S4 are the standard stimuli and D1-D4 denotes the deviant stimuli.
+# During one sequence, the user is instructed to look at one of the deviant stimulus (D1-D4), 
+# then called Target.
+# By opposition, the other deviant stimuli are called NonTarget.
 EVENTS = {
     "D1": [101, 111],
     "D2": [102, 112],
@@ -23,6 +29,10 @@ EVENTS = {
     "D4": [104, 114],
     "S1": [1],
     "S2": [2],
+    "S3": [3],
+    "S4": [4],
+    "Deviant": [101, 111, 102, 112, 103, 113, 104, 114],
+    "Standard": [1, 2, 3, 4],
     "Target": [111, 112, 113, 114],
     "NonTarget": [101, 102, 103, 104],
 }
