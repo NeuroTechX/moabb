@@ -181,16 +181,6 @@ class P300(SinglePass):
         else:
             super().__init__(**kwargs)
 
-    # def used_events(self, dataset):
-    #     ret = {}
-    #     for ev in self.events:
-    #         codes = dataset.event_id[ev]
-    #         if not isinstance(codes, list):
-    #             codes = [codes]
-    #         for code in codes:
-    #             ret[code] = ev
-    #     return ret
-
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
 
