@@ -19,7 +19,7 @@ _api_base_url = "https://dataverse.harvard.edu/api/access/datafile/"
 # The description of the events is available in https://dataverse.harvard.edu/file.xhtml?fileId=10649473&version=1.0.
 # This dataset contains the data of an oddball experiment where
 # S1-S4 are the standard stimuli and D1-D4 denotes the deviant stimuli.
-# During one sequence, the user is instructed to look at one of the deviant stimulus (D1-D4), 
+# During one sequence, the user is instructed to look at one of the deviant stimulus (D1-D4),
 # then called Target.
 # By opposition, the other deviant stimuli are called NonTarget.
 EVENTS = {
