@@ -184,7 +184,7 @@ class Kojima2024B(BaseDataset):
             for subject in subjects:
                 subject_id.append(list(string.ascii_uppercase)[subject - 1])
         else:
-            raise TypeError("Type of subejcts must be either int or list.")
+            raise TypeError("Type of subjects must be either int or list.")
 
         return subject_id
 
