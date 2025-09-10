@@ -9,7 +9,14 @@ import pytest
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
-from moabb.datasets import BNCI2014_001, Cattan2019_VR, Kojima2024A, Shin2017A, Shin2017B
+from moabb.datasets import (
+    BNCI2014_001,
+    Cattan2019_VR,
+    Kojima2024A,
+    Kojima2024B,
+    Shin2017A,
+    Shin2017B,
+)
 from moabb.datasets.base import (
     BaseDataset,
     LocalBIDSDataset,
@@ -20,6 +27,7 @@ from moabb.datasets.base import (
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
+from moabb.datasets.kojima2024b import EVENTS
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
@@ -626,3 +634,58 @@ class TestKojima2024A:
 
         # number of samples
         assert X.shape[0] == len(labels)
+
+
+class TestKojima2024B:
+    def test_convert_subject_to_subject_id(self):
+        ds = Kojima2024B(
+            events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]}
+        )
+        assert ds.convert_subject_to_subject_id(1) == "A"
+        assert ds.convert_subject_to_subject_id(3) == "C"
+        assert ds.convert_subject_to_subject_id(list(range(1, 16))) == [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+            "O",
+        ]
+        with pytest.raises(TypeError):
+            ds.convert_subject_to_subject_id(1.5)
+
+    def test_get_task_run(self):
+        ds = Kojima2024B(
+            events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]}
+        )
+        paradigm = P300(ignore_relabelling=True)
+        X, labels, _meta = ds.get_block_repetition(
+            paradigm, [1], ["2stream"], [1, 2, 3, 4, 5, 6]
+        )
+
+        # number of channels
+        assert X.shape[1] == 64
+
+        # number of samples
+        assert X.shape[0] == len(labels)
+        assert X.shape[0] == 1440
+
+    def test_other_events_than_target(self):
+        ds = Kojima2024B(
+            events={"D1": EVENTS["D1"], "D2": EVENTS["D2"], "S1": EVENTS["S1"]}
+        )
+        paradigm = P300(events=["D1", "D2", "S1"])
+        _X, Y, _meta = paradigm.get_data(dataset=ds, subjects=[1])
+        assert len(np.unique(Y)) == 3
+        assert "D1" in Y
+        assert "D2" in Y
+        assert "S1" in Y
