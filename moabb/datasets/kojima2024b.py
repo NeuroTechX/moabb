@@ -109,6 +109,19 @@ class Kojima2024B(BaseDataset):
     ----------
     events : dict
         Event mapping for the dataset.
+    task : {"all", "2stream", "4stream"}, optional
+            Which task condition to include:
+
+            - ``"all"``: load both 2-stream and 4-stream conditions (default).
+            - ``"2stream"``: load only the 2-stream condition.
+            - ``"4stream"``: load only the 4-stream condition.
+
+        Note
+        ----
+        For each task condition, the total number of trials per class is:
+
+        - ``"2stream"``: 1080 NT / 360 T
+        - ``"4stream"``: 1080 NT / 360 T
 
     References
     ----------
@@ -124,9 +137,22 @@ class Kojima2024B(BaseDataset):
     def __init__(
         self,
         events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]},
+        task="all",
     ):
         self.subject_list = list(range(1, 16))
         self.n_channels = 64
+
+        if task == "all":
+            self.tasks = ["2stream", "4stream"]
+        elif task == "2stream":
+            self.tasks = ["2stream"]
+        elif task == "4stream":
+            self.tasks = ["4stream"]
+        else:
+            raise ValueError(
+                f"Task '{task}' is not implemented. "
+                "Please choose from {'all', '2stream', '4stream'}."
+            )
 
         super().__init__(
             self.subject_list,
@@ -297,7 +323,7 @@ class Kojima2024B(BaseDataset):
         runs = {}
         for file in files_path:
 
-            for task in ["2stream", "4stream"]:
+            for task in self.tasks:
 
                 fname = file.name
 
