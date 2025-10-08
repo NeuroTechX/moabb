@@ -5,6 +5,7 @@
 What's new
 ==========
 
+
 .. NOTE: there are 3 separate sections for changes, based on type:
 
 - "Enhancements" for new features
@@ -18,11 +19,13 @@ Develop branch  - 1.4  (dev)
 --------------------------------------
 Enhancements
 ~~~~~~~~~~~~
-
+- Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
+- Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
 - Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
 
 Bugs
 ~~~~
+- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
 
 API changes
 ~~~~~~~~~~~
@@ -596,4 +599,6 @@ API changes
 .. _Radovan Vodila: https://github.com/rvodila
 .. _Ulysse Durand: https://github.com/UlysseDurand
 .. _Lucas Heck: https://github.com/lucas-heck
+.. _Simon Kojima: https://github.com/simonkojima
 .. _Griffin Keeler: https://github.com/griffinkeeler
+.. _ Kosei Nakada: https://github.com/ponpopon

@@ -7,7 +7,6 @@ from warnings import warn
 
 import mne
 import numpy as np
-import pandas as pd
 import yaml
 from mne.channels import make_standard_montage
 from mne.utils import _open_lock
@@ -852,50 +851,5 @@ class Cattan2019_VR(BaseDataset):
     ):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
-    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
-        """Select data for all provided subjects, blocks and repetitions. Each
-        subject has 12 blocks of 5 repetitions.
-
-        The returned data is a dictionary with the following structure::
-
-            data = {'subject_id' :
-                        {'session_id':
-                            {'run_id': raw}
-                        }
-                    }
-
-        See also
-        --------
-        BaseDataset.get_data
-
-        Parameters
-        ----------
-        subjects: List of int
-            List of subject number
-        block_list: List of int
-            List of block number (from 0 to 11)
-        repetition_list: List of int
-            List of repetition number inside a block (from 0 to 4)
-
-        Returns
-        -------
-        data: Dict
-            dict containing the raw data
-        """
-        X, labels, meta = paradigm.get_data(self, subjects)
-        X_select = []
-        labels_select = []
-        meta_select = []
-        for block in block_list:
-            for repetition in repetition_list:
-                run = block_rep(block, repetition, self.n_repetitions)
-                X_select.append(X[meta["run"] == run])
-                labels_select.append(labels[meta["run"] == run])
-                meta_select.append(meta[meta["run"] == run])
-        X_select = np.concatenate(X_select)
-        labels_select = np.concatenate(labels_select)
-        meta_select = np.concatenate(meta_select)
-        df = pd.DataFrame(meta_select, columns=meta.columns)
-        meta_select = df
-
-        return X_select, labels_select, meta_select
+    def _block_rep(self, block, repetition):
+        return block_rep(block, repetition, self.n_repetitions)
