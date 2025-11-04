@@ -68,8 +68,21 @@ def benchmark(  # noqa: C901
 
     Parameters
     ----------
-    pipelines: str
-        Folder containing the pipelines to evaluate or path to a single pipeline file.
+    pipelines: str or dict
+       Folder containing the pipelines to evaluate or path to a single pipeline file,
+       or a dictionary of scikit-learn pipelines with format:
+       pipelines = [
+                    {
+                        "paradigms": ["SomeParadigm"],
+                        "pipeline": make_pipeline(Transformer1(), Transformer2(), Classifier()),
+                        "name": "PipelineName"
+                    },
+                    {
+                        "paradigms": ["AnotherParadigm"],
+                        "pipeline": make_pipeline(TransformerA(), ClassifierB()),
+                        "name": "AnotherPipelineName"
+                    }
+                   ]
     evaluations: list of str
         If to restrict the types of evaluations to be run. By default, all 3 base types are run
         Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"]
@@ -133,7 +146,10 @@ def benchmark(  # noqa: C901
     if not osp.isdir(output):
         os.makedirs(output)
 
-    pipeline_configs = parse_pipelines_from_directory(pipelines)
+    if isinstance(pipelines, str):
+        pipeline_configs = parse_pipelines_from_directory(pipelines)
+    else:
+        pipeline_configs = pipelines
 
     context_params = {}
     if contexts is not None:
