@@ -70,7 +70,7 @@ def benchmark(  # noqa: C901
     ----------
     pipelines: str or dict
        Folder containing the pipelines to evaluate or path to a single pipeline file,
-       or a dictionary of scikit-learn pipelines with format:
+       or a list of scikit-learn pipelines with format:
        pipelines = [
                     {
                         "paradigms": ["SomeParadigm"],
@@ -83,6 +83,7 @@ def benchmark(  # noqa: C901
                         "name": "AnotherPipelineName"
                     }
                    ]
+       Each entry is a dictionary with 3 keys: "name", "pipeline", "paradigms".
     evaluations: list of str
         If to restrict the types of evaluations to be run. By default, all 3 base types are run
         Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"]
