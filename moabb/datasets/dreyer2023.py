@@ -44,7 +44,7 @@ class _Dreyer2023Base(BaseDataset):
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
             code="Dreyer2023" + self.sub_id,
-            interval=[3, 8],
+            interval=[0, 5],
             paradigm="imagery",
             doi="10.5281/zenodo.7554429",
         )
