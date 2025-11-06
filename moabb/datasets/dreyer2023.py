@@ -72,6 +72,17 @@ class _Dreyer2023Base(BaseDataset):
                 # Read the subject's raw data and set the montage
                 raw = read_raw_bids(bids_path=file, verbose=False)
                 raw = raw.load_data()
+
+                # Set the channel montage
+                mapping = dict()
+                for ch in raw.ch_names:
+                    if "EOG" in ch:
+                        mapping[ch] = "eog"
+                    elif "EMG" in ch:
+                        mapping[ch] = "emg"
+
+                raw.set_channel_types(mapping)
+
                 # We are losting several annotations because there is no fuck
                 # place explaining what it is the events ids :)
                 raw.annotations.rename({"769": "left_hand", "770": "right_hand"})
