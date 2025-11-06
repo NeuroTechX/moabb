@@ -22,7 +22,7 @@ Enhancements
 - Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
 - Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
 - Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
-- Added the ability to feed piplines using a list of dictionaries in :func:`moabb.benchmark` (:gh:`826` by `Anton Andreev`_)
+- Added the ability to feed pipelines using a list of dictionaries in :func:`moabb.benchmark` (:gh:`826` by `Anton Andreev`_)
 
 Bugs
 ~~~~
