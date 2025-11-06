@@ -124,7 +124,7 @@ class _Dreyer2023Base(BaseDataset):
             if "baseline" in task or "rest" in task:
                 continue
 
-            if subject == 59 and ("R5online" in task) or ("R6online" in task):
+            if subject == 59 and (("R5online" in task) or ("R6online" in task)):
                 continue
 
             # Create a BIDSPath object for all the tasks
