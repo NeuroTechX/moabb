@@ -22,12 +22,14 @@ Enhancements
 - Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
 - Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
 - Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+- Added the ability to feed piplines using a list of dictionaries in :func:`moabb.benchmark` (:gh:`826` by `Anton Andreev`_)
 
 Bugs
 ~~~~
 - Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
 
 API changes
+- The 
 ~~~~~~~~~~~
 
 
