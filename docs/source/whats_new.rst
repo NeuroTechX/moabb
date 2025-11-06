@@ -29,7 +29,7 @@ Bugs
 - Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
 
 API changes
-- The
+
 ~~~~~~~~~~~
 
 
