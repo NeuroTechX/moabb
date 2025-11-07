@@ -68,9 +68,10 @@ def benchmark(  # noqa: C901
 
     Parameters
     ----------
-    pipelines: str or dict
+    pipelines: str or list of dict
        Folder containing the pipelines to evaluate or path to a single pipeline file,
        or a list of scikit-learn pipelines with format:
+
        pipelines = [
                     {
                         "paradigms": ["SomeParadigm"],
@@ -149,8 +150,10 @@ def benchmark(  # noqa: C901
 
     if isinstance(pipelines, str):
         pipeline_configs = parse_pipelines_from_directory(pipelines)
-    else:
+    elif isinstance(pipelines, list):
         pipeline_configs = pipelines
+    else:
+        raise TypeError(f"Unsupported pipelines type {type(pipelines)}.")
 
     context_params = {}
     if contexts is not None:
