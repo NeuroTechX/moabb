@@ -26,6 +26,7 @@ Enhancements
 Bugs
 ~~~~
 - Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
+- Fix the :class:`moabb.datasets.Dreyer2023` (:gh:`828` by `Simon Kojima`_)
 
 API changes
 ~~~~~~~~~~~
