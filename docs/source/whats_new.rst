@@ -19,6 +19,7 @@ Develop branch  - 1.4  (dev)
 --------------------------------------
 Enhancements
 ~~~~~~~~~~~~
+- Update to pyRiemann 0.9 and numpy 2.0 for improved compatibility (:gh:`789` by `Gregoire Cattan`_ and `Bruno Aristimunha`_)
 - Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
 - Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
 - Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
