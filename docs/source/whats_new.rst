@@ -15,7 +15,19 @@ What's new
 .. _current:
 
 
-Develop branch  - 1.4  (dev)
+Develop branch  - 1.5  (dev)
+--------------------------------------
+Enhancements
+~~~~~~~~~~~~
+
+Bugs
+~~~~
+
+API changes
+~~~~~~~~~~~
+
+
+Develop branch  - 1.4  (Stable - PyPi)
 --------------------------------------
 Enhancements
 ~~~~~~~~~~~~
@@ -31,7 +43,7 @@ API changes
 ~~~~~~~~~~~
 
 
-Develop branch  - 1.3  (Stable - PyPi)
+Version  - 1.3
 --------------------------------------
 
 Enhancements
