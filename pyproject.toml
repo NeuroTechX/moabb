@@ -1,10 +1,6 @@
 [tool.poetry]
 name = "moabb"
-<<<<<<< HEAD
 version = "1.4.0"
-=======
-version = "1.2.0"
->>>>>>> 3075b692 (Release V1.2.0 (#714))
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>"]
@@ -41,13 +37,6 @@ scikit-learn = "<1.6"
 codecarbon = { version = "^2.1.4", optional = true }
 
 # Optional dependencies for deep learning
-<<<<<<< HEAD
-=======
-tensorflow = { version = ">=2.16", optional = true }
-keras = { version = ">=3.2.0", optional = true }
-scikeras = { version = "^0.13.0", optional = true }
-libclang = { version = "^15.0", optional = true }
->>>>>>> 3075b692 (Release V1.2.0 (#714))
 optuna = { version = "^3.6.1", optional = true }
 optuna-integration = { version = "^3.6.0", optional = true }
 braindecode = { version = ">=0.8.1", optional = true }
@@ -70,36 +59,15 @@ sphinx-rtd-theme = { version = "^3.0.2", optional = true }
 sphinx_copybutton = { version = "^0.5.2", optional = true }
 sphinxcontrib-bibtex = { version = "^2.6.3", optional = true }
 sphinx-favicon = { version = "^1.0.1", optional = true }
-<<<<<<< HEAD
 mne-features = { version = "^0.3", optional = true }
 snowballstemmer = { version = "<3", optional = true }
-=======
-tdlda = { git = "https://github.com/jsosulski/tdlda.git", optional = true }
->>>>>>> 3075b692 (Release V1.2.0 (#714))
 
 [tool.poetry.extras]
 carbonemission = ["codecarbon"]
 deeplearning = ["braindecode"]
 optuna = ["optuna", "optuna-integration"]
-<<<<<<< HEAD
 tests = ["pytest", "pytest-cov", "codecov", "pytest_cases", "pytest-xdist"]
 docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "myst-parser", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon", "mne-features", "snowballstemmer"]
-=======
-tests = ["pytest", "pytest-cov", "codecov", "pytest_cases"]
-docs = [
-  "sphinx",
-  "sphinx-gallery",
-  "sphinx-bootstrap-theme",
-  "pydata-sphinx-theme",
-  "numpydoc",
-  "m2r2",
-  "sphinx-design",
-  "sphinx-rtd-theme",
-  "sphinx_copybutton",
-  "sphinxcontrib-bibtex",
-  "sphinx-favicon"
-]
->>>>>>> 3075b692 (Release V1.2.0 (#714))
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
