@@ -511,16 +511,16 @@ We will compare four pipelines :</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Kalunga2016</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation" title="moabb.evaluations.CrossSubjectEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSubjectEvaluation</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.SSVEP.html#moabb.paradigms.SSVEP" title="moabb.paradigms.SSVEP" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">SSVEP</span></a><span class="p">,</span> <a href="../../generated/moabb.paradigms.FilterBankSSVEP.html#moabb.paradigms.FilterBankSSVEP" title="moabb.paradigms.FilterBankSSVEP" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">FilterBankSSVEP</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_CCA</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_TRCA</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ExtendedSSVEPSignal</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_MsetCCA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_CCA</span></a><span class="p">,</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_TRCA</span></a><span class="p">,</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ExtendedSSVEPSignal</span></a><span class="p">,</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_MsetCCA</span></a>
 
 
 <a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
@@ -578,21 +578,21 @@ The third pipeline relies on the TRCA algorithm,
 and the fourth uses the MsetCCA algorithm. Both CCA based methods
 (i.e. CCA and MsetCCA) used 3 CCA components.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">[</span><span class="s2">&quot;RG+LogReg&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ExtendedSSVEPSignal</span></a><span class="p">(),</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;lwf&quot;</span><span class="p">),</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span> <span class="n">multi_class</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">),</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">[</span><span class="s2">&quot;RG+LogReg&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
+    <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ExtendedSSVEPSignal</span></a><span class="p">(),</span>
+    <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;lwf&quot;</span><span class="p">),</span>
+    <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span>
+    <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span> <span class="n">multi_class</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CCA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_CCA</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <span class="n">n_harmonics</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CCA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_CCA</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <span class="n">n_harmonics</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_TRCA</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_TRCA</span></a><span class="p">[</span><span class="s2">&quot;TRCA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_TRCA</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_TRCA</span></a><span class="p">[</span><span class="s2">&quot;TRCA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_TRCA</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">))</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_MSET_CCA</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_MSET_CCA</span></a><span class="p">[</span><span class="s2">&quot;MSET_CCA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_MsetCCA</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_MSET_CCA</span></a><span class="p">[</span><span class="s2">&quot;MSET_CCA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_MsetCCA</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -612,50 +612,119 @@ be overwritten if necessary.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-  1%|▏                                    | 12.3k/2.06M [00:00&lt;00:22, 91.7kB/s]
-  2%|▊                                     | 41.0k/2.06M [00:00&lt;00:10, 192kB/s]
-  5%|█▋                                    | 93.2k/2.06M [00:00&lt;00:05, 328kB/s]
-  9%|███▍                                   | 180k/2.06M [00:00&lt;00:03, 528kB/s]
- 18%|██████▉                               | 373k/2.06M [00:00&lt;00:01, 1.01MB/s]
- 37%|██████████████                        | 758k/2.06M [00:00&lt;00:00, 1.94MB/s]
- 77%|████████████████████████████▌        | 1.58M/2.06M [00:00&lt;00:00, 3.96MB/s]
+  1%|▏                                    | 12.3k/2.06M [00:00&lt;00:22, 89.8kB/s]
+  2%|▋                                     | 38.9k/2.06M [00:00&lt;00:11, 171kB/s]
+  5%|█▊                                    | 97.3k/2.06M [00:00&lt;00:06, 325kB/s]
+  6%|██▍                                    | 131k/2.06M [00:00&lt;00:06, 317kB/s]
+ 11%|████▎                                  | 228k/2.06M [00:00&lt;00:03, 515kB/s]
+ 16%|██████▏                                | 325k/2.06M [00:00&lt;00:02, 634kB/s]
+ 20%|███████▊                               | 415k/2.06M [00:00&lt;00:02, 692kB/s]
+ 24%|█████████▏                             | 485k/2.06M [00:00&lt;00:02, 674kB/s]
+ 27%|██████████▋                            | 562k/2.06M [00:01&lt;00:02, 681kB/s]
+ 32%|████████████▌                          | 660k/2.06M [00:01&lt;00:01, 743kB/s]
+ 37%|██████████████▍                        | 758k/2.06M [00:01&lt;00:01, 783kB/s]
+ 41%|███████████████▉                       | 840k/2.06M [00:01&lt;00:01, 768kB/s]
+ 45%|█████████████████▍                     | 922k/2.06M [00:01&lt;00:01, 759kB/s]
+ 50%|██████████████████▊                   | 1.02M/2.06M [00:01&lt;00:01, 796kB/s]
+ 54%|████████████████████▎                 | 1.10M/2.06M [00:01&lt;00:01, 777kB/s]
+ 58%|█████████████████████▉                | 1.18M/2.06M [00:01&lt;00:01, 764kB/s]
+ 64%|████████████████████████▎             | 1.31M/2.06M [00:01&lt;00:00, 885kB/s]
+ 68%|█████████████████████████▉            | 1.40M/2.06M [00:02&lt;00:00, 859kB/s]
+ 73%|███████████████████████████▉          | 1.51M/2.06M [00:02&lt;00:00, 891kB/s]
+ 79%|██████████████████████████████        | 1.63M/2.06M [00:02&lt;00:00, 932kB/s]
+ 84%|███████████████████████████████▊      | 1.72M/2.06M [00:02&lt;00:00, 918kB/s]
+ 88%|█████████████████████████████████▌    | 1.82M/2.06M [00:02&lt;00:00, 890kB/s]
+ 93%|███████████████████████████████████▏  | 1.90M/2.06M [00:02&lt;00:00, 863kB/s]
+ 97%|████████████████████████████████████▉ | 2.00M/2.06M [00:02&lt;00:00, 864kB/s]
   0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 11.0GB/s]
+100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 10.2GB/s]
 
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-  0%|▏                                     | 12.3k/2.82M [00:00&lt;00:27, 102kB/s]
-  3%|█▏                                    | 91.1k/2.82M [00:00&lt;00:08, 310kB/s]
-  7%|██▉                                    | 211k/2.82M [00:00&lt;00:04, 609kB/s]
- 17%|██████▋                               | 493k/2.82M [00:00&lt;00:01, 1.33MB/s]
- 35%|█████████████▏                        | 976k/2.82M [00:00&lt;00:00, 2.44MB/s]
- 64%|███████████████████████▋             | 1.80M/2.82M [00:00&lt;00:00, 4.25MB/s]
+  0%|▏                                    | 10.2k/2.82M [00:00&lt;00:34, 81.9kB/s]
+  1%|▌                                     | 38.9k/2.82M [00:00&lt;00:15, 176kB/s]
+  3%|█▎                                    | 94.2k/2.82M [00:00&lt;00:08, 310kB/s]
+  5%|█▉                                     | 138k/2.82M [00:00&lt;00:07, 337kB/s]
+  7%|██▉                                    | 208k/2.82M [00:00&lt;00:06, 429kB/s]
+ 12%|████▋                                  | 337k/2.82M [00:00&lt;00:03, 652kB/s]
+ 16%|██████                                 | 437k/2.82M [00:00&lt;00:03, 716kB/s]
+ 21%|████████                               | 584k/2.82M [00:00&lt;00:02, 882kB/s]
+ 24%|█████████▎                             | 673k/2.82M [00:01&lt;00:02, 842kB/s]
+ 27%|██████████▌                            | 764k/2.82M [00:01&lt;00:02, 821kB/s]
+ 32%|████████████▍                          | 895k/2.82M [00:01&lt;00:02, 910kB/s]
+ 35%|█████████████▊                         | 993k/2.82M [00:01&lt;00:02, 889kB/s]
+ 39%|██████████████▋                       | 1.09M/2.82M [00:01&lt;00:01, 867kB/s]
+ 43%|████████████████▎                     | 1.20M/2.82M [00:01&lt;00:01, 902kB/s]
+ 47%|█████████████████▊                    | 1.32M/2.82M [00:01&lt;00:01, 926kB/s]
+ 50%|███████████████████                   | 1.41M/2.82M [00:01&lt;00:01, 883kB/s]
+ 53%|████████████████████▎                 | 1.50M/2.82M [00:02&lt;00:01, 845kB/s]
+ 56%|█████████████████████▍                | 1.59M/2.82M [00:02&lt;00:01, 808kB/s]
+ 60%|██████████████████████▋               | 1.68M/2.82M [00:02&lt;00:01, 798kB/s]
+ 65%|████████████████████████▊             | 1.84M/2.82M [00:02&lt;00:00, 976kB/s]
+ 73%|███████████████████████████          | 2.06M/2.82M [00:02&lt;00:00, 1.23MB/s]
+ 78%|████████████████████████████▋        | 2.19M/2.82M [00:02&lt;00:00, 1.19MB/s]
+ 83%|██████████████████████████████▋      | 2.33M/2.82M [00:02&lt;00:00, 1.21MB/s]
+ 87%|████████████████████████████████▎    | 2.45M/2.82M [00:02&lt;00:00, 1.16MB/s]
+ 92%|██████████████████████████████████   | 2.59M/2.82M [00:02&lt;00:00, 1.17MB/s]
+ 99%|████████████████████████████████████▍| 2.77M/2.82M [00:03&lt;00:00, 1.27MB/s]
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 6.60GB/s]
+100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 17.5GB/s]
 
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-  0%|                                     | 1.02k/2.58M [00:00&lt;05:21, 8.04kB/s]
-  3%|█▏                                    | 85.0k/2.58M [00:00&lt;00:08, 295kB/s]
-  8%|███                                    | 207k/2.58M [00:00&lt;00:03, 601kB/s]
- 19%|███████▏                              | 493k/2.58M [00:00&lt;00:01, 1.33MB/s]
- 32%|████████████                          | 817k/2.58M [00:00&lt;00:00, 1.93MB/s]
- 64%|███████████████████████▌             | 1.64M/2.58M [00:00&lt;00:00, 3.89MB/s]
+  0%|▏                                    | 12.3k/2.58M [00:00&lt;00:41, 61.2kB/s]
+  2%|▌                                     | 41.0k/2.58M [00:00&lt;00:17, 147kB/s]
+  4%|█▌                                     | 108k/2.58M [00:00&lt;00:07, 319kB/s]
+  7%|██▊                                    | 188k/2.58M [00:00&lt;00:05, 460kB/s]
+ 11%|████▏                                  | 281k/2.58M [00:00&lt;00:03, 580kB/s]
+ 14%|█████▌                                 | 367k/2.58M [00:00&lt;00:03, 637kB/s]
+ 19%|███████▏                               | 480k/2.58M [00:00&lt;00:02, 753kB/s]
+ 24%|█████████▍                             | 627k/2.58M [00:00&lt;00:02, 920kB/s]
+ 28%|██████████▉                            | 721k/2.58M [00:01&lt;00:02, 893kB/s]
+ 31%|████████████▎                          | 812k/2.58M [00:01&lt;00:02, 867kB/s]
+ 35%|█████████████▌                         | 900k/2.58M [00:01&lt;00:02, 840kB/s]
+ 38%|██████████████▊                        | 985k/2.58M [00:01&lt;00:01, 813kB/s]
+ 43%|████████████████▏                     | 1.10M/2.58M [00:01&lt;00:01, 875kB/s]
+ 47%|█████████████████▊                    | 1.22M/2.58M [00:01&lt;00:01, 917kB/s]
+ 51%|███████████████████▏                  | 1.31M/2.58M [00:01&lt;00:01, 886kB/s]
+ 54%|████████████████████▌                 | 1.40M/2.58M [00:01&lt;00:01, 855kB/s]
+ 57%|█████████████████████▊                | 1.48M/2.58M [00:02&lt;00:01, 826kB/s]
+ 61%|███████████████████████▏              | 1.58M/2.58M [00:02&lt;00:01, 826kB/s]
+ 65%|████████████████████████▊             | 1.69M/2.58M [00:02&lt;00:01, 878kB/s]
+ 70%|██████████████████████████▊           | 1.82M/2.58M [00:02&lt;00:00, 962kB/s]
+ 74%|████████████████████████████▏         | 1.92M/2.58M [00:02&lt;00:00, 933kB/s]
+ 78%|█████████████████████████████▋        | 2.02M/2.58M [00:02&lt;00:00, 914kB/s]
+ 82%|███████████████████████████████▎      | 2.13M/2.58M [00:02&lt;00:00, 941kB/s]
+ 86%|████████████████████████████████▋     | 2.23M/2.58M [00:02&lt;00:00, 908kB/s]
+ 90%|██████████████████████████████████    | 2.32M/2.58M [00:02&lt;00:00, 876kB/s]
+ 93%|███████████████████████████████████▍  | 2.41M/2.58M [00:03&lt;00:00, 860kB/s]
+ 98%|█████████████████████████████████████▎| 2.54M/2.58M [00:03&lt;00:00, 950kB/s]
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 15.1GB/s]
+100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 15.4GB/s]
 
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-  1%|▏                                    | 11.3k/2.14M [00:00&lt;00:22, 92.9kB/s]
-  5%|█▋                                    | 97.3k/2.14M [00:00&lt;00:06, 333kB/s]
- 12%|████▋                                  | 256k/2.14M [00:00&lt;00:02, 755kB/s]
- 24%|█████████▏                            | 517k/2.14M [00:00&lt;00:01, 1.36MB/s]
- 48%|█████████████████▋                   | 1.03M/2.14M [00:00&lt;00:00, 2.54MB/s]
- 98%|████████████████████████████████████▏| 2.10M/2.14M [00:00&lt;00:00, 5.08MB/s]
+  1%|▏                                    | 12.3k/2.14M [00:00&lt;00:24, 88.7kB/s]
+  2%|▋                                     | 36.9k/2.14M [00:00&lt;00:13, 160kB/s]
+  5%|█▋                                    | 97.3k/2.14M [00:00&lt;00:06, 327kB/s]
+  6%|██▌                                    | 139k/2.14M [00:00&lt;00:05, 347kB/s]
+ 11%|████▏                                  | 230k/2.14M [00:00&lt;00:03, 514kB/s]
+ 15%|█████▋                                 | 315k/2.14M [00:00&lt;00:03, 596kB/s]
+ 18%|██████▊                                | 376k/2.14M [00:00&lt;00:03, 570kB/s]
+ 22%|████████▌                              | 469k/2.14M [00:00&lt;00:02, 655kB/s]
+ 26%|██████████                             | 551k/2.14M [00:01&lt;00:02, 681kB/s]
+ 30%|███████████▊                           | 649k/2.14M [00:01&lt;00:02, 743kB/s]
+ 35%|█████████████▌                         | 748k/2.14M [00:01&lt;00:01, 784kB/s]
+ 42%|████████████████▎                      | 894k/2.14M [00:01&lt;00:01, 944kB/s]
+ 46%|██████████████████                     | 989k/2.14M [00:01&lt;00:01, 917kB/s]
+ 53%|███████████████████▋                 | 1.14M/2.14M [00:01&lt;00:00, 1.05MB/s]
+ 58%|█████████████████████▌               | 1.25M/2.14M [00:01&lt;00:00, 1.02MB/s]
+ 63%|███████████████████████▉              | 1.35M/2.14M [00:01&lt;00:00, 970kB/s]
+ 78%|████████████████████████████▉        | 1.68M/2.14M [00:01&lt;00:00, 1.57MB/s]
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 13.9GB/s]
+100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 12.2GB/s]
 
 Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  3.57it/s]
-Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  3.56it/s]
-Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  3.56it/s]
+Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  3.56it/s]
+Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  3.54it/s]
+Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  3.54it/s]
 </pre></div>
 </div>
 <p>Filter bank processing, determine the filter automatically from the
@@ -667,9 +736,9 @@ stimulation frequency values of events.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  5.87it/s]
-Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  5.70it/s]
-Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  5.72it/s]
+Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  6.09it/s]
+Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  5.74it/s]
+Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  5.79it/s]
 </pre></div>
 </div>
 <p>TRCA processing also relies on filter bank that is automatically designed.</p>
@@ -680,9 +749,9 @@ Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  1.87it/s]
-Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:01&lt;00:00,  1.87it/s]
-Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:01&lt;00:00,  1.87it/s]
+Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  1.82it/s]
+Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:01&lt;00:00,  1.84it/s]
+Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:01&lt;00:00,  1.84it/s]
 </pre></div>
 </div>
 <p>MsetCCA processing</p>
@@ -693,8 +762,8 @@ Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:01&lt;00:
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  1.97it/s]
-Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  2.29it/s]
+Kalunga2016-CrossSubject:  50%|█████     | 1/2 [00:00&lt;00:00,  1.99it/s]
+Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  2.28it/s]
 Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:00,  2.23it/s]
 </pre></div>
 </div>
@@ -723,8 +792,8 @@ Kalunga2016-CrossSubject: 100%|██████████| 2/2 [00:00&lt;00:
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.688 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  313 MB</p>
+<img src="../../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.040 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  314 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-subject-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a4e70780cba83241d5102b821a19c363/plot_cross_subject_ssvep.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_subject_ssvep.ipynb</span></code></a></p>

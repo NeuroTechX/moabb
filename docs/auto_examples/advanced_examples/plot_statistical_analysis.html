@@ -503,11 +503,11 @@ they can be used.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.decoding</span><span class="w"> </span><span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">moabb_plt</span>
@@ -541,13 +541,13 @@ usually done in the literature.</p>
 space mapping and finally a logistic regression for the classification.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;RG+LR&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">())</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;RG+LR&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">())</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LR&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">())</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LR&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">())</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;RG+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;RG+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
 </pre></div>
 </div>
 </section>
@@ -572,117 +572,111 @@ be overwritten if necessary.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-CrossSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession:  25%|██▌       | 1/4 [00:06&lt;00:19,  6.42s/it]
-BNCI2014-001-CrossSession:  50%|█████     | 2/4 [00:12&lt;00:12,  6.36s/it]
-BNCI2014-001-CrossSession:  75%|███████▌  | 3/4 [00:19&lt;00:06,  6.33s/it]
+BNCI2014-001-CrossSession:  25%|██▌       | 1/4 [00:06&lt;00:19,  6.39s/it]
+BNCI2014-001-CrossSession:  50%|█████     | 2/4 [00:12&lt;00:12,  6.26s/it]
+BNCI2014-001-CrossSession:  75%|███████▌  | 3/4 [00:18&lt;00:06,  6.21s/it]
 
   0%|                                              | 0.00/37.2M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 16.4k/37.2M [00:00&lt;03:49, 162kB/s]
+  0%|                                     | 8.19k/37.2M [00:00&lt;09:03, 68.3kB/s]
 
-  0%|                                      | 56.3k/37.2M [00:00&lt;02:04, 298kB/s]
+  0%|                                      | 39.9k/37.2M [00:00&lt;03:23, 183kB/s]
 
-  0%|▏                                      | 161k/37.2M [00:00&lt;00:59, 627kB/s]
+  0%|                                       | 113k/37.2M [00:00&lt;01:39, 373kB/s]
 
-  1%|▎                                     | 352k/37.2M [00:00&lt;00:32, 1.12MB/s]
+  1%|▎                                      | 249k/37.2M [00:00&lt;00:55, 670kB/s]
 
-  2%|▊                                     | 736k/37.2M [00:00&lt;00:17, 2.07MB/s]
+  1%|▌                                     | 520k/37.2M [00:00&lt;00:29, 1.24MB/s]
 
-  4%|█▍                                   | 1.50M/37.2M [00:00&lt;00:09, 3.91MB/s]
+  3%|█                                    | 1.06M/37.2M [00:00&lt;00:15, 2.34MB/s]
 
-  8%|███                                  | 3.06M/37.2M [00:00&lt;00:04, 7.59MB/s]
+  6%|██▏                                  | 2.16M/37.2M [00:00&lt;00:07, 4.53MB/s]
 
- 13%|████▉                                | 4.95M/37.2M [00:00&lt;00:02, 11.1MB/s]
+ 12%|████▎                                | 4.34M/37.2M [00:00&lt;00:03, 8.78MB/s]
 
- 19%|██████▉                              | 6.93M/37.2M [00:00&lt;00:02, 13.7MB/s]
+ 19%|███████                              | 7.10M/37.2M [00:01&lt;00:02, 13.1MB/s]
 
- 24%|████████▊                            | 8.90M/37.2M [00:01&lt;00:01, 15.4MB/s]
+ 25%|█████████▎                           | 9.33M/37.2M [00:01&lt;00:01, 14.7MB/s]
 
- 29%|██████████▊                          | 10.9M/37.2M [00:01&lt;00:01, 15.9MB/s]
+ 31%|███████████▍                         | 11.4M/37.2M [00:01&lt;00:01, 15.5MB/s]
 
- 35%|████████████▉                        | 13.0M/37.2M [00:01&lt;00:01, 17.3MB/s]
+ 37%|█████████████▋                       | 13.7M/37.2M [00:01&lt;00:01, 16.6MB/s]
 
- 40%|██████████████▋                      | 14.7M/37.2M [00:01&lt;00:01, 17.3MB/s]
+ 43%|████████████████                     | 16.1M/37.2M [00:01&lt;00:01, 17.5MB/s]
 
- 45%|████████████████▋                    | 16.7M/37.2M [00:01&lt;00:01, 17.8MB/s]
+ 50%|██████████████████▍                  | 18.6M/37.2M [00:01&lt;00:01, 18.3MB/s]
 
- 51%|██████████████████▊                  | 18.9M/37.2M [00:01&lt;00:00, 18.9MB/s]
+ 56%|████████████████████▊                | 20.9M/37.2M [00:01&lt;00:00, 18.7MB/s]
 
- 56%|████████████████████▊                | 20.9M/37.2M [00:01&lt;00:00, 19.2MB/s]
+ 63%|███████████████████████▏             | 23.3M/37.2M [00:01&lt;00:00, 19.0MB/s]
 
- 62%|██████████████████████▉              | 23.0M/37.2M [00:01&lt;00:00, 19.5MB/s]
+ 70%|█████████████████████████▋           | 25.8M/37.2M [00:02&lt;00:00, 19.5MB/s]
 
- 67%|████████████████████████▉            | 25.0M/37.2M [00:01&lt;00:00, 19.6MB/s]
+ 76%|████████████████████████████▏        | 28.3M/37.2M [00:02&lt;00:00, 19.7MB/s]
 
- 73%|██████████████████████████▉          | 27.1M/37.2M [00:01&lt;00:00, 19.8MB/s]
+ 83%|██████████████████████████████▌      | 30.7M/37.2M [00:02&lt;00:00, 19.8MB/s]
 
- 78%|████████████████████████████▉        | 29.1M/37.2M [00:02&lt;00:00, 19.8MB/s]
+ 89%|█████████████████████████████████    | 33.1M/37.2M [00:02&lt;00:00, 19.9MB/s]
 
- 84%|███████████████████████████████      | 31.1M/37.2M [00:02&lt;00:00, 19.8MB/s]
-
- 91%|█████████████████████████████████▊   | 34.0M/37.2M [00:02&lt;00:00, 22.0MB/s]
-
- 98%|████████████████████████████████████▏| 36.4M/37.2M [00:02&lt;00:00, 22.5MB/s]
+ 96%|███████████████████████████████████▍ | 35.6M/37.2M [00:02&lt;00:00, 19.9MB/s]
 
   0%|                                              | 0.00/37.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 37.2M/37.2M [00:00&lt;00:00, 139GB/s]
+100%|██████████████████████████████████████| 37.2M/37.2M [00:00&lt;00:00, 153GB/s]
 
 
   0%|                                              | 0.00/41.7M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/41.7M [00:00&lt;08:37, 80.6kB/s]
+  0%|                                     | 8.19k/41.7M [00:00&lt;09:55, 70.1kB/s]
 
-  0%|                                      | 56.3k/41.7M [00:00&lt;02:14, 309kB/s]
+  0%|                                      | 48.1k/41.7M [00:00&lt;03:02, 228kB/s]
 
-  0%|▏                                      | 153k/41.7M [00:00&lt;01:09, 595kB/s]
+  0%|                                       | 128k/41.7M [00:00&lt;01:36, 433kB/s]
 
-  1%|▎                                     | 352k/41.7M [00:00&lt;00:36, 1.12MB/s]
+  1%|▎                                      | 272k/41.7M [00:00&lt;00:55, 744kB/s]
 
-  2%|▋                                     | 736k/41.7M [00:00&lt;00:19, 2.06MB/s]
+  1%|▍                                     | 457k/41.7M [00:00&lt;00:39, 1.04MB/s]
 
-  4%|█▎                                   | 1.51M/41.7M [00:00&lt;00:10, 3.92MB/s]
+  2%|▊                                     | 944k/41.7M [00:00&lt;00:19, 2.08MB/s]
 
-  7%|██▋                                  | 3.06M/41.7M [00:00&lt;00:05, 7.53MB/s]
+  5%|█▋                                   | 1.92M/41.7M [00:00&lt;00:09, 4.10MB/s]
 
- 12%|████▍                                | 4.96M/41.7M [00:00&lt;00:03, 11.0MB/s]
+  9%|███▍                                 | 3.87M/41.7M [00:00&lt;00:04, 8.05MB/s]
 
- 16%|██████                               | 6.78M/41.7M [00:00&lt;00:02, 13.1MB/s]
+ 16%|█████▉                               | 6.63M/41.7M [00:01&lt;00:02, 12.8MB/s]
 
- 21%|███████▊                             | 8.80M/41.7M [00:01&lt;00:02, 15.1MB/s]
+ 22%|███████▉                             | 8.99M/41.7M [00:01&lt;00:02, 15.0MB/s]
 
- 26%|█████████▋                           | 10.9M/41.7M [00:01&lt;00:01, 16.6MB/s]
+ 27%|█████████▉                           | 11.2M/41.7M [00:01&lt;00:01, 16.2MB/s]
 
- 31%|███████████▌                         | 13.1M/41.7M [00:01&lt;00:01, 18.0MB/s]
+ 32%|████████████                         | 13.6M/41.7M [00:01&lt;00:01, 17.2MB/s]
 
- 37%|█████████████▌                       | 15.3M/41.7M [00:01&lt;00:01, 19.0MB/s]
+ 38%|██████████████▏                      | 15.9M/41.7M [00:01&lt;00:01, 18.1MB/s]
 
- 42%|███████████████▍                     | 17.4M/41.7M [00:01&lt;00:01, 19.6MB/s]
+ 45%|████████████████▋                    | 18.8M/41.7M [00:01&lt;00:01, 19.8MB/s]
 
- 47%|█████████████████▎                   | 19.6M/41.7M [00:01&lt;00:01, 20.0MB/s]
+ 51%|██████████████████▊                  | 21.3M/41.7M [00:01&lt;00:01, 20.2MB/s]
 
- 53%|███████████████████▊                 | 22.3M/41.7M [00:01&lt;00:00, 21.3MB/s]
+ 56%|████████████████████▊                | 23.5M/41.7M [00:01&lt;00:00, 20.8MB/s]
 
- 60%|██████████████████████               | 24.8M/41.7M [00:01&lt;00:00, 22.1MB/s]
+ 61%|██████████████████████▋              | 25.6M/41.7M [00:01&lt;00:00, 20.0MB/s]
 
- 65%|████████████████████████             | 27.2M/41.7M [00:01&lt;00:00, 22.2MB/s]
+ 66%|████████████████████████▌            | 27.7M/41.7M [00:02&lt;00:00, 19.5MB/s]
 
- 70%|██████████████████████████           | 29.4M/41.7M [00:01&lt;00:00, 22.0MB/s]
+ 72%|██████████████████████████▋          | 30.2M/41.7M [00:02&lt;00:00, 19.9MB/s]
 
- 76%|████████████████████████████         | 31.6M/41.7M [00:02&lt;00:00, 22.0MB/s]
+ 78%|████████████████████████████▊        | 32.6M/41.7M [00:02&lt;00:00, 20.4MB/s]
 
- 81%|██████████████████████████████       | 34.0M/41.7M [00:02&lt;00:00, 22.2MB/s]
+ 84%|██████████████████████████████▉      | 34.9M/41.7M [00:02&lt;00:00, 20.3MB/s]
 
- 87%|████████████████████████████████     | 36.2M/41.7M [00:02&lt;00:00, 22.0MB/s]
+ 90%|█████████████████████████████████    | 37.4M/41.7M [00:02&lt;00:00, 20.4MB/s]
 
- 92%|██████████████████████████████████▏  | 38.5M/41.7M [00:02&lt;00:00, 22.2MB/s]
-
- 98%|████████████████████████████████████▏| 40.9M/41.7M [00:02&lt;00:00, 22.3MB/s]
+ 95%|███████████████████████████████████▎ | 39.8M/41.7M [00:02&lt;00:00, 20.4MB/s]
 
   0%|                                              | 0.00/41.7M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 41.7M/41.7M [00:00&lt;00:00, 167GB/s]
+100%|██████████████████████████████████████| 41.7M/41.7M [00:00&lt;00:00, 185GB/s]
 
-BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:31&lt;00:00,  8.59s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:31&lt;00:00,  7.77s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:32&lt;00:00,  9.11s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 4/4 [00:32&lt;00:00,  8.07s/it]
 </pre></div>
 </div>
 </section>
@@ -729,8 +723,8 @@ the x-axis over all datasets</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 37.650 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  543 MB</p>
+<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 38.054 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  716 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-statistical-analysis-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/33bee7d7204a7cb56293bd1d838b63f8/plot_statistical_analysis.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_statistical_analysis.ipynb</span></code></a></p>

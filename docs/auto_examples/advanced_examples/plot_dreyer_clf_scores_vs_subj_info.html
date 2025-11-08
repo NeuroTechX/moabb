@@ -504,10 +504,10 @@ subjects (gender and age) and experimenters (gender).</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpatches</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sb</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.spatialfilters</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.spatialfilters</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.Dreyer2023A.html#moabb.datasets.Dreyer2023A" title="moabb.datasets.Dreyer2023A" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Dreyer2023A</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a>
@@ -524,165 +524,189 @@ subjects (gender and age) and experimenters (gender).</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/5.84k [00:00&lt;?, ?B/s]
   0%|                                              | 0.00/5.84k [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 5.84k/5.84k [00:00&lt;00:00, 36.5MB/s]
+100%|█████████████████████████████████████| 5.84k/5.84k [00:00&lt;00:00, 36.1MB/s]
 
 0it [00:00, ?it/s]
 
   0%|                                                | 0.00/698 [00:00&lt;?, ?B/s]
 
   0%|                                                | 0.00/698 [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████████| 698/698 [00:00&lt;00:00, 3.86MB/s]
+100%|█████████████████████████████████████████| 698/698 [00:00&lt;00:00, 3.48MB/s]
 
-1it [00:01,  1.43s/it]
-
-  0%|                                              | 0.00/89.0k [00:00&lt;?, ?B/s]
+1it [00:01,  1.20s/it]
 
   0%|                                              | 0.00/89.0k [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 89.0k/89.0k [00:00&lt;00:00, 233MB/s]
 
-2it [00:02,  1.26s/it]
+  0%|                                              | 0.00/89.0k [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 89.0k/89.0k [00:00&lt;00:00, 285MB/s]
+
+2it [00:02,  1.33s/it]
 
   0%|                                                | 0.00/303 [00:00&lt;?, ?B/s]
 
   0%|                                                | 0.00/303 [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████████| 303/303 [00:00&lt;00:00, 1.66MB/s]
+100%|█████████████████████████████████████████| 303/303 [00:00&lt;00:00, 1.77MB/s]
 
-3it [00:03,  1.18s/it]
-
-  0%|                                               | 0.00/485k [00:00&lt;?, ?B/s]
+3it [00:03,  1.26s/it]
 
   0%|                                               | 0.00/485k [00:00&lt;?, ?B/s]
-100%|███████████████████████████████████████| 485k/485k [00:00&lt;00:00, 1.38GB/s]
 
-4it [00:05,  1.27s/it]
+ 34%|█████████████                          | 163k/485k [00:00&lt;00:00, 1.62MB/s]
+
+  0%|                                               | 0.00/485k [00:00&lt;?, ?B/s]
+100%|███████████████████████████████████████| 485k/485k [00:00&lt;00:00, 1.77GB/s]
+
+4it [00:05,  1.26s/it]
 
   0%|                                              | 0.00/1.92k [00:00&lt;?, ?B/s]
 
   0%|                                              | 0.00/1.92k [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 1.92k/1.92k [00:00&lt;00:00, 10.6MB/s]
+100%|█████████████████████████████████████| 1.92k/1.92k [00:00&lt;00:00, 10.1MB/s]
 
-5it [00:06,  1.38s/it]
-
-  0%|                                                | 0.00/788 [00:00&lt;?, ?B/s]
+5it [00:06,  1.24s/it]
 
   0%|                                                | 0.00/788 [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████████| 788/788 [00:00&lt;00:00, 4.13MB/s]
 
-6it [00:08,  1.38s/it]
+  0%|                                                | 0.00/788 [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████████| 788/788 [00:00&lt;00:00, 4.37MB/s]
+
+6it [00:08,  1.47s/it]
 
   0%|                                              | 0.00/2.22k [00:00&lt;?, ?B/s]
 
   0%|                                              | 0.00/2.22k [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.22k/2.22k [00:00&lt;00:00, 11.3MB/s]
+100%|█████████████████████████████████████| 2.22k/2.22k [00:00&lt;00:00, 13.0MB/s]
 
-7it [00:09,  1.33s/it]
-
-  0%|                                              | 0.00/1.39M [00:00&lt;?, ?B/s]
+7it [00:09,  1.35s/it]
 
   0%|                                              | 0.00/1.39M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 1.39M/1.39M [00:00&lt;00:00, 3.84GB/s]
 
-8it [00:11,  1.71s/it]
+ 13%|████▉                                 | 179k/1.39M [00:00&lt;00:00, 1.73MB/s]
+
+  0%|                                              | 0.00/1.39M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 1.39M/1.39M [00:00&lt;00:00, 3.81GB/s]
+
+8it [00:10,  1.36s/it]
 
   0%|                                              | 0.00/72.6M [00:00&lt;?, ?B/s]
 
-  5%|█▊                                   | 3.62M/72.6M [00:00&lt;00:01, 36.2MB/s]
+  0%|                                      | 179k/72.6M [00:00&lt;00:41, 1.74MB/s]
 
- 18%|██████▊                              | 13.4M/72.6M [00:00&lt;00:00, 72.5MB/s]
+  3%|█                                    | 2.20M/72.6M [00:00&lt;00:05, 12.4MB/s]
 
- 33%|████████████                         | 23.7M/72.6M [00:00&lt;00:00, 86.5MB/s]
+ 14%|█████▎                               | 10.5M/72.6M [00:00&lt;00:01, 43.1MB/s]
 
- 45%|████████████████▌                    | 32.4M/72.6M [00:00&lt;00:00, 72.9MB/s]
+ 20%|███████▌                             | 14.7M/72.6M [00:00&lt;00:02, 28.7MB/s]
 
- 58%|█████████████████████▍               | 41.9M/72.6M [00:00&lt;00:00, 68.5MB/s]
+ 34%|████████████▌                        | 24.7M/72.6M [00:00&lt;00:01, 47.8MB/s]
 
- 73%|██████████████████████████▉          | 52.8M/72.6M [00:00&lt;00:00, 79.7MB/s]
+ 45%|████████████████▌                    | 32.5M/72.6M [00:00&lt;00:00, 56.2MB/s]
 
- 84%|███████████████████████████████▏     | 61.1M/72.6M [00:00&lt;00:00, 73.0MB/s]
+ 55%|████████████████████▎                | 39.8M/72.6M [00:00&lt;00:00, 45.4MB/s]
 
- 99%|████████████████████████████████████▋| 72.0M/72.6M [00:00&lt;00:00, 82.8MB/s]
+ 66%|████████████████████████▌            | 48.2M/72.6M [00:01&lt;00:00, 54.3MB/s]
+
+ 78%|████████████████████████████▉        | 56.6M/72.6M [00:01&lt;00:00, 60.4MB/s]
+
+ 91%|█████████████████████████████████▌   | 65.8M/72.6M [00:01&lt;00:00, 68.5MB/s]
 
   0%|                                              | 0.00/72.6M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 72.6M/72.6M [00:00&lt;00:00, 258GB/s]
+100%|██████████████████████████████████████| 72.6M/72.6M [00:00&lt;00:00, 321GB/s]
 
-9it [00:14,  2.01s/it]
-9it [00:14,  1.60s/it]
+9it [00:13,  1.73s/it]
+9it [00:13,  1.47s/it]
 
 0it [00:00, ?it/s]
 
   0%|                                              | 0.00/65.0M [00:00&lt;?, ?B/s]
 
-  5%|█▊                                   | 3.28M/65.0M [00:00&lt;00:01, 32.8MB/s]
+  0%|                                      | 163k/65.0M [00:00&lt;00:39, 1.63MB/s]
 
- 20%|███████▎                             | 12.9M/65.0M [00:00&lt;00:00, 69.9MB/s]
+  3%|█▏                                   | 2.00M/65.0M [00:00&lt;00:05, 11.5MB/s]
 
- 31%|███████████▎                         | 19.9M/65.0M [00:00&lt;00:00, 69.3MB/s]
+ 16%|█████▉                               | 10.5M/65.0M [00:00&lt;00:01, 44.9MB/s]
 
- 43%|████████████████                     | 28.2M/65.0M [00:00&lt;00:00, 75.0MB/s]
+ 29%|██████████▋                          | 18.9M/65.0M [00:00&lt;00:00, 57.5MB/s]
 
- 55%|████████████████████▎                | 35.7M/65.0M [00:00&lt;00:00, 56.3MB/s]
+ 39%|██████████████▎                      | 25.2M/65.0M [00:00&lt;00:00, 59.0MB/s]
 
- 67%|████████████████████████▌            | 43.2M/65.0M [00:00&lt;00:00, 61.5MB/s]
+ 48%|█████████████████▋                   | 31.0M/65.0M [00:00&lt;00:00, 58.8MB/s]
 
- 81%|█████████████████████████████▉       | 52.6M/65.0M [00:00&lt;00:00, 70.6MB/s]
+ 59%|█████████████████████▉               | 38.5M/65.0M [00:00&lt;00:00, 63.9MB/s]
 
- 96%|███████████████████████████████████▍ | 62.2M/65.0M [00:00&lt;00:00, 77.8MB/s]
+ 69%|█████████████████████████▌           | 44.9M/65.0M [00:00&lt;00:00, 62.7MB/s]
+
+ 86%|███████████████████████████████▋     | 55.7M/65.0M [00:00&lt;00:00, 76.8MB/s]
+
+ 98%|████████████████████████████████████▏| 63.6M/65.0M [00:01&lt;00:00, 77.4MB/s]
 
   0%|                                              | 0.00/65.0M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 65.0M/65.0M [00:00&lt;00:00, 95.5GB/s]
+100%|██████████████████████████████████████| 65.0M/65.0M [00:00&lt;00:00, 301GB/s]
 
-9it [00:02,  4.13it/s]
-9it [00:02,  4.13it/s]
+9it [00:02,  3.83it/s]
+9it [00:02,  3.83it/s]
 
 0it [00:00, ?it/s]
 
   0%|                                              | 0.00/64.3M [00:00&lt;?, ?B/s]
 
-  5%|█▋                                   | 2.95M/64.3M [00:00&lt;00:02, 29.5MB/s]
+  0%|                                      | 171k/64.3M [00:00&lt;00:37, 1.71MB/s]
 
- 13%|████▊                                | 8.39M/64.3M [00:00&lt;00:01, 33.9MB/s]
+  3%|█▏                                   | 2.03M/64.3M [00:00&lt;00:05, 11.6MB/s]
 
- 29%|██████████▊                          | 18.9M/64.3M [00:00&lt;00:01, 45.1MB/s]
+ 16%|██████                               | 10.5M/64.3M [00:00&lt;00:01, 40.9MB/s]
 
- 46%|████████████████▉                    | 29.4M/64.3M [00:00&lt;00:00, 43.4MB/s]
+ 23%|████████▍                            | 14.7M/64.3M [00:00&lt;00:01, 41.5MB/s]
 
- 62%|███████████████████████              | 40.1M/64.3M [00:00&lt;00:00, 57.7MB/s]
+ 33%|████████████                         | 21.0M/64.3M [00:00&lt;00:00, 45.5MB/s]
 
- 75%|███████████████████████████▋         | 48.2M/64.3M [00:00&lt;00:00, 55.8MB/s]
+ 46%|████████████████▉                    | 29.4M/64.3M [00:00&lt;00:00, 55.8MB/s]
 
- 92%|██████████████████████████████████   | 59.1M/64.3M [00:01&lt;00:00, 68.2MB/s]
+ 54%|████████████████████                 | 34.9M/64.3M [00:00&lt;00:00, 43.5MB/s]
+
+ 62%|██████████████████████▉              | 39.8M/64.3M [00:01&lt;00:00, 39.4MB/s]
+
+ 77%|████████████████████████████▋        | 49.8M/64.3M [00:01&lt;00:00, 54.0MB/s]
+
+ 87%|████████████████████████████████     | 55.8M/64.3M [00:01&lt;00:00, 51.8MB/s]
+
+ 95%|███████████████████████████████████▎ | 61.4M/64.3M [00:01&lt;00:00, 48.1MB/s]
 
   0%|                                              | 0.00/64.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 64.3M/64.3M [00:00&lt;00:00, 194GB/s]
+100%|██████████████████████████████████████| 64.3M/64.3M [00:00&lt;00:00, 218GB/s]
 
-9it [00:02,  3.89it/s]
-9it [00:02,  3.89it/s]
+9it [00:02,  3.22it/s]
+9it [00:02,  3.22it/s]
 
 0it [00:00, ?it/s]
 
   0%|                                              | 0.00/67.2M [00:00&lt;?, ?B/s]
 
-  6%|██▎                                  | 4.31M/67.2M [00:00&lt;00:01, 43.1MB/s]
+  0%|                                      | 179k/67.2M [00:00&lt;00:38, 1.73MB/s]
 
- 21%|███████▌                             | 13.8M/67.2M [00:00&lt;00:00, 73.6MB/s]
+  3%|█▎                                   | 2.28M/67.2M [00:00&lt;00:05, 12.9MB/s]
 
- 35%|████████████▊                        | 23.3M/67.2M [00:00&lt;00:00, 83.4MB/s]
+ 19%|██████▉                              | 12.6M/67.2M [00:00&lt;00:01, 47.6MB/s]
 
- 49%|██████████████████                   | 32.9M/67.2M [00:00&lt;00:00, 88.4MB/s]
+ 28%|██████████▍                          | 18.9M/67.2M [00:00&lt;00:00, 52.5MB/s]
 
- 62%|███████████████████████              | 41.8M/67.2M [00:00&lt;00:00, 88.7MB/s]
+ 36%|█████████████▏                       | 23.9M/67.2M [00:00&lt;00:00, 46.6MB/s]
 
- 76%|████████████████████████████         | 50.9M/67.2M [00:00&lt;00:00, 89.3MB/s]
+ 50%|██████████████████▍                  | 33.6M/67.2M [00:00&lt;00:00, 60.2MB/s]
 
- 89%|█████████████████████████████████    | 60.0M/67.2M [00:00&lt;00:00, 90.0MB/s]
+ 60%|██████████████████████               | 40.0M/67.2M [00:00&lt;00:00, 61.5MB/s]
+
+ 77%|████████████████████████████▎        | 51.5M/67.2M [00:00&lt;00:00, 77.5MB/s]
+
+ 89%|████████████████████████████████▉    | 59.8M/67.2M [00:00&lt;00:00, 79.1MB/s]
 
   0%|                                              | 0.00/67.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 67.2M/67.2M [00:00&lt;00:00, 176GB/s]
+100%|██████████████████████████████████████| 67.2M/67.2M [00:00&lt;00:00, 255GB/s]
 
-9it [00:02,  4.42it/s]
-9it [00:02,  4.42it/s]
+9it [00:03,  2.98it/s]
+9it [00:03,  2.98it/s]
 
-{1: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-01_task-R1acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-01_task-R2acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-01_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-01_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-01_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 5: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-05_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-05_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-05_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-05_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-05_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 7: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-07_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-07_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-07_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-07_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-07_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 35: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-35_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-35_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-35_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-35_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-35_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}}
+{1: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-01_task-R1acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-01_task-R2acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-01_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-01_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-01_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-01_task-R6online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 5: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-05_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-05_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-05_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-05_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-05_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-05_task-R6online_eeg.edf, 32 x 234496 (458.0 s), ~57.3 MiB, data loaded&gt;}}, 7: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-07_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-07_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-07_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-07_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-07_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-07_task-R6online_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;}}, 35: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-35_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-35_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-35_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-35_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-35_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-35_task-R6online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}}
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
@@ -690,8 +714,8 @@ subjects (gender and age) and experimenters (gender).</p>
 </ol>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.MotorImagery.html#moabb.paradigms.MotorImagery" title="moabb.paradigms.MotorImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.MotorImagery.html#moabb.paradigms.MotorImagery" title="moabb.paradigms.MotorImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">MotorImagery</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;oas&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">6</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lsqr&quot;</span><span class="p">,</span> <span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
+    <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;oas&quot;</span><span class="p">),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">6</span><span class="p">),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;lsqr&quot;</span><span class="p">,</span> <span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -707,25 +731,25 @@ subjects (gender and age) and experimenters (gender).</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Dreyer2023A-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 10311.05it/s]
+9it [00:00, 10541.40it/s]
 
-Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:02&lt;00:08,  2.82s/it]
-
-0it [00:00, ?it/s]
-9it [00:00, 12582.91it/s]
-
-Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:05&lt;00:05,  2.67s/it]
+Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:02&lt;00:06,  2.28s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 12603.92it/s]
+9it [00:00, 12887.93it/s]
 
-Dreyer2023A-WithinSession:  75%|███████▌  | 3/4 [00:07&lt;00:02,  2.56s/it]
+Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:04&lt;00:04,  2.23s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 12133.96it/s]
+9it [00:00, 12466.56it/s]
 
-Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:10&lt;00:00,  2.48s/it]
-Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:10&lt;00:00,  2.54s/it]
+Dreyer2023A-WithinSession:  75%|███████▌  | 3/4 [00:06&lt;00:02,  2.23s/it]
+
+0it [00:00, ?it/s]
+9it [00:00, 12284.00it/s]
+
+Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:08&lt;00:00,  2.23s/it]
+Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:08&lt;00:00,  2.23s/it]
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -743,7 +767,7 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:10&lt;00
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/19.8k [00:00&lt;?, ?B/s]
   0%|                                              | 0.00/19.8k [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 19.8k/19.8k [00:00&lt;00:00, 61.0MB/s]
+100%|██████████████████████████████████████| 19.8k/19.8k [00:00&lt;00:00, 117MB/s]
 </pre></div>
 </div>
 <p>5.1 Plotting subject AUC ROC scores vs subject’s gender</p>
@@ -806,7 +830,7 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:10&lt;00
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7fa560ca2740&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f4809935990&gt;
 </pre></div>
 </div>
 <p>5.3 Plotting subject AUC ROC scores vs experimenter’s gender</p>
@@ -854,8 +878,8 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:10&lt;00
 <img alt="4_selected_subjects" class="align-center" src="../../_images/4_selected_subjects.png" />
 <p>Obtained results for all subjects correspond to the following figure.</p>
 <img alt="all_subjects" class="align-center" src="../../_images/all_subjects.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 43.694 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1875 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 43.317 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2328 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dreyer-clf-scores-vs-subj-info-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ae04c51e0e1c520116e934f140abe39b/plot_dreyer_clf_scores_vs_subj_info.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dreyer_clf_scores_vs_subj_info.ipynb</span></code></a></p>

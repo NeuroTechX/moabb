@@ -633,12 +633,12 @@ which performs Leave-One-Session-Out cross-validation.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cv_class</strong> (<em>cross-validation class</em><em>, </em><em>default=LeaveOneGroupOut</em>) – Inner cross-validation strategy for splitting the sessions of one subject.
 LeaveOneGroupOut is the most common default.</p></li>
-<li><p><strong>shuffle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to shuffle the session order for each subject. It can only be
+<li><p><strong>shuffle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to shuffle the session order for each subject. It can only be
 used when changing the <cite>cv_class</cite> to a class compatible with <cite>shuffle</cite>.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>RandomState instance</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Controls the randomness of the inner cross-validation when <cite>shuffle</cite> is True.
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>RandomState instance</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Controls the randomness of the inner cross-validation when <cite>shuffle</cite> is True.
 Pass an int for reproducible output across multiple function calls.
 For <cite>cv_class</cite> accepting <cite>random_state</cite>, they are provided with a shared rng.</p></li>
-<li><p><strong>cv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Additional arguments to pass to the inner cross-validation strategy.</p></li>
+<li><p><strong>cv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional arguments to pass to the inner cross-validation strategy.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
@@ -663,7 +663,7 @@ of the inner cross-validation strategy.</p>
 <dd class="field-even"><p><strong>n_splits</strong> – The number of splits for the cross-validation</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
 </dd>
 </dl>
 </dd></dl>

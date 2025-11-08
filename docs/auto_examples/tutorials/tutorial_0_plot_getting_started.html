@@ -508,10 +508,10 @@ next tutorial.</p>
 and a list of datasets to run it all on. You can find those in the following
 submodules; detailed tutorials are given for each of them.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">GridSearchCV</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="sklearn.svm.SVC" class="sphx-glr-backref-module-sklearn-svm sphx-glr-backref-type-py-class"><span class="n">SVC</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">GridSearchCV</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="sklearn.svm.SVC" class="sphx-glr-backref-module-sklearn-svm sphx-glr-backref-type-py-class"><span class="n">SVC</span></a>
 </pre></div>
 </div>
 <p>If you would like to specify the logging level when it is running, you can
@@ -520,7 +520,7 @@ use the standard python logging commands through the top-level moabb module</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines.features</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines.features</span><span class="w"> </span><span class="kn">import</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a>
 </pre></div>
 </div>
 <p>In order to create pipelines within a script, you will likely need at least
@@ -538,12 +538,12 @@ cross-validation via scikit-learn cannot be described in a .yml file). For
 later in the process, the pipelines need to be in a dictionary where the key
 is the name of the pipeline and the value is the Pipeline object</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;AM+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;AM+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a><span class="p">(),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parameters</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.logspace.html#numpy.logspace" title="numpy.logspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">)}</span>
-<a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">GridSearchCV</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="sklearn.svm.SVC" class="sphx-glr-backref-module-sklearn-svm sphx-glr-backref-type-py-class"><span class="n">SVC</span></a><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">),</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parameters</span></a><span class="p">)</span>
-<a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipe</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span></a><span class="p">)</span>
+<a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span></a> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">GridSearchCV</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="sklearn.svm.SVC" class="sphx-glr-backref-module-sklearn-svm sphx-glr-backref-type-py-class"><span class="n">SVC</span></a><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">),</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parameters</span></a><span class="p">)</span>
+<a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipe</span></a> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="http://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a><span class="p">(),</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span></a><span class="p">)</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;AM+SVM&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipe</span></a>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;AM+SVM&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipe</span></a>
 </pre></div>
 </div>
 </section>
@@ -558,14 +558,14 @@ is the name of the pipeline and the value is the Pipeline object</p>
   set_config(key, temp_dir)
 /home/runner/work/moabb/moabb/moabb/datasets/fake.py:92: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_FAKEVIRTUALREALITYDATASET-P300-21-1--60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60--120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120--TARGET-NONTARGET--C3-CZ-C4_PATH&quot;
   set_config(key, temp_dir)
-[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7fa536783790&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7fa5367814b0&gt;, &lt;moabb.datasets.beetl.Beetl2021_A object at 0x7fa536781c60&gt;, &lt;moabb.datasets.beetl.Beetl2021_B object at 0x7fa536781e10&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fa536783d90&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7fa536783f70&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7fa536782e00&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7fa536782260&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7fa536782110&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fa5377822f0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fa537780c10&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7fa536783f40&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fa536781390&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fa5367831f0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fa537782980&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7fa537448400&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fa537449de0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fa53744ac20&gt;]
+[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f47df0c86a0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f47df0c8bb0&gt;, &lt;moabb.datasets.beetl.Beetl2021_A object at 0x7f47df0c9150&gt;, &lt;moabb.datasets.beetl.Beetl2021_B object at 0x7f47df0caf20&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f47df0c8640&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7f47df0cb5e0&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7f47df0c91b0&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7f47df0c9480&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7f47df0cb100&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f47df1eba30&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f47df0c84f0&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7f47df0c9300&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f47df0cba00&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f47df0cba90&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f47df33ad40&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7f47df0c8d30&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f47df0ca590&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f47df1e90f0&gt;]
 </pre></div>
 </div>
 <p>Or you can run a search through the available datasets:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">utils</span><span class="o">.</span><span class="n">dataset_search</span></a><span class="p">(</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span> <span class="n">min_subjects</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7fa536783ca0&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7fa536783790&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7fa536783670&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7fa536783b50&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7fa5367810c0&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7fa536780910&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fa536782140&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7fa536782200&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7fa536782d70&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7fa536780d30&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7fa536782ad0&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7fa5367831f0&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fa536780af0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fa536783eb0&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7fa5367810f0&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7fa536783e80&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fa536781c30&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fa536781d80&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fa536780610&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017B object at 0x7fa536783400&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7fa5367804f0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fa536783430&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7f47df0c9660&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f47df0caa10&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7f47df0caaa0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f47df0c9180&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7f47df0cb460&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7f47df0c8730&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f47df0c8c40&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7f47df0cb550&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7f47df0c9450&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7f47df0c9330&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7f47df0cae60&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7f47df0c8e20&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f47df0c99f0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f47df0cbd30&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7f47df0cb5e0&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7f47df0cb730&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f47df0c86a0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f47df1ea4a0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f47df1e90f0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017B object at 0x7f47df1eba30&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7f47df1eb3a0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f47df1eaec0&gt;]
 </pre></div>
 </div>
 <p>Or you can simply make your own list (which we do here due to computational
@@ -603,238 +603,258 @@ subjects. This also is the correct place to specify multiple threads.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:95: RuntimeWarning: Setting non-standard config type: &quot;MOABB_RESULTS&quot;
   set_config(&quot;MOABB_RESULTS&quot;, osp.join(osp.expanduser(&quot;~&quot;), &quot;mne_data&quot;))
 
-BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]2025-10-06 20:22:19,067 INFO MainThread moabb.datasets.download MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
+BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]2025-11-08 11:03:47,093 INFO MainThread moabb.datasets.download MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
 All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
 /home/runner/work/moabb/moabb/moabb/datasets/download.py:60: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_BNCI_PATH&quot;
   set_config(key, get_config(&quot;MNE_DATA&quot;))
+/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;bnci-horizon-2020.eu&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 16.4k/42.8M [00:00&lt;04:25, 161kB/s]
+  0%|                                     | 8.19k/42.8M [00:00&lt;10:24, 68.5kB/s]
 
-  0%|                                      | 56.3k/42.8M [00:00&lt;02:22, 300kB/s]
+  0%|                                      | 56.3k/42.8M [00:00&lt;02:42, 263kB/s]
 
-  0%|▏                                      | 144k/42.8M [00:00&lt;01:16, 558kB/s]
+  0%|▏                                      | 153k/42.8M [00:00&lt;01:24, 506kB/s]
 
-  1%|▎                                     | 337k/42.8M [00:00&lt;00:39, 1.08MB/s]
+  1%|▎                                      | 352k/42.8M [00:00&lt;00:44, 957kB/s]
 
-  2%|▋                                     | 705k/42.8M [00:00&lt;00:21, 1.99MB/s]
+  2%|▋                                     | 736k/42.8M [00:00&lt;00:23, 1.75MB/s]
 
-  3%|█▎                                   | 1.45M/42.8M [00:00&lt;00:10, 3.78MB/s]
+  4%|█▎                                   | 1.51M/42.8M [00:00&lt;00:12, 3.33MB/s]
 
-  7%|██▌                                  | 2.94M/42.8M [00:00&lt;00:05, 7.31MB/s]
+  7%|██▌                                  | 2.97M/42.8M [00:00&lt;00:06, 6.17MB/s]
 
- 12%|████▍                                | 5.14M/42.8M [00:00&lt;00:03, 11.8MB/s]
+ 13%|████▉                                | 5.77M/42.8M [00:00&lt;00:03, 11.5MB/s]
 
- 15%|█████▍                               | 6.33M/42.8M [00:00&lt;00:03, 11.4MB/s]
+ 19%|██████▉                              | 8.02M/42.8M [00:01&lt;00:02, 13.7MB/s]
 
- 20%|███████▎                             | 8.46M/42.8M [00:01&lt;00:02, 14.3MB/s]
+ 25%|█████████▏                           | 10.6M/42.8M [00:01&lt;00:02, 15.9MB/s]
 
- 25%|█████████▎                           | 10.8M/42.8M [00:01&lt;00:01, 16.9MB/s]
+ 30%|███████████▏                         | 12.9M/42.8M [00:01&lt;00:01, 16.9MB/s]
 
- 30%|███████████▏                         | 13.0M/42.8M [00:01&lt;00:01, 18.4MB/s]
+ 36%|█████████████▎                       | 15.4M/42.8M [00:01&lt;00:01, 18.1MB/s]
 
- 36%|█████████████▏                       | 15.2M/42.8M [00:01&lt;00:01, 19.4MB/s]
+ 41%|███████████████▎                     | 17.8M/42.8M [00:01&lt;00:01, 18.5MB/s]
 
- 41%|███████████████▏                     | 17.6M/42.8M [00:01&lt;00:01, 20.5MB/s]
+ 47%|█████████████████▌                   | 20.3M/42.8M [00:01&lt;00:01, 19.2MB/s]
 
- 46%|█████████████████▏                   | 19.9M/42.8M [00:01&lt;00:01, 21.1MB/s]
+ 53%|███████████████████▌                 | 22.6M/42.8M [00:01&lt;00:01, 19.3MB/s]
 
- 53%|███████████████████▌                 | 22.7M/42.8M [00:01&lt;00:00, 23.0MB/s]
+ 62%|███████████████████████              | 26.8M/42.8M [00:01&lt;00:00, 23.7MB/s]
 
- 58%|█████████████████████▌               | 25.0M/42.8M [00:01&lt;00:00, 19.0MB/s]
+ 69%|█████████████████████████▋           | 29.7M/42.8M [00:02&lt;00:00, 23.8MB/s]
 
- 64%|███████████████████████▊             | 27.5M/42.8M [00:01&lt;00:00, 20.5MB/s]
+ 76%|████████████████████████████         | 32.5M/42.8M [00:02&lt;00:00, 23.6MB/s]
 
- 70%|█████████████████████████▉           | 30.0M/42.8M [00:02&lt;00:00, 21.6MB/s]
+ 85%|███████████████████████████████▍     | 36.3M/42.8M [00:02&lt;00:00, 26.0MB/s]
 
- 75%|███████████████████████████▉         | 32.3M/42.8M [00:02&lt;00:00, 21.6MB/s]
+ 92%|██████████████████████████████████   | 39.3M/42.8M [00:02&lt;00:00, 25.7MB/s]
 
- 81%|█████████████████████████████▊       | 34.5M/42.8M [00:02&lt;00:00, 21.6MB/s]
-
- 86%|███████████████████████████████▊     | 36.8M/42.8M [00:02&lt;00:00, 22.0MB/s]
-
- 91%|█████████████████████████████████▊   | 39.1M/42.8M [00:02&lt;00:00, 21.9MB/s]
-
- 96%|███████████████████████████████████▋ | 41.3M/42.8M [00:02&lt;00:00, 21.8MB/s]
+ 99%|████████████████████████████████████▌| 42.3M/42.8M [00:02&lt;00:00, 25.2MB/s]
 
   0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 162GB/s]
+100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 182GB/s]
+/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;bnci-horizon-2020.eu&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/43.8M [00:00&lt;09:00, 80.9kB/s]
+  0%|                                     | 8.19k/43.8M [00:00&lt;10:58, 66.5kB/s]
 
-  0%|                                      | 56.3k/43.8M [00:00&lt;02:20, 311kB/s]
+  0%|                                      | 56.3k/43.8M [00:00&lt;02:51, 255kB/s]
 
-  0%|▏                                      | 153k/43.8M [00:00&lt;01:12, 598kB/s]
+  0%|▏                                      | 153k/43.8M [00:00&lt;01:28, 491kB/s]
 
-  1%|▎                                     | 344k/43.8M [00:00&lt;00:39, 1.10MB/s]
+  1%|▎                                      | 337k/43.8M [00:00&lt;00:49, 881kB/s]
 
-  2%|▋                                     | 736k/43.8M [00:00&lt;00:20, 2.08MB/s]
+  2%|▌                                     | 705k/43.8M [00:00&lt;00:26, 1.62MB/s]
 
-  3%|█▎                                   | 1.51M/43.8M [00:00&lt;00:10, 3.95MB/s]
+  3%|█▏                                   | 1.46M/43.8M [00:00&lt;00:13, 3.12MB/s]
 
-  7%|██▌                                  | 3.06M/43.8M [00:00&lt;00:05, 7.58MB/s]
+  7%|██▍                                  | 2.95M/43.8M [00:00&lt;00:06, 6.02MB/s]
 
- 13%|████▉                                | 5.77M/43.8M [00:00&lt;00:02, 13.6MB/s]
+ 12%|████▎                                | 5.06M/43.8M [00:00&lt;00:04, 9.47MB/s]
 
- 18%|██████▋                              | 7.88M/43.8M [00:00&lt;00:02, 15.8MB/s]
+ 16%|█████▊                               | 6.86M/43.8M [00:01&lt;00:03, 11.0MB/s]
 
- 24%|████████▉                            | 10.5M/43.8M [00:01&lt;00:01, 18.8MB/s]
+ 20%|███████▍                             | 8.78M/43.8M [00:01&lt;00:02, 12.4MB/s]
 
- 31%|███████████▍                         | 13.5M/43.8M [00:01&lt;00:01, 22.0MB/s]
+ 24%|█████████                            | 10.7M/43.8M [00:01&lt;00:02, 13.3MB/s]
 
- 38%|██████████████                       | 16.7M/43.8M [00:01&lt;00:01, 24.7MB/s]
+ 29%|██████████▋                          | 12.6M/43.8M [00:01&lt;00:02, 13.9MB/s]
 
- 45%|████████████████▊                    | 19.8M/43.8M [00:01&lt;00:00, 26.5MB/s]
+ 33%|████████████▎                        | 14.5M/43.8M [00:01&lt;00:02, 14.3MB/s]
 
- 52%|███████████████████▎                 | 22.8M/43.8M [00:01&lt;00:00, 27.2MB/s]
+ 37%|█████████████▊                       | 16.4M/43.8M [00:01&lt;00:01, 14.6MB/s]
 
- 59%|█████████████████████▉               | 25.9M/43.8M [00:01&lt;00:00, 28.2MB/s]
+ 42%|███████████████▍                     | 18.3M/43.8M [00:01&lt;00:01, 14.8MB/s]
 
- 66%|████████████████████████▎            | 28.7M/43.8M [00:01&lt;00:00, 24.3MB/s]
+ 46%|█████████████████                    | 20.2M/43.8M [00:01&lt;00:01, 14.9MB/s]
 
- 71%|██████████████████████████▍          | 31.3M/43.8M [00:01&lt;00:00, 24.6MB/s]
+ 50%|██████████████████▋                  | 22.1M/43.8M [00:02&lt;00:01, 15.0MB/s]
 
- 77%|████████████████████████████▋        | 33.9M/43.8M [00:01&lt;00:00, 25.0MB/s]
+ 57%|█████████████████████                | 24.9M/43.8M [00:02&lt;00:01, 17.2MB/s]
 
- 83%|██████████████████████████████▊      | 36.5M/43.8M [00:01&lt;00:00, 25.4MB/s]
+ 62%|███████████████████████              | 27.2M/43.8M [00:02&lt;00:00, 17.7MB/s]
 
- 89%|█████████████████████████████████    | 39.2M/43.8M [00:02&lt;00:00, 25.7MB/s]
+ 67%|████████████████████████▊            | 29.3M/43.8M [00:02&lt;00:00, 17.4MB/s]
 
- 96%|███████████████████████████████████▍ | 41.9M/43.8M [00:02&lt;00:00, 26.1MB/s]
+ 72%|██████████████████████████▋          | 31.6M/43.8M [00:02&lt;00:00, 17.8MB/s]
+
+ 78%|████████████████████████████▋        | 34.0M/43.8M [00:02&lt;00:00, 18.1MB/s]
+
+ 84%|███████████████████████████████      | 36.8M/43.8M [00:02&lt;00:00, 19.4MB/s]
+
+ 90%|█████████████████████████████████▏   | 39.3M/43.8M [00:02&lt;00:00, 19.6MB/s]
+
+ 95%|███████████████████████████████████▏ | 41.7M/43.8M [00:03&lt;00:00, 19.4MB/s]
 
   0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 122GB/s]
+100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 129GB/s]
 
-BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:12&lt;00:12, 12.90s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:14&lt;00:14, 14.30s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;bnci-horizon-2020.eu&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 16.4k/43.1M [00:00&lt;04:29, 160kB/s]
+  0%|                                     | 8.19k/43.1M [00:00&lt;10:29, 68.4kB/s]
 
-  0%|                                      | 64.5k/43.1M [00:00&lt;02:05, 342kB/s]
+  0%|                                      | 48.1k/43.1M [00:00&lt;03:13, 223kB/s]
 
-  0%|▏                                      | 153k/43.1M [00:00&lt;01:14, 578kB/s]
+  0%|                                       | 128k/43.1M [00:00&lt;01:41, 422kB/s]
 
-  1%|▎                                     | 344k/43.1M [00:00&lt;00:39, 1.09MB/s]
+  1%|▎                                      | 289k/43.1M [00:00&lt;00:54, 780kB/s]
 
-  1%|▌                                     | 600k/43.1M [00:00&lt;00:26, 1.60MB/s]
+  1%|▌                                     | 608k/43.1M [00:00&lt;00:29, 1.45MB/s]
 
-  3%|█                                    | 1.24M/43.1M [00:00&lt;00:13, 3.17MB/s]
+  3%|█                                    | 1.25M/43.1M [00:00&lt;00:15, 2.75MB/s]
 
-  6%|██▏                                  | 2.49M/43.1M [00:00&lt;00:06, 6.11MB/s]
+  6%|██▏                                  | 2.52M/43.1M [00:00&lt;00:07, 5.28MB/s]
 
- 10%|███▊                                 | 4.42M/43.1M [00:00&lt;00:03, 10.2MB/s]
+ 11%|████                                 | 4.69M/43.1M [00:00&lt;00:04, 9.29MB/s]
 
- 15%|█████▌                               | 6.52M/43.1M [00:00&lt;00:02, 13.4MB/s]
+ 15%|█████▌                               | 6.44M/43.1M [00:01&lt;00:03, 10.9MB/s]
 
- 20%|███████▍                             | 8.72M/43.1M [00:01&lt;00:02, 15.9MB/s]
+ 20%|███████▎                             | 8.46M/43.1M [00:01&lt;00:02, 12.7MB/s]
 
- 26%|█████████▍                           | 11.0M/43.1M [00:01&lt;00:01, 17.9MB/s]
+ 24%|████████▊                            | 10.3M/43.1M [00:01&lt;00:02, 13.5MB/s]
 
- 31%|███████████▌                         | 13.5M/43.1M [00:01&lt;00:01, 19.7MB/s]
+ 29%|██████████▌                          | 12.3M/43.1M [00:01&lt;00:02, 14.3MB/s]
 
- 37%|█████████████▌                       | 15.8M/43.1M [00:01&lt;00:01, 20.6MB/s]
+ 33%|████████████▏                        | 14.2M/43.1M [00:01&lt;00:01, 14.7MB/s]
 
- 42%|███████████████▋                     | 18.2M/43.1M [00:01&lt;00:01, 21.4MB/s]
+ 37%|█████████████▊                       | 16.0M/43.1M [00:01&lt;00:01, 14.9MB/s]
 
- 48%|█████████████████▋                   | 20.6M/43.1M [00:01&lt;00:01, 22.0MB/s]
+ 42%|███████████████▍                     | 17.9M/43.1M [00:01&lt;00:01, 15.0MB/s]
 
- 53%|███████████████████▋                 | 22.9M/43.1M [00:01&lt;00:00, 22.2MB/s]
+ 46%|████████████████▉                    | 19.8M/43.1M [00:01&lt;00:01, 15.1MB/s]
 
- 59%|█████████████████████▋               | 25.3M/43.1M [00:01&lt;00:00, 22.5MB/s]
+ 50%|██████████████████▌                  | 21.6M/43.1M [00:02&lt;00:01, 15.1MB/s]
 
- 64%|███████████████████████▋             | 27.6M/43.1M [00:01&lt;00:00, 22.6MB/s]
+ 54%|████████████████████▏                | 23.5M/43.1M [00:02&lt;00:01, 15.2MB/s]
 
- 70%|█████████████████████████▊           | 30.0M/43.1M [00:01&lt;00:00, 22.8MB/s]
+ 59%|█████████████████████▋               | 25.3M/43.1M [00:02&lt;00:01, 15.1MB/s]
 
- 75%|███████████████████████████▊         | 32.4M/43.1M [00:02&lt;00:00, 22.8MB/s]
+ 63%|███████████████████████▎             | 27.1M/43.1M [00:02&lt;00:01, 15.2MB/s]
 
- 81%|█████████████████████████████▊       | 34.8M/43.1M [00:02&lt;00:00, 23.0MB/s]
+ 67%|████████████████████████▉            | 29.0M/43.1M [00:02&lt;00:00, 15.2MB/s]
 
- 86%|███████████████████████████████▊     | 37.1M/43.1M [00:02&lt;00:00, 22.6MB/s]
+ 72%|██████████████████████████▌          | 30.9M/43.1M [00:02&lt;00:00, 15.3MB/s]
 
- 91%|█████████████████████████████████▊   | 39.3M/43.1M [00:02&lt;00:00, 18.5MB/s]
+ 76%|████████████████████████████         | 32.7M/43.1M [00:02&lt;00:00, 15.3MB/s]
 
- 97%|███████████████████████████████████▊ | 41.7M/43.1M [00:02&lt;00:00, 19.8MB/s]
+ 80%|█████████████████████████████▊       | 34.6M/43.1M [00:02&lt;00:00, 15.5MB/s]
+
+ 87%|████████████████████████████████▏    | 37.5M/43.1M [00:03&lt;00:00, 17.8MB/s]
+
+ 94%|██████████████████████████████████▌  | 40.3M/43.1M [00:03&lt;00:00, 19.4MB/s]
+
+ 99%|████████████████████████████████████▊| 42.8M/43.1M [00:03&lt;00:00, 19.8MB/s]
 
   0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 127GB/s]
+100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 215GB/s]
+/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;bnci-horizon-2020.eu&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/44.2M [00:00&lt;09:05, 81.1kB/s]
+  0%|                                     | 8.19k/44.2M [00:00&lt;11:05, 66.4kB/s]
 
-  0%|                                      | 56.3k/44.2M [00:00&lt;02:22, 311kB/s]
+  0%|                                      | 56.3k/44.2M [00:00&lt;02:53, 255kB/s]
 
-  0%|▏                                      | 153k/44.2M [00:00&lt;01:13, 598kB/s]
+  0%|▏                                      | 153k/44.2M [00:00&lt;01:29, 491kB/s]
 
-  1%|▎                                     | 344k/44.2M [00:00&lt;00:39, 1.10MB/s]
+  1%|▎                                      | 352k/44.2M [00:00&lt;00:47, 929kB/s]
 
-  2%|▋                                     | 736k/44.2M [00:00&lt;00:20, 2.08MB/s]
+  2%|▋                                     | 736k/44.2M [00:00&lt;00:25, 1.70MB/s]
 
-  3%|█▎                                   | 1.51M/44.2M [00:00&lt;00:10, 3.94MB/s]
+  3%|█▎                                   | 1.50M/44.2M [00:00&lt;00:13, 3.22MB/s]
 
-  7%|██▌                                  | 3.06M/44.2M [00:00&lt;00:05, 7.57MB/s]
+  7%|██▍                                  | 2.95M/44.2M [00:00&lt;00:06, 5.96MB/s]
 
- 12%|████▍                                | 5.32M/44.2M [00:00&lt;00:03, 12.2MB/s]
+ 11%|████▏                                | 5.07M/44.2M [00:00&lt;00:04, 9.47MB/s]
 
- 17%|██████▍                              | 7.69M/44.2M [00:00&lt;00:02, 15.6MB/s]
+ 16%|█████▊                               | 6.90M/44.2M [00:01&lt;00:03, 11.1MB/s]
 
- 23%|████████▌                            | 10.2M/44.2M [00:01&lt;00:01, 18.3MB/s]
+ 20%|███████▍                             | 8.88M/44.2M [00:01&lt;00:02, 12.6MB/s]
 
- 29%|██████████▋                          | 12.8M/44.2M [00:01&lt;00:01, 20.5MB/s]
+ 24%|█████████                            | 10.8M/44.2M [00:01&lt;00:02, 13.4MB/s]
 
- 35%|████████████▊                        | 15.4M/44.2M [00:01&lt;00:01, 21.7MB/s]
+ 29%|██████████▌                          | 12.7M/44.2M [00:01&lt;00:02, 14.0MB/s]
 
- 41%|███████████████                      | 17.9M/44.2M [00:01&lt;00:01, 22.7MB/s]
+ 33%|████████████▏                        | 14.5M/44.2M [00:01&lt;00:02, 14.1MB/s]
 
- 46%|█████████████████▏                   | 20.5M/44.2M [00:01&lt;00:01, 23.4MB/s]
+ 37%|█████████████▋                       | 16.4M/44.2M [00:01&lt;00:01, 14.4MB/s]
 
- 52%|███████████████████▏                 | 22.9M/44.2M [00:01&lt;00:00, 23.0MB/s]
+ 41%|███████████████▏                     | 18.2M/44.2M [00:01&lt;00:01, 14.5MB/s]
 
- 57%|█████████████████████                | 25.2M/44.2M [00:01&lt;00:00, 22.8MB/s]
+ 45%|████████████████▊                    | 20.0M/44.2M [00:01&lt;00:01, 14.6MB/s]
 
- 62%|██████████████████████▉              | 27.5M/44.2M [00:01&lt;00:00, 22.5MB/s]
+ 52%|███████████████████▏                 | 22.9M/44.2M [00:02&lt;00:01, 17.0MB/s]
 
- 67%|████████████████████████▊            | 29.7M/44.2M [00:01&lt;00:00, 22.3MB/s]
+ 57%|█████████████████████                | 25.1M/44.2M [00:02&lt;00:01, 17.3MB/s]
 
- 72%|██████████████████████████▋          | 31.9M/44.2M [00:01&lt;00:00, 22.1MB/s]
+ 61%|██████████████████████▋              | 27.2M/44.2M [00:02&lt;00:01, 17.0MB/s]
 
- 77%|████████████████████████████▋        | 34.2M/44.2M [00:02&lt;00:00, 22.1MB/s]
+ 68%|█████████████████████████            | 30.0M/44.2M [00:02&lt;00:00, 18.7MB/s]
 
- 83%|██████████████████████████████▋      | 36.7M/44.2M [00:02&lt;00:00, 22.7MB/s]
+ 74%|███████████████████████████▏         | 32.5M/44.2M [00:02&lt;00:00, 19.2MB/s]
 
- 89%|████████████████████████████████▊    | 39.3M/44.2M [00:02&lt;00:00, 23.2MB/s]
+ 79%|█████████████████████████████▏       | 35.0M/44.2M [00:02&lt;00:00, 19.3MB/s]
 
- 95%|██████████████████████████████████▉  | 41.8M/44.2M [00:02&lt;00:00, 23.6MB/s]
+ 84%|███████████████████████████████▏     | 37.3M/44.2M [00:02&lt;00:00, 19.1MB/s]
+
+ 90%|█████████████████████████████████▏   | 39.7M/44.2M [00:02&lt;00:00, 19.1MB/s]
+
+ 95%|███████████████████████████████████▎ | 42.2M/44.2M [00:03&lt;00:00, 19.4MB/s]
 
   0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 135GB/s]
+100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 127GB/s]
 
-BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:24&lt;00:00, 11.88s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:24&lt;00:00, 12.03s/it]
-2025-10-06 20:22:42,888 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.786
-2025-10-06 20:22:43,004 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.802
-2025-10-06 20:22:43,118 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.797
-2025-10-06 20:22:43,250 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.774
-2025-10-06 20:22:43,379 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.577
-2025-10-06 20:22:43,491 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.499
-2025-10-06 20:22:43,606 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.551
-2025-10-06 20:22:43,732 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.471
+BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:27&lt;00:00, 13.83s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:27&lt;00:00, 13.90s/it]
+2025-11-08 11:04:14,642 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.786
+2025-11-08 11:04:14,757 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.802
+2025-11-08 11:04:14,870 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.797
+2025-11-08 11:04:15,002 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.774
+2025-11-08 11:04:15,139 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.577
+2025-11-08 11:04:15,256 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.499
+2025-11-08 11:04:15,374 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.551
+2025-11-08 11:04:15,505 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.471
 </pre></div>
 </div>
 <p>Results are returned as a pandas DataFrame, and from here you can do as you
@@ -843,17 +863,17 @@ want with them</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ... n_sessions       dataset  pipeline
-0  0.797068  0.250668    144.0  ...          2  BNCI2014-001    AM+SVM
-1  0.773920  0.152906    144.0  ...          2  BNCI2014-001    AM+SVM
-2  0.550733  0.247473    144.0  ...          2  BNCI2014-001    AM+SVM
-3  0.471451  0.161849    144.0  ...          2  BNCI2014-001    AM+SVM
-4  0.786458  0.062732    144.0  ...          2  BNCI2014-001    AM+LDA
+0  0.797068  0.148849    144.0  ...          2  BNCI2014-001    AM+SVM
+1  0.773920  0.141849    144.0  ...          2  BNCI2014-001    AM+SVM
+2  0.550733  0.242596    144.0  ...          2  BNCI2014-001    AM+SVM
+3  0.471451  0.160634    144.0  ...          2  BNCI2014-001    AM+SVM
+4  0.786458  0.030546    144.0  ...          2  BNCI2014-001    AM+LDA
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.381 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  800 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 30.172 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  798 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-0-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc78b19f551dfa48627d09f644ea18ad/tutorial_0_plot_getting_started.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_0_plot_getting_started.ipynb</span></code></a></p>
