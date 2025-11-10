@@ -10,6 +10,7 @@ from mne.utils import _open_lock
 
 from moabb import paradigms as moabb_paradigms
 from moabb.analysis import analyze
+from moabb.datasets.base import BaseDataset
 from moabb.evaluations import (
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
@@ -20,7 +21,6 @@ from moabb.pipelines.utils import (
     generate_param_grid,
     parse_pipelines_from_directory,
 )
-from moabb.datasets.base import BaseDataset
 
 
 try:
@@ -162,10 +162,9 @@ def benchmark(  # noqa: C901
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     pipeline_prdgms = generate_paradigms(pipeline_configs, context_params, log)
-    
+
     # Filter requested benchmark paradigms vs available in provided pipelines
     prdgms = filter_paradigms(pipeline_prdgms, paradigms, log)
-    
 
     param_grid = generate_param_grid(pipeline_configs, context_params, log)
 
@@ -186,9 +185,7 @@ def benchmark(  # noqa: C901
             # List of dataset class instances
             datasets = p.datasets
             d = _inc_exc_datasets(datasets, include_datasets, exclude_datasets)
-            print(
-                f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
-            )
+            print(f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}")
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms[paradigm].items():
@@ -365,7 +362,9 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
         all_str = all(isinstance(x, str) for x in ds_list)
         all_obj = all(isinstance(x, BaseDataset) for x in ds_list)
         if not (all_str or all_obj):
-            raise TypeError(f"{list_name} must contain either all strings or all dataset objects, not a mix.")
+            raise TypeError(
+                f"{list_name} must contain either all strings or all dataset objects, not a mix."
+            )
 
         # Convert all to codes
         if all_str:
@@ -387,7 +386,9 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
             # Check that all objects exist in available datasets
             invalid = [x.code for x in ds_list if x.code not in all_codes]
             if invalid:
-                raise ValueError(f"Some datasets in {list_name} are not part of available datasets: {invalid}")
+                raise ValueError(
+                    f"Some datasets in {list_name} are not part of available datasets: {invalid}"
+                )
             return codes
 
     # --- Inclusion logic ---
@@ -405,8 +406,8 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
         return filtered
 
     return d
-    
-    
+
+
 def filter_paradigms(pipeline_prdgms, paradigms, logger):
     """
     Filter a dictionary of paradigms and their pipelines based on user selection.
