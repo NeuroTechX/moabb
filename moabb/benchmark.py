@@ -20,6 +20,7 @@ from moabb.pipelines.utils import (
     generate_param_grid,
     parse_pipelines_from_directory,
 )
+from moabb.datasets.base import BaseDataset
 
 
 try:
@@ -347,7 +348,12 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
 
     # --- Helper to validate and normalize inputs ---
     def _validate_dataset_list(ds_list, list_name):
-        """Ensure list is consistent and corresponds to existing datasets."""
+        """Ensure list is consistent and corresponds to existing datasets.
+        Returns
+        -------
+        list[str]
+            List of dataset codes.
+        """
         if not isinstance(ds_list, (list, tuple)):
             raise TypeError(f"{list_name} must be a list or tuple.")
 
@@ -357,7 +363,7 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
 
         # All strings or all class instances — not a mix
         all_str = all(isinstance(x, str) for x in ds_list)
-        all_obj = all(hasattr(x, "code") for x in ds_list)
+        all_obj = all(isinstance(x, BaseDataset) for x in ds_list)
         if not (all_str or all_obj):
             raise TypeError(f"{list_name} must contain either all strings or all dataset objects, not a mix.")
 
@@ -401,7 +407,7 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
     return d
     
     
- def filter_paradigms(pipeline_prdgms, paradigms, logger):
+def filter_paradigms(pipeline_prdgms, paradigms, logger):
     """
     Filter a dictionary of paradigms and their pipelines based on user selection.
 
@@ -421,6 +427,7 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
     dict
         Filtered dictionary containing only paradigms that exist in `pipeline_prdgms`.
 
+    """
     if paradigms is None:
         logger.debug("No paradigms filter specified; using all available paradigms.")
         return pipeline_prdgms
