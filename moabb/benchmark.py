@@ -387,7 +387,7 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
             invalid = [x.code for x in ds_list if x.code not in all_codes]
             if invalid:
                 raise ValueError(
-                    f"Some datasets in {list_name} are not part of available datasets: {invalid}"
+                    f"Some datasets in {list_name} are not part of available datasets for the paradigms you requested in benchmark(): {invalid}"
                 )
             return codes
 
