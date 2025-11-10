@@ -160,9 +160,11 @@ def benchmark(  # noqa: C901
         with _open_lock(contexts, "r") as cfile:
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
-    prdgms = generate_paradigms(pipeline_configs, context_params, log)
-    if paradigms is not None:
-        prdgms = {p: prdgms[p] for p in paradigms}
+    pipeline_prdgms = generate_paradigms(pipeline_configs, context_params, log)
+    
+    # Filter requested benchmark paradigms vs available in provided pipelines
+    prdgms = filter_paradigms(pipeline_prdgms, paradigms, log)
+    
 
     param_grid = generate_param_grid(pipeline_configs, context_params, log)
 
@@ -397,3 +399,54 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
         return filtered
 
     return d
+    
+    
+ def filter_paradigms(pipeline_prdgms, paradigms, logger):
+    """
+    Filter a dictionary of paradigms and their pipelines based on user selection.
+
+    Parameters
+    ----------
+    pipeline_prdgms : dict
+        Dictionary mapping paradigm names to pipeline definitions.
+        Example: {"MotorImagery": {...}, "SSVEP": {...}}
+    paradigms : list[str] or None
+        List of target paradigms to include (e.g., ["MotorImagery", "SSVEP"]).
+        If None, all paradigms are kept.
+    logger : logging.Logger
+        Logger instance used to print warnings or info messages.
+
+    Returns
+    -------
+    dict
+        Filtered dictionary containing only paradigms that exist in `pipeline_prdgms`.
+
+    if paradigms is None:
+        logger.debug("No paradigms filter specified; using all available paradigms.")
+        return pipeline_prdgms
+
+    # Collect available vs. requested paradigms
+    available_paradigms = set(pipeline_prdgms.keys())
+    requested_paradigms = set(paradigms)
+
+    valid_paradigms = requested_paradigms & available_paradigms
+    missing_paradigms = requested_paradigms - available_paradigms
+
+    # Log warnings for missing ones
+    if missing_paradigms:
+        logger.warning(
+            "The following paradigms were requested but have no corresponding pipelines: "
+            f"{sorted(missing_paradigms)}"
+        )
+
+    # Keep only valid ones
+    filtered_prdgms = {p: pipeline_prdgms[p] for p in valid_paradigms}
+
+    # Error if nothing left
+    if not filtered_prdgms:
+        raise ValueError(
+            f"No pipelines correspond to the requested paradigms {sorted(paradigms)} for benchmark."
+            f"Available paradigms based on pipelines are: {sorted(available_paradigms)}"
+        )
+
+    return filtered_prdgms
