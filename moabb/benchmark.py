@@ -183,7 +183,7 @@ def benchmark(  # noqa: C901
             # List of dataset class instances
             datasets = p.datasets
             d = _inc_exc_datasets(datasets, include_datasets, exclude_datasets)
-            log.debug(
+            print(
                 f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
             )
 
@@ -317,37 +317,83 @@ def _save_results(eval_results, output, plot):
         analyze(prdgm_result, str(prdgm_path), plot=plot)
 
 
-def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
-    d = list()
+def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
+    """
+    Filter datasets based on include_datasets and exclude_datasets.
+
+    Parameters
+    ----------
+    datasets : list
+        List of dataset class instances (each with a `.code` attribute).
+    include_datasets : list[str or Dataset], optional
+        List of dataset codes or dataset class instances to include.
+    exclude_datasets : list[str or Dataset], optional
+        List of dataset codes or dataset class instances to exclude.
+
+    Returns
+    -------
+    list
+        Filtered list of dataset class instances.
+
+    """
+    # --- Safety checks ---
+    if include_datasets is not None and exclude_datasets is not None:
+        raise ValueError("Cannot specify both include_datasets and exclude_datasets.")
+
+    all_codes = [ds.code for ds in datasets]
+    d = list(datasets)
+
+    # --- Helper to validate and normalize inputs ---
+    def _validate_dataset_list(ds_list, list_name):
+        """Ensure list is consistent and corresponds to existing datasets."""
+        if not isinstance(ds_list, (list, tuple)):
+            raise TypeError(f"{list_name} must be a list or tuple.")
+
+        # Empty list edge case
+        if len(ds_list) == 0:
+            raise ValueError(f"{list_name} cannot be an empty list.")
+
+        # All strings or all class instances — not a mix
+        all_str = all(isinstance(x, str) for x in ds_list)
+        all_obj = all(hasattr(x, "code") for x in ds_list)
+        if not (all_str or all_obj):
+            raise TypeError(f"{list_name} must contain either all strings or all dataset objects, not a mix.")
+
+        # Convert all to codes
+        if all_str:
+            # Check uniqueness
+            if len(ds_list) != len(set(ds_list)):
+                raise ValueError(f"{list_name} contains duplicate dataset codes.")
+
+            # Check validity
+            invalid = [x for x in ds_list if x not in all_codes]
+            if invalid:
+                raise ValueError(f"Invalid dataset codes in {list_name}: {invalid}")
+            return ds_list
+
+        elif all_obj:
+            # Ensure they are unique by code
+            codes = [x.code for x in ds_list]
+            if len(codes) != len(set(codes)):
+                raise ValueError(f"{list_name} contains duplicate dataset instances.")
+            # Check that all objects exist in available datasets
+            invalid = [x.code for x in ds_list if x.code not in all_codes]
+            if invalid:
+                raise ValueError(f"Some datasets in {list_name} are not part of available datasets: {invalid}")
+            return codes
+
+    # --- Inclusion logic ---
     if include_datasets is not None:
-        # Assert if the inputs are key_codes
-        if isinstance(include_datasets[0], str):
-            # Map from key_codes to class instances
-            datasets_codes = [d.code for d in datasets]
-            # Get the indices of the matching datasets
-            for incdat in include_datasets:
-                if incdat in datasets_codes:
-                    d.append(datasets[datasets_codes.index(incdat)])
-        else:
-            # The case where the class instances have been given
-            # can be passed on directly
-            d = list(include_datasets)
-        if exclude_datasets is not None:
-            raise AttributeError(
-                "You could not specify both include and exclude datasets"
-            )
+        include_codes = _validate_dataset_list(include_datasets, "include_datasets")
+        # Keep only included datasets
+        filtered = [ds for ds in datasets if ds.code in include_codes]
+        return filtered
 
-    elif exclude_datasets is not None:
-        d = list(datasets)
-        # Assert if the inputs are not key_codes i.e. expected to be dataset class objects
-        if not isinstance(exclude_datasets[0], str):
-            # Convert the input to key_codes
-            exclude_datasets = [e.code for e in exclude_datasets]
+    # --- Exclusion logic ---
+    if exclude_datasets is not None:
+        exclude_codes = _validate_dataset_list(exclude_datasets, "exclude_datasets")
+        # Remove excluded datasets
+        filtered = [ds for ds in datasets if ds.code not in exclude_codes]
+        return filtered
 
-        # Map from key_codes to class instances
-        datasets_codes = [d.code for d in datasets]
-        for excdat in exclude_datasets:
-            del d[datasets_codes.index(excdat)]
-    else:
-        d = list(datasets)
     return d
