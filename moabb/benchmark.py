@@ -445,7 +445,7 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
     # Error if nothing left
     if not filtered_prdgms:
         raise ValueError(
-            f"No pipelines correspond to the requested paradigms {sorted(paradigms)} for benchmark."
+            f"No pipelines correspond to the requested paradigms {sorted(paradigms)} for benchmark. "
             f"Available paradigms based on pipelines are: {sorted(available_paradigms)}"
         )
 
