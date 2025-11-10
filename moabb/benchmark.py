@@ -111,11 +111,11 @@ def benchmark(  # noqa: C901
         File path to context.yml file that describes context parameters.
         If none, assumes all defaults. Must contain an entry for all
         paradigms described in the pipelines.
-    include_datasets: list of str or Dataset object
+    include_datasets: list of str Dataset codes or Dataset objects
         Datasets (dataset.code or object) to include in the benchmark run.
         By default, all suitable datasets are included. If both include_datasets
         and exclude_datasets are specified, raise an error.
-    exclude_datasets: list of str or Dataset object
+    exclude_datasets: list of str Dataset codes or Dataset objects
         Datasets to exclude from the benchmark run
     optuna: Enable Optuna for the hyperparameter search
 
