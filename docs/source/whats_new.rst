@@ -15,24 +15,40 @@ What's new
 .. _current:
 
 
-Develop branch  - 1.4  (dev)
+Develop branch  - 1.5  (dev)
 --------------------------------------
 Enhancements
 ~~~~~~~~~~~~
-- Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
-- Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
-- Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
 - Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
 
 Bugs
 ~~~~
-- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
 
 API changes
 ~~~~~~~~~~~
 
 
-Develop branch  - 1.3  (Stable - PyPi)
+Develop branch  - 1.4  (Stable - PyPi)
+--------------------------------------
+Enhancements
+~~~~~~~~~~~~
+- Update to pyRiemann 0.9 and numpy 2.0 for improved compatibility (:gh:`789` by `Gregoire Cattan`_ and `Bruno Aristimunha`_)
+- Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
+- Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
+- Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+- Added the ability to feed pipelines using a list of dictionaries in :func:`moabb.benchmark` (:gh:`826` by `Anton Andreev`_)
+
+Bugs
+~~~~
+- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
+- Fix the :class:`moabb.datasets.Dreyer2023` (:gh:`828` by `Simon Kojima`_)
+
+API changes
+
+~~~~~~~~~~~
+
+
+Version  - 1.3
 --------------------------------------
 
 Enhancements
@@ -602,4 +618,5 @@ API changes
 .. _Lucas Heck: https://github.com/lucas-heck
 .. _Simon Kojima: https://github.com/simonkojima
 .. _Griffin Keeler: https://github.com/griffinkeeler
-.. _ Kosei Nakada: https://github.com/ponpopon
+.. _Kosei Nakada: https://github.com/ponpopon
+.. _Romani Michele: https://github.com/BRomans
