@@ -22,6 +22,7 @@ Enhancements
 - Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
 - Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
 - Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+- Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
 
 Bugs
 ~~~~
