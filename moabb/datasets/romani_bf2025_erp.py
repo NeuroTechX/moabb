@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from moabb.datasets.base import BaseDataset
 
+
 BRAINFORM_URL = "https://zenodo.org/api/records/17225966/draft/files/BIDS.zip/content"
 _EVENTS = {"Target": 1, "NonTarget": 2}
 _CHANNELS = ["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"]
@@ -93,20 +94,20 @@ class RomaniBF2025ERP(BaseDataset):
     """
 
     def __init__(
-            self,
-            data_folder: str = None,
-            subjects: Optional[List[int]] = None,
-            exclude_subjects: Optional[List[int]] = None,
-            calibration_length: int = 60,
-            n_targets: int = 10,
-            t_target: int = 1,
-            nt_target: int = 2,
-            interval: tuple = [-0.1, 1.0],
-            extra_runs: bool = True,
-            include_inference: bool = False,
-            load_failed: bool = False,
-            rescale: int = 1e6,
-            montage: str = "standard_1020",
+        self,
+        data_folder: str = None,
+        subjects: Optional[List[int]] = None,
+        exclude_subjects: Optional[List[int]] = None,
+        calibration_length: int = 60,
+        n_targets: int = 10,
+        t_target: int = 1,
+        nt_target: int = 2,
+        interval: tuple = [-0.1, 1.0],
+        extra_runs: bool = True,
+        include_inference: bool = False,
+        load_failed: bool = False,
+        rescale: int = 1e6,
+        montage: str = "standard_1020",
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -219,7 +220,7 @@ class RomaniBF2025ERP(BaseDataset):
             with open(zip_path, "wb") as f:
                 if total_size > 0:
                     with tqdm(
-                            total=total_size, unit="B", unit_scale=True, desc="Downloading"
+                        total=total_size, unit="B", unit_scale=True, desc="Downloading"
                     ) as pbar:
                         for chunk in response.iter_content(chunk_size=8192):
                             f.write(chunk)
@@ -247,7 +248,7 @@ class RomaniBF2025ERP(BaseDataset):
             raise RuntimeError(f"Failed to extract dataset: {e}")
 
     def data_path(
-            self, subject, path=None, force_update=False, update_path=None, verbose=None
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> str:
         """
         Return the path to the dataset.
@@ -276,12 +277,12 @@ class RomaniBF2025ERP(BaseDataset):
         return self.data_folder
 
     def data_url(
-            self,
-            subject: str,
-            path: str,
-            force_update: bool = False,
-            update_path: bool = None,
-            verbose: bool = None,
+        self,
+        subject: str,
+        path: str,
+        force_update: bool = False,
+        update_path: bool = None,
+        verbose: bool = None,
     ) -> List[str]:
         """
         Return download URLs for the dataset.
@@ -390,14 +391,14 @@ class RomaniBF2025ERP(BaseDataset):
                 raw_infer = raw.copy().crop(tmin=calib_end_sample / raw.info["sfreq"])
 
                 # Standardize event IDs: Target=1, NonTarget=2
-                raw_cal = self._convert_events_to_labels(raw_cal,
-                                               t_target=self.t_target,
-                                               nt_target=self.nt_target)
+                raw_cal = self._convert_events_to_labels(
+                    raw_cal, t_target=self.t_target, nt_target=self.nt_target
+                )
 
                 # drop raw stim channel since we have annotations and it would conflict
-                if 'STI' in raw.ch_names:
-                    raw_cal.drop_channels(['STI'])
-                    raw_infer.drop_channels(['STI'])
+                if "STI" in raw.ch_names:
+                    raw_cal.drop_channels(["STI"])
+                    raw_infer.drop_channels(["STI"])
 
                 sessions[ses_name] = {
                     "1calibration": raw_cal,
@@ -510,14 +511,14 @@ class RomaniBF2025ERP(BaseDataset):
             raw_cal = raw.copy().crop(tmin=0, tmax=calib_end_sample / fs)
             raw_infer = raw.copy().crop(tmin=calib_end_sample / fs)
 
-            raw_cal = self._convert_events_to_labels(raw_cal,
-                                           t_target=self.t_target,
-                                           nt_target=self.nt_target)
+            raw_cal = self._convert_events_to_labels(
+                raw_cal, t_target=self.t_target, nt_target=self.nt_target
+            )
 
             # drop raw stim channel since we have annotations and it would conflict
-            if 'STI' in raw.ch_names:
-                raw_cal.drop_channels(['STI'])
-                raw_infer.drop_channels(['STI'])
+            if "STI" in raw.ch_names:
+                raw_cal.drop_channels(["STI"])
+                raw_infer.drop_channels(["STI"])
             data = {"1calibration": raw_cal}
 
             if self.include_inference:
@@ -529,7 +530,9 @@ class RomaniBF2025ERP(BaseDataset):
             print(f"Error loading sub-{subject}, ses-{session}: {e}")
             return {}
 
-    def _convert_events_to_labels(self, raw: mne.io.Raw, t_target=1, nt_target=2) -> mne.io.Raw:
+    def _convert_events_to_labels(
+        self, raw: mne.io.Raw, t_target=1, nt_target=2
+    ) -> mne.io.Raw:
         events, event_id = mne.events_from_annotations(raw)
 
         if len(events) == 0:
@@ -542,12 +545,14 @@ class RomaniBF2025ERP(BaseDataset):
         events = events.copy()
         events[events[:, 2] != t_target, 2] = nt_target  # Better indexing
 
-        print(f"\nMapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}")
+        print(
+            f"\nMapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}"
+        )
 
         annotations = mne.annotations_from_events(
             events,
             sfreq=raw.info["sfreq"],
-            event_desc={t_target: "Target", nt_target: "NonTarget"}
+            event_desc={t_target: "Target", nt_target: "NonTarget"},
         )
         raw.set_annotations(annotations)
 
