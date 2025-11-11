@@ -1,15 +1,15 @@
+import logging
 import os
 import zipfile
-from pathlib import Path
-from typing import Dict, List, Optional
-
 import mne
 import numpy as np
 import requests
+import logging
+from pathlib import Path
+from typing import Dict, List, Optional
 from mne.channels import make_standard_montage
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 from tqdm import tqdm
-
 from moabb.datasets.base import BaseDataset
 
 
@@ -206,11 +206,11 @@ class RomaniBF2025ERP(BaseDataset):
 
         # Check if already downloaded and extracted
         if extract_path.exists() and any(extract_path.iterdir()):
-            print(f"Using cached dataset at: {extract_path}")
+            logging.info(msg=f"Using cached dataset at: {extract_path}")
             return str(extract_path)
 
         # Download the zip file
-        print(f"Downloading Brainform dataset from {BRAINFORM_URL}...")
+        logging.info(f"Downloading Brainform dataset from {BRAINFORM_URL}...")
         try:
             response = requests.get(BRAINFORM_URL, stream=True)
             response.raise_for_status()
@@ -229,13 +229,13 @@ class RomaniBF2025ERP(BaseDataset):
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
 
-            print(f"Download complete. Extracting to {extract_path}...")
+            logging.info(f"Download complete. Extracting to {extract_path}...")
 
             # Extract the zip file
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(cache_dir)
 
-            print("Extraction complete!")
+            logging.info("Extraction complete!")
 
             # Optionally remove the zip file to save space
             zip_path.unlink()
@@ -319,7 +319,7 @@ class RomaniBF2025ERP(BaseDataset):
         subject_folder = os.path.join(self.data_folder, f"sub-{subject_label}")
 
         if not os.path.exists(subject_folder):
-            print(f"Subject folder {subject_folder} not found.")
+            logging.info(f"Subject folder {subject_folder} not found.")
             return {}
 
         # Loop through sessions (e.g. ses-cb, ses-grain, ses-grainExtra)
@@ -332,7 +332,7 @@ class RomaniBF2025ERP(BaseDataset):
                 if ses_name.__contains__("Failed"):
                     continue
             else:
-                print(f"Including failed session: {ses_name}")
+                logging.info(f"Including failed session: {ses_name}")
 
             eeg_dir = os.path.join(ses_path, "eeg")
             if not os.path.exists(eeg_dir):
@@ -341,7 +341,7 @@ class RomaniBF2025ERP(BaseDataset):
             # Look for EEG recording
             edf_files = [f for f in os.listdir(eeg_dir) if f.endswith(".edf")]
             if len(edf_files) == 0:
-                print(f"No EEG EDF found for {ses_name}")
+                logging.warning(f"No EEG EDF found for {ses_name}")
                 continue
 
             ses_name = ses_name.replace("ses-", "")
@@ -379,7 +379,7 @@ class RomaniBF2025ERP(BaseDataset):
                 n_calib_events = self.calibration_length * n_targets
 
                 if len(events) < n_calib_events:
-                    print(f"Warning: not enough events in {ses_name}")
+                    logging.warning(f"Warning: not enough events in {ses_name}")
                     continue
 
                 # Split calibration vs inference by event count
@@ -407,7 +407,7 @@ class RomaniBF2025ERP(BaseDataset):
                     sessions[ses_name]["2inference"] = raw_infer
 
             except Exception as e:
-                print(f"Error reading {bids_path}: {e}")
+                logging.error(f"Error reading {bids_path}: {e}")
 
         return sessions
 
@@ -467,7 +467,7 @@ class RomaniBF2025ERP(BaseDataset):
         )
 
         if not bids_path.fpath.exists():
-            print(f"No EDF file for sub-{subject}, ses-{session}")
+            logging.warning(f"No EDF file for sub-{subject}, ses-{session}")
             return {}
 
         try:
@@ -499,7 +499,7 @@ class RomaniBF2025ERP(BaseDataset):
             n_calib_events = self.calibration_length * n_targets
             total_events = len(events)
             if total_events < n_calib_events:
-                print(
+                logging.warning(
                     f"Warning: {subject} {session} has only {total_events} events (needs {n_calib_events})"
                 )
                 n_calib_events = total_events // 2  # fallback heuristic
@@ -527,7 +527,7 @@ class RomaniBF2025ERP(BaseDataset):
             return data
 
         except Exception as e:
-            print(f"Error loading sub-{subject}, ses-{session}: {e}")
+            logging.error(f"Error loading sub-{subject}, ses-{session}: {e}")
             return {}
 
     def _convert_events_to_labels(
@@ -536,7 +536,7 @@ class RomaniBF2025ERP(BaseDataset):
         events, event_id = mne.events_from_annotations(raw)
 
         if len(events) == 0:
-            print("Warning: No events found")
+            logging.warning("Warning: No events found")
             return raw
 
         original_ids = np.unique(events[:, 2])
@@ -545,9 +545,7 @@ class RomaniBF2025ERP(BaseDataset):
         events = events.copy()
         events[events[:, 2] != t_target, 2] = nt_target  # Better indexing
 
-        print(
-            f"\nMapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}"
-        )
+        logging.info(f"Mapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}")
 
         annotations = mne.annotations_from_events(
             events,
@@ -637,7 +635,7 @@ class RomaniBF2025ERP(BaseDataset):
                 subjects.append(subj)
 
         if not subjects:
-            print("No subjects found in BIDS folder.")
+            logging.warning("No subjects found in BIDS folder.")
 
         return subjects
 
