@@ -278,9 +278,12 @@ class RomaniBF2025ERP(BaseDataset):
         """
         return [BRAINFORM_URL]
 
-    def _get_single_subject_data(self, subject: int):
+    def _get_single_subject_data(self, subject: int | str):
         sessions = {}
-        subject_label = f"P{subject:02d}"  # e.g., sub-P02
+        if isinstance(subject, str):
+            subject_label = subject
+        else:
+            subject_label = f"P{subject:02d}"  # e.g., sub-P02
         subject_folder = os.path.join(self.data_folder, f"sub-{subject_label}")
 
         if not os.path.exists(subject_folder):
@@ -308,9 +311,10 @@ class RomaniBF2025ERP(BaseDataset):
                 print(f"No EEG EDF found for {ses_name}")
                 continue
 
+            ses_name = ses_name.replace("ses-", "")
             bids_path = BIDSPath(
                 subject=subject_label,
-                session=ses_name.replace("ses-", ""),
+                session=ses_name,
                 task="ERP",
                 datatype="eeg",
                 extension=".edf",
