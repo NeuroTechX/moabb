@@ -624,7 +624,9 @@ class TestKojima2024A:
         with pytest.raises(TypeError):
             ds.convert_subject_to_subject_id(1.5)
 
-    @pytest.mark.skip(reason="Skipping due to network/download issues with dataverse.harvard.edu")
+    @pytest.mark.skip(
+        reason="Skipping due to network/download issues with dataverse.harvard.edu"
+    )
     def test_data_shape(self):
         ds = Kojima2024A()
         paradigm = P300()
@@ -664,7 +666,9 @@ class TestKojima2024B:
         with pytest.raises(TypeError):
             ds.convert_subject_to_subject_id(1.5)
 
-    @pytest.mark.skip(reason="Skipping due to network/download issues with dataverse.harvard.edu")
+    @pytest.mark.skip(
+        reason="Skipping due to network/download issues with dataverse.harvard.edu"
+    )
     def test_get_task_run(self):
         ds = Kojima2024B(
             events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]}
@@ -681,7 +685,9 @@ class TestKojima2024B:
         assert X.shape[0] == len(labels)
         assert X.shape[0] == 1440
 
-    @pytest.mark.skip(reason="Skipping due to network/download issues with dataverse.harvard.edu")
+    @pytest.mark.skip(
+        reason="Skipping due to network/download issues with dataverse.harvard.edu"
+    )
     def test_other_events_than_target(self):
         ds = Kojima2024B(
             events={"D1": EVENTS["D1"], "D2": EVENTS["D2"], "S1": EVENTS["S1"]}
