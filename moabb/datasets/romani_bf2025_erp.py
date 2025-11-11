@@ -145,10 +145,6 @@ class RomaniBF2025ERP(BaseDataset):
             Whether to include inference data along with calibration.
         load_failed : bool
             Will load sessions marked as 'Failed' if True instead of standard sessions.
-        rescale : int
-            Factor to rescale the EEG data.
-        montage : str
-            Montage to use for EEG channel locations.
         """
         # Handle data folder - download if not provided
         if data_folder is None:
