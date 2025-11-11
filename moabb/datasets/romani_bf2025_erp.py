@@ -22,6 +22,10 @@ _SFREQ = 250
 class RomaniBF2025ERP(BaseDataset):
     """
     MOABB class for BrainForm event-related potentials (ERP) dataset.
+    .. figure:: https://arxiv.org/html/2510.10169v2/brainform-tasks.png
+        :align: center
+        :alt: BrainForm event-related potentials (ERP) dataset.
+        :width: 1000px
 
     The BrainForm dataset [1]_ is a dataset collected using a serious game
     for brain-computer interface (BCI) training and data collection. It includes
@@ -34,7 +38,7 @@ class RomaniBF2025ERP(BaseDataset):
     target; in the second one, they need to follow a randomized sequence of colors by hitting the corresponding targets
     to unlock a door.
 
-    Calibration sessions consisted of 60 trials on a single training target, for a total of 600 events (60 trials × 10
+    Calibration sessions consisted of 60 trials on a single training target, for a total of 600 events (60 trials x 10
     unique targets). This means that by default, the data is unbalanced, with 60 target events and 540 non-target events
     per session.
     In inference sessions, the number of events varied depending on the subject's performance
@@ -54,10 +58,14 @@ class RomaniBF2025ERP(BaseDataset):
 
     You can test the dataset with the following code:
 
-    dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
-    subject_sessions = dataset._get_single_subject_data(2)
-    for ses, runs in subject_sessions.items():
-        print(ses, list(runs.keys()))
+
+    Examples
+    --------
+    >>> dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
+    >>> subject_sessions = dataset._get_single_subject_data(2)
+    >>> for ses, runs in subject_sessions.items():
+    ...     print(ses, list(runs.keys()))
+
 
     If all sessions are included, for each subject the output will look like this:
         ses-cb ['1calibration', '2inference']
@@ -86,7 +94,6 @@ class RomaniBF2025ERP(BaseDataset):
 
     [1] M. Romani, D. Zanoni, E. Farella, and L. Turchet, “BrainForm: a Serious Game for BCI Training and Data Collection,”
     Oct. 14, 2025, arXiv: arXiv:2510.10169. doi: 10.48550/arXiv.2510.10169.
-
     [2] M. Romani, F. Paissan, A. Fossà, and E. Farella, “Explicit modelling of subject dependency in BCI decoding,”
     Sept. 27, 2025, arXiv: arXiv:2509.23247. doi: 10.48550/arXiv.2509.23247.
 
@@ -106,7 +113,6 @@ class RomaniBF2025ERP(BaseDataset):
         extra_runs: bool = True,
         include_inference: bool = False,
         load_failed: bool = False,
-        rescale: int = 1e6,
         montage: str = "standard_1020",
     ):
         """
@@ -139,10 +145,6 @@ class RomaniBF2025ERP(BaseDataset):
             Whether to include inference data along with calibration.
         load_failed : bool
             Will load sessions marked as 'Failed' if True instead of standard sessions.
-        rescale : int
-            Factor to rescale the EEG data.
-        montage : str
-            Montage to use for EEG channel locations.
         """
         # Handle data folder - download if not provided
         if data_folder is None:
@@ -410,34 +412,6 @@ class RomaniBF2025ERP(BaseDataset):
                 logging.error(f"Error reading {bids_path}: {e}")
 
         return sessions
-
-    def is_valid(self, subject: int = None) -> bool:
-        """
-        Check if the dataset is valid.
-
-        Parameters
-        ----------
-        subject : int, optional
-            Subject to check. If None, check overall dataset validity.
-
-        Returns
-        -------
-        bool
-            True if dataset is valid
-        """
-        if subject is not None:
-            subject_label = f"P{subject:02d}"
-            subject_path = os.path.join(self.data_folder, f"sub-{subject_label}")
-            return os.path.exists(subject_path) and os.path.isdir(subject_path)
-        else:
-            # Check if dataset folder exists and has at least one subject
-            if not os.path.exists(self.data_folder):
-                return False
-            try:
-                subjects = self._discover_subjects()
-                return len(subjects) > 0
-            except Exception:
-                return False
 
     def _load_session_data(self, subject: str, session: str) -> Dict[str, mne.io.Raw]:
         """
