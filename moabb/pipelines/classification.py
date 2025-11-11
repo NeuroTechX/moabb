@@ -164,7 +164,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         Weight coefficients for the different electrodes which are used
         as spatial filters for the data.
 
-    Reference
+    References
     ----------
 
     .. [1] M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,

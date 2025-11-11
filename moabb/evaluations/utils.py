@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+from mne.utils.config import _open_lock
 from numpy import argmax
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
+
+
+log = logging.getLogger(__name__)
 
 
 try:
@@ -16,29 +22,8 @@ except ImportError:
     optuna_available = False
 
 
-def _check_if_is_keras_model(model):
-    """Check if the model is a Keras model.
-
-    Parameters
-    ----------
-    model: object
-        Model to check
-    Returns
-    -------
-    is_keras_model: bool
-        True if the model is a Keras model
-    """
-    try:
-        from scikeras.wrappers import KerasClassifier
-
-        is_keras_model = isinstance(model, KerasClassifier)
-        return is_keras_model
-    except ImportError:
-        return False
-
-
 def _check_if_is_pytorch_model(model):
-    """Check if the model is a Keras model.
+    """Check if the model is a skorch model.
 
     Parameters
     ----------
@@ -46,8 +31,8 @@ def _check_if_is_pytorch_model(model):
         Model to check
     Returns
     -------
-    is_keras_model: bool
-        True if the model is a Keras model
+    is_pytorch_model: bool
+        True if the model is a Skorch model
     """
     try:
         from skorch import NeuralNetClassifier
@@ -69,16 +54,7 @@ def _check_if_is_pytorch_steps(model):
         return skorch_valid
 
 
-def _check_if_is_keras_steps(model):
-    keras_valid = False
-    try:
-        keras_valid = any(_check_if_is_keras_model(j) for j in model.named_steps.values())
-        return keras_valid
-    except Exception:
-        return keras_valid
-
-
-def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
+def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     """Save a model fitted to a given fold from cross-validation.
 
     Parameters
@@ -113,24 +89,14 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                     f_criterion=Path(save_path) / f"{file_step}_criterion.pkl",
                 )
             else:
-                with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
-                    dump(step, file, protocol=HIGHEST_PROTOCOL)
-
-    elif _check_if_is_keras_steps(model):
-        for step_name in model.named_steps:
-            file_step = f"{step_name}_fitted_model_{cv_index}"
-            step = model.named_steps[step_name]
-            if _check_if_is_keras_model(step):
-                step.model_.save(Path(save_path) / f"{file_step}.h5")
-            else:
-                with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
+                with _open_lock((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
                     dump(step, file, protocol=HIGHEST_PROTOCOL)
     else:
-        with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
+        with _open_lock((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
             dump(model, file, protocol=HIGHEST_PROTOCOL)
 
 
-def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
+def _save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
     """Save a list of models fitted to a folder.
 
     Parameters
@@ -154,14 +120,14 @@ def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path
         model_list = [model_list]
 
     for cv_index, model in enumerate(model_list):
-        save_model_cv(model, save_path, str(cv_index))
+        _save_model_cv(model, save_path, str(cv_index))
 
     best_model = model_list[argmax(score_list)]
 
-    save_model_cv(best_model, save_path, "best")
+    _save_model_cv(best_model, save_path, "best")
 
 
-def create_save_path(
+def _create_save_path(
     hdf5_path,
     code: str,
     subject: int | str,
@@ -201,7 +167,7 @@ def create_save_path(
         if grid:
             path_save = (
                 Path(hdf5_path)
-                / f"GridSearch_{eval_type}"
+                / f"Search_{eval_type}"
                 / code
                 / f"{str(subject)}"
                 / str(session)
@@ -219,7 +185,7 @@ def create_save_path(
 
         return str(path_save)
     else:
-        print("No hdf5_path provided, models will not be saved.")
+        log.warning("No hdf5_path provided, models will not be saved.")
 
 
 def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
@@ -253,3 +219,20 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
             except Exception as e:
                 raise ValueError(f"Conversion failed for parameter {key}: {e}")
         return optuna_params
+
+
+def check_search_available():
+    """Check if optuna is available"""
+    try:
+        from optuna.integration import OptunaSearchCV
+
+        optuna_available = True
+    except ImportError:
+        optuna_available = False
+
+    if optuna_available:
+        search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+    else:
+        search_methods = {"grid": GridSearchCV}
+
+    return search_methods, optuna_available

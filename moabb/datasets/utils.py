@@ -1,24 +1,49 @@
 """Utils for easy database selection."""
 
-import inspect
+from __future__ import annotations
 
+import abc
+import inspect
+import logging
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import mne
+import mne_bids
 import numpy as np
 from mne import create_info
 from mne.io import RawArray
 
 import moabb.datasets as db
+from moabb.analysis.plotting import (
+    _get_dataset_parameters,
+    dataset_bubble_plot,
+    get_dataset_area,
+)
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
 
 
+logger = logging.getLogger(__name__)
+
 dataset_list = []
+dataset_dict = {}
 
 
-def _init_dataset_list():
+def _init_dataset():
+
     for ds in inspect.getmembers(db, inspect.isclass):
         if issubclass(ds[1], BaseDataset):
             dataset_list.append(ds[1])
+
+    dataset_class = {
+        dataset.__name__: dataset
+        for dataset in dataset_list
+        if dataset.__name__ not in list(zip(*aliases_list))[0]
+    }
+
+    if not dataset_dict:
+        dataset_dict.update(dataset_class)
 
 
 def dataset_search(  # noqa: C901
@@ -58,7 +83,11 @@ def dataset_search(  # noqa: C901
         list or set of channels
     """
     if len(dataset_list) == 0:
-        _init_dataset_list()
+        _init_dataset()
+
+    if not dataset_dict:
+        _init_dataset()
+
     deprecated_names, _, _ = zip(*aliases_list)
 
     channels = set(channels)
@@ -125,7 +154,7 @@ def find_intersecting_channels(datasets, verbose=False):
     dset_chans = []
     keep_datasets = []
     for d in datasets:
-        print("Searching dataset: {:s}".format(type(d).__name__))
+        logger.info("Searching dataset: {:s}".format(type(d).__name__))
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
@@ -139,11 +168,11 @@ def find_intersecting_channels(datasets, verbose=False):
         allchans.update(processed)
         if len(processed) > 0:
             if verbose:
-                print("Found EEG channels: {}".format(processed))
+                logger.info("Found EEG channels: {}".format(processed))
             dset_chans.append(processed)
             keep_datasets.append(d)
         else:
-            print(
+            logger.warning(
                 "Dataset {:s} has no recognizable EEG channels".format(type(d).__name__)
             )  # noqa
     allchans.intersection_update(*dset_chans)
@@ -323,3 +352,334 @@ def stim_channels_with_selected_ids(
     raw_with_stim = raw.copy().add_channels([stim_raw], force_update_info=True)
 
     return raw_with_stim
+
+
+def bids_metainfo(bids_path: Path) -> dict:
+    """Create metadata for the BIDS dataset.
+
+    To allow lazy loading of the metadata, we store the metadata in a JSON file
+    in the root of the BIDS dataset.
+
+    Parameters
+    ----------
+    bids_path : Path
+        The path to the BIDS dataset.
+    """
+    json_data = {}
+
+    paths = mne_bids.find_matching_paths(
+        root=bids_path,
+        datatypes="eeg",
+    )
+
+    for path in paths:
+        uid = path.fpath.name
+        json_data[uid] = path.entities
+        json_data[uid]["fpath"] = str(path.fpath)
+
+    return json_data
+
+
+class _BubbleChart:
+    def __init__(self, area, bubble_spacing=0.0):
+        """
+        Setup for bubble collapse.
+
+        From https://matplotlib.org/stable/gallery/misc/packed_bubbles.html
+
+        Parameters
+        ----------
+        area : array-like
+            Area of the bubbles.
+        bubble_spacing : float, default: 0
+            Minimal spacing between bubbles after collapsing.
+
+        Notes
+        -----
+        If "area" is sorted, the results might look weird.
+        """
+        area = np.asarray(area)
+        r = np.sqrt(area / np.pi)
+
+        self.bubble_spacing = bubble_spacing
+        self.bubbles = np.ones((len(area), 4))
+        self.bubbles[:, 2] = r
+        self.bubbles[:, 3] = area
+        self.maxstep = 2 * self.bubbles[:, 2].max() + self.bubble_spacing
+        self.step_dist = self.maxstep / 2
+
+        # calculate initial grid layout for bubbles
+        length = np.ceil(np.sqrt(len(self.bubbles)))
+        grid = np.arange(length) * self.maxstep
+        gx, gy = np.meshgrid(grid, grid)
+        self.bubbles[:, 0] = gx.flatten()[: len(self.bubbles)]
+        self.bubbles[:, 1] = gy.flatten()[: len(self.bubbles)]
+
+        self.com = self.center_of_mass()
+
+    def center_of_mass(self):
+        return np.average(self.bubbles[:, :2], axis=0, weights=self.bubbles[:, 3])
+
+    def center_distance(self, bubble, bubbles):
+        return np.hypot(bubble[0] - bubbles[:, 0], bubble[1] - bubbles[:, 1])
+
+    def outline_distance(self, bubble, bubbles):
+        center_distance = self.center_distance(bubble, bubbles)
+        return center_distance - bubble[2] - bubbles[:, 2] - self.bubble_spacing
+
+    def check_collisions(self, bubble, bubbles):
+        distance = self.outline_distance(bubble, bubbles)
+        return len(distance[distance < 0])
+
+    def collides_with(self, bubble, bubbles):
+        distance = self.outline_distance(bubble, bubbles)
+        return np.argmin(distance, keepdims=True)
+
+    def collapse(self, n_iterations=50):
+        """
+        Move bubbles to the center of mass.
+
+        Parameters
+        ----------
+        n_iterations : int, default: 50
+            Number of moves to perform.
+        """
+        for _i in range(n_iterations):
+            moves = 0
+            for i in range(len(self.bubbles)):
+                rest_bub = np.delete(self.bubbles, i, 0)
+                # try to move directly towards the center of mass
+                # direction vector from bubble to the center of mass
+                dir_vec = self.com - self.bubbles[i, :2]
+
+                # shorten direction vector to have length of 1
+                dir_vec = dir_vec / np.sqrt(dir_vec.dot(dir_vec))
+
+                # calculate new bubble position
+                new_point = self.bubbles[i, :2] + dir_vec * self.step_dist
+                new_bubble = np.append(new_point, self.bubbles[i, 2:4])
+
+                # check whether new bubble collides with other bubbles
+                if not self.check_collisions(new_bubble, rest_bub):
+                    self.bubbles[i, :] = new_bubble
+                    self.com = self.center_of_mass()
+                    moves += 1
+                else:
+                    # try to move around a bubble that you collide with
+                    # find colliding bubble
+                    for colliding in self.collides_with(new_bubble, rest_bub):
+                        # calculate direction vector
+                        dir_vec = rest_bub[colliding, :2] - self.bubbles[i, :2]
+                        dir_vec = dir_vec / np.sqrt(dir_vec.dot(dir_vec))
+                        # calculate orthogonal vector
+                        orth = np.array([dir_vec[1], -dir_vec[0]])
+                        # test which direction to go
+                        new_point1 = self.bubbles[i, :2] + orth * self.step_dist
+                        new_point2 = self.bubbles[i, :2] - orth * self.step_dist
+                        dist1 = self.center_distance(self.com, np.array([new_point1]))
+                        dist2 = self.center_distance(self.com, np.array([new_point2]))
+                        new_point = new_point1 if dist1 < dist2 else new_point2
+                        new_bubble = np.append(new_point, self.bubbles[i, 2:4])
+                        if not self.check_collisions(new_bubble, rest_bub):
+                            self.bubbles[i, :] = new_bubble
+                            self.com = self.center_of_mass()
+
+            if moves / len(self.bubbles) < 0.1:
+                self.step_dist = self.step_dist / 2
+
+    def get_centers(self):
+        return self.bubbles[:, :2]
+
+
+class _BaseDatasetPlotter:
+    def __init__(self, datasets, meta_gap, kwargs, n_col=None):
+        self.datasets = datasets = (
+            datasets
+            if datasets is not None
+            else sorted(
+                [dataset() for dataset in dataset_list if "Fake" not in dataset.__name__],
+                key=lambda x: x.__class__.__name__,
+            )
+        )
+        areas_list = []
+        for d in datasets:
+            if isinstance(d, dict):
+                n_subjects = d["n_subjects"]
+                n_sessions = d["n_sessions"]
+                n_trials = d["n_trials"]
+                trial_len = d["trial_len"]
+            else:
+                _, _, n_subjects, n_sessions, n_trials, trial_len = (
+                    _get_dataset_parameters(d)
+                )
+            areas_list.append(
+                get_dataset_area(
+                    n_subjects=n_subjects,
+                    n_sessions=n_sessions,
+                    n_trials=n_trials,
+                    trial_len=trial_len,
+                )
+            )
+        self.areas = np.array(areas_list)
+        self.radii = np.sqrt(self.areas / np.pi)
+        self.meta_gap = meta_gap
+        self.kwargs = kwargs
+        self.n_col = n_col
+
+    @abc.abstractmethod
+    def _get_centers(self) -> np.ndarray:
+        pass
+
+    def plot(self):
+
+        centers = self._get_centers()
+
+        rm = self.radii + self.meta_gap
+        xlim = ((centers[:, 0] - rm).min(), (centers[:, 0] + rm).max() + self.meta_gap)
+        ylim = ((centers[:, 1] - rm).min(), (centers[:, 1] + rm).max())
+        lx, ly = xlim[1] - self.meta_gap, ylim[0] + self.meta_gap
+
+        factor = 0.05
+        # No need to expose the factor parameter as users can already
+        # tune the scale and fontsize arguments, which will have the same effect.
+        fig, ax = plt.subplots(
+            subplot_kw={"aspect": "equal"},
+            figsize=(factor * (xlim[1] - xlim[0]), factor * (ylim[1] - ylim[0])),
+        )
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+        for i, dataset in enumerate(self.datasets):
+            dataset_kwargs = (
+                dataset if isinstance(dataset, dict) else {"dataset": dataset}
+            )
+            dataset_bubble_plot(
+                **dataset_kwargs,
+                ax=ax,
+                center=centers[i],
+                legend=i == len(self.datasets) - 1,
+                legend_position=(lx, ly),
+                scale_ax=False,
+                **self.kwargs,
+            )
+        return fig
+
+
+class _ClusterDatasetPlotter(_BaseDatasetPlotter):
+    def _get_centers(self):
+        bubble_chart = _BubbleChart(self.areas, bubble_spacing=self.meta_gap)
+        bubble_chart.collapse(n_iterations=100)
+        return bubble_chart.get_centers()
+
+
+class _GridDatasetPlotter(_BaseDatasetPlotter):
+    def _get_centers(self):
+        assert isinstance(self.n_col, int)
+        height = self.radii.max() * 2
+        i = np.arange(len(self.datasets))
+        x = i % self.n_col
+        y = -(i // self.n_col)
+        return np.stack([x, y], axis=1) * height
+
+
+def plot_datasets_grid(
+    datasets: list[BaseDataset | dict] | None = None,
+    n_col: int = 10,
+    margin: float = 10.0,
+    **kwargs,
+):
+    """Plots all the MOABB datasets in one figure, distributed on a grid.
+
+    This uses the :func:`~moabb.analysis.plotting.dataset_bubble_plot` function to
+    plot the datasets.
+    The datasets are sorted in alphabetical order and
+    plotted in a grid with n_col columns.
+
+    Parameters
+    ----------
+    datasets: list[BaseDataset | dict] | None
+        List of datasets to plot. If None, all datasets are plotted.
+        If an element of the list is a dictionary, it is assumed to
+        have the following keys:
+
+            dataset_name: str
+                Name of the dataset.
+            paradigm: str
+                Paradigm of the dataset (e.g., 'imagery', 'p300').
+            n_subjects: int
+                Number of subjects in the dataset.
+            n_sessions: int
+                Number of sessions in the dataset.
+            n_trials: int
+                Number of trials in the dataset.
+            trial_len: float
+                Length of each trial in seconds.
+
+    n_col: int
+        Number of columns in the figure.
+    margin: float
+        Margin around the plots.
+    kwargs: dict
+        Additional arguments to pass to the dataset_bubble_plot function.
+
+    Returns
+    -------
+    fig: Figure
+        Pyplot handle
+    """
+    plotter = _GridDatasetPlotter(
+        datasets=datasets,
+        meta_gap=margin,
+        n_col=n_col,
+        kwargs=kwargs,
+    )
+    return plotter.plot()
+
+
+def plot_datasets_cluster(
+    datasets: list[BaseDataset | dict] | None = None,
+    meta_gap: float = 10.0,
+    **kwargs,
+):
+    """Plots all the MOABB datasets in one figure, grouped in one cluster.
+
+    This uses the :func:`~moabb.analysis.plotting.dataset_bubble_plot` function to
+    plot the datasets.
+    The datasets are sorted in alphabetical order and
+    plotted in a grid with n_col columns.
+
+    Parameters
+    ----------
+    datasets: list[BaseDataset | dict] | None
+        List of datasets to plot. If None, all datasets are plotted.
+        If an element of the list is a dictionary, it is assumed to
+        have the following keys:
+
+            dataset_name: str
+                Name of the dataset.
+            paradigm: str
+                Paradigm of the dataset (e.g., 'imagery', 'p300').
+            n_subjects: int
+                Number of subjects in the dataset.
+            n_sessions: int
+                Number of sessions in the dataset.
+            n_trials: int
+                Number of trials in the dataset.
+            trial_len: float
+                Length of each trial in seconds.
+
+    meta_gap: float
+        Gap between the different datasets in the cluster.
+    kwargs: dict
+        Additional arguments to pass to the dataset_bubble_plot function.
+
+    Returns
+    -------
+    fig: Figure
+        Pyplot handle
+    """
+    plotter = _ClusterDatasetPlotter(
+        datasets=datasets,
+        meta_gap=meta_gap,
+        kwargs=kwargs,
+    )
+    return plotter.plot()

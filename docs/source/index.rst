@@ -1,8 +1,7 @@
 :html_theme.sidebar_secondary.remove:
 
-.. mdinclude:: README.md
-
-.. include:: cite.rst
+.. include:: README.md
+   :parser: myst
 
 .. toctree::
    :glob:
@@ -13,10 +12,8 @@
 
    The largest EEG benchmark <paper_results>
    Datasets <dataset_summary>
-   Install <install/install>
-   Overview <overview>
-   Getting Started <auto_tutorials/index>
-   Gallery <auto_examples/index>
-   How does Moabb work? <main_concepts>
-   API reference <api>
+   Installation <install/install>
+   Examples <auto_examples/index>
+   API <api>
+   Citation <cite>
    Release notes <whats_new>

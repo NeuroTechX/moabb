@@ -22,7 +22,7 @@ BASE_URL = "https://ndownloader.figshare.com/files/"
 
 
 class Stieger2021(BaseDataset):
-    """Motor Imagery dataset from Stieger et al. 2021.
+    """Motor Imagery dataset from Stieger et al. 2021 [1]_.
 
     The main goals of our original study were to characterize how individuals
     learn to control SMR-BCIs and to test whether this learning can be improved
@@ -120,7 +120,7 @@ class Stieger2021(BaseDataset):
     .. versionadded:: 1.1.0
     """
 
-    def __init__(self, interval=[0, 3], sessions=None):
+    def __init__(self, interval=[0, 3], sessions=None, fix_bads=True):
         super().__init__(
             subjects=list(range(1, 63)),
             sessions_per_subject=11,
@@ -130,7 +130,7 @@ class Stieger2021(BaseDataset):
             paradigm="imagery",
             doi="10.1038/s41597-021-00883-1",
         )
-
+        self.fix_bads = fix_bads
         self.sessions = sessions
         self.figshare_id = 13123148  # id on figshare
 
@@ -279,5 +279,13 @@ class Stieger2021(BaseDataset):
                     session,
                     raw.info["bads"],
                 )
+                if self.fix_bads:
+                    raw = raw.interpolate_bads()
+                    LOGGER.info(
+                        "Bad channels were interpolated for record %s/%s (subject/session)",
+                        subject,
+                        session,
+                    )
+
             subject_data[str(session)] = {"0": raw}
         return subject_data

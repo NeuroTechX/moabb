@@ -2,12 +2,12 @@ import logging
 from collections import OrderedDict
 from operator import methodcaller
 from typing import Dict, List, Tuple, Union
-from warnings import warn
 
 import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline
+from sklearn.utils._estimator_html_repr import _VisualBlock
 
 
 log = logging.getLogger(__name__)
@@ -36,6 +36,7 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         for _, t in transformers:
             assert hasattr(t, "transform")
         self.transformers = transformers
+        self._is_fitted = True
 
     def transform(self, X, y=None):
         return OrderedDict([(n, t.transform(X)) for n, t in self.transformers])
@@ -44,10 +45,56 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         for _, t in self.transformers:
             t.fit(X)
 
+    def _sk_visual_block_(self):
+        """Tell sklearn’s diagrammer to lay us out in parallel."""
+        names, estimators = zip(*self.transformers)
+        return _VisualBlock(
+            kind="parallel",
+            estimators=list(estimators),
+            names=list(names),
+            name_caption=self.__class__.__name__,
+            dash_wrapped=True,
+        )
+
 
 class FixedTransformer(TransformerMixin, BaseEstimator):
+    def __init__(self):
+        self._is_fitted = True
+        # fixing transformers that are not fitted
+        # to avoid the warning "This estimator has not been fitted yet"
+        # when using the pipeline
+
     def fit(self, X, y=None):
         pass
+
+    def _sk_visual_block_(self):
+        """Tell sklearn’s diagrammer to lay us out in parallel."""
+        return _VisualBlock(
+            kind="parallel",
+            name_caption=str(self.__class__.__name__),
+            estimators=[str(self.get_params())],
+            name_details=str(self.__class__.__name__),
+            dash_wrapped=True,
+        )
+
+
+def _get_event_id_values(event_id):
+    event_id_values = list(event_id.values())
+    if len(event_id_values) == 0:
+        return []
+    arrays = [np.atleast_1d(val) for val in event_id_values]
+    return np.concatenate(arrays).tolist()
+
+
+def _compute_events_desc(event_id):
+    ret = {}
+    for ev in event_id:
+        codes = event_id[ev]
+        if not isinstance(codes, list):
+            codes = [codes]
+        for code in codes:
+            ret[code] = ev
+    return ret
 
 
 class SetRawAnnotations(FixedTransformer):
@@ -58,15 +105,15 @@ class SetRawAnnotations(FixedTransformer):
     def __init__(self, event_id, interval: Tuple[float, float]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
-        if len(set(event_id.values())) != len(event_id):
+        values = _get_event_id_values(self.event_id)
+        if len(np.unique(values)) != len(values):
             raise ValueError("Duplicate event code")
-        self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
+        self.event_desc = _compute_events_desc(self.event_id)
         self.interval = interval
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
         offset = int(self.interval[0] * raw.info["sfreq"])
-
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
             log.warning(
@@ -74,7 +121,7 @@ class SetRawAnnotations(FixedTransformer):
             )
             return raw
         events = mne.find_events(raw, shortest_event=0, verbose=False)
-        events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+        events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
         events[:, 0] += offset
         if len(events) != 0:
             annotations = mne.annotations_from_events(
@@ -125,11 +172,16 @@ class RawToEvents(FixedTransformer):
 
 
 class RawToEventsP300(RawToEvents):
+    def __init__(self, event_id, interval, ignore_relabelling=False):
+        self.ignore_relabelling = ignore_relabelling
+        super().__init__(event_id, interval)
+
     def transform(self, raw, y=None):
         events = self._find_events(raw)
         event_id = self.event_id
         if (
-            "Target" in event_id
+            not self.ignore_relabelling
+            and "Target" in event_id
             and "NonTarget" in event_id
             and isinstance(event_id["Target"], list)
             and isinstance(event_id["NonTarget"], list)
@@ -138,7 +190,8 @@ class RawToEventsP300(RawToEvents):
             events = mne.merge_events(events, event_id["Target"], 1)
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
-        return _unsafe_pick_events(events, list(event_id.values()))
+        ret = _unsafe_pick_events(events, _get_event_id_values(self.event_id))
+        return ret
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
@@ -192,7 +245,7 @@ class EventsToLabels(FixedTransformer):
         self.event_id = event_id
 
     def transform(self, events, y=None):
-        inv_events = {k: v for v, k in self.event_id.items()}
+        inv_events = _compute_events_desc(self.event_id)
         labels = [inv_events[e] for e in events[:, -1]]
         return labels
 
@@ -237,7 +290,7 @@ class RawToEpochs(FixedTransformer):
                     # Index error can occurs if the channels we add are not part of this epoch montage
                     # Then log a warning
                     montage = raw.info["dig"]
-                    warn(
+                    log.warning(
                         f"Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}"
                     )
                     # and disable the montage
@@ -264,7 +317,7 @@ class RawToEpochs(FixedTransformer):
         epochs = mne.Epochs(
             raw,
             events,
-            event_id=self.event_id,
+            event_id=_get_event_id_values(self.event_id),
             tmin=self.tmin,
             tmax=self.tmax,
             proj=False,
@@ -275,30 +328,61 @@ class RawToEpochs(FixedTransformer):
             event_repeated="drop",
             on_missing="ignore",
         )
-        warn(f"warnEpochs {epochs}")
         return epochs
 
 
+class NamedFunctionTransformer(FunctionTransformer):
+    def __init__(self, func, *, display_name=None, validate=False, **kwargs):
+        super().__init__(func=func, validate=validate, **kwargs)
+        self.display_name = display_name
+        self._display_name = display_name or getattr(func, "__name__", "<func>")
+        self._kwargs = {"name": getattr(func, "__name__", "<func>")}
+
+    def __repr__(self):
+        return self._display_name
+
+    def _sk_visual_block_(self):
+        return _VisualBlock(
+            kind="single",
+            estimators=self,
+            names=self._display_name,
+            name_details=str(self._kwargs),
+            dash_wrapped=False,
+        )
+
+
 def get_filter_pipeline(fmin, fmax):
-    return FunctionTransformer(
-        methodcaller(
+    return NamedFunctionTransformer(
+        func=methodcaller(
             "filter",
             l_freq=fmin,
             h_freq=fmax,
             method="iir",
-            picks="eeg",
+            picks="data",
             verbose=False,
         ),
+        display_name=f"Band Pass Filter ({fmin}–{fmax} Hz)",
     )
 
 
 def get_crop_pipeline(tmin, tmax):
-    return FunctionTransformer(
-        methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "crop",
+            tmin=tmin,
+            tmax=tmax,
+            verbose=False,
+        ),
+        display_name=f"Crop ({tmin}–{tmax} s)",
     )
 
 
 def get_resample_pipeline(sfreq):
-    return FunctionTransformer(
-        methodcaller("resample", sfreq=sfreq, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "resample",
+            sfreq=sfreq,
+            verbose=False,
+        ),
+        display_name=f"Resample ({sfreq} Hz)",
     )

@@ -179,7 +179,6 @@ class Sosulski2019(BaseDataset):
 
         # check if has to unzip
         if not (os.path.isdir(path_folder)):
-            print("unzip", path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_zip[:-7])
 

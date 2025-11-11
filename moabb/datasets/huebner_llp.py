@@ -1,3 +1,4 @@
+import logging
 import re
 import zipfile
 from abc import ABC
@@ -8,6 +9,9 @@ import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+
+
+logger = logging.getLogger(__name__)
 
 
 VSPELL_BASE_URL = "https://zenodo.org/record/"
@@ -51,7 +55,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
         if not vhdr_file_patter_match:
             # TODO: raise a wild exception?
-            print(vhdr_file_path)
+            logger.info(vhdr_file_path)
 
         session_name = "0"
         block_idx = vhdr_file_patter_match.group(1)

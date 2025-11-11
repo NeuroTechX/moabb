@@ -36,9 +36,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne-data-v1
+          key: ${{ runner.os }}-mne-braindecode-v1
           restore-keys: |
-            ${{ runner.os }}-mne-data-v1
+            ${{ runner.os }}-mne-braindecode-v1
 
       - name: Checkout Braindecode
         uses: actions/checkout@v4

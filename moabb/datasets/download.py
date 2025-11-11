@@ -4,11 +4,12 @@
 # License: BSD Style.
 
 import json
+import logging
 import os
 import os.path as osp
-import urllib
 from pathlib import Path
 
+import pandas as pd
 import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
@@ -16,6 +17,9 @@ from mne.utils import _url_to_local_path, verbose, warn
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_dataset_path(sign, path):
@@ -43,7 +47,7 @@ def get_dataset_path(sign, path):
     if get_config(key) is None:
         if get_config("MNE_DATA") is None:
             path_def = Path.home() / "mne_data"
-            print(
+            logger.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
                 + str(path_def)
@@ -198,8 +202,8 @@ def fs_issue_request(method, url, headers, data=None, binary=False):
         except ValueError:
             response_data = response.content
     except HTTPError as error:
-        print("Caught an HTTPError: {}".format(error))
-        print("Body:\n", response.text)
+        logger.error("Caught an HTTPError: {}".format(error))
+        logger.error("Body:\n{}".format(response.text))
         raise
 
     return response_data
@@ -281,7 +285,7 @@ def fs_get_file_name(filelist):
     return {str(f["id"]): f["name"] for f in filelist}
 
 
-def download_if_missing(file_path, url, warn_missing=True):
+def download_if_missing(file_path, url, warn_missing=True, verbose=True):
     """Download file from url to a specified path if it is not already there."""
 
     folder_path = osp.dirname(file_path)
@@ -296,4 +300,61 @@ def download_if_missing(file_path, url, warn_missing=True):
     if not osp.exists(file_path):
         if warn_missing:
             warn(f"{file_path} not found. Downloading from {url}")
-        urllib.request.urlretrieve(url, file_path)
+
+        downloader = choose_downloader(url, progressbar=verbose)
+
+        path = retrieve(
+            url,
+            None,
+            fname=osp.basename(file_path),
+            path=osp.dirname(file_path),
+            downloader=downloader,
+        )
+
+        return path
+
+
+def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
+    """Create a metadata file for a dataset stored on OSF."""
+    # OSF API base URL for the project's OSF storage
+
+    base_url = f"https://api.osf.io/v2/nodes/{osf_code}/files/osfstorage/"
+
+    files = []  # to collect (name, url) tuples
+    stack = [base_url + "?page[size]=100"]  # start with base URL, up to 100 results
+
+    while stack:
+        url = stack.pop()
+        try:
+            response = requests.get(url)
+            data = response.json()
+        except Exception as e:
+            logger.error(f"Failed to fetch {url}: {e}")
+            continue
+
+        # Loop through items in this page
+        for item in data.get("data", []):
+            attrs = item.get("attributes", {})
+            kind = attrs.get("kind")
+            if kind == "folder":
+                # If folder, add its listing URL to stack for later retrieval
+                rel = item.get("relationships", {})
+                files_rel = rel.get("files", {}) if rel else {}
+                folder_url = files_rel.get("links", {}).get("related", {}).get("href")
+                if folder_url:
+                    # Append page[size]=100 to folder URL as well for efficiency
+                    stack.append(folder_url + "?page[size]=100")
+            elif kind == "file":
+                name = attrs.get("name")
+                download_url = item.get("links", {}).get("download")
+                if name and download_url:
+                    files.append((name, download_url))
+
+        # If there's a next page, add it to stack to continue pagination
+        next_url = data.get("links", {}).get("next")
+        if next_url:
+            stack.append(next_url)
+
+    metainfo = pd.DataFrame(files, columns=["filename", "url"])
+
+    return metainfo

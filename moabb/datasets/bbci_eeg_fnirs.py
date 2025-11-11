@@ -7,11 +7,12 @@ import zipfile as z
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
-from mne.datasets.utils import _get_path
 from mne.io import RawArray
 from pooch import retrieve
 from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
+
+from moabb.datasets.download import get_dataset_path
 
 from .base import BaseDataset
 
@@ -96,16 +97,13 @@ class BaseShin2017(BaseDataset):
                 )
             )
         events = dict()
-        paradigms = []
         n_sessions = 0
         if motor_imagery:
             events.update(dict(left_hand=1, right_hand=2))
-            paradigms.append("imagery")
             n_sessions += 3
 
         if mental_arithmetic:
             events.update(dict(subtraction=3, rest=4))
-            paradigms.append("arithmetic")
             n_sessions += 3
 
         self.motor_imagery = motor_imagery
@@ -119,7 +117,7 @@ class BaseShin2017(BaseDataset):
             code="Shin2017" + suffix,
             # marker is for *task* start not cue start
             interval=[0, 10],
-            paradigm=("/").join(paradigms),
+            paradigm="imagery",  # no arithmetic paradigm in MOABB at the moment
             doi="10.1109/TNSRE.2016.2628057",
         )
 
@@ -177,8 +175,7 @@ class BaseShin2017(BaseDataset):
         if accept:
             self.accept = True
 
-        key = "MNE_DATASETS_BBCIFNIRS_PATH"
-        path = _get_path(path, key, "BBCI EEG-fNIRS")
+        path = get_dataset_path("BBCIFNIRS", path)
         if not op.isdir(op.join(path, "MNE-eegfnirs-data")):
             os.makedirs(op.join(path, "MNE-eegfnirs-data"))
         if self.fnirs:

@@ -128,8 +128,27 @@ class BaseProcessing(metaclass=abc.ABCMeta):
     def make_process_pipelines(
         self, dataset, return_epochs=False, return_raws=False, postprocess_pipeline=None
     ):
-        """Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
-        Refer to the arguments of :func:`get_data` for more information."""
+        """Create pre-processing pipelines for the data.
+
+        Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
+
+        Parameters
+        ----------
+        dataset : BaseDataset
+            The dataset instance.
+        return_epochs : bool, default is False
+            Specify if needed to return epochs instead of ndarray.
+        return_raws : bool, default is False
+            Specify if needed to return raws instead of ndarray.
+        postprocess_pipeline : Pipeline | None, default is None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline will either receive :class:`mne.io.BaseRaw`, :class:`mne.Epochs`
+            or :func:`np.ndarray` as input, depending on the values of ``return_epochs``
+            and ``return_raws``.
+            This pipeline must return an ``np.ndarray``.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+        """
         if return_epochs and return_raws:
             message = "Select only return_epochs or return_raws, not both"
             raise ValueError(message)
@@ -213,6 +232,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         return_raws=False,
         cache_config=None,
         postprocess_pipeline=None,
+        process_pipelines=None,
     ):
         """
         Return the data for a list of subject.
@@ -246,6 +266,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             This pipeline must return an ``np.ndarray``.
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
+        process_pipelines: Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            You must set the ``return_epochs`` and ``return_raws` parameters
+            accordingly, i.e., if your custom pipeline returns raw objects,
+            you must also set ``return_raws=True``, otherwise you will get unexpected results.
+            Only use it if you know what you are doing.
 
         Returns
         -------
@@ -259,6 +285,20 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             A dataframe containing the metadata.
         """
 
+        if process_pipelines is not None:
+            assert isinstance(process_pipelines, list)
+            assert isinstance(process_pipelines[0], Pipeline)
+            output_step_type, _ = process_pipelines[0].steps[-1]
+            if (
+                (output_step_type == StepType.ARRAY and (return_epochs or return_raws))
+                or (output_step_type == StepType.EPOCHS and not return_epochs)
+                or (output_step_type == StepType.RAW and not return_raws)
+            ):
+                raise ValueError(
+                    f"process_pipeline output step type {output_step_type} incompatible with "
+                    f"arguments {return_epochs=} and {return_raws=}."
+                )
+
         if not self.is_valid(dataset):
             message = f"Dataset {dataset.code} is not valid for paradigm"
             raise AssertionError(message)
@@ -266,9 +306,11 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         if subjects is None:
             subjects = dataset.subject_list
 
-        process_pipelines = self.make_process_pipelines(
-            dataset, return_epochs, return_raws, postprocess_pipeline
-        )
+        if process_pipelines is None:
+            process_pipelines = self.make_process_pipelines(
+                dataset, return_epochs, return_raws, postprocess_pipeline
+            )
+
         labels_pipeline = self.make_labels_pipeline(dataset, return_epochs, return_raws)
 
         data = [
@@ -435,6 +477,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
     ):
         """
         Initialize this paradigm to match all datasets in parameter:
+
         - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
           If the frequency is 128 for example, then MNE can return 128 or 129 samples
           depending on the dataset, even if the length of the epochs is 1s

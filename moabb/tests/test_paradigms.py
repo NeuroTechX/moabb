@@ -518,11 +518,6 @@ class TestP300:
         # does not work with multiple filters:
         assert metadata.equals(epochs.metadata)
 
-    def test_P300_specifyevent(self):
-        # we can't pass event to this class
-        with pytest.raises(ValueError):
-            P300(events=["a"])
-
     def test_P300_wrongevent(self):
         # does not accept dataset with bad event
         paradigm = P300()

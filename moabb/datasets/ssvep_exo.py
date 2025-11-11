@@ -42,6 +42,13 @@ class Kalunga2016(BaseDataset):
     days, by the same operators, on the same hardware and in the same
     conditions.
 
+    Notes
+    -----
+    The events notation 17Hz and 21Hz were swapped after an investigation conducted
+    by @ponpopon.
+
+    .. versionadded:: 1.2.0
+
     references
     ----------
     .. [1] Emmanuel K. Kalunga, Sylvain Chevallier, Quentin Barthelemy. "Online
@@ -53,7 +60,7 @@ class Kalunga2016(BaseDataset):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
-            events={"13": 2, "17": 3, "21": 4, "rest": 1},
+            events={"13": 2, "17": 4, "21": 3, "rest": 1},
             code="Kalunga2016",
             interval=[2, 4],
             paradigm="ssvep",
