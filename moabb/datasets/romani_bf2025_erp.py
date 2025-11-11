@@ -58,10 +58,14 @@ class RomaniBF2025ERP(BaseDataset):
 
     You can test the dataset with the following code:
 
-    dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
-    subject_sessions = dataset._get_single_subject_data(2)
-    for ses, runs in subject_sessions.items():
-        print(ses, list(runs.keys()))
+
+    Examples
+    --------
+    >>> dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
+    >>> subject_sessions = dataset._get_single_subject_data(2)
+    >>> for ses, runs in subject_sessions.items():
+    ...     print(ses, list(runs.keys()))
+
 
     If all sessions are included, for each subject the output will look like this:
         ses-cb ['1calibration', '2inference']
