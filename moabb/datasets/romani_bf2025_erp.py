@@ -1,14 +1,17 @@
 import os
-import numpy as np
-import mne
-import requests
 import zipfile
-from typing import Dict, List, Optional
-from mne.channels import make_standard_montage
-from mne_bids import BIDSPath, read_raw_bids, get_entity_vals
-from moabb.datasets.base import BaseDataset
 from pathlib import Path
+from typing import Dict, List, Optional
+
+import mne
+import numpy as np
+import requests
+from mne.channels import make_standard_montage
+from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 from tqdm import tqdm
+
+from moabb.datasets.base import BaseDataset
+
 
 BRAINFORM_URL = "https://zenodo.org/api/records/17225966/draft/files/BIDS.zip/content"
 
@@ -86,17 +89,19 @@ class RomaniBF2025ERP(BaseDataset):
     _CHANNELS = ["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"]
     _SFREQ = 250
 
-    def __init__(self,
-                 data_folder: str = None,
-                 subjects: Optional[List[int]] = None,
-                 exclude_subjects: Optional[List[int]] = None,
-                 calibration_length: int = 60,
-                 interval: tuple = [-0.1, 1.0],
-                 extra_runs: bool = True,
-                 include_inference: bool = False,
-                 exclude_failed: bool = True,
-                 rescale: int = 1e6,
-                 montage: str = 'standard_1020'):
+    def __init__(
+        self,
+        data_folder: str = None,
+        subjects: Optional[List[int]] = None,
+        exclude_subjects: Optional[List[int]] = None,
+        calibration_length: int = 60,
+        interval: tuple = [-0.1, 1.0],
+        extra_runs: bool = True,
+        include_inference: bool = False,
+        exclude_failed: bool = True,
+        rescale: int = 1e6,
+        montage: str = "standard_1020",
+    ):
         """
         Initialize the Brainform MOABB dataset.
 
@@ -160,10 +165,10 @@ class RomaniBF2025ERP(BaseDataset):
             subjects=subjects,
             sessions_per_subject=2,
             events=events,
-            code='RomaniBF2025ERP',
+            code="RomaniBF2025ERP",
             interval=interval,
-            paradigm='p300',
-            doi='10.48550/arXiv.2510.10169',
+            paradigm="p300",
+            doi="10.48550/arXiv.2510.10169",
         )
 
     def _download_and_extract_dataset(self) -> str:
@@ -176,11 +181,11 @@ class RomaniBF2025ERP(BaseDataset):
             Path to the extracted dataset folder
         """
         # Create a cache directory in user's home
-        cache_dir = Path.home() / '.cache' / 'brainform_dataset'
+        cache_dir = Path.home() / ".cache" / "brainform_dataset"
         cache_dir.mkdir(parents=True, exist_ok=True)
 
-        zip_path = cache_dir / 'BIDS.zip'
-        extract_path = cache_dir / 'BIDS'
+        zip_path = cache_dir / "BIDS.zip"
+        extract_path = cache_dir / "BIDS"
 
         # Check if already downloaded and extracted
         if extract_path.exists() and any(extract_path.iterdir()):
@@ -193,11 +198,13 @@ class RomaniBF2025ERP(BaseDataset):
             response = requests.get(BRAINFORM_URL, stream=True)
             response.raise_for_status()
 
-            total_size = int(response.headers.get('content-length', 0))
+            total_size = int(response.headers.get("content-length", 0))
 
-            with open(zip_path, 'wb') as f:
+            with open(zip_path, "wb") as f:
                 if total_size > 0:
-                    with tqdm(total=total_size, unit='B', unit_scale=True, desc='Downloading') as pbar:
+                    with tqdm(
+                        total=total_size, unit="B", unit_scale=True, desc="Downloading"
+                    ) as pbar:
                         for chunk in response.iter_content(chunk_size=8192):
                             f.write(chunk)
                             pbar.update(len(chunk))
@@ -208,7 +215,7 @@ class RomaniBF2025ERP(BaseDataset):
             print(f"Download complete. Extracting to {extract_path}...")
 
             # Extract the zip file
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(cache_dir)
 
             print("Extraction complete!")
@@ -223,7 +230,9 @@ class RomaniBF2025ERP(BaseDataset):
         except zipfile.BadZipFile as e:
             raise RuntimeError(f"Failed to extract dataset: {e}")
 
-    def data_path(self, subject, path=None, force_update=False, update_path=None, verbose=None) -> str:
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ) -> str:
         """
         Return the path to the dataset.
         Required abstract method from BaseDataset.
@@ -250,8 +259,14 @@ class RomaniBF2025ERP(BaseDataset):
             raise FileNotFoundError(f"Dataset folder not found: {self.data_folder}")
         return self.data_folder
 
-    def data_url(self, subject: str, path: str, force_update: bool = False,
-                 update_path: bool = None, verbose: bool = None) -> List[str]:
+    def data_url(
+        self,
+        subject: str,
+        path: str,
+        force_update: bool = False,
+        update_path: bool = None,
+        verbose: bool = None,
+    ) -> List[str]:
         """
         Return download URLs for the dataset.
         Required abstract method from BaseDataset.
@@ -337,7 +352,9 @@ class RomaniBF2025ERP(BaseDataset):
 
                 if event_id:
                     target_keys = [k for k in event_id.keys() if "target" in k.lower()]
-                    n_targets = len(target_keys) if target_keys else len(np.unique(events[:, 2]))
+                    n_targets = (
+                        len(target_keys) if target_keys else len(np.unique(events[:, 2]))
+                    )
                 else:
                     n_targets = len(np.unique(events[:, 2]))
 
@@ -349,8 +366,10 @@ class RomaniBF2025ERP(BaseDataset):
 
                 # Split calibration vs inference by event count
                 calib_end_sample = events[n_calib_events - 1, 0]
-                calib_raw = raw.copy().crop(tmin=0, tmax=calib_end_sample / raw.info['sfreq'])
-                infer_raw = raw.copy().crop(tmin=calib_end_sample / raw.info['sfreq'])
+                calib_raw = raw.copy().crop(
+                    tmin=0, tmax=calib_end_sample / raw.info["sfreq"]
+                )
+                infer_raw = raw.copy().crop(tmin=calib_end_sample / raw.info["sfreq"])
 
                 sessions[ses_name] = {
                     "1calibration": calib_raw,
@@ -451,7 +470,9 @@ class RomaniBF2025ERP(BaseDataset):
             n_calib_events = self.calibration_length * n_targets
             total_events = len(events)
             if total_events < n_calib_events:
-                print(f"Warning: {subject} {session} has only {total_events} events (needs {n_calib_events})")
+                print(
+                    f"Warning: {subject} {session} has only {total_events} events (needs {n_calib_events})"
+                )
                 n_calib_events = total_events // 2  # fallback heuristic
 
             # Split calibration and inference based on event sample index
@@ -489,7 +510,7 @@ class RomaniBF2025ERP(BaseDataset):
             Raw data for the run
         """
         # Parse the run string to extract session and run type
-        parts = run.split('/')
+        parts = run.split("/")
         if len(parts) == 2:
             session_name, run_type = parts
         else:
@@ -554,5 +575,7 @@ class RomaniBF2025ERP(BaseDataset):
         return subjects
 
     def __repr__(self):
-        return (f"<{self.__class__.__name__}(subjects={len(self.subject_list)}, "
-                f"sessions={self.n_sessions}, extra_runs={self.extra_runs})>")
+        return (
+            f"<{self.__class__.__name__}(subjects={len(self.subject_list)}, "
+            f"sessions={self.n_sessions}, extra_runs={self.extra_runs})>"
+        )
