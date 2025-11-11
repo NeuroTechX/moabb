@@ -94,7 +94,6 @@ class RomaniBF2025ERP(BaseDataset):
 
     [1] M. Romani, D. Zanoni, E. Farella, and L. Turchet, “BrainForm: a Serious Game for BCI Training and Data Collection,”
     Oct. 14, 2025, arXiv: arXiv:2510.10169. doi: 10.48550/arXiv.2510.10169.
-
     [2] M. Romani, F. Paissan, A. Fossà, and E. Farella, “Explicit modelling of subject dependency in BCI decoding,”
     Sept. 27, 2025, arXiv: arXiv:2509.23247. doi: 10.48550/arXiv.2509.23247.
 
