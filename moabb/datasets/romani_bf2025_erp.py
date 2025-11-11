@@ -12,8 +12,10 @@ from tqdm import tqdm
 
 from moabb.datasets.base import BaseDataset
 
-
 BRAINFORM_URL = "https://zenodo.org/api/records/17225966/draft/files/BIDS.zip/content"
+_EVENTS = {"Target": 1, "NonTarget": 2}
+_CHANNELS = ["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"]
+_SFREQ = 250
 
 
 class RomaniBF2025ERP(BaseDataset):
@@ -73,9 +75,10 @@ class RomaniBF2025ERP(BaseDataset):
           "Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"
           EEG signals were referenced to the right mastoid and grounded to the left mastoid.
 
-        - Event codes for the calibration are  assumed as follows:
+        - Events for the calibration are encoded as follows:
             - 1: Target
             - 2: NonTarget
+        - For inference sessions, events only indicate stimulus onset without ground truth labels (from 1 to 10).
 
     References
     ----------
@@ -89,22 +92,21 @@ class RomaniBF2025ERP(BaseDataset):
 
     """
 
-    _EVENTS = {"Target": 1, "NonTarget": 2}
-    _CHANNELS = ["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"]
-    _SFREQ = 250
-
     def __init__(
-        self,
-        data_folder: str = None,
-        subjects: Optional[List[int]] = None,
-        exclude_subjects: Optional[List[int]] = None,
-        calibration_length: int = 60,
-        interval: tuple = [-0.1, 1.0],
-        extra_runs: bool = True,
-        include_inference: bool = False,
-        exclude_failed: bool = True,
-        rescale: int = 1e6,
-        montage: str = "standard_1020",
+            self,
+            data_folder: str = None,
+            subjects: Optional[List[int]] = None,
+            exclude_subjects: Optional[List[int]] = None,
+            calibration_length: int = 60,
+            n_targets: int = 10,
+            t_target: int = 1,
+            nt_target: int = 2,
+            interval: tuple = [-0.1, 1.0],
+            extra_runs: bool = True,
+            include_inference: bool = False,
+            load_failed: bool = False,
+            rescale: int = 1e6,
+            montage: str = "standard_1020",
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -121,14 +123,21 @@ class RomaniBF2025ERP(BaseDataset):
             List of subject indices to exclude. By default, 15 and 18 are excluded since they did not complete the protocol.
         calibration_length : int
             Number of calibration trials per target.
+        n_targets : int
+            Number of unique targets in the dataset. Fixed to 10 for standard BrainForm, change only if you collect
+            a new dataset with different number of targets.
+        t_target : int
+            Event code for the training target stimulus. Change only if you collect a new dataset with different coding.
+        nt_target : int
+            Event code for the non-target stimulus. Make sure it does not conflict with t_target.
         interval : tuple
             Time interval for epoching (in seconds).
         extra_runs : bool
             Whether to include extra runs session.
         include_inference : bool
             Whether to include inference data along with calibration.
-        exclude_failed : bool
-            Whether to exclude failed calibration sessions.
+        load_failed : bool
+            Will load sessions marked as 'Failed' if True instead of standard sessions.
         rescale : int
             Factor to rescale the EEG data.
         montage : str
@@ -142,11 +151,13 @@ class RomaniBF2025ERP(BaseDataset):
             self.data_folder = data_folder
             self._is_temp_dir = False
 
-        self.n_targets = 10  # Fixed for BrainForm dataset, 10 unique targets
+        self.n_targets = n_targets  # Fixed for BrainForm dataset, 10 unique targets
         self.calibration_length = calibration_length
+        self.t_target = t_target
+        self.nt_target = nt_target
         self.extra_runs = extra_runs
         self.include_inference = include_inference
-        self.exclude_failed = exclude_failed
+        self.load_failed = load_failed
         self.rescale = rescale
         self.montage = montage
 
@@ -163,12 +174,13 @@ class RomaniBF2025ERP(BaseDataset):
         if interval[0] >= interval[1]:
             raise ValueError("interval must be [start, end] with start < end")
 
-        events = {"Target": 1, "NonTarget": 2}
+        if load_failed:
+            self.data_folder = self.data_folder + "_failed"
 
         super().__init__(
             subjects=subjects,
             sessions_per_subject=2,
-            events=events,
+            events=_EVENTS,
             code="RomaniBF2025ERP",
             interval=interval,
             paradigm="p300",
@@ -207,7 +219,7 @@ class RomaniBF2025ERP(BaseDataset):
             with open(zip_path, "wb") as f:
                 if total_size > 0:
                     with tqdm(
-                        total=total_size, unit="B", unit_scale=True, desc="Downloading"
+                            total=total_size, unit="B", unit_scale=True, desc="Downloading"
                     ) as pbar:
                         for chunk in response.iter_content(chunk_size=8192):
                             f.write(chunk)
@@ -235,7 +247,7 @@ class RomaniBF2025ERP(BaseDataset):
             raise RuntimeError(f"Failed to extract dataset: {e}")
 
     def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+            self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> str:
         """
         Return the path to the dataset.
@@ -264,12 +276,12 @@ class RomaniBF2025ERP(BaseDataset):
         return self.data_folder
 
     def data_url(
-        self,
-        subject: str,
-        path: str,
-        force_update: bool = False,
-        update_path: bool = None,
-        verbose: bool = None,
+            self,
+            subject: str,
+            path: str,
+            force_update: bool = False,
+            update_path: bool = None,
+            verbose: bool = None,
     ) -> List[str]:
         """
         Return download URLs for the dataset.
@@ -315,10 +327,11 @@ class RomaniBF2025ERP(BaseDataset):
             if not os.path.isdir(ses_path) or not ses_name.startswith("ses-"):
                 continue
 
-            if self.exclude_failed:
+            if not self.load_failed:
                 if ses_name.__contains__("Failed"):
-                    print(f"Excluding failed session: {ses_name}")
                     continue
+            else:
+                print(f"Including failed session: {ses_name}")
 
             eeg_dir = os.path.join(ses_path, "eeg")
             if not os.path.exists(eeg_dir):
@@ -370,16 +383,27 @@ class RomaniBF2025ERP(BaseDataset):
 
                 # Split calibration vs inference by event count
                 calib_end_sample = events[n_calib_events - 1, 0]
-                calib_raw = raw.copy().crop(
+                raw_cal = raw.copy().crop(
                     tmin=0, tmax=calib_end_sample / raw.info["sfreq"]
                 )
-                infer_raw = raw.copy().crop(tmin=calib_end_sample / raw.info["sfreq"])
+
+                raw_infer = raw.copy().crop(tmin=calib_end_sample / raw.info["sfreq"])
+
+                # Standardize event IDs: Target=1, NonTarget=2
+                raw_cal = self._convert_events_to_labels(raw_cal,
+                                               t_target=self.t_target,
+                                               nt_target=self.nt_target)
+
+                # drop raw stim channel since we have annotations and it would conflict
+                if 'STI' in raw.ch_names:
+                    raw_cal.drop_channels(['STI'])
+                    raw_infer.drop_channels(['STI'])
 
                 sessions[ses_name] = {
-                    "1calibration": calib_raw,
+                    "1calibration": raw_cal,
                 }
                 if self.include_inference:
-                    sessions[ses_name]["2inference"] = infer_raw
+                    sessions[ses_name]["2inference"] = raw_infer
 
             except Exception as e:
                 print(f"Error reading {bids_path}: {e}")
@@ -484,17 +508,50 @@ class RomaniBF2025ERP(BaseDataset):
             fs = raw.info["sfreq"]
 
             raw_cal = raw.copy().crop(tmin=0, tmax=calib_end_sample / fs)
+            raw_infer = raw.copy().crop(tmin=calib_end_sample / fs)
+
+            raw_cal = self._convert_events_to_labels(raw_cal,
+                                           t_target=self.t_target,
+                                           nt_target=self.nt_target)
+
+            # drop raw stim channel since we have annotations and it would conflict
+            if 'STI' in raw.ch_names:
+                raw_cal.drop_channels(['STI'])
+                raw_infer.drop_channels(['STI'])
             data = {"1calibration": raw_cal}
 
             if self.include_inference:
-                raw_inf = raw.copy().crop(tmin=calib_end_sample / fs)
-                data["2inference"] = raw_inf
+                data["2inference"] = raw_infer
 
             return data
 
         except Exception as e:
             print(f"Error loading sub-{subject}, ses-{session}: {e}")
             return {}
+
+    def _convert_events_to_labels(self, raw: mne.io.Raw, t_target=1, nt_target=2) -> mne.io.Raw:
+        events, event_id = mne.events_from_annotations(raw)
+
+        if len(events) == 0:
+            print("Warning: No events found")
+            return raw
+
+        original_ids = np.unique(events[:, 2])
+
+        # Map all non-target events to 2
+        events = events.copy()
+        events[events[:, 2] != t_target, 2] = nt_target  # Better indexing
+
+        print(f"\nMapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}")
+
+        annotations = mne.annotations_from_events(
+            events,
+            sfreq=raw.info["sfreq"],
+            event_desc={t_target: "Target", nt_target: "NonTarget"}
+        )
+        raw.set_annotations(annotations)
+
+        return raw
 
     def _get_single_run_data(self, subject, run):
         """
@@ -521,9 +578,10 @@ class RomaniBF2025ERP(BaseDataset):
             raise ValueError(f"Invalid run format: {run}")
 
         subject_label = f"P{subject:02d}"
+        ses_name = session_name.replace("ses-", "")
         bids_path = BIDSPath(
             subject=subject_label,
-            session=session_name.replace("ses-", ""),
+            session=ses_name,
             task="ERP",
             datatype="eeg",
             extension=".edf",
