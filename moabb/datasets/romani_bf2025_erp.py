@@ -73,6 +73,10 @@ class RomaniBF2025ERP(BaseDataset):
           "Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"
           EEG signals were referenced to the right mastoid and grounded to the left mastoid.
 
+        - Event codes for the calibration are  assumed as follows:
+            - 1: Target
+            - 2: NonTarget
+
     References
     ----------
 
