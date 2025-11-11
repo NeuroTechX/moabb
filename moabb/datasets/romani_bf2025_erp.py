@@ -413,7 +413,6 @@ class RomaniBF2025ERP(BaseDataset):
 
         return sessions
 
-
     def _load_session_data(self, subject: str, session: str) -> Dict[str, mne.io.Raw]:
         """
         Load data for a specific subject and session.
