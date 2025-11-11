@@ -413,33 +413,6 @@ class RomaniBF2025ERP(BaseDataset):
 
         return sessions
 
-    def is_valid(self, subject: int = None) -> bool:
-        """
-        Check if the dataset is valid.
-
-        Parameters
-        ----------
-        subject : int, optional
-            Subject to check. If None, check overall dataset validity.
-
-        Returns
-        -------
-        bool
-            True if dataset is valid
-        """
-        if subject is not None:
-            subject_label = f"P{subject:02d}"
-            subject_path = os.path.join(self.data_folder, f"sub-{subject_label}")
-            return os.path.exists(subject_path) and os.path.isdir(subject_path)
-        else:
-            # Check if dataset folder exists and has at least one subject
-            if not os.path.exists(self.data_folder):
-                return False
-            try:
-                subjects = self._discover_subjects()
-                return len(subjects) > 0
-            except Exception:
-                return False
 
     def _load_session_data(self, subject: str, session: str) -> Dict[str, mne.io.Raw]:
         """
