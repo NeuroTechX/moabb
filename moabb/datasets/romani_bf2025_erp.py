@@ -38,7 +38,7 @@ class RomaniBF2025ERP(BaseDataset):
     target; in the second one, they need to follow a randomized sequence of colors by hitting the corresponding targets
     to unlock a door.
 
-    Calibration sessions consisted of 60 trials on a single training target, for a total of 600 events (60 trials × 10
+    Calibration sessions consisted of 60 trials on a single training target, for a total of 600 events (60 trials x 10
     unique targets). This means that by default, the data is unbalanced, with 60 target events and 540 non-target events
     per session.
     In inference sessions, the number of events varied depending on the subject's performance
