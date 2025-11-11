@@ -113,7 +113,6 @@ class RomaniBF2025ERP(BaseDataset):
         extra_runs: bool = True,
         include_inference: bool = False,
         load_failed: bool = False,
-        rescale: int = 1e6,
         montage: str = "standard_1020",
     ):
         """
