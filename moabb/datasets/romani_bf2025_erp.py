@@ -22,6 +22,10 @@ _SFREQ = 250
 class RomaniBF2025ERP(BaseDataset):
     """
     MOABB class for BrainForm event-related potentials (ERP) dataset.
+    .. figure:: https://arxiv.org/html/2510.10169v2/brainform-tasks.png
+        :align: center
+        :alt: BrainForm event-related potentials (ERP) dataset.
+        :width: 1000px
 
     The BrainForm dataset [1]_ is a dataset collected using a serious game
     for brain-computer interface (BCI) training and data collection. It includes
