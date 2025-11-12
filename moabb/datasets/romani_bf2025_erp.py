@@ -1,20 +1,29 @@
-import logging
 import os
-import zipfile
 import mne
 import numpy as np
-import requests
 import logging
+import glob
 from pathlib import Path
 from typing import Dict, List, Optional
-from mne.channels import make_standard_montage
 from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
-from tqdm import tqdm
 from moabb.datasets.base import BaseDataset
 
-
 BRAINFORM_URL = "https://zenodo.org/api/records/17225966/draft/files/BIDS.zip/content"
+
+BF_archive_name = "BIDS.zip"
+BF_folder_name = "BrainForm-BIDS-eeg-dataset"
+BF_dataset_name = "RomaniBF2025ERP"
+
+BRAINFORM_dataset_params = {
+    "dataset_name": BF_dataset_name,
+    "url": BRAINFORM_URL,
+    "archive_name": BF_archive_name,
+    "folder_name": BF_folder_name,
+    "hash": "3aa8015fae4fb0de4ce08c6366518608 ",  # sha256
+    "config_key": BF_dataset_name,
+}
+
 _EVENTS = {"Target": 1, "NonTarget": 2}
 _CHANNELS = ["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"]
 _SFREQ = 250
@@ -107,19 +116,19 @@ class RomaniBF2025ERP(BaseDataset):
     """
 
     def __init__(
-        self,
-        data_folder: str = None,
-        subjects: Optional[List[int]] = None,
-        exclude_subjects: Optional[List[int]] = None,
-        calibration_length: int = 60,
-        n_targets: int = 10,
-        t_target: int = 1,
-        nt_target: int = 2,
-        interval: tuple = [-0.1, 1.0],
-        extra_runs: bool = True,
-        include_inference: bool = False,
-        load_failed: bool = False,
-        montage: str = "standard_1020",
+            self,
+            data_folder: str = None,
+            subjects: Optional[List[int]] = None,
+            exclude_subjects: Optional[List[int]] = None,
+            calibration_length: int = 60,
+            n_targets: int = 10,
+            t_target: int = 1,
+            nt_target: int = 2,
+            interval: tuple = [-0.1, 1.0],
+            extra_runs: bool = True,
+            include_inference: bool = False,
+            load_failed: bool = False,
+            montage: str = "standard_1020",
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -197,65 +206,54 @@ class RomaniBF2025ERP(BaseDataset):
 
     def _download_and_extract_dataset(self) -> str:
         """
-        Download and extract the Brainform dataset.
+        Download and extract the Brainform dataset using MNE's fetch_dataset.
 
-        Returns:
-        --------
+        Returns
+        -------
         str
             Path to the extracted dataset folder
         """
-        # Create a cache directory in user's home
-        cache_dir = Path.home() / ".cache" / "brainform_dataset"
-        cache_dir.mkdir(parents=True, exist_ok=True)
+        path_root = fetch_dataset(
+            dataset_params=BRAINFORM_dataset_params,
+            path=None,  # Uses MNE's default data directory
+            processor="unzip",
+            force_update=False,
+        )
 
-        zip_path = cache_dir / "BIDS.zip"
-        extract_path = cache_dir / "BIDS"
+        # Correct path if needed (in case the unzipped folder has a different structure)
+        path_root = self._correct_path(path_root)
 
-        # Check if already downloaded and extracted
-        if extract_path.exists() and any(extract_path.iterdir()):
-            logging.info(msg=f"Using cached dataset at: {extract_path}")
-            return str(extract_path)
+        return str(path_root)
 
-        # Download the zip file
-        logging.info(f"Downloading Brainform dataset from {BRAINFORM_URL}...")
-        try:
-            response = requests.get(BRAINFORM_URL, stream=True)
-            response.raise_for_status()
+    def _correct_path(self, path: Path) -> str:
+        """
+        Check if the path is correct and adjust if the dataset has nested folders.
 
-            total_size = int(response.headers.get("content-length", 0))
+        Parameters
+        ----------
+        path : str
+            Path to the dataset root.
 
-            with open(zip_path, "wb") as f:
-                if total_size > 0:
-                    with tqdm(
-                        total=total_size, unit="B", unit_scale=True, desc="Downloading"
-                    ) as pbar:
-                        for chunk in response.iter_content(chunk_size=8192):
-                            f.write(chunk)
-                            pbar.update(len(chunk))
-                else:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+        Returns
+        -------
+        str
+            Corrected path to the actual BIDS root.
+        """
 
-            logging.info(f"Download complete. Extracting to {extract_path}...")
+        # Check if there's a nested BIDS folder inside
+        nested_bids = path / "BIDS"
+        if nested_bids.exists() and (nested_bids / "dataset_description.json").exists():
+            return str(nested_bids)
 
-            # Extract the zip file
-            with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                zip_ref.extractall(cache_dir)
+        # Check if we need to look for participants.tsv to find the true root
+        list_tsv = glob.glob(f"{path}/**/participants.tsv", recursive=True)
+        if list_tsv:
+            return str(Path(list_tsv[0]).parent)
 
-            logging.info("Extraction complete!")
-
-            # Optionally remove the zip file to save space
-            zip_path.unlink()
-
-            return str(extract_path)
-
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(f"Failed to download dataset: {e}")
-        except zipfile.BadZipFile as e:
-            raise RuntimeError(f"Failed to extract dataset: {e}")
+        return str(path)
 
     def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+            self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> str:
         """
         Return the path to the dataset.
@@ -284,12 +282,12 @@ class RomaniBF2025ERP(BaseDataset):
         return self.data_folder
 
     def data_url(
-        self,
-        subject: str,
-        path: str,
-        force_update: bool = False,
-        update_path: bool = None,
-        verbose: bool = None,
+            self,
+            subject: str,
+            path: str,
+            force_update: bool = False,
+            update_path: bool = None,
+            verbose: bool = None,
     ) -> List[str]:
         """
         Return download URLs for the dataset.
@@ -445,7 +443,7 @@ class RomaniBF2025ERP(BaseDataset):
             return {}
 
     def _convert_events_to_labels(
-        self, raw: mne.io.Raw, t_target=1, nt_target=2
+            self, raw: mne.io.Raw, t_target=1, nt_target=2
     ) -> mne.io.Raw:
         events, event_id = mne.events_from_annotations(raw)
 
