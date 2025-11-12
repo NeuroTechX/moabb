@@ -18,20 +18,15 @@ class TestBenchmark:
         rep_dir = Path.cwd() / Path("benchmark/")
         shutil.rmtree(rep_dir)
 
-    # def test_benchmark_strdataset(self):
-    #     res = benchmark(
-    #         pipelines=str(self.pp_dir),
-    #         evaluations=["WithinSession"],
-    #         include_datasets=[
-    #             "FakeDataset-imagery-10-2--60-60--120-120--lefthand-righthand--c3-cz-c4",
-    #             "FakeDataset-p300-10-2--60-60--120-120--target-nontarget--c3-cz-c4",
-    #             "FakeDataset-ssvep-10-2--60-60--120-120--13-15--c3-cz-c4",
-    #             "FakeDataset-cvep-10-2--60-60--120-120--10-00--c3-cz-c4",
-    #         ],
-    #         overwrite=True,
-    #     )
-    #     raise Exception("res: " + res)
-    #     assert len(res) == 80
+    def test_benchmark_strdataset(self):
+        res = benchmark(
+            pipelines=str(self.pp_dir),
+            evaluations=["WithinSession"],
+            paradigms=["LeftRightImagery"],
+            include_datasets=["BNCI2014-001"],
+            overwrite=True,
+        )
+        assert len(res) == 36
 
     def test_benchmark_objdataset(self):
         res = benchmark(
