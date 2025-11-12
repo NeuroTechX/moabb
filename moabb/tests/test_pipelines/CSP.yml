@@ -1,6 +1,6 @@
 name: FakePipeline
 paradigms:
-  - FakeImageryParadigm
+  - LeftRightImagery
 
 pipeline:
   - name: Covariances

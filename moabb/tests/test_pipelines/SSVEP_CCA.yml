@@ -1,7 +1,7 @@
 name: SSVEP CCA
 
 paradigms:
-  - FakeSSVEPParadigm
+  - ssvep
 
 pipeline:
   - name: SSVEP_CCA
