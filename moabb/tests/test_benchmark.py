@@ -5,6 +5,7 @@ import pytest
 
 from moabb import benchmark
 from moabb.datasets.fake import FakeDataset
+from moabb.evaluations.base import optuna_available
 
 
 class TestBenchmark:
@@ -95,14 +96,17 @@ class TestBenchmark:
                 overwrite=True,
             )
 
-    # def test_optuna(self):
-    #     if not optuna_available:
-    #         pytest.skip("Optuna is not installed")
-    #     res = benchmark(
-    #         pipelines=str(self.pp_dir),
-    #         evaluations=["WithinSession"],
-    #         paradigms=["FakeImageryParadigm"],
-    #         overwrite=True,
-    #         optuna=True,
-    #     )
-    #     assert len(res) == 40
+    def test_optuna(self):
+        if not optuna_available:
+            pytest.skip("Optuna is not installed")
+        res = benchmark(
+            pipelines=str(self.pp_dir),
+            evaluations=["WithinSession"],
+            paradigms=["LeftRightImagery"],
+            include_datasets=[
+                FakeDataset(["left_hand", "right_hand"], paradigm="imagery",n_subjects=2),
+                ],
+            overwrite=True,
+            optuna=True,
+        )
+        assert len(res) == 8
