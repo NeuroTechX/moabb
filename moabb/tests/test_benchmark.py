@@ -104,8 +104,10 @@ class TestBenchmark:
             evaluations=["WithinSession"],
             paradigms=["LeftRightImagery"],
             include_datasets=[
-                FakeDataset(["left_hand", "right_hand"], paradigm="imagery",n_subjects=2),
-                ],
+                FakeDataset(
+                    ["left_hand", "right_hand"], paradigm="imagery", n_subjects=2
+                ),
+            ],
             overwrite=True,
             optuna=True,
         )
