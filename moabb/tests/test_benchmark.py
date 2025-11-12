@@ -5,7 +5,7 @@ import pytest
 
 from moabb import benchmark
 from moabb.datasets.fake import FakeDataset
-from moabb.evaluations.base import optuna_available
+
 
 class TestBenchmark:
     @classmethod
@@ -64,7 +64,7 @@ class TestBenchmark:
             ],
             overwrite=True,
         )
-        print("res: ",res)
+        print("res: ", res)
         assert len(res) == 40
 
     def test_include_exclude(self):
@@ -75,21 +75,23 @@ class TestBenchmark:
                 exclude_datasets=["Dataset2"],
                 overwrite=True,
             )
-            
+
     def test_include_unique(self):
         with pytest.raises(ValueError):
             benchmark(
                 pipelines=str(self.pp_dir),
-                include_datasets=["Dataset1","Dataset1"],
+                include_datasets=["Dataset1", "Dataset1"],
                 overwrite=True,
             )
-            
+
     def test_include_two_types(self):
         with pytest.raises(TypeError):
             benchmark(
                 pipelines=str(self.pp_dir),
-                include_datasets=["Dataset1",
-                                  FakeDataset(["left_hand", "right_hand"], paradigm="imagery")],
+                include_datasets=[
+                    "Dataset1",
+                    FakeDataset(["left_hand", "right_hand"], paradigm="imagery"),
+                ],
                 overwrite=True,
             )
 

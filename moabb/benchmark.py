@@ -11,6 +11,7 @@ from mne.utils import _open_lock
 from moabb import paradigms as moabb_paradigms
 from moabb.analysis import analyze
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import (
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
@@ -21,7 +22,7 @@ from moabb.pipelines.utils import (
     generate_param_grid,
     parse_pipelines_from_directory,
 )
-from moabb.datasets.fake import FakeDataset
+
 
 try:
     from codecarbon import EmissionsTracker  # noqa
@@ -183,8 +184,12 @@ def benchmark(  # noqa: C901
             log.debug(f"{paradigm}: {context_params[paradigm]}")
             p = get_paradigm_instance(paradigm, context_params)
             # List of dataset class instances
-            datasets = p.datasets + [ds for ds in (include_datasets or []) if isinstance(ds, FakeDataset)] \
-                if any(isinstance(ds, FakeDataset) for ds in (include_datasets or [])) else p.datasets
+            datasets = (
+                p.datasets
+                + [ds for ds in (include_datasets or []) if isinstance(ds, FakeDataset)]
+                if any(isinstance(ds, FakeDataset) for ds in (include_datasets or []))
+                else p.datasets
+            )
             d = _inc_exc_datasets(datasets, include_datasets, exclude_datasets)
             print(f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}")
 
@@ -386,9 +391,13 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
             codes = [x.code for x in ds_list]
             if len(codes) != len(set(codes)):
                 raise ValueError(f"{list_name} contains duplicate dataset instances.")
-                
+
             # Check that all objects exist in available datasets
-            invalid = [x.code for x in ds_list if x.code not in all_codes and not x.code.startswith("FakeDataset")]
+            invalid = [
+                x.code
+                for x in ds_list
+                if x.code not in all_codes and not x.code.startswith("FakeDataset")
+            ]
             if invalid:
                 raise ValueError(
                     f"Some datasets in {list_name} are not part of available datasets for the paradigms you requested in benchmark(): {invalid}"
@@ -463,6 +472,7 @@ def filter_paradigms(pipeline_prdgms, paradigms, logger):
 
     return filtered_prdgms
 
+
 def get_paradigm_instance(paradigm_name, context_params=None):
     """
     Get a paradigm instance from moabb.paradigms by name (case-insensitive).
@@ -472,7 +482,7 @@ def get_paradigm_instance(paradigm_name, context_params=None):
     paradigm_name : str
         Name of the paradigm to look up (e.g., 'P300', 'MotorImagery').
     context_params : dict, optional
-        Dictionary mapping paradigm names to parameters. 
+        Dictionary mapping paradigm names to parameters.
         Will pass context_params[paradigm_name] to the paradigm constructor if available.
 
     Returns
@@ -489,8 +499,8 @@ def get_paradigm_instance(paradigm_name, context_params=None):
 
     # Find matching class name in moabb.paradigms, case-insensitive
     cls_name = next(
-        (name for name in dir(moabb_paradigms) if name.lower() == paradigm_name.lower()), 
-        None
+        (name for name in dir(moabb_paradigms) if name.lower() == paradigm_name.lower()),
+        None,
     )
     if cls_name is None:
         raise ValueError(
