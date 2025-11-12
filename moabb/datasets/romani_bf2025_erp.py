@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional
 from mne.channels import make_standard_montage
+from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 from tqdm import tqdm
 from moabb.datasets.base import BaseDataset
@@ -61,10 +62,15 @@ class RomaniBF2025ERP(BaseDataset):
 
     Examples
     --------
+    Loading the dataset and printing available sessions and runs for subject 2:
     >>> dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
     >>> subject_sessions = dataset._get_single_subject_data(2)
     >>> for ses, runs in subject_sessions.items():
     ...     print(ses, list(runs.keys()))
+    Loading a single session for subject 2, session '0cb':
+    >>> single_session = dataset._load_session_data(2, "0cb")
+    Loading a single run for subject 2, session '0cb', run '1calibration':
+    >>> single_run = dataset._get_single_run_data(2, "0cb/1calibration")
 
 
     If all sessions are included, for each subject the output will look like this:
@@ -161,7 +167,6 @@ class RomaniBF2025ERP(BaseDataset):
         self.extra_runs = extra_runs
         self.include_inference = include_inference
         self.load_failed = load_failed
-        self.rescale = rescale
         self.montage = montage
 
         if subjects is None:
@@ -413,7 +418,7 @@ class RomaniBF2025ERP(BaseDataset):
 
         return sessions
 
-    def _load_session_data(self, subject: str, session: str) -> Dict[str, mne.io.Raw]:
+    def _load_session_data(self, subject: int, session: str) -> Dict[str, mne.io.Raw]:
         """
         Load data for a specific subject and session.
         Reads BIDS-formatted EEG data and splits calibration/inference
@@ -431,75 +436,10 @@ class RomaniBF2025ERP(BaseDataset):
         Dict[str, mne.io.Raw]
             e.g. {'1calibration': raw_cal, '2inference': raw_inf}
         """
-        bids_path = BIDSPath(
-            subject=subject,
-            session=session,
-            task="ERP",
-            datatype="eeg",
-            extension=".edf",
-            root=self.data_folder,
-        )
-
-        if not bids_path.fpath.exists():
-            logging.warning(f"No EDF file for sub-{subject}, ses-{session}")
-            return {}
 
         try:
-            # Load the raw EEG data
-            raw = read_raw_bids(bids_path=bids_path, verbose=False)
-            raw.load_data()
-
-            # Set montage (10–20 system)
-            montage = make_standard_montage(self.montage)
-            raw.set_montage(montage)
-
-            # Read events from annotations (preferred)
-            events, event_id = mne.events_from_annotations(raw)
-            events = events[np.argsort(events[:, 0])]  # sort by onset
-
-            # --- Infer number of unique targets automatically ---
-            # Assume event codes: "Target" and "NonTarget"
-            if event_id:
-                n_targets = sum("Target" in k or "target" in k for k in event_id.keys())
-                if n_targets == 0:
-                    # fallback: infer from event values
-                    unique_vals = np.unique(events[:, 2])
-                    n_targets = len(unique_vals)
-            else:
-                unique_vals = np.unique(events[:, 2])
-                n_targets = len(unique_vals)
-
-            # Compute how many events belong to calibration
-            n_calib_events = self.calibration_length * n_targets
-            total_events = len(events)
-            if total_events < n_calib_events:
-                logging.warning(
-                    f"Warning: {subject} {session} has only {total_events} events (needs {n_calib_events})"
-                )
-                n_calib_events = total_events // 2  # fallback heuristic
-
-            # Split calibration and inference based on event sample index
-            calib_end_sample = events[n_calib_events - 1, 0]
-            fs = raw.info["sfreq"]
-
-            raw_cal = raw.copy().crop(tmin=0, tmax=calib_end_sample / fs)
-            raw_infer = raw.copy().crop(tmin=calib_end_sample / fs)
-
-            raw_cal = self._convert_events_to_labels(
-                raw_cal, t_target=self.t_target, nt_target=self.nt_target
-            )
-
-            # drop raw stim channel since we have annotations and it would conflict
-            if "STI" in raw.ch_names:
-                raw_cal.drop_channels(["STI"])
-                raw_infer.drop_channels(["STI"])
-            data = {"1calibration": raw_cal}
-
-            if self.include_inference:
-                data["2inference"] = raw_infer
-
-            return data
-
+            subject_data = self._get_single_subject_data(subject)
+            return subject_data[session]
         except Exception as e:
             logging.error(f"Error loading sub-{subject}, ses-{session}: {e}")
             return {}
@@ -547,49 +487,8 @@ class RomaniBF2025ERP(BaseDataset):
         raw : mne.io.Raw
             Raw data for the run
         """
-        # Parse the run string to extract session and run type
-        parts = run.split("/")
-        if len(parts) == 2:
-            session_name, run_type = parts
-        else:
-            raise ValueError(f"Invalid run format: {run}")
-
-        subject_label = f"P{subject:02d}"
-        ses_name = session_name.replace("ses-", "")
-        bids_path = BIDSPath(
-            subject=subject_label,
-            session=ses_name,
-            task="ERP",
-            datatype="eeg",
-            extension=".edf",
-            root=self.data_folder,
-        )
-
-        raw = read_raw_bids(bids_path=bids_path, verbose=False)
-        raw.load_data()
-
-        # Set montage
-        montage = make_standard_montage(self.montage)
-        raw.set_montage(montage)
-
-        # Split calibration/inference if needed
-        events, event_id = mne.events_from_annotations(raw)
-        events = events[np.argsort(events[:, 0])]
-
-        n_targets = len([k for k in event_id.keys() if "target" in k.lower()])
-        if n_targets == 0:
-            n_targets = len(np.unique(events[:, 2]))
-
-        n_calib_events = self.calibration_length * n_targets
-        calib_end_sample = events[n_calib_events - 1, 0]
-        fs = raw.info["sfreq"]
-
-        if run_type == "1calibration":
-            raw = raw.crop(tmin=0, tmax=calib_end_sample / fs)
-        elif run_type == "2inference":
-            raw = raw.crop(tmin=calib_end_sample / fs)
-
-        return raw
+        session, run = run.split("/")
+        return self._get_single_subject_data(subject)[session][run]
 
     def _discover_subjects(self) -> List[str]:
         """
@@ -612,6 +511,10 @@ class RomaniBF2025ERP(BaseDataset):
             logging.warning("No subjects found in BIDS folder.")
 
         return subjects
+
+    def _get_session_list(self, subject):
+        subject_sessions = self._get_single_subject_data(subject)
+        return list(subject_sessions.keys())
 
     def __repr__(self):
         return (
