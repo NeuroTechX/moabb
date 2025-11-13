@@ -184,7 +184,7 @@ def benchmark(  # noqa: C901
         for paradigm in prdgms_from_pipelines:
             # get the context
             log.debug(f"{paradigm}: {context_params[paradigm]}")
-            p = get_paradigm_instance(paradigm, context_params)
+            p = _get_paradigm_instance(paradigm, context_params)
             # List of dataset class instances, handles FakeDatasets as well
             datasets = (
                 p.datasets
@@ -353,7 +353,7 @@ def _inc_exc_datasets(paradigm_datasets, include_datasets=None, exclude_datasets
 
     # --- Inclusion logic ---
     if include_datasets is not None:
-        include_codes = validate_list_per_paradigm(
+        include_codes = _validate_list_per_paradigm(
             all_paradigm_codes, include_datasets, "include_datasets"
         )
         # Keep only included datasets
@@ -362,7 +362,7 @@ def _inc_exc_datasets(paradigm_datasets, include_datasets=None, exclude_datasets
 
     # --- Exclusion logic ---
     if exclude_datasets is not None:
-        exclude_codes = validate_list_per_paradigm(
+        exclude_codes = _validate_list_per_paradigm(
             all_paradigm_codes, exclude_datasets, "exclude_datasets"
         )
         # Remove excluded datasets
@@ -372,7 +372,7 @@ def _inc_exc_datasets(paradigm_datasets, include_datasets=None, exclude_datasets
     return d
 
 
-def get_paradigm_instance(paradigm_name, context_params=None):
+def _get_paradigm_instance(paradigm_name, context_params=None):
     """
     Get a paradigm instance from moabb.paradigms by name (case-insensitive).
 
@@ -413,9 +413,9 @@ def get_paradigm_instance(paradigm_name, context_params=None):
     return ParadigmClass(**params)
 
 
-def validate_list_per_paradigm(all_paradigm_codes, ds_list, list_name):
+def _validate_list_per_paradigm(all_paradigm_codes, ds_list, list_name):
     """
-    Validate and normalize a dataset list.
+    Validates a list of include/exclude datasets for specific paradigm.
 
     Ensures the user-provided list of datasets is valid for use in the benchmark.
     Allows dataset lists that contain entries for multiple paradigms, as long as
