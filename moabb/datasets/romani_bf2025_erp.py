@@ -2,7 +2,7 @@ import glob
 import logging
 import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import mne
 import numpy as np
@@ -10,6 +10,7 @@ from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
+
 
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
@@ -117,19 +118,19 @@ class RomaniBF2025ERP(BaseDataset):
     """
 
     def __init__(
-            self,
-            data_folder: str = None,
-            subjects: Optional[List[str]] = None,
-            exclude_subjects: Optional[List[str]] = ["P15", "P18"],
-            calibration_length: int = 60,
-            n_targets: int = 10,
-            t_target: int = 1,
-            nt_target: int = 2,
-            interval: tuple = [-0.1, 1.0],
-            extra_runs: bool = True,
-            include_inference: bool = False,
-            load_failed: bool = False,
-            montage: str = "standard_1020",
+        self,
+        data_folder: str = None,
+        subjects: Optional[List[str]] = None,
+        exclude_subjects: Optional[List[str]] = ["P15", "P18"],
+        calibration_length: int = 60,
+        n_targets: int = 10,
+        t_target: int = 1,
+        nt_target: int = 2,
+        interval: tuple = [-0.1, 1.0],
+        extra_runs: bool = True,
+        include_inference: bool = False,
+        load_failed: bool = False,
+        montage: str = "standard_1020",
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -264,7 +265,7 @@ class RomaniBF2025ERP(BaseDataset):
         return str(path)
 
     def data_path(
-            self, subject, path=None, force_update=False, update_path=None, verbose=None
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> str:
         """
         Return the path to the dataset.
@@ -293,12 +294,12 @@ class RomaniBF2025ERP(BaseDataset):
         return self.data_folder
 
     def data_url(
-            self,
-            subject: str,
-            path: str,
-            force_update: bool = False,
-            update_path: bool = None,
-            verbose: bool = None,
+        self,
+        subject: str,
+        path: str,
+        force_update: bool = False,
+        update_path: bool = None,
+        verbose: bool = None,
     ) -> List[str]:
         """
         Return download URLs for the dataset.
@@ -428,7 +429,7 @@ class RomaniBF2025ERP(BaseDataset):
         return sessions
 
     def _convert_events_to_labels(
-            self, raw: mne.io.Raw, t_target=1, nt_target=2
+        self, raw: mne.io.Raw, t_target=1, nt_target=2
     ) -> mne.io.Raw:
         events, event_id = mne.events_from_annotations(raw)
 
