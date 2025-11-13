@@ -36,14 +36,14 @@ class TestBenchmark:
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             include_datasets=[
-                FakeDataset(["left_hand", "right_hand"], paradigm="imagery"),
-                FakeDataset(["Target", "NonTarget"], paradigm="p300"),
-                FakeDataset(["13", "15"], paradigm="ssvep"),
-                FakeDataset(["1.0", "0.0"], paradigm="cvep"),
+                FakeDataset(["left_hand", "right_hand"], paradigm="imagery",n_subjects=2),
+                FakeDataset(["Target", "NonTarget"], paradigm="p300",n_subjects=2),
+                FakeDataset(["13", "15"], paradigm="ssvep",n_subjects=2),
+                FakeDataset(["1.0", "0.0"], paradigm="cvep",n_subjects=2),
             ],
             overwrite=True,
         )
-        assert len(res) == 80
+        assert len(res) == 16
 
     def test_nodataset(self):
         with pytest.raises(ValueError):
@@ -59,12 +59,12 @@ class TestBenchmark:
             evaluations=["WithinSession"],
             paradigms=["LeftRightImagery"],
             include_datasets=[
-                FakeDataset(["left_hand", "right_hand"], paradigm="imagery"),
+                FakeDataset(["left_hand", "right_hand"], paradigm="imagery",n_subjects=2),
+                FakeDataset(["Target", "NonTarget"], paradigm="p300",n_subjects=2),
             ],
             overwrite=True,
         )
-        print("res: ", res)
-        assert len(res) == 40
+        assert len(res) == 8
 
     def test_include_exclude(self):
         with pytest.raises(ValueError):
@@ -74,23 +74,21 @@ class TestBenchmark:
                 exclude_datasets=["Dataset2"],
                 overwrite=True,
             )
-
+            
     def test_include_unique(self):
         with pytest.raises(ValueError):
             benchmark(
                 pipelines=str(self.pp_dir),
-                include_datasets=["Dataset1", "Dataset1"],
+                include_datasets=["Dataset1","Dataset1"],
                 overwrite=True,
             )
-
+            
     def test_include_two_types(self):
         with pytest.raises(TypeError):
             benchmark(
                 pipelines=str(self.pp_dir),
-                include_datasets=[
-                    "Dataset1",
-                    FakeDataset(["left_hand", "right_hand"], paradigm="imagery"),
-                ],
+                include_datasets=["Dataset1",
+                                  FakeDataset(["left_hand", "right_hand"], paradigm="imagery")],
                 overwrite=True,
             )
 
@@ -102,10 +100,8 @@ class TestBenchmark:
             evaluations=["WithinSession"],
             paradigms=["LeftRightImagery"],
             include_datasets=[
-                FakeDataset(
-                    ["left_hand", "right_hand"], paradigm="imagery", n_subjects=2
-                ),
-            ],
+                FakeDataset(["left_hand", "right_hand"], paradigm="imagery",n_subjects=2),
+                ],
             overwrite=True,
             optuna=True,
         )
