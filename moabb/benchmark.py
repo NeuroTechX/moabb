@@ -355,7 +355,7 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
         """
         Validate and normalize a dataset list. Is ensures that the user-provided list of datasets
         is valid.
-        
+
         Specifically, it checks:
         - The input is a list or tuple.
         - The list is not empty.
@@ -363,16 +363,16 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
         - No duplicates are present.
         - Dataset codes or objects correspond to datasets available for the chosen paradigm(s).
         - Fake datasets (codes starting with "FakeDataset") are allowed even if not in all_codes.
-        
+
         Parameters
         ----------
         ds_list : list[str or BaseDataset]
             The list to validate. Can contain dataset codes (e.g., ["BNCI2014-001"]) or
             dataset objects (instances of BaseDataset or its subclasses).
         list_name : str
-            The name of the list ("include_datasets" or "exclude_datasets"), used only for 
+            The name of the list ("include_datasets" or "exclude_datasets"), used only for
             the error messages.
-        
+
         Returns
         -------
         list[str]
