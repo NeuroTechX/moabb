@@ -11,8 +11,7 @@ from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
 
-
-BRAINFORM_URL = "https://zenodo.org/api/records/17225966/draft/files/BIDS.zip/content"
+BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
 BF_archive_name = "BIDS.zip"
 BF_folder_name = "BrainForm-BIDS-eeg-dataset"
@@ -23,7 +22,7 @@ BRAINFORM_dataset_params = {
     "url": BRAINFORM_URL,
     "archive_name": BF_archive_name,
     "folder_name": BF_folder_name,
-    "hash": "3aa8015fae4fb0de4ce08c6366518608 ",  # sha256
+    "hash": "a104ae6d7ea22f5a38a6f5548bee2de254e9b116713265465837395320d34536",  # sha256
     "config_key": BF_dataset_name,
 }
 
@@ -119,19 +118,19 @@ class RomaniBF2025ERP(BaseDataset):
     """
 
     def __init__(
-        self,
-        data_folder: str = None,
-        subjects: Optional[List[int]] = None,
-        exclude_subjects: Optional[List[int]] = None,
-        calibration_length: int = 60,
-        n_targets: int = 10,
-        t_target: int = 1,
-        nt_target: int = 2,
-        interval: tuple = [-0.1, 1.0],
-        extra_runs: bool = True,
-        include_inference: bool = False,
-        load_failed: bool = False,
-        montage: str = "standard_1020",
+            self,
+            data_folder: str = None,
+            subjects: Optional[List[str]] = None,
+            exclude_subjects: Optional[List[str]] = ["P15", "P18"],
+            calibration_length: int = 60,
+            n_targets: int = 10,
+            t_target: int = 1,
+            nt_target: int = 2,
+            interval: tuple = [-0.1, 1.0],
+            extra_runs: bool = True,
+            include_inference: bool = False,
+            load_failed: bool = False,
+            montage: str = "standard_1020",
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -189,6 +188,9 @@ class RomaniBF2025ERP(BaseDataset):
         if exclude_subjects is not None:
             subjects = [s for s in subjects if s not in exclude_subjects]
 
+        self.subjects_map = {idx: subj for idx, subj in enumerate(subjects)}
+        subjects = list(self.subjects_map.keys())
+
         if calibration_length <= 0:
             raise ValueError("calibration_length must be positive")
         if interval[0] >= interval[1]:
@@ -243,6 +245,13 @@ class RomaniBF2025ERP(BaseDataset):
             Corrected path to the actual BIDS root.
         """
 
+        # Rename unzipped folder after download if needed
+        parent_folder = path.parent
+        unzipped_folder = BF_archive_name + ".unzip"
+        unzipped_path = parent_folder / unzipped_folder
+        if os.path.exists(unzipped_path):
+            os.rename(unzipped_path, path)
+
         # Check if there's a nested BIDS folder inside
         nested_bids = path / "BIDS"
         if nested_bids.exists() and (nested_bids / "dataset_description.json").exists():
@@ -256,7 +265,7 @@ class RomaniBF2025ERP(BaseDataset):
         return str(path)
 
     def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+            self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> str:
         """
         Return the path to the dataset.
@@ -285,12 +294,12 @@ class RomaniBF2025ERP(BaseDataset):
         return self.data_folder
 
     def data_url(
-        self,
-        subject: str,
-        path: str,
-        force_update: bool = False,
-        update_path: bool = None,
-        verbose: bool = None,
+            self,
+            subject: str,
+            path: str,
+            force_update: bool = False,
+            update_path: bool = None,
+            verbose: bool = None,
     ) -> List[str]:
         """
         Return download URLs for the dataset.
@@ -323,7 +332,7 @@ class RomaniBF2025ERP(BaseDataset):
         if isinstance(subject, str):
             subject_label = subject
         else:
-            subject_label = f"P{subject:02d}"  # e.g., sub-P02
+            subject_label = self.subjects_map[subject]
         subject_folder = os.path.join(self.data_folder, f"sub-{subject_label}")
 
         if not os.path.exists(subject_folder):
@@ -419,34 +428,8 @@ class RomaniBF2025ERP(BaseDataset):
 
         return sessions
 
-    def _load_session_data(self, subject: int, session: str) -> Dict[str, mne.io.Raw]:
-        """
-        Load data for a specific subject and session.
-        Reads BIDS-formatted EEG data and splits calibration/inference
-        based on calibration_length × n_targets (inferred from events).
-
-        Parameters
-        ----------
-        subject : str
-            e.g. "P02"
-        session : str
-            e.g. "cb"
-
-        Returns
-        -------
-        Dict[str, mne.io.Raw]
-            e.g. {'1calibration': raw_cal, '2inference': raw_inf}
-        """
-
-        try:
-            subject_data = self._get_single_subject_data(subject)
-            return subject_data[session]
-        except Exception as e:
-            logging.error(f"Error loading sub-{subject}, ses-{session}: {e}")
-            return {}
-
     def _convert_events_to_labels(
-        self, raw: mne.io.Raw, t_target=1, nt_target=2
+            self, raw: mne.io.Raw, t_target=1, nt_target=2
     ) -> mne.io.Raw:
         events, event_id = mne.events_from_annotations(raw)
 
@@ -473,26 +456,6 @@ class RomaniBF2025ERP(BaseDataset):
 
         return raw
 
-    def _get_single_run_data(self, subject, run):
-        """
-        Return data for a single run of a single subject.
-        Required by MOABB's BaseDataset.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number
-        run : str
-            Run identifier (e.g., 'ses-cb/1calibration')
-
-        Returns
-        -------
-        raw : mne.io.Raw
-            Raw data for the run
-        """
-        session, run = run.split("/")
-        return self._get_single_subject_data(subject)[session][run]
-
     def _discover_subjects(self) -> List[str]:
         """
         Discover available subjects from the BIDS structure.
@@ -515,7 +478,7 @@ class RomaniBF2025ERP(BaseDataset):
 
         return subjects
 
-    def _get_session_list(self, subject):
+    def get_session_list(self, subject):
         subject_sessions = self._get_single_subject_data(subject)
         return list(subject_sessions.keys())
 
