@@ -73,24 +73,18 @@ class RomaniBF2025ERP(BaseDataset):
 
     Examples
     --------
-    Loading the dataset and printing available sessions and runs for subject 2:
+    Loading the dataset and then create a subset of the available sessions and runs for subject P01 and P02:
+    >>> paradigm = P300(resample=128)
     >>> dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
-    >>> subject_sessions = dataset._get_single_subject_data(2)
-    >>> for ses, runs in subject_sessions.items():
-    ...     print(ses, list(runs.keys()))
-    Loading a single session for subject 2, session '0cb':
-    >>> single_session = dataset._load_session_data(2, "0cb")
-    Loading a single run for subject 2, session '0cb', run '1calibration':
-    >>> single_run = dataset._get_single_run_data(2, "0cb/1calibration")
+    >>> subset = paradigm.get_data(dataset, [0, 1])
 
+    Loading the dataset and listing available sessions for subject P03:
+    >>> dataset = RomaniBF2025ERP()
+    >>> sessions = dataset.get_session_list(2)
+    >>> print("Sessions for subject 2:", sessions)
 
-    If all sessions are included, for each subject the output will look like this:
-        ses-cb ['1calibration', '2inference']
-        ses-grain ['1calibration', '2inference']
-        ses-grainExtra ['1calibration', '2inference']
-        ses-grainFailed0 ['1calibration', '2inference']
-        ses-grainFailed1 ['1calibration', '2inference']
-        ses-grainFailed2 ['1calibration', '2inference']
+    Expected output:
+    Sessions for subject 2: ['0grain', '1cb', '2cbExtra']
 
     Recording details:
         - EEG signals were recorded using a g.tec Unicorn with a sampling rate of 250 Hz and conductive gel applied.
@@ -105,6 +99,11 @@ class RomaniBF2025ERP(BaseDataset):
             - 1: Target
             - 2: NonTarget
         - For inference sessions, events only indicate stimulus onset without ground truth labels (from 1 to 10).
+
+    Subjects indexing:
+    {0: 'P01', 1: 'P02', 2: 'P03', 3: 'P04', 4: 'P05', 5: 'P06', 6: 'P07', 7: 'P08', 8: 'P09', 9: 'P10', 10: 'P11',
+    11: 'P12', 12: 'P13', 13: 'P14', 14: 'P16', 15: 'P17', 16: 'P19', 17: 'P20', 18: 'P21', 19: 'P22', 20: 'P23',
+    21: 'P24'}
 
     References
     ----------
