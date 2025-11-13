@@ -180,7 +180,7 @@ def benchmark(  # noqa: C901
     df_eval = []
     for evaluation in evaluations:
         eval_results = dict()
-        
+
         for paradigm in prdgms_from_pipelines:
             # get the context
             log.debug(f"{paradigm}: {context_params[paradigm]}")
@@ -353,14 +353,18 @@ def _inc_exc_datasets(paradigm_datasets, include_datasets=None, exclude_datasets
 
     # --- Inclusion logic ---
     if include_datasets is not None:
-        include_codes = validate_list_per_paradigm(all_paradigm_codes, include_datasets, "include_datasets")
+        include_codes = validate_list_per_paradigm(
+            all_paradigm_codes, include_datasets, "include_datasets"
+        )
         # Keep only included datasets
         filtered = [ds for ds in paradigm_datasets if ds.code in include_codes]
         return filtered
 
     # --- Exclusion logic ---
     if exclude_datasets is not None:
-        exclude_codes = validate_list_per_paradigm(all_paradigm_codes, exclude_datasets, "exclude_datasets")
+        exclude_codes = validate_list_per_paradigm(
+            all_paradigm_codes, exclude_datasets, "exclude_datasets"
+        )
         # Remove excluded datasets
         filtered = [ds for ds in paradigm_datasets if ds.code not in exclude_codes]
         return filtered
@@ -407,6 +411,7 @@ def get_paradigm_instance(paradigm_name, context_params=None):
     ParadigmClass = getattr(moabb_paradigms, cls_name)
     params = context_params.get(paradigm_name, {})
     return ParadigmClass(**params)
+
 
 def validate_list_per_paradigm(all_paradigm_codes, ds_list, list_name):
     """
@@ -461,7 +466,9 @@ def validate_list_per_paradigm(all_paradigm_codes, ds_list, list_name):
             raise ValueError(f"{list_name} contains duplicate dataset codes.")
 
         # Accept all codes that belong to the current paradigm or are fake datasets
-        valid = [x for x in ds_list if x in all_paradigm_codes or x.startswith("FakeDataset")]
+        valid = [
+            x for x in ds_list if x in all_paradigm_codes or x.startswith("FakeDataset")
+        ]
         if not valid:
             raise ValueError(
                 f"None of the datasets in {list_name} match the current paradigm’s datasets "
@@ -475,7 +482,11 @@ def validate_list_per_paradigm(all_paradigm_codes, ds_list, list_name):
         raise ValueError(f"{list_name} contains duplicate dataset instances.")
 
     # Accept all dataset objects that belong to the current paradigm or are fake datasets
-    valid = [x.code for x in ds_list if x.code in all_paradigm_codes or x.code.startswith("FakeDataset")]
+    valid = [
+        x.code
+        for x in ds_list
+        if x.code in all_paradigm_codes or x.code.startswith("FakeDataset")
+    ]
     if not valid:
         raise ValueError(
             f"None of the dataset objects in {list_name} match the current paradigm’s datasets "
