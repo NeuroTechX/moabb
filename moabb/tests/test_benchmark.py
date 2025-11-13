@@ -22,11 +22,12 @@ class TestBenchmark:
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
-            paradigms=["LeftRightImagery"],
-            include_datasets=["BNCI2014-001"],
+            paradigms=["P300", "LeftRightImagery"],
+            include_datasets=["BNCI2014-001",
+                              "FakeVirtualRealityDataset-p300-21-1--60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60--120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120--target-nontarget--c3-cz-c4"],
             overwrite=True,
         )
-        assert len(res) == 36
+        assert len(res) == 57
 
     def test_benchmark_objdataset(self):
         res = benchmark(

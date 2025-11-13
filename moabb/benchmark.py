@@ -56,7 +56,7 @@ def benchmark(  # noqa: C901
     possible to include or exclude specific datasets and to choose the type of
     evaluation.
 
-    If particular paradigms are mentioned through select_paradigms, only the pipelines corresponding to those paradigms
+    If particular paradigms are mentioned through parameter paradigms, only the pipelines corresponding to those paradigms
     will be run. If no paradigms are mentioned, all pipelines will be run.
 
     To define the include_datasets or exclude_dataset, you could start from the full dataset list,
@@ -162,25 +162,26 @@ def benchmark(  # noqa: C901
         with _open_lock(contexts, "r") as cfile:
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
-    prdgms = generate_paradigms(pipeline_configs, context_params, log)
+    prdgms_from_pipelines = generate_paradigms(pipeline_configs, context_params, log)
 
     # Filter requested benchmark paradigms vs available in provided pipelines
     if paradigms is not None:
-        prdgms = {p: prdgms[p] for p in paradigms}
+        prdgms_from_pipelines = {p: prdgms_from_pipelines[p] for p in paradigms}
 
     param_grid = generate_param_grid(pipeline_configs, context_params, log)
 
-    log.debug(f"The paradigms being run are {prdgms.keys()}")
+    print(f"The paradigms being run are {prdgms_from_pipelines.keys()}")
 
     if len(context_params) == 0:
-        for paradigm in prdgms:
+        for paradigm in prdgms_from_pipelines:
             context_params[paradigm] = {}
 
     # Looping over the evaluations to be done
     df_eval = []
     for evaluation in evaluations:
         eval_results = dict()
-        for paradigm in prdgms:
+        
+        for paradigm in prdgms_from_pipelines:
             # get the context
             log.debug(f"{paradigm}: {context_params[paradigm]}")
             p = get_paradigm_instance(paradigm, context_params)
@@ -195,7 +196,7 @@ def benchmark(  # noqa: C901
             print(f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}")
 
             ppl_with_epochs, ppl_with_array = {}, {}
-            for pn, pv in prdgms[paradigm].items():
+            for pn, pv in prdgms_from_pipelines[paradigm].items():
                 ppl_with_array[pn] = pv
 
             if len(ppl_with_epochs) > 0:
@@ -324,7 +325,7 @@ def _save_results(eval_results, output, plot):
         analyze(prdgm_result, str(prdgm_path), plot=plot)
 
 
-def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
+def _inc_exc_datasets(paradigm_datasets, include_datasets=None, exclude_datasets=None):
     """
     Filter datasets based on include_datasets and exclude_datasets.
 
@@ -347,95 +348,21 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
     if include_datasets is not None and exclude_datasets is not None:
         raise ValueError("Cannot specify both include_datasets and exclude_datasets.")
 
-    all_codes = [ds.code for ds in datasets]
-    d = list(datasets)
-
-    # --- Helper to validate and normalize inputs ---
-    def _validate_dataset_list(ds_list, list_name):
-        """
-        Validate and normalize a dataset list. It ensures that the user-provided list of datasets
-        is valid.
-
-        Checks:
-        - The input is a list or tuple.
-        - The list is not empty.
-        - All elements are either strings or BaseDataset objects (no mix).
-        - No duplicates are present.
-        - Dataset codes or objects correspond to datasets available for the chosen paradigm(s).
-        - Fake datasets (codes starting with "FakeDataset") are allowed even if not in all_codes.
-
-        Parameters
-        ----------
-        ds_list : list[str or BaseDataset]
-            The list to validate. Can contain dataset codes (e.g., ["BNCI2014-001"]) or
-            dataset objects (instances of BaseDataset or its subclasses).
-        list_name : str
-            The name of the list ("include_datasets" or "exclude_datasets"), used only for
-            the error messages.
-
-        Returns
-        -------
-        list[str]
-            A normalized list of dataset codes extracted from the input list.
-
-        """
-        if not isinstance(ds_list, (list, tuple)):
-            raise TypeError(f"{list_name} must be a list or tuple.")
-
-        # Empty list edge case
-        if len(ds_list) == 0:
-            raise ValueError(f"{list_name} cannot be an empty list.")
-
-        # All strings or all class instances — not a mix
-        all_str = all(isinstance(x, str) for x in ds_list)
-        all_obj = all(isinstance(x, BaseDataset) for x in ds_list)
-        if not (all_str or all_obj):
-            raise TypeError(
-                f"{list_name} must contain either all strings or all dataset objects, not a mix."
-            )
-
-        # Convert all to codes
-        if all_str:
-            # Check uniqueness
-            if len(ds_list) != len(set(ds_list)):
-                raise ValueError(f"{list_name} contains duplicate dataset codes.")
-
-            # Check validity
-            invalid = [x for x in ds_list if x not in all_codes]
-            if invalid:
-                raise ValueError(f"Invalid dataset codes in {list_name}: {invalid}")
-            return ds_list
-
-        elif all_obj:
-            # Ensure they are unique by code
-            codes = [x.code for x in ds_list]
-            if len(codes) != len(set(codes)):
-                raise ValueError(f"{list_name} contains duplicate dataset instances.")
-
-            # Check that all objects exist in available datasets
-            invalid = [
-                x.code
-                for x in ds_list
-                if x.code not in all_codes and not x.code.startswith("FakeDataset")
-            ]
-            if invalid:
-                raise ValueError(
-                    f"Some datasets in {list_name} are not part of available datasets for the paradigms you requested in benchmark(): {invalid}"
-                )
-            return codes
+    all_paradigm_codes = [ds.code for ds in paradigm_datasets]
+    d = list(paradigm_datasets)
 
     # --- Inclusion logic ---
     if include_datasets is not None:
-        include_codes = _validate_dataset_list(include_datasets, "include_datasets")
+        include_codes = validate_list_per_paradigm(all_paradigm_codes, include_datasets, "include_datasets")
         # Keep only included datasets
-        filtered = [ds for ds in datasets if ds.code in include_codes]
+        filtered = [ds for ds in paradigm_datasets if ds.code in include_codes]
         return filtered
 
     # --- Exclusion logic ---
     if exclude_datasets is not None:
-        exclude_codes = _validate_dataset_list(exclude_datasets, "exclude_datasets")
+        exclude_codes = validate_list_per_paradigm(all_paradigm_codes, exclude_datasets, "exclude_datasets")
         # Remove excluded datasets
-        filtered = [ds for ds in datasets if ds.code not in exclude_codes]
+        filtered = [ds for ds in paradigm_datasets if ds.code not in exclude_codes]
         return filtered
 
     return d
@@ -480,3 +407,78 @@ def get_paradigm_instance(paradigm_name, context_params=None):
     ParadigmClass = getattr(moabb_paradigms, cls_name)
     params = context_params.get(paradigm_name, {})
     return ParadigmClass(**params)
+
+def validate_list_per_paradigm(all_paradigm_codes, ds_list, list_name):
+    """
+    Validate and normalize a dataset list.
+
+    Ensures the user-provided list of datasets is valid for use in the benchmark.
+    Allows dataset lists that contain entries for multiple paradigms, as long as
+    at least one dataset is compatible with the current paradigm.
+
+    Checks:
+    - The input is a list or tuple.
+    - The list is not empty.
+    - All elements are either strings or BaseDataset objects (no mix).
+    - No duplicates are present.
+    - At least one dataset matches the current paradigm’s available datasets (all_paradigm_codes).
+    - Fake datasets (codes starting with "FakeDataset") are always accepted.
+
+    Parameters
+    ----------
+    ds_list : list[str or BaseDataset]
+        The list to validate. Can contain dataset codes (e.g., ["BNCI2014-001"])
+        or dataset objects (instances of BaseDataset or its subclasses).
+    list_name : str
+        The name of the list ("include_datasets" or "exclude_datasets"),
+        used only for error messages.
+
+    Returns
+    -------
+    list[str]
+        A normalized list of dataset codes extracted from the input list.
+
+    """
+    if not isinstance(ds_list, (list, tuple)):
+        raise TypeError(f"{list_name} must be a list or tuple.")
+
+    # Empty list edge case
+    if len(ds_list) == 0:
+        raise ValueError(f"{list_name} cannot be an empty list.")
+
+    # Ensure homogeneity: all strings or all dataset objects
+    all_str = all(isinstance(x, str) for x in ds_list)
+    all_obj = all(isinstance(x, BaseDataset) for x in ds_list)
+    if not (all_str or all_obj):
+        raise TypeError(
+            f"{list_name} must contain either all strings or all dataset objects, not a mix."
+        )
+
+    # --- Handle case: list of dataset codes (strings) ---
+    if all_str:
+        # Check duplicates
+        if len(ds_list) != len(set(ds_list)):
+            raise ValueError(f"{list_name} contains duplicate dataset codes.")
+
+        # Accept all codes that belong to the current paradigm or are fake datasets
+        valid = [x for x in ds_list if x in all_paradigm_codes or x.startswith("FakeDataset")]
+        if not valid:
+            raise ValueError(
+                f"None of the datasets in {list_name} match the current paradigm’s datasets "
+                f"({all_paradigm_codes}). Provided: {ds_list}"
+            )
+        return valid
+
+    # --- Handle case: list of dataset objects ---
+    codes = [x.code for x in ds_list]
+    if len(codes) != len(set(codes)):
+        raise ValueError(f"{list_name} contains duplicate dataset instances.")
+
+    # Accept all dataset objects that belong to the current paradigm or are fake datasets
+    valid = [x.code for x in ds_list if x.code in all_paradigm_codes or x.code.startswith("FakeDataset")]
+    if not valid:
+        raise ValueError(
+            f"None of the dataset objects in {list_name} match the current paradigm’s datasets "
+            f"({all_paradigm_codes}). Provided: {[x.code for x in ds_list]}"
+        )
+    return valid
