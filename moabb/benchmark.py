@@ -184,7 +184,7 @@ def benchmark(  # noqa: C901
             # get the context
             log.debug(f"{paradigm}: {context_params[paradigm]}")
             p = get_paradigm_instance(paradigm, context_params)
-            # List of dataset class instances
+            # List of dataset class instances, handles FakeDatasets as well
             datasets = (
                 p.datasets
                 + [ds for ds in (include_datasets or []) if isinstance(ds, FakeDataset)]
@@ -353,10 +353,10 @@ def _inc_exc_datasets(datasets, include_datasets=None, exclude_datasets=None):
     # --- Helper to validate and normalize inputs ---
     def _validate_dataset_list(ds_list, list_name):
         """
-        Validate and normalize a dataset list. Is ensures that the user-provided list of datasets
+        Validate and normalize a dataset list. It ensures that the user-provided list of datasets
         is valid.
 
-        Specifically, it checks:
+        Checks:
         - The input is a list or tuple.
         - The list is not empty.
         - All elements are either strings or BaseDataset objects (no mix).
