@@ -63,10 +63,7 @@ class TestBenchmark:
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             paradigms=["FakeImageryParadigm"],
-            include_datasets=[
-                ds_imagery,
-                ds_p300
-            ],
+            include_datasets=[ds_imagery, ds_p300],
             overwrite=True,
         )
         assert len(res) == 8
