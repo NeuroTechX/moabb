@@ -68,7 +68,7 @@ from .erpcore2021 import (
     ErpCore2021_N400,
     ErpCore2021_P3,
 )
-from .fake import FakeDataset, FakeVirtualRealityDataset
+from .fake import FakeDataset, FakeVirtualRealityDataset, FakeP300Dataset
 from .gigadb import Cho2017
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
