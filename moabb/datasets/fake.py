@@ -155,6 +155,21 @@ class FakeDataset(BaseDataset):
     ):
         pass
 
+class FakeP300Dataset(FakeDataset):
+    """Fake P300 dataset with FakeP300Paradigm
+
+    .. versionadded:: 1.5.0
+    """
+
+    def __init__(self, seed=None):
+        super().__init__(
+            n_sessions=1,
+            n_runs=1,
+            n_subjects=2,
+            code="FakeP300Dataset",
+            event_list=dict(Target=2, NonTarget=1),
+            paradigm="FakeP300Paradigm",
+        )
 
 class FakeVirtualRealityDataset(FakeDataset):
     """Fake Cattan2019_VR dataset for test purpose.
