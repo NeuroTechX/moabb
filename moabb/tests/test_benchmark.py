@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from moabb import benchmark
-from moabb.datasets.fake import FakeDataset, FakeP300Dataset
+from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.base import optuna_available
 
 
@@ -19,7 +19,6 @@ class TestBenchmark:
         shutil.rmtree(rep_dir)
 
     def test_benchmark_strdataset(self):
-        fake_p300_ds = FakeP300Dataset()
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
@@ -30,7 +29,7 @@ class TestBenchmark:
             ],
             overwrite=True,
         )
-        assert len(res) == 57
+        assert len(res) == 60
 
     def test_benchmark_objdataset(self):
         res = benchmark(
