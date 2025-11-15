@@ -66,7 +66,7 @@ class TestBenchmark:
             include_datasets=[ds_imagery, ds_p300],
             overwrite=True,
         )
-        assert len(res) == 8
+        assert len(res) == 120
 
     def test_include_exclude(self):
         with pytest.raises(ValueError):
@@ -110,4 +110,4 @@ class TestBenchmark:
             overwrite=True,
             optuna=True,
         )
-        assert len(res) == 8
+        assert len(res) == 120
