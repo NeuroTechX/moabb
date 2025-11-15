@@ -25,7 +25,8 @@ class TestBenchmark:
             evaluations=["WithinSession"],
             paradigms=["FakeP300Paradigm", "FakeImageryParadigm"],
             include_datasets=[
-                "FakeDataset-p300-10-2--60-60--120-120--target-nontarget--c3-cz-c4"
+                "FakeDataset-p300-10-2--60-60--120-120--target-nontarget--c3-cz-c4",
+                "FakeDataset-imagery-10-2--60-60--120-120--lefthand-righthand--c3-cz-c4",
             ],
             overwrite=True,
         )
