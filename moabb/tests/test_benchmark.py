@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from moabb import benchmark
-from moabb.datasets.fake import FakeDataset
+from moabb.datasets.fake import FakeDataset, FakeP300Dataset
 from moabb.evaluations.base import optuna_available
 
 
@@ -19,13 +19,14 @@ class TestBenchmark:
         shutil.rmtree(rep_dir)
 
     def test_benchmark_strdataset(self):
+        fake_p300_ds = FakeP300Dataset()
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             paradigms=["FakeP300Paradigm", "FakeImageryParadigm"],
             include_datasets=[
                 "BNCI2014-001",
-                "FakeVirtualRealityDataset-p300-21-1--60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60-60--120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120-120--target-nontarget--c3-cz-c4",
+                fake_p300_ds.code,
             ],
             overwrite=True,
         )
