@@ -155,6 +155,7 @@ class FakeDataset(BaseDataset):
     ):
         pass
 
+
 class FakeP300Dataset(FakeDataset):
     """Fake P300 dataset with FakeP300Paradigm
 
@@ -170,6 +171,7 @@ class FakeP300Dataset(FakeDataset):
             event_list=dict(Target=2, NonTarget=1),
             paradigm="FakeP300Paradigm",
         )
+
 
 class FakeVirtualRealityDataset(FakeDataset):
     """Fake Cattan2019_VR dataset for test purpose.
