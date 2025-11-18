@@ -23,6 +23,7 @@ from moabb.pipelines.utils import (
     parse_pipelines_from_directory,
 )
 
+
 try:
     from codecarbon import EmissionsTracker  # noqa
 
@@ -162,10 +163,12 @@ def benchmark(  # noqa: C901
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     prdgms_from_pipelines = generate_paradigms(pipeline_configs, context_params, log)
-    
+
     if paradigms and not set(paradigms).issubset(prdgms_from_pipelines):
-        raise Exception("The paradigms you provided are not correctly filtering the paradigms from the pipelines that are used for processing.")
-    
+        raise Exception(
+            "The paradigms you provided are not correctly filtering the paradigms from the pipelines that are used for processing."
+        )
+
     # Filter requested benchmark paradigms vs available in provided pipelines
     if paradigms is not None:
         prdgms_from_pipelines = {p: prdgms_from_pipelines[p] for p in paradigms}
@@ -195,13 +198,17 @@ def benchmark(  # noqa: C901
                 if any(isinstance(ds, FakeDataset) for ds in (include_datasets or []))
                 else p.datasets
             )
-            compatible_datasets = _inc_exc_datasets(datasets, paradigm, include_datasets, exclude_datasets)
-            
+            compatible_datasets = _inc_exc_datasets(
+                datasets, paradigm, include_datasets, exclude_datasets
+            )
+
             if not compatible_datasets:
                 print(f"WARNING: Paradigm {paradigm} skipped.")
                 continue
-            
-            print(f"Datasets considered for {paradigm} paradigm {[dt.code for dt in compatible_datasets]}")
+
+            print(
+                f"Datasets considered for {paradigm} paradigm {[dt.code for dt in compatible_datasets]}"
+            )
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms_from_pipelines[paradigm].items():
@@ -249,12 +256,14 @@ def benchmark(  # noqa: C901
                 paradigm_results["evaluation"] = f"{evaluation}"
                 eval_results[f"{paradigm}"] = paradigm_results
                 df_eval.append(paradigm_results)
-                
+
             processed_paradigms = processed_paradigms + 1
 
         if processed_paradigms == 0:
-            raise Exception ("Non of the paradigms provided by the pipelines received compatible datasets to evaluate.")
-            
+            raise Exception(
+                "Non of the paradigms provided by the pipelines received compatible datasets to evaluate."
+            )
+
         # Combining FilterBank and direct paradigms
         eval_results = _combine_paradigms(eval_results)
 
@@ -338,7 +347,9 @@ def _save_results(eval_results, output, plot):
         analyze(prdgm_result, str(prdgm_path), plot=plot)
 
 
-def _inc_exc_datasets(paradigm_datasets, paradigm_name, include_datasets=None, exclude_datasets=None):
+def _inc_exc_datasets(
+    paradigm_datasets, paradigm_name, include_datasets=None, exclude_datasets=None
+):
     """
     Filter datasets based on include_datasets and exclude_datasets.
 
@@ -476,7 +487,7 @@ def _validate_list_per_paradigm(all_paradigm_codes, paradigm_name, ds_list, list
     # Ensure homogeneity: all strings or all dataset objects
     all_str = all(isinstance(x, str) for x in ds_list)
     all_obj = all(isinstance(x, BaseDataset) for x in ds_list)
-    
+
     if not (all_str or all_obj):
         raise TypeError(
             f"{list_name} must contain either all strings or all dataset objects, not a mix."
@@ -525,5 +536,5 @@ def _validate_list_per_paradigm(all_paradigm_codes, paradigm_name, ds_list, list
             f"WARNING: Some datasets in {list_name} are incompatible with paradigm {paradigm_name}. "
             f"Provided datasets: {ds_list}. Invalid datastes: {[x for x in ds_list if x not in valid]}"
         )
-        
+
     return valid
