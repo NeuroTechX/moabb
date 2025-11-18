@@ -49,7 +49,7 @@ class TestBenchmark:
         assert len(res) == 16
 
     def test_nodataset(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(Exception):
             benchmark(
                 pipelines=str(self.pp_dir),
                 exclude_datasets=["NonExistingDatasetCode"],
