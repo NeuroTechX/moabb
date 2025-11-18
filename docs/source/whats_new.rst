@@ -21,6 +21,7 @@ Enhancements
 ~~~~~~~~~~~~
 
 Bugs
+- Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by ``Anton Andreev`_)
 ~~~~
 
 API changes
