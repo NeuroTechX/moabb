@@ -1,16 +1,13 @@
 import glob
 import logging
 import os
-from pathlib import Path
-from typing import List, Optional
-
 import mne
 import numpy as np
+from pathlib import Path
+from typing import List, Optional
 from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
-
 from moabb.datasets.base import BaseDataset
-
 
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
@@ -78,11 +75,6 @@ class RomaniBF2025ERP(BaseDataset):
     >>> paradigm = P300(resample=128)
     >>> dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
     >>> subset = paradigm.get_data(dataset, [0, 1])
-
-    Loading the dataset and listing available sessions for subject P03:
-    >>> dataset = RomaniBF2025ERP()
-    >>> sessions = dataset.get_session_list(2)
-    >>> print("Sessions for subject 2:", sessions)
 
     Expected output:
     Sessions for subject 2: ['0grain', '1cb', '2cbExtra']
@@ -293,13 +285,8 @@ class RomaniBF2025ERP(BaseDataset):
             raise FileNotFoundError(f"Dataset folder not found: {self.data_folder}")
         return self.data_folder
 
-    def data_url(
+    def _data_url(
         self,
-        subject: str,
-        path: str,
-        force_update: bool = False,
-        update_path: bool = None,
-        verbose: bool = None,
     ) -> List[str]:
         """
         Return download URLs for the dataset.
@@ -412,11 +399,6 @@ class RomaniBF2025ERP(BaseDataset):
                     raw_cal, t_target=self.t_target, nt_target=self.nt_target
                 )
 
-                # drop raw stim channel since we have annotations and it would conflict
-                if "STI" in raw.ch_names:
-                    raw_cal.drop_channels(["STI"])
-                    raw_infer.drop_channels(["STI"])
-
                 sessions[ses_name] = {
                     "1calibration": raw_cal,
                 }
@@ -429,7 +411,7 @@ class RomaniBF2025ERP(BaseDataset):
         return sessions
 
     def _convert_events_to_labels(
-        self, raw: mne.io.Raw, t_target=1, nt_target=2
+        self, raw: mne.io.Raw, t_target=1, nt_target=2, stim_name = "STI"
     ) -> mne.io.Raw:
         events, event_id = mne.events_from_annotations(raw)
 
@@ -439,20 +421,20 @@ class RomaniBF2025ERP(BaseDataset):
 
         original_ids = np.unique(events[:, 2])
 
-        # Map all non-target events to 2
+        # Map all non-target events to nt_target
         events = events.copy()
-        events[events[:, 2] != t_target, 2] = nt_target  # Better indexing
+        events[events[:, 2] != t_target, 2] = nt_target
+        stim_data = np.zeros((1, raw.n_times), dtype=float)
 
-        logging.info(
-            f"Mapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}"
-        )
+        for event in events:
+            stim_data[0, event[0]] = event[2]
 
-        annotations = mne.annotations_from_events(
-            events,
-            sfreq=raw.info["sfreq"],
-            event_desc={t_target: "Target", nt_target: "NonTarget"},
-        )
-        raw.set_annotations(annotations)
+        logging.debug(f"Mapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}")
+
+        info = mne.create_info([stim_name], raw.info['sfreq'], ['stim'])
+        stim_raw = mne.io.RawArray(stim_data, info)
+        raw.drop_channels([stim_name])
+        raw.add_channels([stim_raw])
 
         return raw
 
@@ -478,9 +460,6 @@ class RomaniBF2025ERP(BaseDataset):
 
         return subjects
 
-    def get_session_list(self, subject):
-        subject_sessions = self._get_single_subject_data(subject)
-        return list(subject_sessions.keys())
 
     def __repr__(self):
         return (
