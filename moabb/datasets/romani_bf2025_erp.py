@@ -1,13 +1,16 @@
 import glob
 import logging
 import os
-import mne
-import numpy as np
 from pathlib import Path
 from typing import List, Optional
+
+import mne
+import numpy as np
 from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
+
 from moabb.datasets.base import BaseDataset
+
 
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
@@ -411,7 +414,7 @@ class RomaniBF2025ERP(BaseDataset):
         return sessions
 
     def _convert_events_to_labels(
-        self, raw: mne.io.Raw, t_target=1, nt_target=2, stim_name = "STI"
+        self, raw: mne.io.Raw, t_target=1, nt_target=2, stim_name="STI"
     ) -> mne.io.Raw:
         events, event_id = mne.events_from_annotations(raw)
 
@@ -429,9 +432,11 @@ class RomaniBF2025ERP(BaseDataset):
         for event in events:
             stim_data[0, event[0]] = event[2]
 
-        logging.debug(f"Mapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}")
+        logging.debug(
+            f"Mapping original event IDs {original_ids} to Target={t_target} and NonTarget={nt_target}"
+        )
 
-        info = mne.create_info([stim_name], raw.info['sfreq'], ['stim'])
+        info = mne.create_info([stim_name], raw.info["sfreq"], ["stim"])
         stim_raw = mne.io.RawArray(stim_data, info)
         raw.drop_channels([stim_name])
         raw.add_channels([stim_raw])
@@ -459,7 +464,6 @@ class RomaniBF2025ERP(BaseDataset):
             logging.warning("No subjects found in BIDS folder.")
 
         return subjects
-
 
     def __repr__(self):
         return (
