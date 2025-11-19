@@ -19,6 +19,7 @@ Develop branch  - 1.5  (dev)
 --------------------------------------
 Enhancements
 ~~~~~~~~~~~~
+- Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
 
 Bugs
 - Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by ``Anton Andreev`_)
@@ -618,4 +619,5 @@ API changes
 .. _Lucas Heck: https://github.com/lucas-heck
 .. _Simon Kojima: https://github.com/simonkojima
 .. _Griffin Keeler: https://github.com/griffinkeeler
-.. _ Kosei Nakada: https://github.com/ponpopon
+.. _Kosei Nakada: https://github.com/ponpopon
+.. _Romani Michele: https://github.com/BRomans
