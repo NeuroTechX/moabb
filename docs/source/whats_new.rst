@@ -22,8 +22,9 @@ Enhancements
 - Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
 
 Bugs
-- Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by ``Anton Andreev`_)
 ~~~~
+- Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by `Anton Andreev`_)
+- Fixes :class:`moabb.datasets.preprocessing.SetRawAnnotations` in case no STIM channel is present (:gh:`838` by `Pierre Guetschel`_ and `Simon Kojima`_)
 
 API changes
 ~~~~~~~~~~~
