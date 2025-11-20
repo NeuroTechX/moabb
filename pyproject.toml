@@ -1,6 +1,7 @@
 [build-system]
 requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
+version = "1.14.1"
 
 [project]
 name = "moabb"
@@ -80,7 +81,7 @@ docs = [
     "sphinxcontrib-bibtex>=2.6.3",
     "sphinx-favicon>=1.0.1",
     "mne-features>=0.3",
-    "snowballstemmer<3",
+    "snowballstemmer>3",
 ]
 all = [
     "moabb[carbonemission]",
@@ -93,8 +94,6 @@ all = [
 [tool.setuptools]
 py-modules = []
 
-[tool.setuptools.dynamic]
-version = {attr = "moabb.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -106,7 +105,7 @@ namespaces = false
 
 [tool.black]
 line-length = 90
-target-version = ["py38"]
+target-version = ["py310"]
 
 [tool.isort]
 src_paths = ["moabb"]
