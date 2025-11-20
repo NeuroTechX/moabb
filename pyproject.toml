@@ -55,9 +55,9 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://neurotechx.github.io/moabb"
+homepage = "https://moabb.neurotechx.com/docs/index.html"
 repository = "https://github.com/NeuroTechX/moabb"
-documentation = "https://neurotechx.github.io/moabb"
+documentation = "https://moabb.neurotechx.com/docs/index.html"
 
 [project.optional-dependencies]
 carbonemission = ["codecarbon>=2.1.4"]
@@ -96,14 +96,11 @@ all = [
 [tool.setuptools]
 py-modules = []
 
-
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["moabb*"]
 exclude = []
 namespaces = false
-
-
 
 [tool.black]
 line-length = 90
