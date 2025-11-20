@@ -7,7 +7,7 @@ import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline
-from sklearn.utils._repr_html import _VisualBlock
+from sklearn.utils._repr_html.estimator import _VisualBlock
 
 
 log = logging.getLogger(__name__)
