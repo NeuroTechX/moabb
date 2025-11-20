@@ -1,7 +1,9 @@
 [build-system]
 requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
-version = "1.14.1"
+
+[tool.setuptools.dynamic]
+version = {attr = "moabb.__version__"}
 
 [project]
 name = "moabb"
