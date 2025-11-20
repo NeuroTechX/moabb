@@ -236,12 +236,14 @@ try:
 
     class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
         _estimator_type = "classifier"
+
         def __sklearn_tags__(self):  # scikit-learn >=1.7 tag override
             try:
                 tags = super().__sklearn_tags__()
             except Exception:
                 # Fallback lightweight tag container
                 from types import SimpleNamespace
+
                 tags = SimpleNamespace()
             # Ensure estimator_type is seen as classifier for response method logic
             tags.estimator_type = "classifier"
@@ -259,6 +261,7 @@ def check_search_available():
     Always returns a classifier-only OptunaSearchCV when optuna is installed.
     """
     if _classifier_wrapper_available and OptunaSearchCVClassifier is not None:
+
         def OptunaSearchCV(estimator, param_distributions, **kwargs):
             return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
 
@@ -266,4 +269,3 @@ def check_search_available():
         return search_methods, True
     else:
         return {"grid": GridSearchCV}, False
-
