@@ -96,7 +96,7 @@ from .upper_limb import Ofner2017
 from .utils import _init_dataset
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
-
+from .romani_bf2025_erp import RomaniBF2025ERP
 
 # Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.

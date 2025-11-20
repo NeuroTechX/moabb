@@ -35,6 +35,7 @@ _SFREQ = 250
 class RomaniBF2025ERP(BaseDataset):
     """
     MOABB class for BrainForm event-related potentials (ERP) dataset.
+
     .. figure:: https://arxiv.org/html/2510.10169v2/brainform-tasks.png
         :align: center
         :alt: BrainForm event-related potentials (ERP) dataset.
@@ -82,19 +83,20 @@ class RomaniBF2025ERP(BaseDataset):
     Expected output:
     Sessions for subject 2: ['0grain', '1cb', '2cbExtra']
 
-    Recording details:
-        - EEG signals were recorded using a g.tec Unicorn with a sampling rate of 250 Hz and conductive gel applied.
+    Notes
+    -----
+    - EEG signals were recorded using a g.tec Unicorn with a sampling rate of 250 Hz and conductive gel applied.
 
-        - Data were collected in Trento, Italy, where the power line frequency is 50 Hz.
+    - Data were collected in Trento, Italy, where the power line frequency is 50 Hz.
 
-        - EEG was recorded from 8 scalp electrodes according to the international 10--20 system:
-          "Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"
-          EEG signals were referenced to the right mastoid and grounded to the left mastoid.
+    - EEG was recorded from 8 scalp electrodes according to the international 10--20 system:
+      "Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"
+      EEG signals were referenced to the right mastoid and grounded to the left mastoid.
 
-        - Events for the calibration are encoded as follows:
-            - 1: Target
-            - 2: NonTarget
-        - For inference sessions, events only indicate stimulus onset without ground truth labels (from 1 to 10).
+    - Events for the calibration are encoded as follows:
+        - 1: Target
+        - 2: NonTarget
+    - For inference sessions, events only indicate stimulus onset without ground truth labels (from 1 to 10).
 
     Subjects indexing:
     {0: 'P01', 1: 'P02', 2: 'P03', 3: 'P04', 4: 'P05', 5: 'P06', 6: 'P07', 7: 'P08', 8: 'P09', 9: 'P10', 10: 'P11',
@@ -104,10 +106,10 @@ class RomaniBF2025ERP(BaseDataset):
     References
     ----------
 
-    [1] M. Romani, D. Zanoni, E. Farella, and L. Turchet, “BrainForm: a Serious Game for BCI Training and Data Collection,”
-    Oct. 14, 2025, arXiv: arXiv:2510.10169. doi: 10.48550/arXiv.2510.10169.
-    [2] M. Romani, F. Paissan, A. Fossà, and E. Farella, “Explicit modelling of subject dependency in BCI decoding,”
-    Sept. 27, 2025, arXiv: arXiv:2509.23247. doi: 10.48550/arXiv.2509.23247.
+    .. [1] M. Romani, D. Zanoni, E. Farella, and L. Turchet, "BrainForm: a Serious Game for BCI Training and Data Collection,"
+           Oct. 14, 2025, arXiv: arXiv:2510.10169. doi: 10.48550/arXiv.2510.10169.
+    .. [2] M. Romani, F. Paissan, A. Fossà, and E. Farella, "Explicit modelling of subject dependency in BCI decoding,"
+           Sept. 27, 2025, arXiv: arXiv:2509.23247. doi: 10.48550/arXiv.2509.23247.
 
 
     """

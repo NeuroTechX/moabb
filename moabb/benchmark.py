@@ -60,65 +60,82 @@ def benchmark(  # noqa: C901
     will be run. If no paradigms are mentioned, all pipelines will be run.
 
     To define the include_datasets or exclude_dataset, you could start from the full dataset list,
-    using for example the following code:
-    > # Choose your paradigm
-    > p = moabb.paradigms.SSVEP()
-    > # Get the class names
-    > print(p.datasets)
-    > # Get the dataset code
-    > print([d.code for d in p.datasets])
+    using for example the following code::
+
+        # Choose your paradigm
+        p = moabb.paradigms.SSVEP()
+        # Get the class names
+        print(p.datasets)
+        # Get the dataset code
+        print([d.code for d in p.datasets])
 
     Parameters
     ----------
-    pipelines: str or list of dict
+    pipelines : str or list of dict
        Folder containing the pipelines to evaluate or path to a single pipeline file,
        or a list of scikit-learn pipelines with format:
 
-       pipelines = [
-                    {
-                        "paradigms": ["SomeParadigm"],
-                        "pipeline": make_pipeline(Transformer1(), Transformer2(), Classifier()),
-                        "name": "PipelineName"
-                    },
-                    {
-                        "paradigms": ["AnotherParadigm"],
-                        "pipeline": make_pipeline(TransformerA(), ClassifierB()),
-                        "name": "AnotherPipelineName"
-                    }
-                   ]
+       .. code-block:: python
+
+           pipelines = [
+               {
+                   "paradigms": ["SomeParadigm"],
+                   "pipeline": make_pipeline(Transformer1(), Transformer2(), Classifier()),
+                   "name": "PipelineName"
+               },
+               {
+                   "paradigms": ["AnotherParadigm"],
+                   "pipeline": make_pipeline(TransformerA(), ClassifierB()),
+                   "name": "AnotherPipelineName"
+               }
+           ]
+
        Each entry is a dictionary with 3 keys: "name", "pipeline", "paradigms".
-    evaluations: list of str
-        If to restrict the types of evaluations to be run. By default, all 3 base types are run
-        Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"]
-    paradigms: list of str
+
+    evaluations : list of str
+        If to restrict the types of evaluations to be run. By default, all 3 base types are run.
+        Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"].
+
+    paradigms : list of str
         To restrict the paradigms on which evaluations should be run.
         Can be a list of these elements ['LeftRightImagery', 'MotorImagery', 'FilterBankSSVEP', 'SSVEP',
-        'FilterBankMotorImagery']
-    results: str
-        Folder to store the results
-    overwrite: bool
-        Force evaluation of cached pipelines
-    output: str
-        Folder to store the analysis results
-    n_jobs: int
-        Number of threads to use for running parallel jobs
-    n_splits: int or None, default=None
+        'FilterBankMotorImagery'].
+
+    results : str
+        Folder to store the results.
+
+    overwrite : bool
+        Force evaluation of cached pipelines.
+
+    output : str
+        Folder to store the analysis results.
+
+    n_jobs : int
+        Number of threads to use for running parallel jobs.
+
+    n_splits : int or None, default=None
         This parameter only works for CrossSubjectEvaluation. It defines the
         number of splits to be done in the cross-validation. If None,
         the number of splits is equal to the number of subjects in the dataset.
-    plot: bool
-        Plot results after computing
-    contexts: str
+
+    plot : bool
+        Plot results after computing.
+
+    contexts : str
         File path to context.yml file that describes context parameters.
         If none, assumes all defaults. Must contain an entry for all
         paradigms described in the pipelines.
-    include_datasets: list of str Dataset codes or Dataset objects
-        Datasets (dataset.code or object) to include in the benchmark run.
+
+    include_datasets : list of str
+        Dataset codes or Dataset objects to include in the benchmark run.
         By default, all suitable datasets are included. If both include_datasets
         and exclude_datasets are specified, raise an error.
-    exclude_datasets: list of str Dataset codes or Dataset objects
-        Datasets to exclude from the benchmark run
-    optuna: Enable Optuna for the hyperparameter search
+
+    exclude_datasets : list of str
+        Dataset codes or Dataset objects to exclude from the benchmark run.
+
+    optuna : bool
+        Enable Optuna for the hyperparameter search.
 
     Returns
     -------

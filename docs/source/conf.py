@@ -430,7 +430,6 @@ intersphinx_mapping = {
     "mne": ("http://mne.tools/stable", None),
     "skorch": ("https://skorch.readthedocs.io/en/stable/", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
-    "moabb": ("https://neurotechx.github.io/moabb/", None),
 }
 
 # -- Options for sphinx-gallery ----------------------------------------------
