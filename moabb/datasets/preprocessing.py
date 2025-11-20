@@ -118,8 +118,8 @@ class SetRawAnnotations(FixedTransformer):
         if len(stim_channels) == 0:
             if raw.annotations is None:
                 log.warning(
-                "No stim channel nor annotations found, skipping setting annotations."
-            )
+                    "No stim channel nor annotations found, skipping setting annotations."
+                )
                 return raw
             events, _ = mne.events_from_annotations(raw, verbose=False)
         else:
