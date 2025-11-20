@@ -107,7 +107,7 @@ namespaces = false
 
 [tool.black]
 line-length = 90
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.isort]
 src_paths = ["moabb"]
