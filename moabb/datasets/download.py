@@ -257,7 +257,6 @@ def fs_get_file_list(article_id, version=None):
     return _fs_paginated_file_list(url, headers=headers)
 
 
-
 def fs_get_file_hash(filelist):
     """Returns a dict associating figshare file id to MD5 hash.
 

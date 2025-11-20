@@ -81,13 +81,13 @@ def benchmark(  # noqa: C901
                {
                    "paradigms": ["SomeParadigm"],
                    "pipeline": make_pipeline(Transformer1(), Transformer2(), Classifier()),
-                   "name": "PipelineName"
+                   "name": "PipelineName",
                },
                {
                    "paradigms": ["AnotherParadigm"],
                    "pipeline": make_pipeline(TransformerA(), ClassifierB()),
-                   "name": "AnotherPipelineName"
-               }
+                   "name": "AnotherPipelineName",
+               },
            ]
 
        Each entry is a dictionary with 3 keys: "name", "pipeline", "paradigms".
