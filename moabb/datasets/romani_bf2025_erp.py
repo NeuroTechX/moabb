@@ -83,8 +83,8 @@ class RomaniBF2025ERP(BaseDataset):
     Expected output:
     Sessions for subject 2: ['0grain', '1cb', '2cbExtra']
 
-    Recording details
-    -----------------
+    Notes
+    -----
     - EEG signals were recorded using a g.tec Unicorn with a sampling rate of 250 Hz and conductive gel applied.
 
     - Data were collected in Trento, Italy, where the power line frequency is 50 Hz.
