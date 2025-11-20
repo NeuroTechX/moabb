@@ -222,38 +222,48 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
         return optuna_params
 
 
+"""Classifier-only OptunaSearchCV wrapper logic.
+
+MOABB currently benchmarks classification tasks only. We therefore provide a
+single wrapper class adding ClassifierMixin and setting `_estimator_type` to
+"classifier" so that scikit-learn>=1.7 correctly infers response methods.
+This avoids the earlier need for dynamic factory logic and pickling issues
+with locally scoped classes.
+"""
+
+try:
+    from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
+
+    class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
+        _estimator_type = "classifier"
+        def __sklearn_tags__(self):  # scikit-learn >=1.7 tag override
+            try:
+                tags = super().__sklearn_tags__()
+            except Exception:
+                # Fallback lightweight tag container
+                from types import SimpleNamespace
+                tags = SimpleNamespace()
+            # Ensure estimator_type is seen as classifier for response method logic
+            tags.estimator_type = "classifier"
+            return tags
+
+    _classifier_wrapper_available = True
+except ImportError:  # pragma: no cover - optuna not installed path
+    OptunaSearchCVClassifier = None
+    _classifier_wrapper_available = False
+
+
 def check_search_available():
-    """Check if optuna is available"""
-    try:
-        from optuna.integration import OptunaSearchCV as _OptunaSearchCV
+    """Return available search methods and Optuna availability flag.
 
-        optuna_available = True
-
+    Always returns a classifier-only OptunaSearchCV when optuna is installed.
+    """
+    if _classifier_wrapper_available and OptunaSearchCVClassifier is not None:
         def OptunaSearchCV(estimator, param_distributions, **kwargs):
-            """
-            Factory function that returns OptunaSearchCV with correct mixin and tags.
-
-            This ensures sklearn 1.7+ can correctly detect if it's a classifier or regressor
-            by inheriting from the appropriate mixin and returning the correct tags.
-            """
-
-            class OptunaSearchCVClassifier(_OptunaSearchCV, ClassifierMixin):
-                _estimator_type = "classifier"
-
-                def __sklearn_tags__(self):
-                    """Override to return correct tags for sklearn 1.7+"""
-                    tags = super().__sklearn_tags__()
-                    tags.estimator_type = "classifier"
-                    return tags
-
             return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
 
-    except ImportError:
-        optuna_available = False
-
-    if optuna_available:
         search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+        return search_methods, True
     else:
-        search_methods = {"grid": GridSearchCV}
+        return {"grid": GridSearchCV}, False
 
-    return search_methods, optuna_available
