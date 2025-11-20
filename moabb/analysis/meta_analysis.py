@@ -74,21 +74,21 @@ def compute_pvals_wilcoxon(df, order=None):
     return out
 
 
-def _pairedttest_exhaustive(data):
-    """Exhaustive paired t-test for permutation tests.
+def _pairedttest_exact(data):
+    """Exact paired t-test.
 
-    Returns p-values for exhaustive ttest that runs through all possible
+    Returns p-values for exact t-test that runs through all possible
     permutations of the first dimension. Very bad idea for size greater than 12
 
     Parameters
     ----------
     data: ndarray of shape (n_subj, n_pipelines, n_pipelines)
-        Array of differences between scores for each pair of algorithms per subject
+        Differences between scores for each pair of pipelines per subject
 
     Returns
     -------
     pvals: ndarray of shape (n_pipelines, n_pipelines)
-        array of pvalues
+        pvalues
     """
     out = np.zeros(data.shape[1:], dtype=np.int32)
     true = data.sum(axis=0)
@@ -103,7 +103,7 @@ def _pairedttest_exhaustive(data):
 
     # Correct for p-values equal to 1
     # as they are invalid p-values for Stouffer's method.
-    # Note: as this is an exhaustive permutation test,
+    # Note: as this is an exact test,
     # one of the t-test is computed with the original statistic
     # So in practice out cannot contain zeros.
 
@@ -113,27 +113,25 @@ def _pairedttest_exhaustive(data):
 
 
 def _pairedttest_random(data, nperms, seed=None):
-    """Return p-values based on nperms permutations of a paired ttest.
+    """Randomized paired t-test.
 
-    data is a (subj, alg, alg) matrix of differences between scores for each
-    pair of algorithms per subject
+    Returns p-values based on nperms permutations of a paired t-test.
 
     Parameters
     ----------
     data: ndarray of shape (n_subj, n_pipelines, n_pipelines)
-        Array of differences between scores for each pair of algorithms per subject
+        Differences between scores for each pair of pipelines per subject
 
     Returns
     -------
     pvals: ndarray of shape (n_pipelines, n_pipelines)
-        array of pvalues
+        pvalues
     """
     rng = check_random_state(seed)
     out = np.ones(data.shape[1:], dtype=np.int32)
     true = data.sum(axis=0)
     for _ in range(nperms):
-        perm = rng.randint(2, size=(data.shape[0],))
-        perm[perm == 0] = -1
+        perm = rng.choice([1, -1], size=(data.shape[0],), replace=True)
         # multiply permutation by subject dimension and sum over subjects
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
@@ -151,7 +149,7 @@ def _pairedttest_random(data, nperms, seed=None):
 def compute_pvals_perm(df, order=None, seed=None):
     """Compute permutation test on aggregated results.
 
-    Returns kxk matrix of p-values computed via permutation test,
+    Returns a square matrix of p-values computed via permutation test,
     order defines the order of rows and columns
 
     Parameters
@@ -159,15 +157,15 @@ def compute_pvals_perm(df, order=None, seed=None):
     df: DataFrame
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
-    order: list
-        list of length (num algorithms) with names corresponding to df columns
+    order: list of length (n_pipelines)
+        Names corresponding to df columns
     seed: int | None
         random seed for reproducibility
 
     Returns
     -------
     pvals: ndarray of shape (n_pipelines, n_pipelines)
-        array of pvalues
+        pvalues
     """
     if order is None:
         order = df.columns
@@ -185,7 +183,7 @@ def compute_pvals_perm(df, order=None, seed=None):
     if data.shape[0] > 13:
         p = _pairedttest_random(data, 10000, seed=seed)
     else:
-        p = _pairedttest_exhaustive(data)
+        p = _pairedttest_exact(data)
     return p
 
 

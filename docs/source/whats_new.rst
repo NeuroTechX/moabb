@@ -40,6 +40,7 @@ Version 1.4.1  (Stable - PyPi)
 Enhancements
 ~~~~~~~~~~~~
 - Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
+- Improve compute_pvals_perm function (:gh:`818` by `Quentin Barthelemy`_)
 
 Bugs
 - Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by `Anton Andreev`_)

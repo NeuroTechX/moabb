@@ -7,7 +7,7 @@ from typing import Sequence
 
 from mne.utils.config import _open_lock
 from numpy import argmax
-from sklearn.base import is_classifier, ClassifierMixin, RegressorMixin
+from sklearn.base import ClassifierMixin
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
@@ -228,23 +228,24 @@ def check_search_available():
         from optuna.integration import OptunaSearchCV as _OptunaSearchCV
 
         optuna_available = True
-        
+
         def OptunaSearchCV(estimator, param_distributions, **kwargs):
             """
             Factory function that returns OptunaSearchCV with correct mixin and tags.
-            
+
             This ensures sklearn 1.7+ can correctly detect if it's a classifier or regressor
             by inheriting from the appropriate mixin and returning the correct tags.
             """
+
             class OptunaSearchCVClassifier(_OptunaSearchCV, ClassifierMixin):
                 _estimator_type = "classifier"
-                
+
                 def __sklearn_tags__(self):
                     """Override to return correct tags for sklearn 1.7+"""
                     tags = super().__sklearn_tags__()
                     tags.estimator_type = "classifier"
                     return tags
-            
+
             return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
 
     except ImportError:
