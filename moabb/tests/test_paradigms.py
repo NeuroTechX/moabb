@@ -43,6 +43,22 @@ class SimpleMotorImagery(BaseMotorImagery):  # Needed to assess BaseImagery
 
 
 class TestMotorImagery(unittest.TestCase):
+
+    def test_paradigm_interval(self):
+        paradigm = SimpleMotorImagery()
+        for use_annotations in [True, False]:
+            dataset = FakeDataset(paradigm="imagery", annotations=use_annotations, seed=12)
+            dataset.interval=(0, 4)
+            #checking that the random data generation is consistent for the same interval
+            X1, _,_ = paradigm.get_data(dataset, subjects=[1])
+            X2, _,_ = paradigm.get_data(dataset, subjects=[1])
+            np.testing.assert_array_equal(X1, X2)
+
+            dataset.interval=(1, 5)
+            # checking that changing the interval changes the data selected
+            X3, _,_ = paradigm.get_data(dataset, subjects=[1])
+            assert not np.array_equal(X1, X3)
+
     def test_BaseImagery_paradigm(self):
         paradigm = SimpleMotorImagery()
         dataset = FakeDataset(paradigm="imagery")
