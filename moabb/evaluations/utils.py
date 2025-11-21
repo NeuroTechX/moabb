@@ -1,3 +1,12 @@
+"""Evaluation utilities and classifier-only OptunaSearchCV wrapper.
+
+MOABB currently benchmarks classification tasks only. We therefore provide a
+single wrapper class adding ClassifierMixin and setting `_estimator_type` to
+"classifier" so that scikit-learn>=1.7 correctly infers response methods. This
+avoids the earlier need for dynamic factory logic and pickling issues with
+locally scoped classes.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -222,15 +231,6 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
         return optuna_params
 
 
-"""Classifier-only OptunaSearchCV wrapper logic.
-
-MOABB currently benchmarks classification tasks only. We therefore provide a
-single wrapper class adding ClassifierMixin and setting `_estimator_type` to
-"classifier" so that scikit-learn>=1.7 correctly infers response methods.
-This avoids the earlier need for dynamic factory logic and pickling issues
-with locally scoped classes.
-"""
-
 try:
     from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
 
@@ -246,7 +246,10 @@ try:
 
                 tags = SimpleNamespace()
             # Ensure estimator_type is seen as classifier for response method logic
-            tags.estimator_type = "classifier"
+            if isinstance(tags, dict):
+                tags["estimator_type"] = "classifier"
+            else:
+                tags.estimator_type = "classifier"
             return tags
 
     _classifier_wrapper_available = True
