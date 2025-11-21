@@ -92,7 +92,17 @@ def score_plot(data, pipelines=None, orientation="vertical"):
         ax.axhline(0.5, linestyle="--", color="k", linewidth=2)
     ax.set_title("Scores per dataset and algorithm")
     handles, labels = ax.get_legend_handles_labels()
-    color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
+    color_dict = {}
+    for lb, h in zip(labels, handles):
+        if hasattr(h, "get_facecolor"):
+            color_dict[lb] = h.get_facecolor()[0]
+        elif hasattr(h, "get_color"):
+            color_dict[lb] = h.get_color()
+        elif hasattr(h, "get_markerfacecolor"):
+            color_dict[lb] = h.get_markerfacecolor()
+        else:
+            # Fallback: try to get color from the line
+            color_dict[lb] = h.get_color() if hasattr(h, "get_color") else "C0"
     plt.tight_layout()
 
     return fig, color_dict
