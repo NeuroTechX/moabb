@@ -209,6 +209,28 @@ def fs_issue_request(method, url, headers, data=None, binary=False):
     return response_data
 
 
+def _fs_paginated_file_list(base_url, headers, page_size=1000):
+    files = []
+    page = 1
+
+    while True:
+        page_url = f"{base_url}?page={page}&page_size={page_size}"
+        response = fs_issue_request("GET", page_url, headers=headers)
+
+        if isinstance(response, dict):
+            page_files = response.get("files", [])
+        else:
+            page_files = response
+
+        if not page_files:
+            break
+
+        files.extend(page_files)
+        page += 1
+
+    return files
+
+
 def fs_get_file_list(article_id, version=None):
     """List all the files associated with a given article.
 
@@ -225,16 +247,14 @@ def fs_get_file_list(article_id, version=None):
         HTTP request response as a python dict
     """
     fsurl = "https://api.figshare.com/v2"
+    headers = {"Content-Type": "application/json"}
+
     if version is None:
-        url = fsurl + "/articles/{}".format(article_id)
-        headers = {"Content-Type": "application/json"}
-        response = fs_issue_request("GET", url, headers=headers)
-        return response["files"]
+        url = fsurl + "/articles/{}/files".format(article_id)
     else:
-        url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
-        headers = {"Content-Type": "application/json"}
-        request = fs_issue_request("GET", url, headers=headers)
-        return request["files"]
+        url = fsurl + "/articles/{}/versions/{}/files".format(article_id, version)
+
+    return _fs_paginated_file_list(url, headers=headers)
 
 
 def fs_get_file_hash(filelist):
