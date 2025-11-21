@@ -1,0 +1,8 @@
+include README.rst
+include LICENSE.txt
+include NOTICE.txt
+
+include moabb/datasets/summary_*.csv
+
+recursive-include docs *.ipynb *.rst conf.py Makefile
+recursive-exclude docs *checkpoint.ipynb
