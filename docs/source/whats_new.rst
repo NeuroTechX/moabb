@@ -34,7 +34,7 @@ Version 1.5  (Source - GitHub)
 
 
 
-Version 1.4.1  (Stable - PyPi)
+Version 1.4.2  (Stable - PyPi)
 --------------------------------------
 
 Enhancements
