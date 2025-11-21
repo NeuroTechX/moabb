@@ -165,7 +165,7 @@ class TestStats:
         n_perms = 10000  # hardcoded in _pairedttest_random
         pvals = ma.compute_pvals_perm(df, seed=rng)
         p1vsp2 = pvals[0, 1]
-        assert p1vsp2 >= 1 / n_perms, "P-values cannot be zero "
+        assert p1vsp2 >= 1 / n_perms, f"P-values cannot be zero {pvals}"
 
 
 class TestResults:
