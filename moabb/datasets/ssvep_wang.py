@@ -67,12 +67,12 @@ class Wang2016(BaseDataset):
 
     Information for all subjects was listed in a ‘Sub_info.txt’ file. For each
     subject, there are five factors including ‘Subject Index’, ‘Gender’, ‘Age’,
-    ‘Handedness’, and ‘Group’. Subjects were divided into an ‘experienced’
-    group (eight subjects, S01-S08) and a ‘naive’ group (27 subjects, S09-S35)
+    'Handedness', and 'Group'. Subjects were divided into an 'experienced'
+    group (eight subjects, S01-S08) and a 'naive' group (27 subjects, S09-S35)
     according to their experience in SSVEP-based BCIs.
 
-    Warning
-    -------
+    Warnings
+    --------
     The original dataset includes two channels labeled 'CB1' and 'CB2',
     which are **not part of the standard 10-20 EEG montage**.
     Although the authors of Wang2016 state that the 10-20 layout was used,

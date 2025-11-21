@@ -14,24 +14,46 @@ What's new
 
 .. _current:
 
+Version 1.5  (Source - GitHub)
+-------------------------------
 
-Develop branch  - 1.5  (dev)
+🚀 Enhancements
+^^^^^^^^^^^^^^^
+
+🧐 API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+🛠 Requirements
+^^^^^^^^^^^^^^^
+
+🪲 Bug fixes
+^^^^^^^^^^^^
+
+⚕️ Code health
+^^^^^^^^^^^^^^
+
+
+
+Version 1.4.1  (Stable - PyPi)
 --------------------------------------
+
 Enhancements
 ~~~~~~~~~~~~
 - Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
 - Improve compute_pvals_perm function (:gh:`818` by `Quentin Barthelemy`_)
 
 Bugs
-- Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by ``Anton Andreev`_)
-~~~~
+- Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by `Anton Andreev`_)
+- Fixing pagination issue with figshare (:gh:`839` by `Bruno Aristimunha`_)
 
+~~~~
 API changes
 ~~~~~~~~~~~
 
 
-Develop branch  - 1.4  (Stable - PyPi)
---------------------------------------
+
+Version  - 1.4
+-----------------------
 Enhancements
 ~~~~~~~~~~~~
 - Update to pyRiemann 0.9 and numpy 2.0 for improved compatibility (:gh:`789` by `Gregoire Cattan`_ and `Bruno Aristimunha`_)

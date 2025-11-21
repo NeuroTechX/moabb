@@ -7,6 +7,7 @@ from typing import Sequence
 
 from mne.utils.config import _open_lock
 from numpy import argmax
+from sklearn.base import ClassifierMixin
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
@@ -221,18 +222,54 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
         return optuna_params
 
 
+# Classifier-only OptunaSearchCV wrapper logic.
+#
+# MOABB currently benchmarks classification tasks only. We therefore provide a
+# single wrapper class adding ClassifierMixin and setting `_estimator_type` to
+# "classifier" so that scikit-learn>=1.7 correctly infers response methods.
+# This avoids the earlier need for dynamic factory logic and pickling issues
+# with locally scoped classes.
+
+try:
+    from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
+
+    class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
+        _estimator_type = "classifier"
+
+        def __sklearn_tags__(self):  # scikit-learn >=1.7 tag override
+            tags = super().__sklearn_tags__()
+
+            if isinstance(tags, dict):
+                tags["estimator_type"] = "classifier"
+                return tags
+
+            try:
+                tags["estimator_type"] = "classifier"
+            except Exception:
+                try:
+                    tags.estimator_type = "classifier"
+                except Exception:
+                    return {"estimator_type": "classifier"}
+
+            return tags
+
+    _classifier_wrapper_available = True
+except ImportError:  # pragma: no cover - optuna not installed path
+    OptunaSearchCVClassifier = None
+    _classifier_wrapper_available = False
+
+
 def check_search_available():
-    """Check if optuna is available"""
-    try:
-        from optuna.integration import OptunaSearchCV
+    """Return available search methods and Optuna availability flag.
 
-        optuna_available = True
-    except ImportError:
-        optuna_available = False
+    Always returns a classifier-only OptunaSearchCV when optuna is installed.
+    """
+    if _classifier_wrapper_available and OptunaSearchCVClassifier is not None:
 
-    if optuna_available:
+        def OptunaSearchCV(estimator, param_distributions, **kwargs):
+            return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
+
         search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+        return search_methods, True
     else:
-        search_methods = {"grid": GridSearchCV}
-
-    return search_methods, optuna_available
+        return {"grid": GridSearchCV}, False

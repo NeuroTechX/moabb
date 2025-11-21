@@ -87,9 +87,10 @@ class Kojima2024B(BaseDataset):
     Each run included 4 trials, each with a different target stimulus.
     In each trial, all deviant stimuli (D1--D4) were presented 15 times.
 
-    Recording Details:
-        - EEG signals were recorded using a BrainAmp system (Brain Products, Germany)
-          at a sampling rate of 1000 Hz.
+    Notes
+    -----
+    - EEG signals were recorded using a BrainAmp system (Brain Products, Germany)
+      at a sampling rate of 1000 Hz.
 
         - Data were collected in Tokyo, Japan, where the power line frequency is 50 Hz.
 
@@ -116,9 +117,7 @@ class Kojima2024B(BaseDataset):
             - ``"2stream"``: load only the 2-stream condition.
             - ``"4stream"``: load only the 4-stream condition.
 
-        Note
-        ----
-        For each task condition, the total number of trials per class is:
+            For each task condition, the total number of trials per class is:
 
         - ``"2stream"``: 1080 NT / 360 T
         - ``"4stream"``: 1080 NT / 360 T

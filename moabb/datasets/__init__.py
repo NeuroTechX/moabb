@@ -82,6 +82,7 @@ from .neiry import DemonsP300
 from .phmd_ml import HeadMountedDisplay  # noqa: F401
 from .phmd_ml import Cattan2019_PHMD
 from .physionet_mi import PhysionetMI
+from .romani_bf2025_erp import RomaniBF2025ERP
 from .schirrmeister2017 import Schirrmeister2017
 from .sosulski2019 import Sosulski2019
 from .ssvep_exo import SSVEPExo  # noqa: F401
