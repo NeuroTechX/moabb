@@ -173,7 +173,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         params = inspect.signature(self.cv_class).parameters
         # When shuffle=True, only allow cv_classes that explicitly support shuffling
         # (i.e., have a 'shuffle' parameter)
-        # changing here 
+        # changing here
         params_key = params.keys()
 
         if shuffle and ("shuffle" not in params_key and "random_state" not in params_key):
