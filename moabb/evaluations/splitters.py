@@ -171,10 +171,12 @@ class CrossSessionSplitter(BaseCrossValidator):
         self.random_state = random_state
 
         params = inspect.signature(self.cv_class).parameters
-        if shuffle and ("shuffle" not in params and "random_state" not in params):
+        # When shuffle=True, only allow cv_classes that explicitly support shuffling
+        # (i.e., have a 'shuffle' parameter)
+        if shuffle and "shuffle" not in params:
             raise ValueError(
                 f"Shuffling is not supported for {cv_class.__name__}. "
-                "Choose a different `cv_class` or use `shuffle=False`."
+                "Choose a different `cv_class` or use `shuffle=False`. "
                 "Example of `cv_class`: `GroupShuffleSplit`: "
                 "CrossSessionSplitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)"
             )
