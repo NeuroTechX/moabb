@@ -121,7 +121,13 @@ class SetRawAnnotations(FixedTransformer):
                     "No stim channel nor annotations found, skipping setting annotations."
                 )
                 return raw
-            events, _ = mne.events_from_annotations(raw, verbose=False)
+            if not all(isinstance(mrk, int) for mrk in self.event_id.values()):
+                raise ValueError(
+                    "When no stim channel is present, event_id values must be integers (not lists)."
+                )
+            events, _ = mne.events_from_annotations(
+                raw, event_id=self.event_id, verbose=False
+            )
         else:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
