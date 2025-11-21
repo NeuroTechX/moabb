@@ -95,6 +95,7 @@ all = [
 
 [tool.setuptools]
 py-modules = []
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -118,10 +119,3 @@ addopts = "-ra -q"
 python_files = [
     "test_*.py",
 ]
-[metadata]
-
-[options]
-include_package_data = True
-
-[options.package_data]
-* = moabb/datasets/summary_*.csv
