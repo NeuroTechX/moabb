@@ -4,6 +4,7 @@ import pickle
 
 import pytest
 
+
 optuna = pytest.importorskip("optuna", reason="Optuna is required for these tests.")
 from optuna.distributions import FloatDistribution
 from sklearn.base import is_classifier
@@ -15,7 +16,8 @@ from moabb.evaluations.utils import OptunaSearchCVClassifier, check_search_avail
 
 
 pytestmark = pytest.mark.skipif(
-    not optuna_available, reason="Optuna is required for these tests.")
+    not optuna_available, reason="Optuna is required for these tests."
+)
 
 
 def _make_search_cv(**kwargs):
