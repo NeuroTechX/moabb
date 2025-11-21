@@ -12,7 +12,7 @@
     <link rel="icon" sizes="144x144" href="../_static/favicon-144.png" type="image/png">
     <link rel="mask-icon" href="../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="500x500" href="../_static/favicon-500.png" type="image/png">
-    <title>moabb.pipelines.classification.SSVEP_TRCA &#8212; moabb 1.3.0-dev documentation</title>
+    <title>moabb.pipelines.classification.SSVEP_TRCA &#8212; moabb 1.4.1-dev documentation</title>
   
   
   
@@ -52,7 +52,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=cba09fd8"></script>
+    <script src="../_static/documentation_options.js?v=f9f458ae"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -80,7 +80,7 @@
     <link rel="prev" title="moabb.pipelines.classification.SSVEP_CCA" href="moabb.pipelines.classification.SSVEP_CCA.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.3.0" />
+  <meta name="docsearch:version" content="1.4.1" />
   </head>
   
   
@@ -145,8 +145,8 @@
     
     
     
-    <img src="../_static/moabb_light.svg" class="logo__image only-light" alt="moabb 1.3.0-dev documentation - Home"/>
-    <img src="../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.3.0-dev documentation - Home"/>
+    <img src="../_static/moabb_light.svg" class="logo__image only-light" alt="moabb 1.4.1-dev documentation - Home"/>
+    <img src="../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.4.1-dev documentation - Home"/>
   
   
 </a></div>
@@ -417,6 +417,7 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N170.html">moabb.datasets.ErpCore2021_N170</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N400.html">moabb.datasets.ErpCore2021_N400</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_P3.html">moabb.datasets.ErpCore2021_P3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.RomaniBF2025ERP.html">moabb.datasets.RomaniBF2025ERP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kojima2024A.html">moabb.datasets.Kojima2024A</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kojima2024B.html">moabb.datasets.Kojima2024B</a></li>
 </ul>
@@ -798,11 +799,12 @@ identified as the predicted class of the data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_TRCA.set_score_request">
-<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><span class="pre">SSVEP_TRCA</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.10/site-packages/sklearn/utils/_metadata_requests.py#L1250-L1294"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.set_score_request" title="Link to this definition">#</a></dt>
-<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
-<p>Note that this method is only relevant if
-<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
-Please see <a class="reference external" href="http://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.7)"><span class="xref std std-ref">User Guide</span></a> on how the routing
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><span class="pre">SSVEP_TRCA</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.10/site-packages/sklearn/utils/_metadata_requests.py#L1285-L1330"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.set_score_request" title="Link to this definition">#</a></dt>
+<dd><p>Configure whether metadata should be requested to be passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant when this estimator is used as a
+sub-estimator within a <a class="reference external" href="http://scikit-learn.org/stable/glossary.html#term-meta-estimator" title="(in scikit-learn v1.7)"><span class="xref std std-term">meta-estimator</span></a> and metadata routing is enabled
+with <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
+Please check the <a class="reference external" href="http://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.7)"><span class="xref std std-ref">User Guide</span></a> on how the routing
 mechanism works.</p>
 <p>The options for each parameter are:</p>
 <ul class="simple">
@@ -816,12 +818,6 @@ existing request. This allows you to change the request for some
 parameters and not others.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.3.</span></p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method is only relevant if this estimator is used as a
-sub-estimator of a meta-estimator, e.g. used inside a
-<a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>. Otherwise it has no effect.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
