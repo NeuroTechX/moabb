@@ -3,16 +3,17 @@
 import pickle
 
 import pytest
-
-
-optuna = pytest.importorskip("optuna", reason="Optuna is required for these tests.")
-from optuna.distributions import FloatDistribution
 from sklearn.base import is_classifier
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 
 from moabb.evaluations.base import optuna_available
 from moabb.evaluations.utils import OptunaSearchCVClassifier, check_search_available
+
+
+optuna = pytest.importorskip("optuna", reason="Optuna is required for these tests.")
+
+from optuna.distributions import FloatDistribution  # noqa: E402
 
 
 pytestmark = pytest.mark.skipif(
