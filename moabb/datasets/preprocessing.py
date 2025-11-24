@@ -116,11 +116,20 @@ class SetRawAnnotations(FixedTransformer):
         offset = int(self.interval[0] * raw.info["sfreq"])
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
-            log.warning(
-                "No stim channel nor annotations found, skipping setting annotations."
+            if raw.annotations is None:
+                log.warning(
+                    "No stim channel nor annotations found, skipping setting annotations."
+                )
+                return raw
+            if not all(isinstance(mrk, int) for mrk in self.event_id.values()):
+                raise ValueError(
+                    "When no stim channel is present, event_id values must be integers (not lists)."
+                )
+            events, _ = mne.events_from_annotations(
+                raw, event_id=self.event_id, verbose=False
             )
-            return raw
-        events = mne.find_events(raw, shortest_event=0, verbose=False)
+        else:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
         events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
         events[:, 0] += offset
         if len(events) != 0:
