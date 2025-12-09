@@ -31,7 +31,7 @@ Version 1.5  (Source - GitHub)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
-- Fixing warnings from the latest scikit-learn version within the Preprocessing logic (:gh:`871` by `Bruno Aristimunha`_)
+- Fixing warnings from the latest scikit-learn version within the Preprocessing logic (:gh:`850` by `Bruno Aristimunha`_)
 
 
 Version 1.4.2  (Stable - PyPi)
