@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 import mne
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 from moabb.datasets.base import BaseDataset
@@ -14,6 +14,7 @@ from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
     EventsToLabels,
+    FixedPipeline,
     ForkPipelines,
     RawToEpochs,
     RawToEvents,
@@ -21,6 +22,7 @@ from moabb.datasets.preprocessing import (
     get_crop_pipeline,
     get_filter_pipeline,
     get_resample_pipeline,
+    make_fixed_pipeline,
 )
 
 
@@ -203,7 +205,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                     ]
                 )
                 steps.append((StepType.ARRAY, array_events_pipeline))
-            process_pipelines.append(Pipeline(steps))
+            process_pipelines.append(FixedPipeline(steps))
         return process_pipelines
 
     def make_labels_pipeline(self, dataset, return_epochs=False, return_raws=False):
@@ -211,12 +213,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         output of the postprocess_pipeline.
         Refer to the arguments of :func:`get_data` for more information."""
         if return_epochs:
-            labels_pipeline = make_pipeline(
+            labels_pipeline = make_fixed_pipeline(
                 EpochsToEvents(),
                 EventsToLabels(event_id=self.used_events(dataset)),
             )
         elif return_raws:
-            labels_pipeline = make_pipeline(
+            labels_pipeline = make_fixed_pipeline(
                 self._get_events_pipeline(dataset),
                 EventsToLabels(event_id=self.used_events(dataset)),
             )
@@ -424,10 +426,10 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         steps.append(
             (
                 "epoching",
-                make_pipeline(
+                make_fixed_pipeline(
                     ForkPipelines(
                         [
-                            ("raw", make_pipeline(None)),
+                            ("raw", make_fixed_pipeline(None)),
                             ("events", self._get_events_pipeline(dataset)),
                         ]
                     ),
@@ -448,7 +450,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             steps.append(("resample", get_resample_pipeline(self.resample)))
         if return_epochs:  # needed to concatenate epochs
             steps.append(("load_data", FunctionTransformer(methodcaller("load_data"))))
-        return Pipeline(steps)
+        return FixedPipeline(steps)
 
     def _get_array_pipeline(
         self, return_epochs, return_raws, dataset, processing_pipeline
@@ -466,7 +468,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             steps.append(("postprocess_pipeline", processing_pipeline))
         if len(steps) == 0:
             return None
-        return Pipeline(steps)
+        return FixedPipeline(steps)
 
     def match_all(
         self,

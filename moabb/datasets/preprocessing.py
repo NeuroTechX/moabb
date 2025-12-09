@@ -6,11 +6,48 @@ from typing import Dict, List, Tuple, Union
 import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import FunctionTransformer, Pipeline
+from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
 from sklearn.utils._repr_html.estimator import _VisualBlock
 
 
 log = logging.getLogger(__name__)
+
+
+class FixedPipeline(Pipeline):
+    """A Pipeline that is always considered fitted.
+
+    This is useful for pre-processing pipelines that don't require fitting,
+    as they only apply fixed transformations (e.g., filtering, epoching).
+    This avoids the FutureWarning from sklearn 1.8+ about unfitted pipelines.
+    """
+
+    def __sklearn_is_fitted__(self):
+        """Return True to indicate this pipeline is always considered fitted."""
+        return True
+
+
+def make_fixed_pipeline(*steps, memory=None, verbose=False):
+    """Create a FixedPipeline that is always considered fitted.
+
+    This is a drop-in replacement for sklearn's make_pipeline that creates
+    a pipeline marked as fitted, suitable for fixed transformations.
+
+    Parameters
+    ----------
+    *steps : list of estimators
+        List of (name, transform) tuples that are chained in the pipeline.
+    memory : str or object with the joblib.Memory interface, default=None
+        Used to cache the fitted transformers of the pipeline.
+    verbose : bool, default=False
+        If True, the time elapsed while fitting each step will be printed.
+
+    Returns
+    -------
+    p : FixedPipeline
+        A FixedPipeline object.
+    """
+
+    return FixedPipeline(_name_estimators(steps), memory=memory, verbose=verbose)
 
 
 def _is_none_pipeline(pipeline):
@@ -44,6 +81,11 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
     def fit(self, X, y=None):
         for _, t in self.transformers:
             t.fit(X)
+        return self
+
+    def __sklearn_is_fitted__(self):
+        """Return True to indicate this transformer is always considered fitted."""
+        return True
 
     def _sk_visual_block_(self):
         """Tell sklearn’s diagrammer to lay us out in parallel."""
@@ -65,7 +107,11 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
         # when using the pipeline
 
     def fit(self, X, y=None):
-        pass
+        return self
+
+    def __sklearn_is_fitted__(self):
+        """Return True to indicate this transformer is always considered fitted."""
+        return True
 
     def _sk_visual_block_(self):
         """Tell sklearn’s diagrammer to lay us out in parallel."""
@@ -103,6 +149,7 @@ class SetRawAnnotations(FixedTransformer):
     """
 
     def __init__(self, event_id, interval: Tuple[float, float]):
+        super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         values = _get_event_id_values(self.event_id)
@@ -153,6 +200,7 @@ class RawToEvents(FixedTransformer):
     """
 
     def __init__(self, event_id: dict[str, int], interval: Tuple[float, float]):
+        super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.interval = interval
@@ -212,6 +260,7 @@ class RawToFixedIntervalEvents(FixedTransformer):
         stop_offset,
         marker=1,
     ):
+        super().__init__()
         self.length = length
         self.stride = stride
         self.start_offset = start_offset
@@ -245,12 +294,16 @@ class RawToFixedIntervalEvents(FixedTransformer):
 
 
 class EpochsToEvents(FixedTransformer):
+    def __init__(self):
+        super().__init__()
+
     def transform(self, epochs, y=None):
         return epochs.events
 
 
 class EventsToLabels(FixedTransformer):
     def __init__(self, event_id):
+        super().__init__()
         self.event_id = event_id
 
     def transform(self, events, y=None):
@@ -269,6 +322,7 @@ class RawToEpochs(FixedTransformer):
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
     ):
+        super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.tmin = tmin

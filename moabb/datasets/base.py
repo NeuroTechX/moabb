@@ -15,10 +15,9 @@ from typing import Any, Dict, Union
 import mne_bids
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
 
 from moabb.datasets.bids_interface import StepType, _interface_map
-from moabb.datasets.preprocessing import SetRawAnnotations
+from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
 log = logging.getLogger(__name__)
@@ -393,7 +392,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.unit_factor = unit_factor
 
     def _create_process_pipeline(self):
-        return Pipeline(
+        return FixedPipeline(
             [
                 (
                     StepType.RAW,
@@ -620,7 +619,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                     self,
                     subject,
                     path=cache_config.path,
-                    process_pipeline=Pipeline(cached_steps),
+                    process_pipeline=FixedPipeline(cached_steps),
                     verbose=cache_config.verbose,
                 )
 
@@ -667,7 +666,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                         self,
                         subject,
                         path=cache_config.path,
-                        process_pipeline=Pipeline(
+                        process_pipeline=FixedPipeline(
                             cached_steps + remaining_steps[: step_idx + 1]
                         ),
                         verbose=cache_config.verbose,
