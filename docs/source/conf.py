@@ -232,11 +232,6 @@ html_theme_options = {
             url="https://pypi.org/project/moabb/",
             icon="fa-brands fa-python",
         ),
-        dict(
-            name="Discord",
-            url="https://discord.gg/5ewsHPGbTN",
-            icon="fa-brands fa-discord",
-        ),
     ],
     "icon_links_label": "External Links",  # for screen reader
     "use_edit_page_button": True,

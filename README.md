@@ -57,88 +57,28 @@ state of the art by 5% ...”.
 This project is under the umbrella of [NeuroTechX][link_neurotechx], the international
 community for NeuroTech enthusiasts.
 
-The project is currently maintained by:
+The Mother of all BCI Benchmarks was founded by [Alexander Barachant](http://alexandre.barachant.org/) and [Vinay Jayaram](https://vinay-jayaram.github.io/).
 
-<table style="text-align: center;">
-  <thead>
-    <tr>
-      <th>Sylvain Chevallier</th>
-      <th>Bruno Aristimunha</th>
-      <th>Igor Carrara</th>
-      <th>Pierre Guetschel</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5824988?s=150&amp;v=4" alt="Sylvain Chevallier"></td>
-      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
-      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
-      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/25532709?s=150&amp;v=4" alt="Pierre Guetschel"></td>
-</tr>
-  </tbody>
-</table>
+It is currently maintained by:
 
-The Mother of all BCI Benchmarks was founded by Alexander Barachant and Vinay Jayaram, who
-are experts in the field of Brain-Computer Interfaces (BCI). At the moment, both work as
-Research Scientists at Meta.
-
-<table style="text-align: center;">
-  <thead>
-    <tr>
-      <th>Alexander Barachant</th>
-      <th>Vinay Jayaram</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-<td style="padding: 0 15px;"><img src="http://alexandre.barachant.org/images/avatar.jpg" alt="Alexander Barachant" width="150" height="150"></td>
-<td style="padding: 0 15px;"><img src="https://beetl.ai/static/media/vinay.217f36bc.jpeg" alt="Vinay Jayaram" width="150" height="150"></td></tr>
-  </tbody>
-</table>
-
+* [Sylvain Chevallier](https://sylvchev.github.io/)
+* [Bruno Aristimunha](https://bruaristimunha.github.io/)
+* [Pierre Guetschel](https://github.com/PierreGtch)
+* [Grégoire Cattan](https://github.com/gcattan)
 ## Contributors
 
 The MOABB is a community project, and we are always thankful to all the contributors!
 
-<div id="contributors-container"></div>
+<a href="https://github.com/NeuroTechX/moabb/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=NeuroTechX/moabb" />
+</a>
 
-<script>
-const endpoint = 'https://api.github.com/repos/NeuroTechX/moabb/contributors';
-const container = document.getElementById('contributors-container');
-const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pierreGtch", "sara04", "pre-commit-ci[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
-fetch(endpoint)
-  .then(response => response.json())
-  .then(contributors => {
-    const filteredContributors = contributors.filter(contributor => !filterList.includes(contributor.login));    filteredContributors.forEach(contributor => {
-      const link = document.createElement('a');
-      link.href = contributor.html_url;
-      link.target = '_blank';
-      const img = document.createElement('img');
-      img.src = contributor.avatar_url;
-      img.alt = contributor.login;
-      img.style.width = '100px';
-      img.style.height = '100px';
-      img.style.objectFit = 'cover';
-      img.style.borderRadius = '50%';
-      link.appendChild(img);
-      container.appendChild(link);
-    });
-  });
-</script>
+## Acknowledgements
 
-Special acknowledge for the extra MOABB contributors:
+MOABB has benefited from the support of the following organizations:
 
-<table style="text-align: center;">
-  <thead>
-    <tr>
-      <th>Pedro Rodrigues</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-<td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/4588557?v=4" alt=" Pedro L. C. Rodrigues" width="150" height="150"></td>
-  </tbody>
-</table>
+<!-- Add your organization logos here -->
+<!-- Example: <img src="URL_TO_LOGO" alt="Organization Name" style="height:60px;"/> -->
 
 ### What do we need?
 
