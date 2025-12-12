@@ -77,8 +77,7 @@ The MOABB is a community project, and we are always thankful to all the contribu
 
 MOABB has benefited from the support of the following organizations:
 
-<!-- Add your organization logos here -->
-<!-- Example: <img src="URL_TO_LOGO" alt="Organization Name" style="height:60px;"/> -->
+<a href="https://www.dataia.eu/en"><img src="https://www.dataia.eu/themes/dataia/css/images/DATAIA-h-sansfond.png" alt="DATAIA" style="height:60px; background-color:#2e4a7d; padding:10px; border-radius:5px;"/></a>
 
 ### What do we need?
 
