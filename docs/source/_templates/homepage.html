@@ -1,14 +1,27 @@
-<!-- homepage gallery -->
-<div class="container">
-  <div class="d-flex flex-wrap flex-row justify-content-between">
+<!-- MOABB Homepage Hero Section -->
+<div class="container-fluid moabb-hero">
+  <div class="row justify-content-center text-center py-4">
+    <div class="col-12 col-lg-10">
+      <img src="{{ pathto('_static/moabb_logo.svg', 1) }}" alt="MOABB Logo" class="moabb-hero-logo mb-3">
+      <p class="h4 text-center font-weight-light moabb-tagline">
+        Mother of all BCI Benchmarks — Open-source Python package for benchmarking
+        Brain-Computer Interface algorithms on EEG datasets.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Homepage Feature Gallery -->
+<div class="container moabb-gallery-container">
+  <div class="d-flex flex-wrap flex-row justify-content-center">
     {% for item in carousel %}
       <div class="col-12 col-sm-6 col-lg-4 px-2 my-2">
         <div class="card frontpage-gallery">
           <a href="{{ item.url }}">
             <img class="card-img moabb-card" src="{{ item.img if item.img.startswith('http') else pathto('_static/homepage/' + item.img, 1) }}" alt="{{ item.alt }}">
-            <div class="card-img-overlay px-3 py-1">
-              <p class="lead mb-1 fadeout">{{ item.title }}</p>
-              <p class="card-text fadeout">{{ item.text }}</p>
+            <div class="card-img-overlay px-3 py-2">
+              <p class="lead mb-1 fadeout gallery-title">{{ item.title }}</p>
+              <p class="card-text fadeout gallery-text">{{ item.text }}</p>
             </div>
           </a>
         </div>
@@ -16,3 +29,5 @@
     {% endfor %}
   </div>
 </div>
+
+<hr class="moabb-divider">
