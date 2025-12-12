@@ -20,3 +20,53 @@
     border-left: 5px solid #007CBA !important;
   }
 }
+
+/* ******************************************************* homepage carousel */
+div.frontpage-gallery {
+    overflow: hidden;
+    height: 220px;
+    justify-content: center;
+}
+div.frontpage-gallery a {
+    text-decoration: none;
+    color: var(--pst-color-text-base);
+}
+div.frontpage-gallery img.card-img {
+    transform: scale(1.8);
+    transform-origin: 50% 0%;
+    opacity: 0.2;
+    transition: 400ms ease-out;
+}
+div.frontpage-gallery:hover img.card-img {
+    transform: scale(1.2);
+    opacity: 1.0;
+    transition: 400ms ease-out;
+}
+div.frontpage-gallery .fadeout {
+    opacity: 1.0;
+    transition: 200ms linear;
+}
+div.frontpage-gallery:hover .fadeout {
+    opacity: 0.0;
+    transition: 200ms linear;
+}
+/* affects the homepage gallery tiles */
+div.card {
+    border: 1px solid var(--pst-color-border);
+    background-color: var(--pst-color-background);
+}
+.card-header {
+    border-bottom-color: var(--pst-color-border);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="dark"] .card-header {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* MOABB specific card image styling */
+div.frontpage-gallery img.moabb-card {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}

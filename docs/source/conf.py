@@ -264,7 +264,7 @@ html_logo = "images/moabb_logo.svg"
 html_static_path = ["_static"]
 
 html_css_files = [
-    "https://raw.githubusercontent.com/neurotechx/moabb/refs/heads/develop/docs/source/_static/css/custom.css",
+    "css/custom.css",
     "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css",
 ]
 
@@ -302,6 +302,51 @@ html_context = {
     "github_repo": "moabb",
     "github_version": "develop",
     "doc_path": "docs",
+    # Homepage carousel highlighting MOABB components
+    "carousel": [
+        dict(
+            title="Datasets",
+            text="Access 30+ open EEG datasets for motor imagery, P300, and SSVEP paradigms.",
+            url="dataset_summary.html",
+            img="datasets_overview.png",
+            alt="Datasets overview",
+        ),
+        dict(
+            title="Evaluations",
+            text="Cross-session, cross-subject, and within-session evaluation schemes.",
+            url="auto_examples/tutorials/tutorial_1_simple_example_paradigm.html",
+            img="crosssubj.png",
+            alt="Cross-subject evaluation",
+        ),
+        dict(
+            title="Preprocessing",
+            text="Flexible preprocessing pipelines with MNE-Python integration.",
+            url="api.html#module-moabb.pipelines",
+            img="architecture.png",
+            alt="MOABB Architecture",
+        ),
+        dict(
+            title="Paradigms",
+            text="Motor imagery, P300, SSVEP, and other BCI paradigms ready to use.",
+            url="auto_examples/paradigm_examples/index.html",
+            img="M.png",
+            alt="Paradigms",
+        ),
+        dict(
+            title="Analysis & Statistics",
+            text="Comprehensive analysis tools, statistical tests, and visualizations.",
+            url="auto_examples/how_to_benchmark/index.html",
+            img="datasets_largest.png",
+            alt="Analysis and statistics",
+        ),
+        dict(
+            title="Benchmark Results",
+            text="Explore the largest BCI EEG benchmark with standardized results.",
+            url="paper_results.html",
+            img="withinsess.png",
+            alt="Benchmark results",
+        ),
+    ],
 }
 
 
