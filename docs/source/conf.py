@@ -71,6 +71,7 @@ extensions = [
     "numpydoc",
     "sphinx_favicon",
     "sphinxcontrib.jquery",
+    "sphinx_sitemap",
 ]
 
 
@@ -224,19 +225,28 @@ html_theme_options = {
         dict(
             name="GitHub",
             url="https://github.com/NeuroTechX/moabb",
-            icon="fa-brands fa-square-github",
+            icon="fa-brands fa-github",
+        ),
+        dict(
+            name="PyPI",
+            url="https://pypi.org/project/moabb/",
+            icon="fa-brands fa-python",
+        ),
+        dict(
+            name="Discord",
+            url="https://discord.gg/5ewsHPGbTN",
+            icon="fa-brands fa-discord",
         ),
     ],
-    "github_url": "https://github.com/NeuroTechX/moabb",
     "icon_links_label": "External Links",  # for screen reader
-    "use_edit_page_button": False,
+    "use_edit_page_button": True,
     "navigation_with_keys": False,
     "collapse_navigation": False,
     "navigation_depth": -1,
     "show_toc_level": 1,
     "nosidebar": True,
-    "navbar_end": ["theme-switcher"],
-    "announcement": "https://raw.githubusercontent.com/neurotechx/moabb/develop/docs/source/_templates/custom-template.html",
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "announcement": "If you use MOABB, remember to <a href='https://neurotechx.github.io/moabb/cite.html'>cite</a>! The largest BCI EEG benchmark is out! Check the <a href='https://neurotechx.github.io/moabb/paper_results.html'>results</a>.",
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
     "pygments_light_style": "tango",
@@ -245,6 +255,8 @@ html_theme_options = {
         "image_light": "moabb_light.svg",
         "image_dark": "moabb_dark.svg",
     },
+    "footer_start": ["copyright"],
+    "footer_end": ["sphinx-version", "theme-version"],
 }
 
 html_sidebars = {
@@ -262,6 +274,12 @@ html_logo = "images/moabb_logo.svg"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# Base URL for sitemap generation (required by sphinx_sitemap)
+html_baseurl = "https://neurotechx.github.io/moabb/"
+
+# Sitemap configuration
+sitemap_url_scheme = "{link}"
 
 html_css_files = [
     "css/custom.css",

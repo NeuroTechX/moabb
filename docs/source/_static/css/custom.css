@@ -39,6 +39,63 @@
     line-height: 1.5;
 }
 
+/* Quick Action Buttons */
+.moabb-quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-moabb-primary {
+    background-color: #007CBA;
+    color: white !important;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition: background-color 200ms ease, transform 200ms ease;
+}
+
+.btn-moabb-primary:hover {
+    background-color: #005a8c;
+    transform: translateY(-1px);
+}
+
+.btn-moabb-secondary {
+    background-color: transparent;
+    color: var(--pst-color-text-base) !important;
+    border: 1px solid var(--pst-color-border);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.btn-moabb-secondary:hover {
+    background-color: var(--pst-color-surface);
+    border-color: var(--pst-color-primary);
+    transform: translateY(-1px);
+}
+
+/* Badges Section */
+.moabb-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.moabb-badges a {
+    text-decoration: none;
+}
+
+.moabb-badges img {
+    height: 20px;
+}
+
 .moabb-gallery-container {
     margin-bottom: 2rem;
 }
@@ -143,6 +200,12 @@ div.frontpage-gallery img.moabb-card {
     .moabb-tagline {
         font-size: 1rem;
         padding: 0 1rem;
+    }
+
+    .btn-moabb-primary,
+    .btn-moabb-secondary {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
     }
 
     div.frontpage-gallery {

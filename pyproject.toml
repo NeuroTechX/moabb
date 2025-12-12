@@ -85,6 +85,7 @@ docs = [
     "sphinx-favicon>=1.0.1",
     "mne-features>=0.3",
     "snowballstemmer>=3.0.1",
+    "sphinx-sitemap",
 ]
 all = [
     "moabb[carbonemission]",
