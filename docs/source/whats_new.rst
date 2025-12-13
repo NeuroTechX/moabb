@@ -31,11 +31,32 @@ Version 1.5  (Source - GitHub)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
+
+
+
+Version 1.4.3 (Stable - PyPi)
+-------------------------------
+
+🚀 Enhancements
+^^^^^^^^^^^^^^^
+
+🧐 API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+🛠 Requirements
+^^^^^^^^^^^^^^^
+
+🪲 Bug fixes
+^^^^^^^^^^^^
 - Fixing warnings from the latest scikit-learn version within the Preprocessing logic (:gh:`850` by `Bruno Aristimunha`_)
+- Fixing compatibility with Scikit-learn 1.8 (:gh:`853` by `Bruno Aristimunha`_)
+
+⚕️ Code health
+^^^^^^^^^^^^^^
 
 
-Version 1.4.2  (Stable - PyPi)
---------------------------------------
+Version 1.4.2
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
