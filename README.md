@@ -149,8 +149,8 @@ If you use MOABB in your experiments, please cite MOABB and the related publicat
 
 - Citation guide: https://neurotechx.github.io/moabb/cite.html
 
-<details>
-<summary>Show APA + BibTeX</summary>
+<details open>
+<summary>Citation (APA + BibTeX)</summary>
 
 <p><strong>APA</strong></p>
 <pre><code>Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., &amp; Chevallier, S. (2025).

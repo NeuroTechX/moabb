@@ -241,7 +241,14 @@ html_theme_options = {
     "show_toc_level": 1,
     "nosidebar": True,
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
-    "announcement": "If you use MOABB, remember to <a href='https://neurotechx.github.io/moabb/cite.html'>cite</a>! The largest BCI EEG benchmark is out! Check the <a href='https://neurotechx.github.io/moabb/paper_results.html'>results</a>.",
+    "announcement": (
+        "<strong>Using MOABB in academic work?</strong> "
+        "<a class='moabb-announcement-cta' href='cite.html'>Cite MOABB</a> "
+        "<span class='moabb-announcement-secondary'>"
+        "DOI: <a href='https://doi.org/10.5281/zenodo.10034224'>10.5281/zenodo.10034224</a> · "
+        "Explore <a href='paper_results.html'>benchmark results</a>"
+        "</span>"
+    ),
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
     "pygments_light_style": "tango",
