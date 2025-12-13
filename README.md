@@ -1,6 +1,6 @@
 <div align="center" class="moabb-readme-header">
   <img
-    src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg"
+    src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_notext.svg"
     width="220"
     height="220"
     alt="MOABB logo"
@@ -116,14 +116,11 @@ It is currently maintained by:
 
 The MOABB is a community project, and we are always thankful to all the contributors!
 
-<details>
-<summary>See all contributors</summary>
-
-<a href="https://github.com/NeuroTechX/moabb/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=NeuroTechX/moabb" />
-</a>
-
-</details>
+<div align="center" class="moabb-contributors">
+  <a href="https://github.com/NeuroTechX/moabb/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=NeuroTechX/moabb" alt="MOABB contributors" width="1100" />
+  </a>
+</div>
 
 ## Acknowledgements
 

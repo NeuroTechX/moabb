@@ -327,16 +327,16 @@ html_context = {
         dict(
             title="Evaluations",
             text="Cross-session, cross-subject, and within-session evaluation schemes.",
-            url="auto_examples/tutorials/tutorial_1_simple_example_paradigm.html",
+            url="api.html#evaluations",
             img="crosssubj.png",
             alt="Cross-subject evaluation",
         ),
         dict(
             title="Preprocessing",
             text="Flexible preprocessing pipelines with MNE-Python integration.",
-            url="api.html#module-moabb.pipelines",
+            url="auto_examples/advanced_examples/plot_pre_processing_steps.html",
             img="architecture.png",
-            alt="MOABB Architecture",
+            alt="Preprocessing steps",
         ),
         dict(
             title="Paradigms",
@@ -348,9 +348,9 @@ html_context = {
         dict(
             title="Analysis & Statistics",
             text="Comprehensive analysis tools, statistical tests, and visualizations.",
-            url="auto_examples/how_to_benchmark/index.html",
-            img="datasets_largest.png",
-            alt="Analysis and statistics",
+            url="auto_examples/advanced_examples/plot_statistical_analysis.html",
+            img="statistical_analysis.png",
+            alt="Statistical analysis",
         ),
         dict(
             title="Benchmark Results",

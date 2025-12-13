@@ -168,6 +168,24 @@ html[data-theme="dark"] .moabb-hero-visual {
     border-top: 1px solid var(--pst-color-border);
 }
 
+/* ****************************************************** Contributors */
+.moabb-contributors {
+    margin: 1.25rem 0 0.5rem;
+}
+
+.moabb-contributors img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 16px;
+    border: 1px solid var(--pst-color-border);
+    background: var(--pst-color-surface);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="dark"] .moabb-contributors img {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
 /* ******************************************************* homepage carousel */
 div.frontpage-gallery {
     overflow: hidden;
