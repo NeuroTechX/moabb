@@ -1,23 +1,69 @@
-<p align="center" style="font-size: 40px;">
-  <span style="font-size: 70px; font-weight: 1000;">Mother of all BCI Benchmarks</span>   <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
-  Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
-</p>
+<div align="center" class="moabb-readme-header">
+  <img
+    src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg"
+    width="220"
+    height="220"
+    alt="MOABB logo"
+  />
+  <h1>Mother of all BCI Benchmarks (MOABB)</h1>
+  <p>
+    Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list
+    of freely available EEG datasets.
+  </p>
+  <p>
+    <a href="https://neurotechx.github.io/moabb/">Docs</a> •
+    <a href="https://neurotechx.github.io/moabb/install/install.html">Install</a> •
+    <a href="https://neurotechx.github.io/moabb/auto_examples/index.html">Examples</a> •
+    <a href="https://neurotechx.github.io/moabb/paper_results.html">Benchmark</a> •
+    <a href="https://neurotechx.github.io/moabb/dataset_summary.html">Datasets</a>
+  </p>
+  <p>
+    <a href="https://doi.org/10.5281/zenodo.10034224"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10034224.svg" alt="DOI"></a>
+    <a href="https://github.com/NeuroTechX/moabb/actions?query=branch%3Adevelop"><img src="https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg" alt="Build Status"></a>
+    <a href="https://pypi.org/project/moabb/"><img src="https://img.shields.io/pypi/v/moabb?color=blue&style=flat-square" alt="PyPI"></a>
+    <a href="https://pypi.org/project/moabb/"><img src="https://img.shields.io/pypi/v/moabb?label=version&color=orange&style=flat-square" alt="Version"></a>
+    <a href="https://pypi.org/project/moabb/"><img src="https://img.shields.io/pypi/pyversions/moabb?style=flat-square" alt="Python versions"></a>
+    <a href="https://pepy.tech/project/moabb"><img src="https://pepy.tech/badge/moabb" alt="Downloads"></a>
+  </p>
+</div>
 
+## Quickstart
+
+```bash
+pip install moabb
+```
+
+```python
+import moabb
+from moabb.datasets import BNCI2014_001
+from moabb.evaluations import CrossSessionEvaluation
+from moabb.paradigms import LeftRightImagery
+from moabb.pipelines.features import LogVariance
+
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.pipeline import make_pipeline
+
+moabb.set_log_level("info")
+
+pipelines = {"LogVar+LDA": make_pipeline(LogVariance(), LDA())}
+
+dataset = BNCI2014_001()
+dataset.subject_list = dataset.subject_list[:2]
+
+paradigm = LeftRightImagery(fmin=8, fmax=35)
+evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=[dataset])
+results = evaluation.process(pipelines)
+
+print(results.head())
+```
+
+For full installation options and troubleshooting, see the docs: https://neurotechx.github.io/moabb/install/install.html
 
 ## Disclaimer
 
-**This is an open science project that may evolve depending on the need of the
-community.**
+**This is an open science project that may evolve depending on the need of the community.**
 
-
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10034224.svg)](https://doi.org/10.5281/zenodo.10034224)
-[![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
-[![PyPI](https://img.shields.io/pypi/v/moabb?color=blue&style=plastic)](https://img.shields.io/pypi/v/moabb)
-[![Downloads](https://pepy.tech/badge/moabb)](https://pepy.tech/project/moabb)
-
-
-### The problem
+## The problem
 
 [Brain-Computer Interfaces](https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface)
 allow to interact with a computer using brain signals. In this project, we focus mostly on
@@ -37,7 +83,7 @@ As a result, there is no comprehensive benchmark of BCI algorithms, and newcomer
 spending a tremendous amount of time browsing literature to find out what algorithm works
 best and on which dataset.
 
-### The solution
+## The solution
 
 The Mother of all BCI Benchmarks allows to:
 
@@ -65,13 +111,19 @@ It is currently maintained by:
 * [Bruno Aristimunha](https://bruaristimunha.github.io/)
 * [Pierre Guetschel](https://github.com/PierreGtch)
 * [Grégoire Cattan](https://github.com/gcattan)
+
 ## Contributors
 
 The MOABB is a community project, and we are always thankful to all the contributors!
 
+<details>
+<summary>See all contributors</summary>
+
 <a href="https://github.com/NeuroTechX/moabb/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=NeuroTechX/moabb" />
 </a>
+
+</details>
 
 ## Acknowledgements
 
@@ -94,68 +146,79 @@ professional development of any and all of our contributors. If you're looking t
 code, try out working collaboratively, or translate your skills to the digital domain,
 we're here to help.
 
-## Citing MOABB and related publications
+## Cite MOABB
 
-If you use MOABB in your experiments, please cite this library when
-publishing a paper to increase the visibility of open science initiatives:
+If you use MOABB in your experiments, please cite MOABB and the related publications:
 
-* Here is the APA version:
-```
-Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2025).
-Mother of all BCI Benchmarks (MOABB), 2025. DOI: 10.5281/zenodo.10034223.
-```
+- Citation guide: https://neurotechx.github.io/moabb/cite.html
 
-and the Bibtex version:
+<details>
+<summary>Show APA + BibTeX</summary>
 
-```bibtex
+<p><strong>APA</strong></p>
+<pre><code>Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., &amp; Chevallier, S. (2025).
+Mother of all BCI Benchmarks (MOABB), 2025. DOI: 10.5281/zenodo.10034223.</code></pre>
 
-    @software{Aristimunha_Mother_of_all,
-      author       = {Aristimunha, Bruno and
-                      Carrara, Igor and
-                      Guetschel, Pierre and
-                      Sedlar, Sara and
-                      Rodrigues, Pedro and
-                      Sosulski, Jan and
-                      Narayanan, Divyesh and
-                      Bjareholt, Erik and
-                      Barthelemy, Quentin and
-                      Schirrmeister, Robin Tibor and
-                      Kobler, Reinmar and
-                      Kalunga, Emmanuel and
-                      Darmet, Ludovic and
-                      Gregoire, Cattan and
-                      Abdul Hussain, Ali and
-                      Gatti, Ramiro and
-                      Goncharenko, Vladislav and
-                      Thielen, Jordy and
-                      Moreau, Thomas and
-                      Roy, Yannick and
-                      Jayaram, Vinay and
-                      Barachant, Alexandre and
-                      Chevallier, Sylvain},
-            title        = {Mother of all BCI Benchmarks},
-            year         = 2025,
-            publisher    = {Zenodo},
-            version      = {v1.2.0},
-            url = {https://github.com/NeuroTechX/moabb},
-            doi = {10.5281/zenodo.10034223},
-    }
-```
+<p><strong>BibTeX</strong></p>
+<pre><code>@software{Aristimunha_Mother_of_all,
+  author       = {Aristimunha, Bruno and
+                  Carrara, Igor and
+                  Guetschel, Pierre and
+                  Sedlar, Sara and
+                  Rodrigues, Pedro and
+                  Sosulski, Jan and
+                  Narayanan, Divyesh and
+                  Bjareholt, Erik and
+                  Barthelemy, Quentin and
+                  Schirrmeister, Robin Tibor and
+                  Kobler, Reinmar and
+                  Kalunga, Emmanuel and
+                  Darmet, Ludovic and
+                  Gregoire, Cattan and
+                  Abdul Hussain, Ali and
+                  Gatti, Ramiro and
+                  Goncharenko, Vladislav and
+                  Thielen, Jordy and
+                  Moreau, Thomas and
+                  Roy, Yannick and
+                  Jayaram, Vinay and
+                  Barachant, Alexandre and
+                  Chevallier, Sylvain},
+  title        = {Mother of all BCI Benchmarks},
+  year         = 2025,
+  publisher    = {Zenodo},
+  version      = {v1.2.0},
+  url          = {https://github.com/NeuroTechX/moabb},
+  doi          = {10.5281/zenodo.10034223},
+}</code></pre>
 
-If you want to cite the scientific contributions of MOABB, you could use the following paper:
+<p>If you want to cite the scientific contributions of MOABB, you could use the following papers:</p>
 
-> Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau
-> ["The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark"](https://cnrs.hal.science/hal-04537061/)
-> HAL: hal-04537061.
+<blockquote>
+  <p>
+    Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes,
+    Sébastien Velut, Salim Khazem, Thomas Moreau<br>
+    <a href="https://cnrs.hal.science/hal-04537061/">“The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark”</a><br>
+    HAL: hal-04537061.
+  </p>
+</blockquote>
 
-> Vinay Jayaram and Alexandre Barachant.
-> ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)
-> Journal of neural engineering 15.6 (2018): 066011.
-> [DOI](https://doi.org/10.1088/1741-2552/aadea0)
+<blockquote>
+  <p>
+    Vinay Jayaram and Alexandre Barachant.<br>
+    <a href="http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta">“MOABB: trustworthy algorithm benchmarking for BCIs.”</a><br>
+    Journal of neural engineering 15.6 (2018): 066011.<br>
+    <a href="https://doi.org/10.1088/1741-2552/aadea0">DOI</a>
+  </p>
+</blockquote>
 
-If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
-issue! We would love to hear about your work and help you promote it.
+<p>
+  If you publish a paper using MOABB, please contact us on
+  <a href="https://app.gitter.im/#/room/#moabb_dev_community:gitter.im">gitter</a> or open an issue!
+  We would love to hear about your work and help you promote it.
+</p>
 
+</details>
 
 ## Contact us
 

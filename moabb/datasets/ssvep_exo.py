@@ -45,7 +45,7 @@ class Kalunga2016(BaseDataset):
     Notes
     -----
     The events notation 17Hz and 21Hz were swapped after an investigation conducted
-    by @ponpopon.
+    by ponpopon at Github.
 
     The dataset includes recordings from 12 healthy subjects.
 
@@ -56,6 +56,7 @@ class Kalunga2016(BaseDataset):
     .. [1] Emmanuel K. Kalunga, Sylvain Chevallier, Quentin Barthelemy. "Online
            SSVEP-based BCI using Riemannian Geometry". Neurocomputing, 2016.
            arXiv report: https://arxiv.org/abs/1501.03227
+
     """
 
     def __init__(self):

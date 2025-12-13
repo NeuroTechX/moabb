@@ -645,3 +645,4 @@ API changes
 .. _Griffin Keeler: https://github.com/griffinkeeler
 .. _Kosei Nakada: https://github.com/ponpopon
 .. _Romani Michele: https://github.com/BRomans
+.. _Lionel Kusch: https://github.com/lionelkusch

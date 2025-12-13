@@ -6,6 +6,8 @@ import pandas as pd
 
 
 def prepare_table(df: pd.DataFrame):
+    # Convert column to string dtype first to avoid FutureWarning
+    df["PapersWithCode leaderboard"] = df["PapersWithCode leaderboard"].astype("object")
     no_pwc = df["PapersWithCode leaderboard"].isna()
     df.loc[no_pwc, "PapersWithCode leaderboard"] = "No"
     df.loc[~no_pwc, "PapersWithCode leaderboard"] = df.loc[
