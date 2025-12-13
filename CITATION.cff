@@ -1,4 +1,4 @@
-cff-version: 1.3.0
+cff-version: 1.4
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Aristimunha"
@@ -51,6 +51,9 @@ authors:
 - family-names: "Goncharenko"
   given-names: "Vladislav"
   orcid: "https://orcid.org/0000-0002-9243-6914"
+- family-names: "Andreev"
+  given-names: "Anton"
+  orcid: "https://orcid.org/000-0002-4466-4525"
 - family-names: "Thielen"
   given-names: "Jordy"
   orcid: "https://orcid.org/0000-0002-6264-0367"
@@ -70,7 +73,7 @@ authors:
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
 title: "Mother of all BCI Benchmarks"
-version: 1.4.0
+version: 1.4.3
 doi: 10.5281/zenodo.10034223
-date-released: 2025-11-07
+date-released: 2025-12-12
 url: "https://github.com/NeuroTechX/moabb"
