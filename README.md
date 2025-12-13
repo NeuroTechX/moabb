@@ -210,8 +210,7 @@ Mother of all BCI Benchmarks (MOABB), 2025. DOI: 10.5281/zenodo.10034223.</code>
 </blockquote>
 
 <p>
-  If you publish a paper using MOABB, please contact us on
-  <a href="https://app.gitter.im/#/room/#moabb_dev_community:gitter.im">gitter</a> or open an issue!
+  If you publish a paper using MOABB, please contact us on Github and open an issue!
   We would love to hear about your work and help you promote it.
 </p>
 
@@ -222,11 +221,6 @@ Mother of all BCI Benchmarks (MOABB), 2025. DOI: 10.5281/zenodo.10034223.</code>
 If you want to report a problem or suggest an enhancement, we'd love for you to
 [open an issue](https://github.com/NeuroTechX/moabb/issues) at this GitHub repository
 because then we can get right on it.
-
-For a less formal discussion or exchanging ideas, you can also reach us on the Github or join our weekly office hours! This an open video meeting
-happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
-the link on the gitter channel. We are also on NeuroTechX Slack channel
-[#moabb][link_neurotechx_signup].
 
 
 [link_alex_b]: http://alexandre.barachant.org/
