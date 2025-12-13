@@ -75,6 +75,7 @@ docs = [
     "sphinx-gallery>=0.18.0",
     "sphinx-bootstrap-theme>=0.8.1",
     "pydata-sphinx-theme>=0.16.1",
+    "nbformat>=5.10.4",
     "numpydoc>=1.8.0",
     "myst-parser>=4.0.1",
     "sphinx-design>=0.6.1",

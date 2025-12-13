@@ -257,6 +257,13 @@ html_theme_options = {
         "image_light": "moabb_light.svg",
         "image_dark": "moabb_dark.svg",
     },
+    "secondary_sidebar_items": {
+        "**": [
+            "page-toc",
+            "sg_download_links",
+            "sg_launcher_links",
+        ],
+    },
     "footer_start": ["copyright"],
     "footer_end": ["sphinx-version", "theme-version"],
 }
@@ -322,6 +329,11 @@ html_context = {
     "github_repo": "moabb",
     "github_version": "develop",
     "doc_path": "docs",
+    # Colab launcher for Sphinx-Gallery examples (see _templates/sg_launcher_links.html)
+    "colab_repo": "NeuroTechX/moabb",
+    "colab_branch": "gh-pages",
+    # Docs are deployed under docs/ in gh-pages and moabb.github.io
+    "colab_docs_path": "docs",
     # Homepage carousel highlighting MOABB components
     "carousel": [
         dict(

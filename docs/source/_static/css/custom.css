@@ -238,6 +238,34 @@ html[data-theme="dark"] .moabb-contributors img {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
+/* ******************************************************* Colab launcher */
+.moabb-colab-card {
+    border: 1px solid var(--pst-color-border);
+}
+
+.moabb-colab-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.6rem;
+    padding: 0.95rem 0.9rem;
+}
+
+.moabb-colab-card .sd-btn {
+    width: 100%;
+    max-width: 240px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 0.85rem;
+}
+
+.moabb-colab-badge {
+    height: 22px;
+    vertical-align: middle;
+}
+
 /* ******************************************************* homepage carousel */
 div.frontpage-gallery {
     overflow: hidden;

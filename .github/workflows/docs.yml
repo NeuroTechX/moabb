@@ -61,6 +61,20 @@ jobs:
         run: |
           cd docs && make html
 
+      - name: Generate notebooks from examples (Colab)
+        run: |
+          set -euo pipefail
+          echo "Converting Python examples to notebooks in docs/build/html/auto_examples/_notebooks..."
+          mkdir -p docs/build/html/auto_examples/_notebooks
+          find examples -type f -name '*.py' | while read -r f; do
+            rel="${f#examples/}"
+            out_dir="docs/build/html/auto_examples/_notebooks/$(dirname "$rel")"
+            mkdir -p "$out_dir"
+            base="$(basename "$rel" .py)"
+            out_path="$out_dir/$base.ipynb"
+            python .github/scripts/convert_to_notebook.py --input "$f" --output "$out_path"
+          done
+
       # Create an artifact of the html output.
       - uses: actions/upload-artifact@v4
         with:
