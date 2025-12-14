@@ -4,18 +4,17 @@ on:
   push:
     branches: [develop, master]
     paths:
-      - '**.md'
-      - 'docs/**'
-      - '.github/workflows/link-check.yml'
+      - "**.md"
+      - "docs/**"
+      - ".github/workflows/link-check.yml"
   pull_request:
     branches: [develop]
     paths:
-      - '**.md'
-      - 'docs/**'
-      - '.github/workflows/link-check.yml'
+      - "**.md"
+      - "docs/**"
+      - ".github/workflows/link-check.yml"
   schedule:
-    # Run weekly on Monday at 00:00 UTC to catch broken external links
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -25,32 +24,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check links in Markdown files
+      - name: Check links in Markdown and RST files
         uses: lycheeverse/lychee-action@v2
         with:
-          # Check all markdown files and RST files
           args: >-
             --verbose
             --no-progress
             --accept 200,204,206,301,302,303,307,308,429
             --timeout 30
             --max-retries 3
-            --exclude-mail
-            --exclude '^https://github\.com/NeuroTechX/moabb/(issues|pulls|compare)'
-            --exclude '^https://github\.com/.*/(fork|new)'
-            --exclude 'localhost'
-            --exclude '127\.0\.0\.1'
-            --exclude 'example\.com'
-            --exclude '^file://'
-            --exclude 'arxiv\.org'
-            --exclude 'twitter\.com'
-            --exclude 'x\.com'
-            --exclude 'linkedin\.com'
-            --exclude 'app\.gitter\.im'
-            './**/*.md'
-            './**/*.rst'
-            './README.md'
-          fail: false
+            --exclude "^mailto:"
+            --exclude "^https://github\\.com/NeuroTechX/moabb/(issues|pulls|compare)"
+            --exclude "^https://github\\.com/.*/(fork|new)"
+            --exclude "localhost"
+            --exclude "127\\.0\\.0\\.1"
+            --exclude "example\\.com"
+            --exclude "^file://"
+            --exclude "^git\\+"
+            --exclude "arxiv\\.org"
+            --exclude "twitter\\.com"
+            --exclude "x\\.com"
+            --exclude "linkedin\\.com"
+            --exclude "app\\.gitter\\.im"
+            --exclude "gitter\\.im"
+            --exclude "gitlab\\.com"
+            --exclude "dx\\.doi\\.org"
+            "./**/*.md"
+            "./**/*.rst"
+          fail: true
           output: ./lychee-report.md
 
       - name: Upload link check report
@@ -73,21 +74,18 @@ jobs:
             } catch (e) {
               report = 'Could not read the link check report.';
             }
-
-            // Check if there's already an open issue for broken links
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
               labels: 'broken-links'
             });
-
             if (issues.data.length === 0) {
               await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: '🔗 Broken links detected in documentation',
-                body: `## Automated Link Check Report\n\nThe weekly link check has detected broken links in the repository.\n\n<details>\n<summary>Link Check Report</summary>\n\n${report}\n\n</details>\n\n---\n*This issue was automatically created by the link-check workflow.*`,
+                title: 'Broken links detected in documentation',
+                body: `## Automated Link Check Report\n\nThe weekly link check has detected broken links.\n\n<details>\n<summary>Report</summary>\n\n${report}\n\n</details>`,
                 labels: ['broken-links', 'documentation']
               });
             }
