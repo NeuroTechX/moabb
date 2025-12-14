@@ -61,8 +61,6 @@ print(results.head())
 
 For full installation options and troubleshooting, see the [documentation](https://moabb.neurotechx.com/docs/install/install.html).
 
-dataset = BNCI2014_001()
-dataset.subject_list = dataset.subject_list[:2]
 
 ## Disclaimer
 
