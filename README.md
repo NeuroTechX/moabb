@@ -11,11 +11,11 @@
     of freely available EEG datasets.
   </p>
   <p>
-    <a href="https://neurotechx.github.io/moabb/">Docs</a> •
-    <a href="https://neurotechx.github.io/moabb/install/install.html">Install</a> •
-    <a href="https://neurotechx.github.io/moabb/auto_examples/index.html">Examples</a> •
-    <a href="https://neurotechx.github.io/moabb/paper_results.html">Benchmark</a> •
-    <a href="https://neurotechx.github.io/moabb/dataset_summary.html">Datasets</a>
+    <a href="https://moabb.neurotechx.com/">Docs</a> •
+    <a href="https://moabb.neurotechx.com/docs/install/install.html">Install</a> •
+    <a href="https://moabb.neurotechx.com/docs/auto_examples/index.html">Examples</a> •
+    <a href="https://moabb.neurotechx.com/docs/paper_results.html">Benchmark</a> •
+    <a href="https://moabb.neurotechx.com/docs/dataset_summary.html">Datasets</a>
   </p>
   <p>
     <a href="https://doi.org/10.5281/zenodo.10034223"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10034223.svg" alt="DOI"></a>
@@ -60,7 +60,7 @@ results = evaluation.process(pipelines)
 print(results.head())
 ```
 
-For full installation options and troubleshooting, see the [documentation](https://neurotechx.github.io/moabb/install/install.html).
+For full installation options and troubleshooting, see the [documentation](https://moabb.neurotechx.com/docs/install/install.html).
 
 
 ## Disclaimer
@@ -107,7 +107,7 @@ state of the art by 5% ...”.
 This project is under the umbrella of [NeuroTechX][link_neurotechx], the international
 community for NeuroTech enthusiasts.
 
-The Mother of all BCI Benchmarks was founded by [Alexander Barachant](http://alexandre.barachant.org/) and [Vinay Jayaram](https://vinay-jayaram.github.io/).
+The Mother of all BCI Benchmarks was founded by [Alexander Barachant](http://alexandre.barachant.org/) and [Vinay Jayaram][link_vinay].
 
 It is currently maintained by:
 
@@ -151,7 +151,7 @@ we're here to help.
 
 If you use MOABB in your experiments, please cite MOABB and the related publications:
 
-📚 [Full citation guide](https://neurotechx.github.io/moabb/cite.html)
+📚 [Full citation guide](https://moabb.neurotechx.com/docs/cite.html)
 
 ### Software Citation
 
@@ -247,6 +247,6 @@ because then we can get right on it.
 [link_pierre]: https://www.linkedin.com/in/pierreguetschel/
 [link_neurotechx_signup]: https://neurotechx.com/
 [link_gitter]: https://app.gitter.im/#/room/#moabb_dev_community:gitter.im
-[link_moabb_docs]: https://neurotechx.github.io/moabb/
+[link_moabb_docs]: https://moabb.neurotechx.com/
 [link_arxiv]: https://arxiv.org/abs/1805.06427
 [link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta

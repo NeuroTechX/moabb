@@ -163,7 +163,7 @@ currently on our radar can be seen `here <https://github.com/NeuroTechX/moabb/is
 but we are open to any suggestion.
 
 If you want to actively contribute to inclusion of one new dataset, you can follow also this tutorial
-`tutorial <https://neurotechx.github.io/moabb/auto_tutorials/tutorial_4_adding_a_dataset.html>`__.
+`tutorial <https://moabb.neurotechx.com/docs/auto_tutorials/tutorial_4_adding_a_dataset.html>`__.
 
 .. raw:: html
 

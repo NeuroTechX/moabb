@@ -289,7 +289,7 @@ html_logo = "images/moabb_logo.svg"
 html_static_path = ["_static"]
 
 # Base URL for sitemap generation (required by sphinx_sitemap)
-html_baseurl = "https://neurotechx.github.io/moabb/"
+html_baseurl = "https://moabb.neurotechx.com/docs/"
 
 # Sitemap configuration
 sitemap_url_scheme = "{link}"
