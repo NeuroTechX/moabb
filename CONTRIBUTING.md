@@ -6,7 +6,7 @@ Contributions are always welcome, no matter how small!
 
 If you think you can help in any of the areas of MOABB (and we bet you can) or in any of
 the many areas that we haven't yet thought of (and here we're _sure_ you can) then please
-check out our [roadmap](https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md).
+check out our [issues](https://github.com/NeuroTechX/moabb/issues).
 
 Please note that it's very important to us that we maintain a positive and supportive
 environment for everyone who wants to participate. When you join us we ask that you follow
@@ -84,9 +84,7 @@ instruments against the code you produced.
 
 For Code Quality verification, we use:
 
-- [`black`](https://github.com/psf/black) - Python code formatting
-- [`isort`](https://github.com/timothycrosley/isort) - imports sorting and grouping
-- [`flake8`](https://gitlab.com/pycqa/flake8) - code style checking
+- [`ruff`](https://github.com/astral-sh/ruff) - Python linting and formatting
 - [`prettier`](https://github.com/prettier/prettier) - `.yml` and `.md` files formatting
 - and more checkers.
 

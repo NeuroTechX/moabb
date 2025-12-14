@@ -142,8 +142,9 @@ def depreciated_alias(name, expire_version):
             f"{name} will be removed in version {expire_version}."
         )
         note_msg = (
-            f".. note:: ``{func.__name__}`` was previously named ``{name}``. "
-            f"``{name}`` will be removed in  version {expire_version}."
+            ".. note::\n\n"
+            f"        ``{func.__name__}`` was previously named ``{name}``. "
+            f"``{name}`` will be removed in version {expire_version}.\n"
         )
 
         namespace = sys._getframe(1).f_globals  # Caller's globals.
