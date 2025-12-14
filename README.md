@@ -35,7 +35,6 @@
 pip install moabb
 ```
 
-
 ```python
 import moabb
 from moabb.datasets import BNCI2014_001
