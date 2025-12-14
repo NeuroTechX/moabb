@@ -220,7 +220,7 @@ If you want to cite the scientific contributions of MOABB, please use the follow
 
 > Vinay Jayaram and Alexandre Barachant
 >
-> **["MOABB: trustworthy algorithm benchmarking for BCIs"](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)**
+> **["MOABB: trustworthy algorithm benchmarking for BCIs"](https://doi.org/10.1088/1741-2552/aadea0)**
 >
 > Journal of Neural Engineering 15.6 (2018): 066011
 >
@@ -249,4 +249,4 @@ because then we can get right on it.
 [link_gitter]: https://app.gitter.im/#/room/#moabb_dev_community:gitter.im
 [link_moabb_docs]: https://moabb.neurotechx.com/
 [link_arxiv]: https://arxiv.org/abs/1805.06427
-[link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta
+[link_jne]: https://doi.org/10.1088/1741-2552/aadea0
