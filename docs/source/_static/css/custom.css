@@ -85,14 +85,14 @@ html[data-theme="dark"] .bd-header-announcement {
 }
 
 .moabb-hero-logo {
-    width: clamp(96px, 12vw, 140px);
+    width: clamp(96px, 20vw, 300px);
     height: auto;
 }
 
 .moabb-hero-title {
     font-size: clamp(2.5rem, 4vw, 3.75rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     line-height: 1.0;
 }
 
@@ -100,7 +100,7 @@ html[data-theme="dark"] .bd-header-announcement {
     font-size: 1.15rem;
     font-weight: 600;
     color: var(--pst-color-text-muted);
-    line-height: 1.2;
+    line-height: 1.0;
 }
 
 .moabb-tagline {
