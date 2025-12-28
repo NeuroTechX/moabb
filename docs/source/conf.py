@@ -168,7 +168,7 @@ sphinx_gallery_conf = {
     "show_memory": True,
     "reference_url": dict(moabb=None),
     "filename_pattern": "(/plot_|/tutorial_)",
-    "default_thumb_file": "../images/M.png",
+    "default_thumb_file": "../moabb_logo.png",
     "subsection_order": ExplicitOrder(
         [
             "../../examples/tutorials",
@@ -281,7 +281,7 @@ html_sidebars = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "images/moabb_logo.svg"
+html_logo = "moabb_logo.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -365,7 +365,7 @@ html_context = {
             title="Paradigms",
             text="Motor imagery, P300, SSVEP, and other BCI paradigms ready to use.",
             url="auto_examples/paradigm_examples/index.html",
-            img="M.png",
+            img="moabb_logo.png",
             alt="Paradigms",
         ),
         dict(
@@ -403,7 +403,7 @@ latex_elements = {
     # "figure_align": "htbp",
 }
 
-latex_logo = "images/moabb_logo.svg"
+latex_logo = "moabb_logo.svg"
 latex_toplevel_sectioning = "part"
 
 # Grouping the document tree into LaTeX files. List of tuples
