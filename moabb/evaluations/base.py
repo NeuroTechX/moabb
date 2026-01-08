@@ -80,6 +80,8 @@ class BaseEvaluation(ABC):
        n_splits, save_model, cache_config parameters.
     .. versionadded:: 1.1.1
        optuna, time_out parameters.
+    .. versionadded:: 1.5
+       verbose parameter.
     """
 
     search = False
