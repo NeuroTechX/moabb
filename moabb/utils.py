@@ -109,8 +109,12 @@ def verbose(function):
                 bound.apply_defaults()
                 if "verbose" in bound.arguments:
                     verbose_val = bound.arguments["verbose"]
-            except Exception:
-                pass
+            except TypeError as exc:
+                log.debug(
+                    "Failed to bind 'verbose' argument for %s: %s",
+                    function.__name__,
+                    exc,
+                )
 
         # Check self.verbose
         if verbose_val is None and len(args) > 0:
@@ -131,8 +135,8 @@ def verbose(function):
         if level is not None:
             try:
                 logger.setLevel(level)
-            except Exception:
-                pass
+            except (TypeError, ValueError) as exc:
+                logger.warning("Failed to set log level %r: %s", level, exc)
 
         try:
             return function(*args, **kwargs)

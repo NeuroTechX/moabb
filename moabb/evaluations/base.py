@@ -70,8 +70,8 @@ class BaseEvaluation(ABC):
         Cut off time for the optuna search expressed in seconds, the default value is 15 minutes.
         Only used with optuna equal to True.
     verbose: bool, str, int, default=None
-        If not None, override default verbose level (see :func:`mne.verbose`
-        and :func:`mne.set_log_level` for more info).
+        If not None, override the default MOABB logging level used by this evaluation
+        (see :func:`moabb.utils.verbose` for more information on how this is handled).
         If used, it should be passed as a keyword-argument only.
 
     Notes
