@@ -19,7 +19,7 @@ Version 1.5  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- None yet.
+- Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
