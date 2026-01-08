@@ -20,6 +20,7 @@ Version 1.5  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
+- Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
