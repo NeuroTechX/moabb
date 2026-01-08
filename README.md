@@ -114,6 +114,7 @@ It is currently maintained by:
 * [Bruno Aristimunha](https://bruaristimunha.github.io/)
 * [Pierre Guetschel](https://github.com/PierreGtch)
 * [Grégoire Cattan](https://github.com/gcattan)
+* [Anton Andreev](https://github.com/toncho11)
 
 ## Contributors
 
