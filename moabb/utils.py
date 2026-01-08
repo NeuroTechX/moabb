@@ -1,6 +1,7 @@
 """Util functions for moabb."""
 
 import contextlib
+import functools
 import inspect
 import logging
 import os
@@ -71,6 +72,75 @@ def set_log_level(level="INFO"):
         level=level,
         format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s",
     )
+
+
+def verbose(function):
+    """Verbose decorator to allow setting the level of verbosity.
+
+    This decorator checks for a 'verbose' argument in the function signature
+    or 'self.verbose' if available, and sets the logging level of the 'moabb'
+    logger accordingly for the duration of the function.
+
+    Parameters
+    ----------
+    function : function
+        Function to be decorated.
+
+    Returns
+    -------
+    dec : function
+        The decorated function.
+    """
+    arg_names = inspect.getfullargspec(function).args
+
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        verbose_val = None
+
+        # Check kwargs
+        if "verbose" in kwargs:
+            verbose_val = kwargs["verbose"]
+
+        # Check positional args
+        elif "verbose" in arg_names:
+            sig = inspect.signature(function)
+            try:
+                bound = sig.bind_partial(*args, **kwargs)
+                bound.apply_defaults()
+                if "verbose" in bound.arguments:
+                    verbose_val = bound.arguments["verbose"]
+            except Exception:
+                pass
+
+        # Check self.verbose
+        if verbose_val is None and len(args) > 0:
+            if hasattr(args[0], "verbose"):
+                verbose_val = getattr(args[0], "verbose", None)
+
+        logger = logging.getLogger("moabb")
+        old_level = logger.level
+        level = None
+
+        if verbose_val is True:
+            level = logging.INFO
+        elif verbose_val is False:
+            level = logging.WARNING
+        elif isinstance(verbose_val, (int, str)):
+            level = verbose_val
+
+        if level is not None:
+            try:
+                logger.setLevel(level)
+            except Exception:
+                pass
+
+        try:
+            return function(*args, **kwargs)
+        finally:
+            if level is not None:
+                logger.setLevel(old_level)
+
+    return wrapper
 
 
 def set_download_dir(path):
