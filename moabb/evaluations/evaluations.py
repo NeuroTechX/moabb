@@ -2,6 +2,7 @@ import logging
 from copy import deepcopy
 from time import time
 from typing import Optional, Union
+from uuid import uuid4
 
 import numpy as np
 from mne.epochs import BaseEpochs
@@ -178,10 +179,13 @@ class WithinSessionEvaluation(BaseEvaluation):
                 for name, clf in run_pipes.items():
                     if _carbonfootprint:
                         # Initialize CodeCarbon
-                        tracker = EmissionsTracker(save_to_file=False, log_level="error")
-                        tracker.start()
+                        experiment_id = uuid4()
+                        tracker = EmissionsTracker(
+                            save_to_file=self.codecarbon_to_file,
+                            output_dir=self.hdf5_path,
+                            experiment_id=experiment_id,
+                        )
 
-                    t_start = time()
                     self.cv = WithinSessionSplitter(
                         n_folds=5,
                         shuffle=True,
@@ -226,7 +230,17 @@ class WithinSessionEvaluation(BaseEvaluation):
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
 
+                        # Fit classifier with tracking
+                        if _carbonfootprint:
+                            tracker.start()
+                        t_start = time()
                         cvclf.fit(X_[train], y_[train])
+                        duration = time() - t_start
+                        if _carbonfootprint:
+                            emissions = tracker.stop()
+                            if emissions is None:
+                                emissions = np.nan
+
                         _ensure_fitted(cvclf)
 
                         score = scorer(cvclf, X_[test], y_[test])
@@ -243,11 +257,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                     acc = np.array(acc)
                     score = acc.mean()
 
-                    if _carbonfootprint:
-                        emissions = tracker.stop()
-                        if emissions is None:
-                            emissions = np.nan
-                    duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
                         "time": duration / self.cv.n_folds,  # 5 fold CV
@@ -261,6 +270,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
+                        if self.codecarbon_to_file:
+                            res["experiment_id"] = experiment_id
 
                     yield res
 
@@ -504,11 +515,6 @@ class CrossSessionEvaluation(BaseEvaluation):
             scorer = get_scorer(self.paradigm.scoring)
 
             for name, clf in run_pipes.items():
-                if _carbonfootprint:
-                    # Initialise CodeCarbon
-                    tracker = EmissionsTracker(save_to_file=False, log_level="error")
-                    tracker.start()
-
                 # we want to store a results per session
                 self.cv = CrossSessionSplitter(random_state=self.random_state)
 
@@ -536,13 +542,29 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                 for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
                     model_list = []
+
                     if _carbonfootprint:
-                        tracker.start()
-                    t_start = time()
+                        # Initialise CodeCarbon
+                        experiment_id = uuid4()
+                        tracker = EmissionsTracker(
+                            save_to_file=self.codecarbon_to_file,
+                            output_dir=self.hdf5_path,
+                            experiment_id=experiment_id,
+                        )
 
                     cvclf = clone(grid_clf)
 
+                    # Fit classifier with tracking
+                    if _carbonfootprint:
+                        tracker.start()
+                    t_start = time()
                     cvclf.fit(X[train], y[train])
+                    duration = time() - t_start
+                    if _carbonfootprint:
+                        emissions = tracker.stop()
+                        if emissions is None:
+                            emissions = np.nan
+
                     _ensure_fitted(cvclf)
 
                     model_list.append(cvclf)
@@ -554,13 +576,6 @@ class CrossSessionEvaluation(BaseEvaluation):
                             save_path=model_save_path,
                             cv_index=str(cv_ind),
                         )
-
-                    if _carbonfootprint:
-                        emissions = tracker.stop()
-                        if emissions is None:
-                            emissions = 0
-
-                    duration = time() - t_start
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -575,6 +590,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
+                        if self.codecarbon_to_file:
+                            res["experiment_id"] = experiment_id
 
                     yield res
 
@@ -683,11 +700,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
-        # Implement Grid Search
-        if _carbonfootprint:
-            # Initialise CodeCarbon
-            tracker = EmissionsTracker(save_to_file=False, log_level="error")
-
         # Progressbar at subject level
         for cv_ind, (train, test) in enumerate(
             tqdm(
@@ -704,8 +716,14 @@ class CrossSubjectEvaluation(BaseEvaluation):
             # iterate over pipelines
             for name, clf in run_pipes.items():
                 if _carbonfootprint:
-                    tracker.start()
-                t_start = time()
+                    # Initialise CodeCarbon
+                    experiment_id = uuid4()
+                    tracker = EmissionsTracker(
+                        save_to_file=self.codecarbon_to_file,
+                        output_dir=self.hdf5_path,
+                        experiment_id=experiment_id,
+                    )
+
                 clf = self._grid_search(
                     param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
@@ -727,14 +745,20 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         cv_index=str(cv_ind),
                     )
 
-                model = deepcopy(clf).fit(X[train], y[train])
-                _ensure_fitted(model)
+                cvclf = deepcopy(clf)
 
+                # Fit classifier with tracking
+                if _carbonfootprint:
+                    tracker.start()
+                t_start = time()
+                cvclf.fit(X[train], y[train])
+                duration = time() - t_start
                 if _carbonfootprint:
                     emissions = tracker.stop()
                     if emissions is None:
-                        emissions = 0
-                duration = time() - t_start
+                        emissions = np.nan
+
+                _ensure_fitted(cvclf)
 
                 if self.hdf5_path is not None and self.save_model:
 
@@ -749,13 +773,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     )
 
                     _save_model_cv(
-                        model=model, save_path=model_save_path, cv_index=str(cv_ind)
+                        model=cvclf, save_path=model_save_path, cv_index=str(cv_ind)
                     )
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
 
-                    score = scorer(model, X[test[ix]], y[test[ix]])
+                    score = scorer(cvclf, X[test[ix]], y[test[ix]])
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -771,6 +795,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
+                        if self.codecarbon_to_file:
+                            res["experiment_id"] = experiment_id
+
                     yield res
 
     def is_valid(self, dataset):

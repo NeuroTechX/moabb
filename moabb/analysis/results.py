@@ -160,6 +160,19 @@ class Results:
                     dset.attrs["n_subj"] = len(d1["dataset"].subject_list)
                     dset.attrs["n_sessions"] = d1["dataset"].n_sessions
                     dt = h5py.special_dtype(vlen=str)
+
+                    # Create unique experiment id column as separate attritbute
+                    additional_cols_for_data = self.additional_columns
+                    if _carbonfootprint and "experiment_id" in self.additional_columns:
+                        n_add_cols -= 1
+                        additional_cols_for_data.remove("experiment_id")
+                        dset.create_dataset(
+                            "experiment_id",
+                            (0,),
+                            dtype=dt,
+                            maxshape=(None,),
+                        )
+
                     dset.create_dataset("id", (0, 2), dtype=dt, maxshape=(None, 2))
                     dset.create_dataset(
                         "data",
@@ -169,7 +182,7 @@ class Results:
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
                         "columns",
-                        col_names + self.additional_columns,
+                        col_names + additional_cols_for_data,
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
@@ -193,6 +206,13 @@ class Results:
                             cols.append(*d["carbon_emission"])
                         else:
                             cols.append(d["carbon_emission"])
+
+                        # Save unique experiment id shared with CodeCarbon
+                        if "experiment_id" in self.additional_columns:
+                            add_cols.remove(d["experiment_id"])
+                            dset["experiment_id"].resize(length, 0)
+                            dset["experiment_id"][-1] = str(d["experiment_id"])
+
                     dset["data"][-1, :] = np.asarray(
                         [
                             *cols,
@@ -232,6 +252,8 @@ class Results:
                     df["n_sessions"] = dset.attrs["n_sessions"]
                     df["dataset"] = dname
                     df["pipeline"] = name
+                    if _carbonfootprint and "experiment_id" in dset:
+                        df["experiment_id"] = np.array(dset["experiment_id"]).astype(str)
                     df_list.append(df)
 
         return pd.concat(df_list, ignore_index=True)

@@ -73,6 +73,10 @@ class BaseEvaluation(ABC):
         If not None, override the default MOABB logging level used by this evaluation
         (see :func:`moabb.utils.verbose` for more information on how this is handled).
         If used, it should be passed as a keyword-argument only.
+    codecarbon_to_file: bool, default=False
+        If True, detailed CodeCarbon measurements are saved to file. Else, no save to file.
+        Rows from CodeCarbon results can be joined with rows from MOABB results by the column `experiment_id`.
+        CodeCarbon must be installed to use this parameter.
 
     Notes
     -----
@@ -107,6 +111,7 @@ class BaseEvaluation(ABC):
         optuna=False,
         time_out=60 * 15,
         verbose=None,
+        codecarbon_to_file=False,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -121,6 +126,7 @@ class BaseEvaluation(ABC):
         self.optuna = optuna
         self.time_out = time_out
         self.verbose = verbose
+        self.codecarbon_to_file = codecarbon_to_file
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -141,6 +147,10 @@ class BaseEvaluation(ABC):
         # if no dataset provided, then we get the list from the paradigm
         if datasets is None:
             datasets = self.paradigm.datasets
+
+        # Save unique experiment id to results dataframe
+        if self.codecarbon_to_file:
+            additional_columns = [*(additional_columns or []), "experiment_id"]
 
         if not isinstance(datasets, list):
             if isinstance(datasets, BaseDataset):
