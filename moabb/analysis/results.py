@@ -154,6 +154,7 @@ class Results:
                 d1 = dlist[0]  # FIXME: handle multiple session ?
                 dname = d1["dataset"].code
                 n_add_cols = len(self.additional_columns)
+                additional_col_names = self.additional_columns.copy()
                 if dname not in ppline_grp.keys():
                     # create dataset subgroup if nonexistent
                     dset = ppline_grp.create_group(dname)
@@ -162,10 +163,9 @@ class Results:
                     dt = h5py.special_dtype(vlen=str)
 
                     # Create unique experiment id column as separate attritbute
-                    additional_cols_for_data = self.additional_columns
                     if _carbonfootprint and "experiment_id" in self.additional_columns:
                         n_add_cols -= 1
-                        additional_cols_for_data.remove("experiment_id")
+                        additional_col_names.remove("experiment_id")
                         dset.create_dataset(
                             "experiment_id",
                             (0,),
@@ -182,7 +182,7 @@ class Results:
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
                         "columns",
-                        col_names + additional_cols_for_data,
+                        col_names + additional_col_names,
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
