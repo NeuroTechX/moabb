@@ -154,7 +154,6 @@ class Results:
                 d1 = dlist[0]  # FIXME: handle multiple session ?
                 dname = d1["dataset"].code
                 n_add_cols = len(self.additional_columns)
-                additional_col_names = self.additional_columns.copy()
                 if dname not in ppline_grp.keys():
                     # create dataset subgroup if nonexistent
                     dset = ppline_grp.create_group(dname)
@@ -162,12 +161,10 @@ class Results:
                     dset.attrs["n_sessions"] = d1["dataset"].n_sessions
                     dt = h5py.special_dtype(vlen=str)
 
-                    # Create unique experiment id column as separate attritbute
-                    if _carbonfootprint and "experiment_id" in self.additional_columns:
-                        n_add_cols -= 1
-                        additional_col_names.remove("experiment_id")
+                    # Create unique CodeCarbon task name attritbute
+                    if _carbonfootprint:
                         dset.create_dataset(
-                            "experiment_id",
+                            "codecarbon_task_name",
                             (0,),
                             dtype=dt,
                             maxshape=(None,),
@@ -182,7 +179,7 @@ class Results:
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
                         "columns",
-                        col_names + additional_col_names,
+                        col_names + self.additional_columns,
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
@@ -207,11 +204,9 @@ class Results:
                         else:
                             cols.append(d["carbon_emission"])
 
-                        # Save unique experiment id shared with CodeCarbon
-                        if "experiment_id" in self.additional_columns:
-                            add_cols.remove(d["experiment_id"])
-                            dset["experiment_id"].resize(length, 0)
-                            dset["experiment_id"][-1] = str(d["experiment_id"])
+                        # Save unique CodeCarbon task name
+                        dset["codecarbon_task_name"].resize(length, 0)
+                        dset["codecarbon_task_name"][-1] = str(d["codecarbon_task_name"])
 
                     dset["data"][-1, :] = np.asarray(
                         [
@@ -252,8 +247,10 @@ class Results:
                     df["n_sessions"] = dset.attrs["n_sessions"]
                     df["dataset"] = dname
                     df["pipeline"] = name
-                    if _carbonfootprint and "experiment_id" in dset:
-                        df["experiment_id"] = np.array(dset["experiment_id"]).astype(str)
+                    if _carbonfootprint:
+                        df["codecarbon_task_name"] = np.array(
+                            dset["codecarbon_task_name"]
+                        ).astype(str)
                     df_list.append(df)
 
         return pd.concat(df_list, ignore_index=True)

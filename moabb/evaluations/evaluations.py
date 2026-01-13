@@ -177,15 +177,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                 ix = metadata.session == session
 
                 for name, clf in run_pipes.items():
-                    if _carbonfootprint:
-                        # Initialize CodeCarbon
-                        experiment_id = uuid4()
-                        tracker = EmissionsTracker(
-                            save_to_file=self.codecarbon_to_file,
-                            output_dir=self.hdf5_path,
-                            experiment_id=experiment_id,
-                        )
-
                     self.cv = WithinSessionSplitter(
                         n_folds=5,
                         shuffle=True,
@@ -227,24 +218,29 @@ class WithinSessionEvaluation(BaseEvaluation):
                     y_ = y[ix] if self.mne_labels else y_cv
                     meta_ = metadata[ix].reset_index(drop=True)
 
+                    if _carbonfootprint:
+                        # Initialise CodeCarbon per cross-validation
+                        tracker = EmissionsTracker()
+                        tracker.start()
+
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
 
                         # Fit classifier with tracking
                         if _carbonfootprint:
-                            tracker.start()
+                            task_name = str(uuid4())
+                            tracker.start_task(task_name)
                         t_start = time()
                         cvclf.fit(X_[train], y_[train])
                         duration = time() - t_start
                         if _carbonfootprint:
-                            emissions = tracker.stop()
-                            if emissions is None:
-                                emissions = np.nan
+                            emissions_data = tracker.stop_task()
+                            emissions = (
+                                emissions_data.emissions if emissions_data else np.nan
+                            )
 
                         _ensure_fitted(cvclf)
-
                         score = scorer(cvclf, X_[test], y_[test])
-
                         acc.append(score)
 
                         if self.hdf5_path is not None and self.save_model:
@@ -253,6 +249,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 save_path=model_save_path,
                                 cv_index=cv_ind,
                             )
+
+                    if _carbonfootprint:
+                        tracker.stop()
 
                     acc = np.array(acc)
                     score = acc.mean()
@@ -270,8 +269,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        if self.codecarbon_to_file:
-                            res["experiment_id"] = experiment_id
+                        res["codecarbon_task_name"] = task_name
 
                     yield res
 
@@ -540,30 +538,25 @@ class CrossSessionEvaluation(BaseEvaluation):
                         eval_type="CrossSession",
                     )
 
+                if _carbonfootprint:
+                    # Initialise CodeCarbon per cross-validation
+                    tracker = EmissionsTracker()
+                    tracker.start()
+
                 for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
                     model_list = []
-
-                    if _carbonfootprint:
-                        # Initialise CodeCarbon
-                        experiment_id = uuid4()
-                        tracker = EmissionsTracker(
-                            save_to_file=self.codecarbon_to_file,
-                            output_dir=self.hdf5_path,
-                            experiment_id=experiment_id,
-                        )
-
                     cvclf = clone(grid_clf)
 
                     # Fit classifier with tracking
                     if _carbonfootprint:
-                        tracker.start()
+                        task_name = str(uuid4())
+                        tracker.start_task(task_name)
                     t_start = time()
                     cvclf.fit(X[train], y[train])
                     duration = time() - t_start
                     if _carbonfootprint:
-                        emissions = tracker.stop()
-                        if emissions is None:
-                            emissions = np.nan
+                        emissions_data = tracker.stop_task()
+                        emissions = emissions_data.emissions if emissions_data else np.nan
 
                     _ensure_fitted(cvclf)
 
@@ -590,10 +583,12 @@ class CrossSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        if self.codecarbon_to_file:
-                            res["experiment_id"] = experiment_id
+                        res["codecarbon_task_name"] = task_name
 
                     yield res
+
+                if _carbonfootprint:
+                    tracker.stop()
 
     def is_valid(self, dataset):
         return dataset.n_sessions > 1
@@ -700,6 +695,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
+        if _carbonfootprint:
+            # Initialise CodeCarbon per cross-validation
+            tracker = EmissionsTracker()
+            tracker.start()
+
         # Progressbar at subject level
         for cv_ind, (train, test) in enumerate(
             tqdm(
@@ -715,15 +715,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
             )
             # iterate over pipelines
             for name, clf in run_pipes.items():
-                if _carbonfootprint:
-                    # Initialise CodeCarbon
-                    experiment_id = uuid4()
-                    tracker = EmissionsTracker(
-                        save_to_file=self.codecarbon_to_file,
-                        output_dir=self.hdf5_path,
-                        experiment_id=experiment_id,
-                    )
-
                 clf = self._grid_search(
                     param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
@@ -749,14 +740,14 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                 # Fit classifier with tracking
                 if _carbonfootprint:
-                    tracker.start()
+                    task_name = str(uuid4())
+                    tracker.start_task(task_name)
                 t_start = time()
                 cvclf.fit(X[train], y[train])
                 duration = time() - t_start
                 if _carbonfootprint:
-                    emissions = tracker.stop()
-                    if emissions is None:
-                        emissions = np.nan
+                    emissions_data = tracker.stop_task()
+                    emissions = emissions_data.emissions if emissions_data else np.nan
 
                 _ensure_fitted(cvclf)
 
@@ -795,10 +786,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        if self.codecarbon_to_file:
-                            res["experiment_id"] = experiment_id
+                        res["codecarbon_task_name"] = task_name
 
                     yield res
+
+        if _carbonfootprint:
+            tracker.stop()
 
     def is_valid(self, dataset):
         return len(dataset.subject_list) > 1
