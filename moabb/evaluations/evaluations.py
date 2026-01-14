@@ -39,6 +39,7 @@ log = logging.getLogger(__name__)
 try:
     from codecarbon import EmissionsTracker
 
+    # Create default CodeCarbon configurations if none exists
     home_config = Path.home() / ".codecarbon.config"
     cwd_config = Path.cwd() / ".codecarbon.config"
     codecarbon_env_vars = [
