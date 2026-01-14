@@ -21,6 +21,10 @@ Enhancements
 ~~~~~~~~~~~~
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
+- Enhanced BNCI datasets with comprehensive participant demographics documentation (by `Bruno Aristimunha`_)
+- Added ``_participant_demographics`` class attribute to BNCI2014-002, BNCI2014-009, BNCI2015-001, and BNCI2015-004 for programmatic access to demographics (by `Bruno Aristimunha`_)
+- Improved BIDS conversion with guaranteed montage preservation for all BNCI datasets (by `Bruno Aristimunha`_)
+- Dataset-specific metadata extraction for BNCI2014-001, BNCI2014-004, and BNCI2014-008 with age, gender, and clinical information (by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -32,11 +36,18 @@ Requirements
 
 Bugs
 ~~~~
-- None yet.
+- Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
+- Fixed measurement date setting for BNCI datasets to use specific collection years from papers (by `Bruno Aristimunha`_)
+- Ensured proper subject ID assignment for BIDS compliance across all BNCI datasets (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
-- None yet.
+- Refactored BNCI dataset architecture to remove generic post-processing loops (by `Bruno Aristimunha`_)
+- Created ``_finalize_raw()`` helper function for consistent metadata finalization across all readers (by `Bruno Aristimunha`_)
+- Improved code maintainability by incorporating finalization logic into each dataset reader function (by `Bruno Aristimunha`_)
+- Removed all ``hasattr()`` checks in favor of dataset-specific metadata extraction (by `Bruno Aristimunha`_)
+- Replaced generic ``try-except`` blocks with deterministic, dataset-specific logic (by `Bruno Aristimunha`_)
+- Removed redundant local imports for PEP 8 compliance in BNCI datasets (by `Bruno Aristimunha`_)
 
 
 

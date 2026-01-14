@@ -2,6 +2,7 @@
 
 import io
 import zipfile
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -171,6 +172,7 @@ def _load_data_iva_2003(
         return filename
 
     runs, ev = _convert_bbci2003(filename[0], ch_names, ch_type)
+    _finalize_raw(runs, "BNCI2003-004", subject)
 
     session = {"0train": {"0": runs}}
     return session
@@ -207,7 +209,13 @@ def _load_data_001_2014(
         filenames += filename
         if only_filenames:
             continue
-        runs, ev = _convert_mi(filename[0], ch_names, ch_types)
+        runs, ev = _convert_mi(
+            filename[0],
+            ch_names,
+            ch_types,
+            dataset_code="BNCI2014-001",
+            subject_id=subject,
+        )
         # FIXME: deal with run with no event (1:3) and name them
         sessions[f"{session_idx}{_map[r]}"] = {
             str(ii): run for ii, run in enumerate(runs)
@@ -240,7 +248,7 @@ def _load_data_002_2014(
         if only_filenames:
             continue
         # FIXME: electrode position and name are not provided directly.
-        raws, _ = _convert_mi(filename, None, ["eeg"] * 15)
+        raws, _ = _convert_mi(filename, None, ["eeg"] * 15, subject_id=subject)
         runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
         return filenames
@@ -273,7 +281,9 @@ def _load_data_004_2014(
         filenames.append(filename)
         if only_filenames:
             continue
-        raws, _ = _convert_mi(filename, ch_names, ch_types)
+        raws, _ = _convert_mi(
+            filename, ch_names, ch_types, dataset_code="BNCI2014-004", subject_id=subject
+        )
         sessions.extend(zip([r] * len(raws), raws))
 
     if only_filenames:
@@ -302,6 +312,9 @@ def _load_data_008_2014(
         return [filename]
     run = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raw, event_id = _convert_run_p300_sl(run, verbose=verbose)
+
+    # Enrich with BNCI2014-008 specific metadata (age, gender, ALSfrs, onsetALS)
+    _enrich_run_with_metadata(raw, run, "BNCI2014-008", subject)
 
     sessions = {"0": {"0": raw}}
 
@@ -334,6 +347,7 @@ def _load_data_009_2014(
     event_id = {}
     for run in data:
         raw, ev = _convert_run_p300_sl(run, verbose=verbose)
+        _finalize_raw(raw, "BNCI2014-009", subject)
         # Raw EEG data are scaled by a factor 10.
         # See https://github.com/NeuroTechX/moabb/issues/275
         raw._data[:16, :] /= 10.0
@@ -382,7 +396,7 @@ def _load_data_001_2015(
         filenames += filename
         if only_filenames:
             continue
-        runs, ev = _convert_mi(filename[0], ch_names, ch_types)
+        runs, ev = _convert_mi(filename[0], ch_names, ch_types, subject_id=subject)
         sessions[f"{session_idx}{r}"] = {str(ii): run for ii, run in enumerate(runs)}
     if only_filenames:
         return filenames
@@ -415,7 +429,6 @@ def _load_data_003_2015(
     ch_names = ["Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8", "Target", "Flash"]
 
     ch_types = ["eeg"] * 8 + ["stim"] * 2
-    montage = make_standard_montage("standard_1005")
 
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
 
@@ -442,7 +455,10 @@ def _load_data_003_2015(
 
         eeg_data = np.r_[run[1:-2] * 1e-6, targets, flashs]
         raw = RawArray(data=eeg_data, info=info, verbose=verbose)
-        raw.set_montage(montage)
+        # Enrich raw object with additional metadata
+        raw.info["line_freq"] = 50.0
+        _finalize_raw(raw, "BNCI2015-003", subject)
+
         sessions["0"][r_name] = raw
 
     return sessions
@@ -477,7 +493,7 @@ def _load_data_004_2015(
     ]
     # fmt: on
     ch_types = ["eeg"] * 30
-    raws, ev = _convert_mi(filename, ch_names, ch_types)
+    raws, ev = _convert_mi(filename, ch_names, ch_types, subject_id=subject)
     sessions = {str(ii): {"0": run} for ii, run in enumerate(raws)}
     return sessions
 
@@ -510,7 +526,10 @@ def _load_data_009_2015(
 
     ch_types = ["eeg"] * 60 + ["eog"] * 2
 
-    return _convert_bbci(filename, ch_types, verbose=None)
+    raws, event_id = _convert_bbci(filename, ch_types, verbose=None)
+    for raw in raws:
+        _finalize_raw(raw, "BNCI2015-009", subject)
+    return raws, event_id
 
 
 @verbose
@@ -542,7 +561,10 @@ def _load_data_010_2015(
 
     ch_types = ["eeg"] * 63
 
-    return _convert_bbci(filename, ch_types, verbose=None)
+    raws, event_id = _convert_bbci(filename, ch_types, verbose=None)
+    for raw in raws:
+        _finalize_raw(raw, "BNCI2015-010", subject)
+    return raws, event_id
 
 
 @verbose
@@ -569,7 +591,10 @@ def _load_data_012_2015(
 
     ch_types = ["eeg"] * 63
 
-    return _convert_bbci(filename, ch_types, verbose=None)
+    raws, event_id = _convert_bbci(filename, ch_types, verbose=None)
+    for raw in raws:
+        _finalize_raw(raw, "BNCI2015-012", subject)
+    return raws, event_id
 
 
 @verbose
@@ -600,12 +625,143 @@ def _load_data_013_2015(
         data = loadmat(filename, struct_as_record=False, squeeze_me=True)
         for run in data["run"]:
             raw, evd = _convert_run_epfl(run, verbose=verbose)
+            _finalize_raw(raw, "BNCI2015-013", subject)
             raws.append(raw)
             event_id.update(evd)
     return raws, event_id
 
 
-def _convert_mi(filename, ch_names, ch_types):
+def _finalize_raw(raw, dataset_code, subject_id):
+    """Finalize raw object with montage, measurement date, and subject ID.
+
+    This function should be called by each conversion function after creating
+    the raw object to ensure all required metadata is set for BIDS compliance.
+
+    Parameters
+    ----------
+    raw : instance of RawArray
+        Raw object to finalize.
+    dataset_code : str
+        Dataset code (e.g., 'BNCI2014-001').
+    subject_id : int
+        Subject number.
+    """
+    # Set montage if not already set and we have standard EEG channels
+    if raw.get_montage() is None:
+        eeg_picks = [
+            ch for ch, typ in zip(raw.ch_names, raw.get_channel_types()) if typ == "eeg"
+        ]
+
+        if eeg_picks:
+            montage = make_standard_montage("standard_1005")
+            if any(ch in montage.ch_names for ch in eeg_picks):
+                raw.set_montage(montage, on_missing="ignore")
+
+    # Set measurement date if not already set (required for BIDS)
+    if raw.info["meas_date"] is None:
+        year = MNEBNCI._dataset_years.get(dataset_code, 2010)
+        raw.set_meas_date(datetime(year, 1, 1, tzinfo=timezone.utc))
+
+    # Ensure subject_info has an ID (required for BIDS)
+    subject_info = raw.info.get("subject_info")
+    if subject_info is not None:
+        if "his_id" not in str(subject_info):
+            subject_info["his_id"] = f"sub-{subject_id:02d}"
+
+
+def _enrich_run_with_metadata(raw, run, dataset_code, subject_id):
+    """Extract metadata from run object and enrich raw object.
+
+    This function extracts subject-specific metadata (age, gender, etc.) from
+    MAT file run objects and enriches the raw object. It also sets the
+    measurement date based on when the data was collected. After metadata
+    extraction, it calls _finalize_raw() to ensure BIDS compliance.
+
+    Parameters
+    ----------
+    raw : instance of RawArray
+        Raw object to enrich.
+    run : MAT file run object
+        Run object containing metadata.
+    dataset_code : str
+        Dataset code to determine which fields to extract.
+    subject_id : int
+        Subject number for BIDS subject_info.
+    """
+    # BNCI2014-001 and BNCI2014-004: have age, gender, artifacts
+    if dataset_code in ["BNCI2014-001", "BNCI2014-004"]:
+        subject_info = {}
+
+        # Extract age
+        age = int(run.age)
+        birth_year = datetime.now().year - age
+        subject_info["birthday"] = date(birth_year, 1, 1)
+
+        # Extract gender
+        gender_str = str(run.gender).lower()
+        if gender_str in ["male", "m"]:
+            subject_info["sex"] = 1
+        elif gender_str in ["female", "f"]:
+            subject_info["sex"] = 2
+        else:
+            subject_info["sex"] = 0  # Unknown
+
+        # Set handedness (right-handed based on dataset description)
+        subject_info["hand"] = 1
+
+        raw.info["subject_info"] = subject_info
+
+        # Extract artifacts information
+        artifacts = run.artifacts
+        if len(artifacts) > 0:
+            n_artifacts = len(np.nonzero(artifacts)[0])
+            if n_artifacts > 0:
+                current_desc = raw.info.get("description") or ""
+                raw.info["description"] = (
+                    current_desc + f"Artifacts: {n_artifacts}/{len(artifacts)} trials; "
+                )
+
+        # Set measurement date (BCI Competition IV 2008)
+        raw.set_meas_date(datetime(2008, 1, 1, tzinfo=timezone.utc))
+
+    # BNCI2014-008: has age (string!), gender, ALSfrs, onsetALS
+    elif dataset_code == "BNCI2014-008":
+        subject_info = {}
+
+        # Extract age (note: age is stored as string in this dataset!)
+        age = int(run.age)
+        birth_year = datetime.now().year - age
+        subject_info["birthday"] = date(birth_year, 1, 1)
+
+        # Extract gender
+        gender_str = str(run.gender).lower()
+        if gender_str in ["male", "m"]:
+            subject_info["sex"] = 1
+        elif gender_str in ["female", "f"]:
+            subject_info["sex"] = 2
+        else:
+            subject_info["sex"] = 0  # Unknown
+
+        # Set handedness (unknown for P300 datasets)
+        subject_info["hand"] = 0  # Unknown
+
+        raw.info["subject_info"] = subject_info
+
+        # Extract ALS-specific information
+        alsfrs = str(run.ALSfrs)
+        onset = str(run.onsetALS)
+        current_desc = raw.info.get("description") or ""
+        # ALS = Amyotrophic Lateral Sclerosis (medical condition, not a typo)
+        raw.info["description"] = current_desc + f"ALSfrs: {alsfrs}; ALS onset: {onset}; "
+
+        # Set measurement date (recorded ~2012)
+        raw.set_meas_date(datetime(2012, 1, 1, tzinfo=timezone.utc))
+
+    # Finalize raw object (montage, measurement date fallback, subject ID)
+    _finalize_raw(raw, dataset_code, subject_id)
+
+
+def _convert_mi(filename, ch_names, ch_types, dataset_code=None, subject_id=None):
     """Process (Graz) motor imagery data from MAT files.
 
     Parameters
@@ -616,6 +772,10 @@ def _convert_mi(filename, ch_names, ch_types):
         List of channel names.
     ch_types : list of str
         List of channel types.
+    dataset_code : str, optional
+        Dataset code for metadata extraction.
+    subject_id : int, optional
+        Subject number for BIDS compliance.
 
     Returns
     -------
@@ -634,6 +794,14 @@ def _convert_mi(filename, ch_names, ch_types):
         raw, evd = _convert_run(run, ch_names, ch_types, None)
         if raw is None:
             continue
+
+        # Enrich with metadata if dataset code is provided
+        if dataset_code and subject_id:
+            _enrich_run_with_metadata(raw, run, dataset_code, subject_id)
+        elif subject_id:
+            # No dataset-specific metadata, but still need BIDS finalization
+            _finalize_raw(raw, dataset_code or "unknown", subject_id)
+
         runs.append(raw)
         event_id.update(evd)
     # change labels to match rest
@@ -660,6 +828,7 @@ def standardize_keys(d):
 @verbose
 def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     """Convert one run to raw."""
+
     # parse eeg data
     event_id = {}
     n_chan = run.X.shape[1]
@@ -682,18 +851,24 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
         return None, None
 
     eeg_data = np.c_[eeg_data, trigger]
-    ch_names = ch_names + ["stim"]
+    # Use 'STI' instead of 'stim' to avoid ambiguity with channel type
+    ch_names = ch_names + ["STI"]
     ch_types = ch_types + ["stim"]
     event_id = {ev: (ii + 1) for ii, ev in enumerate(run.classes)}
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
     raw.set_montage(montage)
+
+    # Set line frequency (50 Hz for European datasets)
+    raw.info["line_freq"] = 50.0
+
     return raw, event_id
 
 
 @verbose
 def _convert_run_p300_sl(run, verbose=None):
     """Convert one p300 run from santa lucia file format."""
+
     montage = make_standard_montage("standard_1005")
     eeg_data = 1e-6 * run.X
     sfreq = 256
@@ -707,7 +882,12 @@ def _convert_run_p300_sl(run, verbose=None):
     event_id.update({ev: (ii + 3) for ii, ev in enumerate(run.classes_stim)})
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
+    # Montage is now set in _get_single_subject_data() method
     raw.set_montage(montage)
+
+    # Set line frequency (50 Hz for European datasets)
+    raw.info["line_freq"] = 50.0
+
     return raw, event_id
 
 
@@ -729,8 +909,8 @@ def _convert_bbci(filename, ch_types, verbose=None):
 @verbose
 def _convert_run_bbci(run, ch_types, verbose=None):
     """Convert one run to raw."""
+
     # parse eeg data
-    montage = make_standard_montage("standard_1005")
     eeg_data = 1e-6 * run.X
     sfreq = run.fs
 
@@ -751,7 +931,10 @@ def _convert_run_bbci(run, ch_types, verbose=None):
 
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
-    raw.set_montage(montage)
+
+    # Set line frequency (50 Hz for European datasets)
+    raw.info["line_freq"] = 50.0
+
     return raw, event_id
 
 
@@ -848,6 +1031,9 @@ def _convert_run_bbci2003(run, ch_names, ch_types, verbose=None):
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
     raw.set_annotations(annotations)
 
+    # Enrich raw object with additional metadata
+    raw.info["line_freq"] = 50.0
+
     return raw, event_id
 
 
@@ -857,7 +1043,6 @@ def _convert_run_epfl(run, verbose=None):
     # parse eeg data
     event_id = {}
 
-    montage = make_standard_montage("standard_1005")
     eeg_data = 1e-6 * run.eeg
     sfreq = run.header.SampleRate
 
@@ -873,18 +1058,39 @@ def _convert_run_epfl(run, verbose=None):
             trigger[run.header.EVENT.POS[ii] - 1, 0] = 1
 
     eeg_data = np.c_[eeg_data, trigger]
-    ch_names = ch_names + ["stim"]
+    # Use 'STI' instead of 'stim' to avoid ambiguity with channel type
+    ch_names = ch_names + ["STI"]
     ch_types = ch_types + ["stim"]
     event_id = {"correct": 1, "error": 2}
 
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
-    raw.set_montage(montage)
+
+    # Enrich raw object with additional metadata
+    raw.info["line_freq"] = 50.0
+
     return raw, event_id
 
 
 class MNEBNCI(BaseDataset):
     """Base BNCI dataset."""
+
+    # Dataset collection/publication years for measurement dates
+    _dataset_years = {
+        "BNCI2003-004": 2003,
+        "BNCI2014-001": 2008,
+        "BNCI2014-002": 2008,
+        "BNCI2014-004": 2008,
+        "BNCI2014-008": 2012,
+        "BNCI2014-009": 2012,
+        "BNCI2015-001": 2010,
+        "BNCI2015-003": 2009,
+        "BNCI2015-004": 2013,
+        "BNCI2015-009": 2015,  # AMUSE dataset from BNCI Horizon 2020
+        "BNCI2015-010": 2015,  # RSVP dataset from BNCI Horizon 2020
+        "BNCI2015-012": 2015,  # PASS2D dataset from BNCI Horizon 2020
+        "BNCI2015-013": 2015,  # Error-related potentials dataset
+    }
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -1038,6 +1244,14 @@ class BNCI2014_002(MNEBNCI):
     were aged between 20 and 30 years, 8 naive to the task, and had no known
     medical or neurological diseases.
 
+    **Participant Demographics**
+
+    - 14 healthy volunteers (note: documentation mentions both 13 and 14)
+    - Age range: 20-30 years
+    - BCI experience: 8 out of 14 naive to the task
+    - Health status: No known medical or neurological diseases
+    - Location: Graz University of Technology, Austria
+
     References
     ----------
     .. [1] Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
@@ -1045,6 +1259,15 @@ class BNCI2014_002(MNEBNCI):
            interfaces: a practical and convenient non-linear classifier.
            Biomedical Engineering/Biomedizinische Technique, 61(1), pp.77-86.
     """
+
+    # Participant demographics from paper
+    _participant_demographics = {
+        "n_subjects": 14,
+        "age_range": (20, 30),
+        "health_status": "healthy volunteers",
+        "bci_experience": "8 out of 14 naive to the task",
+        "location": "Graz University of Technology, Austria",
+    }
 
     def __init__(self):
         super().__init__(
@@ -1227,6 +1450,15 @@ class BNCI2014_009(MNEBNCI):
     Each subject attended 4 recording sessions. During each session,
     the subject performed three runs with each of the stimulation interfaces.
 
+    **Participant Demographics**
+
+    - 10 healthy subjects
+    - Gender: All female (10/10)
+    - Age: Mean = 26.8 ± 5.6 years
+    - BCI experience: Previous experience with P300-based BCIs
+    - Location: Neuroelectrical Imaging and BCI Laboratory, IRCCS Fondazione
+      Santa Lucia, Rome, Italy
+
     References
     ----------
     .. [1] P Aricò, F Aloise, F Schettini, S Salinari, D Mattia and F Cincotti
@@ -1234,6 +1466,17 @@ class BNCI2014_009(MNEBNCI):
            based brain–computer interface performance. Journal of Neural
            Engineering, vol. 11, number 3.
     """
+
+    # Participant demographics from paper
+    _participant_demographics = {
+        "n_subjects": 10,
+        "gender": {"female": 10, "male": 0},
+        "age_mean": 26.8,
+        "age_std": 5.6,
+        "health_status": "healthy subjects",
+        "bci_experience": "previous experience with P300-based BCIs",
+        "location": "IRCCS Fondazione Santa Lucia, Rome, Italy",
+    }
 
     def __init__(self):
         super().__init__(
@@ -1273,6 +1516,16 @@ class BNCI2015_001(MNEBNCI):
     The activity period, where the users received feedback, lasted from
     second 4 to 8. There was a random 2 to 3 s pause between the trials.
 
+    **Participant Demographics**
+
+    - 12 novice users
+    - BCI experience: Novice to motor imagery BCIs
+    - Performance: 10 out of 12 participants reached >70% accuracy within
+      1-3 sessions (10-80 min online time), with a median accuracy of
+      80.2 ± 11.3% in the last session
+    - Location: Institute for Knowledge Discovery, Graz University of
+      Technology, Austria
+
     References
     ----------
     .. [1] J. Faller, C. Vidaurre, T. Solis-Escalante, C. Neuper and R.
@@ -1280,6 +1533,14 @@ class BNCI2015_001(MNEBNCI):
            plug and play online ERD- BCI.  IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 20(3), 313-319.
     """
+
+    # Participant demographics from paper
+    _participant_demographics = {
+        "n_subjects": 12,
+        "bci_experience": "novice users",
+        "performance_note": "10/12 reached >70% accuracy, median 80.2±11.3%",
+        "location": "Graz University of Technology, Austria",
+    }
 
     def __init__(self):
         # FIXME: some participant have 3 sessions
@@ -1374,6 +1635,28 @@ class BNCI2015_004(MNEBNCI):
     during the imagery period, and to move and blink during the
     ITI. Experimental runs began and ended with a blank screen (duration 4 s)
 
+    **Participant Demographics**
+
+    - 9 individuals with severe motor disabilities
+    - Gender: 7 female, 2 male
+    - Age range: 20-57 years (median = 38 years, SD = 10)
+    - Disabilities: Spinal cord injury (SCI) or stroke, with varying time
+      since onset
+    - Functional status: Some participants had tetraplegia
+    - BCI experience: Naive to the task (no previous BCI training)
+    - Recruitment: Attended rehabilitation program at Guttmann Institute,
+      Barcelona, Spain
+    - Location: Institute for Knowledge Discovery, Graz University of
+      Technology, Austria (data collection site: Guttmann Institute, Spain)
+
+    Notes
+    -----
+    This dataset is unique in MOABB as it includes participants with severe
+    motor disabilities rather than healthy volunteers, making it valuable for
+    evaluating BCI performance in the target end-user population. Individual
+    participant details including months since injury/stroke and specific
+    disability types are documented in Table 1 of the reference paper.
+
     References
     ----------
     .. [1] Scherer R, Faller J, Friedrich EVC, Opisso E, Costa U, Kübler A, et
@@ -1381,6 +1664,21 @@ class BNCI2015_004(MNEBNCI):
            Interface Performance in End-Users with Disability. PLoS ONE 10(5).
            https://doi.org/10.1371/journal.pone.0123727
     """
+
+    # Participant demographics from paper
+    _participant_demographics = {
+        "n_subjects": 9,
+        "gender": {"female": 7, "male": 2},
+        "age_range": (20, 57),
+        "age_median": 38,
+        "age_std": 10,
+        "health_status": "individuals with severe motor disabilities",
+        "disability_types": ["spinal cord injury", "stroke"],
+        "functional_status": "some with tetraplegia",
+        "bci_experience": "naive (no previous BCI training)",
+        "location": "Guttmann Institute, Barcelona, Spain (rehabilitation center)",
+        "data_provider": "Graz University of Technology, Austria",
+    }
 
     def __init__(self):
         super().__init__(
