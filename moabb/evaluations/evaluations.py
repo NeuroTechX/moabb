@@ -1,5 +1,7 @@
 import logging
+import os
 from copy import deepcopy
+from pathlib import Path
 from time import time
 from typing import Optional, Union
 from uuid import uuid4
@@ -31,15 +33,32 @@ from moabb.evaluations.utils import (
 )
 
 
+log = logging.getLogger(__name__)
+
+
 try:
     from codecarbon import EmissionsTracker
+
+    home_config = Path.home() / ".codecarbon.config"
+    cwd_config = Path.cwd() / ".codecarbon.config"
+    codecarbon_env_vars = [
+        k for k in ["CODECARBON_SAVE_TO_FILE", "CODECARBON_LOG_LEVEL"] if k in os.environ
+    ]
+    if not home_config.exists() and not cwd_config.exists() and not codecarbon_env_vars:
+        default_config = """# Auto-generated CodeCarbon configurations for MOABB evaluations.
+# You can modify or delete this file.
+# For more info: https://mlco2.github.io/codecarbon/usage.html#configuration.
+[codecarbon]
+save_to_file=false
+log_level=error
+"""
+        cwd_config.write_text(default_config)
+        log.info(f"Created default CodeCarbon configuration at {cwd_config}.")
 
     _carbonfootprint = True
 except ImportError:
     _carbonfootprint = False
 
-
-log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
