@@ -42,12 +42,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
-- Refactored BNCI dataset architecture to remove generic post-processing loops (by `Bruno Aristimunha`_)
-- Created ``_finalize_raw()`` helper function for consistent metadata finalization across all readers (by `Bruno Aristimunha`_)
-- Improved code maintainability by incorporating finalization logic into each dataset reader function (by `Bruno Aristimunha`_)
-- Removed all ``hasattr()`` checks in favor of dataset-specific metadata extraction (by `Bruno Aristimunha`_)
-- Replaced generic ``try-except`` blocks with deterministic, dataset-specific logic (by `Bruno Aristimunha`_)
-- Removed redundant local imports for PEP 8 compliance in BNCI datasets (by `Bruno Aristimunha`_)
+
 
 
 
