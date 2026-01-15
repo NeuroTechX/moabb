@@ -2,7 +2,7 @@ import logging
 import os
 from copy import deepcopy
 from pathlib import Path
-from time import time
+from time import perf_counter
 from typing import Optional, Union
 from uuid import uuid4
 
@@ -250,9 +250,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                         if _carbonfootprint:
                             task_name = str(uuid4())
                             tracker.start_task(task_name)
-                        t_start = time()
+                        t_start = perf_counter()
                         cvclf.fit(X_[train], y_[train])
-                        duration = time() - t_start
+                        duration = perf_counter() - t_start
                         if _carbonfootprint:
                             emissions_data = tracker.stop_task()
                             emissions = (
@@ -260,8 +260,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         _ensure_fitted(cvclf)
-                        score = scorer(cvclf, X_[test], y_[test])
-                        acc.append(score)
 
                         if self.hdf5_path is not None and self.save_model:
                             _save_model_cv(
@@ -269,6 +267,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 save_path=model_save_path,
                                 cv_index=cv_ind,
                             )
+
+                        score = scorer(cvclf, X_[test], y_[test])
+                        acc.append(score)
 
                     if _carbonfootprint:
                         tracker.stop()
@@ -336,7 +337,7 @@ class WithinSessionEvaluation(BaseEvaluation):
             y_train = le.fit_transform(y_train)
             y_test = le.transform(y_test)
         scorer = get_scorer(self.paradigm.scoring)
-        t_start = time()
+        t_start = perf_counter()
         try:
             model = clf.fit(X_train, y_train)
             _ensure_fitted(model)
@@ -351,7 +352,7 @@ class WithinSessionEvaluation(BaseEvaluation):
             if self.error_score == "raise":
                 raise e
             score = self.error_score
-        duration = time() - t_start
+        duration = perf_counter() - t_start
         return score, duration
 
     def _evaluate_learning_curve(
@@ -571,17 +572,14 @@ class CrossSessionEvaluation(BaseEvaluation):
                     if _carbonfootprint:
                         task_name = str(uuid4())
                         tracker.start_task(task_name)
-                    t_start = time()
+                    t_start = perf_counter()
                     cvclf.fit(X[train], y[train])
-                    duration = time() - t_start
+                    duration = perf_counter() - t_start
                     if _carbonfootprint:
                         emissions_data = tracker.stop_task()
                         emissions = emissions_data.emissions if emissions_data else np.nan
 
                     _ensure_fitted(cvclf)
-
-                    model_list.append(cvclf)
-                    score = scorer(cvclf, X[test], y[test])
 
                     if self.hdf5_path is not None and self.save_model:
                         _save_model_cv(
@@ -589,6 +587,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                             save_path=model_save_path,
                             cv_index=str(cv_ind),
                         )
+
+                    model_list.append(cvclf)
+                    score = scorer(cvclf, X[test], y[test])
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -762,9 +763,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 if _carbonfootprint:
                     task_name = str(uuid4())
                     tracker.start_task(task_name)
-                t_start = time()
+                t_start = perf_counter()
                 cvclf.fit(X[train], y[train])
-                duration = time() - t_start
+                duration = perf_counter() - t_start
                 if _carbonfootprint:
                     emissions_data = tracker.stop_task()
                     emissions = emissions_data.emissions if emissions_data else np.nan
@@ -772,7 +773,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 _ensure_fitted(cvclf)
 
                 if self.hdf5_path is not None and self.save_model:
-
                     model_save_path = _create_save_path(
                         hdf5_path=self.hdf5_path,
                         code=dataset.code,
@@ -782,10 +782,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         grid=self.search,
                         eval_type="CrossSubject",
                     )
-
                     _save_model_cv(
                         model=cvclf, save_path=model_save_path, cv_index=str(cv_ind)
                     )
+
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
