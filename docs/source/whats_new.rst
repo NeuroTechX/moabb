@@ -38,6 +38,24 @@ Code health
 ~~~~~~~~~~~
 - None yet.
 
+Version 1.4.4
+-------------
+
+Enhancements
+~~~~~~~~~~~~
+- None.
+
+API changes
+~~~~~~~~~~~
+- None.
+
+Requirements
+~~~~~~~~~~~~
+- None.
+
+Bugs
+~~~~
+- Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 
 
 Version 1.4.3 (Stable - PyPi)
