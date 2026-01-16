@@ -31,9 +31,6 @@ from moabb.evaluations.utils import (
 )
 
 
-log = logging.getLogger(__name__)
-
-
 try:
     from codecarbon import EmissionsTracker
 
@@ -41,6 +38,8 @@ try:
 except ImportError:
     _carbonfootprint = False
 
+
+log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
