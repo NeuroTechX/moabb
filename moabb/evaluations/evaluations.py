@@ -220,7 +220,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         # Initialise CodeCarbon per cross-validation
-                        tracker = EmissionsTracker()
+                        tracker = EmissionsTracker(**self.codecarbon_config)
                         tracker.start()
 
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
@@ -541,7 +541,7 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                 if _carbonfootprint:
                     # Initialise CodeCarbon per cross-validation
-                    tracker = EmissionsTracker()
+                    tracker = EmissionsTracker(**self.codecarbon_config)
                     tracker.start()
 
                 for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
@@ -698,7 +698,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         if _carbonfootprint:
             # Initialise CodeCarbon per cross-validation
-            tracker = EmissionsTracker()
+            tracker = EmissionsTracker(**self.codecarbon_config)
             tracker.start()
 
         # Progressbar at subject level
