@@ -59,7 +59,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         self.n_harmonics = n_harmonics
         self.classes_ = []
         self.one_hot_ = {}
-        self.le_, self.slen_, self.freqs_ = None, None, []
+        self._le, self._slen, self._freqs = None, None, []
 
     def fit(self, X, y, sample_weight=None):
         """Compute reference sinusoid signal.
