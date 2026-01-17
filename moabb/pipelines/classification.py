@@ -451,7 +451,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         # Initialize pred array
         y_pred = []
 
-        for X_test in X:
+        for x in X:
             # Initialize correlations array
             corr_array = np.zeros((self.n_fbands, self.n_classes))
 
