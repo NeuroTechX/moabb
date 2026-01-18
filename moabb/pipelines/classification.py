@@ -408,7 +408,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 x2 -= np.mean(x2, 0)
 
                 # Put the two trials together
-                X = np.concatenate((x1, x2))
+                X = np.concatenate((x1, x2), axis=1)
 
                 if n_channels == 1:
                     X = X.reshape((n_channels, len(X)))
@@ -1014,8 +1014,10 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         y = []
         for x in X:
             corr_f = {}
+            # Whiten test data to match training preprocessing
+            x_white = _whitening(x)
             for f in self.classes_:
-                S_x, S_y = self.cca.fit_transform(x.T, self.Ym[f].T)
+                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[f].T)
                 corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
             y.append(max(corr_f, key=corr_f.get))
         return y
@@ -1044,7 +1046,9 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
         P = np.zeros(shape=(len(X), len(self.classes_)))
         for i, x in enumerate(X):
+            # Whiten test data to match training preprocessing
+            x_white = _whitening(x)
             for j, f in enumerate(self.classes_):
-                S_x, S_y = self.cca.fit_transform(x.T, self.Ym[f].T)
+                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[f].T)
                 P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
         return P / np.resize(P.sum(axis=1), P.T.shape).T
