@@ -161,13 +161,10 @@ class RomaniBF2025ERP(BaseDataset):
         load_failed : bool
             Will load sessions marked as 'Failed' if True instead of standard sessions.
         """
-        # Handle data folder - download if not provided
-        if data_folder is None:
-            self.data_folder = self._download_and_extract_dataset()
-            self._is_temp_dir = True
-        else:
-            self.data_folder = data_folder
-            self._is_temp_dir = False
+        # Store data folder and defer download if not provided
+        self.data_folder = data_folder
+        self._is_temp_dir = False
+        self._download_attempted = False
 
         self.n_targets = n_targets  # Fixed for BrainForm dataset, 10 unique targets
         self.calibration_length = calibration_length
@@ -179,10 +176,15 @@ class RomaniBF2025ERP(BaseDataset):
         self.montage = montage
 
         if subjects is None:
-            # Discover subjects from BIDS structure
-            subjects = self._discover_subjects()
+            # Discover subjects from BIDS structure if data folder exists
+            if self.data_folder is not None and os.path.exists(self.data_folder):
+                subjects = self._discover_subjects()
+            else:
+                # If data folder doesn't exist yet, use a default list of expected subjects
+                # These will be validated when data is actually accessed
+                subjects = [f"P{i:02d}" for i in range(1, 25)]
         if exclude_subjects is None:
-            exclude_subjects = [15, 18]
+            exclude_subjects = ["P15", "P18"]
         if exclude_subjects is not None:
             subjects = [s for s in subjects if s not in exclude_subjects]
 
@@ -206,6 +208,22 @@ class RomaniBF2025ERP(BaseDataset):
             paradigm="p300",
             doi="10.48550/arXiv.2510.10169",
         )
+
+    def _ensure_data_downloaded(self) -> None:
+        """
+        Ensure the dataset is downloaded. This is called lazily when data is accessed.
+        """
+        if self.data_folder is not None and os.path.exists(self.data_folder):
+            # Data folder already exists, no download needed
+            return
+
+        if self._download_attempted:
+            # Already tried to download, don't try again
+            return
+
+        self._download_attempted = True
+        self.data_folder = self._download_and_extract_dataset()
+        self._is_temp_dir = True
 
     def _download_and_extract_dataset(self) -> str:
         """
@@ -290,6 +308,7 @@ class RomaniBF2025ERP(BaseDataset):
         str
             Path to the dataset folder
         """
+        self._ensure_data_downloaded()
         if not os.path.exists(self.data_folder):
             raise FileNotFoundError(f"Dataset folder not found: {self.data_folder}")
         return self.data_folder
@@ -324,6 +343,7 @@ class RomaniBF2025ERP(BaseDataset):
         return [BRAINFORM_URL]
 
     def _get_single_subject_data(self, subject: int | str):
+        self._ensure_data_downloaded()
         sessions = {}
         if isinstance(subject, str):
             subject_label = subject
