@@ -119,11 +119,14 @@ datasets = [dataset, dataset2]
 #  - ``pue`` (float): Power Usage Effectiveness of data center
 #
 # Example 1: Basic configuration with CSV output and verbose logging
+# Note: Using 'process' tracking mode requires fewer system permissions than 'machine' mode
 codecarbon_config = {
     "save_to_file": True,
-    "log_level": "info",
+    "log_level": "error",
     "output_file": "emissions_results.csv",
     "experiment_name": "MOABB_Benchmark_Zhou2016",
+    "tracking_mode": "process",  # Use process-level tracking to reduce permission requirements
+    "disable_rapl": True,  # Disable RAPL attempts to avoid password prompts, falls back to TDP estimation
 }
 
 results = benchmark(
