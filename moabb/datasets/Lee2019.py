@@ -220,15 +220,6 @@ class Lee2019(BaseDataset):
 class Lee2019_MI(Lee2019):
     """BMI/OpenBMI dataset for MI.
 
-    .. admonition:: Dataset summary
-
-
-        ==========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name          #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ==========  =======  =======  ==========  =================  ============  ===============  ===========
-        Lee2019_MI       54       62           2                100  4s            1000Hz                     2
-        ==========  =======  =======  ==========  =================  ============  ===============  ===========
-
     Dataset from Lee et al 2019 [1]_.
 
     **Dataset Description**
@@ -289,15 +280,6 @@ class Lee2019_MI(Lee2019):
 
 class Lee2019_ERP(Lee2019):
     """BMI/OpenBMI dataset for P300.
-
-    .. admonition:: Dataset summary
-
-
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        Lee2019_ERP       54       62  6900 NT / 1380 T   1s               1000Hz                     2
-        ===========  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.
 
@@ -379,15 +361,6 @@ class Lee2019_ERP(Lee2019):
 
 class Lee2019_SSVEP(Lee2019):
     """BMI/OpenBMI dataset for SSVEP.
-
-    .. admonition:: Dataset summary
-
-
-        =============  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name             #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
-        =============  =======  =======  ==========  =================  ===============  ===============  ===========
-        Lee2019_SSVEP       54       62           4                 50  4s               1000Hz                     2
-        =============  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.
 

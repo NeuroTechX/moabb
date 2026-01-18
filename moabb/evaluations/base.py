@@ -1,16 +1,26 @@
 import logging
 from abc import ABC, abstractmethod
+from warnings import warn
 
 import pandas as pd
+from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
-from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
+from moabb.evaluations.utils import (
+    _convert_sklearn_params_to_optuna,
+    check_search_available,
+)
 from moabb.paradigms.base import BaseParadigm
+from moabb.utils import verbose
 
+
+search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
+
+# Making the optuna soft dependency
 
 
 class BaseEvaluation(ABC):
@@ -53,13 +63,30 @@ class BaseEvaluation(ABC):
         Save model after training, for each fold of cross-validation if needed
     cache_config: bool, default=None
         Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+    optuna:bool, default=False
+        If optuna is enable it will change the GridSearch to a RandomizedGridSearch with 15 minutes of cut off time.
+        This option is compatible with list of entries of type None, bool, int, float and string
+    time_out: default=60*15
+        Cut off time for the optuna search expressed in seconds, the default value is 15 minutes.
+        Only used with optuna equal to True.
+    verbose: bool, str, int, default=None
+        If not None, override the default MOABB logging level used by this evaluation
+        (see :func:`moabb.utils.verbose` for more information on how this is handled).
+        If used, it should be passed as a keyword-argument only.
 
     Notes
     -----
     .. versionadded:: 1.1.0
        n_splits, save_model, cache_config parameters.
+    .. versionadded:: 1.1.1
+       optuna, time_out parameters.
+    .. versionadded:: 1.5
+       verbose parameter.
     """
 
+    search = False
+
+    @verbose
     def __init__(
         self,
         paradigm,
@@ -77,6 +104,9 @@ class BaseEvaluation(ABC):
         n_splits=None,
         save_model=False,
         cache_config=None,
+        optuna=False,
+        time_out=60 * 15,
+        verbose=None,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -88,6 +118,17 @@ class BaseEvaluation(ABC):
         self.n_splits = n_splits
         self.save_model = save_model
         self.cache_config = cache_config
+        self.optuna = optuna
+        self.time_out = time_out
+        self.verbose = verbose
+
+        if self.optuna and not optuna_available:
+            raise ImportError("Optuna is not available. Please install it first.")
+        if (self.time_out != 60 * 15) and not self.optuna:
+            warn(
+                "time_out parameter is only used when optuna is enabled. "
+                "Ignoring time_out parameter."
+            )
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -166,7 +207,6 @@ class BaseEvaluation(ABC):
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
 
-
         Returns
         -------
         results: pd.DataFrame
@@ -181,26 +221,44 @@ class BaseEvaluation(ABC):
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
-        res_per_db = []
-        for dataset in self.datasets:
-            log.info("Processing dataset: {}".format(dataset.code))
-            process_pipeline = self.paradigm.make_process_pipelines(
+        # Prepare dataset processing parameters
+        processing_params = [
+            (
                 dataset,
-                return_epochs=self.return_epochs,
-                return_raws=self.return_raws,
-                postprocess_pipeline=postprocess_pipeline,
-            )[0]
-            # (we only keep the pipeline for the first frequency band, better ideas?)
-
-            results = self.evaluate(
-                dataset,
-                pipelines,
-                param_grid=param_grid,
-                process_pipeline=process_pipeline,
-                postprocess_pipeline=postprocess_pipeline,
+                self.paradigm.make_process_pipelines(
+                    dataset,
+                    return_epochs=self.return_epochs,
+                    return_raws=self.return_raws,
+                    postprocess_pipeline=postprocess_pipeline,
+                )[0],
             )
+            for dataset in self.datasets
+        ]
+
+        # Parallel processing...
+        parallel_results = Parallel(n_jobs=self.n_jobs)(
+            delayed(
+                lambda d, p: list(
+                    self.evaluate(
+                        d,
+                        pipelines,
+                        param_grid=param_grid,
+                        process_pipeline=p,
+                        postprocess_pipeline=postprocess_pipeline,
+                    )
+                )
+            )(dataset, process_pipeline)
+            for dataset, process_pipeline in processing_params
+        )
+
+        res_per_db = []
+        # Process results in order
+        for (dataset, process_pipeline), results in zip(
+            processing_params, parallel_results
+        ):
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
+
             res_per_db.append(
                 self.results.to_dataframe(
                     pipelines=pipelines, process_pipeline=process_pipeline
@@ -261,9 +319,17 @@ class BaseEvaluation(ABC):
         """
 
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
+        extra_params = {}
         if param_grid is not None:
             if name in param_grid:
-                search = GridSearchCV(
+                if self.optuna:
+                    search = search_methods["optuna"]
+                    param_grid[name] = _convert_sklearn_params_to_optuna(param_grid[name])
+                    extra_params["timeout"] = self.time_out
+                else:
+                    search = search_methods["grid"]
+
+                search = search(
                     grid_clf,
                     param_grid[name],
                     refit=True,
@@ -271,11 +337,14 @@ class BaseEvaluation(ABC):
                     n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
+                    **extra_params,
                 )
+                self.search = True
                 return search
-
             else:
+                self.search = True
                 return grid_clf
 
         else:
+            self.search = False
             return grid_clf

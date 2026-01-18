@@ -1,21 +1,73 @@
 """Base class for a dataset."""
 
+from __future__ import annotations
+
 import abc
 import logging
 import re
 import traceback
+from collections.abc import Sequence
 from dataclasses import dataclass
 from inspect import signature
 from pathlib import Path
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
-from sklearn.pipeline import Pipeline
+import mne_bids
+import numpy as np
+import pandas as pd
 
 from moabb.datasets.bids_interface import StepType, _interface_map
-from moabb.datasets.preprocessing import SetRawAnnotations
+from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
 log = logging.getLogger(__name__)
+
+_RAW_EXTENSIONS = [
+    ".con",
+    ".sqd",
+    ".pdf",
+    ".fif",
+    ".ds",
+    ".vhdr",
+    ".set",
+    ".edf",
+    ".bdf",
+    ".EDF",
+    ".snirf",
+    ".cdt",
+    ".mef",
+    ".nwb",
+]
+
+
+def get_summary_table(paradigm: str, dir_name: str | None = None):
+    if dir_name is None:
+        dir_name = Path(__file__).parent
+    path = Path(dir_name) / f"summary_{paradigm}.csv"
+    df = pd.read_csv(
+        path,
+        header=0,
+        index_col="Dataset",
+        skipinitialspace=True,
+        dtype={"PapersWithCode leaderboard": str},
+    )
+    return df
+
+
+_summary_table_imagery = get_summary_table("imagery")
+_summary_table_p300 = get_summary_table("p300")
+_summary_table_ssvep = get_summary_table("ssvep")
+_summary_table_cvep = get_summary_table("cvep")
+_summary_table_rstate = get_summary_table("rstate")
+_summary_table = pd.concat(
+    [
+        _summary_table_imagery,
+        _summary_table_p300,
+        _summary_table_ssvep,
+        _summary_table_cvep,
+        _summary_table_rstate,
+    ],
+)
 
 
 @dataclass
@@ -72,7 +124,7 @@ class CacheConfig:
         Create a CacheConfig object from a dict or another CacheConfig object.
 
         Examples
-        -------
+        --------
         Using default parameters:
 
         >>> CacheConfig.make()
@@ -122,9 +174,9 @@ def is_abbrev(abbrev_name: str, full_name: str):
 
 def check_subject_names(data):
     for subject in data.keys():
-        if not isinstance(subject, int):
+        if not isinstance(subject, (int, str)):
             raise ValueError(
-                f"Subject names must be integers, found {type(subject)}: {subject!r}. "
+                f"Subject names must be integers or strings, found {type(subject)}: {subject!r}. "
                 f"If you used cache, you may need to erase it using overwrite=True."
             )
 
@@ -178,7 +230,85 @@ def check_run_names(data):
                 )
 
 
-class BaseDataset(metaclass=abc.ABCMeta):
+def _transfer_unit(key: str, value: str):
+    pattern = r"( ?\((\w+)\))$"
+    match = re.search(pattern, key)
+    if match:
+        suffix, unit = match.groups()
+        return key[: -len(suffix)], f"{value} {unit}"
+    return key, value
+
+
+def format_row(row: pd.Series, horizontal: bool = True):
+    pwc_key = "PapersWithCode leaderboard"
+    tab_prefix = " " * 8
+    tab_sep = "="
+    row = row[~row.isna()]
+    pwc_link = row.get(pwc_key, None)
+    if pwc_link is not None:
+        row = row.drop(pwc_key)
+
+    def to_int(x):
+        try:
+            i = int(x)
+            if i == x:
+                return i
+            return x
+        except ValueError:
+            return x
+
+    # append the eventual units to the values:
+    keys, values = zip(
+        *[_transfer_unit(str(key), str(to_int(val))) for key, val in row.items()]
+    )
+    # make columns bold:
+    keys: Sequence[str] = [f"**{key}**" for key in keys]
+    # transpose the table if vertical:
+    rows: Sequence[Sequence[str]] = (
+        [keys, values] if horizontal else list(zip(keys, values))
+    )
+    # compute the width of each column:
+    widths = [max(map(len, col)) for col in zip(*rows)]
+    # pad each column with spaces:
+    rows = [[str(col).rjust(width) for col, width in zip(row, widths)] for row in rows]
+    # add separator rows:
+    sep_row = [tab_sep * width for width in widths]
+    if horizontal:
+        rows.insert(1, sep_row)
+    rows.insert(0, sep_row)
+    rows.append(sep_row)
+    # join the columns and rows into one string:
+    rows_str = "\n".join([f"{tab_prefix}{' '.join(row)}" for row in rows])
+    # add the header:
+    out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
+    # add the PapersWithCode link if it exists:
+    if pwc_link is not None:
+        out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
+    return out, row
+
+
+class MetaclassDataset(abc.ABCMeta):
+    def __new__(cls, name, bases, attrs):
+        doc = attrs.get("__doc__", "")
+        try:
+            row = _summary_table.loc[name]
+            row_str, row = format_row(row, horizontal=False)
+            doc_list = doc.split("\n\n")
+            if len(doc_list) >= 2:
+                doc_list = [doc_list[0], row_str] + doc_list[1:]
+            else:
+                doc_list.append(row_str)
+            attrs["__doc__"] = "\n\n".join(doc_list)
+            attrs["_summary_table"] = row.to_dict()
+        except KeyError:
+            log.debug(
+                f"No description found for dataset {name}. "
+                f"Complete the appropriate moabb/datasets/summary_*.csv file"
+            )
+        return super().__new__(cls, name, bases, attrs)
+
+
+class BaseDataset(metaclass=MetaclassDataset):
     """Abstract Moabb BaseDataset.
 
     Parameters required for all datasets
@@ -218,6 +348,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
     doi: DOI for dataset, optional (for now)
     """
+
+    _summary_table: dict[str, Any]
 
     def __init__(
         self,
@@ -260,7 +392,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.unit_factor = unit_factor
 
     def _create_process_pipeline(self):
-        return Pipeline(
+        return FixedPipeline(
             [
                 (
                     StepType.RAW,
@@ -271,6 +403,50 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 ),
             ]
         )
+
+    def _block_rep(self, block, repetition):
+        raise NotImplementedError()
+
+    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
+        """Select data for all provided subjects, blocks and repetitions.
+
+        subject -> session -> run -> block -> repetition
+
+        See also
+        --------
+        BaseDataset.get_data
+
+        Parameters
+        ----------
+        subjects: List of int
+            List of subject number
+        block_list: List of int
+            List of block number
+        repetition_list: List of int
+            List of repetition number inside a block
+
+        Returns
+        -------
+        data: Dict
+            dict containing the raw data
+        """
+        X, labels, meta = paradigm.get_data(self, subjects)
+        X_select = []
+        labels_select = []
+        meta_select = []
+        for block in block_list:
+            for repetition in repetition_list:
+                run = self._block_rep(block, repetition)
+                X_select.append(X[meta["run"] == run])
+                labels_select.append(labels[meta["run"] == run])
+                meta_select.append(meta[meta["run"] == run])
+        X_select = np.concatenate(X_select)
+        labels_select = np.concatenate(labels_select)
+        meta_select = np.concatenate(meta_select)
+        df = pd.DataFrame(meta_select, columns=meta.columns)
+        meta_select = df
+
+        return X_select, labels_select, meta_select
 
     def get_data(
         self,
@@ -393,6 +569,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
             # check if accept is needed
             sig = signature(self.data_path)
             if "accept" in [str(p) for p in sig.parameters]:
+                # pylint: disable-next=unexpected-keyword-arg
                 self.data_path(
                     subject=subject,
                     path=path,
@@ -442,7 +619,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     self,
                     subject,
                     path=cache_config.path,
-                    process_pipeline=Pipeline(cached_steps),
+                    process_pipeline=FixedPipeline(cached_steps),
                     verbose=cache_config.verbose,
                 )
 
@@ -489,7 +666,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
                         self,
                         subject,
                         path=cache_config.path,
-                        process_pipeline=Pipeline(
+                        process_pipeline=FixedPipeline(
                             cached_steps + remaining_steps[: step_idx + 1]
                         ),
                         verbose=cache_config.verbose,
@@ -534,7 +711,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
+    ) -> list[str | Path]:
         """Get path to local copy of a subject data.
 
         Parameters
@@ -564,3 +741,189 @@ class BaseDataset(metaclass=abc.ABCMeta):
             list of length one, for compatibility.
         """  # noqa: E501
         pass
+
+
+class BaseBIDSDataset(BaseDataset):
+    """Abstract BIDS dataset class.
+
+    This abstract class can be used to facilitate the integration of datasets which are
+    provided in the Brain Imaging Data Structure (BIDS) format into MOABB.
+
+    More information about BIDS can be found at https://bids.neuroimaging.io/.
+
+    The method ``_download_subject`` must be implemented in each subclass
+    (see its docstring for more details).
+
+    If necessary, the methods ``_get_path_search_params`` and
+    ``_get_read_extra_params`` can be implemented in the subclass.
+    """
+
+    def _get_path_search_params(self, subject: int | None) -> dict[str, Any]:
+        """Return the kwargs for the :func:`mne_bids.find_matching_paths` function."""
+        out = {"extensions": _RAW_EXTENSIONS}
+        if subject is not None:
+            out["subjects"] = str(subject)
+        return out
+
+    def _get_read_extra_params(
+        self,
+        subject: int,  # pylint: disable=unused-argument
+    ) -> dict[str, Any] | None:
+        """Return the ``extra_params`` argument for the :func:`mne_bids.read_raw_bids` function."""
+        return None
+
+    @staticmethod
+    def _find_matching_paths(root, **kwargs) -> list[mne_bids.BIDSPath]:
+        bids_paths = mne_bids.find_matching_paths(root=root, **kwargs)
+        # Remove JSON files manually (the ignore_json argument only arrives in mne-bids=0.16)
+        return [bids_path for bids_path in bids_paths if bids_path.extension != ".json"]
+
+    @abc.abstractmethod
+    def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
+        """Download the data of a single subject and return the local path to the ROOT of the BIDS dataset.
+
+        Returns
+        -------
+        root : str
+            Path to the ROOT of the BIDS dataset.
+        """
+        pass
+
+    def bids_paths(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ) -> list[mne_bids.BIDSPath]:
+        root = self._download_subject(subject, path, force_update, update_path, verbose)
+        return self._find_matching_paths(
+            root=root, **self._get_path_search_params(subject)
+        )
+
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        bids_paths = self.bids_paths(subject, path, force_update, update_path, verbose)
+        return [bids_path.fpath for bids_path in bids_paths]
+
+    def _get_single_subject_data(self, subject):
+        bids_paths = self.bids_paths(subject)
+        data = {}
+        for bids_path in bids_paths:
+            raw = mne_bids.read_raw_bids(
+                bids_path, extra_params=self._get_read_extra_params(subject)
+            )
+            # Data needs to be preloaded for the filtering step of paradigms
+            raw.load_data()
+
+            if bids_path.session is None:
+                log.warning(
+                    "Session not found for subject='%s'. Using session='0'", subject
+                )
+                session = "0"
+            else:
+                session = bids_path.session
+            if bids_path.run is None:
+                log.warning(
+                    "Run not found for subject='%s', session='%s'. Using run='0'",
+                    subject,
+                    session,
+                )
+                run = "0"
+            else:
+                run = bids_path.run
+            data.setdefault(session, {})[run] = raw
+        return data
+
+
+class LocalBIDSDataset(BaseBIDSDataset):
+    """Generic local/private BIDS datasets.
+
+    This class is useful if you have a local/private dataset in BIDS format
+    and you want to use it with MOABB, without having to create a new dataset class.
+
+    Parameters
+    ----------
+    bids_root : str | Path
+        Local path to the root of the BIDS dataset.
+    path_search_params : dict[str, Any] | None
+        Additional kwargs for the :func:`mne_bids.find_matching_paths` function.
+    read_extra_params : dict[str, Any] | None
+        Additional kwargs for the :func:`mne_bids.read_raw_bids` function.
+    subjects : list[int] | None
+        Optional list of subjects. If None, the subjects are inferred from the dataset.
+    sessions_per_subject : int | None
+        Optional number of sessions per subject. If None, the number is inferred from the dataset.
+    events : dict[str, str]
+        String codes for events matched with labels in the stim channel.
+    interval : list with 2 entries
+        Imagery interval as defined in the dataset description.
+    paradigm : str
+        Defines what sort of dataset this is.
+    doi : str | None
+        Optional DOI for dataset.
+    code : str
+        Unique identifier for the dataset. for compatibility reasons,
+        it should start with ``"LocalBIDSDataset"``
+    unit_factor : float
+        Factor to convert units to microvolts (default: 1e6).
+    """
+
+    def __init__(
+        self,
+        bids_root: Path | str,
+        path_search_params: dict[str, Any] | None = None,
+        read_extra_params: dict[str, Any] | None = None,
+        *,
+        subjects: list[int] | None = None,
+        sessions_per_subject: int | None = None,
+        events,
+        code="LocalBIDSDataset-",
+        interval,
+        paradigm,
+        doi=None,
+        unit_factor=1e6,
+    ):
+        self.bids_root = bids_root
+        self.path_search_params = path_search_params
+        self.read_extra_params = read_extra_params
+        bids_paths = self._find_matching_paths(
+            root=bids_root, **self._get_path_search_params(None)
+        )
+        if len(bids_paths) == 0:
+            raise ValueError(f"No BIDS dataset found in {bids_root}")
+        if subjects is None or sessions_per_subject is None:
+            if subjects is None:
+                subjects = sorted(set(path.subject for path in bids_paths))
+                log.warning(f"Found subjects: {subjects}")
+            if sessions_per_subject is None:
+                sessions_per_subject = min(
+                    len(
+                        set(
+                            bids_path.session
+                            for bids_path in bids_paths
+                            if bids_path.subject == subject
+                        )
+                    )
+                    for subject in subjects
+                )
+                log.warning(f"Found {sessions_per_subject=}")
+
+        super().__init__(
+            subjects,
+            sessions_per_subject,
+            events,
+            code,
+            interval,
+            paradigm,
+            doi,
+            unit_factor,
+        )
+
+    def _download_subject(self, subject, path, force_update, update_path, verbose):
+        return self.bids_root
+
+    def _get_path_search_params(self, subject):
+        return dict(
+            super()._get_path_search_params(subject), **(self.path_search_params or {})
+        )
+
+    def _get_read_extra_params(self, subject):
+        return self.read_extra_params

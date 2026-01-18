@@ -14,24 +14,14 @@ from .base import BaseDataset
 
 log = logging.getLogger(__name__)
 
+WANG_URL = "https://zenodo.org/records/14865172/files/"
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
-WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
-
-
+# WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
 # WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
 class Wang2016(BaseDataset):
     """SSVEP Wang 2016 dataset.
-
-    .. admonition:: Dataset summary
-
-
-        ========  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name        #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
-        ========  =======  =======  ==========  =================  ===============  ===============  ===========
-        Wang2016       34       62          40                  6  5s               250Hz                      1
-        ========  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -77,9 +67,25 @@ class Wang2016(BaseDataset):
 
     Information for all subjects was listed in a ‘Sub_info.txt’ file. For each
     subject, there are five factors including ‘Subject Index’, ‘Gender’, ‘Age’,
-    ‘Handedness’, and ‘Group’. Subjects were divided into an ‘experienced’
-    group (eight subjects, S01-S08) and a ‘naive’ group (27 subjects, S09-S35)
+    'Handedness', and 'Group'. Subjects were divided into an 'experienced'
+    group (eight subjects, S01-S08) and a 'naive' group (27 subjects, S09-S35)
     according to their experience in SSVEP-based BCIs.
+
+    Warnings
+    --------
+    The original dataset includes two channels labeled 'CB1' and 'CB2',
+    which are **not part of the standard 10-20 EEG montage**.
+    Although the authors of Wang2016 state that the 10-20 layout was used,
+    the provided channel location file suggests that 'CB1' and 'CB2'
+    may correspond approximately to 'P9' and 'P10'. However, this mapping is
+    **not confirmed**, and the exact locations remain uncertain.
+
+    In this implementation, we treat 'CB1' and 'CB2' as standard EEG channels,
+    following the approach used by the authors.
+
+    Users should be aware of this ambiguity when interpreting spatial analyses
+    or when comparing to other datasets with strictly standard montages.
+
 
     References
     ----------
@@ -144,7 +150,7 @@ class Wang2016(BaseDataset):
         buff = (data.shape[0], n_channels + 1, 50)
         data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
 
-        ch_types = ["eeg"] * 59 + ["misc"] + 3 * ["eeg"] + ["misc", "stim"]
+        ch_types = ["eeg"] * 64 + ["stim"]
         sfreq = 250
         info = create_info(self._ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)

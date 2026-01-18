@@ -128,6 +128,7 @@ class BaseSSVEP(BaseParadigm):
         This function is called before the processing function, and is used to
         prepare the dataset for processing. This includes:
         get the events used for the paradigm, and set the filters if needed.
+
         Parameters
         ----------
         dataset: moabb.datasets.base.BaseDataset
@@ -233,6 +234,7 @@ class FilterBankSSVEP(BaseSSVEP):
     SSVEP paradigm with multiple narrow bandpass filters, centered around the
     frequencies of considered events.
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more.
+
     Parameters
     ----------
     filters: list of list | None (default None)

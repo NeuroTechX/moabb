@@ -1,0 +1,7 @@
+Dataset, #Subj, #Sessions, Freq (Hz), #Chan, Trials length (s), #Trial classes, #Trials / class, #Epochs classes, #Epochs / class, Codes, Presentation rate (Hz), PapersWithCode leaderboard
+Thielen2015,12,1,2048,64,4.2,36,3,2,27216 NT / 27216 T,Gold codes,120,
+Thielen2021,30,1,512,8,31.5,20,5,2,18900 NT / 18900 T,Gold codes,60,
+CastillosCVEP100,    12,1,500,32,2.2,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60,
+CastillosCVEP40,     12,1,500,32,2.2,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60,
+CastillosBurstVEP40, 12,1,500,32,2.2,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60,
+CastillosBurstVEP100,12,1,500,32,2.2,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60,

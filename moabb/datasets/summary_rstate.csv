@@ -1,0 +1,4 @@
+Dataset, #Subj, #Chan, #Classes, #Blocks / class, Trials length (s), Freq (Hz), #Sessions, PapersWithCode leaderboard
+Cattan2019_PHMD,12,16,2,5,60,512,1,
+Hinss2021,15,62,4,1,2,250,1,
+Rodrigues2017,20,16,2,5,10,512,1,

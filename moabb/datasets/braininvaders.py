@@ -3,14 +3,13 @@ import os
 import os.path as osp
 import shutil
 import zipfile as z
-from distutils.dir_util import copy_tree
 from warnings import warn
 
 import mne
 import numpy as np
-import pandas as pd
 import yaml
 from mne.channels import make_standard_montage
+from mne.utils import _open_lock
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
@@ -188,7 +187,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             S = data[:, 1:17]
             stim = 2 * data[:, 18] + 1 * data[:, 19]
             chtypes = ["eeg"] * 16 + ["stim"]
-            X = np.concatenate([S, stim[:, None]], axis=1).T
+            X = np.concatenate([S * 1e-6, stim[:, None]], axis=1).T
 
             sfreq = 512
 
@@ -285,12 +284,12 @@ def _bi_data_path(  # noqa: C901
                 zip_ref = z.ZipFile(path_zip, "r")
                 zip_ref.extractall(path_folder)
                 os.makedirs(osp.join(directory, f"Session{i + 1}"))
-                copy_tree(path_zip.strip(".zip"), directory)
+                shutil.copy_tree(path_zip.strip(".zip"), directory)
                 shutil.rmtree(path_zip.strip(".zip"))
 
         # filter the data regarding the experimental conditions
         meta_file = directory + os.sep + "meta.yml"
-        with open(meta_file, "r") as stream:
+        with _open_lock(meta_file, "r") as stream:
             meta = yaml.load(stream, Loader=yaml.FullLoader)
         conditions = []
         if ds.adaptive:
@@ -416,13 +415,6 @@ def _bi_data_path(  # noqa: C901
 class BI2012(BaseDataset):
     """P300 dataset BI2012 from a "Brain Invaders" experiment.
 
-    .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== ===========
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ================ ======= ======= ================ =============== =============== ===========
-         BI2012           25      16      640 NT / 128 T       1s              128Hz          2
-        ================ ======= ======= ================ =============== =============== ===========
-
     Dataset following the setup from [1]_ carried-out at University of
     Grenoble Alpes.
 
@@ -482,15 +474,6 @@ class BI2012(BaseDataset):
 @depreciated_alias("bi2013a", "1.1")
 class BI2013a(BaseDataset):
     """P300 dataset BI2013a from a "Brain Invaders" experiment.
-
-    .. admonition:: Dataset summary
-
-
-        =======  =======  =======  =================  ===============  ===============  =================
-        Name       #Subj    #Chan  #Trials / class    Trials length    Sampling rate    #Sessions
-        =======  =======  =======  =================  ===============  ===============  =================
-        BI2013a       24       16  3200 NT / 640 T    1s               512Hz            (1-7)8 s|(8-24)1s
-        =======  =======  =======  =================  ===============  ===============  =================
 
     Dataset following the setup from [1]_ carried-out at University of
     Grenoble Alpes.
@@ -586,13 +569,6 @@ class BI2013a(BaseDataset):
 class BI2014a(BaseDataset):
     """P300 dataset BI2014a from a "Brain Invaders" experiment.
 
-    .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== ===========
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ================ ======= ======= ================ =============== =============== ===========
-         BI2014a           64      16        5 NT x 1 T         1s              512Hz       up to 3
-        ================ ======= ======= ================ =============== =============== ===========
-
     This dataset contains electroencephalographic (EEG) recordings of 71 subjects
     playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders.
     The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target)
@@ -644,13 +620,6 @@ class BI2014a(BaseDataset):
 @depreciated_alias("bi2014b", "1.1")
 class BI2014b(BaseDataset):
     """P300 dataset BI2014b from a "Brain Invaders" experiment.
-
-    .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== ===========
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ================ ======= ======= ================ =============== =============== ===========
-         BI2014b           38      32        5 NT x 1 T         1s              512Hz           3
-        ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 38 subjects playing in
     pair (19 pairs) to the multi-user version of a visual P300-based Brain-Computer Interface (BCI)
@@ -705,13 +674,6 @@ class BI2014b(BaseDataset):
 class BI2015a(BaseDataset):
     """P300 dataset BI2015a from a "Brain Invaders" experiment.
 
-    .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== ===========
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ================ ======= ======= ================ =============== =============== ===========
-         BI2015a           43      32        5 NT x 1 T         1s              512Hz           3
-        ================ ======= ======= ================ =============== =============== ===========
-
     This dataset contains electroencephalographic (EEG) recordings
     of 43 subjects playing to a visual P300 Brain-Computer Interface (BCI)
     videogame named Brain Invaders. The interface uses the oddball paradigm
@@ -765,13 +727,6 @@ class BI2015a(BaseDataset):
 @depreciated_alias("bi2015b", "1.1")
 class BI2015b(BaseDataset):
     """P300 dataset BI2015b from a "Brain Invaders" experiment.
-
-       .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== ===========
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ================ ======= ======= ================ =============== =============== ===========
-         BI2015b           44      32        5 NT x 1 T         1s              512Hz           1
-        ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings
     of 44 subjects playing in pair to the multi-user version of a visual
@@ -829,13 +784,6 @@ class BI2015b(BaseDataset):
 @depreciated_alias("VirtualReality", "1.1")
 class Cattan2019_VR(BaseDataset):
     """Dataset of an EEG-based BCI experiment in Virtual Reality using P300.
-
-    .. admonition:: Dataset summary
-        ============== ======= ======= ================ =============== =============== ===========
-         Name           #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ============== ======= ======= ================ =============== =============== ===========
-         Cattan2019_VR   21      16      600 NT / 120 T   1s              512Hz           2
-        ============== ======= ======= ================ =============== =============== ===========
 
     We describe the experimental procedures for a dataset that we have made publicly
     available at https://doi.org/10.5281/zenodo.2605204 in mat (Mathworks, Natick, USA)
@@ -903,50 +851,5 @@ class Cattan2019_VR(BaseDataset):
     ):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
-    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
-        """Select data for all provided subjects, blocks and repetitions. Each
-        subject has 12 blocks of 5 repetitions.
-
-        The returned data is a dictionary with the following structure::
-
-            data = {'subject_id' :
-                        {'session_id':
-                            {'run_id': raw}
-                        }
-                    }
-
-        See also
-        --------
-        BaseDataset.get_data
-
-        Parameters
-        ----------
-        subjects: List of int
-            List of subject number
-        block_list: List of int
-            List of block number (from 0 to 11)
-        repetition_list: List of int
-            List of repetition number inside a block (from 0 to 4)
-
-        Returns
-        -------
-        data: Dict
-            dict containing the raw data
-        """
-        X, labels, meta = paradigm.get_data(self, subjects)
-        X_select = []
-        labels_select = []
-        meta_select = []
-        for block in block_list:
-            for repetition in repetition_list:
-                run = block_rep(block, repetition, self.n_repetitions)
-                X_select.append(X[meta["run"] == run])
-                labels_select.append(labels[meta["run"] == run])
-                meta_select.append(meta[meta["run"] == run])
-        X_select = np.concatenate(X_select)
-        labels_select = np.concatenate(labels_select)
-        meta_select = np.concatenate(meta_select)
-        df = pd.DataFrame(meta_select, columns=meta.columns)
-        meta_select = df
-
-        return X_select, labels_select, meta_select
+    def _block_rep(self, block, repetition):
+        return block_rep(block, repetition, self.n_repetitions)
