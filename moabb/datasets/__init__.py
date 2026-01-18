@@ -56,6 +56,23 @@ from .castillos2023 import (
     CastillosCVEP40,
     CastillosCVEP100,
 )
+from .martinezcagigal2023_checker_cvep import (
+    MartinezCagigal2023C1,
+    MartinezCagigal2023C2,
+    MartinezCagigal2023C3,
+    MartinezCagigal2023C4,
+    MartinezCagigal2023C5,
+    MartinezCagigal2023C6,
+    MartinezCagigal2023C7,
+    MartinezCagigal2023C8,
+)
+from .martinezcagigal2023_pary_cvep import (
+    MartinezCagigal2023P2,
+    MartinezCagigal2023P3,
+    MartinezCagigal2023P5,
+    MartinezCagigal2023P7,
+    MartinezCagigal2023P11,
+)
 from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .erpcore2021 import (

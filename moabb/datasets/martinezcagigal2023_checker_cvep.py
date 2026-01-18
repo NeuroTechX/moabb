@@ -7,10 +7,11 @@ from glob import glob
 import mne
 import numpy as np
 from dateutil import parser
-from medusa import components
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.bson_loader import load_bson
+from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 
 MARTINEZCAGIGAL2023_CHECKER_URL = "https://uvadoc.uva.es/handle/10324/70973"
@@ -37,42 +38,49 @@ SUBJECTS = (
 
 CONDITIONS = ("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8")
 
+# Event descriptions for checkerboard dataset
+EVENTS = {0: "white_flash", 1: "checkerboard_pattern"}
 
-class MartinezCagigal2023C(BaseDataset):
-    """Checkerboard m-sequence-based c-VEP dataset from Martínez-Cagigal et
-    al. (2025) and Fernández-Rodríguez et al. (2023).
+
+class MartinezCagigal2023CBase(BaseDataset):
+    """Base class for Checkerboard m-sequence-based c-VEP dataset from
+    Martínez-Cagigal et al. (2025) and Fernández-Rodríguez et al. (2023).
 
     **Dataset Description**
-    This dataset, accesible at [1], was originally recorded for study [2],
+
+    This dataset, accesible at [1]_, was originally recorded for study [2]_,
     which evaluated 8 different stimuli in a c-VEP circular shifting paradigm
     using binary m-sequences. The conditions were tested in a 9-command
-    speller. The stimulus was composed of a black-background checkerboard (
-    BB-CB) pattern, i.e. event 1 was encoded with a checkerboard patterna nd
-    event 0 with a black flash. The stimuli were encoded using circularly
+    speller. The stimulus was composed of a black-background checkerboard
+    (BB-CB) pattern, i.e. event 1 was encoded with a checkerboard pattern and
+    event 0 with a white flash. The stimuli were encoded using circularly
     shifting versions of a 63-bit binary m-sequence. The different conditions
-    evaluated different spatial frequency variations of the BB-CB pattern (
-    i.e., the number of squares inside the checkerboard pattern). The evaluated
-    conditions were:
-    - 1c: C001 (0 c/º, 1x1 squares).
-    - 2c: C002 (0.15 c/º, 2x2 squares).
-    - 3c: C004 (0.3 c/º, 4x4 squares).
-    - 4c: C008 (0.6 c/º, 8x8 squares).
-    - 5c: C016 (1.2 c/º, 16x16 squares).
-    - 6c: C032 (2.4 c/º, 32x32 squares).
-    - 7c: C064 (4.79 c/º, 64x64 squares).
-    - 8c: C128 (9.58 c/º, 128x128 squares).
+    evaluated different spatial frequency variations of the BB-CB pattern
+    (i.e., the number of squares inside the checkerboard pattern).
+
+    The evaluated conditions were:
+
+    - c1: C001 (0 c/º, 1x1 squares).
+    - c2: C002 (0.15 c/º, 2x2 squares).
+    - c3: C004 (0.3 c/º, 4x4 squares).
+    - c4: C008 (0.6 c/º, 8x8 squares).
+    - c5: C016 (1.2 c/º, 16x16 squares).
+    - c6: C032 (2.4 c/º, 32x32 squares).
+    - c7: C064 (4.79 c/º, 64x64 squares).
+    - c8: C128 (9.58 c/º, 128x128 squares).
 
     The dataset includes recordings from 16 healthy subjects performing
     a copy-spelling task under each condition. The evaluation was conducted in
     a single session, during which each participant completed:
-    (1) a calibration phase consisting of 30 trials using the original
-        m-sequence (divided into two recordings of 15 trials each), and
-    (2) an online copy-spelling task of 18 trials (in one run).
+
+    1. A calibration phase consisting of 30 trials using the original
+       m-sequence (divided into two recordings of 15 trials each), and
+    2. An online copy-spelling task of 18 trials (in one run).
 
     Each trial consisted of 8 cycles (i.e., repetitions of the same code).
     Additionally, participants completed questionnaires to assess satisfaction
     and perceived eyestrain for each m-sequence condition. Questionnaire
-    results are available in [1].
+    results are available in [1]_.
 
     The encoding was displayed at a 120 Hz refresh rate. EEG signals were
     recorded using a g.USBamp amplifier (g.Tec, Guger Technologies, Austria)
@@ -80,9 +88,7 @@ class MartinezCagigal2023C(BaseDataset):
     placed at: Oz, F3, Fz, F4, I1, I2, C3, Cz, C4, CPz, P3, Pz, P4, PO7, POz,
     PO8, grounded at AFz and referenced to the earlobe.
 
-    The experimental paradigm was executed using the MEDUSA© software [3],
-    with the publicly available application "c-VEP Speller":
-    https://www.medusabci.com/market/cvep_speller/
+    The experimental paradigm was executed using the MEDUSA© software [3]_.
 
     References
     ----------
@@ -107,34 +113,22 @@ class MartinezCagigal2023C(BaseDataset):
     -----
     Although the dataset was recorded in a single session, each condition is
     stored as a separate session to match the MOABB structure. Within each
-    session, three MNE arrays are available (two for training, one for testing).
-
-    Due to limitations in the MNE format, both cycle onsets and event onsets
-    are stored as annotations, with labels included in their descriptions:
-        - "cycle_onset": marks the start of a stimulation cycle
-        - "0": marks the onset of a 0 (white) event
-        - "1": marks the onset of a 1 (black) event
-
-    The MNE format does not support encoding further paradigm-specific
-    information. For full access to the dataset's metadata and structure,
-    users are encouraged to load the original recordings using the MEDUSA Kernel.
-
-    Example:
-    >> pip install medusa-kernel
-    >> from medusa import components
-    >> from medusa.bci import cvep_spellers
-    >> rec = components.Recording.load(path)
-
-    The "rec" object will contain all available information.
+    session, three runs are available (two for training, one for testing).
 
     .. versionadded:: 1.2.0
     """
 
+    # Class variable to specify which condition this dataset loads
+    condition = None
+
     def __init__(self):
+        if self.condition is None:
+            raise ValueError("Subclasses must specify the 'condition' class variable")
+
         super().__init__(
             subjects=list(range(1, len(SUBJECTS) + 1)),
-            sessions_per_subject=len(CONDITIONS),
-            events={},
+            sessions_per_subject=1,  # Only one condition per dataset
+            events=EVENTS,
             code="MartinezCagigal2023Checkercvep",
             interval=(0, 1),  # Don't use this, it depends on the condition
             paradigm="cvep",
@@ -145,55 +139,52 @@ class MartinezCagigal2023C(BaseDataset):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject)
 
-        # Each subject evaluated 8 different conditions, where
-        # checkerboard-like stimuli spatial frequency varied
-        sessions = dict()
-        for cond in CONDITIONS:
-            sessions[cond[::-1]] = dict()
+        # Load only the specified condition for this dataset
+        # Use reversed condition name as session key for consistency with MOABB structure
+        cond = self.condition
+        cname = cond[::-1]
+        sessions = {cname: dict()}
         user = SUBJECTS[subject - 1]
 
         # Get the EEG files
         zf = zipfile.ZipFile(file_path_list[0])
         with tempfile.TemporaryDirectory() as tempdir:
             zf.extractall(tempdir)
-            # For each base (condition)
-            for cond in CONDITIONS:
-                cname = cond[::-1]
-                # Training signals
-                train_paths = glob(f"{tempdir}/{user}/{cond}/*_calib*")
-                for i, train_path in enumerate(train_paths):
-                    try:
-                        print(f"> Loading {user}, cond {cname}, train {i + 1}")
-                        sessions[cname][f"{i + 1}train"] = self.__convert_to_mne_format(
-                            train_path
-                        )
-                    except Exception:
-                        print(
-                            f"[EXCEPTION] Cannot convert signal {train_path}."
-                            f" More information: {traceback.format_exc()}"
-                        )
-                n = len(train_paths)
+            # Training signals
+            train_paths = glob(f"{tempdir}/{user}/{cond}/*_calib*")
+            for i, train_path in enumerate(train_paths):
+                try:
+                    print(f"> Loading {user}, cond {cname}, train {i + 1}")
+                    sessions[cname][f"{i + 1}train"] = self.__convert_to_mne_format(
+                        train_path
+                    )
+                except Exception:
+                    print(
+                        f"[EXCEPTION] Cannot convert signal {train_path}."
+                        f" More information: {traceback.format_exc()}"
+                    )
+            n = len(train_paths)
 
-                # Load the true labels for testing
-                test_labels = glob(f"{tempdir}/{user}/{cond}/*_labels*")
-                assert len(test_labels) == 1
-                with open(test_labels[0], "r", encoding="utf-8") as f:
-                    true_labels = [line.strip() for line in f.readlines()]
+            # Load the true labels for testing
+            test_labels = glob(f"{tempdir}/{user}/{cond}/*_labels*")
+            assert len(test_labels) == 1
+            with open(test_labels[0], "r", encoding="utf-8") as f:
+                true_labels = [line.strip() for line in f.readlines()]
 
-                # Testing signals
-                test_paths = glob(f"{tempdir}/{user}/{cond}/*_online*")
-                assert len(test_paths) == len(true_labels)
-                for i, test_path in enumerate(test_paths):
-                    try:
-                        print(f"> Loading {user}, cond {cname}, test {i+n+1}")
-                        sessions[cname][f"{i + n + 1}test"] = (
-                            self.__convert_to_mne_format(test_path, true_labels[i])
-                        )
-                    except Exception:
-                        print(
-                            f"[EXCEPTION] Cannot convert signal {test_path}."
-                            f" More information: {traceback.format_exc()}"
-                        )
+            # Testing signals
+            test_paths = glob(f"{tempdir}/{user}/{cond}/*_online*")
+            assert len(test_paths) == len(true_labels)
+            for i, test_path in enumerate(test_paths):
+                try:
+                    print(f"> Loading {user}, cond {cname}, test {i+n+1}")
+                    sessions[cname][f"{i + n + 1}test"] = (
+                        self.__convert_to_mne_format(test_path, true_labels[i])
+                    )
+                except Exception:
+                    print(
+                        f"[EXCEPTION] Cannot convert signal {test_path}."
+                        f" More information: {traceback.format_exc()}"
+                    )
 
         return sessions
 
@@ -227,96 +218,172 @@ class MartinezCagigal2023C(BaseDataset):
         return camel_case_labels
 
     @staticmethod
-    def __trim_unfinished_trial(rec):
-        if np.max(rec.cvepspellerdata.cycle_idx) != rec.cvepspellerdata.cycle_idx[-1]:
-            last_idx = (
-                np.where(
-                    rec.cvepspellerdata.cycle_idx == np.max(rec.cvepspellerdata.cycle_idx)
-                )[0][-1]
-                + 1
-            )
-            rec.cvepspellerdata.cycle_idx = rec.cvepspellerdata.cycle_idx[:last_idx]
-            rec.cvepspellerdata.level_idx = rec.cvepspellerdata.level_idx[:last_idx]
-            rec.cvepspellerdata.matrix_idx = rec.cvepspellerdata.matrix_idx[:last_idx]
-            rec.cvepspellerdata.onsets = rec.cvepspellerdata.onsets[:last_idx]
-            rec.cvepspellerdata.trial_idx = rec.cvepspellerdata.trial_idx[:last_idx]
-            rec.cvepspellerdata.unit_idx = rec.cvepspellerdata.unit_idx[:last_idx]
-        return rec
+    def __load_bson_recording(path):
+        """Load a BSON recording file and return the data dictionary."""
+        return load_bson(path)
+
+    @staticmethod
+    def __trim_unfinished_trial(cvep_data):
+        """Trim incomplete trials from the CVEP data."""
+        cycle_idx = np.array(cvep_data["cycle_idx"])
+        if np.max(cycle_idx) != cycle_idx[-1]:
+            last_idx = np.where(cycle_idx == np.max(cycle_idx))[0][-1] + 1
+            cvep_data["cycle_idx"] = cvep_data["cycle_idx"][:last_idx]
+            cvep_data["level_idx"] = cvep_data["level_idx"][:last_idx]
+            cvep_data["matrix_idx"] = cvep_data["matrix_idx"][:last_idx]
+            cvep_data["onsets"] = cvep_data["onsets"][:last_idx]
+            cvep_data["trial_idx"] = cvep_data["trial_idx"][:last_idx]
+            cvep_data["unit_idx"] = cvep_data["unit_idx"][:last_idx]
+        return cvep_data
 
     def __convert_to_mne_format(self, path, true_labels=None):
-        # Load in MEDUSA format
-        rec = components.Recording.load(path)
+        """Convert a BSON recording to MNE Raw format."""
+        # Load BSON file
+        rec = self.__load_bson_recording(path)
 
-        # Trim unfinished trials
-        rec = self.__trim_unfinished_trial(rec)
-        signal = rec.get_biosignals_with_class_name("EEG")["eeg"]
+        # Get CVEP speller data
+        cvep_data = rec["cvepspellerdata"]
+        cvep_data = self.__trim_unfinished_trial(cvep_data)
+
+        # Get EEG data
+        eeg = rec["eeg"]
+        signal = np.array(eeg["signal"])
+        times = np.array(eeg["times"])
+        sampling_freq = eeg["fs"]
 
         # Create the info
-        ch_names = self.__get_camel_case_labels(signal.channel_set.l_cha)
+        ch_names = self.__get_camel_case_labels(eeg["channel_set"]["l_cha"])
         ch_types = ["eeg"] * len(ch_names)
-        sampling_freq = signal.fs
-        meas_date = parser.parse(rec.date)
+        meas_date = parser.parse(rec["date"])
         info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sampling_freq)
-        info["subject_info"] = {"his_id": str(rec.subject_id)}
-        info["description"] = str(rec.recording_id)
+        info["subject_info"] = {"his_id": str(rec["subject_id"])}
+        info["description"] = str(rec["recording_id"])
         info.set_meas_date(meas_date.replace(tzinfo=timezone.utc))
         info.set_montage("standard_1005", match_case=False, on_missing="warn")
 
-        # Set data
-        raw_data = mne.io.RawArray(np.array(signal.signal).T, info, verbose=False)
-        exp_annotations = {}
+        # Set data (signal shape is samples x channels, need to transpose)
+        raw_data = mne.io.RawArray(signal.T, info, verbose=False)
 
-        # Cycle onsets
-        sample_onsets = rec.cvepspellerdata.onsets - signal.times[0]
-        exp_annotations["onset"] = sample_onsets.tolist()
-        exp_annotations["description"] = ["cycle_onset"] * len(sample_onsets)
+        # Get timing information
+        fps = cvep_data["fps_resolution"]
+        sample_onsets = np.array(cvep_data["onsets"]) - times[0]
 
-        # Get bit-wise sequences
-        fps = rec.cvepspellerdata.fps_resolution
+        # Get bit-wise sequences for each cycle
         seqs_by_cycle = list()
-        if rec.cvepspellerdata.mode == "train":
-            for idx in range(len(rec.cvepspellerdata.command_idx)):
-                m_ = int(rec.cvepspellerdata.matrix_idx[idx])
-                c_ = str(int(rec.cvepspellerdata.command_idx[idx]))
-                seqs_by_cycle.append(
-                    rec.cvepspellerdata.commands_info[m_][c_]["sequence"]
-                )
+        commands_info = cvep_data["commands_info"]
+
+        if cvep_data["mode"] == "train":
+            command_idx = cvep_data["command_idx"]
+            matrix_idx = cvep_data["matrix_idx"]
+            for idx in range(len(command_idx)):
+                m_ = int(matrix_idx[idx])
+                c_ = str(int(command_idx[idx]))
+                seqs_by_cycle.append(commands_info[m_][c_]["sequence"])
         else:
+            # For test mode, need to look up sequences by label
             assert true_labels is not None
             seqs_by_trial = list()
             for label in true_labels:
-                for item in rec.cvepspellerdata.commands_info[0].values():
+                for item in commands_info[0].values():
                     if item["label"] == label:
                         seqs_by_trial.append(item["sequence"])
                         break
-            for t_idx in rec.cvepspellerdata.trial_idx:
+            trial_idx = cvep_data["trial_idx"]
+            for t_idx in trial_idx:
                 seqs_by_cycle.append(seqs_by_trial[int(t_idx)])
 
-        # Set the duration for cycle onsets
-        exp_annotations["duration"] = [len(s) / fps for s in seqs_by_cycle]
+        # Calculate trial onsets in samples
+        trial_onsets_samples = (sample_onsets * sampling_freq).astype(int)
 
-        # Annotate bit-wise
-        for o_idx in range(len(sample_onsets)):
-            bw_onsets = [
-                sample_onsets[o_idx] + i / fps for i in range(len(seqs_by_cycle[o_idx]))
-            ]
-            bw_duration = [1 / fps] * len(bw_onsets)
-            bw_desc = seqs_by_cycle[o_idx]
-            exp_annotations["onset"] += bw_onsets
-            exp_annotations["duration"] += bw_duration
-            exp_annotations["description"] += bw_desc
+        # Get unique trial indices and their labels
+        trial_idx = np.array(cvep_data["trial_idx"])
+        unique_trials = np.unique(trial_idx)
+        trial_labels = unique_trials.astype(int)
 
-        # Set annotations
-        annotations = mne.Annotations(
-            onset=exp_annotations["onset"],
-            duration=exp_annotations["duration"],
-            description=exp_annotations["description"],
+        # Find the first onset for each trial
+        first_trial_onsets = []
+        for t in unique_trials:
+            mask = trial_idx == t
+            first_onset_idx = np.where(mask)[0][0]
+            first_trial_onsets.append(trial_onsets_samples[first_onset_idx])
+        first_trial_onsets = np.array(first_trial_onsets)
+
+        # Add trial-level stimulus channel (offset=200)
+        raw_data = add_stim_channel_trial(
+            raw_data, first_trial_onsets, trial_labels, offset=200
         )
-        raw_data.set_annotations(annotations)
+
+        # Build a codebook from the sequences (shape: n_bits x n_codes)
+        # For binary sequences, codes contain values 0 and 1
+        max_seq_len = max(len(s) for s in seqs_by_cycle)
+        unique_seqs = {}
+        for i, seq in enumerate(seqs_by_cycle):
+            trial_id = int(trial_idx[i])
+            if trial_id not in unique_seqs:
+                unique_seqs[trial_id] = seq
+
+        # Create codebook matrix
+        n_codes = len(unique_seqs)
+        codes = np.zeros((max_seq_len, n_codes), dtype=int)
+        for trial_id, seq in unique_seqs.items():
+            codes[: len(seq), trial_id] = seq
+
+        # Add epoch-level stimulus channel with bit-wise codes (offset=100)
+        raw_data = add_stim_channel_epoch(
+            raw_data, first_trial_onsets, trial_labels, codes, fps, offset=100
+        )
 
         return raw_data
 
 
+class MartinezCagigal2023C1(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c1: 0 c/º, 1x1 squares)."""
+
+    condition = "c1"
+
+
+class MartinezCagigal2023C2(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c2: 0.15 c/º, 2x2 squares)."""
+
+    condition = "c2"
+
+
+class MartinezCagigal2023C3(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c3: 0.3 c/º, 4x4 squares)."""
+
+    condition = "c3"
+
+
+class MartinezCagigal2023C4(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c4: 0.6 c/º, 8x8 squares)."""
+
+    condition = "c4"
+
+
+class MartinezCagigal2023C5(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c5: 1.2 c/º, 16x16 squares)."""
+
+    condition = "c5"
+
+
+class MartinezCagigal2023C6(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c6: 2.4 c/º, 32x32 squares)."""
+
+    condition = "c6"
+
+
+class MartinezCagigal2023C7(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c7: 4.79 c/º, 64x64 squares)."""
+
+    condition = "c7"
+
+
+class MartinezCagigal2023C8(MartinezCagigal2023CBase):
+    """Checkerboard c-VEP dataset (condition c8: 9.58 c/º, 128x128 squares)."""
+
+    condition = "c8"
+
+
 if __name__ == "__main__":
-    dataset = MartinezCagigal2023C()
+    dataset = MartinezCagigal2023C1()
     sessions = dataset.get_data(subjects=[1])

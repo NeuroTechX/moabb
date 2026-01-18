@@ -7,10 +7,11 @@ from glob import glob
 import mne
 import numpy as np
 from dateutil import parser
-from medusa import components
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.bson_loader import load_bson
+from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 
 MARTINEZCAGIGAL2023_PARY_URL = "https://uvadoc.uva.es/handle/10324/70945"
@@ -37,24 +38,50 @@ SUBJECTS = (
 
 CONDITIONS = ("2", "3", "5", "7", "11")
 
+# M-sequence lengths for each base (p-ary)
+MSEQUENCE_LENGTHS = {
+    "2": 63,   # GF(2^6)
+    "3": 80,   # GF(3^4)
+    "5": 124,  # GF(5^3)
+    "7": 48,   # GF(7^2)
+    "11": 120,  # GF(11^2)
+}
 
-class MartinezCagigal2023P(BaseDataset):
-    """P-ary m-sequence-based c-VEP dataset from Martínez-Cagigal et al. (2023)
+# Event descriptions for p-ary datasets
+EVENTS = {
+    0: "event_0",
+    1: "event_1",
+    2: "event_2",
+    3: "event_3",
+    4: "event_4",
+    5: "event_5",
+    6: "event_6",
+    7: "event_7",
+    8: "event_8",
+    9: "event_9",
+    10: "event_10",
+}
+
+
+class MartinezCagigal2023PBase(BaseDataset):
+    """Base class for P-ary m-sequence-based c-VEP dataset from Martínez-Cagigal et al. (2023)
 
     **Dataset Description**
-    This dataset was originally recorded for study [1], which evaluated
+
+    This dataset was originally recorded for study [1]_, which evaluated
     different non-binary encoding strategies. Specifically, five different
     conditions were tested in a 16-command speller. Each condition used a
     different p-ary m-sequence to encode the commands via circular shifting.
     One command was encoded using the original m-sequence, while the remaining
-    commands were encoded using shifted versions of that sequence [2].
+    commands were encoded using shifted versions of that sequence [2]_.
 
     A p-ary m-sequence means it contains *p* different events, which were
     encoded using different shades of gray. For example, in the binary case
     (p=2), events 0 and 1 were encoded using white and black flashes,
-    respectively. For p=3, black, white, and mid-gray flashes were used [1].
+    respectively. For p=3, black, white, and mid-gray flashes were used [1]_.
 
     The evaluated conditions were:
+
     - Base 2: GF(2^6) m-sequence of 63 bits
     - Base 3: GF(3^4) m-sequence of 80 bits
     - Base 5: GF(5^3) m-sequence of 124 bits
@@ -64,27 +91,28 @@ class MartinezCagigal2023P(BaseDataset):
     The dataset includes recordings from 16 healthy subjects performing
     a copy-spelling task under each condition. The evaluation was conducted in
     a single session, during which each participant completed:
-    (1) a calibration phase consisting of 30 trials using the original
-        m-sequence (divided into six recordings of five trials each), and
-    (2) an online copy-spelling task of 32 trials (divided into two recordings
-        of 16 trials each).
+
+    1. A calibration phase consisting of 30 trials using the original
+       m-sequence (divided into six recordings of five trials each), and
+    2. An online copy-spelling task of 32 trials (divided into two recordings
+       of 16 trials each).
 
     Each trial consisted of 10 cycles (i.e., repetitions of the same code).
     Additionally, participants completed questionnaires to assess satisfaction
     and perceived eyestrain for each m-sequence condition. Questionnaire
-    results are available in [3].
+    results are available in [3]_.
 
     The encoding was displayed at a 120 Hz refresh rate. EEG signals were
     recorded using a g.USBamp amplifier (g.Tec, Guger Technologies, Austria)
     with 16 active electrodes and a sampling rate of 256 Hz. Electrodes were
     placed at: F3, Fz, F4, C3, Cz, C4, CPz, P3, Pz, P4, PO7, PO8, Oz, I1, and I2;
-    grounded at AFz and referenced to the earlobe. NOTE: Recordings of user
-    “zdvm” for bases 2, 3, 5, and 7 had a sampling rate of 600 Hz.
-    The rest of recordings have all a sampling rate of 256 Hz.
+    grounded at AFz and referenced to the earlobe.
 
-    The experimental paradigm was executed using the MEDUSA© software [4],
-    with the publicly available application "P-ary c-VEP Speller":
-    https://www.medusabci.com/market/pary_cvep/
+    .. note::
+       Recordings of user "zdvm" for bases 2, 3, 5, and 7 had a sampling rate
+       of 600 Hz. The rest of recordings have all a sampling rate of 256 Hz.
+
+    The experimental paradigm was executed using the MEDUSA© software [4]_.
 
     References
     ----------
@@ -115,36 +143,22 @@ class MartinezCagigal2023P(BaseDataset):
     -----
     Although the dataset was recorded in a single session, each condition is
     stored as a separate session to match the MOABB structure. Within each
-    session, eight MNE arrays are available (six for training, two for testing).
-
-    Due to limitations in the MNE format, both cycle onsets and event onsets
-    are stored as annotations, with labels included in their descriptions.
-    For example, for a binary m-sequence, the possible annotations are:
-        - "cycle_onset": marks the start of a stimulation cycle
-        - "0": marks the onset of a 0 (white) event
-        - "1": marks the onset of a 1 (black) event
-    For other p-ary sequences (e.g., p=7), additional event labels (0–6) are included.
-
-    The MNE format does not support encoding further paradigm-specific
-    information. For full access to the dataset's metadata and structure,
-    users are encouraged to load the original recordings using the MEDUSA Kernel.
-
-    Example:
-    >> pip install medusa-kernel
-    >> from medusa import components
-    >> from medusa.bci import cvep_spellers
-    >> rec = components.Recording.load(path)
-
-    The "rec" object will contain all available information.
+    session, eight runs are available (six for training, two for testing).
 
     .. versionadded:: 1.2.0
     """
 
+    # Class variable to specify which condition this dataset loads
+    condition = None
+
     def __init__(self):
+        if self.condition is None:
+            raise ValueError("Subclasses must specify the 'condition' class variable")
+
         super().__init__(
             subjects=list(range(1, len(SUBJECTS) + 1)),
-            sessions_per_subject=len(CONDITIONS),
-            events={},
+            sessions_per_subject=1,  # Only one condition per dataset
+            events=EVENTS,
             code="MartinezCagigal2023Parycvep",
             interval=(0, 1),  # Don't use this, it depends on the condition
             paradigm="cvep",
@@ -155,54 +169,50 @@ class MartinezCagigal2023P(BaseDataset):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject)
 
-        # Each subject evaluated 5 different conditions, composed of p-ary
-        # m-sequences of bases 2, 3, 5, 7, and 11
-        sessions = dict()
-        for cond in CONDITIONS:
-            sessions[cond] = dict()
+        # Load only the specified condition for this dataset
+        base = self.condition
+        sessions = {str(base): dict()}
         user = SUBJECTS[subject - 1]
 
         # Get the EEG files
         zf = zipfile.ZipFile(file_path_list[0])
         with tempfile.TemporaryDirectory() as tempdir:
             zf.extractall(tempdir)
-            # For each base (condition)
-            for base in CONDITIONS:
-                # Training signals
-                train_paths = glob(f"{tempdir}/{user}/*{base}_train*")
-                for i, train_path in enumerate(train_paths):
-                    try:
-                        print(f"> Loading {user}, base {base}, train {i + 1}")
-                        sessions[str(base)][f"{i + 1}train"] = (
-                            self.__convert_to_mne_format(train_path)
-                        )
-                    except Exception:
-                        print(
-                            f"[EXCEPTION] Cannot convert signal {train_path}."
-                            f" More information: {traceback.format_exc()}"
-                        )
-                n = len(train_paths)
+            # Training signals
+            train_paths = glob(f"{tempdir}/{user}/*{base}_train*")
+            for i, train_path in enumerate(train_paths):
+                try:
+                    print(f"> Loading {user}, base {base}, train {i + 1}")
+                    sessions[str(base)][f"{i + 1}train"] = (
+                        self.__convert_to_mne_format(train_path)
+                    )
+                except Exception:
+                    print(
+                        f"[EXCEPTION] Cannot convert signal {train_path}."
+                        f" More information: {traceback.format_exc()}"
+                    )
+            n = len(train_paths)
 
-                # Load the true labels for testing
-                test_labels = glob(f"{tempdir}/{user}/*{base}_labels*")
-                assert len(test_labels) == 1
-                with open(test_labels[0], "r", encoding="utf-8") as f:
-                    true_labels = [line.strip() for line in f.readlines()]
+            # Load the true labels for testing
+            test_labels = glob(f"{tempdir}/{user}/*{base}_labels*")
+            assert len(test_labels) == 1
+            with open(test_labels[0], "r", encoding="utf-8") as f:
+                true_labels = [line.strip() for line in f.readlines()]
 
-                # Testing signals
-                test_paths = glob(f"{tempdir}/{user}/*{base}_test*")
-                assert len(test_paths) == len(true_labels)
-                for i, test_path in enumerate(test_paths):
-                    try:
-                        print(f"> Loading {user}, base {base}, test {i+n+1}")
-                        sessions[str(base)][f"{i + n + 1}test"] = (
-                            self.__convert_to_mne_format(test_path, true_labels[i])
-                        )
-                    except Exception:
-                        print(
-                            f"[EXCEPTION] Cannot convert signal {test_path}."
-                            f" More information: {traceback.format_exc()}"
-                        )
+            # Testing signals
+            test_paths = glob(f"{tempdir}/{user}/*{base}_test*")
+            assert len(test_paths) == len(true_labels)
+            for i, test_path in enumerate(test_paths):
+                try:
+                    print(f"> Loading {user}, base {base}, test {i+n+1}")
+                    sessions[str(base)][f"{i + n + 1}test"] = (
+                        self.__convert_to_mne_format(test_path, true_labels[i])
+                    )
+                except Exception:
+                    print(
+                        f"[EXCEPTION] Cannot convert signal {test_path}."
+                        f" More information: {traceback.format_exc()}"
+                    )
 
         return sessions
 
@@ -236,96 +246,154 @@ class MartinezCagigal2023P(BaseDataset):
         return camel_case_labels
 
     @staticmethod
-    def __trim_unfinished_trial(rec):
-        if np.max(rec.cvepspellerdata.cycle_idx) != rec.cvepspellerdata.cycle_idx[-1]:
-            last_idx = (
-                np.where(
-                    rec.cvepspellerdata.cycle_idx == np.max(rec.cvepspellerdata.cycle_idx)
-                )[0][-1]
-                + 1
-            )
-            rec.cvepspellerdata.cycle_idx = rec.cvepspellerdata.cycle_idx[:last_idx]
-            rec.cvepspellerdata.level_idx = rec.cvepspellerdata.level_idx[:last_idx]
-            rec.cvepspellerdata.matrix_idx = rec.cvepspellerdata.matrix_idx[:last_idx]
-            rec.cvepspellerdata.onsets = rec.cvepspellerdata.onsets[:last_idx]
-            rec.cvepspellerdata.trial_idx = rec.cvepspellerdata.trial_idx[:last_idx]
-            rec.cvepspellerdata.unit_idx = rec.cvepspellerdata.unit_idx[:last_idx]
-        return rec
+    def __load_bson_recording(path):
+        """Load a BSON recording file and return the data dictionary."""
+        return load_bson(path)
+
+    @staticmethod
+    def __trim_unfinished_trial(cvep_data):
+        """Trim incomplete trials from the CVEP data."""
+        cycle_idx = np.array(cvep_data["cycle_idx"])
+        if np.max(cycle_idx) != cycle_idx[-1]:
+            last_idx = np.where(cycle_idx == np.max(cycle_idx))[0][-1] + 1
+            cvep_data["cycle_idx"] = cvep_data["cycle_idx"][:last_idx]
+            cvep_data["level_idx"] = cvep_data["level_idx"][:last_idx]
+            cvep_data["matrix_idx"] = cvep_data["matrix_idx"][:last_idx]
+            cvep_data["onsets"] = cvep_data["onsets"][:last_idx]
+            cvep_data["trial_idx"] = cvep_data["trial_idx"][:last_idx]
+            cvep_data["unit_idx"] = cvep_data["unit_idx"][:last_idx]
+        return cvep_data
 
     def __convert_to_mne_format(self, path, true_labels=None):
-        # Load in MEDUSA format
-        rec = components.Recording.load(path)
+        """Convert a BSON recording to MNE Raw format."""
+        # Load BSON file
+        rec = self.__load_bson_recording(path)
 
-        # Trim unfinished trials
-        rec = self.__trim_unfinished_trial(rec)
-        signal = rec.get_biosignals_with_class_name("EEG")["eeg"]
+        # Get CVEP speller data
+        cvep_data = rec["cvepspellerdata"]
+        cvep_data = self.__trim_unfinished_trial(cvep_data)
+
+        # Get EEG data
+        eeg = rec["eeg"]
+        signal = np.array(eeg["signal"])
+        times = np.array(eeg["times"])
+        sampling_freq = eeg["fs"]
 
         # Create the info
-        ch_names = self.__get_camel_case_labels(signal.channel_set.l_cha)
+        ch_names = self.__get_camel_case_labels(eeg["channel_set"]["l_cha"])
         ch_types = ["eeg"] * len(ch_names)
-        sampling_freq = signal.fs
-        meas_date = parser.parse(rec.date)
+        meas_date = parser.parse(rec["date"])
         info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sampling_freq)
-        info["subject_info"] = {"his_id": str(rec.subject_id)}
-        info["description"] = str(rec.recording_id)
+        info["subject_info"] = {"his_id": str(rec["subject_id"])}
+        info["description"] = str(rec["recording_id"])
         info.set_meas_date(meas_date.replace(tzinfo=timezone.utc))
         info.set_montage("standard_1005", match_case=False, on_missing="warn")
 
-        # Set data
-        raw_data = mne.io.RawArray(np.array(signal.signal).T, info, verbose=False)
-        exp_annotations = {}
+        # Set data (signal shape is samples x channels, need to transpose)
+        raw_data = mne.io.RawArray(signal.T, info, verbose=False)
 
-        # Cycle onsets
-        sample_onsets = rec.cvepspellerdata.onsets - signal.times[0]
-        exp_annotations["onset"] = sample_onsets.tolist()
-        exp_annotations["description"] = ["cycle_onset"] * len(sample_onsets)
+        # Get timing information
+        fps = cvep_data["fps_resolution"]
+        sample_onsets = np.array(cvep_data["onsets"]) - times[0]
 
-        # Get bit-wise sequences
-        fps = rec.cvepspellerdata.fps_resolution
+        # Get bit-wise sequences for each cycle
         seqs_by_cycle = list()
-        if rec.cvepspellerdata.mode == "train":
-            for idx in range(len(rec.cvepspellerdata.command_idx)):
-                m_ = int(rec.cvepspellerdata.matrix_idx[idx])
-                c_ = str(int(rec.cvepspellerdata.command_idx[idx]))
-                seqs_by_cycle.append(
-                    rec.cvepspellerdata.commands_info[m_][c_]["sequence"]
-                )
+        commands_info = cvep_data["commands_info"]
+
+        if cvep_data["mode"] == "train":
+            command_idx = cvep_data["command_idx"]
+            matrix_idx = cvep_data["matrix_idx"]
+            for idx in range(len(command_idx)):
+                m_ = int(matrix_idx[idx])
+                c_ = str(int(command_idx[idx]))
+                seqs_by_cycle.append(commands_info[m_][c_]["sequence"])
         else:
+            # For test mode, need to look up sequences by label
             assert true_labels is not None
             seqs_by_trial = list()
             for label in true_labels:
-                for item in rec.cvepspellerdata.commands_info[0].values():
+                for item in commands_info[0].values():
                     if item["label"] == label:
                         seqs_by_trial.append(item["sequence"])
                         break
-            for t_idx in rec.cvepspellerdata.trial_idx:
+            trial_idx = cvep_data["trial_idx"]
+            for t_idx in trial_idx:
                 seqs_by_cycle.append(seqs_by_trial[int(t_idx)])
 
-        # Set the duration for cycle onsets
-        exp_annotations["duration"] = [len(s) / fps for s in seqs_by_cycle]
+        # Calculate trial onsets in samples
+        trial_onsets_samples = (sample_onsets * sampling_freq).astype(int)
 
-        # Annotate bit-wise
-        for o_idx in range(len(sample_onsets)):
-            bw_onsets = [
-                sample_onsets[o_idx] + i / fps for i in range(len(seqs_by_cycle[o_idx]))
-            ]
-            bw_duration = [1 / fps] * len(bw_onsets)
-            bw_desc = seqs_by_cycle[o_idx]
-            exp_annotations["onset"] += bw_onsets
-            exp_annotations["duration"] += bw_duration
-            exp_annotations["description"] += bw_desc
+        # Get unique trial indices and their labels
+        trial_idx = np.array(cvep_data["trial_idx"])
+        unique_trials = np.unique(trial_idx)
+        trial_labels = unique_trials.astype(int)
 
-        # Set annotations
-        annotations = mne.Annotations(
-            onset=exp_annotations["onset"],
-            duration=exp_annotations["duration"],
-            description=exp_annotations["description"],
+        # Find the first onset for each trial
+        first_trial_onsets = []
+        for t in unique_trials:
+            mask = trial_idx == t
+            first_onset_idx = np.where(mask)[0][0]
+            first_trial_onsets.append(trial_onsets_samples[first_onset_idx])
+        first_trial_onsets = np.array(first_trial_onsets)
+
+        # Add trial-level stimulus channel (offset=200)
+        raw_data = add_stim_channel_trial(
+            raw_data, first_trial_onsets, trial_labels, offset=200
         )
-        raw_data.set_annotations(annotations)
+
+        # Build a codebook from the sequences (shape: n_bits x n_codes)
+        # For p-ary sequences, codes contain values 0 to p-1
+        max_seq_len = max(len(s) for s in seqs_by_cycle)
+        unique_seqs = {}
+        for i, seq in enumerate(seqs_by_cycle):
+            trial_id = int(trial_idx[i])
+            if trial_id not in unique_seqs:
+                unique_seqs[trial_id] = seq
+
+        # Create codebook matrix
+        n_codes = len(unique_seqs)
+        codes = np.zeros((max_seq_len, n_codes), dtype=int)
+        for trial_id, seq in unique_seqs.items():
+            codes[: len(seq), trial_id] = seq
+
+        # Add epoch-level stimulus channel with bit-wise codes (offset=100)
+        raw_data = add_stim_channel_epoch(
+            raw_data, first_trial_onsets, trial_labels, codes, fps, offset=100
+        )
 
         return raw_data
 
 
+class MartinezCagigal2023P2(MartinezCagigal2023PBase):
+    """P-ary c-VEP dataset (base 2: GF(2^6) m-sequence of 63 bits)."""
+
+    condition = "2"
+
+
+class MartinezCagigal2023P3(MartinezCagigal2023PBase):
+    """P-ary c-VEP dataset (base 3: GF(3^4) m-sequence of 80 bits)."""
+
+    condition = "3"
+
+
+class MartinezCagigal2023P5(MartinezCagigal2023PBase):
+    """P-ary c-VEP dataset (base 5: GF(5^3) m-sequence of 124 bits)."""
+
+    condition = "5"
+
+
+class MartinezCagigal2023P7(MartinezCagigal2023PBase):
+    """P-ary c-VEP dataset (base 7: GF(7^2) m-sequence of 48 bits)."""
+
+    condition = "7"
+
+
+class MartinezCagigal2023P11(MartinezCagigal2023PBase):
+    """P-ary c-VEP dataset (base 11: GF(11^2) m-sequence of 120 bits)."""
+
+    condition = "11"
+
+
 if __name__ == "__main__":
-    dataset = MartinezCagigal2023P()
+    dataset = MartinezCagigal2023P2()
     sessions = dataset.get_data(subjects=[1])
