@@ -148,43 +148,79 @@ order_list = [
 ]
 
 ###############################################################################
-# Plotting the results
-# --------------------
-# We can plot the results using the ``codecarbon_plot`` function, generated
-# below. This function takes the dataframe returned by the ``benchmark``
-# function as input, and returns a pyplot figure with comprehensive emissions
-# analysis.
+# Comprehensive CodeCarbon Visualization Analysis
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# The function provides multiple visualization options:
-#
-# **Basic usage (emissions only):**
-# Shows CO2 emissions per dataset and algorithm with logarithmic scale.
-#
-# **With efficiency metrics:**
-# Adds a subplot showing energy efficiency (accuracy score per kg CO2).
-# Higher bars indicate better efficiency.
-#
-# **With power vs score analysis:**
-# Adds a scatter plot showing the trade-off between accuracy and emissions.
-# Pipelines in the upper-right are better (higher accuracy, lower emissions).
+# The ``codecarbon_plot`` function provides multiple visualization modes to
+# analyze emissions data from different perspectives. Each mode answers specific
+# questions about the sustainability and efficiency of your pipelines.
 
-# Example 1: Basic emissions visualization
+###############################################################################
+# Visualization Mode 1: Basic CO2 Emissions (Default)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This shows the raw CO2 emissions per dataset and algorithm. It helps you
+# understand which combinations of dataset and pipeline produce the most
+# emissions.
+#
+# **What it shows:**
+#  - X-axis: Different datasets used in benchmarking
+#  - Y-axis: CO2 emissions in kg (log scale)
+#  - Colors: Different pipeline algorithms
+#
+# **Best for:** Understanding overall emissions impact
+
 fig1 = codecarbon_plot(results, order_list, country="(France)")
+print("Mode 1 created: Basic CO2 emissions visualization")
 
-# Example 2: Include efficiency analysis
-# This shows which pipelines provide the best accuracy-to-emissions ratio
+###############################################################################
+# Visualization Mode 2: Energy Efficiency Analysis
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This mode adds a subplot showing energy efficiency, calculated as:
+# **Efficiency = Accuracy Score / CO2 Emissions (kg)**
+#
+# Higher efficiency means the pipeline achieves better accuracy with less
+# carbon cost. This is the key metric for sustainable machine learning.
+#
+# **What it shows:**
+#  - Bar chart: Pipelines ranked by energy efficiency
+#  - Values: Efficiency score (higher is better)
+#  - Colors: Pipeline identification
+#
+# **Best for:** Identifying which pipelines are most sustainable
+# **Use case:** When you care about accuracy-to-emissions ratio
+
 fig2 = codecarbon_plot(
     results,
     order_list,
     country="(France)",
     include_efficiency=True,
 )
+print("Mode 2 created: Added energy efficiency analysis")
 
-# Example 3: Full analysis with accuracy vs emissions trade-off
-# This comprehensive view shows three plots:
-# 1. CO2 emissions per dataset (log scale)
-# 2. Energy efficiency ranking (accuracy / kg CO2)
-# 3. Accuracy vs emissions scatter (Pareto frontier)
+###############################################################################
+# Visualization Mode 3: Complete Analysis with Pareto Frontier
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This comprehensive mode shows ALL three visualizations:
+#  1. CO2 emissions per dataset (shows raw environmental impact)
+#  2. Energy efficiency ranking (shows best accuracy/emissions ratio)
+#  3. Accuracy vs emissions scatter (shows performance-sustainability trade-off)
+#
+# The third plot shows the **Pareto frontier**: pipelines in the upper-right
+# are Pareto-optimal (you cannot improve accuracy without increasing emissions
+# or vice versa).
+#
+# **What each plot shows:**
+#  - Plot 1: Raw emissions across datasets and pipelines
+#  - Plot 2: Which pipelines are most efficient (sorted ranking)
+#  - Plot 3: Accuracy vs emissions scatter (find the best balance)
+#
+# **Best for:** Complete sustainability analysis and informed decision-making
+# **Use case:** Selecting the best pipeline considering both performance
+#              and environmental impact
+
 fig3 = codecarbon_plot(
     results,
     order_list,
@@ -192,6 +228,7 @@ fig3 = codecarbon_plot(
     include_efficiency=True,
     include_power_vs_score=True,
 )
+print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 
 ###############################################################################
 # CodeCarbon Configuration Examples
@@ -258,29 +295,129 @@ fig3 = codecarbon_plot(
 #     }
 
 ###############################################################################
-# Emissions Summary Report
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Emissions Summary Report and Analysis
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# Beyond visualizations, you can generate a detailed summary report of
-# emissions metrics using the ``emissions_summary`` function. This provides
-# a table with comprehensive efficiency metrics for each pipeline.
+# Beyond visualizations, you can generate a detailed summary report using
+# the ``emissions_summary`` function. This provides comprehensive metrics
+# for data-driven decision making.
 
 summary = emissions_summary(results, order_list=order_list)
-print("Emissions Summary Report:")
+print("\n" + "=" * 80)
+print("EMISSIONS SUMMARY REPORT")
 print("=" * 80)
+print("\nDetailed Metrics Table:")
 print(summary.to_string())
-print("\nKey Metrics:")
-print("  - avg_score: Average accuracy across all evaluations")
-print("  - avg_emissions: Average CO2 emissions per evaluation (kg)")
-print("  - total_emissions: Total CO2 emissions for this pipeline (kg)")
-print("  - efficiency: Score per kg CO2 (higher is better)")
-print("  - emissions_per_eval: Average emissions per individual evaluation")
 
-# Identify the most efficient pipeline
+###############################################################################
+# Understanding the Metrics
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# The summary report includes the following columns:
+#
+# **Performance Metrics:**
+#  - avg_score: Average accuracy/performance across all evaluations
+#  - std_score: Standard deviation (variability) of accuracy
+#
+# **Emissions Metrics:**
+#  - avg_emissions: Average CO2 per evaluation in kg
+#  - total_emissions: Total CO2 for all evaluations in kg
+#  - emissions_per_eval: Average emissions per fold
+#
+# **Efficiency Metrics:**
+#  - efficiency: **Score / kg CO2** (MOST IMPORTANT - higher is better)
+#  - n_evaluations: Number of evaluations performed
+
+print("\n" + "=" * 80)
+print("METRIC EXPLANATIONS")
+print("=" * 80)
+metrics_info = {
+    "avg_score": "Higher = Better accuracy",
+    "std_score": "Lower = More consistent accuracy",
+    "avg_emissions": "Lower = Less carbon per evaluation",
+    "total_emissions": "Lower = Less total carbon footprint",
+    "efficiency": "HIGHER = Better (accuracy with less carbon)",
+    "n_evaluations": "Number of CV folds evaluated",
+}
+for metric, explanation in metrics_info.items():
+    print(f"  {metric:20s}: {explanation}")
+
+###############################################################################
+# Sustainability Analysis
+# ~~~~~~~~~~~~~~~~~~~~~~
+#
+# Identify the most sustainable and efficient pipelines.
+
+print("\n" + "=" * 80)
+print("SUSTAINABILITY RANKINGS")
+print("=" * 80)
+
+# Find best efficiency
 best_efficiency = summary["efficiency"].idxmax()
-print(f"\nMost efficient pipeline: {best_efficiency}")
-print(f"  - Accuracy: {summary.loc[best_efficiency, 'avg_score']:.3f}")
-print(f"  - Efficiency: {summary.loc[best_efficiency, 'efficiency']:.3f} score/kg CO2")
+worst_efficiency = summary["efficiency"].idxmin()
+print("\n1. Most Efficient Pipeline (Best accuracy-to-emissions ratio):")
+print(f"   Pipeline: {best_efficiency}")
+print(f"   - Accuracy: {summary.loc[best_efficiency, 'avg_score']:.4f}")
+print(f"   - Efficiency: {summary.loc[best_efficiency, 'efficiency']:.4f} score/kg CO2")
+print(
+    f"   - Total emissions: {summary.loc[best_efficiency, 'total_emissions']:.6f} kg CO2"
+)
+
+print("\n2. Lowest Emissions Pipeline:")
+lowest_emissions = summary["avg_emissions"].idxmin()
+print(f"   Pipeline: {lowest_emissions}")
+print(
+    f"   - Avg emissions: {summary.loc[lowest_emissions, 'avg_emissions']:.6f} kg CO2/eval"
+)
+print(f"   - Accuracy: {summary.loc[lowest_emissions, 'avg_score']:.4f}")
+
+print("\n3. Highest Accuracy Pipeline:")
+best_accuracy = summary["avg_score"].idxmax()
+print(f"   Pipeline: {best_accuracy}")
+print(f"   - Accuracy: {summary.loc[best_accuracy, 'avg_score']:.4f}")
+print(f"   - Efficiency: {summary.loc[best_accuracy, 'efficiency']:.4f} score/kg CO2")
+
+print("\n4. Efficiency Comparison:")
+for pipeline in summary.index:
+    efficiency = summary.loc[pipeline, "efficiency"]
+    accuracy = summary.loc[pipeline, "avg_score"]
+    emissions = summary.loc[pipeline, "avg_emissions"]
+    print(
+        f"   {pipeline:25s}: {efficiency:6.4f} score/kg | {accuracy:.4f} acc | {emissions:.6f} kg CO2/eval"
+    )
+
+print("\n" + "=" * 80)
+print("RECOMMENDATIONS")
+print("=" * 80)
+print(f"\nMost Sustainable Choice: {best_efficiency}")
+print("  → Best balance of accuracy and environmental impact")
+print(
+    f"  → Efficiency score: {summary.loc[best_efficiency, 'efficiency']:.4f} score/kg CO2"
+)
+
+if best_accuracy != best_efficiency:
+    efficiency_loss = (
+        (
+            summary.loc[best_accuracy, "avg_score"]
+            - summary.loc[best_efficiency, "avg_score"]
+        )
+        / summary.loc[best_accuracy, "avg_score"]
+        * 100
+    )
+    emissions_saving = (
+        (
+            summary.loc[best_accuracy, "avg_emissions"]
+            - summary.loc[best_efficiency, "avg_emissions"]
+        )
+        / summary.loc[best_accuracy, "avg_emissions"]
+        * 100
+    )
+    print(f"\nSwitch from {best_accuracy} to {best_efficiency}:")
+    print(f"  → Accuracy reduction: {efficiency_loss:.1f}%")
+    print(f"  → Carbon savings: {emissions_saving:.1f}%")
+    print(
+        f"  → Better efficiency: {summary.loc[best_efficiency, 'efficiency'] / summary.loc[best_accuracy, 'efficiency']:.2f}x more sustainable"
+    )
 
 ###############################################################################
 # The result expected will be the following image, but varying depending on the
