@@ -39,30 +39,11 @@ Bugs
 ~~~~
 - Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
 - Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
+- Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 
 Code health
 ~~~~~~~~~~~
 - None yet.
-
-Version 1.4.4
--------------
-
-Enhancements
-~~~~~~~~~~~~
-- None.
-
-API changes
-~~~~~~~~~~~
-- None.
-
-Requirements
-~~~~~~~~~~~~
-- None.
-
-Bugs
-~~~~
-- Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
-
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
