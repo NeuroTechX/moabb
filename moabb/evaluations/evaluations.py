@@ -594,9 +594,6 @@ class CrossSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        res["codecarbon_task_name"] = getattr(
-                            tracker, "task_name", "default"
-                        )
 
                     yield res
 
@@ -800,9 +797,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        res["codecarbon_task_name"] = getattr(
-                            tracker, "task_name", "default"
-                        )
                     yield res
 
     def is_valid(self, dataset):
