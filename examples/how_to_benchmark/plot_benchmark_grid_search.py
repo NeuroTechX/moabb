@@ -72,8 +72,9 @@ results = benchmark(
     include_datasets=["Zhou2016"],
     results="./results/",
     overwrite=False,
-    plot=False,
     output="./benchmark/",
+    suffix="benchmark_grid",
+    plot=False,
 )
 
 ###############################################################################

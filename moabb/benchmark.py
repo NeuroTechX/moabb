@@ -50,6 +50,7 @@ def benchmark(  # noqa: C901
     results="./results/",
     overwrite=False,
     output="./benchmark/",
+    suffix="",
     n_jobs=-1,
     plot=False,
     contexts=None,
@@ -119,6 +120,10 @@ def benchmark(  # noqa: C901
 
     output : str
         Folder to store the analysis results.
+
+    suffix : str
+        Suffix for the results file. Use this to differentiate results from
+        different benchmark runs that use the same paradigm and evaluation.
 
     n_jobs : int
         Number of threads to use for running parallel jobs.
@@ -266,6 +271,7 @@ def benchmark(  # noqa: C901
                     hdf5_path=results,
                     n_jobs=n_jobs,
                     overwrite=overwrite,
+                    suffix=suffix,
                     return_epochs=True,
                     n_splits=n_splits,
                     cache_config=cache_config,
@@ -289,6 +295,7 @@ def benchmark(  # noqa: C901
                     hdf5_path=results,
                     n_jobs=n_jobs,
                     overwrite=overwrite,
+                    suffix=suffix,
                     n_splits=n_splits,
                     cache_config=cache_config,
                     optuna=optuna,
