@@ -21,29 +21,6 @@ Enhancements
 ~~~~~~~~~~~~
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
-
-API changes
-~~~~~~~~~~~
-- None yet.
-
-Requirements
-~~~~~~~~~~~~
-- None yet.
-
-Bugs
-~~~~
-- None yet.
-
-Code health
-~~~~~~~~~~~
-- None yet.
-
-
-Version 1.4.4
--------------
-
-Enhancements
-~~~~~~~~~~~~
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 
 API changes
@@ -53,13 +30,19 @@ API changes
 - Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
 
+
 Requirements
 ~~~~~~~~~~~~
 - Requires CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
 
 Bugs
 ~~~~
-- None.
+- None yet.
+
+Code health
+~~~~~~~~~~~
+- None yet.
+
 
 
 Version 1.4.3 (Stable - PyPi)
@@ -650,7 +633,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
-
+.. _Ethan Davis: https://github.com/davisethan
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
