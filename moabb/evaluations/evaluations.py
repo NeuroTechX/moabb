@@ -29,6 +29,15 @@ from moabb.evaluations.utils import (
     _save_model_cv,
 )
 from moabb.paradigms.ssvep import BaseSSVEP
+from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
+
+
+def _pipeline_requires_epochs(pipeline):
+    """Check if any step in the pipeline requires MNE Epochs objects."""
+    for name, step in pipeline.steps:
+        if isinstance(step, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA)):
+            return True
+    return False
 
 
 try:
@@ -163,10 +172,12 @@ class WithinSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
-            # Force return_epochs=True for SSVEP paradigms as they require MNE Epochs objects
-            is_ssvep = isinstance(self.paradigm, BaseSSVEP)
-            return_epochs = True if is_ssvep else self.return_epochs
-            # For SSVEP paradigms, don't pass process_pipeline to ensure it's created
+            # Force return_epochs=True if any pipeline requires MNE Epochs objects
+            requires_epochs = any(
+                _pipeline_requires_epochs(clf) for clf in run_pipes.values()
+            )
+            return_epochs = True if requires_epochs else self.return_epochs
+            # For pipelines requiring epochs, don't pass process_pipeline to ensure it's created
             # with return_epochs=True
             X, y, metadata = self.paradigm.get_data(
                 dataset=dataset,
@@ -175,7 +186,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 return_raws=self.return_raws,
                 cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
-                process_pipelines=None if is_ssvep else [process_pipeline],
+                process_pipelines=None if requires_epochs else [process_pipeline],
             )
             # iterate over sessions
             for session in np.unique(metadata.session):
@@ -267,6 +278,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
+                        res["codecarbon_task_name"] = getattr(tracker, "task_name", "default")
 
                     yield res
 
@@ -581,6 +593,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
+                        res["codecarbon_task_name"] = getattr(tracker, "task_name", "default")
 
                     yield res
 
@@ -656,10 +669,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if len(run_pipes) == 0:
             return
 
-        # Force return_epochs=True for SSVEP paradigms as they require MNE Epochs objects
-        is_ssvep = isinstance(self.paradigm, BaseSSVEP)
-        return_epochs = True if is_ssvep else self.return_epochs
-        # For SSVEP paradigms, don't pass process_pipeline to ensure it's created
+        # Force return_epochs=True if any pipeline requires MNE Epochs objects
+        requires_epochs = any(
+            _pipeline_requires_epochs(clf) for clf in run_pipes.values()
+        )
+        return_epochs = True if requires_epochs else self.return_epochs
+        # For pipelines requiring epochs, don't pass process_pipeline to ensure it's created
         # with return_epochs=True
         X, y, metadata = self.paradigm.get_data(
             dataset=dataset,
@@ -667,7 +682,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             return_raws=self.return_raws,
             cache_config=self.cache_config,
             postprocess_pipeline=postprocess_pipeline,
-            process_pipelines=None if is_ssvep else [process_pipeline],
+            process_pipelines=None if requires_epochs else [process_pipeline],
         )
         le = LabelEncoder()
         y = y if self.mne_labels else le.fit_transform(y)
@@ -782,6 +797,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
+                        res["codecarbon_task_name"] = getattr(tracker, "task_name", "default")
                     yield res
 
     def is_valid(self, dataset):
