@@ -32,7 +32,7 @@ Requirements
 
 Bugs
 ~~~~
-- Correct :class:`moabb.pipelines.classification.SSVEP_CCA` and :class:`moabb.pipelines.classification.SSVEP_TRCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
+- Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
 
 Code health
 ~~~~~~~~~~~
