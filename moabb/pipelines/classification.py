@@ -408,7 +408,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 x2 -= np.mean(x2, 0)
 
                 # Put the two trials together
-                X = np.concatenate((x1, x2), axis=1)
+                X = np.concatenate((x1, x2), axis=0)
 
                 if n_channels == 1:
                     X = X.reshape((n_channels, len(X)))
