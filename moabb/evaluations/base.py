@@ -73,6 +73,10 @@ class BaseEvaluation(ABC):
         If not None, override the default MOABB logging level used by this evaluation
         (see :func:`moabb.utils.verbose` for more information on how this is handled).
         If used, it should be passed as a keyword-argument only.
+    codecarbon_config: dict of CodeCarbon parameters, default=dict(save_to_file=False, log_level="error")
+        Allow CodeCarbon script level configurations.
+        Can use combination of CodeCarbon environment variable and configuration files.
+        See CodeCarbon developer documentation for more information.
 
     Notes
     -----
@@ -107,6 +111,7 @@ class BaseEvaluation(ABC):
         optuna=False,
         time_out=60 * 15,
         verbose=None,
+        codecarbon_config=dict(save_to_file=False, log_level="error"),
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -121,6 +126,7 @@ class BaseEvaluation(ABC):
         self.optuna = optuna
         self.time_out = time_out
         self.verbose = verbose
+        self.codecarbon_config = codecarbon_config
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")

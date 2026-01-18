@@ -1,6 +1,7 @@
 import glob
 import logging
 import os
+import shutil
 from pathlib import Path
 from typing import List, Optional
 
@@ -247,6 +248,9 @@ class RomaniBF2025ERP(BaseDataset):
         unzipped_folder = BF_archive_name + ".unzip"
         unzipped_path = parent_folder / unzipped_folder
         if os.path.exists(unzipped_path):
+            # If target path exists, remove it first (from partial cache)
+            if os.path.exists(path):
+                shutil.rmtree(path)
             os.rename(unzipped_path, path)
 
         # Check if there's a nested BIDS folder inside

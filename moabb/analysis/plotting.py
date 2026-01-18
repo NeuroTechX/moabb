@@ -108,26 +108,71 @@ def score_plot(data, pipelines=None, orientation="vertical"):
     return fig, color_dict
 
 
-def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
-    """Plot code carbon consume for the results from the benchmark.
+def codecarbon_plot(
+    data,
+    order_list=None,
+    pipelines=None,
+    country="",
+    include_efficiency=False,
+    include_power_vs_score=False,
+):
+    """Plot code carbon consumption for results from the benchmark.
+
+    Creates comprehensive emissions visualizations leveraging detailed CodeCarbon
+    tracking data. By default, shows CO2 emissions per dataset and algorithm.
+    Additional metrics can be enabled to show efficiency trade-offs and hardware
+    utilization.
 
     Parameters
     ----------
-    data: output of Results.to_dataframe()
-        results on datasets
-    order_list: list of str | None
-        order of pipelines to include in this plot
-    pipelines: list of str | None
-        pipelines to include in this plot
-    country: str
-        country to include in the title
-    pipelines: list of str | None
-        pipelines to include in this plot
+    data : DataFrame
+        Output of Results.to_dataframe() containing benchmark results.
+        Should include 'carbon_emission' and 'score' columns for enhanced analysis.
+    order_list : list of str | None, default=None
+        Order of pipelines to include in the plot. If None, uses default order.
+    pipelines : list of str | None, default=None
+        Specific pipelines to include in the plot. If None, includes all pipelines.
+    country : str, default=""
+        Country name to include in plot titles for geographic context.
+    include_efficiency : bool, default=False
+        If True, adds subplot showing energy efficiency (score per kg CO2).
+        Highlights pipelines with best accuracy-to-emissions ratio.
+    include_power_vs_score : bool, default=False
+        If True, adds subplot showing accuracy vs emissions scatter plot.
+        Useful for identifying Pareto-optimal pipelines balancing performance
+        and sustainability.
 
     Returns
     -------
-    fig: Figure
-        Pyplot handle
+    fig : Figure
+        Pyplot figure handle containing the requested visualizations.
+
+    Notes
+    -----
+    The function expects CodeCarbon to have been enabled during benchmark with
+    save_to_file=True to capture detailed emissions data. If detailed metrics
+    are unavailable, falls back to basic CO2 emissions visualization.
+
+    The plot uses logarithmic scale for CO2 emissions due to potential wide
+    variance across different datasets and pipeline types.
+
+    Examples
+    --------
+    Basic usage (emissions only):
+    >>> results = benchmark(pipelines="./pipelines/", codecarbon_config={"save_to_file": True})
+    >>> fig = codecarbon_plot(results)
+
+    With efficiency metrics:
+    >>> fig = codecarbon_plot(results, include_efficiency=True, country="France")
+
+    With multiple views:
+    >>> fig = codecarbon_plot(
+    ...     results,
+    ...     include_efficiency=True,
+    ...     include_power_vs_score=True,
+    ...     order_list=["CSP+SVM", "Tangent Space LR"],
+    ...     pipelines=["CSP+SVM", "Tangent Space LR"],
+    ... )
     """
     data = collapse_session_scores(data)
     unique_ids = data["dataset"].apply(_simplify_names)
@@ -139,24 +184,243 @@ def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
     if pipelines is not None:
         data = data[data.pipeline.isin(pipelines)]
 
-    data = data.rename(columns={"carbon emission": "carbon_emission"})
+    # Rename for consistency
+    if "carbon emission" in data.columns:
+        data = data.rename(columns={"carbon emission": "carbon_emission"})
 
-    fig = sea.catplot(
-        kind="bar",
-        data=data,
-        x="dataset",
-        y="carbon_emission",
-        hue="pipeline",
-        palette=PIPELINE_PALETTE,
-        height=8.5,
-        hue_order=order_list,
-    ).set(title=r"$CO_2$ emission per dataset and algorithm" + country)
-    fig.set(yscale="log")
-    fig.tight_layout()
-    fig.set_ylabels(r"$CO_2$ emission (Log Scale)")
-    fig.set_xlabels("Dataset")
+    # Prepare data for main plot
+    plot_data = data.copy()
 
+    # Determine number of subplots
+    n_plots = 1
+    if include_efficiency and "carbon_emission" in plot_data.columns:
+        n_plots += 1
+    if include_power_vs_score and "carbon_emission" in plot_data.columns:
+        n_plots += 1
+
+    # Create figure with subplots if needed
+    if n_plots > 1:
+        fig, axes = plt.subplots(1, n_plots, figsize=(7 * n_plots, 8))
+        # axes is already a numpy array of Axes objects
+    else:
+        fig, ax = plt.subplots(1, 1, figsize=(12, 8.5))
+        axes = [ax]  # Wrap single axis in list for consistent indexing
+
+    # Plot 1: Main CO2 emissions by dataset and algorithm
+    ax = axes[0]
+    pivot_data = (
+        plot_data.groupby(["dataset", "pipeline"])["carbon_emission"].mean().reset_index()
+    )
+
+    # Get unique pipelines in the desired order
+    unique_pipelines = (
+        [p for p in order_list if p in pivot_data["pipeline"].unique()]
+        if order_list
+        else list(pivot_data["pipeline"].unique())
+    )
+
+    # Create bar plot
+    for idx, pipeline in enumerate(unique_pipelines):
+        pipeline_data = pivot_data[pivot_data["pipeline"] == pipeline]
+        color = PIPELINE_PALETTE[idx % len(PIPELINE_PALETTE)]
+        ax.bar(
+            pipeline_data["dataset"],
+            pipeline_data["carbon_emission"],
+            label=pipeline,
+            alpha=0.8,
+            width=0.8 / len(unique_pipelines),
+            color=color,
+        )
+
+    ax.set_yscale("log")
+    ax.set_ylabel(r"$CO_2$ Emission (kg, Log Scale)")
+    ax.set_xlabel("Dataset")
+    title = r"$CO_2$ Emission per Dataset and Algorithm"
+    if country:
+        title += f" {country}"
+    ax.set_title(title, fontsize=12, fontweight="bold")
+    ax.legend(title="Pipeline", bbox_to_anchor=(1.05, 1), loc="upper left")
+    ax.grid(True, alpha=0.3)
+
+    # Plot 2: Energy efficiency (score per kg CO2)
+    if include_efficiency and n_plots > 1:
+        ax = axes[1]
+        efficiency_data = plot_data.groupby("pipeline").apply(
+            lambda x: pd.Series(
+                {
+                    "avg_score": x["score"].mean(),
+                    "avg_emissions": x["carbon_emission"].mean(),
+                    "n_evals": len(x),
+                }
+            )
+        )
+        efficiency_data["efficiency"] = (
+            efficiency_data["avg_score"] / efficiency_data["avg_emissions"]
+        )
+        efficiency_data = efficiency_data.sort_values("efficiency", ascending=False)
+
+        colors = [
+            (
+                PIPELINE_PALETTE[unique_pipelines.index(p) % len(PIPELINE_PALETTE)]
+                if p in unique_pipelines
+                else PIPELINE_PALETTE[0]
+            )
+            for p in efficiency_data.index
+        ]
+        bars = ax.barh(efficiency_data.index, efficiency_data["efficiency"], color=colors)
+
+        # Add value labels on bars
+        for bar in bars:
+            width = bar.get_width()
+            ax.text(
+                width,
+                bar.get_y() + bar.get_height() / 2,
+                f"{width:.2f}",
+                ha="left",
+                va="center",
+                fontsize=9,
+            )
+
+        ax.set_xlabel("Energy Efficiency (Accuracy / kg CO2)")
+        ax.set_title(
+            "Pipeline Energy Efficiency\n(Higher is Better)",
+            fontsize=12,
+            fontweight="bold",
+        )
+        ax.grid(True, alpha=0.3, axis="x")
+
+    # Plot 3: Accuracy vs Emissions scatter
+    if include_power_vs_score and n_plots > 2:
+        ax = axes[2]
+        scatter_data = plot_data.groupby("pipeline").apply(
+            lambda x: pd.Series(
+                {
+                    "avg_score": x["score"].mean(),
+                    "avg_emissions": x["carbon_emission"].mean(),
+                    "count": len(x),
+                }
+            )
+        )
+
+        for idx, (pipeline, row) in enumerate(scatter_data.iterrows()):
+            color = (
+                PIPELINE_PALETTE[unique_pipelines.index(pipeline) % len(PIPELINE_PALETTE)]
+                if pipeline in unique_pipelines
+                else PIPELINE_PALETTE[0]
+            )
+            ax.scatter(
+                row["avg_emissions"],
+                row["avg_score"],
+                s=300,
+                alpha=0.7,
+                color=color,
+                edgecolors="black",
+                linewidth=1.5,
+            )
+            ax.annotate(
+                pipeline,
+                (row["avg_emissions"], row["avg_score"]),
+                xytext=(5, 5),
+                textcoords="offset points",
+                fontsize=9,
+                fontweight="bold",
+            )
+
+        ax.set_xlabel(r"Avg CO$_2$ Emissions (kg)")
+        ax.set_ylabel("Avg Accuracy Score")
+        ax.set_title(
+            "Accuracy vs Emissions Trade-off\n(Upper-Right is Better)",
+            fontsize=12,
+            fontweight="bold",
+        )
+        ax.grid(True, alpha=0.3)
+        ax.set_xscale("log")
+
+    plt.tight_layout()
     return fig
+
+
+def emissions_summary(data, order_list=None, pipelines=None):
+    """Generate a summary report of emissions metrics from benchmark results.
+
+    Provides comprehensive analysis of energy consumption and sustainability
+    metrics across pipelines, including efficiency rankings and trade-offs.
+
+    Parameters
+    ----------
+    data : DataFrame
+        Output of Results.to_dataframe() containing benchmark results.
+        Must include 'carbon_emission' and 'score' columns.
+    order_list : list of str | None, default=None
+        Order of pipelines to include in the summary.
+    pipelines : list of str | None, default=None
+        Specific pipelines to include in the summary.
+
+    Returns
+    -------
+    summary : DataFrame
+        Summary statistics with columns:
+        - pipeline : Pipeline name
+        - avg_score : Average accuracy score
+        - avg_emissions : Average CO2 emissions (kg)
+        - total_emissions : Total CO2 emissions (kg)
+        - efficiency : Score per kg CO2 (higher is better)
+        - n_evaluations : Number of evaluations performed
+
+    Examples
+    --------
+    >>> results = benchmark(pipelines="./pipelines/", ...)
+    >>> summary = emissions_summary(results)
+    >>> print(summary.sort_values("efficiency", ascending=False))
+    """
+    data = collapse_session_scores(data)
+
+    if pipelines is not None:
+        data = data[data.pipeline.isin(pipelines)]
+
+    if "carbon emission" in data.columns:
+        data = data.rename(columns={"carbon emission": "carbon_emission"})
+
+    if "carbon_emission" not in data.columns:
+        log.warning("No carbon_emission data found in results")
+        return None
+
+    # Calculate summary statistics per pipeline
+    summary = data.groupby("pipeline").apply(
+        lambda x: pd.Series(
+            {
+                "avg_score": x["score"].mean(),
+                "std_score": x["score"].std(),
+                "avg_emissions": x["carbon_emission"].mean(),
+                "total_emissions": x["carbon_emission"].sum(),
+                "n_evaluations": len(x),
+            }
+        )
+    )
+
+    # Calculate efficiency metrics
+    summary["efficiency"] = summary["avg_score"] / summary["avg_emissions"]
+    summary["emissions_per_eval"] = summary["total_emissions"] / summary["n_evaluations"]
+
+    # Reorder columns
+    summary = summary[
+        [
+            "avg_score",
+            "std_score",
+            "avg_emissions",
+            "total_emissions",
+            "emissions_per_eval",
+            "efficiency",
+            "n_evaluations",
+        ]
+    ]
+
+    # Apply ordering if provided
+    if order_list is not None:
+        existing_order = [p for p in order_list if p in summary.index]
+        summary = summary.loc[existing_order]
+
+    return summary
 
 
 def paired_plot(data, alg1, alg2):

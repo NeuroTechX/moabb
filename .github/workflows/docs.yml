@@ -37,14 +37,23 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/mne_data
-          key: doc-${{ runner.os }}-mne-data-v1
+          key: doc-${{ runner.os }}-mne-data-${{ github.run_id }}
           restore-keys: |
-            doc-${{ runner.os }}-mne-data-v1
+            doc-${{ runner.os }}-mne-data-
 
-      - name: Ensure MNE Data folder exists if cache fails
+      - name: Clean up corrupted cache
         run: |
           echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
           mkdir -p ~/mne_data
+          # Remove any incomplete extractions (e.g., BIDS.zip.unzip alongside final folder)
+          if [ -d ~/mne_data/BIDS.zip.unzip ]; then
+            echo "Removing incomplete extraction: BIDS.zip.unzip"
+            rm -rf ~/mne_data/BIDS.zip.unzip
+          fi
+          if [ -d ~/mne_data/BrainForm-BIDS-eeg-dataset ] && [ -f ~/mne_data/BrainForm-BIDS-eeg-dataset/.cache-incomplete ]; then
+            echo "Removing incomplete BrainForm dataset"
+            rm -rf ~/mne_data/BrainForm-BIDS-eeg-dataset
+          fi
 
       - name: Cache docs build
         id: cache-docs
@@ -55,7 +64,7 @@ jobs:
 
       - name: Install moabb
         run: |
-          uv pip install -e .[docs,deeplearning,optuna,external]
+          uv pip install -e .[docs,deeplearning,optuna,external,carbonemission]
 
       - name: Build docs
         run: |
