@@ -201,11 +201,10 @@ def codecarbon_plot(
     # Create figure with subplots if needed
     if n_plots > 1:
         fig, axes = plt.subplots(1, n_plots, figsize=(7 * n_plots, 8))
-        if n_plots == 2:
-            axes = [axes]  # Ensure iterable even with single additional subplot
+        # axes is already a numpy array of Axes objects
     else:
-        fig, axes = plt.subplots(1, 1, figsize=(12, 8.5))
-        axes = [axes]
+        fig, ax = plt.subplots(1, 1, figsize=(12, 8.5))
+        axes = [ax]  # Wrap single axis in list for consistent indexing
 
     # Plot 1: Main CO2 emissions by dataset and algorithm
     ax = axes[0]
@@ -217,7 +216,7 @@ def codecarbon_plot(
     unique_pipelines = (
         [p for p in order_list if p in pivot_data["pipeline"].unique()]
         if order_list
-        else pivot_data["pipeline"].unique()
+        else list(pivot_data["pipeline"].unique())
     )
 
     # Create bar plot
@@ -262,9 +261,7 @@ def codecarbon_plot(
 
         colors = [
             (
-                PIPELINE_PALETTE[
-                    unique_pipelines.tolist().index(p) % len(PIPELINE_PALETTE)
-                ]
+                PIPELINE_PALETTE[unique_pipelines.index(p) % len(PIPELINE_PALETTE)]
                 if p in unique_pipelines
                 else PIPELINE_PALETTE[0]
             )
@@ -307,9 +304,7 @@ def codecarbon_plot(
 
         for idx, (pipeline, row) in enumerate(scatter_data.iterrows()):
             color = (
-                PIPELINE_PALETTE[
-                    unique_pipelines.tolist().index(pipeline) % len(PIPELINE_PALETTE)
-                ]
+                PIPELINE_PALETTE[unique_pipelines.index(pipeline) % len(PIPELINE_PALETTE)]
                 if pipeline in unique_pipelines
                 else PIPELINE_PALETTE[0]
             )

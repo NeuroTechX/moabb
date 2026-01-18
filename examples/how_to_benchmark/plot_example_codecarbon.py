@@ -19,6 +19,10 @@ replicated on your infrastructure.
 # License: BSD (3-clause)
 
 ###############################################################################
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.spatial import ConvexHull
+
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import codecarbon_plot, emissions_summary
 from moabb.datasets import BNCI2014_001, Zhou2016
@@ -171,7 +175,6 @@ order_list = [
 # **Best for:** Understanding overall emissions impact
 
 fig1 = codecarbon_plot(results, order_list, country="(France)")
-print("Mode 1 created: Basic CO2 emissions visualization")
 
 ###############################################################################
 # Visualization Mode 2: Energy Efficiency Analysis
@@ -197,7 +200,6 @@ fig2 = codecarbon_plot(
     country="(France)",
     include_efficiency=True,
 )
-print("Mode 2 created: Added energy efficiency analysis")
 
 ###############################################################################
 # Visualization Mode 3: Complete Analysis with Pareto Frontier
@@ -303,121 +305,148 @@ print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 # for data-driven decision making.
 
 summary = emissions_summary(results, order_list=order_list)
-print("\n" + "=" * 80)
-print("EMISSIONS SUMMARY REPORT")
-print("=" * 80)
-print("\nDetailed Metrics Table:")
-print(summary.to_string())
 
 ###############################################################################
-# Understanding the Metrics
-# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Creating Summary Visualizations
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# The summary report includes the following columns:
-#
-# **Performance Metrics:**
-#  - avg_score: Average accuracy/performance across all evaluations
-#  - std_score: Standard deviation (variability) of accuracy
-#
-# **Emissions Metrics:**
-#  - avg_emissions: Average CO2 per evaluation in kg
-#  - total_emissions: Total CO2 for all evaluations in kg
-#  - emissions_per_eval: Average emissions per fold
-#
-# **Efficiency Metrics:**
-#  - efficiency: **Score / kg CO2** (MOST IMPORTANT - higher is better)
-#  - n_evaluations: Number of evaluations performed
+# Instead of text summaries, we create comprehensive visualizations that
+# show the relationships between accuracy, efficiency, and emissions.
 
-print("\n" + "=" * 80)
-print("METRIC EXPLANATIONS")
-print("=" * 80)
-metrics_info = {
-    "avg_score": "Higher = Better accuracy",
-    "std_score": "Lower = More consistent accuracy",
-    "avg_emissions": "Lower = Less carbon per evaluation",
-    "total_emissions": "Lower = Less total carbon footprint",
-    "efficiency": "HIGHER = Better (accuracy with less carbon)",
-    "n_evaluations": "Number of CV folds evaluated",
-}
-for metric, explanation in metrics_info.items():
-    print(f"  {metric:20s}: {explanation}")
+fig_summary, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig_summary.suptitle(
+    "Emissions Summary: Accuracy, Efficiency, and Environmental Impact",
+    fontsize=16,
+    fontweight="bold",
+)
+
+# Plot 1: Pipeline Efficiency Rankings
+ax1 = axes[0, 0]
+summary_sorted = summary.sort_values("efficiency", ascending=True)
+colors = plt.cm.RdYlGn(
+    (summary_sorted["efficiency"] - summary_sorted["efficiency"].min())
+    / (summary_sorted["efficiency"].max() - summary_sorted["efficiency"].min())
+)
+ax1.barh(range(len(summary_sorted)), summary_sorted["efficiency"], color=colors)
+ax1.set_yticks(range(len(summary_sorted)))
+ax1.set_yticklabels(summary_sorted.index)
+ax1.set_xlabel("Efficiency (Accuracy / kg CO2)")
+ax1.set_title("Pipeline Efficiency Ranking\n(Higher is Better)")
+ax1.grid(axis="x", alpha=0.3)
+
+# Plot 2: Average Emissions Comparison
+ax2 = axes[0, 1]
+summary_sorted_emissions = summary.sort_values("avg_emissions", ascending=False)
+colors_emissions = plt.cm.Blues(np.linspace(0.4, 1, len(summary_sorted_emissions)))
+ax2.bar(
+    range(len(summary_sorted_emissions)),
+    summary_sorted_emissions["avg_emissions"],
+    color=colors_emissions,
+)
+ax2.set_xticks(range(len(summary_sorted_emissions)))
+ax2.set_xticklabels(summary_sorted_emissions.index, rotation=45, ha="right")
+ax2.set_ylabel("Average CO2 Emissions (kg/eval)")
+ax2.set_title("Carbon Footprint per Pipeline\n(Lower is Better)")
+ax2.grid(axis="y", alpha=0.3)
+
+# Plot 3: Accuracy Distribution with Standard Deviation
+ax3 = axes[1, 0]
+summary_sorted_score = summary.sort_values("avg_score", ascending=False)
+x_pos = np.arange(len(summary_sorted_score))
+ax3.bar(
+    x_pos,
+    summary_sorted_score["avg_score"],
+    yerr=summary_sorted_score["std_score"],
+    capsize=5,
+    color="steelblue",
+    alpha=0.7,
+)
+ax3.set_xticks(x_pos)
+ax3.set_xticklabels(summary_sorted_score.index, rotation=45, ha="right")
+ax3.set_ylabel("Average Score")
+ax3.set_title("Accuracy Performance with Variability\n(Higher is Better)")
+ax3.set_ylim([0, 1.0])
+ax3.grid(axis="y", alpha=0.3)
+
+# Plot 4: Total Emissions Summary
+ax4 = axes[1, 1]
+summary_sorted_total = summary.sort_values("total_emissions", ascending=False)
+colors_total = plt.cm.Oranges(np.linspace(0.4, 1, len(summary_sorted_total)))
+ax4.bar(
+    range(len(summary_sorted_total)),
+    summary_sorted_total["total_emissions"],
+    color=colors_total,
+)
+ax4.set_xticks(range(len(summary_sorted_total)))
+ax4.set_xticklabels(summary_sorted_total.index, rotation=45, ha="right")
+ax4.set_ylabel("Total CO2 Emissions (kg)")
+ax4.set_title("Total Carbon Footprint per Pipeline\n(Lower is Better)")
+ax4.grid(axis="y", alpha=0.3)
+
+plt.tight_layout()
 
 ###############################################################################
-# Sustainability Analysis
-# ~~~~~~~~~~~~~~~~~~~~~~
+# Pareto Frontier for Decision Making
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# Identify the most sustainable and efficient pipelines.
+# The Pareto frontier visualization helps identify the best trade-off
+# between accuracy and environmental impact. Points on the frontier are
+# Pareto-optimal: you cannot improve accuracy without increasing emissions
+# or vice versa.
 
-print("\n" + "=" * 80)
-print("SUSTAINABILITY RANKINGS")
-print("=" * 80)
+fig_pareto, ax = plt.subplots(figsize=(10, 8))
 
-# Find best efficiency
-best_efficiency = summary["efficiency"].idxmax()
-worst_efficiency = summary["efficiency"].idxmin()
-print("\n1. Most Efficient Pipeline (Best accuracy-to-emissions ratio):")
-print(f"   Pipeline: {best_efficiency}")
-print(f"   - Accuracy: {summary.loc[best_efficiency, 'avg_score']:.4f}")
-print(f"   - Efficiency: {summary.loc[best_efficiency, 'efficiency']:.4f} score/kg CO2")
-print(
-    f"   - Total emissions: {summary.loc[best_efficiency, 'total_emissions']:.6f} kg CO2"
-)
+# Calculate Pareto frontier
+points = summary[["avg_score", "avg_emissions"]].values
+hull = ConvexHull(points)
+frontier_indices = hull.vertices
 
-print("\n2. Lowest Emissions Pipeline:")
-lowest_emissions = summary["avg_emissions"].idxmin()
-print(f"   Pipeline: {lowest_emissions}")
-print(
-    f"   - Avg emissions: {summary.loc[lowest_emissions, 'avg_emissions']:.6f} kg CO2/eval"
-)
-print(f"   - Accuracy: {summary.loc[lowest_emissions, 'avg_score']:.4f}")
-
-print("\n3. Highest Accuracy Pipeline:")
-best_accuracy = summary["avg_score"].idxmax()
-print(f"   Pipeline: {best_accuracy}")
-print(f"   - Accuracy: {summary.loc[best_accuracy, 'avg_score']:.4f}")
-print(f"   - Efficiency: {summary.loc[best_accuracy, 'efficiency']:.4f} score/kg CO2")
-
-print("\n4. Efficiency Comparison:")
-for pipeline in summary.index:
-    efficiency = summary.loc[pipeline, "efficiency"]
-    accuracy = summary.loc[pipeline, "avg_score"]
-    emissions = summary.loc[pipeline, "avg_emissions"]
-    print(
-        f"   {pipeline:25s}: {efficiency:6.4f} score/kg | {accuracy:.4f} acc | {emissions:.6f} kg CO2/eval"
-    )
-
-print("\n" + "=" * 80)
-print("RECOMMENDATIONS")
-print("=" * 80)
-print(f"\nMost Sustainable Choice: {best_efficiency}")
-print("  → Best balance of accuracy and environmental impact")
-print(
-    f"  → Efficiency score: {summary.loc[best_efficiency, 'efficiency']:.4f} score/kg CO2"
-)
-
-if best_accuracy != best_efficiency:
-    efficiency_loss = (
-        (
-            summary.loc[best_accuracy, "avg_score"]
-            - summary.loc[best_efficiency, "avg_score"]
+# Plot all pipelines
+for idx, pipeline in enumerate(summary.index):
+    if idx in frontier_indices:
+        ax.scatter(
+            summary.loc[pipeline, "avg_emissions"],
+            summary.loc[pipeline, "avg_score"],
+            s=300,
+            alpha=0.8,
+            edgecolors="darkgreen",
+            linewidth=2,
+            label=pipeline if idx < 3 else "",
         )
-        / summary.loc[best_accuracy, "avg_score"]
-        * 100
-    )
-    emissions_saving = (
-        (
-            summary.loc[best_accuracy, "avg_emissions"]
-            - summary.loc[best_efficiency, "avg_emissions"]
+    else:
+        ax.scatter(
+            summary.loc[pipeline, "avg_emissions"],
+            summary.loc[pipeline, "avg_score"],
+            s=200,
+            alpha=0.5,
+            color="gray",
         )
-        / summary.loc[best_accuracy, "avg_emissions"]
-        * 100
+    ax.annotate(
+        pipeline,
+        (summary.loc[pipeline, "avg_emissions"], summary.loc[pipeline, "avg_score"]),
+        xytext=(5, 5),
+        textcoords="offset points",
+        fontsize=9,
     )
-    print(f"\nSwitch from {best_accuracy} to {best_efficiency}:")
-    print(f"  → Accuracy reduction: {efficiency_loss:.1f}%")
-    print(f"  → Carbon savings: {emissions_saving:.1f}%")
-    print(
-        f"  → Better efficiency: {summary.loc[best_efficiency, 'efficiency'] / summary.loc[best_accuracy, 'efficiency']:.2f}x more sustainable"
-    )
+
+# Highlight Pareto frontier
+frontier_points = points[frontier_indices]
+frontier_points = frontier_points[np.argsort(frontier_points[:, 0])]
+ax.plot(
+    frontier_points[:, 0],
+    frontier_points[:, 1],
+    "g--",
+    linewidth=2,
+    label="Pareto Frontier",
+)
+
+ax.set_xlabel("Average CO2 Emissions (kg/eval)", fontsize=12)
+ax.set_ylabel("Average Accuracy Score", fontsize=12)
+ax.set_title(
+    "Pareto Frontier: Accuracy vs Emissions Trade-off", fontsize=14, fontweight="bold"
+)
+ax.grid(True, alpha=0.3)
+ax.legend(loc="best")
 
 ###############################################################################
 # The result expected will be the following image, but varying depending on the
