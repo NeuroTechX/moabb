@@ -1,7 +1,7 @@
 # Minimal Makefile for Sphinx documentation
 #
 # Variables (can be overridden from the command line)
-SPHINXOPTS    =
+SPHINXOPTS    = -j auto
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = moabb
 SOURCEDIR     = source

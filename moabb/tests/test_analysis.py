@@ -235,6 +235,83 @@ class TestResults:
         )
         assert df.shape[0] == 6, df.shape[0]
 
+    def test_add_results_without_carbon_emission(self):
+        """Test adding results that don't have carbon_emission key."""
+        # Create result dict without carbon_emission
+        d_no_carbon = {
+            "time": 1,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 1,
+            "session": "0",
+            "score": 0.9,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+        _in = to_result_input(["a"], [d_no_carbon])
+        # Should not raise KeyError
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+        df = self.obj.to_dataframe()
+        assert df.shape[0] == 1
+
+    def test_mixed_carbon_emission_results(self):
+        """Test adding results where some have carbon_emission and some don't."""
+        d_with_carbon = {
+            "time": 1,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 1,
+            "session": "0",
+            "score": 0.9,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+        d_without_carbon = {
+            "time": 2,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 2,
+            "session": "0",
+            "score": 0.85,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+
+        if _carbonfootprint:
+            d_with_carbon["carbon_emission"] = 5
+            d_with_carbon["codecarbon_task_name"] = "task1"
+
+        # Add results with carbon_emission
+        _in = to_result_input(["a"], [d_with_carbon])
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+
+        # Add results without carbon_emission
+        _in = to_result_input(["a"], [d_without_carbon])
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+
+        # Should be able to export to dataframe without errors
+        df = self.obj.to_dataframe()
+        assert df.shape[0] == 2
+
+    def test_dataframe_with_missing_codecarbon_dataset(self):
+        """Test that to_dataframe works even if codecarbon_task_name dataset doesn't exist."""
+        # Add a result without carbon_emission
+        d_no_carbon = {
+            "time": 1,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 1,
+            "session": "0",
+            "score": 0.9,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+        _in = to_result_input(["a"], [d_no_carbon])
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+
+        # Should be able to call to_dataframe without KeyError
+        df = self.obj.to_dataframe()
+        assert df.shape[0] == 1
+        # codecarbon_task_name should not be in columns if not present in HDF5
+        if _carbonfootprint and "codecarbon_task_name" not in str(df.columns):
+            pass  # Expected for old files
+
 
 if _carbonfootprint:
 

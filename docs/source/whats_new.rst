@@ -25,20 +25,27 @@ Enhancements
 - Added ``_participant_demographics`` class attribute to BNCI2014-002, BNCI2014-009, BNCI2015-001, and BNCI2015-004 for programmatic access to demographics (by `Bruno Aristimunha`_)
 - Improved BIDS conversion with guaranteed montage preservation for all BNCI datasets (by `Bruno Aristimunha`_)
 - Dataset-specific metadata extraction for BNCI2014-001, BNCI2014-004, and BNCI2014-008 with age, gender, and clinical information (by `Bruno Aristimunha`_)
+- Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 
 API changes
 ~~~~~~~~~~~
-- None yet.
+- Allow CodeCarbon script level configurations when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`866` by `Ethan Davis`_).
+- When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
+- Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
+- Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
+
 
 Requirements
 ~~~~~~~~~~~~
-- None yet.
+- Requires CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
 
 Bugs
 ~~~~
 - Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
 - Fixed measurement date setting for BNCI datasets to use specific collection years from papers (by `Bruno Aristimunha`_)
 - Ensured proper subject ID assignment for BIDS compliance across all BNCI datasets (by `Bruno Aristimunha`_)
+- Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
+- Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
@@ -635,6 +642,7 @@ API changes
 ~~~~~~~~~~~
 - None
 
+.. _Ethan Davis: https://github.com/davisethan
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
