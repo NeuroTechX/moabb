@@ -238,13 +238,13 @@ def compute_dataset_statistics(df, perm_cutoff=20):
         Table of effect and p-values for each dataset and all pipelines
     """
     df = collapse_session_scores(df)
-    algs = df.pipeline.unique()
     dsets = df.dataset.unique()
     out = {}
     for d in dsets:
         score_data = df[df.dataset == d].pivot(
             index="subject", values="score", columns="pipeline"
         )
+        algs = score_data.columns.tolist()
         if score_data.shape[0] < perm_cutoff:
             p = compute_pvals_perm(score_data, algs)
         else:
