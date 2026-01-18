@@ -363,6 +363,12 @@ class WithinSessionEvaluation(BaseEvaluation):
                 X_sess = X_all[sess_idx]
                 y_sess = y_all[sess_idx]
                 # metadata_sess = metadata_all[sess_idx]
+
+                # Initialize tracker once per session instead of per iteration
+                if _carbonfootprint:
+                    tracker = EmissionsTracker(**self.codecarbon_config)
+                    tracker.start()
+
                 sss = StratifiedShuffleSplit(
                     n_splits=self.n_perms[0], test_size=self.test_size
                 )
@@ -419,8 +425,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                             else:
                                 if _carbonfootprint:
                                     task_name = str(uuid4())
-                                    tracker = EmissionsTracker(**self.codecarbon_config)
-                                    tracker.start()
                                     tracker.start_task(task_name)
 
                                 res["score"], res["time"] = self.score_explicit(
@@ -434,10 +438,13 @@ class WithinSessionEvaluation(BaseEvaluation):
                                         if emissions_data
                                         else np.nan
                                     )
-                                    tracker.stop()
                                     res["carbon_emission"] = (1000 * emissions,)
                                     res["codecarbon_task_name"] = task_name
                             yield res
+
+                # Stop tracker after session is complete
+                if _carbonfootprint:
+                    tracker.stop()
 
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
