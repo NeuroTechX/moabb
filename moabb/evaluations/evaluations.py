@@ -505,14 +505,21 @@ class CrossSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
+            # Force return_epochs=True if any pipeline requires MNE Epochs objects
+            requires_epochs = any(
+                _pipeline_requires_epochs(clf) for clf in run_pipes.values()
+            )
+            return_epochs = True if requires_epochs else self.return_epochs
+            # For pipelines requiring epochs, don't pass process_pipeline to ensure it's created
+            # with return_epochs=True
             X, y, metadata = self.paradigm.get_data(
                 dataset=dataset,
                 subjects=[subject],
-                return_epochs=self.return_epochs,
+                return_epochs=return_epochs,
                 return_raws=self.return_raws,
                 cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
-                process_pipelines=[process_pipeline],
+                process_pipelines=None if requires_epochs else [process_pipeline],
             )
             le = LabelEncoder()
             y = y if self.mne_labels else le.fit_transform(y)
