@@ -34,6 +34,15 @@ except ImportError:
 log = logging.getLogger(__name__)
 
 
+def _ppl_needs_epochs(pn):
+    """Check if the pipeline needs MNE epochs as input."""
+    ppl_with_epochs = ["SSVEP CCA", "TRCA-SSVEP", "MsetCCA-SSVEP"]
+    if any(s in pn for s in ppl_with_epochs):
+        return True
+    else:
+        return False
+
+
 def benchmark(  # noqa: C901
     pipelines="./pipelines/",
     evaluations=None,
@@ -41,6 +50,7 @@ def benchmark(  # noqa: C901
     results="./results/",
     overwrite=False,
     output="./benchmark/",
+    suffix="",
     n_jobs=-1,
     plot=False,
     contexts=None,
@@ -49,6 +59,7 @@ def benchmark(  # noqa: C901
     n_splits=None,
     cache_config=None,
     optuna=False,
+    codecarbon_config=None,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -110,6 +121,10 @@ def benchmark(  # noqa: C901
     output : str
         Folder to store the analysis results.
 
+    suffix : str
+        Suffix for the results file. Use this to differentiate results from
+        different benchmark runs that use the same paradigm and evaluation.
+
     n_jobs : int
         Number of threads to use for running parallel jobs.
 
@@ -137,6 +152,16 @@ def benchmark(  # noqa: C901
     optuna : bool
         Enable Optuna for the hyperparameter search.
 
+    codecarbon_config : dict, default=None
+        Configuration dictionary for CodeCarbon emissions tracking.
+        If None, uses CodeCarbon defaults. Available options include:
+        - save_to_file (bool): Save emissions to CSV file
+        - log_level (str): Logging level ('debug', 'info', 'warning', 'error')
+        - save_to_api (bool): Send data to CodeCarbon API
+        - tracking_mode (str): 'machine' or 'process'
+        - experiment_name (str): Name of the experiment
+        See CodeCarbon documentation for all available options.
+
     Returns
     -------
     eval_results: DataFrame
@@ -153,6 +178,9 @@ def benchmark(  # noqa: C901
     # set logs
     if evaluations is None:
         evaluations = ["WithinSession", "CrossSession", "CrossSubject"]
+
+    if codecarbon_config is None:
+        codecarbon_config = dict(save_to_file=False, log_level="error")
 
     eval_type = {
         "WithinSession": WithinSessionEvaluation,
@@ -229,7 +257,10 @@ def benchmark(  # noqa: C901
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms_from_pipelines[paradigm].items():
-                ppl_with_array[pn] = pv
+                if _ppl_needs_epochs(pn):
+                    ppl_with_epochs[pn] = pv
+                else:
+                    ppl_with_array[pn] = pv
 
             if len(ppl_with_epochs) > 0:
                 # Keras pipelines require return_epochs=True
@@ -240,10 +271,12 @@ def benchmark(  # noqa: C901
                     hdf5_path=results,
                     n_jobs=n_jobs,
                     overwrite=overwrite,
+                    suffix=suffix,
                     return_epochs=True,
                     n_splits=n_splits,
                     cache_config=cache_config,
                     optuna=optuna,
+                    codecarbon_config=codecarbon_config,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_epochs, param_grid=param_grid
@@ -262,9 +295,11 @@ def benchmark(  # noqa: C901
                     hdf5_path=results,
                     n_jobs=n_jobs,
                     overwrite=overwrite,
+                    suffix=suffix,
                     n_splits=n_splits,
                     cache_config=cache_config,
                     optuna=optuna,
+                    codecarbon_config=codecarbon_config,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_array, param_grid=param_grid

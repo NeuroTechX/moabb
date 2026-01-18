@@ -297,7 +297,7 @@ def filterbank(X, sfreq, idx_fb, peaks):
     Code based on the Matlab implementation from authors of [1]_
     (https://github.com/mnakanishi/TRCA-SSVEP).
     """
-    if idx_fb > len(peaks):
+    if idx_fb >= len(peaks):
         raise (
             ValueError("idx_fb should be less than number of SSVEP stimulus frequency")
         )
@@ -318,27 +318,87 @@ def filterbank(X, sfreq, idx_fb, peaks):
     sfreq = sfreq / 2
 
     peaks = np.sort(peaks)
+    min_freq = np.min(peaks)
     max_freq = np.max(peaks)
 
     if max_freq < 40:
-        top = 40
+        top = 100
     else:
-        top = 60
+        top = 115
     # Check for Nyquist
     if top >= sfreq:
         top = sfreq - 10
 
     # Lowcut frequencies for the pass band (depends on the frequencies of SSVEP)
     # No more than 3dB loss in the passband
-    passband = [peaks[i] - 1 for i in range(len(peaks))]
+    diff = max_freq - min_freq
+    passband = [min_freq - 2 + x * diff for x in range(7)]
+    # passband = [peaks[i] - 1 for i in range(len(peaks))]
 
     # At least 40db attenuation in the stopband
-    stopband = [peaks[i] - 2 for i in range(len(peaks))]
+    if min_freq - 4 > 0:
+        stopband = [
+            min_freq - 4 + x * (diff - 2) if x < 3 else min_freq - 4 + x * diff
+            for x in range(7)
+        ]
+    else:
+        stopband = [2 + x * (diff - 2) if x < 3 else 2 + x * diff for x in range(7)]
+    # stopband = [peaks[i] - 2 for i in range(len(peaks))]
 
     Wp = [passband[idx_fb] / sfreq, top / sfreq]
-    Ws = [stopband[idx_fb] / sfreq, (top + 20) / sfreq]
+    Ws = [stopband[idx_fb] / sfreq, (top + 7) / sfreq]
 
-    N, Wn = scp.cheb1ord(Wp, Ws, 3, 15)  # Chebyshev type I filter order selection.
+    # Ensure valid filter parameters for cheb1ord
+    # For bandpass: Ws[0] < Wp[0] < Wp[1] < Ws[1], all in (0, 1)
+    Wp[0] = max(0.01, min(Wp[0], Wp[1] - 0.01))  # Ensure Wp[0] < Wp[1]
+    Ws[0] = max(0.001, min(Ws[0], Wp[0] - 0.001))  # Ensure Ws[0] < Wp[0]
+    Wp[1] = min(0.99, max(Wp[1], Wp[0] + 0.01))  # Ensure Wp[1] > Wp[0]
+    Ws[1] = min(0.999, max(Ws[1], Wp[1] + 0.001))  # Ensure Ws[1] > Wp[1]
+
+    try:
+        N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
+    except ValueError as e:
+        log.warning(
+            f"Filter design failed with parameters Wp={Wp}, Ws={Ws}: {e}. Using relaxed parameters."
+        )
+        # Relax the filter specifications and try again
+        Wp_relaxed = [min_freq / sfreq * 0.95, min(0.95, (top - 2) / sfreq)]
+        Ws_relaxed = [min_freq / sfreq * 0.85, min(0.99, top / sfreq)]
+        try:
+            N, Wn = scp.cheb1ord(
+                Wp_relaxed, Ws_relaxed, 5, 30
+            )  # Relax from 3dB/40dB to 5dB/30dB
+        except ValueError:
+            log.warning("Filter still fails, using butterworth instead")
+            B, A = scp.butter(
+                4,
+                [min_freq / sfreq * 0.95, min(0.95, (top - 2) / sfreq)],
+                btype="bandpass",
+            )
+            y = np.zeros(X.shape)
+            if num_trials == 1:
+                for ch_i in range(num_chans):
+                    try:
+                        y[ch_i, :] = scp.filtfilt(
+                            B,
+                            A,
+                            X[ch_i, :],
+                            axis=0,
+                            padtype="odd",
+                            padlen=3 * (max(len(B), len(A)) - 1),
+                        )
+                    except Exception as e2:
+                        log.error(f"Butterworth filter failed: {e2}")
+                        y[ch_i, :] = X[ch_i, :]
+            else:
+                for trial_i in range(num_trials):
+                    for ch_i in range(num_chans):
+                        y[trial_i, ch_i, :] = scp.filtfilt(
+                            B, A, X[trial_i, ch_i, :], axis=0
+                        )
+            return y
+        Wp = Wp_relaxed
+        Ws = Ws_relaxed
 
     B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
 

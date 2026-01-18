@@ -180,6 +180,7 @@ sphinx_gallery_conf = {
         ]
     ),
     "within_subsection_order": "FileNameSortKey",
+    "parallel": True,
 }
 
 
