@@ -14,6 +14,7 @@ replicated on your infrastructure.
 
 # Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
+#          Ethan Davis <davisethan@gmail.com>
 #
 # License: BSD (3-clause)
 
@@ -75,6 +76,52 @@ dataset.subject_list = dataset.subject_list[:1]
 dataset2.subject_list = dataset2.subject_list[:1]
 datasets = [dataset, dataset2]
 
+###############################################################################
+# Configuring CodeCarbon Tracking
+# --------------------------------
+#
+# The ``benchmark`` function supports CodeCarbon configuration through the
+# ``codecarbon_config`` parameter. This allows fine-grained control over how
+# emissions are tracked and reported.
+#
+# CodeCarbon provides many configuration options:
+#
+# **Output Options:**
+#  - ``save_to_file`` (bool): Save results to CSV file (default: False)
+#  - ``log_level`` (str): Logging verbosity (default: 'error')
+#  - ``output_dir`` (str): Directory for output files (default: '.')
+#  - ``output_file`` (str): CSV filename (default: 'emissions.csv')
+#
+# **Tracking Options:**
+#  - ``tracking_mode`` (str): 'machine' for system-wide, 'process' for isolated
+#  - ``measure_power_secs`` (int): Power measurement interval in seconds
+#  - ``experiment_name`` (str): Label for the experiment
+#  - ``project_name`` (str): Project identifier
+#
+# **Hardware Options:**
+#  - ``gpu_ids`` (str): Comma-separated GPU IDs to track
+#  - ``force_cpu_power`` (float): Manual CPU power in watts
+#  - ``force_ram_power`` (float): Manual RAM power in watts
+#
+# **API & Output Backends:**
+#  - ``save_to_api`` (bool): Send data to CodeCarbon API
+#  - ``api_endpoint`` (str): Custom API endpoint
+#  - ``save_to_prometheus`` (bool): Push to Prometheus
+#  - ``prometheus_url`` (str): Prometheus server address
+#
+# **Location & Electricity:**
+#  - ``country_2letter_iso_code`` (str): Country code for carbon intensity
+#  - ``electricitymaps_api_token`` (str): API token for real-time data
+#  - ``pue`` (float): Power Usage Effectiveness of data center
+#
+# Example 1: Basic configuration with CSV output and verbose logging
+codecarbon_config = {
+    "save_to_file": True,
+    "log_level": "info",
+    "output_file": "emissions_results.csv",
+    "experiment_name": "MOABB_Benchmark_Zhou2016",
+}
+
 results = benchmark(
     pipelines="./pipelines_codecarbon/",
     evaluations=["WithinSession"],
@@ -84,6 +131,7 @@ results = benchmark(
     overwrite=False,
     plot=False,
     output="./benchmark/",
+    codecarbon_config=codecarbon_config,
 )
 
 ###############################################################################
@@ -111,6 +159,69 @@ order_list = [
 codecarbon_plot(results, order_list, country="(France)")
 
 ###############################################################################
+# CodeCarbon Configuration Examples
+# ----------------------------------
+#
+# Below are additional configuration examples for different use cases:
+#
+# **Example 2: Process-level tracking with custom tracking interval**
+# .. code-block:: python
+#
+#     codecarbon_config = {
+#         'tracking_mode': 'process',
+#         'measure_power_secs': 30,
+#         'save_to_file': True,
+#         'log_level': 'debug'
+#     }
+#
+# **Example 3: GPU tracking with specific IDs**
+# .. code-block:: python
+#
+#     codecarbon_config = {
+#         'gpu_ids': '0,1,2',  # Track GPUs 0, 1, 2
+#         'save_to_file': True,
+#         'experiment_name': 'multi_gpu_benchmark'
+#     }
+#
+# **Example 4: Real-time carbon intensity data with Electricity Maps API**
+# .. code-block:: python
+#
+#     codecarbon_config = {
+#         'electricitymaps_api_token': 'your-token-here',
+#         'country_2letter_iso_code': 'FR',
+#         'save_to_file': True,
+#         'output_file': 'emissions_real_time.csv'
+#     }
+#
+# **Example 5: API-based tracking and reporting**
+# .. code-block:: python
+#
+#     codecarbon_config = {
+#         'save_to_api': True,
+#         'api_endpoint': 'https://api.codecarbon.io',
+#         'api_key': 'your-api-key',
+#         'project_name': 'MOABB_Project'
+#     }
+#
+# **Example 6: Prometheus metrics export**
+# .. code-block:: python
+#
+#     codecarbon_config = {
+#         'save_to_prometheus': True,
+#         'prometheus_url': 'http://localhost:9091',
+#         'experiment_name': 'moabb_metrics'
+#     }
+#
+# **Example 7: Custom data center with manual power specifications**
+# .. code-block:: python
+#
+#     codecarbon_config = {
+#         'force_cpu_power': 150.0,  # Watts
+#         'force_ram_power': 20.0,   # Watts
+#         'pue': 1.2,                # Data center PUE
+#         'save_to_file': True
+#     }
+#
 # The result expected will be the following image, but varying depending on the
 # machine and the country used to run the example.
 #

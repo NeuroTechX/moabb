@@ -49,6 +49,7 @@ def benchmark(  # noqa: C901
     n_splits=None,
     cache_config=None,
     optuna=False,
+    codecarbon_config=None,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -137,6 +138,16 @@ def benchmark(  # noqa: C901
     optuna : bool
         Enable Optuna for the hyperparameter search.
 
+    codecarbon_config : dict, default=None
+        Configuration dictionary for CodeCarbon emissions tracking.
+        If None, uses CodeCarbon defaults. Available options include:
+        - save_to_file (bool): Save emissions to CSV file
+        - log_level (str): Logging level ('debug', 'info', 'warning', 'error')
+        - save_to_api (bool): Send data to CodeCarbon API
+        - tracking_mode (str): 'machine' or 'process'
+        - experiment_name (str): Name of the experiment
+        See CodeCarbon documentation for all available options.
+
     Returns
     -------
     eval_results: DataFrame
@@ -153,6 +164,9 @@ def benchmark(  # noqa: C901
     # set logs
     if evaluations is None:
         evaluations = ["WithinSession", "CrossSession", "CrossSubject"]
+
+    if codecarbon_config is None:
+        codecarbon_config = dict(save_to_file=False, log_level="error")
 
     eval_type = {
         "WithinSession": WithinSessionEvaluation,
@@ -244,6 +258,7 @@ def benchmark(  # noqa: C901
                     n_splits=n_splits,
                     cache_config=cache_config,
                     optuna=optuna,
+                    codecarbon_config=codecarbon_config,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_epochs, param_grid=param_grid
@@ -265,6 +280,7 @@ def benchmark(  # noqa: C901
                     n_splits=n_splits,
                     cache_config=cache_config,
                     optuna=optuna,
+                    codecarbon_config=codecarbon_config,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_array, param_grid=param_grid
