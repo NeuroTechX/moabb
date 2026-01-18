@@ -20,7 +20,7 @@ replicated on your infrastructure.
 
 ###############################################################################
 from moabb import benchmark, set_log_level
-from moabb.analysis.plotting import codecarbon_plot
+from moabb.analysis.plotting import codecarbon_plot, emissions_summary
 from moabb.datasets import BNCI2014_001, Zhou2016
 from moabb.paradigms import LeftRightImagery
 
@@ -152,11 +152,46 @@ order_list = [
 # --------------------
 # We can plot the results using the ``codecarbon_plot`` function, generated
 # below. This function takes the dataframe returned by the ``benchmark``
-# function as input, and returns a pyplot figure.
-# The ``order_list`` argument is used to specify the order of the pipelines in
-# the plot.
+# function as input, and returns a pyplot figure with comprehensive emissions
+# analysis.
+#
+# The function provides multiple visualization options:
+#
+# **Basic usage (emissions only):**
+# Shows CO2 emissions per dataset and algorithm with logarithmic scale.
+#
+# **With efficiency metrics:**
+# Adds a subplot showing energy efficiency (accuracy score per kg CO2).
+# Higher bars indicate better efficiency.
+#
+# **With power vs score analysis:**
+# Adds a scatter plot showing the trade-off between accuracy and emissions.
+# Pipelines in the upper-right are better (higher accuracy, lower emissions).
 
-codecarbon_plot(results, order_list, country="(France)")
+# Example 1: Basic emissions visualization
+fig1 = codecarbon_plot(results, order_list, country="(France)")
+
+# Example 2: Include efficiency analysis
+# This shows which pipelines provide the best accuracy-to-emissions ratio
+fig2 = codecarbon_plot(
+    results,
+    order_list,
+    country="(France)",
+    include_efficiency=True,
+)
+
+# Example 3: Full analysis with accuracy vs emissions trade-off
+# This comprehensive view shows three plots:
+# 1. CO2 emissions per dataset (log scale)
+# 2. Energy efficiency ranking (accuracy / kg CO2)
+# 3. Accuracy vs emissions scatter (Pareto frontier)
+fig3 = codecarbon_plot(
+    results,
+    order_list,
+    country="(France)",
+    include_efficiency=True,
+    include_power_vs_score=True,
+)
 
 ###############################################################################
 # CodeCarbon Configuration Examples
@@ -221,7 +256,33 @@ codecarbon_plot(results, order_list, country="(France)")
 #         'pue': 1.2,                # Data center PUE
 #         'save_to_file': True
 #     }
+
+###############################################################################
+# Emissions Summary Report
+# ~~~~~~~~~~~~~~~~~~~~~~~~
 #
+# Beyond visualizations, you can generate a detailed summary report of
+# emissions metrics using the ``emissions_summary`` function. This provides
+# a table with comprehensive efficiency metrics for each pipeline.
+
+summary = emissions_summary(results, order_list=order_list)
+print("Emissions Summary Report:")
+print("=" * 80)
+print(summary.to_string())
+print("\nKey Metrics:")
+print("  - avg_score: Average accuracy across all evaluations")
+print("  - avg_emissions: Average CO2 emissions per evaluation (kg)")
+print("  - total_emissions: Total CO2 emissions for this pipeline (kg)")
+print("  - efficiency: Score per kg CO2 (higher is better)")
+print("  - emissions_per_eval: Average emissions per individual evaluation")
+
+# Identify the most efficient pipeline
+best_efficiency = summary["efficiency"].idxmax()
+print(f"\nMost efficient pipeline: {best_efficiency}")
+print(f"  - Accuracy: {summary.loc[best_efficiency, 'avg_score']:.3f}")
+print(f"  - Efficiency: {summary.loc[best_efficiency, 'efficiency']:.3f} score/kg CO2")
+
+###############################################################################
 # The result expected will be the following image, but varying depending on the
 # machine and the country used to run the example.
 #
