@@ -259,14 +259,14 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 emissions_data.emissions if emissions_data else np.nan
                             )
 
-                        _ensure_fitted(cvclf)
-
                         if self.hdf5_path is not None and self.save_model:
                             _save_model_cv(
                                 model=cvclf,
                                 save_path=model_save_path,
                                 cv_index=cv_ind,
                             )
+
+                        _ensure_fitted(cvclf)
 
                         score = scorer(cvclf, X_[test], y_[test])
                         acc.append(score)
@@ -612,14 +612,14 @@ class CrossSessionEvaluation(BaseEvaluation):
                         emissions_data = tracker.stop_task()
                         emissions = emissions_data.emissions if emissions_data else np.nan
 
-                    _ensure_fitted(cvclf)
-
                     if self.hdf5_path is not None and self.save_model:
                         _save_model_cv(
                             model=cvclf,
                             save_path=model_save_path,
                             cv_index=str(cv_ind),
                         )
+
+                    _ensure_fitted(cvclf)
 
                     model_list.append(cvclf)
                     score = scorer(cvclf, X[test], y[test])
@@ -810,8 +810,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     emissions_data = tracker.stop_task()
                     emissions = emissions_data.emissions if emissions_data else np.nan
 
-                _ensure_fitted(cvclf)
-
                 if self.hdf5_path is not None and self.save_model:
                     model_save_path = _create_save_path(
                         hdf5_path=self.hdf5_path,
@@ -825,6 +823,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     _save_model_cv(
                         model=cvclf, save_path=model_save_path, cv_index=str(cv_ind)
                     )
+
+                _ensure_fitted(cvclf)
 
                 # we eval on each session
                 for session in np.unique(sessions[test]):
