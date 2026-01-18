@@ -358,22 +358,33 @@ def filterbank(X, sfreq, idx_fb, peaks):
     try:
         N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
     except ValueError as e:
-        log.warning(f"Filter design failed with parameters Wp={Wp}, Ws={Ws}: {e}. Using relaxed parameters.")
+        log.warning(
+            f"Filter design failed with parameters Wp={Wp}, Ws={Ws}: {e}. Using relaxed parameters."
+        )
         # Relax the filter specifications and try again
         Wp_relaxed = [min_freq / sfreq * 0.95, min(0.95, (top - 2) / sfreq)]
         Ws_relaxed = [min_freq / sfreq * 0.85, min(0.99, top / sfreq)]
         try:
-            N, Wn = scp.cheb1ord(Wp_relaxed, Ws_relaxed, 5, 30)  # Relax from 3dB/40dB to 5dB/30dB
+            N, Wn = scp.cheb1ord(
+                Wp_relaxed, Ws_relaxed, 5, 30
+            )  # Relax from 3dB/40dB to 5dB/30dB
         except ValueError:
             log.warning("Filter still fails, using butterworth instead")
-            B, A = scp.butter(4, [min_freq / sfreq * 0.95, min(0.95, (top - 2) / sfreq)], btype="bandpass")
+            B, A = scp.butter(
+                4,
+                [min_freq / sfreq * 0.95, min(0.95, (top - 2) / sfreq)],
+                btype="bandpass",
+            )
             y = np.zeros(X.shape)
             if num_trials == 1:
                 for ch_i in range(num_chans):
                     try:
                         y[ch_i, :] = scp.filtfilt(
-                            B, A, X[ch_i, :],
-                            axis=0, padtype="odd",
+                            B,
+                            A,
+                            X[ch_i, :],
+                            axis=0,
+                            padtype="odd",
                             padlen=3 * (max(len(B), len(A)) - 1),
                         )
                     except Exception as e2:
@@ -382,7 +393,9 @@ def filterbank(X, sfreq, idx_fb, peaks):
             else:
                 for trial_i in range(num_trials):
                     for ch_i in range(num_chans):
-                        y[trial_i, ch_i, :] = scp.filtfilt(B, A, X[trial_i, ch_i, :], axis=0)
+                        y[trial_i, ch_i, :] = scp.filtfilt(
+                            B, A, X[trial_i, ch_i, :], axis=0
+                        )
             return y
         Wp = Wp_relaxed
         Ws = Ws_relaxed
