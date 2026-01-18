@@ -633,6 +633,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+
 .. _Ethan Davis: https://github.com/davisethan
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
