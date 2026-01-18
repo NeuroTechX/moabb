@@ -8,7 +8,7 @@ using `CodeCarbon library <https://codecarbon.io/>`__.
 For this example, we will use only one
 dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets. Due to limitation of online documentation
-generation, the results is computed on a local cluster but could be easily
+generation, the results are computed on a local cluster but could be easily
 replicated on your infrastructure.
 """
 
