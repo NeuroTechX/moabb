@@ -198,7 +198,7 @@ class Results:
                             f" contain only these keys: {d.keys()}."
                         ) from None
                     cols = [d["score"], d["time"], d["n_samples"]]
-                    if _carbonfootprint:
+                    if _carbonfootprint and "carbon_emission" in d:
                         if isinstance(d["carbon_emission"], tuple):
                             cols.append(*d["carbon_emission"])
                         else:
