@@ -413,10 +413,30 @@ class WithinSessionEvaluation(BaseEvaluation):
                             if not_enough_data:
                                 res["time"] = 0
                                 res["score"] = np.nan
+                                if _carbonfootprint:
+                                    res["carbon_emission"] = (np.nan,)
+                                    res["codecarbon_task_name"] = ""
                             else:
+                                if _carbonfootprint:
+                                    task_name = str(uuid4())
+                                    tracker = EmissionsTracker(**self.codecarbon_config)
+                                    tracker.start()
+                                    tracker.start_task(task_name)
+
                                 res["score"], res["time"] = self.score_explicit(
                                     deepcopy(clf), X_train, y_train, X_test, y_test
                                 )
+
+                                if _carbonfootprint:
+                                    emissions_data = tracker.stop_task()
+                                    emissions = (
+                                        emissions_data.emissions
+                                        if emissions_data
+                                        else np.nan
+                                    )
+                                    tracker.stop()
+                                    res["carbon_emission"] = (1000 * emissions,)
+                                    res["codecarbon_task_name"] = task_name
                             yield res
 
     def evaluate(
