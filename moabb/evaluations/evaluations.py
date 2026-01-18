@@ -28,6 +28,7 @@ from moabb.evaluations.utils import (
     _ensure_fitted,
     _save_model_cv,
 )
+from moabb.paradigms.ssvep import BaseSSVEP
 
 
 try:
@@ -162,14 +163,19 @@ class WithinSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
+            # Force return_epochs=True for SSVEP paradigms as they require MNE Epochs objects
+            is_ssvep = isinstance(self.paradigm, BaseSSVEP)
+            return_epochs = True if is_ssvep else self.return_epochs
+            # For SSVEP paradigms, don't pass process_pipeline to ensure it's created
+            # with return_epochs=True
             X, y, metadata = self.paradigm.get_data(
                 dataset=dataset,
                 subjects=[subject],
-                return_epochs=self.return_epochs,
+                return_epochs=return_epochs,
                 return_raws=self.return_raws,
                 cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
-                process_pipelines=[process_pipeline],
+                process_pipelines=None if is_ssvep else [process_pipeline],
             )
             # iterate over sessions
             for session in np.unique(metadata.session):
@@ -650,13 +656,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if len(run_pipes) == 0:
             return
 
+        # Force return_epochs=True for SSVEP paradigms as they require MNE Epochs objects
+        is_ssvep = isinstance(self.paradigm, BaseSSVEP)
+        return_epochs = True if is_ssvep else self.return_epochs
+        # For SSVEP paradigms, don't pass process_pipeline to ensure it's created
+        # with return_epochs=True
         X, y, metadata = self.paradigm.get_data(
             dataset=dataset,
-            return_epochs=self.return_epochs,
+            return_epochs=return_epochs,
             return_raws=self.return_raws,
             cache_config=self.cache_config,
             postprocess_pipeline=postprocess_pipeline,
-            process_pipelines=[process_pipeline],
+            process_pipelines=None if is_ssvep else [process_pipeline],
         )
         le = LabelEncoder()
         y = y if self.mne_labels else le.fit_transform(y)
