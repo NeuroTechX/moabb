@@ -14,7 +14,7 @@ replicated on your infrastructure.
 
 # Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
-#          Ethan Davis <davisethan@gmail.com>
+#          Ethan Davis <davise5@uw.edu>
 #
 # License: BSD (3-clause)
 
