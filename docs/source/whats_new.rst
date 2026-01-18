@@ -37,7 +37,7 @@ Requirements
 
 Bugs
 ~~~~
-- None yet.
+- Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~

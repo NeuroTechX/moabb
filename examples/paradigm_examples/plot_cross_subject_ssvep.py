@@ -98,7 +98,7 @@ pipelines_fb["RG+LogReg"] = make_pipeline(
     ExtendedSSVEPSignal(),
     Covariances(estimator="lwf"),
     TangentSpace(),
-    LogisticRegression(solver="lbfgs", multi_class="auto"),
+    LogisticRegression(solver="lbfgs"),
 )
 
 pipelines = {}

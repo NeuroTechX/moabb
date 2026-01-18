@@ -198,15 +198,23 @@ class Results:
                             f" contain only these keys: {d.keys()}."
                         ) from None
                     cols = [d["score"], d["time"], d["n_samples"]]
-                    if _carbonfootprint and "carbon_emission" in d:
-                        if isinstance(d["carbon_emission"], tuple):
-                            cols.append(*d["carbon_emission"])
+                    if _carbonfootprint:
+                        # Always add carbon_emission column if codecarbon is available
+                        if "carbon_emission" in d:
+                            if isinstance(d["carbon_emission"], tuple):
+                                cols.append(*d["carbon_emission"])
+                            else:
+                                cols.append(d["carbon_emission"])
                         else:
-                            cols.append(d["carbon_emission"])
+                            # Add NaN if carbon_emission is not available
+                            cols.append(np.nan)
 
-                        # Save unique CodeCarbon task name
-                        dset["codecarbon_task_name"].resize(length, 0)
-                        dset["codecarbon_task_name"][-1] = str(d["codecarbon_task_name"])
+                        # Save unique CodeCarbon task name (only if dataset exists)
+                        if "codecarbon_task_name" in dset:
+                            dset["codecarbon_task_name"].resize(length, 0)
+                            dset["codecarbon_task_name"][-1] = str(
+                                d.get("codecarbon_task_name", "")
+                            )
 
                     dset["data"][-1, :] = np.asarray(
                         [
@@ -247,7 +255,7 @@ class Results:
                     df["n_sessions"] = dset.attrs["n_sessions"]
                     df["dataset"] = dname
                     df["pipeline"] = name
-                    if _carbonfootprint:
+                    if _carbonfootprint and "codecarbon_task_name" in dset:
                         df["codecarbon_task_name"] = np.array(
                             dset["codecarbon_task_name"]
                         ).astype(str)

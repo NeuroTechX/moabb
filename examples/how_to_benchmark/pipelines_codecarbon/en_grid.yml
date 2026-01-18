@@ -19,6 +19,7 @@ pipeline:
   - name: LogisticRegression
     from: sklearn.linear_model
     parameters:
+      penalty: "elasticnet"
       l1_ratio: 0.70
       intercept_scaling: 1000.0
       solver: "saga"
