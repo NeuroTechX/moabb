@@ -1,12 +1,12 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push)",
-      "Bash(git checkout:*)",
-      "Bash(python:*)",
-      "Bash(find:*)"
-    ]
-  }
+    "permissions": {
+        "allow": [
+            "Bash(git add:*)",
+            "Bash(git commit:*)",
+            "Bash(git push)",
+            "Bash(git checkout:*)",
+            "Bash(python:*)",
+            "Bash(find:*)"
+        ]
+    }
 }

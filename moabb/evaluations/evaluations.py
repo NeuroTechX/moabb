@@ -28,7 +28,6 @@ from moabb.evaluations.utils import (
     _ensure_fitted,
     _save_model_cv,
 )
-from moabb.paradigms.ssvep import BaseSSVEP
 from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
 
 
@@ -278,7 +277,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        res["codecarbon_task_name"] = getattr(tracker, "task_name", "default")
+                        res["codecarbon_task_name"] = getattr(
+                            tracker, "task_name", "default"
+                        )
 
                     yield res
 
@@ -593,7 +594,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        res["codecarbon_task_name"] = getattr(tracker, "task_name", "default")
+                        res["codecarbon_task_name"] = getattr(
+                            tracker, "task_name", "default"
+                        )
 
                     yield res
 
@@ -797,7 +800,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        res["codecarbon_task_name"] = getattr(tracker, "task_name", "default")
+                        res["codecarbon_task_name"] = getattr(
+                            tracker, "task_name", "default"
+                        )
                     yield res
 
     def is_valid(self, dataset):
