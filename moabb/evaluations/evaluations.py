@@ -277,9 +277,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                        res["codecarbon_task_name"] = getattr(
-                            tracker, "task_name", "default"
-                        )
 
                     yield res
 
