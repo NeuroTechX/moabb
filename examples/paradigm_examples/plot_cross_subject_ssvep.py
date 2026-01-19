@@ -98,17 +98,17 @@ pipelines_fb["RG+LogReg"] = make_pipeline(
     ExtendedSSVEPSignal(),
     Covariances(estimator="lwf"),
     TangentSpace(),
-    LogisticRegression(solver="lbfgs", multi_class="auto"),
+    LogisticRegression(solver="lbfgs"),
 )
 
 pipelines = {}
-pipelines["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=2))
+pipelines["CCA"] = make_pipeline(SSVEP_CCA(n_harmonics=2))
 
 pipelines_TRCA = {}
-pipelines_TRCA["TRCA"] = make_pipeline(SSVEP_TRCA(interval=interval, freqs=freqs))
+pipelines_TRCA["TRCA"] = make_pipeline(SSVEP_TRCA(n_fbands=3))
 
 pipelines_MSET_CCA = {}
-pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs))
+pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA())
 
 ##############################################################################
 # Evaluation

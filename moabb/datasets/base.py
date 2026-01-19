@@ -13,11 +13,11 @@ from pathlib import Path
 from typing import Any, Dict, Union
 
 import mne_bids
+import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
 
 from moabb.datasets.bids_interface import StepType, _interface_map
-from moabb.datasets.preprocessing import SetRawAnnotations
+from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
 log = logging.getLogger(__name__)
@@ -392,7 +392,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.unit_factor = unit_factor
 
     def _create_process_pipeline(self):
-        return Pipeline(
+        return FixedPipeline(
             [
                 (
                     StepType.RAW,
@@ -403,6 +403,50 @@ class BaseDataset(metaclass=MetaclassDataset):
                 ),
             ]
         )
+
+    def _block_rep(self, block, repetition):
+        raise NotImplementedError()
+
+    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
+        """Select data for all provided subjects, blocks and repetitions.
+
+        subject -> session -> run -> block -> repetition
+
+        See also
+        --------
+        BaseDataset.get_data
+
+        Parameters
+        ----------
+        subjects: List of int
+            List of subject number
+        block_list: List of int
+            List of block number
+        repetition_list: List of int
+            List of repetition number inside a block
+
+        Returns
+        -------
+        data: Dict
+            dict containing the raw data
+        """
+        X, labels, meta = paradigm.get_data(self, subjects)
+        X_select = []
+        labels_select = []
+        meta_select = []
+        for block in block_list:
+            for repetition in repetition_list:
+                run = self._block_rep(block, repetition)
+                X_select.append(X[meta["run"] == run])
+                labels_select.append(labels[meta["run"] == run])
+                meta_select.append(meta[meta["run"] == run])
+        X_select = np.concatenate(X_select)
+        labels_select = np.concatenate(labels_select)
+        meta_select = np.concatenate(meta_select)
+        df = pd.DataFrame(meta_select, columns=meta.columns)
+        meta_select = df
+
+        return X_select, labels_select, meta_select
 
     def get_data(
         self,
@@ -575,7 +619,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                     self,
                     subject,
                     path=cache_config.path,
-                    process_pipeline=Pipeline(cached_steps),
+                    process_pipeline=FixedPipeline(cached_steps),
                     verbose=cache_config.verbose,
                 )
 
@@ -622,7 +666,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                         self,
                         subject,
                         path=cache_config.path,
-                        process_pipeline=Pipeline(
+                        process_pipeline=FixedPipeline(
                             cached_steps + remaining_steps[: step_idx + 1]
                         ),
                         verbose=cache_config.verbose,

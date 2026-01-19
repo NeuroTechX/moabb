@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from sklearn.model_selection import (
-    GroupKFold,
     GroupShuffleSplit,
     KFold,
     LeaveOneGroupOut,
@@ -410,7 +409,7 @@ def test_if_split_is_not_random(data, splitter):
     [
         LeaveOneGroupOut,
         TimeSeriesSplit,
-        GroupKFold,
+        # GroupKFold, changed behavior within scikit-learn 1.6
         LeaveOneOut,
         LeavePGroupsOut,
         LeavePOut,

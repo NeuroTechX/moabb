@@ -4,6 +4,7 @@
 # License: BSD Style.
 
 import json
+import logging
 import os
 import os.path as osp
 from pathlib import Path
@@ -16,6 +17,9 @@ from mne.utils import _url_to_local_path, verbose, warn
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_dataset_path(sign, path):
@@ -43,7 +47,7 @@ def get_dataset_path(sign, path):
     if get_config(key) is None:
         if get_config("MNE_DATA") is None:
             path_def = Path.home() / "mne_data"
-            print(
+            logger.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
                 + str(path_def)
@@ -198,11 +202,33 @@ def fs_issue_request(method, url, headers, data=None, binary=False):
         except ValueError:
             response_data = response.content
     except HTTPError as error:
-        print("Caught an HTTPError: {}".format(error))
-        print("Body:\n", response.text)
+        logger.error("Caught an HTTPError: {}".format(error))
+        logger.error("Body:\n{}".format(response.text))
         raise
 
     return response_data
+
+
+def _fs_paginated_file_list(base_url, headers, page_size=1000):
+    files = []
+    page = 1
+
+    while True:
+        page_url = f"{base_url}?page={page}&page_size={page_size}"
+        response = fs_issue_request("GET", page_url, headers=headers)
+
+        if isinstance(response, dict):
+            page_files = response.get("files", [])
+        else:
+            page_files = response
+
+        if not page_files:
+            break
+
+        files.extend(page_files)
+        page += 1
+
+    return files
 
 
 def fs_get_file_list(article_id, version=None):
@@ -221,16 +247,14 @@ def fs_get_file_list(article_id, version=None):
         HTTP request response as a python dict
     """
     fsurl = "https://api.figshare.com/v2"
+    headers = {"Content-Type": "application/json"}
+
     if version is None:
-        url = fsurl + "/articles/{}".format(article_id)
-        headers = {"Content-Type": "application/json"}
-        response = fs_issue_request("GET", url, headers=headers)
-        return response["files"]
+        url = fsurl + "/articles/{}/files".format(article_id)
     else:
-        url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
-        headers = {"Content-Type": "application/json"}
-        request = fs_issue_request("GET", url, headers=headers)
-        return request["files"]
+        url = fsurl + "/articles/{}/versions/{}/files".format(article_id, version)
+
+    return _fs_paginated_file_list(url, headers=headers)
 
 
 def fs_get_file_hash(filelist):
@@ -325,7 +349,7 @@ def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
             response = requests.get(url)
             data = response.json()
         except Exception as e:
-            print(f"Failed to fetch {url}: {e}")
+            logger.error(f"Failed to fetch {url}: {e}")
             continue
 
         # Loop through items in this page

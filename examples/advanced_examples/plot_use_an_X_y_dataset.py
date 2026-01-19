@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-=====================================================================
-Tutorial 6: Using X y data (epoched data) instead of continuous signal
-=====================================================================
+===========================================================
+Using X y data (epoched data) instead of continuous signal
+===========================================================
 Sometimes, we have data in the format of X and y, rather than as a continuous
 signal. In such cases, the data is already segmented into epochs. This creates
 a problem, because MOABB is designed to work with continuous data organized by

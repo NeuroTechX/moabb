@@ -62,7 +62,7 @@ interval = dataset.interval
 freqs = paradigm.used_events(dataset)
 
 pipeline = {}
-pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
+pipeline["CCA"] = make_pipeline(SSVEP_CCA(n_harmonics=3))
 
 ##############################################################################
 # Get Data (optional)

@@ -87,7 +87,7 @@ class BaseMAMEM(BaseDataset):
 
     def __init__(self, events, sessions_per_subject, code, doi, figshare_id):
         super().__init__(
-            subjects=list(range(1, 11)),
+            subjects=list(range(1, 12)),
             events=events,
             interval=[1, 4],
             paradigm="ssvep",

@@ -1,5 +1,6 @@
 Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length (s), Freq (Hz), #Sessions, #Runs, Total_trials, PapersWithCode leaderboard
 AlexMI,8,16,3,20,3,512,1,1,480,https://paperswithcode.com/dataset/alexandremotorimagery-moabb
+BNCI2003_004,5,118,2,84,3.5,100,1,1,1400,
 BNCI2014_001,9,22,4,144,4,250,2,6,62208,https://paperswithcode.com/dataset/bnci2014-001-moabb-1
 BNCI2014_002,14,15,2,80,5,512,1,8,17920,https://paperswithcode.com/dataset/bnci2014-002-moabb-1
 BNCI2014_004,9,3,2,360,4.5,250,5,1,32400,https://paperswithcode.com/dataset/bnci2014-004-moabb-1

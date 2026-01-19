@@ -18,7 +18,8 @@ from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import optuna_available
-from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
+from moabb.evaluations.utils import _create_save_path as create_save_path
+from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
@@ -393,17 +394,6 @@ class UtilEvaluation:
         # Assert that the saved model file exists
         assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
 
-    def test_save_model_list(self):
-        step = Dummy()
-        model = Pipeline([("step", step)])
-        model_list = [model]
-        score_list = [0.8]
-        save_path = "test_save_path"
-        save_model_list(model_list, score_list, save_path)
-
-        # Assert that the saved model file for best model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
-
     def test_create_save_path(self):
         hdf5_path = "base_path"
         code = "evaluation_code"
@@ -454,21 +444,6 @@ class UtilEvaluation:
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_history.json"))
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_criterion.pkl"))
 
-    def test_save_model_list_with_multiple_models(self):
-        model1 = Dummy()
-        model2 = Dummy()
-        model_list = [model1, model2]
-        score_list = [0.8, 0.9]
-        save_path = "test_save_path"
-        save_model_list(model_list, score_list, save_path)
-
-        # Assert that the saved model files for each model exist
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_1.pkl"))
-
-        # Assert that the saved model file for the best model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
-
     def test_create_save_path_with_cross_session_evaluation(self):
         hdf5_path = "base_path"
         code = "evaluation_code"
@@ -515,19 +490,6 @@ class UtilEvaluation:
         # Assert that calling save_model_cv without a save_path does raise an IOError
         with pytest.raises(IOError):
             save_model_cv(model, save_path, cv_index)
-
-    def test_save_model_list_with_single_model(self):
-        model = Dummy()
-        model_list = model
-        score_list = [0.8]
-        save_path = "test_save_path"
-        save_model_list(model_list, score_list, save_path)
-
-        # Assert that the saved model file for the single model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
-
-        # Assert that the saved model file for the best model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
     def test_create_save_path_with_cross_subject_evaluation(self):
         hdf5_path = "base_path"

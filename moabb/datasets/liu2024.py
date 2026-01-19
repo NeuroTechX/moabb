@@ -26,9 +26,7 @@ LIU2024_EVENTS = "https://figshare.com/ndownloader/files/38516084"
 
 
 class Liu2024(BaseDataset):
-    """
-
-    Dataset [1]_ from the study on motor imagery [2]_.
+    """Dataset [1]_ from the study on motor imagery [2]_.
 
     **Dataset description**
     This dataset includes data from 50 acute stroke patients (the time after stroke ranges from 1 day to 30 days)

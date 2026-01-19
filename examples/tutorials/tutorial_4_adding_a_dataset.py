@@ -84,7 +84,7 @@ for subject in [1, 2, 3]:
 # The global variable with the dataset's URL should specify an online
 # repository where all the files are stored.
 
-ExampleDataset_URL = "https://zenodo.org/records/14973598/files/"
+ExampleDataset_URL = "https://zenodo.org/records/14973598"
 
 
 ##############################################################################
@@ -138,7 +138,7 @@ class ExampleDataset(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        url = "{:s}subject_0{:d}.mat".format(ExampleDataset_URL, subject)
+        url = "{:s}/files/subject_0{:d}.mat".format(ExampleDataset_URL, subject)
         path = dl.data_dl(url, "ExampleDataset")
         return [path]  # it has to return a list
 

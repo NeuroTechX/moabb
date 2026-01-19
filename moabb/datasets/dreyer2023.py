@@ -44,7 +44,7 @@ class _Dreyer2023Base(BaseDataset):
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
             code="Dreyer2023" + self.sub_id,
-            interval=[3, 8],
+            interval=[0, 5],
             paradigm="imagery",
             doi="10.5281/zenodo.7554429",
         )
@@ -72,6 +72,17 @@ class _Dreyer2023Base(BaseDataset):
                 # Read the subject's raw data and set the montage
                 raw = read_raw_bids(bids_path=file, verbose=False)
                 raw = raw.load_data()
+
+                # Set the channel montage
+                mapping = dict()
+                for ch in raw.ch_names:
+                    if "EOG" in ch:
+                        mapping[ch] = "eog"
+                    elif "EMG" in ch:
+                        mapping[ch] = "emg"
+
+                raw.set_channel_types(mapping)
+
                 # We are losting several annotations because there is no fuck
                 # place explaining what it is the events ids :)
                 raw.annotations.rename({"769": "left_hand", "770": "right_hand"})
@@ -124,7 +135,7 @@ class _Dreyer2023Base(BaseDataset):
             if "baseline" in task or "rest" in task:
                 continue
 
-            if subject == 59 and ("R5online" in task) or ("R6online" in task):
+            if subject == 59 and (("R5online" in task) or ("R6online" in task)):
                 continue
 
             # Create a BIDSPath object for all the tasks

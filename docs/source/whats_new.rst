@@ -5,6 +5,7 @@
 What's new
 ==========
 
+
 .. NOTE: there are 3 separate sections for changes, based on type:
 
 - "Enhancements" for new features
@@ -13,9 +14,106 @@ What's new
 
 .. _current:
 
+Version 1.5  (Source - GitHub)
+-------------------------------
 
-Develop branch  - 1.2.1
-------------------------
+Enhancements
+~~~~~~~~~~~~
+- Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
+- Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
+- Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
+
+API changes
+~~~~~~~~~~~
+- Allow CodeCarbon script level configurations when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`866` by `Ethan Davis`_).
+- When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
+- Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
+- Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
+
+
+Requirements
+~~~~~~~~~~~~
+- Requires CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
+
+Bugs
+~~~~
+- Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
+- Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
+- Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
+
+Code health
+~~~~~~~~~~~
+- None yet.
+
+Version 1.4.3 (Stable - PyPi)
+-------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Add “Open in Colab” buttons for gallery examples (:gh:`853` by `Bruno Aristimunha`_)
+- Refresh docs homepage design and citation visibility (:gh:`853` by `Bruno Aristimunha`_)
+- Add :class:`moabb.datasets.preprocessing.FixedPipeline` and :func:`moabb.datasets.preprocessing.make_fixed_pipeline` to avoid scikit-learn unfitted pipeline warnings (:gh:`850` by `Bruno Aristimunha`_)
+
+API changes
+~~~~~~~~~~~
+- None.
+
+Requirements
+~~~~~~~~~~~~
+- Improve compatibility with Python 3.14 (:gh:`848` by `Bruno Aristimunha`_)
+
+Bugs
+~~~~
+- Fixing warnings from the latest scikit-learn version within the Preprocessing logic (:gh:`850` by `Bruno Aristimunha`_)
+- Fixing compatibility with Scikit-learn 1.8 (:gh:`852` by `Bruno Aristimunha`_)
+
+Code health
+~~~~~~~~~~~
+- Generate notebooks in docs CI for Colab integration (:gh:`853` by `Bruno Aristimunha`_)
+
+
+Version 1.4.2
+---------------
+
+Enhancements
+~~~~~~~~~~~~
+- Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
+- Improve compute_pvals_perm function (:gh:`818` by `Quentin Barthelemy`_)
+
+Bugs
+~~~~
+- Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by `Anton Andreev`_)
+- Fixing pagination issue with figshare (:gh:`839` by `Bruno Aristimunha`_)
+- Fixes :class:`moabb.datasets.preprocessing.SetRawAnnotations` in case no STIM channel is present (:gh:`838` by `Pierre Guetschel`_ and `Simon Kojima`_)
+
+API changes
+~~~~~~~~~~~
+- None.
+
+
+
+Version  - 1.4
+-----------------------
+Enhancements
+~~~~~~~~~~~~
+- Update to pyRiemann 0.9 and numpy 2.0 for improved compatibility (:gh:`789` by `Gregoire Cattan`_ and `Bruno Aristimunha`_)
+- Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
+- Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
+- Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+- Added the ability to feed pipelines using a list of dictionaries in :func:`moabb.benchmark` (:gh:`826` by `Anton Andreev`_)
+
+Bugs
+~~~~
+- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
+- Fix the :class:`moabb.datasets.Dreyer2023` (:gh:`828` by `Simon Kojima`_)
+
+API changes
+~~~~~~~~~~~
+- None.
+
+
+Version  - 1.3
+--------------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -30,11 +128,13 @@ Enhancements
 - Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
 - Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
 - Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
+- Refactor :class:`moabb.evaluation.CrossSessionEvaluation`, :class:`moabb.evaluation.CrossSubjectEvaluation` and  :class:`moabb.evaluation.WithinSessionEvaluation` to use the new splitter classes (:gh:`769` by `Bruno Aristimunha`_)
 - Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch`_ and `Bruno Aristimunha`_)
 - Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
 - Add function to auto-generate tables for the paper results documentation page (:gh:`785` by `Lucas Heck`_)
 - Improving the Filterbank tutorial and implementing the mutual information selection to reproduce the FilterbankCSP (:gh:`787` by `Bruno Aristimunha`_)
 - A tutorial on how to create and use a MOABB dataset from X y (non continuous, epoched) data (:gh:`800` by `Anton Andreev`_)
+- Improving the parallel writing of results (:gh:`803` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -51,15 +151,15 @@ Bugs
 - Remove an unnecessary line in the README.md (:gh:`791` by `Lionel Kusch`_)
 - Update the dead link about the tutorial of GitHub in CONTRIBUTING.md (:gh:`792` by `Lionel Kusch`_)
 - Fix: number of trial per class for PHMD_ML dataset (:gh:`797` by `Gregoire Cattan`_)
-- Converting the :class:`moabb.datasets.Zhou2016` to BIDS (:gh:`798` by `Bruno Aristimunha`_)
+- Converting the :class:`moabb.datasets.Zhou2016` to BIDS (:gh:`802` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
 - Removing the deep learning module from inside moabb in favour of braindecode integration (:gh:`692` by `Bruno Aristimunha`_ )
 
 
-Version - 1.2.0  (Stable - PyPi)
----------------------------------
+Version - 1.2.0
+----------------
 
 
 Enhancements
@@ -534,6 +634,7 @@ API changes
 ~~~~~~~~~~~
 - None
 
+.. _Ethan Davis: https://github.com/davisethan
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
@@ -562,7 +663,7 @@ API changes
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
 .. _Jordy Thielen: https://github.com/thijor
-.. _Sebastien Velut: https://github.com/swetbear
+.. _Sebastien Velut: https://github.com/sebVelut
 .. _Brian Irvine: https://github.com/brianjohannes
 .. _Bruna Lopes: https://github.com/brunaafl
 .. _Yash Chauhan: https://github.com/jiggychauhi
@@ -580,3 +681,8 @@ API changes
 .. _Radovan Vodila: https://github.com/rvodila
 .. _Ulysse Durand: https://github.com/UlysseDurand
 .. _Lucas Heck: https://github.com/lucas-heck
+.. _Simon Kojima: https://github.com/simonkojima
+.. _Griffin Keeler: https://github.com/griffinkeeler
+.. _Kosei Nakada: https://github.com/ponpopon
+.. _Romani Michele: https://github.com/BRomans
+.. _Lionel Kusch: https://github.com/lionelkusch
