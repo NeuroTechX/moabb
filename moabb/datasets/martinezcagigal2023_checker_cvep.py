@@ -177,8 +177,8 @@ class MartinezCagigal2023CBase(BaseDataset):
             for i, test_path in enumerate(test_paths):
                 try:
                     print(f"> Loading {user}, cond {cname}, test {i+n+1}")
-                    sessions[cname][f"{i + n + 1}test"] = (
-                        self.__convert_to_mne_format(test_path, true_labels[i])
+                    sessions[cname][f"{i + n + 1}test"] = self.__convert_to_mne_format(
+                        test_path, true_labels[i]
                     )
                 except Exception:
                     print(

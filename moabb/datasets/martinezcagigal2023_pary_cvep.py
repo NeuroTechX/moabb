@@ -40,10 +40,10 @@ CONDITIONS = ("2", "3", "5", "7", "11")
 
 # M-sequence lengths for each base (p-ary)
 MSEQUENCE_LENGTHS = {
-    "2": 63,   # GF(2^6)
-    "3": 80,   # GF(3^4)
+    "2": 63,  # GF(2^6)
+    "3": 80,  # GF(3^4)
     "5": 124,  # GF(5^3)
-    "7": 48,   # GF(7^2)
+    "7": 48,  # GF(7^2)
     "11": 120,  # GF(11^2)
 }
 
@@ -183,8 +183,8 @@ class MartinezCagigal2023PBase(BaseDataset):
             for i, train_path in enumerate(train_paths):
                 try:
                     print(f"> Loading {user}, base {base}, train {i + 1}")
-                    sessions[str(base)][f"{i + 1}train"] = (
-                        self.__convert_to_mne_format(train_path)
+                    sessions[str(base)][f"{i + 1}train"] = self.__convert_to_mne_format(
+                        train_path
                     )
                 except Exception:
                     print(
