@@ -94,9 +94,10 @@ jobs:
               raise Exception(f"Failed after {max_retries} retries")
 
           # Pre-fetch Zhou2016 Zenodo metadata to cache it
+          # BIDS datasets use MNE-BIDS-{kebab-case} format
           print("Pre-fetching Zhou2016 Zenodo metadata...")
           mne_data = get_config("MNE_DATA") or str(Path.home() / "mne_data")
-          zhou_path = Path(mne_data) / "MNE-zhou2016-data"
+          zhou_path = Path(mne_data) / "MNE-BIDS-zhou-2016"
           zhou_path.mkdir(parents=True, exist_ok=True)
 
           zenodo_url = "https://zenodo.org/api/records/16534752"
