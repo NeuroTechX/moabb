@@ -773,6 +773,13 @@ def _match_int(s):
     return int(match.group(1))
 
 
+def _match_float(s):
+    """Match the first float in a string."""
+    match = re.search(r"(\d+\.?\d*)", str(s))
+    assert match, f"Cannot parse float from '{s}'"
+    return float(match.group(1))
+
+
 def _get_dataset_parameters(dataset):
     row = dataset._summary_table
     dataset_name = dataset.__class__.__name__
@@ -791,7 +798,7 @@ def _get_dataset_parameters(dataset):
             n_trials = int(match.group(1)) + int(match.group(2))
         else:
             n_trials = _match_int(row["#Trials / class"])
-    trial_len = float(row["Trials length (s)"])
+    trial_len = _match_float(row["Trials length (s)"])
     return (
         dataset_name,
         paradigm,

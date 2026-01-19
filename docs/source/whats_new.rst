@@ -26,6 +26,7 @@ Enhancements
 - Improved BIDS conversion with guaranteed montage preservation for all BNCI datasets (by `Bruno Aristimunha`_)
 - Dataset-specific metadata extraction for BNCI2014-001, BNCI2014-004, and BNCI2014-008 with age, gender, and clinical information (by `Bruno Aristimunha`_)
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
+- Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
 
 API changes
 ~~~~~~~~~~~
@@ -693,3 +694,4 @@ API changes
 .. _Kosei Nakada: https://github.com/ponpopon
 .. _Romani Michele: https://github.com/BRomans
 .. _Lionel Kusch: https://github.com/lionelkusch
+.. _Victor Martinez-Cagigal: https://github.com/vicmarcag
