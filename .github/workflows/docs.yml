@@ -112,11 +112,13 @@ jobs:
 
       - name: Build docs
         env:
-          # Disable parallel gallery builds when cache is cold to avoid Zenodo rate limiting
+          # Disable parallel builds when cache is cold to avoid Zenodo rate limiting
           SPHINX_GALLERY_PARALLEL: ${{ steps.cache-mne_data.outputs.cache-hit == 'true' }}
+          SPHINX_JOBS: ${{ steps.cache-mne_data.outputs.cache-hit == 'true' && 'auto' || '1' }}
         run: |
           echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
           echo "Parallel gallery builds: $SPHINX_GALLERY_PARALLEL"
+          echo "Sphinx jobs: $SPHINX_JOBS"
           cd docs && make html
 
       - name: Generate notebooks from examples (Colab)
