@@ -56,7 +56,7 @@ def _read_document(data, offset=0):
         elif elem_type == 0x05:  # Binary data
             bin_len = struct.unpack_from("<i", data, offset)[0]
             offset += 4
-            subtype = data[offset]
+            _ = data[offset]  # BSON binary subtype (unused but must be read)
             offset += 1
             value = data[offset : offset + bin_len]
             offset += bin_len
