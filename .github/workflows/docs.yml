@@ -71,6 +71,7 @@ jobs:
         run: |
           echo "Cache is cold, pre-downloading datasets with delays to avoid rate limiting..."
           python << 'EOF'
+          import sys
           import time
 
           # All datasets used in examples that download from Zenodo
@@ -78,16 +79,20 @@ jobs:
               # (module_path, class_name, num_subjects)
               ('moabb.datasets', 'BNCI2014_001', 3),
               ('moabb.datasets', 'BNCI2014_009', 2),
-              ('moabb.datasets', 'Zhou2016', 2),
+              ('moabb.datasets', 'Zhou2016', 4),  # All 4 subjects
               ('moabb.datasets', 'AlexMI', 1),
               ('moabb.datasets', 'Kalunga2016', 2),
               ('moabb.datasets', 'Cattan2019_VR', 1),
               ('moabb.datasets', 'Hinss2021', 1),
           ]
 
+          failed = []
           for module_path, class_name, n_subjects in datasets_to_download:
-              print(f'Pre-downloading {class_name}...')
-              for attempt in range(3):
+              print(f'\n{"="*60}')
+              print(f'Pre-downloading {class_name} ({n_subjects} subjects)...')
+              print(f'{"="*60}')
+              success = False
+              for attempt in range(5):  # More retries
                   try:
                       import importlib
                       module = importlib.import_module(module_path)
@@ -95,19 +100,31 @@ jobs:
                       ds = cls()
                       subjects = ds.subject_list[:n_subjects]
                       ds.download(subject_list=subjects)
-                      print(f'{class_name} downloaded successfully ({n_subjects} subjects)')
+                      print(f'SUCCESS: {class_name} downloaded ({n_subjects} subjects)')
+                      success = True
                       break
                   except Exception as e:
-                      print(f'Attempt {attempt + 1} failed: {e}')
-                      if attempt < 2:
-                          wait = 60 * (attempt + 1)
+                      print(f'Attempt {attempt + 1}/5 failed: {e}')
+                      if attempt < 4:
+                          wait = 90 * (attempt + 1)  # 90s, 180s, 270s, 360s
                           print(f'Waiting {wait}s before retry...')
                           time.sleep(wait)
-                      else:
-                          print(f'Warning: {class_name} download failed after 3 attempts')
+              if not success:
+                  failed.append(class_name)
+                  print(f'FAILED: {class_name} after 5 attempts')
               # Wait between datasets to avoid rate limiting
-              print('Waiting 45s before next dataset...')
-              time.sleep(45)
+              print('Waiting 60s before next dataset...')
+              time.sleep(60)
+
+          if failed:
+              print(f'\n{"="*60}')
+              print(f'ERROR: Failed to download: {", ".join(failed)}')
+              print(f'{"="*60}')
+              sys.exit(1)
+          else:
+              print(f'\n{"="*60}')
+              print('All datasets downloaded successfully!')
+              print(f'{"="*60}')
           EOF
 
       - name: Build docs
