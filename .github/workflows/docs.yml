@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/mne_data
-          key: doc-${{ runner.os }}-mne-data-${{ github.run_id }}
+          key: doc-${{ runner.os }}-mne-data-v2
           restore-keys: |
             doc-${{ runner.os }}-mne-data-
 
@@ -67,7 +67,12 @@ jobs:
           uv pip install -e .[docs,deeplearning,optuna,external,carbonemission]
 
       - name: Build docs
+        env:
+          # Disable parallel gallery builds when cache is cold to avoid Zenodo rate limiting
+          SPHINX_GALLERY_PARALLEL: ${{ steps.cache-mne_data.outputs.cache-hit == 'true' }}
         run: |
+          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
+          echo "Parallel gallery builds: $SPHINX_GALLERY_PARALLEL"
           cd docs && make html
 
       - name: Generate notebooks from examples (Colab)
