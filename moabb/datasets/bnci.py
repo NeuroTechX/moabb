@@ -248,7 +248,9 @@ def _load_data_002_2014(
         if only_filenames:
             continue
         # FIXME: electrode position and name are not provided directly.
-        raws, _ = _convert_mi(filename, None, ["eeg"] * 15, subject_id=subject)
+        raws, _ = _convert_mi(
+            filename, None, ["eeg"] * 15, dataset_code="BNCI2014-002", subject_id=subject
+        )
         runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
         return filenames
@@ -493,7 +495,9 @@ def _load_data_004_2015(
     ]
     # fmt: on
     ch_types = ["eeg"] * 30
-    raws, ev = _convert_mi(filename, ch_names, ch_types, subject_id=subject)
+    raws, ev = _convert_mi(
+        filename, ch_names, ch_types, dataset_code="BNCI2015-004", subject_id=subject
+    )
     sessions = {str(ii): {"0": run} for ii, run in enumerate(raws)}
     return sessions
 
@@ -692,9 +696,13 @@ def _enrich_run_with_metadata(raw, run, dataset_code, subject_id):
     if dataset_code in ["BNCI2014-001", "BNCI2014-004"]:
         subject_info = {}
 
+        # Set measurement date (BCI Competition IV 2008)
+        rec_year = 2008
+        raw.set_meas_date(datetime(rec_year, 1, 1, tzinfo=timezone.utc))
+
         # Extract age
         age = int(run.age)
-        birth_year = datetime.now().year - age
+        birth_year = rec_year - age
         subject_info["birthday"] = date(birth_year, 1, 1)
 
         # Extract gender
@@ -721,16 +729,17 @@ def _enrich_run_with_metadata(raw, run, dataset_code, subject_id):
                     current_desc + f"Artifacts: {n_artifacts}/{len(artifacts)} trials; "
                 )
 
-        # Set measurement date (BCI Competition IV 2008)
-        raw.set_meas_date(datetime(2008, 1, 1, tzinfo=timezone.utc))
-
     # BNCI2014-008: has age (string!), gender, ALSfrs, onsetALS
     elif dataset_code == "BNCI2014-008":
         subject_info = {}
 
+        # Set measurement date (recorded ~2012)
+        rec_year = 2012
+        raw.set_meas_date(datetime(rec_year, 1, 1, tzinfo=timezone.utc))
+
         # Extract age (note: age is stored as string in this dataset!)
         age = int(run.age)
-        birth_year = datetime.now().year - age
+        birth_year = rec_year - age
         subject_info["birthday"] = date(birth_year, 1, 1)
 
         # Extract gender
@@ -753,9 +762,6 @@ def _enrich_run_with_metadata(raw, run, dataset_code, subject_id):
         current_desc = raw.info.get("description") or ""
         # ALS = Amyotrophic Lateral Sclerosis (medical condition, not a typo)
         raw.info["description"] = current_desc + f"ALSfrs: {alsfrs}; ALS onset: {onset}; "
-
-        # Set measurement date (recorded ~2012)
-        raw.set_meas_date(datetime(2012, 1, 1, tzinfo=timezone.utc))
 
     # Finalize raw object (montage, measurement date fallback, subject ID)
     _finalize_raw(raw, dataset_code, subject_id)
