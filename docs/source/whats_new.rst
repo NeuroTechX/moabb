@@ -22,6 +22,7 @@ Enhancements
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
+- Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
 
 API changes
 ~~~~~~~~~~~
@@ -686,3 +687,4 @@ API changes
 .. _Kosei Nakada: https://github.com/ponpopon
 .. _Romani Michele: https://github.com/BRomans
 .. _Lionel Kusch: https://github.com/lionelkusch
+.. _Victor Martinez-Cagigal: https://github.com/vicmarcag
