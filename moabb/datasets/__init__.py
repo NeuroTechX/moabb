@@ -76,23 +76,8 @@ from .kojima2024a import Kojima2024A
 from .kojima2024b import Kojima2024B
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .liu2024 import Liu2024
-from .martinezcagigal2023_checker_cvep import (
-    MartinezCagigal2023C1,
-    MartinezCagigal2023C2,
-    MartinezCagigal2023C3,
-    MartinezCagigal2023C4,
-    MartinezCagigal2023C5,
-    MartinezCagigal2023C6,
-    MartinezCagigal2023C7,
-    MartinezCagigal2023C8,
-)
-from .martinezcagigal2023_pary_cvep import (
-    MartinezCagigal2023P2,
-    MartinezCagigal2023P3,
-    MartinezCagigal2023P5,
-    MartinezCagigal2023P7,
-    MartinezCagigal2023P11,
-)
+from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
+from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import MunichMI  # noqa: F401
 from .mpi_mi import GrosseWentrup2009
 from .neiry import DemonsP300

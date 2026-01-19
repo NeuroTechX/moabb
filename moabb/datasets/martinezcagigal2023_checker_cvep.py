@@ -36,19 +36,20 @@ SUBJECTS = (
     "SF16",
 )
 
-CONDITIONS = ("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8")
+ALL_CONDITIONS = ("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8")
 
 # Event descriptions for checkerboard dataset
-EVENTS = {0: "white_flash", 1: "checkerboard_pattern"}
+# Note: offset of 100 is added by add_stim_channel_epoch
+EVENTS = {"0.0": 100, "1.0": 101}
 
 
-class MartinezCagigal2023CBase(BaseDataset):
-    """Base class for Checkerboard m-sequence-based c-VEP dataset from
+class MartinezCagigal2023Checker(BaseDataset):
+    """Checkerboard m-sequence-based c-VEP dataset from
     Martínez-Cagigal et al. (2025) and Fernández-Rodríguez et al. (2023).
 
     **Dataset Description**
 
-    This dataset, accesible at [1]_, was originally recorded for study [2]_,
+    This dataset, accessible at [1]_, was originally recorded for study [2]_,
     which evaluated 8 different stimuli in a c-VEP circular shifting paradigm
     using binary m-sequences. The conditions were tested in a 9-command
     speller. The stimulus was composed of a black-background checkerboard
@@ -90,6 +91,14 @@ class MartinezCagigal2023CBase(BaseDataset):
 
     The experimental paradigm was executed using the MEDUSA© software [3]_.
 
+    Parameters
+    ----------
+    conditions : tuple of str, optional
+        Which conditions to load. Default is all conditions:
+        ("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8").
+        Each condition corresponds to a different spatial frequency of the
+        checkerboard pattern.
+
     References
     ----------
     .. [1] Martínez Cagigal, V. (2025). Dataset: Influence of spatial frequency
@@ -118,16 +127,19 @@ class MartinezCagigal2023CBase(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
-    # Class variable to specify which condition this dataset loads
-    condition = None
-
-    def __init__(self):
-        if self.condition is None:
-            raise ValueError("Subclasses must specify the 'condition' class variable")
+    def __init__(self, conditions=ALL_CONDITIONS):
+        # Validate conditions
+        for cond in conditions:
+            if cond not in ALL_CONDITIONS:
+                raise ValueError(
+                    f"Invalid condition '{cond}'. "
+                    f"Valid conditions are: {ALL_CONDITIONS}"
+                )
+        self.conditions = conditions
 
         super().__init__(
             subjects=list(range(1, len(SUBJECTS) + 1)),
-            sessions_per_subject=1,  # Only one condition per dataset
+            sessions_per_subject=len(conditions),
             events=EVENTS,
             code="MartinezCagigal2023Checkercvep",
             interval=(0, 1),  # Don't use this, it depends on the condition
@@ -138,53 +150,54 @@ class MartinezCagigal2023CBase(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject)
-
-        # Load only the specified condition for this dataset
-        # Use reversed condition name as session key for consistency with MOABB structure
-        cond = self.condition
-        cname = cond[::-1]
-        sessions = {cname: dict()}
         user = SUBJECTS[subject - 1]
 
         # Get the EEG files
         zf = zipfile.ZipFile(file_path_list[0])
+        sessions = {}
+
         with tempfile.TemporaryDirectory() as tempdir:
             zf.extractall(tempdir)
-            # Training signals
-            train_paths = glob(f"{tempdir}/{user}/{cond}/*_calib*")
-            for i, train_path in enumerate(train_paths):
-                try:
-                    print(f"> Loading {user}, cond {cname}, train {i + 1}")
-                    sessions[cname][f"{i + 1}train"] = self.__convert_to_mne_format(
-                        train_path
-                    )
-                except Exception:
-                    print(
-                        f"[EXCEPTION] Cannot convert signal {train_path}."
-                        f" More information: {traceback.format_exc()}"
-                    )
-            n = len(train_paths)
 
-            # Load the true labels for testing
-            test_labels = glob(f"{tempdir}/{user}/{cond}/*_labels*")
-            assert len(test_labels) == 1
-            with open(test_labels[0], "r", encoding="utf-8") as f:
-                true_labels = [line.strip() for line in f.readlines()]
+            for i, cond in enumerate(self.conditions):
+                session_name = f"{i}{cond}"  # e.g., "0c1", "1c2"
+                sessions[session_name] = {}
 
-            # Testing signals
-            test_paths = glob(f"{tempdir}/{user}/{cond}/*_online*")
-            assert len(test_paths) == len(true_labels)
-            for i, test_path in enumerate(test_paths):
-                try:
-                    print(f"> Loading {user}, cond {cname}, test {i+n+1}")
-                    sessions[cname][f"{i + n + 1}test"] = self.__convert_to_mne_format(
-                        test_path, true_labels[i]
-                    )
-                except Exception:
-                    print(
-                        f"[EXCEPTION] Cannot convert signal {test_path}."
-                        f" More information: {traceback.format_exc()}"
-                    )
+                # Training signals
+                train_paths = glob(f"{tempdir}/{user}/{cond}/*_calib*")
+                for j, train_path in enumerate(train_paths):
+                    try:
+                        print(f"> Loading {user}, cond {cond}, train {j + 1}")
+                        sessions[session_name][f"{j + 1}train"] = (
+                            self._convert_to_mne_format(train_path)
+                        )
+                    except Exception:
+                        print(
+                            f"[EXCEPTION] Cannot convert signal {train_path}."
+                            f" More information: {traceback.format_exc()}"
+                        )
+                n = len(train_paths)
+
+                # Load the true labels for testing
+                test_labels = glob(f"{tempdir}/{user}/{cond}/*_labels*")
+                assert len(test_labels) == 1
+                with open(test_labels[0], "r", encoding="utf-8") as f:
+                    true_labels = [line.strip() for line in f.readlines()]
+
+                # Testing signals
+                test_paths = glob(f"{tempdir}/{user}/{cond}/*_online*")
+                assert len(test_paths) == len(true_labels)
+                for j, test_path in enumerate(test_paths):
+                    try:
+                        print(f"> Loading {user}, cond {cond}, test {j+n+1}")
+                        sessions[session_name][f"{j + n + 1}test"] = (
+                            self._convert_to_mne_format(test_path, true_labels[j])
+                        )
+                    except Exception:
+                        print(
+                            f"[EXCEPTION] Cannot convert signal {test_path}."
+                            f" More information: {traceback.format_exc()}"
+                        )
 
         return sessions
 
@@ -206,7 +219,7 @@ class MartinezCagigal2023CBase(BaseDataset):
         return subject_paths
 
     @staticmethod
-    def __get_camel_case_labels(ch_labels):
+    def _get_camel_case_labels(ch_labels):
         """Converts a given list of channel labels to the common camel-case
         format (e.g., 'FPZ' -> 'FPz').
         """
@@ -218,12 +231,12 @@ class MartinezCagigal2023CBase(BaseDataset):
         return camel_case_labels
 
     @staticmethod
-    def __load_bson_recording(path):
+    def _load_bson_recording(path):
         """Load a BSON recording file and return the data dictionary."""
         return load_bson(path)
 
     @staticmethod
-    def __trim_unfinished_trial(cvep_data):
+    def _trim_unfinished_trial(cvep_data):
         """Trim incomplete trials from the CVEP data."""
         cycle_idx = np.array(cvep_data["cycle_idx"])
         if np.max(cycle_idx) != cycle_idx[-1]:
@@ -236,14 +249,14 @@ class MartinezCagigal2023CBase(BaseDataset):
             cvep_data["unit_idx"] = cvep_data["unit_idx"][:last_idx]
         return cvep_data
 
-    def __convert_to_mne_format(self, path, true_labels=None):
+    def _convert_to_mne_format(self, path, true_labels=None):
         """Convert a BSON recording to MNE Raw format."""
         # Load BSON file
-        rec = self.__load_bson_recording(path)
+        rec = self._load_bson_recording(path)
 
         # Get CVEP speller data
         cvep_data = rec["cvepspellerdata"]
-        cvep_data = self.__trim_unfinished_trial(cvep_data)
+        cvep_data = self._trim_unfinished_trial(cvep_data)
 
         # Get EEG data
         eeg = rec["eeg"]
@@ -252,7 +265,7 @@ class MartinezCagigal2023CBase(BaseDataset):
         sampling_freq = eeg["fs"]
 
         # Create the info
-        ch_names = self.__get_camel_case_labels(eeg["channel_set"]["l_cha"])
+        ch_names = self._get_camel_case_labels(eeg["channel_set"]["l_cha"])
         ch_types = ["eeg"] * len(ch_names)
         meas_date = parser.parse(rec["date"])
         info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sampling_freq)
@@ -336,54 +349,7 @@ class MartinezCagigal2023CBase(BaseDataset):
         return raw_data
 
 
-class MartinezCagigal2023C1(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c1: 0 c/º, 1x1 squares)."""
-
-    condition = "c1"
-
-
-class MartinezCagigal2023C2(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c2: 0.15 c/º, 2x2 squares)."""
-
-    condition = "c2"
-
-
-class MartinezCagigal2023C3(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c3: 0.3 c/º, 4x4 squares)."""
-
-    condition = "c3"
-
-
-class MartinezCagigal2023C4(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c4: 0.6 c/º, 8x8 squares)."""
-
-    condition = "c4"
-
-
-class MartinezCagigal2023C5(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c5: 1.2 c/º, 16x16 squares)."""
-
-    condition = "c5"
-
-
-class MartinezCagigal2023C6(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c6: 2.4 c/º, 32x32 squares)."""
-
-    condition = "c6"
-
-
-class MartinezCagigal2023C7(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c7: 4.79 c/º, 64x64 squares)."""
-
-    condition = "c7"
-
-
-class MartinezCagigal2023C8(MartinezCagigal2023CBase):
-    """Checkerboard c-VEP dataset (condition c8: 9.58 c/º, 128x128 squares)."""
-
-    condition = "c8"
-
-
 if __name__ == "__main__":
-    dataset = MartinezCagigal2023C1()
+    dataset = MartinezCagigal2023Checker()
     sessions = dataset.get_data(subjects=[1])
+    print(sessions[1].keys())
