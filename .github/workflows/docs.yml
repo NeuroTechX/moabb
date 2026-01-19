@@ -66,6 +66,67 @@ jobs:
         run: |
           uv pip install -e .[docs,deeplearning,optuna,external,carbonemission]
 
+      - name: Pre-download datasets (cold cache only)
+        if: steps.cache-mne_data.outputs.cache-hit != 'true'
+        run: |
+          echo "Cache is cold, pre-downloading datasets with delays to avoid rate limiting..."
+          python << 'EOF'
+          import time
+          import requests
+          from pathlib import Path
+          from mne import get_config
+
+          def fetch_with_retry(url, max_retries=5, initial_delay=30):
+              """Fetch URL with exponential backoff for rate limiting."""
+              delay = initial_delay
+              for attempt in range(max_retries):
+                  try:
+                      response = requests.get(url)
+                      response.raise_for_status()
+                      return response
+                  except requests.exceptions.HTTPError as e:
+                      if e.response.status_code == 429:
+                          print(f"Rate limited, waiting {delay}s (attempt {attempt + 1}/{max_retries})...")
+                          time.sleep(delay)
+                          delay *= 2  # Exponential backoff
+                      else:
+                          raise
+              raise Exception(f"Failed after {max_retries} retries")
+
+          # Pre-fetch Zhou2016 Zenodo metadata to cache it
+          print("Pre-fetching Zhou2016 Zenodo metadata...")
+          mne_data = get_config("MNE_DATA") or str(Path.home() / "mne_data")
+          zhou_path = Path(mne_data) / "MNE-zhou2016-data"
+          zhou_path.mkdir(parents=True, exist_ok=True)
+
+          zenodo_url = "https://zenodo.org/api/records/16534752"
+          meta_file = zhou_path / "16534752.json"
+
+          if not meta_file.exists():
+              response = fetch_with_retry(zenodo_url)
+              meta_file.write_text(response.text)
+              print(f"Cached Zenodo metadata to {meta_file}")
+          else:
+              print("Zenodo metadata already cached")
+
+          print("Waiting 30s before downloading datasets...")
+          time.sleep(30)
+
+          # Now download datasets
+          from moabb.datasets import BNCI2014_001, Zhou2016
+
+          for name, cls in [('BNCI2014_001', BNCI2014_001), ('Zhou2016', Zhou2016)]:
+              print(f'Pre-downloading {name}...')
+              try:
+                  ds = cls()
+                  ds.download(subject_list=ds.subject_list[:2])
+                  print(f'{name} downloaded successfully')
+              except Exception as e:
+                  print(f'Warning: {name} download failed: {e}')
+              print('Waiting 30s before next dataset...')
+              time.sleep(30)
+          EOF
+
       - name: Build docs
         env:
           # Disable parallel gallery builds when cache is cold to avoid Zenodo rate limiting
