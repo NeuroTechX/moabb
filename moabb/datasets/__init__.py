@@ -76,6 +76,8 @@ from .kojima2024a import Kojima2024A
 from .kojima2024b import Kojima2024B
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .liu2024 import Liu2024
+from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
+from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import MunichMI  # noqa: F401
 from .mpi_mi import GrosseWentrup2009
 from .neiry import DemonsP300
