@@ -547,6 +547,9 @@ class BaseParadigm(BaseProcessing):
     events: List of str | None (default None)
         event to use for epoching. If None, default to all events defined in
         the dataset.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -558,6 +561,7 @@ class BaseParadigm(BaseProcessing):
         baseline=None,
         channels=None,
         resample=None,
+        scorer=None,
     ):
         super().__init__(
             filters=filters,
@@ -568,6 +572,7 @@ class BaseParadigm(BaseProcessing):
             tmax=tmax,
         )
         self.events = events
+        self.scorer = scorer
 
     @property
     @abc.abstractmethod
@@ -575,7 +580,6 @@ class BaseParadigm(BaseProcessing):
         """Property that defines scoring metric (e.g. ROC-AUC or accuracy
         or f-score), given as a sklearn-compatible string or a compatible
         sklearn scorer.
-
         """
         pass
 
