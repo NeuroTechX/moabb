@@ -5,17 +5,15 @@ from typing import Optional, Union
 from uuid import uuid4
 
 import numpy as np
-import pandas as pd
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
-from sklearn.metrics import get_scorer
+from sklearn.metrics import check_scoring
 from sklearn.model_selection import (
     GroupKFold,
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
 )
-from sklearn.model_selection._validation import _score
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -216,7 +214,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                         inner_cv=inner_cv,
                     )
 
-                    scorer = get_scorer(self.paradigm.scoring)
                     le = LabelEncoder()
                     y_cv = le.fit_transform(y[ix])
                     X_ = X[ix]
@@ -262,7 +259,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         _ensure_fitted(cvclf)
-                        score = scorer(cvclf, X_[test], y_[test])
+                        scoring = check_scoring(
+                            estimator=cvclf, scoring=self.paradigm.scoring
+                        )
+                        score = scoring(cvclf, X_[test], y_[test])
                         acc.append(score)
 
                     if _carbonfootprint:
@@ -279,14 +279,14 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    if isinstance(acc[0], pd.DataFrame):
-                        df = pd.concat(acc, ignore_index=True)
-                        mean = df.mean().to_frame().T
-                        res["score"] = mean.iloc[0, 0]
-                        res.update(mean.iloc[0].to_dict())
+                    if isinstance(acc[0], dict):
+                        mean_score = {
+                            key: np.mean([fold[key] for fold in acc]) for key in acc[0]
+                        }
+                        res["score"] = next(iter(mean_score.values()))
+                        res.update(mean_score)
                     else:
-                        acc = np.array(acc)
-                        res["score"] = acc.mean()
+                        res["score"] = np.array(acc).mean()
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
@@ -336,18 +336,12 @@ class WithinSessionEvaluation(BaseEvaluation):
             le = LabelEncoder()
             y_train = le.fit_transform(y_train)
             y_test = le.transform(y_test)
-        scorer = get_scorer(self.paradigm.scoring)
         t_start = perf_counter()
         try:
             model = clf.fit(X_train, y_train)
             _ensure_fitted(model)
-            score = _score(
-                estimator=model,
-                X_test=X_test,
-                y_test=y_test,
-                scorer=scorer,
-                score_params={},
-            )
+            scoring = check_scoring(estimator=model, scoring=self.paradigm.scoring)
+            score = scoring(model, X_test, y_test)
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
@@ -450,9 +444,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 score, res["time"] = self.score_explicit(
                                     deepcopy(clf), X_train, y_train, X_test, y_test
                                 )
-                                if isinstance(score, pd.DataFrame):
-                                    res["score"] = score.iloc[0, 0]
-                                    res.update(score.iloc[0].to_dict())
+                                if isinstance(score, dict):
+                                    res["score"] = next(iter(score.values()))
+                                    res.update(score)
                                 else:
                                     res["score"] = score
 
@@ -570,7 +564,6 @@ class CrossSessionEvaluation(BaseEvaluation):
             le = LabelEncoder()
             y = y if self.mne_labels else le.fit_transform(y)
             groups = metadata.session.values
-            scorer = get_scorer(self.paradigm.scoring)
 
             for name, clf in run_pipes.items():
                 # we want to store a results per session
@@ -623,7 +616,10 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                     _ensure_fitted(cvclf)
                     model_list.append(cvclf)
-                    score = scorer(cvclf, X[test], y[test])
+                    scoring = check_scoring(
+                        estimator=cvclf, scoring=self.paradigm.scoring
+                    )
+                    score = scoring(cvclf, X[test], y[test])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
                     res = {
@@ -636,9 +632,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    if isinstance(score, pd.DataFrame):
-                        res["score"] = score.iloc[0, 0]
-                        res.update(score.iloc[0].to_dict())
+                    if isinstance(score, dict):
+                        res["score"] = next(iter(score.values()))
+                        res.update(score)
                     else:
                         res["score"] = score
 
@@ -746,8 +742,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         sessions = metadata.session.values
         n_subjects = len(dataset.subject_list)
 
-        scorer = get_scorer(self.paradigm.scoring)
-
         # perform leave one subject out CV
         if self.n_splits is None:
             cv_class = LeaveOneGroupOut
@@ -818,7 +812,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # Evaluate on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    score = scorer(cvclf, X[test[ix]], y[test[ix]])
+                    scoring = check_scoring(
+                        estimator=cvclf, scoring=self.paradigm.scoring
+                    )
+                    score = scoring(cvclf, X[test[ix]], y[test[ix]])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
                     res = {
@@ -831,9 +828,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    if isinstance(score, pd.DataFrame):
-                        res["score"] = score.iloc[0, 0]
-                        res.update(score.iloc[0].to_dict())
+                    if isinstance(score, dict):
+                        res["score"] = next(iter(score.values()))
+                        res.update(score)
                     else:
                         res["score"] = score
 
