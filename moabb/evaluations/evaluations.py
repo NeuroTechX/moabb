@@ -447,6 +447,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 if isinstance(score, dict):
                                     res["score"] = next(iter(score.values()))
                                     res.update(score)
+                                    self.additional_columns.extend(score.keys())
                                 else:
                                     res["score"] = score
 
@@ -635,6 +636,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     if isinstance(score, dict):
                         res["score"] = next(iter(score.values()))
                         res.update(score)
+                        self.additional_columns.extend(score.keys())
                     else:
                         res["score"] = score
 
@@ -831,6 +833,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     if isinstance(score, dict):
                         res["score"] = next(iter(score.values()))
                         res.update(score)
+                        self.additional_columns.extend(score.keys())
                     else:
                         res["score"] = score
 
