@@ -205,15 +205,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                     inner_cv = StratifiedKFold(
                         3, shuffle=True, random_state=self.random_state
                     )
-                    scorer = get_scorer(self.paradigm.scoring)
-                    le = LabelEncoder()
-                    y_cv = le.fit_transform(y[ix])
-                    X_ = X[ix]
-                    y_ = y[ix] if self.mne_labels else y_cv
-
-                    grid_clf = clone(clf)
 
                     # Implement Grid Search
+                    grid_clf = clone(clf)
                     grid_clf = self._grid_search(
                         param_grid=param_grid,
                         name=name,
@@ -221,22 +215,13 @@ class WithinSessionEvaluation(BaseEvaluation):
                         inner_cv=inner_cv,
                     )
 
-                    if self.hdf5_path is not None and self.save_model:
-                        model_save_path = _create_save_path(
-                            self.hdf5_path,
-                            dataset.code,
-                            subject,
-                            session,
-                            name,
-                            grid=self.search,
-                            eval_type="WithinSession",
-                        )
-
                     scorer = get_scorer(self.paradigm.scoring)
-                    acc = list()
+                    le = LabelEncoder()
+                    y_cv = le.fit_transform(y[ix])
                     X_ = X[ix]
                     y_ = y[ix] if self.mne_labels else y_cv
                     meta_ = metadata[ix].reset_index(drop=True)
+                    acc = list()
 
                     if _carbonfootprint:
                         # Initialise CodeCarbon per cross-validation
@@ -260,6 +245,15 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         if self.hdf5_path is not None and self.save_model:
+                            model_save_path = _create_save_path(
+                                self.hdf5_path,
+                                dataset.code,
+                                subject,
+                                session,
+                                name,
+                                grid=self.search,
+                                eval_type="WithinSession",
+                            )
                             _save_model_cv(
                                 model=cvclf,
                                 save_path=model_save_path,
@@ -267,7 +261,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         _ensure_fitted(cvclf)
-
                         score = scorer(cvclf, X_[test], y_[test])
                         acc.append(score)
 
@@ -569,28 +562,15 @@ class CrossSessionEvaluation(BaseEvaluation):
             for name, clf in run_pipes.items():
                 # we want to store a results per session
                 self.cv = CrossSessionSplitter(random_state=self.random_state)
-
                 inner_cv = StratifiedKFold(
                     3, shuffle=True, random_state=self.random_state
                 )
 
-                grid_clf = clone(clf)
-
                 # Implement Grid Search
+                grid_clf = clone(clf)
                 grid_clf = self._grid_search(
                     param_grid=param_grid, name=name, grid_clf=grid_clf, inner_cv=inner_cv
                 )
-
-                if self.hdf5_path is not None and self.save_model:
-                    model_save_path = _create_save_path(
-                        hdf5_path=self.hdf5_path,
-                        code=dataset.code,
-                        subject=subject,
-                        session="",
-                        name=name,
-                        grid=self.search,
-                        eval_type="CrossSession",
-                    )
 
                 if _carbonfootprint:
                     # Initialise CodeCarbon per cross-validation
@@ -613,6 +593,15 @@ class CrossSessionEvaluation(BaseEvaluation):
                         emissions = emissions_data.emissions if emissions_data else np.nan
 
                     if self.hdf5_path is not None and self.save_model:
+                        model_save_path = _create_save_path(
+                            hdf5_path=self.hdf5_path,
+                            code=dataset.code,
+                            subject=subject,
+                            session="",
+                            name=name,
+                            grid=self.search,
+                            eval_type="CrossSession",
+                        )
                         _save_model_cv(
                             model=cvclf,
                             save_path=model_save_path,
@@ -620,7 +609,6 @@ class CrossSessionEvaluation(BaseEvaluation):
                         )
 
                     _ensure_fitted(cvclf)
-
                     model_list.append(cvclf)
                     score = scorer(cvclf, X[test], y[test])
 
@@ -779,24 +767,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 clf = self._grid_search(
                     param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
-
-                if self.hdf5_path is not None and self.save_model:
-                    # Save the best model from grid search
-                    model_save_path = _create_save_path(
-                        hdf5_path=self.hdf5_path,
-                        code=dataset.code,
-                        subject=subject,
-                        session="",
-                        name=name,
-                        grid=self.search,
-                        eval_type="CrossSubject",
-                    )
-                    _save_model_cv(
-                        model=clf,
-                        save_path=model_save_path,
-                        cv_index=str(cv_ind),
-                    )
-
                 cvclf = deepcopy(clf)
 
                 # Fit classifier with tracking
