@@ -23,6 +23,7 @@ Enhancements
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
+- Allow custom paradigms to have multiple scores for evaluations (:gh:`870` by `Ethan Davis`_)
 
 API changes
 ~~~~~~~~~~~
@@ -30,6 +31,7 @@ API changes
 - When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
 - Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
+- Use the :class:`moabb.evaluations.base.BaseEvaluation` parameter `additional_columns` to define additional columns for scores in the evaluations results (:gh:`870` by `Ethan Davis`_)
 
 
 Requirements
@@ -41,6 +43,8 @@ Bugs
 - Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
 - Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
+- Merged save model logic into one conditional in evaluations (:gh:`870` by `Ethan Davis`_)
+- Prevent Python mutable default argument when defining CodeCarbon configurations (:gh:`870` by `Ethan Davis`_)
 
 Code health
 ~~~~~~~~~~~
