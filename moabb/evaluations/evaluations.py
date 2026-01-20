@@ -5,6 +5,7 @@ from typing import Optional, Union
 from uuid import uuid4
 
 import numpy as np
+import pandas as pd
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -266,8 +267,6 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         tracker.stop()
-                    acc = np.array(acc)
-                    score = acc.mean()
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -275,11 +274,20 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "dataset": dataset,
                         "subject": subject,
                         "session": session,
-                        "score": score,
                         "n_samples": len(y_cv),  # not training sample
                         "n_channels": nchan,
                         "pipeline": name,
                     }
+
+                    if isinstance(acc[0], pd.DataFrame):
+                        df = pd.concat(acc, ignore_index=True)
+                        mean = df.mean().to_frame().T
+                        res["score"] = mean.iloc[0, 0]
+                        res.update(mean.iloc[0].to_dict())
+                    else:
+                        acc = np.array(acc)
+                        res["score"] = acc.mean()
+
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
                         res["codecarbon_task_name"] = task_name
@@ -439,9 +447,14 @@ class WithinSessionEvaluation(BaseEvaluation):
                                     task_name = str(uuid4())
                                     tracker.start_task(task_name)
 
-                                res["score"], res["time"] = self.score_explicit(
+                                score, res["time"] = self.score_explicit(
                                     deepcopy(clf), X_train, y_train, X_test, y_test
                                 )
+                                if isinstance(score, pd.DataFrame):
+                                    res["score"] = score.iloc[0, 0]
+                                    res.update(score.iloc[0].to_dict())
+                                else:
+                                    res["score"] = score
 
                                 if _carbonfootprint:
                                     emissions_data = tracker.stop_task()
@@ -611,18 +624,24 @@ class CrossSessionEvaluation(BaseEvaluation):
                     _ensure_fitted(cvclf)
                     model_list.append(cvclf)
                     score = scorer(cvclf, X[test], y[test])
-
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+
                     res = {
                         "time": duration,
                         "dataset": dataset,
                         "subject": subject,
                         "session": groups[test][0],
-                        "score": score,
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
                     }
+
+                    if isinstance(score, pd.DataFrame):
+                        res["score"] = score.iloc[0, 0]
+                        res.update(score.iloc[0].to_dict())
+                    else:
+                        res["score"] = score
+
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
                         res["codecarbon_task_name"] = task_name
@@ -796,23 +815,27 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                 _ensure_fitted(cvclf)
 
-                # we eval on each session
+                # Evaluate on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-
                     score = scorer(cvclf, X[test[ix]], y[test[ix]])
-
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+
                     res = {
                         "time": duration,
                         "dataset": dataset,
                         "subject": subject,
                         "session": session,
-                        "score": score,
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
                     }
+
+                    if isinstance(score, pd.DataFrame):
+                        res["score"] = score.iloc[0, 0]
+                        res.update(score.iloc[0].to_dict())
+                    else:
+                        res["score"] = score
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
