@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple
 import mne
 import numpy as np
 import pandas as pd
+from sklearn.metrics import check_scoring
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
@@ -572,6 +573,13 @@ class BaseParadigm(BaseProcessing):
             tmax=tmax,
         )
         self.events = events
+
+        if scorer is not None:
+            try:
+                check_scoring(None, scoring=scorer)
+            except (ValueError, TypeError) as e:
+                raise ValueError(f"Invalid scorer: {e}") from e
+
         self.scorer = scorer
 
     @property
