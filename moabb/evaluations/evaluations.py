@@ -532,7 +532,10 @@ class CrossSessionEvaluation(BaseEvaluation):
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
     ):
         if not self.is_valid(dataset):
-            raise AssertionError("Dataset is not appropriate for evaluation")
+            reason = self._get_incompatibility_reason(dataset)
+            raise AssertionError(
+                f"Dataset '{dataset.code}' is not appropriate for CrossSessionEvaluation: {reason}"
+            )
             # Progressbar at subject level
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession"):
             # check if we already have result for this subject/pipeline
@@ -646,6 +649,16 @@ class CrossSessionEvaluation(BaseEvaluation):
 
     def is_valid(self, dataset):
         return dataset.n_sessions > 1
+
+    def _get_incompatibility_reason(self, dataset):
+        """Get specific reason for dataset incompatibility."""
+        n_sessions = dataset.n_sessions
+        if n_sessions <= 1:
+            return (
+                f"dataset has only {n_sessions} session(s), "
+                "but CrossSessionEvaluation requires at least 2 sessions"
+            )
+        return "requirements not met"
 
 
 class CrossSubjectEvaluation(BaseEvaluation):
@@ -855,3 +868,14 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     def is_valid(self, dataset):
         return len(dataset.subject_list) > 1
+
+    def _get_incompatibility_reason(self, dataset):
+        """Get specific reason for dataset incompatibility."""
+        n_subjects = len(dataset.subject_list)
+        if n_subjects <= 1:
+            return (
+                f"dataset has only {n_subjects} subject(s), "
+                "but CrossSubjectEvaluation requires at least 2 subjects"
+            )
+        return "requirements not met"
+

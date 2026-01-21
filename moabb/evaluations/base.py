@@ -168,8 +168,11 @@ class BaseEvaluation(ABC):
                 )
                 rm.append(dataset)
             elif not valid_for_eval:
+                # Get specific reason for incompatibility
+                eval_type = self.__class__.__name__
+                reason = self._get_incompatibility_reason(dataset)
                 log.warning(
-                    f"{dataset} not compatible with evaluation. "
+                    f"{dataset} not compatible with {eval_type}: {reason}. "
                     "Removing this dataset from the list."
                 )
                 rm.append(dataset)
@@ -323,6 +326,24 @@ class BaseEvaluation(ABC):
         dataset : dataset instance
             The dataset to verify.
         """
+
+    def _get_incompatibility_reason(self, dataset):
+        """Get a human-readable reason why dataset is incompatible.
+
+        This method should be overridden by subclasses to provide
+        specific incompatibility reasons.
+
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset to check.
+
+        Returns
+        -------
+        str
+            A human-readable reason for incompatibility.
+        """
+        return "requirements not met"
 
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
         extra_params = {}
