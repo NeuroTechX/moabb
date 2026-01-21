@@ -36,7 +36,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     random_state: int, RandomState instance or None, default=None
         Controls the randomness of splits. Only used when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
-    cv_class: cros-validation class, default=StratifiedKFold
+    cv_class: cross-validation class, default=StratifiedKFold
         Inner cross-validation strategy for splitting the sessions.
     cv_kwargs: dict
         Additional arguments to pass to the inner cross-validation strategy.
@@ -136,7 +136,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
         Controls the randomness of splits. Only used when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
     cv_class: cross-validation class, default=StratifiedKFold
-        Inner cross-validation strategy for splitting the data within each subject.
+        Inner cross-validation strategy for splitting within each subject.
     cv_kwargs: dict
         Additional arguments to pass to the inner cross-validation strategy.
 
@@ -174,6 +174,23 @@ class WithinSubjectSplitter(BaseCrossValidator):
                 self._cv_kwargs[p] = v
 
     def get_n_splits(self, metadata):
+        """
+        Return the number of splits for the cross-validation.
+
+        The number of splits is the number of subjects times the number of folds.
+
+        We try to keep the same behaviour as the sklearn cross-validation classes.
+
+        Parameters
+        ----------
+        metadata: pd.DataFrame
+            The metadata containing the subject and session information.
+
+        Returns
+        -------
+        n_splits: int
+            The number of splits for the cross-validation
+        """
         num_subjects = metadata["subject"].nunique()
         return self.n_folds * num_subjects
 
