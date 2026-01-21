@@ -534,7 +534,7 @@ class CrossSessionEvaluation(BaseEvaluation):
         if not self.is_valid(dataset):
             reason = self._get_incompatibility_reason(dataset)
             raise AssertionError(
-                f"Dataset '{dataset.code}' is not appropriate for CrossSessionEvaluation: {reason}"
+                f"Dataset '{dataset.code}' is not appropriate for {self.__class__.__name__}: {reason}"
             )
             # Progressbar at subject level
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession"):
@@ -656,7 +656,7 @@ class CrossSessionEvaluation(BaseEvaluation):
         if n_sessions <= 1:
             return (
                 f"dataset has only {n_sessions} session(s), "
-                "but CrossSessionEvaluation requires at least 2 sessions"
+                f"but {self.__class__.__name__} requires at least 2 sessions"
             )
         return "requirements not met"
 
@@ -875,7 +875,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if n_subjects <= 1:
             return (
                 f"dataset has only {n_subjects} subject(s), "
-                "but CrossSubjectEvaluation requires at least 2 subjects"
+                f"but {self.__class__.__name__} requires at least 2 subjects"
             )
         return "requirements not met"
 
