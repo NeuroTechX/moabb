@@ -223,10 +223,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         # Initialise CodeCarbon per cross-validation
-                        if any(
-                            key in self.codecarbon_config
-                            for key in self.codecarbon_offline
-                        ):
+                        if self.codecarbon_offline:
                             tracker = OfflineEmissionsTracker(**self.codecarbon_config)
                         else:
                             tracker = EmissionsTracker(**self.codecarbon_config)
@@ -388,9 +385,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                 # Initialize tracker once per session instead of per iteration
                 if _carbonfootprint:
-                    if any(
-                        key in self.codecarbon_config for key in self.codecarbon_offline
-                    ):
+                    if self.codecarbon_offline:
                         tracker = OfflineEmissionsTracker(**self.codecarbon_config)
                     else:
                         tracker = EmissionsTracker(**self.codecarbon_config)
@@ -598,9 +593,7 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                 if _carbonfootprint:
                     # Initialise CodeCarbon per cross-validation
-                    if any(
-                        key in self.codecarbon_config for key in self.codecarbon_offline
-                    ):
+                    if self.codecarbon_offline:
                         tracker = OfflineEmissionsTracker(**self.codecarbon_config)
                     else:
                         tracker = EmissionsTracker(**self.codecarbon_config)
@@ -784,7 +777,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         if _carbonfootprint:
             # Initialise CodeCarbon per cross-validation
-            if any(key in self.codecarbon_config for key in self.codecarbon_offline):
+            if self.codecarbon_offline:
                 tracker = OfflineEmissionsTracker(**self.codecarbon_config)
             else:
                 tracker = EmissionsTracker(**self.codecarbon_config)
