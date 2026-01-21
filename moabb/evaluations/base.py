@@ -127,9 +127,13 @@ class BaseEvaluation(ABC):
         self.time_out = time_out
         self.verbose = verbose
 
-        if codecarbon_config is None:
-            codecarbon_config = dict(save_to_file=False, log_level="error")
+        self.additional_columns = additional_columns
+        if additional_columns is None:
+            self.additional_columns = []
+
         self.codecarbon_config = codecarbon_config
+        if codecarbon_config is None:
+            self.codecarbon_config = dict(save_to_file=False, log_level="error")
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -142,6 +146,9 @@ class BaseEvaluation(ABC):
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
+        if isinstance(self.paradigm.scoring, dict):
+            paradigm_keys = list(self.paradigm.scoring.keys())
+            self.additional_columns.extend(paradigm_keys)
 
         # check labels
         if self.mne_labels and not self.return_epochs:
@@ -192,7 +199,7 @@ class BaseEvaluation(ABC):
             overwrite=overwrite,
             suffix=suffix,
             hdf5_path=self.hdf5_path,
-            additional_columns=additional_columns,
+            additional_columns=self.additional_columns,
         )
 
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
