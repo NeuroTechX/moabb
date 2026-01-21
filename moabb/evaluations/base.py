@@ -147,8 +147,8 @@ class BaseEvaluation(ABC):
             raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
         if isinstance(self.paradigm.scoring, dict):
-            paradigm_keys = list(self.paradigm.scoring.keys())
-            self.additional_columns.extend(paradigm_keys)
+            scoring_keys = [f"score_{key}" for key in self.paradigm.scoring.keys()]
+            self.additional_columns.extend(scoring_keys)
 
         # check labels
         if self.mne_labels and not self.return_epochs:

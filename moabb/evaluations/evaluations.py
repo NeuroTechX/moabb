@@ -284,7 +284,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                             key: np.mean([fold[key] for fold in acc]) for key in acc[0]
                         }
                         res["score"] = next(iter(mean_score.values()))
-                        res.update(mean_score)
+                        res.update(
+                            {f"score_{key}": value for key, value in score.items()}
+                        )
                     else:
                         res["score"] = np.array(acc).mean()
 
@@ -446,7 +448,12 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 )
                                 if isinstance(score, dict):
                                     res["score"] = next(iter(score.values()))
-                                    res.update(score)
+                                    res.update(
+                                        {
+                                            f"score_{key}": value
+                                            for key, value in score.items()
+                                        }
+                                    )
                                 else:
                                     res["score"] = score
 
@@ -634,7 +641,9 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                     if isinstance(score, dict):
                         res["score"] = next(iter(score.values()))
-                        res.update(score)
+                        res.update(
+                            {f"score_{key}": value for key, value in score.items()}
+                        )
                     else:
                         res["score"] = score
 
@@ -830,7 +839,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     if isinstance(score, dict):
                         res["score"] = next(iter(score.values()))
-                        res.update(score)
+                        res.update(
+                            {f"score_{key}": value for key, value in score.items()}
+                        )
                     else:
                         res["score"] = score
 
