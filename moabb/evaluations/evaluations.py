@@ -881,4 +881,3 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 f"but {self.__class__.__name__} requires at least 2 subjects"
             )
         return "requirements not met"
-
