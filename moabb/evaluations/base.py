@@ -342,6 +342,7 @@ class BaseEvaluation(ABC):
         -------
         str
             A human-readable reason for incompatibility.
+
         """
         return "requirements not met"
 
