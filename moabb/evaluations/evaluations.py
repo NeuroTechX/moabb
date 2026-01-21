@@ -714,7 +714,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
     ):
         if not self.is_valid(dataset):
-            raise AssertionError("Dataset is not appropriate for evaluation")
+            reason = self._get_incompatibility_reason(dataset)
+            raise AssertionError(
+                f"Dataset '{dataset.code}' is not appropriate for {self.__class__.__name__}: {reason}"
+            )
         # this is a bit awkward, but we need to check if at least one pipe
         # have to be run before loading the data. If at least one pipeline
         # need to be run, we have to load all the data.
