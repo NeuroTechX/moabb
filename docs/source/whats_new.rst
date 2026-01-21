@@ -21,6 +21,7 @@ Enhancements
 ~~~~~~~~~~~~
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
+- Improved error messages for dataset compatibility checks in evaluations - now provides specific reasons when datasets are incompatible (e.g., "dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions") by `Bruno Aristimunha`_
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
 
