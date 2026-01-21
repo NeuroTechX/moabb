@@ -25,6 +25,7 @@ Enhancements
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
 - Allow custom paradigms to have multiple scores for evaluations (:gh:`870` by `Ethan Davis`_)
 - Ability to parameterize the scoring rule of paradigms (:gh:`870` by `Ethan Davis`_)
+- Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
