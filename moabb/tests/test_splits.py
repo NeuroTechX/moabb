@@ -22,6 +22,7 @@ from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     WithinSessionSplitter,
+    WithinSubjectSplitter,
 )
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
@@ -66,6 +67,26 @@ def eval_split_within_session(shuffle, random_state, data):
 
             for idx_train, idx_test in cv.split(metadata_, y_):
                 yield indices[idx_train], indices[idx_test]
+
+
+def eval_split_within_subject(shuffle, random_state, data):
+    _, y, metadata = data
+    rng = check_random_state(random_state) if shuffle else None
+
+    all_index = metadata.index.values
+    subjects = metadata["subject"].unique()
+    if shuffle:
+        rng.shuffle(subjects)
+
+    for subject in subjects:
+        subject_mask = metadata["subject"] == subject
+        subject_indices = all_index[subject_mask]
+        y_subject = y[subject_mask]
+
+        cv = StratifiedKFold(n_splits=5, shuffle=shuffle, random_state=rng)
+
+        for idx_train, idx_test in cv.split(subject_indices, y_subject):
+            yield subject_indices[idx_train], subject_indices[idx_test]
 
 
 def eval_split_cross_subject(shuffle, random_state, data):
@@ -126,6 +147,21 @@ def test_within_session_compatibility(shuffle, random_state, data):
         assert np.array_equal(idx_test, idx_test_splitter)
 
 
+@pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
+def test_within_subject_compatibility(shuffle, random_state, data):
+    _, y, metadata = data
+
+    split = WithinSubjectSplitter(n_folds=5, shuffle=shuffle, random_state=random_state)
+
+    for (idx_train, idx_test), (idx_train_splitter, idx_test_splitter) in zip(
+        eval_split_within_subject(shuffle=shuffle, random_state=random_state, data=data),
+        split.split(y, metadata),
+    ):
+        # Check if the output is the same as the input
+        assert np.array_equal(idx_train, idx_train_splitter)
+        assert np.array_equal(idx_test, idx_test_splitter)
+
+
 def test_is_shuffling(data):
     X, y, metadata = data
 
@@ -141,7 +177,13 @@ def test_is_shuffling(data):
 
 
 @pytest.mark.parametrize(
-    "splitter", [WithinSessionSplitter, CrossSessionSplitter, CrossSubjectSplitter]
+    "splitter",
+    [
+        WithinSessionSplitter,
+        WithinSubjectSplitter,
+        CrossSessionSplitter,
+        CrossSubjectSplitter,
+    ],
 )
 def test_custom_inner_cv(
     splitter,
@@ -381,6 +423,15 @@ def test_cross_subject_get_n_splits(data):
 
     n_splits = split.get_n_splits(metadata)
     assert n_splits == 5  # 5 subjects
+
+
+def test_within_subject_get_n_splits(data):
+    _, y, metadata = data
+
+    split = WithinSubjectSplitter()
+
+    n_splits = split.get_n_splits(metadata)
+    assert n_splits == 5 * 5  # 5 subjects, 5 folds each
 
 
 @pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
