@@ -126,9 +126,7 @@ class Zhou2016(BaseBIDSDataset):
 
         if not Path(file_path).exists():
             # If not found, fetch from Zenodo
-            response = requests.get(
-                ZENODO_URL, headers={"User-Agent": get_user_agent()}
-            )
+            response = requests.get(ZENODO_URL, headers={"User-Agent": get_user_agent()})
             response.raise_for_status()
             # Save the response to a file
             with _open_lock(file_path, "w") as f:
