@@ -41,10 +41,11 @@ Bugs
 - Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
 - Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
+- Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
-- None yet.
+- Persist docs CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------

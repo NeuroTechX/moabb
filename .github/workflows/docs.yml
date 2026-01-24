@@ -32,18 +32,18 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
-      - name: Create/Restore MNE Data Cache
+      - name: Restore MNE Data Cache
         id: cache-mne_data
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/mne_data
-          key: doc-${{ runner.os }}-mne-data-v2
+          key: doc-${{ runner.os }}-mne-data-v2-${{ github.run_id }}
           restore-keys: |
-            doc-${{ runner.os }}-mne-data-
+            doc-${{ runner.os }}-mne-data-v2-
 
       - name: Clean up corrupted cache
         run: |
-          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
+          echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
           mkdir -p ~/mne_data
           # Remove any incomplete extractions (e.g., BIDS.zip.unzip alongside final folder)
           if [ -d ~/mne_data/BIDS.zip.unzip ]; then
@@ -67,7 +67,7 @@ jobs:
           uv pip install -e .[docs,deeplearning,optuna,external,carbonemission]
 
       - name: Pre-download datasets (cold cache only)
-        if: steps.cache-mne_data.outputs.cache-hit != 'true'
+        if: steps.cache-mne_data.outputs.cache-matched-key == ''
         run: |
           echo "Cache is cold, pre-downloading datasets with delays to avoid rate limiting..."
           python << 'EOF'
@@ -130,10 +130,10 @@ jobs:
       - name: Build docs
         env:
           # Disable parallel builds when cache is cold to avoid Zenodo rate limiting
-          SPHINX_GALLERY_PARALLEL: ${{ steps.cache-mne_data.outputs.cache-hit == 'true' }}
-          SPHINX_JOBS: ${{ steps.cache-mne_data.outputs.cache-hit == 'true' && 'auto' || '1' }}
+          SPHINX_GALLERY_PARALLEL: ${{ steps.cache-mne_data.outputs.cache-matched-key != '' }}
+          SPHINX_JOBS: ${{ steps.cache-mne_data.outputs.cache-matched-key != '' && 'auto' || '1' }}
         run: |
-          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
+          echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
           echo "Parallel gallery builds: $SPHINX_GALLERY_PARALLEL"
           echo "Sphinx jobs: $SPHINX_JOBS"
           cd docs && make html
@@ -151,6 +151,13 @@ jobs:
             out_path="$out_dir/$base.ipynb"
             python .github/scripts/convert_to_notebook.py --input "$f" --output "$out_path"
           done
+
+      - name: Save MNE Data Cache
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/mne_data
+          key: doc-${{ runner.os }}-mne-data-v2-${{ github.run_id }}
 
       # Create an artifact of the html output.
       - uses: actions/upload-artifact@v4
