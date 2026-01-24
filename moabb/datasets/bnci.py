@@ -16,7 +16,7 @@ from moabb.datasets.base import BaseDataset
 from moabb.utils import depreciated_alias
 
 
-BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
+BNCI_URL = "https://bnci-horizon-2020.eu/database/data-sets/"
 BBCI_URL = "http://doc.ml.tu-berlin.de/bbci/"
 
 
