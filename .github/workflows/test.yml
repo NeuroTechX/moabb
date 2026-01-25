@@ -36,18 +36,71 @@ jobs:
           enable-cache: true
 
       # Cache MNE Data
-      - name: Create/Restore MNE Data Cache
+      - name: Restore MNE Data Cache
         id: cache-mne_data
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne-data-v1
+          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-mne-data-v1
+            ${{ runner.os }}-mne-data-v2-
 
       - name: Install moabb
         run: |
           uv pip install -e .[tests,deeplearning,optuna]
+
+      - name: Pre-download BNCI datasets (cold cache only)
+        if: steps.cache-mne_data.outputs.cache-matched-key == ''
+        run: |
+          echo "Cache is cold, pre-downloading BNCI datasets..."
+          python << 'EOF'
+          import sys
+          import time
+
+          datasets_to_download = [
+              ("moabb.datasets", "BNCI2014_001", None),
+              ("moabb.datasets", "BNCI2015_001", None),
+          ]
+
+          failed = []
+          for module_path, class_name, n_subjects in datasets_to_download:
+              print(f"\n{'='*60}")
+              print(f"Pre-downloading {class_name}...")
+              print(f"{'='*60}")
+              success = False
+              for attempt in range(5):
+                  try:
+                      import importlib
+                      module = importlib.import_module(module_path)
+                      cls = getattr(module, class_name)
+                      ds = cls()
+                      subjects = ds.subject_list if n_subjects is None else ds.subject_list[:n_subjects]
+                      ds.download(subject_list=subjects)
+                      print(f"SUCCESS: {class_name} downloaded")
+                      success = True
+                      break
+                  except Exception as e:
+                      print(f"Attempt {attempt + 1}/5 failed: {e}")
+                      if attempt < 4:
+                          wait = 90 * (attempt + 1)
+                          print(f"Waiting {wait}s before retry...")
+                          time.sleep(wait)
+              if not success:
+                  failed.append(class_name)
+                  print(f"FAILED: {class_name} after 5 attempts")
+              print("Waiting 60s before next dataset...")
+              time.sleep(60)
+
+          if failed:
+              print(f"\n{'='*60}")
+              print(f"ERROR: Failed to download: {', '.join(failed)}")
+              print(f"{'='*60}")
+              sys.exit(1)
+          else:
+              print(f"\n{'='*60}")
+              print("All BNCI datasets downloaded successfully!")
+              print(f"{'='*60}")
+          EOF
 
       - name: Run tests
         run: |
@@ -66,3 +119,10 @@ jobs:
           directory: /home/runner/work/moabb/moabb
           files: ./.coverage,coverage.xml
           env_vars: OS,PYTHON
+
+      - name: Save MNE Data Cache
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}

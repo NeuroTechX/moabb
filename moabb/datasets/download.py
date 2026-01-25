@@ -8,6 +8,7 @@ import logging
 import os
 import os.path as osp
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pandas as pd
 import requests
@@ -20,6 +21,42 @@ from requests.exceptions import HTTPError
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_user_agent():
+    """Return a user agent string for outbound requests."""
+    try:
+        from importlib import metadata
+
+        version = metadata.version("moabb")
+        return f"moabb/{version} (https://github.com/NeuroTechX/moabb)"
+    except Exception:
+        return "moabb (https://github.com/NeuroTechX/moabb)"
+
+
+def _set_user_agent(downloader):
+    headers = downloader.kwargs.setdefault("headers", {})
+    headers.setdefault("User-Agent", get_user_agent())
+
+
+def _sanitize_path(path: Path) -> Path:
+    table = {ord(c): "-" for c in ':*?"<>|'}
+    return Path(str(path).translate(table))
+
+
+def _normalize_destination(url: str, root: Path) -> Path:
+    parsed = urlparse(url)
+    if parsed.scheme in {"http", "https"} and parsed.netloc == "zenodo.org":
+        parts = [p for p in parsed.path.split("/") if p]
+        if len(parts) >= 4 and parts[0] in {"record", "records"} and parts[2] == "files":
+            record_id = parts[1]
+            fname = parts[-1]
+            return root / "zenodo" / record_id / fname
+        if len(parts) >= 5 and parts[0] == "api" and parts[1] == "records":
+            record_id = parts[2]
+            fname = parts[-1]
+            return root / "zenodo" / record_id / fname
+    return Path(_url_to_local_path(url, root))
 
 
 def get_dataset_path(sign, path):
@@ -140,14 +177,20 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     """
     path = Path(get_dataset_path(sign, path))
     key_dest = "MNE-{:s}-data".format(sign.lower())
-    destination = _url_to_local_path(url, path / key_dest)
-    destination = str(path) + destination.split(str(path))[1]
-    table = {ord(c): "-" for c in ':*?"<>|'}
-    destination = Path(str(path) + destination.split(str(path))[1].translate(table))
+    root = path / key_dest
+    destination = _sanitize_path(_normalize_destination(url, root))
+    legacy_destination = _sanitize_path(Path(_url_to_local_path(url, root)))
+    if legacy_destination.exists() and not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            legacy_destination.replace(destination)
+        except OSError:
+            destination = legacy_destination
 
     downloader = choose_downloader(url, progressbar=True)
     if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
         downloader.kwargs.setdefault("verify", False)
+    _set_user_agent(downloader)
 
     # Fetch the file
     if not destination.is_file() or force_update:
@@ -160,7 +203,7 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     dlpath = retrieve(
         url,
         known_hash,
-        fname=Path(url).name,
+        fname=destination.name,
         path=str(destination.parent),
         progressbar=True,
         downloader=downloader,
@@ -322,6 +365,9 @@ def download_if_missing(file_path, url, warn_missing=True, verbose=True):
             warn(f"{file_path} not found. Downloading from {url}")
 
         downloader = choose_downloader(url, progressbar=verbose)
+        if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
+            downloader.kwargs.setdefault("verify", False)
+        _set_user_agent(downloader)
 
         path = retrieve(
             url,

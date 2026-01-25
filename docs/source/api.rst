@@ -300,6 +300,7 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     :template: class.rst
 
     WithinSessionSplitter
+    WithinSubjectSplitter
     CrossSessionSplitter
     CrossSubjectSplitter
 
