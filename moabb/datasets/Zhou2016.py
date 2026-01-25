@@ -14,7 +14,7 @@ from mne.utils import _open_lock
 
 from .base import BaseBIDSDataset
 from .bids_interface import get_bids_root
-from .download import download_if_missing
+from .download import download_if_missing, get_user_agent
 
 
 log = logging.getLogger(__name__)
@@ -126,7 +126,7 @@ class Zhou2016(BaseBIDSDataset):
 
         if not Path(file_path).exists():
             # If not found, fetch from Zenodo
-            response = requests.get(ZENODO_URL)
+            response = requests.get(ZENODO_URL, headers={"User-Agent": get_user_agent()})
             response.raise_for_status()
             # Save the response to a file
             with _open_lock(file_path, "w") as f:
