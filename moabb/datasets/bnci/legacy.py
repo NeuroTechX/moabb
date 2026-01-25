@@ -16,6 +16,8 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.utils import depreciated_alias
 
+from .utils import convert_units, validate_subject
+
 
 BNCI_URL = "https://lampx.tugraz.at/~bci/database/"
 BBCI_URL = "http://doc.ml.tu-berlin.de/bbci/"
@@ -144,9 +146,7 @@ def _load_data_iva_2003(
     verbose=None,
 ):
     """Loads data for the BNCI2003-IVa dataset."""
-    # Raises ValueError is subject is not between 1 and 5
-    if (subject < 1) or (subject > 5):
-        raise ValueError(f"Subject must be between 1 and 5. Got {subject}")
+    validate_subject(subject, 5, "BNCI2003-004")
 
     subject_names = ["aa", "al", "av", "aw", "ay"]
 
@@ -196,8 +196,7 @@ def _load_data_001_2014(
     verbose=None,
 ):
     """Load data for 001-2014 dataset."""
-    if (subject < 1) or (subject > 9):
-        raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
+    validate_subject(subject, 9, "BNCI2014-001")
 
     # fmt: off
     ch_names = [
@@ -243,8 +242,7 @@ def _load_data_002_2014(
     verbose=None,
 ):
     """Load data for 002-2014 dataset."""
-    if (subject < 1) or (subject > 14):
-        raise ValueError("Subject must be between 1 and 14. Got %d." % subject)
+    validate_subject(subject, 14, "BNCI2014-002")
 
     runs = []
     filenames = []
@@ -276,8 +274,7 @@ def _load_data_004_2014(
     verbose=None,
 ):
     """Load data for 004-2014 dataset."""
-    if (subject < 1) or (subject > 9):
-        raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
+    validate_subject(subject, 9, "BNCI2014-004")
 
     ch_names = ["C3", "Cz", "C4", "EOG1", "EOG2", "EOG3"]
     ch_types = ["eeg"] * 3 + ["eog"] * 3
@@ -312,8 +309,7 @@ def _load_data_008_2014(
     verbose=None,
 ):
     """Load data for 008-2014 dataset."""
-    if (subject < 1) or (subject > 8):
-        raise ValueError("Subject must be between 1 and 8. Got %d." % subject)
+    validate_subject(subject, 8, "BNCI2014-008")
 
     url = "{u}008-2014/A{s:02d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
@@ -341,8 +337,7 @@ def _load_data_009_2014(
     verbose=None,
 ):
     """Load data for 009-2014 dataset."""
-    if (subject < 1) or (subject > 10):
-        raise ValueError("Subject must be between 1 and 10. Got %d." % subject)
+    validate_subject(subject, 10, "BNCI2014-009")
 
     # FIXME there is two type of speller, grid speller and geo-speller.
     # we load only grid speller data
@@ -381,8 +376,7 @@ def _load_data_001_2015(
     verbose=None,
 ):
     """Load data for 001-2015 dataset."""
-    if (subject < 1) or (subject > 12):
-        raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
+    validate_subject(subject, 12, "BNCI2015-001")
 
     if subject in [8, 9, 10, 11]:
         ses = [(0, "A"), (1, "B"), (2, "C")]  # 3 sessions for those subjects
@@ -423,8 +417,7 @@ def _load_data_003_2015(
     verbose=None,
 ):
     """Load data for 003-2015 dataset."""
-    if (subject < 1) or (subject > 10):
-        raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
+    validate_subject(subject, 10, "BNCI2015-003")
 
     url = "{u}003-2015/s{s:d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
@@ -462,7 +455,8 @@ def _load_data_003_2015(
         targets = np.zeros_like(flashs)
         targets[0, ix_flash] = run[10, ix_flash] + 1
 
-        eeg_data = np.r_[run[1:-2] * 1e-6, targets, flashs]
+        eeg_channels = convert_units(run[1:-2], from_unit="uV", to_unit="V")
+        eeg_data = np.r_[eeg_channels, targets, flashs]
         raw = RawArray(data=eeg_data, info=info, verbose=verbose)
         # Enrich raw object with additional metadata
         raw.info["line_freq"] = 50.0
@@ -484,8 +478,7 @@ def _load_data_004_2015(
     verbose=None,
 ):
     """Load data for 004-2015 dataset."""
-    if (subject < 1) or (subject > 9):
-        raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
+    validate_subject(subject, 9, "BNCI2015-004")
 
     subjects = ["A", "C", "D", "E", "F", "G", "H", "J", "L"]
 
@@ -524,8 +517,7 @@ def _load_data_007_2015(
     This dataset contains motion-onset visual evoked potentials (mVEPs)
     for gaze-independent BCI communication. Uses BBCI data format.
     """
-    if (subject < 1) or (subject > 16):
-        raise ValueError("Subject must be between 1 and 16. Got %d." % subject)
+    validate_subject(subject, 16, "BNCI2015-007")
 
     # Subject codes for the 16 subjects
     # fmt: off
@@ -564,8 +556,7 @@ def _load_data_008_2015(
     This dataset contains P300 evoked potentials recorded during a gaze-independent
     two-stage visual speller paradigm called the "Center Speller".
     """
-    if (subject < 1) or (subject > 13):
-        raise ValueError("Subject must be between 1 and 13. Got %d." % subject)
+    validate_subject(subject, 13, "BNCI2015-008")
 
     # fmt: off
     subjects = [
@@ -600,8 +591,8 @@ def _load_data_006_2015(
     only_filenames=False,
     verbose=None,
 ):
-    if (subject < 1) or (subject > 11):
-        raise ValueError("Subject must be between 1 and 11. Got %d." % subject)
+    """Load data for 006-2015 dataset (Music BCI)."""
+    validate_subject(subject, 11, "BNCI2015-006")
     subjects = [
         "vp1",
         "vp2",
@@ -656,8 +647,7 @@ def _load_data_009_2015(
     verbose=None,
 ):
     """Load data for 009-2015 dataset."""
-    if (subject < 1) or (subject > 21):
-        raise ValueError("Subject must be between 1 and 21. Got %d." % subject)
+    validate_subject(subject, 21, "BNCI2015-009")
 
     # fmt: off
     subjects = [
@@ -690,8 +680,7 @@ def _load_data_010_2015(
     verbose=None,
 ):
     """Load data for 010-2015 dataset."""
-    if (subject < 1) or (subject > 12):
-        raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
+    validate_subject(subject, 12, "BNCI2015-010")
 
     # fmt: off
     subjects = [
@@ -725,8 +714,7 @@ def _load_data_012_2015(
     verbose=None,
 ):
     """Load data for 012-2015 dataset."""
-    if (subject < 1) or (subject > 12):
-        raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
+    validate_subject(subject, 12, "BNCI2015-012")
 
     subjects = ["nv", "nw", "nx", "ny", "nz", "mg", "oa", "ob", "oc", "od", "ja", "oe"]
 
@@ -755,8 +743,7 @@ def _load_data_013_2015(
     verbose=None,
 ):
     """Load data for 013-2015 dataset."""
-    if (subject < 1) or (subject > 6):
-        raise ValueError("Subject must be between 1 and 6. Got %d." % subject)
+    validate_subject(subject, 6, "BNCI2015-013")
 
     data_paths = []
     for r in ["s1", "s2"]:
@@ -982,7 +969,7 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     event_id = {}
     n_chan = run.X.shape[1]
     montage = make_standard_montage("standard_1005")
-    eeg_data = 1e-6 * run.X
+    eeg_data = convert_units(run.X, from_unit="uV", to_unit="V")
     sfreq = run.fs
 
     if not ch_names:
@@ -1019,7 +1006,7 @@ def _convert_run_p300_sl(run, verbose=None):
     """Convert one p300 run from santa lucia file format."""
 
     montage = make_standard_montage("standard_1005")
-    eeg_data = 1e-6 * run.X
+    eeg_data = convert_units(run.X, from_unit="uV", to_unit="V")
     sfreq = 256
     ch_names = list(run.channels) + ["Target stim", "Flash stim"]
     ch_types = ["eeg"] * len(run.channels) + ["stim"] * 2
@@ -1060,7 +1047,7 @@ def _convert_run_bbci(run, ch_types, verbose=None):
     """Convert one run to raw."""
 
     # parse eeg data
-    eeg_data = 1e-6 * run.X
+    eeg_data = convert_units(run.X, from_unit="uV", to_unit="V")
     sfreq = run.fs
 
     ch_names = list(run.channels)
@@ -1192,7 +1179,7 @@ def _convert_run_epfl(run, verbose=None):
     # parse eeg data
     event_id = {}
 
-    eeg_data = 1e-6 * run.eeg
+    eeg_data = convert_units(run.eeg, from_unit="uV", to_unit="V")
     sfreq = run.header.SampleRate
 
     ch_names = list(run.header.Label[:-1])
@@ -3137,6 +3124,7 @@ class BNCI2019_001(BaseDataset):
             raw = read_raw_gdf(path, eog=eog_channels, preload=True, verbose="ERROR")
             raw.set_montage(montage, on_missing="ignore")
             raw._data[np.isnan(raw._data)] = 0
+            # Convert EEG channels (excluding last 3 EOG channels) from uV to V
             raw._data[:-3] *= 1e-6
             stim = raw.annotations.description.astype(np.dtype("<21U"))
             stim[stim == "776"] = "supination"
