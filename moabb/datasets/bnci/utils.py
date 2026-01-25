@@ -114,10 +114,12 @@ def ensure_data_orientation(data, n_channels):
 def convert_units(data, from_unit="uV", to_unit="V", channel_mask=None):
     """Convert data units with optional channel selection.
 
+    Always returns a copy to avoid modifying the input data.
+
     Parameters
     ----------
     data : ndarray
-        Data array to convert. Modified in place if possible.
+        Data array to convert (not modified).
     from_unit : str
         Source unit. Currently supports "uV" (microvolts).
     to_unit : str
@@ -128,22 +130,23 @@ def convert_units(data, from_unit="uV", to_unit="V", channel_mask=None):
 
     Returns
     -------
-    data : ndarray
-        Data with converted units.
+    ndarray
+        New array with converted units (float64).
     """
     if from_unit == "uV" and to_unit == "V":
         scale = 1e-6
     elif from_unit == to_unit:
-        return data
+        return data.copy()
     else:
         raise ValueError(f"Unsupported conversion: {from_unit} to {to_unit}")
 
-    data = data.astype(np.float64, copy=False)
+    # Always create a copy to avoid modifying input
+    result = data.astype(np.float64, copy=True)
     if channel_mask is None:
-        data *= scale
+        result *= scale
     else:
-        data[channel_mask] *= scale
-    return data
+        result[channel_mask] *= scale
+    return result
 
 
 def standardize_channel_names(ch_names, aliases=None):
