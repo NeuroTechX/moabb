@@ -1,7 +1,9 @@
 # Minimal Makefile for Sphinx documentation
 #
-# Variables (can be overridden from the command line)
-SPHINXOPTS    = -j auto
+# Variables (can be overridden from the command line or environment)
+# Use SPHINX_JOBS env var to control parallelism (default: auto)
+SPHINX_JOBS   ?= auto
+SPHINXOPTS    ?= -j $(SPHINX_JOBS)
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = moabb
 SOURCEDIR     = source

@@ -46,10 +46,12 @@ Bugs
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 - Merged save model logic into one conditional in evaluations (:gh:`870` by `Ethan Davis`_)
 - Prevent Python mutable default argument when defining CodeCarbon configurations (:gh:`870` by `Ethan Davis`_)
+- Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
+- Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
-- None yet.
+- Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------

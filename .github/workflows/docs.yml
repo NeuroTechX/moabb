@@ -32,18 +32,18 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
-      - name: Create/Restore MNE Data Cache
+      - name: Restore MNE Data Cache
         id: cache-mne_data
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/mne_data
-          key: doc-${{ runner.os }}-mne-data-${{ github.run_id }}
+          key: doc-${{ runner.os }}-mne-data-v2-${{ github.run_id }}
           restore-keys: |
-            doc-${{ runner.os }}-mne-data-
+            doc-${{ runner.os }}-mne-data-v2-
 
       - name: Clean up corrupted cache
         run: |
-          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
+          echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
           mkdir -p ~/mne_data
           # Remove any incomplete extractions (e.g., BIDS.zip.unzip alongside final folder)
           if [ -d ~/mne_data/BIDS.zip.unzip ]; then
@@ -66,8 +66,76 @@ jobs:
         run: |
           uv pip install -e .[docs,deeplearning,optuna,external,carbonemission]
 
-      - name: Build docs
+      - name: Pre-download datasets (cold cache only)
+        if: steps.cache-mne_data.outputs.cache-matched-key == ''
         run: |
+          echo "Cache is cold, pre-downloading datasets with delays to avoid rate limiting..."
+          python << 'EOF'
+          import sys
+          import time
+
+          # All datasets used in examples that download from Zenodo
+          datasets_to_download = [
+              # (module_path, class_name, num_subjects)
+              ('moabb.datasets', 'BNCI2014_001', 3),
+              ('moabb.datasets', 'BNCI2014_009', 2),
+              ('moabb.datasets', 'Zhou2016', 4),  # All 4 subjects
+              ('moabb.datasets', 'AlexMI', 1),
+              ('moabb.datasets', 'Kalunga2016', 2),
+              ('moabb.datasets', 'Cattan2019_VR', 1),
+              ('moabb.datasets', 'Hinss2021', 1),
+          ]
+
+          failed = []
+          for module_path, class_name, n_subjects in datasets_to_download:
+              print(f'\n{"="*60}')
+              print(f'Pre-downloading {class_name} ({n_subjects} subjects)...')
+              print(f'{"="*60}')
+              success = False
+              for attempt in range(5):  # More retries
+                  try:
+                      import importlib
+                      module = importlib.import_module(module_path)
+                      cls = getattr(module, class_name)
+                      ds = cls()
+                      subjects = ds.subject_list[:n_subjects]
+                      ds.download(subject_list=subjects)
+                      print(f'SUCCESS: {class_name} downloaded ({n_subjects} subjects)')
+                      success = True
+                      break
+                  except Exception as e:
+                      print(f'Attempt {attempt + 1}/5 failed: {e}')
+                      if attempt < 4:
+                          wait = 90 * (attempt + 1)  # 90s, 180s, 270s, 360s
+                          print(f'Waiting {wait}s before retry...')
+                          time.sleep(wait)
+              if not success:
+                  failed.append(class_name)
+                  print(f'FAILED: {class_name} after 5 attempts')
+              # Wait between datasets to avoid rate limiting
+              print('Waiting 60s before next dataset...')
+              time.sleep(60)
+
+          if failed:
+              print(f'\n{"="*60}')
+              print(f'ERROR: Failed to download: {", ".join(failed)}')
+              print(f'{"="*60}')
+              sys.exit(1)
+          else:
+              print(f'\n{"="*60}')
+              print('All datasets downloaded successfully!')
+              print(f'{"="*60}')
+          EOF
+
+      - name: Build docs
+        env:
+          # Disable parallel builds when cache is cold to avoid Zenodo rate limiting
+          SPHINX_GALLERY_PARALLEL: ${{ steps.cache-mne_data.outputs.cache-matched-key != '' }}
+          SPHINX_JOBS: ${{ steps.cache-mne_data.outputs.cache-matched-key != '' && 'auto' || '1' }}
+        run: |
+          echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
+          echo "Parallel gallery builds: $SPHINX_GALLERY_PARALLEL"
+          echo "Sphinx jobs: $SPHINX_JOBS"
           cd docs && make html
 
       - name: Generate notebooks from examples (Colab)
@@ -83,6 +151,13 @@ jobs:
             out_path="$out_dir/$base.ipynb"
             python .github/scripts/convert_to_notebook.py --input "$f" --output "$out_path"
           done
+
+      - name: Save MNE Data Cache
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/mne_data
+          key: doc-${{ runner.os }}-mne-data-v2-${{ github.run_id }}
 
       # Create an artifact of the html output.
       - uses: actions/upload-artifact@v4
