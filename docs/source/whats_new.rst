@@ -43,7 +43,7 @@ Bugs
 - Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 - Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
-- Use HTTPS for BNCI dataset downloads to avoid connection timeouts (:gh:`946` by `Bruno Aristimunha`_)
+- Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
