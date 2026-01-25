@@ -5,12 +5,10 @@ This subpackage contains all BNCI datasets organized by year.
 
 # Newer datasets (2016-2025)
 from .bnci_2016_002 import BNCI2016_002
-from .bnci_2020_001 import BNCI2020_001
-from .bnci_2020_002 import BNCI2020_002
+from .bnci_2020 import BNCI2020_001, BNCI2020_002
 from .bnci_2022_001 import BNCI2022_001
 from .bnci_2024_001 import BNCI2024_001
-from .bnci_2025_001 import BNCI2025_001
-from .bnci_2025_002 import BNCI2025_002
+from .bnci_2025 import BNCI2025_001, BNCI2025_002
 
 # Legacy datasets (2003-2019) from the original BNCI file
 from .legacy import (  # Base classes and utilities; Dataset classes; Deprecated aliases
