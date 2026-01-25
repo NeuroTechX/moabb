@@ -34,6 +34,8 @@ API changes
 - When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
 - Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
+- Renamed stimulus channel from ``stim`` to ``STI`` in BNCI motor imagery and error-related potential datasets for clarity and BIDS compliance (by `Bruno Aristimunha`_).
+- Added four new BNCI P300/ERP dataset classes: :class:`moabb.datasets.BNCI2015_009` (AMUSE), :class:`moabb.datasets.BNCI2015_010` (RSVP), :class:`moabb.datasets.BNCI2015_012` (PASS2D), and :class:`moabb.datasets.BNCI2015_013` (ErrP) (by `Bruno Aristimunha`_).
 
 
 Requirements
@@ -51,6 +53,8 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
+- Reorganized BNCI datasets into ``moabb.datasets.bnci`` subpackage for cleaner organization. All BNCI datasets are now in one folder with legacy datasets (2003-2019) in ``legacy.py`` and newer datasets (2016-2025) in individual files. Backward compatibility is maintained - existing imports continue to work (by `Bruno Aristimunha`_).
+- Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
 
 
 Version 1.4.3 (Stable - PyPi)
