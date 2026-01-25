@@ -180,7 +180,8 @@ sphinx_gallery_conf = {
         ]
     ),
     "within_subsection_order": "FileNameSortKey",
-    "parallel": True,
+    # Disable parallel when cache is cold to avoid Zenodo rate limiting
+    "parallel": os.environ.get("SPHINX_GALLERY_PARALLEL", "true").lower() == "true",
 }
 
 
