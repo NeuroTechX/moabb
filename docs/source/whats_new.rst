@@ -47,7 +47,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
-- Persist docs CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
+- Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
