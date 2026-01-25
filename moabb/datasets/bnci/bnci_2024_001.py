@@ -13,21 +13,18 @@ To integrate into bnci.py:
 """
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from mne.utils import verbose
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
-
-
-BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
-
-
-def data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
+from .base import BNCIBaseDataset
+from .utils import (
+    BNCI_URL,
+    bnci_data_path,
+    convert_units,
+    ensure_data_orientation,
+    make_raw,
+    validate_subject,
+)
 
 
 @verbose
@@ -69,12 +66,11 @@ def _load_data_001_2024(
     sessions : dict
         Dictionary of sessions with raw data.
     """
-    if (subject < 1) or (subject > 20):
-        raise ValueError("Subject must be between 1 and 20. Got %d." % subject)
+    validate_subject(subject, 20, "BNCI2024-001")
 
     # Download the MAT file for this subject
     url = "{u}001-2024/sub{s:02d}.mat".format(u=base_url, s=subject)
-    filename = data_path(url, path, force_update, update_path)[0]
+    filename = bnci_data_path(url, path, force_update, update_path)[0]
 
     if only_filenames:
         return [filename]
@@ -109,7 +105,7 @@ def _load_data_001_2024(
         run_array = [data["data"]]
 
     for run in run_array:
-        raw, evd = _convert_run_001_2024(run, ch_names, ch_types, verbose)
+        raw = _convert_run_001_2024(run, ch_names, ch_types, verbose)
         if raw is not None:
             runs.append(raw)
 
@@ -137,13 +133,14 @@ def _convert_run_001_2024(run, ch_names, ch_types, verbose=None):
     -------
     raw : instance of RawArray
         Raw MNE object.
-    event_id : dict
-        Dictionary containing event codes.
     """
     # Parse EEG data
-    n_chan = run.X.shape[1]
-    montage = make_standard_montage("standard_1005")
-    eeg_data = 1e-6 * run.X  # Convert from microvolts to volts
+    eeg_data = np.asarray(run.X)
+    n_expected = 64  # 60 EEG + 4 EOG
+    eeg_data = ensure_data_orientation(eeg_data, n_expected)
+    n_chan = eeg_data.shape[0]
+    montage = "standard_1005"
+    eeg_data = convert_units(eeg_data, from_unit="uV", to_unit="V")
     sfreq = run.fs
 
     # Adjust channel names/types if necessary
@@ -154,49 +151,33 @@ def _convert_run_001_2024(run, ch_names, ch_types, verbose=None):
         montage = None
 
     # Create trigger channel
-    trigger = np.zeros((len(eeg_data), 1))
+    trigger = np.zeros((1, eeg_data.shape[1]))
 
     # Some runs may not contain trials (baseline runs)
     if hasattr(run, "trial") and len(run.trial) > 0:
-        trigger[run.trial - 1, 0] = run.y
+        trial_idx = np.asarray(run.trial).astype(int) - 1
+        trigger[0, trial_idx] = np.asarray(run.y).astype(int)
     else:
-        return None, None
+        return None
 
-    eeg_data = np.c_[eeg_data, trigger]
+    eeg_data = np.vstack([eeg_data, trigger])
     ch_names = list(ch_names) + ["STI"]
     ch_types = list(ch_types) + ["stim"]
 
-    # Create event_id from classes
-    if hasattr(run, "classes"):
-        event_id = {ev: (ii + 1) for ii, ev in enumerate(run.classes)}
-    else:
-        # Default event IDs for the 10 letters
-        event_id = {
-            "letter_a": 1,
-            "letter_d": 2,
-            "letter_e": 3,
-            "letter_f": 4,
-            "letter_j": 5,
-            "letter_n": 6,
-            "letter_o": 7,
-            "letter_s": 8,
-            "letter_t": 9,
-            "letter_v": 10,
-        }
+    raw = make_raw(
+        eeg_data,
+        ch_names,
+        ch_types,
+        sfreq,
+        verbose=verbose,
+        montage=montage,
+        line_freq=50.0,
+    )
 
-    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
-    raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
-
-    if montage is not None:
-        raw.set_montage(montage, on_missing="ignore")
-
-    # Set line frequency (50 Hz for European datasets)
-    raw.info["line_freq"] = 50.0
-
-    return raw, event_id
+    return raw
 
 
-class BNCI2024_001(BaseDataset):
+class BNCI2024_001(BNCIBaseDataset):
     """BNCI 2024-001 Handwritten Character Classification dataset.
 
     Dataset from [1]_.
@@ -287,22 +268,6 @@ class BNCI2024_001(BaseDataset):
             interval=[0, 3],
             paradigm="imagery",
             doi="10.1016/j.compbiomed.2024.109132",
-        )
-
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        sessions = _load_data_001_2024(subject=subject, verbose=False)
-        return sessions
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return the data paths of the dataset."""
-        return _load_data_001_2024(
-            subject=subject,
-            verbose=verbose,
-            update_path=update_path,
-            path=path,
-            force_update=force_update,
-            only_filenames=True,
+            load_fn=_load_data_001_2024,
+            base_url=BNCI_URL,
         )

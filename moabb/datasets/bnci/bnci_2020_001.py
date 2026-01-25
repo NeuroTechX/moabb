@@ -2,23 +2,34 @@
 
 from datetime import datetime, timezone
 
-import numpy as np
-from mne import Annotations, create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
+from mne import Annotations
 from mne.utils import verbose
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
+from .base import BNCIBaseDataset
+from .utils import (
+    BNCI_URL,
+    bnci_data_path,
+    convert_units,
+    make_raw,
+    validate_subject,
+)
 
 
-BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
+ELECTRODE_TYPES = [
+    ("G", "gel"),
+    ("V", "water"),
+    ("H", "dry"),
+]
+SUBJECTS_PER_TYPE = 15
+TOTAL_SUBJECTS = SUBJECTS_PER_TYPE * len(ELECTRODE_TYPES)
 
 
-def _data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    """Download data file from URL."""
-    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
+def _map_subject_to_electrode(subject):
+    validate_subject(subject, TOTAL_SUBJECTS, "BNCI2020-001")
+    type_idx, subj_idx = divmod(subject - 1, SUBJECTS_PER_TYPE)
+    prefix, electrode_label = ELECTRODE_TYPES[type_idx]
+    return prefix, electrode_label, subj_idx + 1
 
 
 @verbose
@@ -40,8 +51,7 @@ def _load_data_001_2020(
     Parameters
     ----------
     subject : int
-        Subject number (1-15). Each subject ID maps to one subject from
-        each electrode type (gel, water, dry).
+        Subject number (1-45). Subjects 1-15 are gel, 16-30 water, 31-45 dry.
     path : None | str
         Location for data storage.
     force_update : bool
@@ -58,129 +68,106 @@ def _load_data_001_2020(
     Returns
     -------
     sessions : dict
-        Dictionary of sessions with raw data. Sessions are organized by
-        electrode type: '0gel', '1water', '2dry'.
+        Dictionary of sessions with raw data. Each subject has one session.
     """
-    if (subject < 1) or (subject > 15):
-        raise ValueError("Subject must be between 1 and 15. Got %d." % subject)
-
-    # Electrode type prefixes and session names
-    # G = gel (g.tec), V = versatile (water-based), H = hero (dry)
-    electrode_types = [
-        ("G", "0gel"),
-        ("V", "1water"),
-        ("H", "2dry"),
-    ]
-
-    sessions = {}
-    filenames = []
-
-    for prefix, session_name in electrode_types:
-        url = f"{base_url}001-2020/{prefix}{subject:02d}.mat"
-        filename = _data_path(url, path, force_update, update_path, verbose)[0]
-        filenames.append(filename)
-
-        if only_filenames:
-            continue
-
-        # Load the MAT file
-        mat_data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-
-        header = mat_data["header"]
-        events = mat_data["events"]
-        signal = mat_data["signal"]
-
-        # Get channel information
-        sfreq = float(header.sample_rate)
-        n_channels = signal.shape[0]
-
-        # Only use channel labels that correspond to actual signal channels
-        # Some files have extra labels (e.g., PTH channels) not in the signal
-        all_labels = [ch.strip() for ch in header.channels_labels]
-        ch_labels = all_labels[:n_channels]
-
-        # Determine channel types based on header information
-        eeg_idx = list(header.channels_eeg - 1)  # Convert to 0-indexed
-        if hasattr(header.channels_eog, "__len__") and len(header.channels_eog) > 0:
-            eog_idx = list(header.channels_eog - 1)
-        else:
-            eog_idx = []
-
-        # Filter indices to only include channels within signal range
-        eeg_idx = [idx for idx in eeg_idx if idx < n_channels]
-        eog_idx = [idx for idx in eog_idx if idx < n_channels]
-
-        ch_types = ["misc"] * n_channels
-        for idx in eeg_idx:
-            ch_types[idx] = "eeg"
-        for idx in eog_idx:
-            ch_types[idx] = "eog"
-
-        # Clean up channel names
-        ch_names = []
-        for i, label in enumerate(ch_labels):
-            # Standardize EOG channel names
-            if "EOG" in label.upper():
-                clean_name = label.replace("-", "").replace(" ", "")
-                ch_names.append(clean_name)
-            elif "PTH" in label.upper():
-                ch_names.append(label.replace("-", "_"))
-            else:
-                ch_names.append(label)
-
-        # Create MNE info structure
-        info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types)
-
-        # Convert signal to volts (data is in microvolts)
-        signal_scaled = signal.copy().astype(np.float64)
-        for idx in eeg_idx + eog_idx:
-            signal_scaled[idx, :] *= 1e-6
-
-        # Create RawArray
-        raw = RawArray(signal_scaled, info, verbose=verbose)
-
-        # Set line frequency (European dataset)
-        raw.info["line_freq"] = 50.0
-
-        # Set measurement date (dataset recorded 2020)
-        raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
-
-        # Create annotations from events
-        # Filter for movement onset and rest events only
-        relevant_codes = [503587, 503588, 768]  # palmar onset, lateral onset, rest onset
-        code_to_desc = {
-            503587: "palmar_grasp",
-            503588: "lateral_grasp",
-            768: "rest",
-        }
-
-        onset_times = []
-        descriptions = []
-        for pos, code in zip(events.positions, events.codes):
-            if code in relevant_codes:
-                onset_times.append(pos / sfreq)
-                descriptions.append(code_to_desc[code])
-
-        if onset_times:
-            annotations = Annotations(
-                onset=onset_times,
-                duration=[0.0] * len(onset_times),
-                description=descriptions,
-            )
-            raw.set_annotations(annotations)
-
-        # Set montage for EEG channels
-        montage = make_standard_montage("standard_1005")
-        raw.set_montage(montage, on_missing="ignore")
-
-        sessions[session_name] = {"0": raw}
+    prefix, electrode_label, subj_idx = _map_subject_to_electrode(subject)
+    url = f"{base_url}001-2020/{prefix}{subj_idx:02d}.mat"
+    filename = bnci_data_path(url, path, force_update, update_path, verbose)[0]
 
     if only_filenames:
-        return filenames
-    return sessions
+        return [filename]
+
+    # Load the MAT file
+    mat_data = loadmat(filename, struct_as_record=False, squeeze_me=True)
+
+    header = mat_data["header"]
+    events = mat_data["events"]
+    signal = mat_data["signal"]
+
+    # Get channel information
+    sfreq = float(header.sample_rate)
+    n_channels = signal.shape[0]
+
+    # Only use channel labels that correspond to actual signal channels
+    # Some files have extra labels (e.g., PTH channels) not in the signal
+    all_labels = [ch.strip() for ch in header.channels_labels]
+    ch_labels = all_labels[:n_channels]
+
+    # Determine channel types based on header information
+    eeg_idx = list(header.channels_eeg - 1)  # Convert to 0-indexed
+    if hasattr(header.channels_eog, "__len__") and len(header.channels_eog) > 0:
+        eog_idx = list(header.channels_eog - 1)
+    else:
+        eog_idx = []
+
+    # Filter indices to only include channels within signal range
+    eeg_idx = [idx for idx in eeg_idx if idx < n_channels]
+    eog_idx = [idx for idx in eog_idx if idx < n_channels]
+
+    ch_types = ["misc"] * n_channels
+    for idx in eeg_idx:
+        ch_types[idx] = "eeg"
+    for idx in eog_idx:
+        ch_types[idx] = "eog"
+
+    # Clean up channel names
+    ch_names = []
+    for label in ch_labels:
+        # Standardize EOG channel names
+        if "EOG" in label.upper():
+            clean_name = label.replace("-", "").replace(" ", "")
+            ch_names.append(clean_name)
+        elif "PTH" in label.upper():
+            ch_names.append(label.replace("-", "_"))
+        else:
+            ch_names.append(label)
+
+    # Convert signal to volts (data is in microvolts)
+    eeg_eog_mask = eeg_idx + eog_idx
+    signal_scaled = convert_units(
+        signal.copy(), from_unit="uV", to_unit="V", channel_mask=eeg_eog_mask
+    )
+
+    raw = make_raw(
+        signal_scaled,
+        ch_names,
+        ch_types,
+        sfreq,
+        verbose=verbose,
+        montage="standard_1005",
+        line_freq=50.0,
+        meas_date=datetime(2020, 1, 1, tzinfo=timezone.utc),
+        description=f"electrode_type={electrode_label}",
+    )
+
+    # Create annotations from events
+    # Filter for movement onset and rest events only
+    relevant_codes = [503587, 503588, 768]  # palmar onset, lateral onset, rest onset
+    code_to_desc = {
+        503587: "palmar_grasp",
+        503588: "lateral_grasp",
+        768: "rest",
+    }
+
+    onset_times = []
+    descriptions = []
+    for pos, code in zip(events.positions, events.codes):
+        if code in relevant_codes:
+            onset_times.append(pos / sfreq)
+            descriptions.append(code_to_desc[code])
+
+    if onset_times:
+        annotations = Annotations(
+            onset=onset_times,
+            duration=[0.0] * len(onset_times),
+            description=descriptions,
+        )
+        raw.set_annotations(annotations)
+
+    return {"0": {"0": raw}}
 
 
-class BNCI2020_001(BaseDataset):
+class BNCI2020_001(BNCIBaseDataset):
     """BNCI 2020-001 Reach-and-Grasp Electrode Comparison dataset.
 
     Dataset from [1]_.
@@ -228,13 +215,13 @@ class BNCI2020_001(BaseDataset):
     - lateral_grasp: Movement onset for lateral grasp (reaching to jar with spoon)
     - rest: Onset of rest period
 
-    **Sessions**
+    **Electrode Types**
 
-    Data for each subject is organized into three sessions by electrode type:
+    Subjects are grouped by electrode type (15 per type). The subject index maps to:
 
-    - Session '0gel': Gel-based electrode recording
-    - Session '1water': Water-based electrode recording
-    - Session '2dry': Dry electrode recording
+    - 1-15: Gel-based electrode recording
+    - 16-30: Water-based electrode recording
+    - 31-45: Dry electrode recording
 
     **Classification Results (from original paper)**
 
@@ -260,8 +247,8 @@ class BNCI2020_001(BaseDataset):
     """
 
     _participant_demographics = {
-        "n_subjects": 15,
-        "n_subjects_total": 45,
+        "n_subjects": 45,
+        "subjects_per_electrode_type": 15,
         "health_status": "healthy able-bodied subjects",
         "location": "Graz University of Technology, Austria",
         "electrode_types": [
@@ -273,38 +260,13 @@ class BNCI2020_001(BaseDataset):
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 16)),
-            sessions_per_subject=3,
+            subjects=list(range(1, TOTAL_SUBJECTS + 1)),
+            sessions_per_subject=1,
             events={"palmar_grasp": 503587, "lateral_grasp": 503588, "rest": 768},
             code="BNCI2020-001",
             interval=[-2, 3],
             paradigm="imagery",
             doi="10.3389/fnins.2020.00849",
-        )
-
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        sessions = _load_data_001_2020(
-            subject=subject,
-            path=None,
-            force_update=False,
-            update_path=None,
+            load_fn=_load_data_001_2020,
             base_url=BNCI_URL,
-            only_filenames=False,
-            verbose=False,
-        )
-        return sessions
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return the data paths of the dataset."""
-        return _load_data_001_2020(
-            subject=subject,
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            base_url=BNCI_URL,
-            only_filenames=True,
-            verbose=verbose,
         )

@@ -3,22 +3,146 @@
 from datetime import datetime, timezone
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
+from mne import Annotations
 from mne.utils import verbose
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
+from .base import BNCIBaseDataset
+from .utils import (
+    BNCI_URL,
+    bnci_data_path,
+    convert_units,
+    ensure_data_orientation,
+    make_raw,
+    validate_subject,
+)
 
 
-BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
+EVENT_ID = {"snakerun": 1, "freerun": 2, "eyerun": 3}
+_EVENT_ALIASES = {
+    "snake": "snakerun",
+    "snakerun": "snakerun",
+    "free": "freerun",
+    "freerun": "freerun",
+    "eye": "eyerun",
+    "eyerun": "eyerun",
+}
 
 
-def _data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    """Download data file from URL."""
-    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
+def _get_field(obj, name):
+    if obj is None:
+        return None
+    if isinstance(obj, dict):
+        return obj.get(name)
+    if hasattr(obj, name):
+        return getattr(obj, name)
+    if isinstance(obj, np.ndarray) and obj.dtype.names and name in obj.dtype.names:
+        return obj[name]
+    return None
+
+
+def _normalize_positions(pos, sfreq, n_samples):
+    pos = np.asarray(pos).squeeze()
+    if pos.size == 0:
+        return None
+    pos = pos.astype(float)
+    if pos.max() <= (n_samples / sfreq + 1):
+        pos = np.round(pos * sfreq)
+    pos = pos.astype(int)
+    if pos.min() >= 1:
+        pos = pos - 1
+    pos = pos[(pos >= 0) & (pos < n_samples)]
+    return pos
+
+
+def _label_to_desc(label):
+    if label is None:
+        return None
+    if isinstance(label, bytes):
+        label = label.decode()
+    if isinstance(label, str):
+        key = label.strip().lower()
+        if key in EVENT_ID:
+            return key
+        for token, name in _EVENT_ALIASES.items():
+            if token in key:
+                return name
+        return None
+    try:
+        code = int(label)
+    except (TypeError, ValueError):
+        return None
+    return {v: k for k, v in EVENT_ID.items()}.get(code)
+
+
+def _annotations_from_candidate(candidate, sfreq, n_samples):
+    pos = _get_field(candidate, "pos")
+    labels = None
+    class_names = _get_field(candidate, "className")
+
+    if pos is not None:
+        labels = (
+            _get_field(candidate, "y")
+            or _get_field(candidate, "label")
+            or _get_field(candidate, "type")
+        )
+    elif isinstance(candidate, np.ndarray) and candidate.ndim == 2:
+        if candidate.shape[1] < 2:
+            return None
+        pos = candidate[:, 0]
+        labels = candidate[:, 1]
+    else:
+        return None
+
+    pos = _normalize_positions(pos, sfreq, n_samples)
+    if pos is None or labels is None:
+        return None
+
+    labels = np.asarray(labels).squeeze()
+    if labels.ndim == 2:
+        if labels.shape[0] == len(pos):
+            labels = labels.argmax(axis=1)
+        elif labels.shape[1] == len(pos):
+            labels = labels.argmax(axis=0)
+        else:
+            return None
+    elif labels.ndim != 1 or labels.shape[0] != len(pos):
+        return None
+
+    descriptions = []
+    if class_names is not None:
+        class_names = [str(name) for name in np.atleast_1d(class_names).tolist()]
+        labels = labels.astype(int)
+        if labels.min() == 1 and labels.max() <= len(class_names):
+            labels = labels - 1
+        for idx in labels:
+            if 0 <= idx < len(class_names):
+                descriptions.append(_label_to_desc(class_names[idx]))
+            else:
+                descriptions.append(None)
+    else:
+        descriptions = [_label_to_desc(label) for label in labels]
+
+    pairs = [(p, d) for p, d in zip(pos, descriptions) if d is not None]
+    if not pairs:
+        return None
+
+    onset = [p / sfreq for p, _ in pairs]
+    desc = [d for _, d in pairs]
+    return Annotations(onset=onset, duration=[0.0] * len(desc), description=desc)
+
+
+def _extract_annotations(mat_data, sfreq, n_samples):
+    containers = [mat_data, _get_field(mat_data, "data")]
+    for container in containers:
+        if container is None:
+            continue
+        for key in ("mrk", "markers", "marker", "events", "event"):
+            candidate = _get_field(container, key)
+            annotations = _annotations_from_candidate(candidate, sfreq, n_samples)
+            if annotations is not None:
+                return annotations
+    return None
 
 
 @verbose
@@ -55,8 +179,7 @@ def _load_data_002_2025(
     sessions : dict
         Dictionary containing sessions with raw data for each run.
     """
-    if (subject < 1) or (subject > 20):
-        raise ValueError("Subject must be between 1 and 20. Got %d." % subject)
+    validate_subject(subject, 20, "BNCI2025-002")
 
     # Subject IDs in the dataset (as listed on BNCI website)
     # fmt: off
@@ -100,7 +223,7 @@ def _load_data_002_2025(
         for run_idx, perc in enumerate(perception_levels):
             filename_part = f"{subj_id}_ses{session_idx}_{perc}.mat"
             url = f"{base_url}002-2025/{filename_part}"
-            filename = _data_path(url, path, force_update, update_path)[0]
+            filename = bnci_data_path(url, path, force_update, update_path)[0]
             filenames.append(filename)
 
             if only_filenames:
@@ -205,14 +328,11 @@ def _convert_run_002_2025(
         )
 
     # Ensure data is in correct shape (n_channels, n_samples)
-    # Data should be (n_samples, n_channels) or (n_channels, n_samples)
-    if eeg_data.shape[0] > eeg_data.shape[1]:
-        # Data is (n_samples, n_channels), transpose to (n_channels, n_samples)
-        eeg_data = eeg_data.T
+    eeg_data = ensure_data_orientation(eeg_data, n_channels=64)
 
     # Convert to Volts (MNE standard) if data is in microvolts
     if np.abs(eeg_data).max() > 1:  # Likely in microvolts
-        eeg_data = eeg_data * 1e-6
+        eeg_data = convert_units(eeg_data, from_unit="uV", to_unit="V")
 
     # Check number of channels
     n_channels_data = eeg_data.shape[0]
@@ -228,30 +348,26 @@ def _convert_run_002_2025(
             ch_names = ch_names[:n_channels_data]
             ch_types = ch_types[:n_channels_data]
 
-    # Create MNE info structure
-    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
+    raw = make_raw(
+        eeg_data,
+        ch_names,
+        ch_types,
+        sfreq,
+        verbose=verbose,
+        montage="standard_1005",
+        line_freq=50.0,
+        meas_date=datetime(2022, 1, 1, tzinfo=timezone.utc),
+        description=f"Session {session_idx}, Perception: {perception}",
+    )
 
-    # Create Raw object
-    raw = RawArray(data=eeg_data, info=info, verbose=verbose)
-
-    # Set montage for EEG channels
-    montage = make_standard_montage("standard_1005")
-    raw.set_montage(montage, on_missing="ignore")
-
-    # Set line frequency (European dataset - 50 Hz)
-    raw.info["line_freq"] = 50.0
-
-    # Set measurement date (dataset recorded ~2021-2022)
-    raw.set_meas_date(datetime(2022, 1, 1, tzinfo=timezone.utc))
-
-    # Add description
-    desc = f"Session {session_idx}, Perception: {perception}"
-    raw.info["description"] = desc
+    annotations = _extract_annotations(data, sfreq, eeg_data.shape[1])
+    if annotations is not None:
+        raw.set_annotations(annotations)
 
     return raw
 
 
-class BNCI2025_002(BaseDataset):
+class BNCI2025_002(BNCIBaseDataset):
     """BNCI 2025-002 Continuous 2D Trajectory Decoding dataset.
 
     Dataset from [1]_.
@@ -356,7 +472,7 @@ class BNCI2025_002(BaseDataset):
         "n_channels": 64,
         "channel_types": {"eeg": 60, "eog": 4},
         "paradigm": "imagery",
-        "events": {"snakerun": 1, "freerun": 2, "eyerun": 3},
+        "events": EVENT_ID,
         "doi": "10.1088/1741-2552/ac689f",
         "license": "CC BY 4.0",
         "montage": "standard_1005",
@@ -369,36 +485,11 @@ class BNCI2025_002(BaseDataset):
         super().__init__(
             subjects=list(range(1, 21)),
             sessions_per_subject=3,
-            events={"snakerun": 1, "freerun": 2, "eyerun": 3},
+            events=EVENT_ID,
             code="BNCI2025-002",
             interval=[0, 8],  # Trial length varies but 8s is a common window
             paradigm="imagery",
             doi="10.1088/1741-2552/ac689f",
-        )
-
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        sessions = _load_data_002_2025(
-            subject=subject,
-            path=None,
-            force_update=False,
-            update_path=None,
+            load_fn=_load_data_002_2025,
             base_url=BNCI_URL,
-            only_filenames=False,
-            verbose=False,
-        )
-        return sessions
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return paths to data files for a single subject."""
-        return _load_data_002_2025(
-            subject=subject,
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            base_url=BNCI_URL,
-            only_filenames=True,
-            verbose=verbose,
         )

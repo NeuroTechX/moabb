@@ -3,22 +3,17 @@
 from datetime import date, datetime, timezone
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from mne.utils import verbose
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
-
-
-BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
-
-
-def _data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    """Download data file from URL."""
-    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
+from .base import BNCIBaseDataset
+from .utils import (
+    BNCI_URL,
+    bnci_data_path,
+    make_raw,
+    standardize_channel_names,
+    validate_subject,
+)
 
 
 @verbose
@@ -60,23 +55,15 @@ def _load_data_002_2020(
     sessions : dict
         Dictionary with session data.
     """
-    if (subject < 1) or (subject > 18):
-        raise ValueError("Subject must be between 1 and 18. Got %d." % subject)
+    validate_subject(subject, 18, "BNCI2020-002")
 
     url = "{u}002-2020/P{s:02d}.mat".format(u=base_url, s=subject)
-    filename = _data_path(url, path, force_update, update_path)[0]
+    filename = bnci_data_path(url, path, force_update, update_path)[0]
 
     if only_filenames:
         return [filename]
 
     raw, event_id = _convert_attention_shift(filename, verbose=verbose)
-
-    # Set montage for EEG channels
-    montage = make_standard_montage("standard_1005")
-    raw.set_montage(montage, on_missing="ignore")
-
-    # Set measurement date (dataset recorded 2020)
-    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
 
     # Extract subject metadata and enrich raw object
     mat_data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -149,10 +136,8 @@ def _convert_attention_shift(filename, verbose=None):
     # Get channel names - these are EEG channels
     ch_names = list(bciexp.label)
 
-    # Some channel names may need mapping for standard montage
-    # O9 -> PO9, O10 -> PO10 (common naming convention differences)
-    ch_name_mapping = {"O9": "PO9", "O10": "PO10"}
-    ch_names = [ch_name_mapping.get(ch, ch) for ch in ch_names]
+    # Standardize channel names for montage compatibility
+    ch_names = standardize_channel_names(ch_names)
 
     # Channel types: all EEG
     ch_types = ["eeg"] * n_channels
@@ -176,8 +161,23 @@ def _convert_attention_shift(filename, verbose=None):
     stim_data = np.zeros((1, n_samples * n_trials))
 
     # Get intentions for each trial
-    intentions = bciexp.intention
+    intentions = np.asarray(bciexp.intention)
     event_id = {"NonTarget": 1, "Target": 2}
+
+    value_map = None
+    try:
+        numeric_vals = intentions.astype(int)
+    except (ValueError, TypeError):
+        numeric_vals = None
+    if numeric_vals is not None:
+        unique_vals = set(np.unique(numeric_vals).tolist())
+        if unique_vals <= {0, 1}:
+            value_map = {0: 1, 1: 2}
+        elif unique_vals <= {1, 2}:
+            value_map = {1: 1, 2: 2}
+
+    target_tokens = {"yes", "y", "right", "r", "target", "true"}
+    nontarget_tokens = {"no", "n", "left", "l", "nontarget", "false"}
 
     for trial_idx in range(n_trials):
         trial_start = trial_idx * n_samples
@@ -185,28 +185,37 @@ def _convert_attention_shift(filename, verbose=None):
         # 'yes' response is associated with attending right (green cross on right) -> Target
         # 'no' response is associated with attending left (red cross on left) -> NonTarget
         intention = intentions[trial_idx]
-        if intention == "yes":
-            stim_data[0, trial_start] = 2  # Target (right attention)
+        if value_map is not None:
+            code = value_map.get(int(intention), 1)
         else:
-            stim_data[0, trial_start] = 1  # NonTarget (left attention)
+            token = str(intention).strip().lower()
+            if token in target_tokens:
+                code = 2
+            elif token in nontarget_tokens:
+                code = 1
+            else:
+                code = 1
+        stim_data[0, trial_start] = code
 
     # Combine all data
     # Scale EEG data to Volts (data is in microvolts)
     all_data = np.vstack([eeg_data * 1e-6, heog_data * 1e-6, veog_data * 1e-6, stim_data])
 
-    # Create MNE info
-    info = create_info(ch_names=ch_names_full, ch_types=ch_types_full, sfreq=sfreq)
-
-    # Create raw object
-    raw = RawArray(data=all_data, info=info, verbose=verbose)
-
-    # Set line frequency (50 Hz for European datasets)
-    raw.info["line_freq"] = 50.0
+    raw = make_raw(
+        all_data,
+        ch_names_full,
+        ch_types_full,
+        sfreq,
+        verbose=verbose,
+        montage="standard_1005",
+        line_freq=50.0,
+        meas_date=datetime(2020, 1, 1, tzinfo=timezone.utc),
+    )
 
     return raw, event_id
 
 
-class BNCI2020_002(BaseDataset):
+class BNCI2020_002(BNCIBaseDataset):
     """BNCI 2020-002 Attention Shift (Covert Spatial Attention) dataset.
 
     Dataset from [1]_.
@@ -342,31 +351,6 @@ class BNCI2020_002(BaseDataset):
             interval=[0, 16],  # 16 seconds per trial (4000 samples at 250 Hz)
             paradigm="p300",  # ERP-based paradigm for compatibility
             doi="10.3389/fnins.2020.591777",
-        )
-
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        sessions = _load_data_002_2020(
-            subject=subject,
-            path=None,
-            force_update=False,
-            update_path=None,
+            load_fn=_load_data_002_2020,
             base_url=BNCI_URL,
-            only_filenames=False,
-            verbose=False,
-        )
-        return sessions
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return paths to data files for a single subject."""
-        return _load_data_002_2020(
-            subject=subject,
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            base_url=BNCI_URL,
-            only_filenames=True,
-            verbose=verbose,
         )

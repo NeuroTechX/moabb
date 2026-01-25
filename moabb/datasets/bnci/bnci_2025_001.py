@@ -4,21 +4,18 @@ This module implements the BNCI2025_001 dataset for MOABB.
 """
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from mne.utils import verbose
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
-
-
-BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
-
-
-def data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
+from .base import BNCIBaseDataset
+from .utils import (
+    BNCI_URL,
+    bnci_data_path,
+    convert_units,
+    ensure_data_orientation,
+    make_raw,
+    validate_subject,
+)
 
 
 @verbose
@@ -69,12 +66,11 @@ def _load_data_001_2025(
     - 4 directions x 2 speeds x 2 distances = 16 conditions
     - ~60 trials per condition (~960 total per subject)
     """
-    if (subject < 1) or (subject > 20):
-        raise ValueError("Subject must be between 1 and 20. Got %d." % subject)
+    validate_subject(subject, 20, "BNCI2025-001")
 
     # Download the data file for this subject
     url = "{u}001-2025/sub{s:02d}.mat".format(u=base_url, s=subject)
-    filename = data_path(url, path, force_update, update_path)[0]
+    filename = bnci_data_path(url, path, force_update, update_path)[0]
 
     if only_filenames:
         return [filename]
@@ -116,10 +112,19 @@ def _load_data_001_2025(
     # Set channel types
     ch_types = ["eeg"] * 60 + ["eog"] * 4
 
-    # Get EEG data
-    eeg_data = data.X.T if data.X.shape[0] > data.X.shape[1] else data.X
-    # Convert to volts if in microvolts
-    eeg_data = eeg_data * 1e-6
+    # Get EEG data and ensure correct orientation
+    eeg_data = ensure_data_orientation(data.X, n_channels=64)
+
+    n_channels_data = eeg_data.shape[0]
+    if n_channels_data != len(ch_names):
+        if n_channels_data > len(ch_names):
+            eeg_data = eeg_data[: len(ch_names), :]
+        else:
+            ch_names = ch_names[:n_channels_data]
+            ch_types = ch_types[:n_channels_data]
+
+    # Convert to volts
+    eeg_data = convert_units(eeg_data, from_unit="uV", to_unit="V")
 
     # Get trial information
     trial_onsets = data.trial - 1  # Convert to 0-indexed
@@ -136,23 +141,22 @@ def _load_data_001_2025(
     ch_names = ch_names + ["STI"]
     ch_types = ch_types + ["stim"]
 
-    # Create MNE info and raw object
-    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
-    raw = RawArray(data=all_data, info=info, verbose=verbose)
-
-    # Set line frequency (European dataset)
-    raw.info["line_freq"] = 50.0
-
-    # Set montage
-    montage = make_standard_montage("standard_1005")
-    raw.set_montage(montage, on_missing="ignore")
+    raw = make_raw(
+        all_data,
+        ch_names,
+        ch_types,
+        sfreq,
+        verbose=verbose,
+        montage="standard_1005",
+        line_freq=50.0,
+    )
 
     # Return in standard session format
     sessions = {"0": {"0": raw}}
     return sessions
 
 
-class BNCI2025_001(BaseDataset):
+class BNCI2025_001(BNCIBaseDataset):
     """BNCI 2025-001 Motor Kinematics Reaching dataset.
 
     Dataset from Srisrisawang & Muller-Putz (2024) [1]_.
@@ -280,24 +284,6 @@ class BNCI2025_001(BaseDataset):
             interval=[0, 4],  # Movement period
             paradigm="imagery",  # Compatible with motor imagery paradigm
             doi="10.1088/1741-2552/ada0ea",
-        )
-
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        sessions = _load_data_001_2025(subject=subject, verbose=False)
-        return sessions
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return path to the data files for a single subject."""
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject %d" % subject)
-        return _load_data_001_2025(
-            subject,
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            only_filenames=True,
-            verbose=verbose,
+            load_fn=_load_data_001_2025,
+            base_url=BNCI_URL,
         )

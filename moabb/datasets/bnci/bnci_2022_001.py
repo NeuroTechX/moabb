@@ -3,17 +3,19 @@
 from datetime import datetime, timezone
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from mne.utils import verbose
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
+from .base import BNCIBaseDataset
+from .utils import (
+    BNCI_URL,
+    bnci_data_path,
+    convert_units,
+    ensure_data_orientation,
+    make_raw,
+    validate_subject,
+)
 
-
-BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
 
 # Subject IDs with their recording dates for the task (wpsize) files
 # Based on the dataset description, each subject has a unique recording date
@@ -35,11 +37,6 @@ SUBJECT_INFO = {
     12: "20161109",
     13: "20161110",
 }
-
-
-def _data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    """Download data file from URL."""
-    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
 
 
 @verbose
@@ -90,8 +87,7 @@ def _load_data_001_2022(
     downsampled from 2048 Hz to 256 Hz. Online sessions and behavioral
     data are not included.
     """
-    if (subject < 1) or (subject > 13):
-        raise ValueError("Subject must be between 1 and 13. Got %d." % subject)
+    validate_subject(subject, 13, "BNCI2022-001")
 
     # 64 EEG channels using the Biosemi ActiveTwo system (10-20 system positions)
     # fmt: off
@@ -126,7 +122,7 @@ def _load_data_001_2022(
     url = f"{base_url}001-2022/{task_filename}"
 
     try:
-        filename = _data_path(url, path, force_update, update_path)[0]
+        filename = bnci_data_path(url, path, force_update, update_path)[0]
         filenames.append(filename)
 
         if not only_filenames:
@@ -150,7 +146,7 @@ def _load_data_001_2022(
         for alt_pattern in alternative_patterns:
             try:
                 url = f"{base_url}001-2022/{alt_pattern}"
-                filename = _data_path(url, path, force_update, update_path)[0]
+                filename = bnci_data_path(url, path, force_update, update_path)[0]
                 filenames.append(filename)
 
                 if not only_filenames:
@@ -261,24 +257,14 @@ def _convert_run_001_2022(
             f"Could not find EEG data in MAT file. Keys: {list(data.keys())}"
         )
 
-    # Ensure data is in correct orientation
-    # Data format from description: timepoint-by-channel matrix
-    # MNE expects: (n_channels, n_samples)
+    # Ensure data is in correct orientation (n_channels, n_samples)
     if eeg_data.ndim == 2:
-        if eeg_data.shape[0] > eeg_data.shape[1]:
-            # Data is (n_samples, n_channels), transpose to (n_channels, n_samples)
-            eeg_data = eeg_data.T
-        elif eeg_data.shape[1] == 64:
-            # Data is already (n_channels, n_samples) or (n_samples, n_channels)
-            eeg_data = eeg_data.T
+        eeg_data = ensure_data_orientation(eeg_data, n_channels=64)
 
     # Handle EOG data
     if eog_data is not None:
         if eog_data.ndim == 2:
-            if eog_data.shape[0] > eog_data.shape[1]:
-                eog_data = eog_data.T
-            elif eog_data.shape[1] == 3:
-                eog_data = eog_data.T
+            eog_data = ensure_data_orientation(eog_data, n_channels=3)
 
         # Combine EEG and EOG
         combined_data = np.vstack([eeg_data, eog_data])
@@ -295,7 +281,7 @@ def _convert_run_001_2022(
     # Convert to Volts (MNE standard) if data is in microvolts
     # Biosemi data is typically in microvolts
     if np.abs(combined_data).max() > 1:  # Likely in microvolts
-        combined_data = combined_data * 1e-6
+        combined_data = convert_units(combined_data, from_unit="uV", to_unit="V")
 
     # Create MNE info structure
     n_channels = combined_data.shape[0]
@@ -310,20 +296,16 @@ def _convert_run_001_2022(
                 ch_names.append(f"MISC{i - 67 + 1}")
                 ch_types.append("misc")
 
-    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
-
-    # Create Raw object
-    raw = RawArray(data=combined_data, info=info, verbose=verbose)
-
-    # Set montage for EEG channels
-    montage = make_standard_montage("biosemi64")
-    raw.set_montage(montage, on_missing="ignore")
-
-    # Set line frequency (European dataset - 50 Hz)
-    raw.info["line_freq"] = 50.0
-
-    # Set measurement date (dataset recorded October 2016)
-    raw.set_meas_date(datetime(2016, 10, 1, tzinfo=timezone.utc))
+    raw = make_raw(
+        combined_data,
+        ch_names,
+        ch_types,
+        sfreq,
+        verbose=verbose,
+        montage="biosemi64",
+        line_freq=50.0,
+        meas_date=datetime(2016, 10, 1, tzinfo=timezone.utc),
+    )
 
     # Add events as annotations if trigger channel exists
     if trigger is not None:
@@ -377,7 +359,7 @@ def _convert_run_001_2022(
     return raw
 
 
-class BNCI2022_001(BaseDataset):
+class BNCI2022_001(BNCIBaseDataset):
     """BNCI 2022-001 EEG Correlates of Difficulty Level dataset.
 
     Dataset from [1]_.
@@ -514,31 +496,6 @@ class BNCI2022_001(BaseDataset):
             interval=[0, 90],  # Approximately 90 seconds per trajectory
             paradigm="imagery",  # For compatibility
             doi="10.1109/THMS.2020.3038339",
-        )
-
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        sessions = _load_data_001_2022(
-            subject=subject,
-            path=None,
-            force_update=False,
-            update_path=None,
+            load_fn=_load_data_001_2022,
             base_url=BNCI_URL,
-            only_filenames=False,
-            verbose=False,
-        )
-        return sessions
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return paths to data files for a single subject."""
-        return _load_data_001_2022(
-            subject=subject,
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            base_url=BNCI_URL,
-            only_filenames=True,
-            verbose=verbose,
         )

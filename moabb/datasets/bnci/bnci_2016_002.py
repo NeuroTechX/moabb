@@ -3,14 +3,11 @@
 from datetime import datetime, timezone
 
 import h5py
-import numpy as np
-from mne import Annotations, create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
+from mne import Annotations
 from mne.utils import verbose
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
+from .base import BNCIBaseDataset
+from .utils import bnci_data_path, convert_units, make_raw
 
 
 # BBCI URL where the data is hosted
@@ -35,11 +32,6 @@ _SUBJECT_VP_CODES = {
     14: "ii",
     15: "ja",
 }
-
-
-def _data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    """Download data file from URL."""
-    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
 
 
 def _read_hdf5_string(f, ref):
@@ -93,7 +85,7 @@ def _load_data_002_2016(
 
     vp_code = _SUBJECT_VP_CODES[subject]
     url = f"{base_url}VP{vp_code}.mat"
-    filename = _data_path(url, path, force_update, update_path, verbose)[0]
+    filename = bnci_data_path(url, path, force_update, update_path, verbose)[0]
 
     if only_filenames:
         return [filename]
@@ -147,23 +139,22 @@ def _load_data_002_2016(
         else:
             ch_types.append("eeg")
 
-    # Create MNE info structure
-    info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types)
-
     # Convert EEG/EOG/EMG data to volts (data appears to be in microvolts based on typical BBCI format)
-    data_scaled = data.copy().astype(np.float64)
-    for i, ch_type in enumerate(ch_types):
-        if ch_type in ["eeg", "eog", "emg"]:
-            data_scaled[i, :] *= 1e-6
+    eeg_eog_emg_mask = [i for i, ct in enumerate(ch_types) if ct in ["eeg", "eog", "emg"]]
+    data_scaled = convert_units(
+        data.copy(), from_unit="uV", to_unit="V", channel_mask=eeg_eog_emg_mask
+    )
 
-    # Create RawArray
-    raw = RawArray(data_scaled, info, verbose=verbose)
-
-    # Set line frequency (European dataset)
-    raw.info["line_freq"] = 50.0
-
-    # Set measurement date (dataset recorded 2011 based on publication)
-    raw.set_meas_date(datetime(2011, 1, 1, tzinfo=timezone.utc))
+    raw = make_raw(
+        data_scaled,
+        ch_names,
+        ch_types,
+        sfreq,
+        verbose=verbose,
+        montage="standard_1005",
+        line_freq=50.0,
+        meas_date=datetime(2011, 1, 1, tzinfo=timezone.utc),
+    )
 
     # Create annotations from markers
     # Event mapping:
@@ -201,17 +192,13 @@ def _load_data_002_2016(
         )
         raw.set_annotations(annotations)
 
-    # Set montage for EEG channels
-    montage = make_standard_montage("standard_1005")
-    raw.set_montage(montage, on_missing="ignore")
-
     # Return as single session with single run
     sessions = {"0": {"0": raw}}
 
     return sessions
 
 
-class BNCI2016_002(BaseDataset):
+class BNCI2016_002(BNCIBaseDataset):
     """BNCI 2016-002 Emergency Braking during Simulated Driving dataset.
 
     .. admonition:: Dataset summary
@@ -361,31 +348,6 @@ class BNCI2016_002(BaseDataset):
             interval=[-0.5, 1.0],  # 500ms before to 1s after emergency onset
             paradigm="p300",  # ERP-based paradigm
             doi="10.1088/1741-2560/8/5/056001",
-        )
-
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        sessions = _load_data_002_2016(
-            subject=subject,
-            path=None,
-            force_update=False,
-            update_path=None,
+            load_fn=_load_data_002_2016,
             base_url=BBCI_URL,
-            only_filenames=False,
-            verbose=False,
-        )
-        return sessions
-
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return the data paths of the dataset."""
-        return _load_data_002_2016(
-            subject=subject,
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            base_url=BBCI_URL,
-            only_filenames=True,
-            verbose=verbose,
         )
