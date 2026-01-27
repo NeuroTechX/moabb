@@ -328,7 +328,8 @@ class WithinSessionEvaluation(BaseEvaluation):
             raise ValueError(f"Unknown policy {self.data_size['policy']}")
         return indices
 
-    def score_explicit(self, clf, X_train, y_train, X_test, y_test):
+    def score_explicit(self, res, clf, X_train, y_train, X_test, y_test):
+        """Fit model and update result dict with scores and duration."""
         if not self.mne_labels:
             # convert labels if array, keep them if epochs and mne_labels is set
             le = LabelEncoder()
@@ -339,14 +340,12 @@ class WithinSessionEvaluation(BaseEvaluation):
             model = clf.fit(X_train, y_train)
             _ensure_fitted(model)
             scorer = _create_scorer(model, self.paradigm.scoring)
-            score = scorer(model, X_test, y_test)
+            _score_and_update(res, scorer, model, X_test, y_test)
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
-            # Return error_score as dict to match expected format
-            score = {"score": self.error_score}
-        duration = perf_counter() - t_start
-        return score, duration
+            res["score"] = self.error_score
+        res["time"] = perf_counter() - t_start
 
     def _evaluate_learning_curve(
         self, dataset, pipelines, process_pipeline, postprocess_pipeline
@@ -440,10 +439,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                                     task_name = str(uuid4())
                                     tracker.start_task(task_name)
 
-                                score, res["time"] = self.score_explicit(
-                                    deepcopy(clf), X_train, y_train, X_test, y_test
+                                self.score_explicit(
+                                    res, deepcopy(clf), X_train, y_train, X_test, y_test
                                 )
-                                _update_result_with_scores(res, score)
 
                                 if _carbonfootprint:
                                     emissions_data = tracker.stop_task()
