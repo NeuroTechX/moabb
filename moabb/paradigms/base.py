@@ -56,12 +56,21 @@ def _normalize_scorer(scorer):
     Raises
     ------
     ValueError
-        If list contains mixed types (not all strings or all callables).
+        If list is empty or contains mixed types (not all strings or all callables).
+
+    Notes
+    -----
+    When converting callables to scorers, this function assumes all metrics
+    follow the convention that higher values are better. For loss functions
+    where lower is better, users should pass a pre-configured scorer using
+    sklearn's make_scorer with greater_is_better=False.
     """
     if scorer is None or isinstance(scorer, (str, dict)):
         return scorer
 
     if isinstance(scorer, list):
+        if len(scorer) == 0:
+            raise ValueError("scorer list cannot be empty")
         if all(isinstance(s, str) for s in scorer):
             # List of strings - sklearn handles this natively
             return scorer

@@ -348,8 +348,9 @@ class WithinSessionEvaluation(BaseEvaluation):
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
-            score = self.error_score
-            is_multimetric = False  # fallback
+            # Return error_score as dict to match expected format
+            score = {"score": self.error_score}
+            is_multimetric = False
         duration = perf_counter() - t_start
         return score, is_multimetric, duration
 

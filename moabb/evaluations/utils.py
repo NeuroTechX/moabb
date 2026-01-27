@@ -364,6 +364,13 @@ def _create_scorer(estimator, scoring):
     is_multimetric : bool
         True if original scoring was multi-metric (dict or list).
         Used for column naming in results.
+
+    Notes
+    -----
+    This function uses sklearn's private _MultimetricScorer class for
+    consistent dict output. While private APIs may change between sklearn
+    versions, _MultimetricScorer has been stable and is the standard
+    internal mechanism for multi-metric scoring.
     """
     # Check if multi-metric (dict or list)
     is_multimetric = isinstance(scoring, (dict, list))
@@ -384,13 +391,20 @@ def _average_scores(fold_scores):
     ----------
     fold_scores : list of dict
         List of score dictionaries from each CV fold.
-        All dicts must have the same keys.
+        All dicts must have the same keys. Must not be empty.
 
     Returns
     -------
     mean_scores : dict
         Dictionary with same keys as input, values are means across folds.
+
+    Raises
+    ------
+    ValueError
+        If fold_scores is empty.
     """
+    if not fold_scores:
+        raise ValueError("fold_scores cannot be empty")
     keys = fold_scores[0].keys()
     return {key: np.mean([fold[key] for fold in fold_scores]) for key in keys}
 
