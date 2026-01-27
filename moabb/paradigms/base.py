@@ -46,7 +46,9 @@ def _normalize_scorer(scorer):
         - callable: returns as-is
         - dict: returns as-is
         - list of str: returns as-is (sklearn handles this)
-        - list of callable: converts to dict with function names as keys
+        - list of callable/tuple: converts to dict with function names as keys.
+          Each element can be either a callable (assumes greater_is_better=True)
+          or a tuple of (callable, greater_is_better) for explicit control.
 
     Returns
     -------
@@ -56,14 +58,18 @@ def _normalize_scorer(scorer):
     Raises
     ------
     ValueError
-        If list is empty or contains mixed types (not all strings or all callables).
+        If list is empty or contains invalid types.
 
-    Notes
-    -----
-    When converting callables to scorers, this function assumes all metrics
-    follow the convention that higher values are better. For loss functions
-    where lower is better, users should pass a pre-configured scorer using
-    sklearn's make_scorer with greater_is_better=False.
+    Examples
+    --------
+    >>> from sklearn.metrics import accuracy_score, mean_squared_error
+    >>> # Simple list of metrics (all assume higher is better)
+    >>> scorer = [accuracy_score, balanced_accuracy_score]
+    >>> # Mix of metrics with explicit greater_is_better control
+    >>> scorer = [
+    ...     accuracy_score,                  # greater_is_better=True (default)
+    ...     (mean_squared_error, False),     # greater_is_better=False (loss)
+    ... ]
     """
     if scorer is None or isinstance(scorer, (str, dict)):
         return scorer
@@ -74,11 +80,29 @@ def _normalize_scorer(scorer):
         if all(isinstance(s, str) for s in scorer):
             # List of strings - sklearn handles this natively
             return scorer
-        if all(callable(s) for s in scorer):
-            # Convert list of metric functions to dict
+
+        # Check if list contains callables or (callable, bool) tuples
+        def _is_valid_scorer_item(item):
+            if callable(item):
+                return True
+            if isinstance(item, tuple) and len(item) == 2:
+                func, greater = item
+                return callable(func) and isinstance(greater, bool)
+            return False
+
+        if all(_is_valid_scorer_item(s) for s in scorer):
+            # Convert list of metric functions/tuples to dict
             result = {}
             seen = {}
-            for i, func in enumerate(scorer):
+            for i, item in enumerate(scorer):
+                # Extract function and greater_is_better
+                if isinstance(item, tuple):
+                    func, greater_is_better = item
+                else:
+                    func = item
+                    greater_is_better = True
+
+                # Generate unique name
                 name = getattr(func, "__name__", f"scorer_{i}")
                 if name == "<lambda>":
                     name = f"scorer_{i}"
@@ -87,9 +111,14 @@ def _normalize_scorer(scorer):
                     name = f"{name}_{seen[name]}"
                 else:
                     seen[name] = 0
-                result[name] = make_scorer(func)
+
+                result[name] = make_scorer(func, greater_is_better=greater_is_better)
             return result
-        raise ValueError("scorer list must be all strings or all callables")
+
+        raise ValueError(
+            "scorer list must contain all strings, all callables, "
+            "or all (callable, greater_is_better) tuples"
+        )
 
     # callable passes through
     return scorer
