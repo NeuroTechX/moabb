@@ -50,7 +50,6 @@ Bugs
 Code health
 ~~~~~~~~~~~
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
-- Avoid reliance on scikit-learn private `_MultimetricScorer` in evaluation scoring wrappers.
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
