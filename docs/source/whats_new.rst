@@ -25,6 +25,7 @@ Enhancements
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
 - Allow custom paradigms to have multiple scores for evaluations (:gh:`870` by `Ethan Davis`_)
 - Ability to parameterize the scoring rule of paradigms (:gh:`870` by `Ethan Davis`_)
+- Extend scoring configuration to accept lists of metric callables, scorer objects, and tuple kwargs (e.g., `needs_proba`/`needs_threshold`) for multi-metric evaluations.
 - Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
 
 API changes
@@ -52,6 +53,7 @@ Bugs
 Code health
 ~~~~~~~~~~~
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
+- Avoid reliance on scikit-learn private `_MultimetricScorer` in evaluation scoring wrappers.
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------

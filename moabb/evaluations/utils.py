@@ -10,7 +10,6 @@ from mne.utils.config import _open_lock
 from numpy import argmax
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import check_scoring
-from sklearn.metrics._scorer import _MultimetricScorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
@@ -342,8 +341,8 @@ def check_search_available():
 def _create_scorer(estimator, scoring):
     """Create a scorer that always returns a dict.
 
-    Wraps single scorers in _MultimetricScorer with key "score" to ensure
-    consistent dict output format, simplifying downstream score handling.
+    Wraps single scorers to return {"score": value} while leaving
+    multi-metric scoring to sklearn's check_scoring.
 
     Parameters
     ----------
@@ -359,29 +358,27 @@ def _create_scorer(estimator, scoring):
 
     Returns
     -------
-    scorer : _MultimetricScorer
+    scorer : callable
         Scorer that always returns dict of scores.
     is_multimetric : bool
         True if original scoring was multi-metric (dict or list).
         Used for column naming in results.
 
-    Notes
-    -----
-    This function uses sklearn's private _MultimetricScorer class for
-    consistent dict output. While private APIs may change between sklearn
-    versions, _MultimetricScorer has been stable and is the standard
-    internal mechanism for multi-metric scoring.
     """
     # Check if multi-metric (dict or list)
     is_multimetric = isinstance(scoring, (dict, list))
 
     if is_multimetric:
-        # check_scoring creates _MultimetricScorer for dict/list
+        # check_scoring returns a multi-metric scorer for dict/list inputs
         return check_scoring(estimator, scoring=scoring), True
     else:
-        # Wrap single scorer in _MultimetricScorer with key "score"
+        # Wrap single scorer to return dict with key "score"
         single_scorer = check_scoring(estimator, scoring=scoring)
-        return _MultimetricScorer(scorers={"score": single_scorer}), False
+
+        def _dict_scorer(estimator, X, y=None, **kwargs):
+            return {"score": single_scorer(estimator, X, y, **kwargs)}
+
+        return _dict_scorer, False
 
 
 def _average_scores(fold_scores):

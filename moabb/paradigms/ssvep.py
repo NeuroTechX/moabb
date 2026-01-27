@@ -81,7 +81,6 @@ class BaseSSVEP(BaseParadigm):
         )
 
         self.n_classes = n_classes
-        self.scorer = scorer
         if self.events is None:
             log.warning(
                 "Choosing the first "

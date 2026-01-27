@@ -31,11 +31,10 @@ log = logging.getLogger(__name__)
 
 
 def _normalize_scorer(scorer):
-    """Normalize scorer, converting list of callables to dict.
+    """Normalize scorer, converting list-style scorers to a dict.
 
-    This function handles the case where users pass a list of metric
-    functions (e.g., [accuracy_score, balanced_accuracy_score]) and
-    converts it to a dict format that sklearn's check_scoring can handle.
+    This handles lists of metric functions or scorer objects and converts
+    them to a dict format that sklearn's check_scoring can handle.
 
     Parameters
     ----------
@@ -46,9 +45,14 @@ def _normalize_scorer(scorer):
         - callable: returns as-is
         - dict: returns as-is
         - list of str: returns as-is (sklearn handles this)
-        - list of callable/tuple: converts to dict with function names as keys.
-          Each element can be either a callable (assumes greater_is_better=True)
-          or a tuple of (callable, greater_is_better) for explicit control.
+        - list of callable/scorer/tuple: converts to dict with metric names as keys.
+          Each element can be:
+          - a callable metric function (assumes greater_is_better=True)
+          - a scorer object (e.g., make_scorer/get_scorer output), passed through
+          - a tuple of (callable, greater_is_better)
+          - a tuple of (callable, scorer_kwargs) where scorer_kwargs is a dict
+            (e.g., needs_proba/needs_threshold; may include greater_is_better)
+          - a tuple of (callable, greater_is_better, scorer_kwargs)
 
     Returns
     -------
@@ -70,6 +74,10 @@ def _normalize_scorer(scorer):
     ...     accuracy_score,                  # greater_is_better=True (default)
     ...     (mean_squared_error, False),     # greater_is_better=False (loss)
     ... ]
+    >>> # Metrics needing probability/threshold based scoring
+    >>> scorer = [
+    ...     (roc_auc_score, {"needs_threshold": True}),
+    ... ]
     """
     if scorer is None or isinstance(scorer, (str, dict)):
         return scorer
@@ -81,13 +89,29 @@ def _normalize_scorer(scorer):
             # List of strings - sklearn handles this natively
             return scorer
 
-        # Check if list contains callables or (callable, bool) tuples
+        def _is_scorer_object(obj):
+            # Detect sklearn scorer objects (e.g., make_scorer/get_scorer output)
+            return callable(obj) and hasattr(obj, "_score_func") and hasattr(obj, "_sign")
+
+        # Check if list contains valid scorer items
         def _is_valid_scorer_item(item):
+            if _is_scorer_object(item):
+                return True
             if callable(item):
                 return True
-            if isinstance(item, tuple) and len(item) == 2:
-                func, greater = item
-                return callable(func) and isinstance(greater, bool)
+            if isinstance(item, tuple):
+                if len(item) == 2:
+                    func, second = item
+                    return callable(func) and (
+                        isinstance(second, bool) or isinstance(second, dict)
+                    )
+                if len(item) == 3:
+                    func, greater, kwargs = item
+                    return (
+                        callable(func)
+                        and isinstance(greater, bool)
+                        and isinstance(kwargs, dict)
+                    )
             return False
 
         if all(_is_valid_scorer_item(s) for s in scorer):
@@ -95,12 +119,37 @@ def _normalize_scorer(scorer):
             result = {}
             seen = {}
             for i, item in enumerate(scorer):
-                # Extract function and greater_is_better
-                if isinstance(item, tuple):
-                    func, greater_is_better = item
+                # Pass through scorer objects unchanged
+                if _is_scorer_object(item):
+                    scorer_obj = item
+                    func = getattr(item, "_score_func", None)
                 else:
-                    func = item
-                    greater_is_better = True
+                    scorer_kwargs = {}
+                    # Extract function and greater_is_better/kwargs
+                    if isinstance(item, tuple):
+                        if len(item) == 2:
+                            func, second = item
+                            if isinstance(second, bool):
+                                greater_is_better = second
+                            else:
+                                scorer_kwargs = dict(second)
+                                greater_is_better = scorer_kwargs.pop(
+                                    "greater_is_better", True
+                                )
+                        else:
+                            func, greater_is_better, scorer_kwargs = item
+                            if "greater_is_better" in scorer_kwargs:
+                                raise ValueError(
+                                    "greater_is_better should not be provided in "
+                                    "scorer_kwargs when passed as a separate argument"
+                                )
+                    else:
+                        func = item
+                        greater_is_better = True
+
+                    scorer_obj = make_scorer(
+                        func, greater_is_better=greater_is_better, **scorer_kwargs
+                    )
 
                 # Generate unique name
                 name = getattr(func, "__name__", f"scorer_{i}")
@@ -112,12 +161,13 @@ def _normalize_scorer(scorer):
                 else:
                     seen[name] = 0
 
-                result[name] = make_scorer(func, greater_is_better=greater_is_better)
+                result[name] = scorer_obj
             return result
 
         raise ValueError(
-            "scorer list must contain all strings, all callables, "
-            "or all (callable, greater_is_better) tuples"
+            "scorer list must contain all strings, all callables/scorers, "
+            "or all tuples with (callable, bool), (callable, kwargs), "
+            "or (callable, bool, kwargs)"
         )
 
     # callable passes through
