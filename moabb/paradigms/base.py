@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 import mne
 import numpy as np
 import pandas as pd
-from sklearn.metrics import check_scoring
+from sklearn.metrics import check_scoring, make_scorer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
@@ -28,6 +28,62 @@ from moabb.datasets.preprocessing import (
 
 
 log = logging.getLogger(__name__)
+
+
+def _normalize_scorer(scorer):
+    """Normalize scorer, converting list of callables to dict.
+
+    This function handles the case where users pass a list of metric
+    functions (e.g., [accuracy_score, balanced_accuracy_score]) and
+    converts it to a dict format that sklearn's check_scoring can handle.
+
+    Parameters
+    ----------
+    scorer : str, callable, dict, list, or None
+        The scoring specification. Can be:
+        - None: returns None (use default)
+        - str: returns as-is
+        - callable: returns as-is
+        - dict: returns as-is
+        - list of str: returns as-is (sklearn handles this)
+        - list of callable: converts to dict with function names as keys
+
+    Returns
+    -------
+    normalized_scorer : str, callable, dict, list, or None
+        The normalized scorer specification.
+
+    Raises
+    ------
+    ValueError
+        If list contains mixed types (not all strings or all callables).
+    """
+    if scorer is None or isinstance(scorer, (str, dict)):
+        return scorer
+
+    if isinstance(scorer, list):
+        if all(isinstance(s, str) for s in scorer):
+            # List of strings - sklearn handles this natively
+            return scorer
+        if all(callable(s) for s in scorer):
+            # Convert list of metric functions to dict
+            result = {}
+            seen = {}
+            for i, func in enumerate(scorer):
+                name = getattr(func, "__name__", f"scorer_{i}")
+                if name == "<lambda>":
+                    name = f"scorer_{i}"
+                if name in seen:
+                    seen[name] += 1
+                    name = f"{name}_{seen[name]}"
+                else:
+                    seen[name] = 0
+                result[name] = make_scorer(func)
+            return result
+        raise ValueError("scorer list must be all strings or all callables")
+
+    # callable passes through
+    return scorer
 
 
 class BaseProcessing(metaclass=abc.ABCMeta):
@@ -573,6 +629,9 @@ class BaseParadigm(BaseProcessing):
             tmax=tmax,
         )
         self.events = events
+
+        # Normalize scorer (convert list of callables to dict)
+        scorer = _normalize_scorer(scorer)
 
         if scorer is not None:
             try:

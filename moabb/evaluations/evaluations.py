@@ -7,7 +7,6 @@ from uuid import uuid4
 import numpy as np
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
-from sklearn.metrics import check_scoring
 from sklearn.model_selection import (
     GroupKFold,
     LeaveOneGroupOut,
@@ -24,9 +23,12 @@ from moabb.evaluations.splitters import (
     WithinSessionSplitter,
 )
 from moabb.evaluations.utils import (
+    _average_scores,
     _create_save_path,
+    _create_scorer,
     _ensure_fitted,
     _save_model_cv,
+    _update_result_with_scores,
 )
 from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
 
@@ -229,6 +231,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                             tracker = EmissionsTracker(**self.codecarbon_config)
                         tracker.start()
 
+                    # Create scorer once before CV loop
+                    scorer, is_multimetric = _create_scorer(
+                        grid_clf, self.paradigm.scoring
+                    )
+
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
 
@@ -262,10 +269,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         _ensure_fitted(cvclf)
-                        scoring = check_scoring(
-                            estimator=cvclf, scoring=self.paradigm.scoring
-                        )
-                        score = scoring(cvclf, X_[test], y_[test])
+                        # scorer always returns dict
+                        score = scorer(cvclf, X_[test], y_[test])
                         acc.append(score)
 
                     if _carbonfootprint:
@@ -282,16 +287,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    if isinstance(acc[0], dict):
-                        mean_score = {
-                            key: np.mean([fold[key] for fold in acc]) for key in acc[0]
-                        }
-                        res["score"] = next(iter(mean_score.values()))
-                        res.update(
-                            {f"score_{key}": value for key, value in score.items()}
-                        )
-                    else:
-                        res["score"] = np.array(acc).mean()
+                    # No isinstance check needed - always dict
+                    mean_scores = _average_scores(acc)
+                    _update_result_with_scores(res, mean_scores, is_multimetric)
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
@@ -345,14 +343,15 @@ class WithinSessionEvaluation(BaseEvaluation):
         try:
             model = clf.fit(X_train, y_train)
             _ensure_fitted(model)
-            scoring = check_scoring(estimator=model, scoring=self.paradigm.scoring)
-            score = scoring(model, X_test, y_test)
+            scorer, is_multimetric = _create_scorer(model, self.paradigm.scoring)
+            score = scorer(model, X_test, y_test)
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
             score = self.error_score
+            is_multimetric = False  # fallback
         duration = perf_counter() - t_start
-        return score, duration
+        return score, is_multimetric, duration
 
     def _evaluate_learning_curve(
         self, dataset, pipelines, process_pipeline, postprocess_pipeline
@@ -449,19 +448,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                                     task_name = str(uuid4())
                                     tracker.start_task(task_name)
 
-                                score, res["time"] = self.score_explicit(
+                                score, is_multimetric, res["time"] = self.score_explicit(
                                     deepcopy(clf), X_train, y_train, X_test, y_test
                                 )
-                                if isinstance(score, dict):
-                                    res["score"] = next(iter(score.values()))
-                                    res.update(
-                                        {
-                                            f"score_{key}": value
-                                            for key, value in score.items()
-                                        }
-                                    )
-                                else:
-                                    res["score"] = score
+                                # score is always dict from _create_scorer
+                                _update_result_with_scores(res, score, is_multimetric)
 
                                 if _carbonfootprint:
                                     emissions_data = tracker.stop_task()
@@ -599,6 +590,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                         tracker = EmissionsTracker(**self.codecarbon_config)
                     tracker.start()
 
+                # Create scorer once before CV loop
+                scorer, is_multimetric = _create_scorer(grid_clf, self.paradigm.scoring)
+
                 for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
                     model_list = []
                     cvclf = clone(grid_clf)
@@ -632,10 +626,8 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                     _ensure_fitted(cvclf)
                     model_list.append(cvclf)
-                    scoring = check_scoring(
-                        estimator=cvclf, scoring=self.paradigm.scoring
-                    )
-                    score = scoring(cvclf, X[test], y[test])
+                    # scorer always returns dict
+                    score = scorer(cvclf, X[test], y[test])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
                     res = {
@@ -648,13 +640,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    if isinstance(score, dict):
-                        res["score"] = next(iter(score.values()))
-                        res.update(
-                            {f"score_{key}": value for key, value in score.items()}
-                        )
-                    else:
-                        res["score"] = score
+                    # No isinstance check needed - always dict
+                    _update_result_with_scores(res, score, is_multimetric)
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
@@ -830,13 +817,14 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                 _ensure_fitted(cvclf)
 
+                # Create scorer once per pipeline
+                scorer, is_multimetric = _create_scorer(cvclf, self.paradigm.scoring)
+
                 # Evaluate on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    scoring = check_scoring(
-                        estimator=cvclf, scoring=self.paradigm.scoring
-                    )
-                    score = scoring(cvclf, X[test[ix]], y[test[ix]])
+                    # scorer always returns dict
+                    score = scorer(cvclf, X[test[ix]], y[test[ix]])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
                     res = {
@@ -849,13 +837,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    if isinstance(score, dict):
-                        res["score"] = next(iter(score.values()))
-                        res.update(
-                            {f"score_{key}": value for key, value in score.items()}
-                        )
-                    else:
-                        res["score"] = score
+                    # No isinstance check needed - always dict
+                    _update_result_with_scores(res, score, is_multimetric)
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)

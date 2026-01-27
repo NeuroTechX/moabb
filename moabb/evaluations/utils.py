@@ -5,9 +5,12 @@ from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+import numpy as np
 from mne.utils.config import _open_lock
 from numpy import argmax
 from sklearn.base import ClassifierMixin
+from sklearn.metrics import check_scoring
+from sklearn.metrics._scorer import _MultimetricScorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
@@ -334,3 +337,91 @@ def check_search_available():
         return search_methods, True
     else:
         return {"grid": GridSearchCV}, False
+
+
+def _create_scorer(estimator, scoring):
+    """Create a scorer that always returns a dict.
+
+    Wraps single scorers in _MultimetricScorer with key "score" to ensure
+    consistent dict output format, simplifying downstream score handling.
+
+    Parameters
+    ----------
+    estimator : sklearn-compatible estimator
+        The fitted estimator to use for scoring validation.
+    scoring : str, callable, dict, list, or None
+        The scoring specification. Can be:
+        - None: uses default scorer
+        - str: a single scorer name (e.g., "accuracy")
+        - callable: a single scorer function
+        - dict: {name: scorer} for multiple metrics
+        - list: list of scorer names or callables
+
+    Returns
+    -------
+    scorer : _MultimetricScorer
+        Scorer that always returns dict of scores.
+    is_multimetric : bool
+        True if original scoring was multi-metric (dict or list).
+        Used for column naming in results.
+    """
+    # Check if multi-metric (dict or list)
+    is_multimetric = isinstance(scoring, (dict, list))
+
+    if is_multimetric:
+        # check_scoring creates _MultimetricScorer for dict/list
+        return check_scoring(estimator, scoring=scoring), True
+    else:
+        # Wrap single scorer in _MultimetricScorer with key "score"
+        single_scorer = check_scoring(estimator, scoring=scoring)
+        return _MultimetricScorer(scorers={"score": single_scorer}), False
+
+
+def _average_scores(fold_scores):
+    """Average scores across CV folds.
+
+    Parameters
+    ----------
+    fold_scores : list of dict
+        List of score dictionaries from each CV fold.
+        All dicts must have the same keys.
+
+    Returns
+    -------
+    mean_scores : dict
+        Dictionary with same keys as input, values are means across folds.
+    """
+    keys = fold_scores[0].keys()
+    return {key: np.mean([fold[key] for fold in fold_scores]) for key in keys}
+
+
+def _update_result_with_scores(res, scores, is_multimetric):
+    """Update result dict with scores.
+
+    For single-metric scoring, only adds "score" key.
+    For multi-metric scoring, adds "score" (first metric) and
+    "score_{name}" for each metric.
+
+    Parameters
+    ----------
+    res : dict
+        Result dictionary to update in-place.
+    scores : dict
+        Dictionary of score values.
+    is_multimetric : bool
+        Whether the original scoring was multi-metric.
+
+    Returns
+    -------
+    res : dict
+        The updated result dictionary.
+    """
+    if is_multimetric:
+        # Primary score is first metric value
+        res["score"] = next(iter(scores.values()))
+        # Add individual score columns
+        res.update({f"score_{key}": value for key, value in scores.items()})
+    else:
+        # Single scorer always has "score" key
+        res["score"] = scores["score"]
+    return res
