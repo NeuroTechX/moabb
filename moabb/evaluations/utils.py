@@ -338,6 +338,16 @@ def check_search_available():
         return {"grid": GridSearchCV}, False
 
 
+class _DictScorer:
+    """Wrapper that converts a single scorer to return dict format."""
+
+    def __init__(self, scorer):
+        self.scorer = scorer
+
+    def __call__(self, estimator, X, y=None, **kwargs):
+        return {"score": self.scorer(estimator, X, y, **kwargs)}
+
+
 def _create_scorer(estimator, scoring):
     """Create a scorer that always returns a dict.
 
@@ -368,11 +378,7 @@ def _create_scorer(estimator, scoring):
     else:
         # Wrap single scorer to return dict with key "score"
         single_scorer = check_scoring(estimator, scoring=scoring)
-
-        def _dict_scorer(estimator, X, y=None, **kwargs):
-            return {"score": single_scorer(estimator, X, y, **kwargs)}
-
-        return _dict_scorer
+        return _DictScorer(single_scorer)
 
 
 def _average_scores(fold_scores):
