@@ -126,11 +126,6 @@ class BaseEvaluation(ABC):
         self.optuna = optuna
         self.time_out = time_out
         self.verbose = verbose
-
-        self.additional_columns = additional_columns
-        if additional_columns is None:
-            self.additional_columns = []
-
         self.codecarbon_config = codecarbon_config
 
         if self.optuna and not optuna_available:
@@ -144,9 +139,6 @@ class BaseEvaluation(ABC):
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
-        if isinstance(self.paradigm.scoring, dict):
-            scoring_keys = [f"score_{key}" for key in self.paradigm.scoring.keys()]
-            self.additional_columns.extend(scoring_keys)
 
         # check labels
         if self.mne_labels and not self.return_epochs:
@@ -197,7 +189,7 @@ class BaseEvaluation(ABC):
             overwrite=overwrite,
             suffix=suffix,
             hdf5_path=self.hdf5_path,
-            additional_columns=self.additional_columns,
+            additional_columns=additional_columns,
         )
 
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
