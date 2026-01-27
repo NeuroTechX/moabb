@@ -360,17 +360,11 @@ def _create_scorer(estimator, scoring):
     -------
     scorer : callable
         Scorer that always returns dict of scores.
-    is_multimetric : bool
-        True if original scoring was multi-metric (dict or list).
-        Used for column naming in results.
 
     """
-    # Check if multi-metric (dict or list)
-    is_multimetric = isinstance(scoring, (dict, list))
-
-    if is_multimetric:
+    if isinstance(scoring, (dict, list)):
         # check_scoring returns a multi-metric scorer for dict/list inputs
-        return check_scoring(estimator, scoring=scoring), True
+        return check_scoring(estimator, scoring=scoring)
     else:
         # Wrap single scorer to return dict with key "score"
         single_scorer = check_scoring(estimator, scoring=scoring)
@@ -378,7 +372,7 @@ def _create_scorer(estimator, scoring):
         def _dict_scorer(estimator, X, y=None, **kwargs):
             return {"score": single_scorer(estimator, X, y, **kwargs)}
 
-        return _dict_scorer, False
+        return _dict_scorer
 
 
 def _average_scores(fold_scores):
@@ -406,10 +400,10 @@ def _average_scores(fold_scores):
     return {key: np.mean([fold[key] for fold in fold_scores]) for key in keys}
 
 
-def _update_result_with_scores(res, scores, is_multimetric):
+def _update_result_with_scores(res, scores):
     """Update result dict with scores.
 
-    For single-metric scoring, only adds "score" key.
+    For single-metric scoring (dict with only "score" key), only adds "score".
     For multi-metric scoring, adds "score" (first metric) and
     "score_{name}" for each metric.
 
@@ -419,20 +413,18 @@ def _update_result_with_scores(res, scores, is_multimetric):
         Result dictionary to update in-place.
     scores : dict
         Dictionary of score values.
-    is_multimetric : bool
-        Whether the original scoring was multi-metric.
 
     Returns
     -------
     res : dict
         The updated result dictionary.
     """
-    if is_multimetric:
-        # Primary score is first metric value
+    if list(scores.keys()) == ["score"]:
+        # Single scorer
+        res["score"] = scores["score"]
+    else:
+        # Multi-metric: primary score is first metric value
         res["score"] = next(iter(scores.values()))
         # Add individual score columns
         res.update({f"score_{key}": value for key, value in scores.items()})
-    else:
-        # Single scorer always has "score" key
-        res["score"] = scores["score"]
     return res

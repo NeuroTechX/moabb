@@ -229,9 +229,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         tracker.start()
 
                     # Create scorer once before CV loop
-                    scorer, is_multimetric = _create_scorer(
-                        grid_clf, self.paradigm.scoring
-                    )
+                    scorer = _create_scorer(grid_clf, self.paradigm.scoring)
 
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
@@ -284,9 +282,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    # No isinstance check needed - always dict
                     mean_scores = _average_scores(acc)
-                    _update_result_with_scores(res, mean_scores, is_multimetric)
+                    _update_result_with_scores(res, mean_scores)
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
@@ -340,16 +337,15 @@ class WithinSessionEvaluation(BaseEvaluation):
         try:
             model = clf.fit(X_train, y_train)
             _ensure_fitted(model)
-            scorer, is_multimetric = _create_scorer(model, self.paradigm.scoring)
+            scorer = _create_scorer(model, self.paradigm.scoring)
             score = scorer(model, X_test, y_test)
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
             # Return error_score as dict to match expected format
             score = {"score": self.error_score}
-            is_multimetric = False
         duration = perf_counter() - t_start
-        return score, is_multimetric, duration
+        return score, duration
 
     def _evaluate_learning_curve(
         self, dataset, pipelines, process_pipeline, postprocess_pipeline
@@ -443,11 +439,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                                     task_name = str(uuid4())
                                     tracker.start_task(task_name)
 
-                                score, is_multimetric, res["time"] = self.score_explicit(
+                                score, res["time"] = self.score_explicit(
                                     deepcopy(clf), X_train, y_train, X_test, y_test
                                 )
-                                # score is always dict from _create_scorer
-                                _update_result_with_scores(res, score, is_multimetric)
+                                _update_result_with_scores(res, score)
 
                                 if _carbonfootprint:
                                     emissions_data = tracker.stop_task()
@@ -583,7 +578,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     tracker.start()
 
                 # Create scorer once before CV loop
-                scorer, is_multimetric = _create_scorer(grid_clf, self.paradigm.scoring)
+                scorer = _create_scorer(grid_clf, self.paradigm.scoring)
 
                 for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
                     model_list = []
@@ -618,7 +613,6 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                     _ensure_fitted(cvclf)
                     model_list.append(cvclf)
-                    # scorer always returns dict
                     score = scorer(cvclf, X[test], y[test])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
@@ -632,8 +626,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    # No isinstance check needed - always dict
-                    _update_result_with_scores(res, score, is_multimetric)
+                    _update_result_with_scores(res, score)
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
@@ -807,12 +800,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 _ensure_fitted(cvclf)
 
                 # Create scorer once per pipeline
-                scorer, is_multimetric = _create_scorer(cvclf, self.paradigm.scoring)
+                scorer = _create_scorer(cvclf, self.paradigm.scoring)
 
                 # Evaluate on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    # scorer always returns dict
                     score = scorer(cvclf, X[test[ix]], y[test[ix]])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
@@ -826,8 +818,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    # No isinstance check needed - always dict
-                    _update_result_with_scores(res, score, is_multimetric)
+                    _update_result_with_scores(res, score)
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
