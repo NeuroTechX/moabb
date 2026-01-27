@@ -16,15 +16,7 @@ from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 from .beetl import Beetl2021_A, Beetl2021_B
 
 # BNCI datasets (from bnci subpackage)
-from .bnci import BNCI2014001  # noqa: F401
-from .bnci import BNCI2014002  # noqa: F401
-from .bnci import BNCI2014004  # noqa: F401
-from .bnci import BNCI2014008  # noqa: F401
-from .bnci import BNCI2014009  # noqa: F401
-from .bnci import BNCI2015001  # noqa: F401
-from .bnci import BNCI2015003  # noqa: F401
-from .bnci import BNCI2015004  # noqa: F401
-from .bnci import (  # Legacy datasets (2003-2019); Newer datasets (2016-2025); Deprecated aliases (will be removed in future)
+from .bnci import (
     BNCI2003_004,
     BNCI2014_001,
     BNCI2014_002,

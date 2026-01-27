@@ -9,7 +9,7 @@ from scipy.io import loadmat
 
 from moabb.utils import depreciated_alias
 
-from .legacy_base import (
+from .base import (
     BBCI_URL,
     BNCI_URL,
     MNEBNCI,
@@ -251,21 +251,22 @@ def _load_data_006_2015(
 ):
     """Load data for 006-2015 dataset (Music BCI)."""
     validate_subject(subject, 11, "BNCI2015-006")
+    # Subject codes from BNCI website (not sequential vp1-vp11)
     subjects = [
-        "vp1",
-        "vp2",
-        "vp3",
-        "vp4",
-        "vp5",
-        "vp6",
-        "vp7",
-        "vp8",
-        "vp9",
-        "vp10",
-        "vp11",
+        "VPaak",
+        "VPaan",
+        "VPgcc",
+        "VPaap",
+        "VPaaq",
+        "VPjaq",
+        "VPaar",
+        "VPjat",
+        "VPgeo",
+        "VPaas",
+        "VPaat",
     ]
     s = subjects[subject - 1]
-    url = "{u}BNCIHorizon2020-MusicBCI/MusicBCI_{s}.mat".format(u=base_url, s=s)
+    url = "{u}BNCIHorizon2020-MusicBCI/musicbci_{s}.mat".format(u=base_url, s=s)
     filename = data_path(url, path, force_update, update_path)[0]
     if only_filenames:
         return [filename]
@@ -277,8 +278,8 @@ def _load_data_006_2015(
     ch_types = ["eeg"] * len(ch_names)
     trigger = np.zeros((len(eeg_data), 1))
     if hasattr(data, "trial") and len(data.trial) > 0:
-        trial_indices = np.array(data.trial).flatten() - 1
-        trial_labels = np.array(data.y).flatten()
+        trial_indices = np.array(data.trial).flatten().astype(int) - 1
+        trial_labels = np.array(data.y).flatten().astype(int)
         valid_mask = (trial_indices >= 0) & (trial_indices < len(eeg_data))
         trigger[trial_indices[valid_mask], 0] = trial_labels[valid_mask]
     eeg_data = np.c_[eeg_data, trigger]

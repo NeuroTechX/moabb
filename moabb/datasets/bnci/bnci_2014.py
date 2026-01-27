@@ -5,7 +5,7 @@ from scipy.io import loadmat
 
 from moabb.utils import depreciated_alias
 
-from .legacy_base import (
+from .base import (
     BNCI_URL,
     MNEBNCI,
     _convert_mi,

@@ -2,7 +2,7 @@
 
 from mne.utils import verbose
 
-from .legacy_base import MNEBNCI, _convert_bbci2003, _finalize_raw, data_path
+from .base import MNEBNCI, _convert_bbci2003, _finalize_raw, data_path
 from .utils import validate_subject
 
 

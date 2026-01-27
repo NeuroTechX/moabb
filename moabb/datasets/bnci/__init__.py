@@ -3,6 +3,8 @@
 This subpackage contains all BNCI datasets organized by year.
 """
 
+from .base import MNEBNCI, load_data
+
 # Legacy datasets (2003-2019), split by year
 from .bnci_2003 import BNCI2003_004
 from .bnci_2014 import (
@@ -40,7 +42,6 @@ from .bnci_2020 import BNCI2020_001, BNCI2020_002
 from .bnci_2022_001 import BNCI2022_001
 from .bnci_2024_001 import BNCI2024_001
 from .bnci_2025 import BNCI2025_001, BNCI2025_002
-from .legacy_base import MNEBNCI, load_data
 
 
 __all__ = [
