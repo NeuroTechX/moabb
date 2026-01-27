@@ -427,7 +427,7 @@ def _convert_bbci(filename, ch_types, verbose=None):
 
 
 @verbose
-def _convert_run_bbci(run, ch_types, verbose=None):
+def _convert_run_bbci(run, ch_types=None, verbose=None):
     """Convert one run to raw."""
 
     # parse eeg data
@@ -435,6 +435,10 @@ def _convert_run_bbci(run, ch_types, verbose=None):
     sfreq = run.fs
 
     ch_names = list(run.channels)
+
+    # Dynamically determine channel types if not provided
+    if ch_types is None:
+        ch_types = ["eeg"] * len(ch_names)
 
     trigger = np.zeros((len(eeg_data), 1))
     trigger[run.trial - 1, 0] = run.y

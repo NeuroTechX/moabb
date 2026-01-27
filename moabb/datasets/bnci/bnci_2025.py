@@ -1,11 +1,16 @@
 """BNCI 2025 datasets."""
 
+import zipfile
 from datetime import datetime, timezone
+from pathlib import Path
 
+import mne
 import numpy as np
 from mne import Annotations
 from mne.utils import verbose
 from scipy.io import loadmat
+
+from moabb.datasets import download as dl
 
 from .base import BNCIBaseDataset
 from .utils import (
@@ -22,6 +27,31 @@ from .utils import (
 # BNCI 2025-001: Motor Kinematics Reaching
 # =============================================================================
 
+# Base URL for the BNCI 2025-001 dataset (hosted at TU Graz)
+BNCI_2025_001_URL = "https://lampx.tugraz.at/~bci/database/001-2025/"
+
+# Event code mapping for 001-2025 dataset
+# Format: XYZ where X=speed (1=slow, 2=fast), Y=distance (1=near, 2=far), Z=direction (1-4)
+# Direction codes: 1=up, 2=down, 3=left, 4=right
+_EVENT_CODE_MAPPING_001_2025 = {
+    "111": "up_slow_near",
+    "112": "down_slow_near",
+    "113": "left_slow_near",
+    "114": "right_slow_near",
+    "121": "up_slow_far",
+    "122": "down_slow_far",
+    "123": "left_slow_far",
+    "124": "right_slow_far",
+    "211": "up_fast_near",
+    "212": "down_fast_near",
+    "213": "left_fast_near",
+    "214": "right_fast_near",
+    "221": "up_fast_far",
+    "222": "down_fast_far",
+    "223": "left_fast_far",
+    "224": "right_fast_far",
+}
+
 
 @verbose
 def _load_data_001_2025(
@@ -29,7 +59,7 @@ def _load_data_001_2025(
     path=None,
     force_update=False,
     update_path=None,
-    base_url=BNCI_URL,
+    base_url=BNCI_2025_001_URL,
     only_filenames=False,
     verbose=None,
 ):
@@ -70,94 +100,75 @@ def _load_data_001_2025(
     - Sampling rate: 500 Hz
     - 4 directions x 2 speeds x 2 distances = 16 conditions
     - ~60 trials per condition (~960 total per subject)
+
+    The data is stored in EEGLAB format (.set/.fdt files) inside ZIP archives.
+    Each subject's ZIP file contains:
+    - {subject}v2-trialblocks.set/fdt: Main trial data with reaching movements
+    - {subject}v2-eyeblocks.set/fdt: Eye movement calibration data
     """
     validate_subject(subject, 20, "BNCI2025-001")
 
-    # Download the data file for this subject
-    url = "{u}001-2025/sub{s:02d}.mat".format(u=base_url, s=subject)
-    filename = bnci_data_path(url, path, force_update, update_path)[0]
+    # Download the ZIP file for this subject
+    zip_filename = f"p{subject:03d}.zip"
+    url = f"{base_url}{zip_filename}"
+
+    # Download the ZIP file
+    zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
+
+    # Determine the extraction directory (same as ZIP location)
+    zip_dir = Path(zip_path).parent
+    extract_dir = zip_dir / f"p{subject:03d}"
+
+    # Extract if not already extracted or if force_update
+    # Try v2 naming first (subject 1 style: p001v2-trialblocks.set)
+    set_file = extract_dir / f"p{subject:03d}v2-trialblocks.set"
+    set_file_alt = extract_dir / f"p{subject:03d}-trialblocks.set"
+
+    if (not set_file.exists() and not set_file_alt.exists()) or force_update:
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            zf.extractall(extract_dir)
+
+    # Use the file that exists (v2 naming for subject 1, regular for others)
+    if not set_file.exists():
+        set_file = set_file_alt
+    if not set_file.exists():
+        raise FileNotFoundError(
+            f"Could not find .set file in {extract_dir}. "
+            f"Tried: p{subject:03d}v2-trialblocks.set and p{subject:03d}-trialblocks.set"
+        )
 
     if only_filenames:
-        return [filename]
+        return [str(set_file)]
 
-    # Load the MAT file
-    mat_data = loadmat(filename, struct_as_record=False, squeeze_me=True)
+    # Load the EEGLAB file
+    raw = mne.io.read_raw_eeglab(str(set_file), preload=True, verbose=verbose)
 
-    # Expected structure based on BNCI convention:
-    # data.X - EEG data (samples x channels)
-    # data.y - labels
-    # data.trial - trial onset indices
-    # data.fs - sampling frequency
-    # data.classes - class names
+    # Remap annotation descriptions from numeric codes to descriptive names
+    # The data contains codes like "111", "112", etc. which we map to
+    # descriptive names like "up_slow_near", "down_slow_near", etc.
+    if raw.annotations is not None and len(raw.annotations) > 0:
+        new_descriptions = []
+        for desc in raw.annotations.description:
+            if desc in _EVENT_CODE_MAPPING_001_2025:
+                new_descriptions.append(_EVENT_CODE_MAPPING_001_2025[desc])
+            else:
+                new_descriptions.append(desc)
+        raw.annotations.description = np.array(new_descriptions)
 
-    data = mat_data["data"]
+    # Set measurement date for BIDS compliance
+    raw.set_meas_date(datetime(2024, 1, 1, tzinfo=timezone.utc))
 
-    # Get sampling frequency
-    sfreq = float(data.fs) if hasattr(data, "fs") else 500.0
+    # Set line frequency (European dataset)
+    raw.info["line_freq"] = 50.0
 
-    # Get channel names - 60 EEG + 4 EOG
-    if hasattr(data, "channels"):
-        ch_names = list(data.channels)
-    else:
-        # Default channel names based on paper description
-        # 60 EEG channels in standard 10-10 montage + 4 EOG
-        # fmt: off
-        ch_names = [
-            "Fp1", "Fpz", "Fp2", "AF7", "AF3", "AFz", "AF4", "AF8",
-            "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6", "F8",
-            "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8",
-            "T7", "C5", "C3", "C1", "Cz", "C2", "C4", "C6", "T8",
-            "TP7", "CP5", "CP3", "CP1", "CPz", "CP2", "CP4", "CP6", "TP8",
-            "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6", "P8",
-            "PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2",
-            "EOG1", "EOG2", "EOG3", "EOG4",
-        ]
-        # fmt: on
+    # Set montage for standard 10-10 positions
+    montage = mne.channels.make_standard_montage("standard_1005")
+    raw.set_montage(montage, on_missing="ignore")
 
-    # Set channel types
-    ch_types = ["eeg"] * 60 + ["eog"] * 4
-
-    # Get EEG data and ensure correct orientation
-    eeg_data = ensure_data_orientation(data.X, n_channels=64)
-
-    n_channels_data = eeg_data.shape[0]
-    if n_channels_data != len(ch_names):
-        if n_channels_data > len(ch_names):
-            eeg_data = eeg_data[: len(ch_names), :]
-        else:
-            ch_names = ch_names[:n_channels_data]
-            ch_types = ch_types[:n_channels_data]
-
-    # Convert to volts
-    eeg_data = convert_units(eeg_data, from_unit="uV", to_unit="V")
-
-    # Get trial information
-    trial_onsets = data.trial - 1  # Convert to 0-indexed
-    labels = data.y
-
-    # Create trigger channel
-    trigger = np.zeros((1, eeg_data.shape[1]))
-    for onset, label in zip(trial_onsets, labels):
-        if onset < trigger.shape[1]:
-            trigger[0, onset] = label
-
-    # Add trigger channel
-    all_data = np.vstack([eeg_data, trigger])
-    ch_names = ch_names + ["STI"]
-    ch_types = ch_types + ["stim"]
-
-    raw = make_raw(
-        all_data,
-        ch_names,
-        ch_types,
-        sfreq,
-        verbose=verbose,
-        montage="standard_1005",
-        line_freq=50.0,
-    )
-
-    # Return in standard session format
+    # Return in MOABB session format
+    # Session/run names must match pattern: digit(s) followed by optional letters
     sessions = {"0": {"0": raw}}
+
     return sessions
 
 
@@ -257,10 +268,10 @@ class BNCI2025_001(BNCIBaseDataset):
         "paradigm": "imagery",  # Compatible paradigm for MOABB processing
         "task_type": "movement_execution",
         "doi": "10.1088/1741-2552/ada0ea",
-        "license": "Open access (BNCI Horizon 2020)",
+        "license": "CC BY 4.0",
         "montage": "standard_1005",
         "filters": "0.3-100 Hz bandpass, 50 Hz notch",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/",
+        "data_url": "https://lampx.tugraz.at/~bci/database/001-2025/",
     }
 
     def __init__(self):
@@ -290,7 +301,7 @@ class BNCI2025_001(BNCIBaseDataset):
             paradigm="imagery",  # Compatible with motor imagery paradigm
             doi="10.1088/1741-2552/ada0ea",
             load_fn=_load_data_001_2025,
-            base_url=BNCI_URL,
+            base_url=BNCI_2025_001_URL,
         )
 
 
@@ -425,6 +436,57 @@ def _extract_annotations(mat_data, sfreq, n_samples):
     return None
 
 
+# Marker codes for 002-2025 dataset
+# These files contain snake run trials with perception feedback
+_MARKER_CODE_002 = {
+    1000: "snakerun",  # Trial start - snake tracking task
+}
+
+
+def _extract_annotations_from_markers_array(markers, sfreq):
+    """Extract annotations from a continuous MARKERS array.
+
+    The MARKERS array contains event codes at each sample. Events are detected
+    by finding rising edges (transitions from 0 or negative to positive values).
+
+    Parameters
+    ----------
+    markers : ndarray
+        1D array of marker codes, one per sample.
+    sfreq : float
+        Sampling frequency in Hz.
+
+    Returns
+    -------
+    annotations : Annotations | None
+        MNE Annotations object with detected events, or None if no events found.
+    """
+    markers = np.asarray(markers).squeeze()
+    if markers.ndim != 1 or markers.size == 0:
+        return None
+
+    # Find rising edges: transitions from 0 (or negative) to positive marker codes
+    # We're interested in trial starts marked by code 1000
+    onsets = []
+    descriptions = []
+
+    prev_marker = markers[0]
+    for i in range(1, len(markers)):
+        curr_marker = markers[i]
+        # Detect rising edge to a known marker code
+        if curr_marker != prev_marker and curr_marker in _MARKER_CODE_002:
+            onsets.append(i / sfreq)
+            descriptions.append(_MARKER_CODE_002[curr_marker])
+        prev_marker = curr_marker
+
+    if not onsets:
+        return None
+
+    return Annotations(
+        onset=onsets, duration=[0.0] * len(onsets), description=descriptions
+    )
+
+
 @verbose
 def _load_data_002_2025(
     subject,
@@ -440,7 +502,8 @@ def _load_data_002_2025(
     Parameters
     ----------
     subject : int
-        Subject number (1-20).
+        Subject number (1-2). Note: Only 2 subjects are currently available
+        on the BNCI server.
     path : None | str
         Location of where to look for the BNCI data storing location.
     force_update : bool
@@ -459,15 +522,11 @@ def _load_data_002_2025(
     sessions : dict
         Dictionary containing sessions with raw data for each run.
     """
-    validate_subject(subject, 20, "BNCI2025-002")
+    validate_subject(subject, 2, "BNCI2025-002")
 
-    # Subject IDs in the dataset (as listed on BNCI website)
-    # fmt: off
-    subject_ids = [
-        "fe3", "fg4", "fg6", "fh0", "fh4", "fh5", "fh7", "fi3", "fi6", "fj0",
-        "fj4", "fj5", "fj7", "fk3", "fk6", "fl0", "fl3", "fl4", "fl6", "fm0",
-    ]
-    # fmt: on
+    # Subject IDs available on the BNCI server
+    # Note: Only 2 of the original 20 subjects' data is currently available
+    subject_ids = ["fe3", "fg4"]
 
     subj_id = subject_ids[subject - 1]
 
@@ -640,7 +699,15 @@ def _convert_run_002_2025(
         description=f"Session {session_idx}, Perception: {perception}",
     )
 
-    annotations = _extract_annotations(data, sfreq, eeg_data.shape[1])
+    # Try to extract annotations from the MARKERS array (002-2025 format)
+    annotations = None
+    if "MARKERS" in data:
+        annotations = _extract_annotations_from_markers_array(data["MARKERS"], sfreq)
+
+    # Fallback to standard extraction methods
+    if annotations is None:
+        annotations = _extract_annotations(data, sfreq, eeg_data.shape[1])
+
     if annotations is not None:
         raw.set_annotations(annotations)
 
@@ -654,22 +721,24 @@ class BNCI2025_002(BNCIBaseDataset):
 
     **Dataset Description**
 
-    This dataset contains EEG recordings from 20 able-bodied participants
-    performing a continuous 2D trajectory decoding task using attempted
-    movement. The study investigates continuous decoding of hand movement
-    trajectories from EEG signals, with participants tracking a moving target
-    on screen while their dominant arm is strapped to restrict actual motor
-    output (simulating attempted movement conditions similar to paralyzed
-    individuals).
+    This dataset contains EEG recordings from participants performing a
+    continuous 2D trajectory decoding task using attempted movement. The study
+    investigates continuous decoding of hand movement trajectories from EEG
+    signals, with participants tracking a moving target on screen while their
+    dominant arm is strapped to restrict actual motor output (simulating
+    attempted movement conditions similar to paralyzed individuals).
 
     The experimental paradigm includes both calibration and online decoding
     phases, with varying levels of EEG feedback (0%, 50%, 100%) to evaluate
     the impact of feedback on decoding performance.
 
+    Note: Only 2 of the original 20 participants' data is currently available
+    on the BNCI server.
+
     **Participants**
 
-    - 20 able-bodied subjects (10 male, mean age 24 +/- 5 years)
-    - All right-handed
+    - 2 subjects available (from original 20 able-bodied subjects)
+    - Original study: 10 male, mean age 24 +/- 5 years, all right-handed
     - 4 had prior EEG experience
     - Location: Institute of Neural Engineering, Graz University of
       Technology, Austria
@@ -735,18 +804,19 @@ class BNCI2025_002(BNCIBaseDataset):
     """
 
     _participant_demographics = {
-        "n_subjects": 20,
-        "gender": {"male": 10, "female": 10},
+        "n_subjects": 2,
+        "gender": {"male": 10, "female": 10},  # Original study demographics
         "age_mean": 24,
         "age_std": 5,
         "handedness": "all right-handed",
         "health_status": "able-bodied participants",
         "bci_experience": "4 had prior EEG experience",
         "location": "Institute of Neural Engineering, Graz University of Technology, Austria",
+        "note": "Only 2 of 20 subjects currently available on server",
     }
 
     ARTICLE_METADATA = {
-        "n_subjects": 20,
+        "n_subjects": 2,
         "sessions_per_subject": 3,
         "sampling_rate": 200,
         "n_channels": 64,
@@ -763,7 +833,7 @@ class BNCI2025_002(BNCIBaseDataset):
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 21)),
+            subjects=list(range(1, 3)),
             sessions_per_subject=3,
             events=EVENT_ID_002,
             code="BNCI2025-002",

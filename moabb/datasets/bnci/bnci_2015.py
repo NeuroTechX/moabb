@@ -354,7 +354,9 @@ def _load_data_010_2015(
     if only_filenames:
         return [filename]
 
-    ch_types = ["eeg"] * 63
+    # Pass None for ch_types to allow dynamic detection based on actual channel count
+    # Most subjects have 63 channels, but some (e.g., subject 5/VPgce) have 61
+    ch_types = None
 
     raws, event_id = _convert_bbci(filename, ch_types, verbose=None)
     for raw in raws:
@@ -373,9 +375,11 @@ def _load_data_012_2015(
     verbose=None,
 ):
     """Load data for 012-2015 dataset."""
-    validate_subject(subject, 12, "BNCI2015-012")
+    validate_subject(subject, 10, "BNCI2015-012")
 
-    subjects = ["nv", "nw", "nx", "ny", "nz", "mg", "oa", "ob", "oc", "od", "ja", "oe"]
+    # Subject codes - removed "nx" (original subject 3) and "mg" (original subject 6)
+    # as their data files are not available on the BNCI server (HTTP 404)
+    subjects = ["nv", "nw", "ny", "nz", "oa", "ob", "oc", "od", "ja", "oe"]
 
     s = subjects[subject - 1]
     url = "{u}BNCIHorizon2020-PASS2D/PASS2D_VP{s}.mat".format(u=base_url, s=s)
@@ -648,10 +652,10 @@ class BNCI2015_006(MNEBNCI):
     ARTICLE_METADATA = {
         "n_subjects": 11,
         "sessions_per_subject": 1,
-        "sampling_rate": 100,
+        "sampling_rate": 200,
         "n_channels": 64,
         "paradigm": "p300",
-        "events": {"attended_deviant": 1, "unattended_deviant": 2},
+        "events": {"Target": 1, "NonTarget": 2},
         "doi": "10.1088/1741-2560/11/2/026009",
     }
 
@@ -659,7 +663,7 @@ class BNCI2015_006(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 12)),
             sessions_per_subject=1,
-            events={"attended_deviant": 1, "unattended_deviant": 2},
+            events={"Target": 1, "NonTarget": 2},
             code="BNCI2015-006",
             interval=[0, 1.0],
             paradigm="p300",
@@ -814,10 +818,10 @@ class BNCI2015_007(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 17)),
             sessions_per_subject=1,
-            events={"Target": 1, "Non-target": 2},
+            events={"Target": 1, "NonTarget": 2},
             code="BNCI2015-007",
             interval=[0, 0.7],
-            paradigm="p300",  # Oddball-like paradigm with Target/Non-target
+            paradigm="p300",  # Oddball-like paradigm with Target/NonTarget
             doi="10.1088/1741-2560/9/4/045006",
         )
 
@@ -1156,8 +1160,11 @@ class BNCI2015_012(MNEBNCI):
 
     **Dataset Description**
 
-    This dataset contains EEG recordings from 12 subjects performing a P300
+    This dataset contains EEG recordings from 10 subjects performing a P300
     speller task with a two-dimensional pseudo-random sequence (PASS2D) paradigm.
+
+    Note: Only 10 of the original 12 participants' data is available on the BNCI
+    server. Subjects 3 (VPnx) and 6 (VPmg) return HTTP 404 errors.
 
     References
     ----------
@@ -1172,16 +1179,14 @@ class BNCI2015_012(MNEBNCI):
     """
 
     _participant_demographics = {
-        "n_subjects": 12,
+        "n_subjects": 10,
         "health_status": "healthy subjects",
         "location": "Berlin Institute of Technology, Germany",
         "subject_codes": [
             "nv",
             "nw",
-            "nx",
             "ny",
             "nz",
-            "mg",
             "oa",
             "ob",
             "oc",
@@ -1192,7 +1197,7 @@ class BNCI2015_012(MNEBNCI):
     }
 
     ARTICLE_METADATA = {
-        "n_subjects": 12,
+        "n_subjects": 10,
         "sessions_per_subject": 1,
         "sampling_rate": 100,
         "n_channels": 63,
@@ -1207,7 +1212,7 @@ class BNCI2015_012(MNEBNCI):
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 13)),
+            subjects=list(range(1, 11)),
             sessions_per_subject=1,
             events={"Target": 1, "NonTarget": 2},
             code="BNCI2015-012",
@@ -1256,8 +1261,8 @@ class BNCI2015_013(MNEBNCI):
         "sessions_per_subject": 2,
         "n_channels": 64,
         "channel_types": {"eeg": 64},
-        "paradigm": "erp",
-        "events": {"correct": 1, "error": 2},
+        "paradigm": "p300",
+        "events": {"Target": 1, "NonTarget": 2},
         "doi": "10.1109/TNSRE.2010.2053387",
         "data_url": "http://bnci-horizon-2020.eu/database/data-sets/013-2015/",
     }
@@ -1266,10 +1271,10 @@ class BNCI2015_013(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 7)),
             sessions_per_subject=2,
-            events={"correct": 1, "error": 2},
+            events={"Target": 1, "NonTarget": 2},
             code="BNCI2015-013",
             interval=[0, 0.6],
-            paradigm="erp",
+            paradigm="p300",
             doi="10.1109/TNSRE.2010.2053387",
         )
 
