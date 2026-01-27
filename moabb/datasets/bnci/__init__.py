@@ -3,10 +3,6 @@
 This subpackage contains all BNCI datasets organized by year.
 """
 
-# Compatibility shim for the removed legacy module.
-import sys
-import types
-
 # Legacy datasets (2003-2019), split by year
 from .bnci_2003 import BNCI2003_004
 from .bnci_2014 import (
@@ -87,40 +83,3 @@ __all__ = [
     "BNCI2015003",
     "BNCI2015004",
 ]
-
-# Provide a module alias for backward compatibility with
-# ``moabb.datasets.bnci.legacy`` without keeping legacy.py on disk.
-_legacy_module = types.ModuleType(f"{__name__}.legacy")
-_legacy_exports = [
-    "MNEBNCI",
-    "load_data",
-    "BNCI2003_004",
-    "BNCI2014_001",
-    "BNCI2014_002",
-    "BNCI2014_004",
-    "BNCI2014_008",
-    "BNCI2014_009",
-    "BNCI2015_001",
-    "BNCI2015_003",
-    "BNCI2015_004",
-    "BNCI2015_006",
-    "BNCI2015_007",
-    "BNCI2015_008",
-    "BNCI2015_009",
-    "BNCI2015_010",
-    "BNCI2015_012",
-    "BNCI2015_013",
-    "BNCI2019_001",
-    "BNCI2014001",
-    "BNCI2014002",
-    "BNCI2014004",
-    "BNCI2014008",
-    "BNCI2014009",
-    "BNCI2015001",
-    "BNCI2015003",
-    "BNCI2015004",
-]
-for _name in _legacy_exports:
-    setattr(_legacy_module, _name, globals()[_name])
-_legacy_module.__all__ = list(_legacy_exports)
-sys.modules[f"{__name__}.legacy"] = _legacy_module

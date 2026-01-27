@@ -56,7 +56,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
-- Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed, while import compatibility for ``moabb.datasets.bnci.legacy`` is preserved via a module alias (by `Bruno Aristimunha`_).
+- Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
 - Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
 
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
