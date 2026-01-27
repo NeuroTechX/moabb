@@ -28,6 +28,7 @@ from moabb.evaluations.utils import (
     _create_scorer,
     _ensure_fitted,
     _save_model_cv,
+    _score_and_update,
     _update_result_with_scores,
 )
 from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
@@ -613,7 +614,6 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                     _ensure_fitted(cvclf)
                     model_list.append(cvclf)
-                    score = scorer(cvclf, X[test], y[test])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
                     res = {
@@ -626,7 +626,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    _update_result_with_scores(res, score)
+                    _score_and_update(res, scorer, cvclf, X[test], y[test])
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
@@ -805,7 +805,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # Evaluate on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    score = scorer(cvclf, X[test[ix]], y[test[ix]])
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
                     res = {
@@ -818,7 +817,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
-                    _update_result_with_scores(res, score)
+                    _score_and_update(res, scorer, cvclf, X[test[ix]], y[test[ix]])
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)

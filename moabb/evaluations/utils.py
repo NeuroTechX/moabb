@@ -428,3 +428,31 @@ def _update_result_with_scores(res, scores):
         # Add individual score columns
         res.update({f"score_{key}": value for key, value in scores.items()})
     return res
+
+
+def _score_and_update(res, scorer, model, X, y):
+    """Score model and update result dict.
+
+    Combines scoring and result update into a single call.
+    This is a building block for future _evaluate_fold refactoring.
+
+    Parameters
+    ----------
+    res : dict
+        Result dictionary to update in-place.
+    scorer : callable
+        Scorer function that returns a dict of scores.
+    model : estimator
+        Fitted model to score.
+    X : array-like
+        Test features.
+    y : array-like
+        Test labels.
+
+    Returns
+    -------
+    res : dict
+        The updated result dictionary.
+    """
+    score = scorer(model, X, y)
+    return _update_result_with_scores(res, score)
