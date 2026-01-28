@@ -80,8 +80,8 @@ ALEXMI_METADATA = DatasetMetadata(
 BNCI2014_001_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=250.0,
-        n_channels=22,
-        channel_types={"eeg": 22},
+        n_channels=26,
+        channel_types={"eeg": 22, "eog": 3, "stim": 1},
         sensors=[
             "Fz",
             "FC3",
@@ -151,8 +151,8 @@ BNCI2014_001_METADATA = DatasetMetadata(
 BNCI2014_002_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=15,
-        channel_types={"eeg": 15},
+        n_channels=16,
+        channel_types={"eeg": 15, "stim": 1},
         montage="standard_1005",
         line_freq=50.0,
     ),
@@ -186,8 +186,8 @@ BNCI2014_002_METADATA = DatasetMetadata(
 BNCI2014_004_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=250.0,
-        n_channels=3,
-        channel_types={"eeg": 3},
+        n_channels=7,
+        channel_types={"eeg": 3, "eog": 3, "stim": 1},
         sensors=["C3", "Cz", "C4"],
         filters="0.5-100 Hz bandpass, 50 Hz notch",
         montage="standard_1005",
@@ -222,8 +222,8 @@ BNCI2014_004_METADATA = DatasetMetadata(
 BNCI2015_001_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=13,
-        channel_types={"eeg": 13},
+        n_channels=14,
+        channel_types={"eeg": 13, "stim": 1},
         sensors=[
             "FC3",
             "FCz",
@@ -248,8 +248,8 @@ BNCI2015_001_METADATA = DatasetMetadata(
     ),
     experiment=ExperimentMetadata(
         paradigm="imagery",
-        task_type="right_hand_feet",
-        events={"right_hand": 1, "feet": 2},
+        task_type="right_hand_left_hand",
+        events={"right_hand": 1, "left_hand": 2},
         n_classes=2,
         trial_duration=5.0,
     ),
@@ -364,8 +364,8 @@ BNCI2003_004_METADATA = DatasetMetadata(
 CHO2017_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=64,
-        channel_types={"eeg": 64},
+        n_channels=69,
+        channel_types={"eeg": 64, "emg": 4, "stim": 1},
         hardware="BrainAmp",
         montage="standard_1005",
         line_freq=60.0,
