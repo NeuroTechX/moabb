@@ -1,7 +1,8 @@
 """Metadata schema dataclasses for MOABB datasets.
 
 This module provides a standardized way to document dataset metadata,
-inspired by the Eegle.jl library's YAML-based metadata format.
+combining MOABB's paradigm-focused structure with EEGDash's comprehensive
+schema for compatibility with the broader EEG data ecosystem.
 
 The schema is organized into logical sections:
 - AcquisitionMetadata: Technical recording parameters
@@ -9,20 +10,216 @@ The schema is organized into logical sections:
 - ParticipantMetadata: Subject demographics
 - ExperimentMetadata: Paradigm and task details
 - DatasetMetadata: Top-level container combining all sections
+
+Additional EEGDash-compatible classes:
+- Demographics: Extended subject demographics (EEGDash format)
+- ExternalLinks: URLs and data sources
+- Timestamps: Dataset creation/modification dates
+- Storage: Data location information
+- Tags: Classification tags with confidence scores
+- TaggerMeta: Automatic tagging metadata
+
+References
+----------
+- EEGDash API: https://eegdash.org/
+- EEGDash Data API: https://data.eegdash.org/api/eegdash/datasets/summary/
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Dict, List, Optional
+
+
+# =============================================================================
+# EEGDash-compatible nested classes
+# =============================================================================
+
+
+@dataclass
+class Demographics:
+    """Subject demographics information following EEGDash schema.
+
+    This extends ParticipantMetadata with additional EEGDash fields.
+
+    Parameters
+    ----------
+    subjects_count : int
+        Number of subjects in the dataset.
+    age_min : float, optional
+        Minimum age of participants in years.
+    age_max : float, optional
+        Maximum age of participants in years.
+    ages : List[int], optional
+        List of ages for each subject.
+    gender : Dict[str, int], optional
+        Gender distribution, e.g., {"male": 12, "female": 8}.
+    handedness : Dict[str, int], optional
+        Handedness distribution, e.g., {"right": 18, "left": 2}.
+    clinical_population : str, optional
+        Clinical diagnosis if patient population.
+    """
+
+    subjects_count: int
+    age_min: Optional[float] = None
+    age_max: Optional[float] = None
+    ages: Optional[List[int]] = None
+    gender: Optional[Dict[str, int]] = None
+    handedness: Optional[Dict[str, int]] = None
+    clinical_population: Optional[str] = None
+
+
+@dataclass
+class ExternalLinks:
+    """External URLs and data source links following EEGDash schema.
+
+    Parameters
+    ----------
+    source_url : str, optional
+        Primary URL to the dataset source (e.g., OpenNeuro page).
+    ftp_url : str, optional
+        FTP server URL if available.
+    alternative_urls : Dict[str, str], optional
+        Additional URLs mapped by name.
+    """
+
+    source_url: Optional[str] = None
+    ftp_url: Optional[str] = None
+    alternative_urls: Optional[Dict[str, str]] = None
+
+
+@dataclass
+class Timestamps:
+    """Dataset timestamp information following EEGDash schema.
+
+    Parameters
+    ----------
+    dataset_created_at : datetime, optional
+        When the dataset was first created/published.
+    dataset_modified_at : datetime, optional
+        When the dataset was last modified.
+    ingested_at : datetime, optional
+        When the dataset was ingested into the system.
+    """
+
+    dataset_created_at: Optional[datetime] = None
+    dataset_modified_at: Optional[datetime] = None
+    ingested_at: Optional[datetime] = None
+
+
+@dataclass
+class TagConfidence:
+    """Confidence scores for automatic tags following EEGDash schema.
+
+    Parameters
+    ----------
+    pathology : float, optional
+        Confidence score for pathology tag (0-1).
+    modality : float, optional
+        Confidence score for modality tag (0-1).
+    type : float, optional
+        Confidence score for experiment type tag (0-1).
+    """
+
+    pathology: Optional[float] = None
+    modality: Optional[float] = None
+    type: Optional[float] = None
+
+
+@dataclass
+class TagReasoning:
+    """Reasoning explanations for automatic tags following EEGDash schema.
+
+    Parameters
+    ----------
+    few_shot_analysis : str, optional
+        Analysis from few-shot examples.
+    metadata_analysis : str, optional
+        Analysis from dataset metadata.
+    paper_abstract_analysis : str, optional
+        Analysis from associated paper abstract.
+    evidence_alignment_check : str, optional
+        Cross-validation of evidence sources.
+    decision_summary : str, optional
+        Summary of final tagging decision.
+    """
+
+    few_shot_analysis: Optional[str] = None
+    metadata_analysis: Optional[str] = None
+    paper_abstract_analysis: Optional[str] = None
+    evidence_alignment_check: Optional[str] = None
+    decision_summary: Optional[str] = None
+
+
+@dataclass
+class Tags:
+    """Classification tags for the dataset following EEGDash schema.
+
+    Parameters
+    ----------
+    pathology : List[str], optional
+        Health status tags, e.g., ["healthy"] or ["epilepsy", "stroke"].
+    modality : List[str], optional
+        Stimulus/task modality, e.g., ["visual", "auditory", "motor"].
+    type : List[str], optional
+        Experiment type, e.g., ["perception", "imagery", "resting_state"].
+    confidence : TagConfidence, optional
+        Confidence scores for each tag category.
+    reasoning : TagReasoning, optional
+        Reasoning explanations for tag assignments.
+    """
+
+    pathology: Optional[List[str]] = None
+    modality: Optional[List[str]] = None
+    type: Optional[List[str]] = None
+    confidence: Optional[TagConfidence] = None
+    reasoning: Optional[TagReasoning] = None
+
+
+@dataclass
+class ChannelCount:
+    """Channel count entry for frequency distribution.
+
+    Parameters
+    ----------
+    val : int
+        Number of channels.
+    count : int
+        Number of recordings with this channel count.
+    """
+
+    val: int
+    count: int
+
+
+@dataclass
+class SamplingRateCount:
+    """Sampling rate count entry for frequency distribution.
+
+    Parameters
+    ----------
+    val : float
+        Sampling rate in Hz.
+    count : int
+        Number of recordings with this sampling rate.
+    """
+
+    val: float
+    count: int
+
+
+# =============================================================================
+# Core MOABB metadata classes
+# =============================================================================
 
 
 @dataclass
 class AcquisitionMetadata:
     """Technical acquisition parameters.
 
-    Inspired by Eegle.jl acquisition section. Captures hardware, software,
-    and recording settings used during data collection.
+    Captures hardware, software, and recording settings used during
+    data collection.
 
     Parameters
     ----------
@@ -70,8 +267,7 @@ class AcquisitionMetadata:
 class DocumentationMetadata:
     """Publication and dataset provenance information.
 
-    Inspired by Eegle.jl documentation section. Captures citation info,
-    data repository links, and institutional details.
+    Captures citation info, data repository links, and institutional details.
 
     Parameters
     ----------
@@ -93,6 +289,16 @@ class DocumentationMetadata:
         Data license, e.g., "CC BY 4.0", "ODC-BY".
     publication_year : int, optional
         Year of dataset publication or associated paper.
+    senior_author : str, optional
+        Senior/corresponding author (EEGDash field).
+    contact_info : List[str], optional
+        Contact information (EEGDash field).
+    associated_paper_doi : str, optional
+        DOI for associated publication (EEGDash field).
+    funding : List[str], optional
+        Funding sources (EEGDash field).
+    readme : str, optional
+        Dataset README content (EEGDash field).
     """
 
     doi: Optional[str] = None
@@ -104,6 +310,12 @@ class DocumentationMetadata:
     data_url: Optional[str] = None
     license: Optional[str] = None
     publication_year: Optional[int] = None
+    # EEGDash additional fields
+    senior_author: Optional[str] = None
+    contact_info: Optional[List[str]] = None
+    associated_paper_doi: Optional[str] = None
+    funding: Optional[List[str]] = None
+    readme: Optional[str] = None
 
 
 @dataclass
@@ -126,6 +338,12 @@ class ParticipantMetadata:
         Mean age of participants in years.
     age_std : float, optional
         Standard deviation of participant ages.
+    age_min : float, optional
+        Minimum age (EEGDash field).
+    age_max : float, optional
+        Maximum age (EEGDash field).
+    ages : List[int], optional
+        Per-subject ages (EEGDash field).
     handedness : Dict[str, int], optional
         Handedness distribution, e.g., {"right": 18, "left": 2}.
     clinical_population : str, optional
@@ -138,6 +356,10 @@ class ParticipantMetadata:
     gender: Optional[Dict[str, int]] = None
     age_mean: Optional[float] = None
     age_std: Optional[float] = None
+    # EEGDash additional fields
+    age_min: Optional[float] = None
+    age_max: Optional[float] = None
+    ages: Optional[List[int]] = None
     handedness: Optional[Dict[str, int]] = None
     clinical_population: Optional[str] = None
 
@@ -146,13 +368,12 @@ class ParticipantMetadata:
 class ExperimentMetadata:
     """Experimental paradigm and task details.
 
-    Inspired by Eegle.jl id and stim sections. Captures the experimental
-    design, event codes, and trial structure.
+    Captures the experimental design, event codes, and trial structure.
 
     Parameters
     ----------
     paradigm : str
-        BCI paradigm type: "imagery", "p300", "ssvep", "cvep", or "rstate".
+        BCI paradigm type: "imagery", "p300", "ssvep", "cvep", "erp", or "rstate".
     task_type : str, optional
         Specific task variant, e.g., "left_right_hand", "4_class",
         "row_col_speller".
@@ -165,6 +386,12 @@ class ExperimentMetadata:
         Number of trials per class/condition.
     trial_duration : float, optional
         Duration of each trial in seconds.
+    tasks : List[str], optional
+        List of task names (EEGDash field).
+    study_design : str, optional
+        Study design description (EEGDash field).
+    study_domain : str, optional
+        Research domain (EEGDash field).
     """
 
     paradigm: str
@@ -173,6 +400,10 @@ class ExperimentMetadata:
     n_classes: Optional[int] = None
     trials_per_class: Optional[Dict[str, int]] = None
     trial_duration: Optional[float] = None
+    # EEGDash additional fields
+    tasks: Optional[List[str]] = None
+    study_design: Optional[str] = None
+    study_domain: Optional[str] = None
 
 
 @dataclass
@@ -180,7 +411,8 @@ class DatasetMetadata:
     """Complete dataset metadata combining all sections.
 
     This is the top-level container that aggregates all metadata sections
-    into a single, comprehensive dataset description.
+    into a single, comprehensive dataset description. Supports both MOABB's
+    paradigm-focused structure and EEGDash's comprehensive fields.
 
     Parameters
     ----------
@@ -198,6 +430,35 @@ class DatasetMetadata:
         Number of runs per session. Default is 1.
     format_version : str
         Metadata schema version. Default is "1.0.0".
+
+    EEGDash-compatible Parameters
+    -----------------------------
+    total_files : int, optional
+        Total number of files in the dataset.
+    size_bytes : int, optional
+        Total dataset size in bytes.
+    datatypes : str, optional
+        Data types present, e.g., "eeg, meg, anat, func".
+    experimental_modalities : List[str], optional
+        List of experimental modalities.
+    sessions : List[str], optional
+        List of session identifiers.
+    contributing_labs : List[str], optional
+        Contributing laboratories.
+    n_contributing_labs : int, optional
+        Number of contributing labs.
+    data_processed : bool
+        Whether data has been preprocessed. Default is False.
+    external_links : ExternalLinks, optional
+        External URLs and data sources.
+    timestamps : Timestamps, optional
+        Dataset creation and modification dates.
+    tags : Tags, optional
+        Classification tags.
+    nchans_counts : List[ChannelCount], optional
+        Distribution of channel counts across recordings.
+    sfreq_counts : List[SamplingRateCount], optional
+        Distribution of sampling rates across recordings.
 
     Examples
     --------
@@ -219,6 +480,7 @@ class DatasetMetadata:
     ... )
     """
 
+    # Core MOABB fields (required)
     acquisition: AcquisitionMetadata
     participants: ParticipantMetadata
     experiment: ExperimentMetadata
@@ -226,3 +488,30 @@ class DatasetMetadata:
     sessions_per_subject: int = 1
     runs_per_session: int = 1
     format_version: str = "1.0.0"
+
+    # EEGDash file/size information
+    total_files: Optional[int] = None
+    size_bytes: Optional[int] = None
+
+    # EEGDash data types and modalities
+    datatypes: Optional[str] = None
+    experimental_modalities: Optional[List[str]] = None
+
+    # EEGDash sessions
+    sessions: Optional[List[str]] = None
+
+    # EEGDash institutions
+    contributing_labs: Optional[List[str]] = None
+    n_contributing_labs: Optional[int] = None
+
+    # EEGDash processing status
+    data_processed: bool = False
+
+    # EEGDash nested objects
+    external_links: Optional[ExternalLinks] = None
+    timestamps: Optional[Timestamps] = None
+    tags: Optional[Tags] = None
+
+    # EEGDash distributions
+    nchans_counts: Optional[List[ChannelCount]] = None
+    sfreq_counts: Optional[List[SamplingRateCount]] = None
