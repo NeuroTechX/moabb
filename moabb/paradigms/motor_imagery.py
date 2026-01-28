@@ -51,6 +51,9 @@ class BaseMotorImagery(BaseParadigm):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -62,6 +65,7 @@ class BaseMotorImagery(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
+        scorer=None,
     ):
         super().__init__(
             filters=filters,
@@ -71,6 +75,7 @@ class BaseMotorImagery(BaseParadigm):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            scorer=scorer,
         )
 
     def is_valid(self, dataset):
@@ -102,6 +107,8 @@ class BaseMotorImagery(BaseParadigm):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "accuracy"
 
 
@@ -147,6 +154,9 @@ class SinglePass(BaseMotorImagery):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(self, fmin=8, fmax=32, **kwargs):
@@ -170,7 +180,7 @@ class FilterBank(BaseMotorImagery):
 class LeftRightImagery(SinglePass):
     """Motor Imagery for left hand/right hand classification.
 
-    Metric is 'roc_auc'
+    Metric is 'roc_auc' by default
     """
 
     def __init__(self, **kwargs):
@@ -183,13 +193,15 @@ class LeftRightImagery(SinglePass):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "roc_auc"
 
 
 class FilterBankLeftRightImagery(FilterBank):
     """Filter Bank Motor Imagery for left hand/right hand classification.
 
-    Metric is 'roc_auc'
+    Metric is 'roc_auc' by default
     """
 
     def __init__(self, **kwargs):
@@ -202,13 +214,15 @@ class FilterBankLeftRightImagery(FilterBank):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "roc_auc"
 
 
 class FilterBankMotorImagery(FilterBank):
     """Filter bank n-class motor imagery.
 
-    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
+    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
     ----------
@@ -282,16 +296,17 @@ class FilterBankMotorImagery(FilterBank):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         if self.n_classes == 2:
             return "roc_auc"
-        else:
-            return "accuracy"
+        return "accuracy"
 
 
 class MotorImagery(SinglePass):
     """N-class motor imagery.
 
-    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
+    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
     ----------
@@ -335,6 +350,9 @@ class MotorImagery(SinglePass):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(self, n_classes=None, **kwargs):
@@ -398,10 +416,11 @@ class MotorImagery(SinglePass):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         if self.n_classes == 2:
             return "roc_auc"
-        else:
-            return "accuracy"
+        return "accuracy"
 
 
 class FakeImageryParadigm(LeftRightImagery):

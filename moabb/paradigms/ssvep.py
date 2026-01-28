@@ -50,6 +50,9 @@ class BaseSSVEP(BaseParadigm):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -62,6 +65,7 @@ class BaseSSVEP(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
+        scorer=None,
     ):
         """Init the BaseSSVEP function."""
 
@@ -73,6 +77,7 @@ class BaseSSVEP(BaseParadigm):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            scorer=scorer,
         )
 
         self.n_classes = n_classes
@@ -161,16 +166,17 @@ class BaseSSVEP(BaseParadigm):
 
     @property
     def scoring(self):
-        """Return the default scoring method for this paradigm.
+        """Return the scoring method for this paradigm.
 
-        If n_classes use the roc_auc, else use accuracy. More details
+        By default, if n_classes use the roc_auc, else use accuracy. More details
         about this default scoring method can be found in the original
         moabb paper.
         """
+        if self.scorer is not None:
+            return self.scorer
         if self.n_classes == 2:
             return "roc_auc"
-        else:
-            return "accuracy"
+        return "accuracy"
 
 
 class SSVEP(BaseSSVEP):
@@ -219,6 +225,9 @@ class SSVEP(BaseSSVEP):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(self, fmin=7, fmax=45, **kwargs):
@@ -265,6 +274,8 @@ class FilterBankSSVEP(BaseSSVEP):
         the dataset.
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(self, filters=None, **kwargs):
