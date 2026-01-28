@@ -23,6 +23,9 @@ Enhancements
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
+- Allow custom paradigms to have multiple scores for evaluations (:gh:`948` by `Ethan Davis`_)
+- Ability to parameterize the scoring rule of paradigms (:gh:`948` by `Ethan Davis`_)
+- Extend scoring configuration to accept lists of metric callables, scorer objects, and tuple kwargs (e.g., `needs_proba`/`needs_threshold`) for multi-metric evaluations (:gh:`948` by `Ethan Davis`_ and `Bruno Aristimunha`_)
 - Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
 
 API changes
@@ -49,6 +52,7 @@ Bugs
 Code health
 ~~~~~~~~~~~
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
+- Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
