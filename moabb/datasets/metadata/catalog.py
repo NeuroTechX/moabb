@@ -26,8 +26,8 @@ from .schema import (
 ALEXMI_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=16,
-        channel_types={"eeg": 16},
+        n_channels=17,
+        channel_types={"eeg": 16, "stim": 1},
         sensors=[
             "Fpz",
             "F7",
@@ -615,8 +615,8 @@ SHIN2017A_METADATA = DatasetMetadata(
 WEIBO2014_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=200.0,
-        n_channels=60,
-        channel_types={"eeg": 60},
+        n_channels=65,
+        channel_types={"eeg": 60, "misc": 2, "eog": 2, "stim": 1},
         hardware="Neuroscan SynAmps2",
         montage="standard_1005",
         line_freq=50.0,
@@ -633,8 +633,8 @@ WEIBO2014_METADATA = DatasetMetadata(
         events={
             "left_hand": 1,
             "right_hand": 2,
-            "left_foot": 3,
-            "right_foot": 4,
+            "hands": 3,
+            "feet": 4,
             "rest": 5,
             "left_hand_right_foot": 6,
             "right_hand_left_foot": 7,
@@ -1873,8 +1873,8 @@ BNCI2020_002_METADATA = DatasetMetadata(
 BI2012_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=128.0,
-        n_channels=16,
-        channel_types={"eeg": 16},
+        n_channels=17,
+        channel_types={"eeg": 16, "stim": 1},
         sensors=[
             "Fp1",
             "Fp2",
@@ -2948,8 +2948,8 @@ WANG2016_METADATA = DatasetMetadata(
 MAMEM1_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=250.0,
-        n_channels=256,
-        channel_types={"eeg": 256},
+        n_channels=257,
+        channel_types={"eeg": 256, "stim": 1},
         hardware="EGI 300 Geodesic EEG System (GES 300)",
         sensor_type="HydroCel Geodesic Sensor Net",
         montage="GSN-HydroCel-256",
@@ -2984,8 +2984,8 @@ MAMEM1_METADATA = DatasetMetadata(
 MAMEM2_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=250.0,
-        n_channels=256,
-        channel_types={"eeg": 256},
+        n_channels=257,
+        channel_types={"eeg": 256, "stim": 1},
         hardware="EGI 300 Geodesic EEG System (GES 300)",
         sensor_type="HydroCel Geodesic Sensor Net",
         montage="GSN-HydroCel-256",
@@ -3020,8 +3020,8 @@ MAMEM2_METADATA = DatasetMetadata(
 MAMEM3_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=128.0,
-        n_channels=14,
-        channel_types={"eeg": 14},
+        n_channels=15,
+        channel_types={"eeg": 14, "stim": 1},
         hardware="Emotiv EPOC",
         montage="standard_1020",
         line_freq=50.0,
