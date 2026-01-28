@@ -231,7 +231,7 @@ def _create_save_path(
         if grid:
             path_save = (
                 Path(hdf5_path)
-                / f"Search_{eval_type}"
+                / f"GridSearch_{eval_type}"
                 / code
                 / f"{str(subject)}"
                 / str(session)
@@ -344,8 +344,8 @@ class _DictScorer:
     def __init__(self, scorer):
         self.scorer = scorer
 
-    def __call__(self, estimator, X, y=None, **kwargs):
-        return {"score": self.scorer(estimator, X, y, **kwargs)}
+    def __call__(self, estimator, X, y_true=None, **kwargs):
+        return {"score": self.scorer(estimator, X, y_true, **kwargs)}
 
 
 def _create_scorer(estimator, scoring):
@@ -436,7 +436,7 @@ def _update_result_with_scores(res, scores):
     return res
 
 
-def _score_and_update(res, scorer, model, X, y):
+def _score_and_update(res, scorer, model, X, y_true):
     """Score model and update result dict.
 
     Combines scoring and result update into a single call.
@@ -452,7 +452,7 @@ def _score_and_update(res, scorer, model, X, y):
         Fitted model to score.
     X : array-like
         Test features.
-    y : array-like
+    y_true : array-like
         Test labels.
 
     Returns
@@ -460,5 +460,5 @@ def _score_and_update(res, scorer, model, X, y):
     res : dict
         The updated result dictionary.
     """
-    score = scorer(model, X, y)
+    score = scorer(model, X, y_true)
     return _update_result_with_scores(res, score)
