@@ -51,6 +51,9 @@ class BaseP300(BaseParadigm):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -63,6 +66,7 @@ class BaseP300(BaseParadigm):
         channels=None,
         resample=None,
         ignore_relabelling=False,
+        scorer=None,
     ):
         self.ignore_relabelling = ignore_relabelling
         super().__init__(
@@ -73,6 +77,7 @@ class BaseP300(BaseParadigm):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            scorer=scorer,
         )
 
     def is_valid(self, dataset):
@@ -108,6 +113,8 @@ class BaseP300(BaseParadigm):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "roc_auc"
 
 
@@ -153,6 +160,9 @@ class SinglePass(BaseP300):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(self, fmin=1, fmax=24, **kwargs):
@@ -172,7 +182,7 @@ class SinglePass(BaseP300):
 class P300(SinglePass):
     """P300 for Target/NonTarget classification.
 
-    Metric is 'roc_auc'
+    Metric is 'roc_auc' by default
     """
 
     def __init__(self, **kwargs):
@@ -186,6 +196,8 @@ class P300(SinglePass):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "roc_auc"
 
 

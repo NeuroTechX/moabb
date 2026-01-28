@@ -23,6 +23,9 @@ Enhancements
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
+- Allow custom paradigms to have multiple scores for evaluations (:gh:`948` by `Ethan Davis`_)
+- Ability to parameterize the scoring rule of paradigms (:gh:`948` by `Ethan Davis`_)
+- Extend scoring configuration to accept lists of metric callables, scorer objects, and tuple kwargs (e.g., `needs_proba`/`needs_threshold`) for multi-metric evaluations (:gh:`948` by `Ethan Davis`_ and `Bruno Aristimunha`_)
 - Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
 
 API changes
@@ -31,7 +34,6 @@ API changes
 - When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
 - Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
-
 
 Requirements
 ~~~~~~~~~~~~
@@ -48,6 +50,7 @@ Bugs
 Code health
 ~~~~~~~~~~~
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
+- Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
