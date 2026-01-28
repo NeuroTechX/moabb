@@ -157,15 +157,15 @@ def _load_data_002_2016(
     )
 
     # Create annotations from markers
-    # Event mapping:
-    # car_normal (index 0): lead car normal driving
-    # car_brake (index 1): lead car starts braking (emergency situation onset)
-    # car_hold (index 2): lead car holding/stopped
-    # car_collision (index 3): collision occurred
-    # react_emg (index 4): subject's EMG reaction detected
+    # Event mapping for P300 paradigm compatibility:
+    # car_normal (index 0): lead car normal driving -> NonTarget
+    # car_brake (index 1): lead car starts braking (emergency situation onset) -> Target
+    # car_hold (index 2): lead car holding/stopped (not used for classification)
+    # car_collision (index 3): collision occurred (not used for classification)
+    # react_emg (index 4): subject's EMG reaction detected (not used for classification)
     event_mapping = {
-        0: "car_normal",
-        1: "car_brake",
+        0: "NonTarget",
+        1: "Target",
         2: "car_hold",
         3: "car_collision",
         4: "react_emg",
@@ -259,8 +259,13 @@ class BNCI2016_002(BNCIBaseDataset):
 
     **Event Codes**
 
-    - car_normal: Lead car driving normally
-    - car_brake: Lead car starts braking (emergency situation onset)
+    For P300 paradigm compatibility, events are mapped to Target/NonTarget:
+
+    - Target: Lead car starts braking (emergency situation onset, originally car_brake)
+    - NonTarget: Lead car driving normally (originally car_normal)
+
+    Additional events (not used for P300 classification):
+
     - car_hold: Lead car holding/stopped
     - car_collision: Collision occurred (subject failed to brake in time)
     - react_emg: Subject's EMG reaction detected (braking initiated)
@@ -325,11 +330,8 @@ class BNCI2016_002(BNCIBaseDataset):
         "channel_types": {"eeg": 59, "eog": 2, "emg": 1, "misc": 7},
         "paradigm": "p300",
         "events": {
-            "car_normal": "lead car normal driving",
-            "car_brake": "emergency situation onset",
-            "car_hold": "lead car stopped",
-            "car_collision": "collision occurred",
-            "react_emg": "subject braking reaction",
+            "Target": "emergency situation onset (lead car braking)",
+            "NonTarget": "lead car normal driving",
         },
         "doi": "10.1088/1741-2560/8/5/056001",
         "license": "CC BY-NC-ND 4.0",
@@ -341,8 +343,8 @@ class BNCI2016_002(BNCIBaseDataset):
             subjects=list(_SUBJECT_VP_CODES.keys()),
             sessions_per_subject=1,
             events={
-                "car_brake": 1,  # Main event of interest: emergency braking onset
-                "react_emg": 2,  # Subject's response
+                "Target": 1,  # Emergency braking onset (lead car brakes)
+                "NonTarget": 2,  # Normal driving (lead car driving normally)
             },
             code="BNCI2016-002",
             interval=[-0.5, 1.0],  # 500ms before to 1s after emergency onset
