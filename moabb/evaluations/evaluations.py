@@ -45,7 +45,7 @@ def _pipeline_requires_epochs(pipeline):
 
 
 try:
-    from codecarbon import EmissionsTracker
+    from codecarbon import EmissionsTracker, OfflineEmissionsTracker
 
     _carbonfootprint = True
 except ImportError:
@@ -240,7 +240,10 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         # Initialise CodeCarbon per cross-validation
-                        tracker = EmissionsTracker(**self.codecarbon_config)
+                        if self.codecarbon_offline:
+                            tracker = OfflineEmissionsTracker(**self.codecarbon_config)
+                        else:
+                            tracker = EmissionsTracker(**self.codecarbon_config)
                         tracker.start()
 
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
@@ -385,7 +388,10 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                 # Initialize tracker once per session instead of per iteration
                 if _carbonfootprint:
-                    tracker = EmissionsTracker(**self.codecarbon_config)
+                    if self.codecarbon_offline:
+                        tracker = OfflineEmissionsTracker(**self.codecarbon_config)
+                    else:
+                        tracker = EmissionsTracker(**self.codecarbon_config)
                     tracker.start()
 
                 sss = StratifiedShuffleSplit(
@@ -594,7 +600,10 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                 if _carbonfootprint:
                     # Initialise CodeCarbon per cross-validation
-                    tracker = EmissionsTracker(**self.codecarbon_config)
+                    if self.codecarbon_offline:
+                        tracker = OfflineEmissionsTracker(**self.codecarbon_config)
+                    else:
+                        tracker = EmissionsTracker(**self.codecarbon_config)
                     tracker.start()
 
                 for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
@@ -758,7 +767,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         if _carbonfootprint:
             # Initialise CodeCarbon per cross-validation
-            tracker = EmissionsTracker(**self.codecarbon_config)
+            if self.codecarbon_offline:
+                tracker = OfflineEmissionsTracker(**self.codecarbon_config)
+            else:
+                tracker = EmissionsTracker(**self.codecarbon_config)
             tracker.start()
 
         # Progressbar at subject level

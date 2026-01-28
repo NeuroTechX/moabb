@@ -130,6 +130,17 @@ class BaseEvaluation(ABC):
         self.codecarbon_config = codecarbon_config
         if codecarbon_config is None:
             self.codecarbon_config = dict(save_to_file=False, log_level="error")
+        else:
+            offline_params = [
+                "country_iso_code",
+                "region",
+                "cloud_provider",
+                "cloud_region",
+                "country_2letter_iso_code",
+            ]
+            self.codecarbon_offline = any(
+                key in self.codecarbon_config for key in offline_params
+            )
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
