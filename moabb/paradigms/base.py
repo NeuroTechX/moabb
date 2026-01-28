@@ -148,16 +148,14 @@ def _normalize_scorer(scorer):
                         greater_is_better = True
 
                     # Handle deprecated parameters for sklearn 1.4+ and 1.6+
-                    if (
-                        "needs_threshold" in scorer_kwargs
-                        and scorer_kwargs.pop("needs_threshold")
+                    if "needs_threshold" in scorer_kwargs and scorer_kwargs.pop(
+                        "needs_threshold"
                     ):
                         scorer_kwargs.setdefault(
                             "response_method", ("decision_function", "predict_proba")
                         )
-                    if (
-                        "needs_proba" in scorer_kwargs
-                        and scorer_kwargs.pop("needs_proba")
+                    if "needs_proba" in scorer_kwargs and scorer_kwargs.pop(
+                        "needs_proba"
                     ):
                         scorer_kwargs.setdefault("response_method", "predict_proba")
 
