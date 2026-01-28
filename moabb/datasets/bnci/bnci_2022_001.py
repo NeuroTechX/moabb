@@ -17,26 +17,10 @@ from .utils import (
 )
 
 
-# Subject IDs with their recording dates for the task (wpsize) files
-# Based on the dataset description, each subject has a unique recording date
-# Format: subject_number -> (recording_date for task)
-# Note: These dates are examples based on the description (Oct 2016)
-# Actual dates would be found in the data files themselves
-SUBJECT_INFO = {
-    1: "20161025",
-    2: "20161026",
-    3: "20161027",
-    4: "20161028",
-    5: "20161031",
-    6: "20161101",
-    7: "20161102",
-    8: "20161103",
-    9: "20161104",
-    10: "20161107",
-    11: "20161108",
-    12: "20161109",
-    13: "20161110",
-}
+# File naming convention for 001-2022 dataset:
+# - Baseline files: s{n}b.mat (e.g., s1b.mat, s2b.mat, ...)
+# - Task (wpsize) files: s{n}w.mat (e.g., s1w.mat, s2w.mat, ...)
+# The dataset contains 13 subjects (s1-s13)
 
 
 @verbose
@@ -113,58 +97,24 @@ def _load_data_001_2022(
     sessions = {}
     filenames = []
 
-    # Get subject recording date
-    rec_date = SUBJECT_INFO.get(subject, "20161025")
-
     # Load task (wpsize) data - this is the main task data with difficulty levels
-    # File naming pattern: s{n}_{date}_wpsize.mat
-    task_filename = f"s{subject}_{rec_date}_wpsize.mat"
+    # File naming pattern: s{n}w.mat (e.g., s1w.mat, s2w.mat, ...)
+    task_filename = f"s{subject}w.mat"
     url = f"{base_url}001-2022/{task_filename}"
 
-    try:
-        filename = bnci_data_path(url, path, force_update, update_path)[0]
-        filenames.append(filename)
+    filename = bnci_data_path(url, path, force_update, update_path)[0]
+    filenames.append(filename)
 
-        if not only_filenames:
-            raw = _convert_run_001_2022(
-                filename,
-                ch_names,
-                ch_types,
-                subject_id=subject,
-                run_type="task",
-                verbose=verbose,
-            )
-            sessions["0task"] = {"0": raw}
-
-    except Exception as e:
-        # If specific date fails, try alternative patterns
-        alternative_patterns = [
-            f"s{subject}_wpsize.mat",
-            f"S{subject}_wpsize.mat",
-            f"s{subject:02d}_wpsize.mat",
-        ]
-        for alt_pattern in alternative_patterns:
-            try:
-                url = f"{base_url}001-2022/{alt_pattern}"
-                filename = bnci_data_path(url, path, force_update, update_path)[0]
-                filenames.append(filename)
-
-                if not only_filenames:
-                    raw = _convert_run_001_2022(
-                        filename,
-                        ch_names,
-                        ch_types,
-                        subject_id=subject,
-                        run_type="task",
-                        verbose=verbose,
-                    )
-                    sessions["0task"] = {"0": raw}
-                break
-            except Exception:
-                continue
-        else:
-            # If all patterns fail, raise the original error
-            raise e
+    if not only_filenames:
+        raw = _convert_run_001_2022(
+            filename,
+            ch_names,
+            ch_types,
+            subject_id=subject,
+            run_type="task",
+            verbose=verbose,
+        )
+        sessions["0task"] = {"0": raw}
 
     if only_filenames:
         return filenames
