@@ -1,0 +1,1084 @@
+{
+    "metadata": {
+        "generated": "2026-01-28T10:34:31.322934",
+        "format_version": "1.0.0"
+    },
+    "summary": {
+        "total_datasets": 84,
+        "datasets_with_errors": 3,
+        "datasets_with_warnings": 14,
+        "datasets_with_data": 30,
+        "clean_datasets": 65
+    },
+    "results": [
+        {
+            "dataset_name": "AlexMI",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-alexeeg-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2014_001",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-BIDS-bnci2014-001",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2014_002",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2014_004",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_001",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_004",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2003_004",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2019_001",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2020_001",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2024_001",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2022_001",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2025_001",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2025_002",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Beetl2021_A",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-Beetl2021-A-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Beetl2021_B",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-Beetl2021-B-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Cho2017",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-gigadb-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Dreyer2023",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-Dreyer2023-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Dreyer2023A",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-Dreyer2023A-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=27, actual=32",
+                    "catalog_value": "27",
+                    "actual_value": "32",
+                    "suggestion": "Update catalog: n_channels=32"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 512.0,
+                "n_channels": 32,
+                "sensors": "[32 channels]",
+                "channel_types": {
+                    "eeg": 32
+                },
+                "has_montage": false
+            }
+        },
+        {
+            "dataset_name": "Dreyer2023B",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-Dreyer2023B-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Dreyer2023C",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-Dreyer2023C-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "GrosseWentrup2009",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Lee2019_MI",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-lee2019-mi-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Liu2024",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-liu2024-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Ofner2017",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "PhysionetMI",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-eegbci-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "experiment.n_classes",
+                    "severity": "warning",
+                    "message": "n_classes (4) != len(events) (5)",
+                    "catalog_value": "4",
+                    "actual_value": "5",
+                    "suggestion": null
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Schirrmeister2017",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-schirrmeister2017-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Shin2017A",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [
+                {
+                    "field": "documentation.license",
+                    "severity": "info",
+                    "message": "Non-standard license identifier: 'GNU GPLv3'",
+                    "catalog_value": "GNU GPLv3",
+                    "actual_value": null,
+                    "suggestion": "Consider using SPDX identifier"
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Shin2017B",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [
+                {
+                    "field": "documentation.license",
+                    "severity": "info",
+                    "message": "Non-standard license identifier: 'GNU GPLv3'",
+                    "catalog_value": "GNU GPLv3",
+                    "actual_value": null,
+                    "suggestion": "Consider using SPDX identifier"
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Stieger2021",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-Stieger2021-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Weibo2014",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-weibo-2014",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Zhou2016",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-BIDS-zhou2016",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [
+                {
+                    "field": "documentation.license",
+                    "severity": "info",
+                    "message": "Non-standard license identifier: 'Public Domain'",
+                    "catalog_value": "Public Domain",
+                    "actual_value": null,
+                    "suggestion": "Consider using SPDX identifier"
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BI2012",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BI2013a",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BI2014a",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-braininvaders2014a-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BI2014b",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BI2015a",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BI2015b",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2014_008",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2014_009",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_003",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_006",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_007",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_008",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_009",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_010",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_012",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2015_013",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2016_002",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "BNCI2020_002",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Cattan2019_VR",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-virtualreality-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "DemonsP300",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "EPFLP300",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "ErpCore2021_ERN",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-erpcorep32021-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=30, actual=33",
+                    "catalog_value": "30",
+                    "actual_value": "33",
+                    "suggestion": "Update catalog: n_channels=33"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 1024.0,
+                "n_channels": 33,
+                "sensors": "[33 channels]",
+                "channel_types": {
+                    "eeg": 33
+                },
+                "has_montage": true
+            }
+        },
+        {
+            "dataset_name": "ErpCore2021_LRP",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-erpcorep32021-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=30, actual=33",
+                    "catalog_value": "30",
+                    "actual_value": "33",
+                    "suggestion": "Update catalog: n_channels=33"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 1024.0,
+                "n_channels": 33,
+                "sensors": "[33 channels]",
+                "channel_types": {
+                    "eeg": 33
+                },
+                "has_montage": true
+            }
+        },
+        {
+            "dataset_name": "ErpCore2021_MMN",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-erpcorep32021-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=30, actual=33",
+                    "catalog_value": "30",
+                    "actual_value": "33",
+                    "suggestion": "Update catalog: n_channels=33"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 1024.0,
+                "n_channels": 33,
+                "sensors": "[33 channels]",
+                "channel_types": {
+                    "eeg": 33
+                },
+                "has_montage": true
+            }
+        },
+        {
+            "dataset_name": "ErpCore2021_N170",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-erpcorep32021-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=30, actual=33",
+                    "catalog_value": "30",
+                    "actual_value": "33",
+                    "suggestion": "Update catalog: n_channels=33"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 1024.0,
+                "n_channels": 33,
+                "sensors": "[33 channels]",
+                "channel_types": {
+                    "eeg": 33
+                },
+                "has_montage": true
+            }
+        },
+        {
+            "dataset_name": "ErpCore2021_N2pc",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-erpcorep32021-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=30, actual=33",
+                    "catalog_value": "30",
+                    "actual_value": "33",
+                    "suggestion": "Update catalog: n_channels=33"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 1024.0,
+                "n_channels": 33,
+                "sensors": "[33 channels]",
+                "channel_types": {
+                    "eeg": 33
+                },
+                "has_montage": true
+            }
+        },
+        {
+            "dataset_name": "ErpCore2021_N400",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-erpcorep32021-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=30, actual=33",
+                    "catalog_value": "30",
+                    "actual_value": "33",
+                    "suggestion": "Update catalog: n_channels=33"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 1024.0,
+                "n_channels": 33,
+                "sensors": "[33 channels]",
+                "channel_types": {
+                    "eeg": 33
+                },
+                "has_montage": true
+            }
+        },
+        {
+            "dataset_name": "ErpCore2021_P3",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-erpcorep32021-data",
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=30, actual=33",
+                    "catalog_value": "30",
+                    "actual_value": "33",
+                    "suggestion": "Update catalog: n_channels=33"
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 1024.0,
+                "n_channels": 33,
+                "sensors": "[33 channels]",
+                "channel_types": {
+                    "eeg": 33
+                },
+                "has_montage": true
+            }
+        },
+        {
+            "dataset_name": "Huebner2017",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Huebner2018",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Kojima2024A",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Kojima2024B",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Lee2019_ERP",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "RomaniBF2025ERP",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Sosulski2019",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Kalunga2016",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Lee2019_SSVEP",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "MAMEM1",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-ssvepexo-data",
+            "error_count": 1,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.sampling_rate",
+                    "severity": "error",
+                    "message": "Sampling rate mismatch: catalog=250.0, actual=256.0",
+                    "catalog_value": "250.0",
+                    "actual_value": "256.0",
+                    "suggestion": "Update catalog: sampling_rate=256.0"
+                },
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=256, actual=9",
+                    "catalog_value": "256",
+                    "actual_value": "9",
+                    "suggestion": "Update catalog: n_channels=9"
+                },
+                {
+                    "field": "documentation.country",
+                    "severity": "info",
+                    "message": "Unrecognized country: 'Greece'",
+                    "catalog_value": "Greece",
+                    "actual_value": null,
+                    "suggestion": null
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 256.0,
+                "n_channels": 9,
+                "sensors": "[9 channels]",
+                "channel_types": {
+                    "eeg": 8,
+                    "stim": 1
+                },
+                "line_freq": 50.0,
+                "has_montage": false
+            }
+        },
+        {
+            "dataset_name": "MAMEM2",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-ssvepexo-data",
+            "error_count": 1,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.sampling_rate",
+                    "severity": "error",
+                    "message": "Sampling rate mismatch: catalog=250.0, actual=256.0",
+                    "catalog_value": "250.0",
+                    "actual_value": "256.0",
+                    "suggestion": "Update catalog: sampling_rate=256.0"
+                },
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=256, actual=9",
+                    "catalog_value": "256",
+                    "actual_value": "9",
+                    "suggestion": "Update catalog: n_channels=9"
+                },
+                {
+                    "field": "documentation.country",
+                    "severity": "info",
+                    "message": "Unrecognized country: 'Greece'",
+                    "catalog_value": "Greece",
+                    "actual_value": null,
+                    "suggestion": null
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 256.0,
+                "n_channels": 9,
+                "sensors": "[9 channels]",
+                "channel_types": {
+                    "eeg": 8,
+                    "stim": 1
+                },
+                "line_freq": 50.0,
+                "has_montage": false
+            }
+        },
+        {
+            "dataset_name": "MAMEM3",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-ssvepexo-data",
+            "error_count": 1,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "acquisition.sampling_rate",
+                    "severity": "error",
+                    "message": "Sampling rate mismatch: catalog=128.0, actual=256.0",
+                    "catalog_value": "128.0",
+                    "actual_value": "256.0",
+                    "suggestion": "Update catalog: sampling_rate=256.0"
+                },
+                {
+                    "field": "acquisition.n_channels",
+                    "severity": "warning",
+                    "message": "Channel count mismatch: catalog=14, actual=9",
+                    "catalog_value": "14",
+                    "actual_value": "9",
+                    "suggestion": "Update catalog: n_channels=9"
+                },
+                {
+                    "field": "documentation.country",
+                    "severity": "info",
+                    "message": "Unrecognized country: 'Greece'",
+                    "catalog_value": "Greece",
+                    "actual_value": null,
+                    "suggestion": null
+                }
+            ],
+            "extracted_values": {
+                "sampling_rate": 256.0,
+                "n_channels": 9,
+                "sensors": "[9 channels]",
+                "channel_types": {
+                    "eeg": 8,
+                    "stim": 1
+                },
+                "line_freq": 50.0,
+                "has_montage": false
+            }
+        },
+        {
+            "dataset_name": "Nakanishi2015",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [
+                {
+                    "field": "documentation.license",
+                    "severity": "info",
+                    "message": "Non-standard license identifier: 'Public Domain'",
+                    "catalog_value": "Public Domain",
+                    "actual_value": null,
+                    "suggestion": "Consider using SPDX identifier"
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Wang2016",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [
+                {
+                    "field": "documentation.license",
+                    "severity": "info",
+                    "message": "Non-standard license identifier: 'Public Domain'",
+                    "catalog_value": "Public Domain",
+                    "actual_value": null,
+                    "suggestion": "Consider using SPDX identifier"
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "CastillosBurstVEP40",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "CastillosBurstVEP100",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "CastillosCVEP40",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "CastillosCVEP100",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "MartinezCagigal2023Checker",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "MartinezCagigal2023Pary",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Thielen2015",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "experiment.n_classes",
+                    "severity": "warning",
+                    "message": "n_classes (36) != len(events) (2)",
+                    "catalog_value": "36",
+                    "actual_value": "2",
+                    "suggestion": null
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Thielen2021",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 1,
+            "issues": [
+                {
+                    "field": "experiment.n_classes",
+                    "severity": "warning",
+                    "message": "n_classes (20) != len(events) (2)",
+                    "catalog_value": "20",
+                    "actual_value": "2",
+                    "suggestion": null
+                }
+            ],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Cattan2019_PHMD",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-headmounted-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Hinss2021",
+            "data_available": true,
+            "data_path": "/Users/bruaristimunha/mne_data/MNE-neuroergonomics2021-data",
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        },
+        {
+            "dataset_name": "Rodrigues2017",
+            "data_available": false,
+            "data_path": null,
+            "error_count": 0,
+            "warning_count": 0,
+            "issues": [],
+            "extracted_values": {}
+        }
+    ]
+}
