@@ -31,11 +31,11 @@ API changes
 - When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
 - Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
-
+- Enable choice of online or offline CodeCarbon through the parameterization of `codecarbon_config` when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`956` by `Ethan Davis`_)
 
 Requirements
 ~~~~~~~~~~~~
-- Requires CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
+- Allows CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
 
 Bugs
 ~~~~
@@ -44,6 +44,7 @@ Bugs
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 - Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
 - Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
+- Prevent Python mutable default argument when defining CodeCarbon configurations (:gh:`956` by `Ethan Davis`_)
 
 Code health
 ~~~~~~~~~~~
