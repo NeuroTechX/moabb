@@ -21,10 +21,26 @@ from .utils import (
     BNCI_URL,
     bnci_data_path,
     convert_units,
-    ensure_data_orientation,
     make_raw,
     validate_subject,
 )
+
+
+# Mapping of letter markers to event codes
+# The MAT file uses marker = 100 + (letter position in alphabet)
+# a=0, d=3, e=4, f=5, j=9, n=13, o=14, s=18, t=19, v=21
+_LETTER_MARKER_MAP = {
+    100: 1,  # letter 'a' (alphabet position 0) -> event 1
+    103: 2,  # letter 'd' (alphabet position 3) -> event 2
+    104: 3,  # letter 'e' (alphabet position 4) -> event 3
+    105: 4,  # letter 'f' (alphabet position 5) -> event 4
+    109: 5,  # letter 'j' (alphabet position 9) -> event 5
+    113: 6,  # letter 'n' (alphabet position 13) -> event 6
+    114: 7,  # letter 'o' (alphabet position 14) -> event 7
+    118: 8,  # letter 's' (alphabet position 18) -> event 8
+    119: 9,  # letter 't' (alphabet position 19) -> event 9
+    121: 10,  # letter 'v' (alphabet position 21) -> event 10
+}
 
 
 @verbose
@@ -43,6 +59,18 @@ def _load_data_001_2024(
     handwritten character (letter) writing tasks. The data was collected
     for research on handwritten character classification from EEG through
     continuous kinematic decoding.
+
+    The data structure contains:
+    - round01_paradigm, round02_paradigm: Main experimental runs
+    - round01_sgeyesub, round02_sgeyesub: Eye tracking calibration blocks
+
+    Each paradigm run contains:
+    - BrainVisionRDA_data: EEG data (n_samples x 64 channels)
+    - BrainVisionRDA_time: Timestamps in seconds
+    - ParadigmMarker_data: Event markers
+    - ParadigmMarker_time: Event timestamps
+    - MoCap_data: Motion capture data (pen position)
+    - MoCap_time: Motion capture timestamps
 
     Parameters
     ----------
@@ -69,7 +97,7 @@ def _load_data_001_2024(
     validate_subject(subject, 20, "BNCI2024-001")
 
     # Download the MAT file for this subject
-    url = "{u}001-2024/sub{s:02d}.mat".format(u=base_url, s=subject)
+    url = "{u}001-2024/S{s:02d}.mat".format(u=base_url, s=subject)
     filename = bnci_data_path(url, path, force_update, update_path)[0]
 
     if only_filenames:
@@ -77,6 +105,52 @@ def _load_data_001_2024(
 
     # Load the MAT file
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
+
+    # Process the paradigm runs (round01_paradigm, round02_paradigm)
+    runs = []
+    for round_name in ["round01_paradigm", "round02_paradigm"]:
+        if round_name in data:
+            raw = _convert_run_001_2024(data[round_name], verbose)
+            if raw is not None:
+                runs.append(raw)
+
+    # Return in sessions format
+    sessions = {"0": {str(ii): run for ii, run in enumerate(runs)}}
+    return sessions
+
+
+@verbose
+def _convert_run_001_2024(run, verbose=None):
+    """Convert one run from 001-2024 dataset to raw.
+
+    Parameters
+    ----------
+    run : mat_struct
+        Run data from MAT file containing BrainVisionRDA_data,
+        BrainVisionRDA_time, ParadigmMarker_data, and ParadigmMarker_time.
+    verbose : bool, str, int, or None
+        Verbosity level.
+
+    Returns
+    -------
+    raw : instance of RawArray
+        Raw MNE object.
+    """
+    # Parse EEG data - shape is (n_samples, n_channels)
+    eeg_data = np.asarray(run.BrainVisionRDA_data)
+    eeg_time = np.asarray(run.BrainVisionRDA_time)
+
+    # Transpose to (n_channels, n_samples) as expected by MNE
+    eeg_data = eeg_data.T
+
+    n_chan, n_samples = eeg_data.shape
+
+    # Calculate sampling rate from timestamps
+    # Time is in seconds (absolute timestamps)
+    duration = eeg_time[-1] - eeg_time[0]
+    sfreq = (n_samples - 1) / duration
+    # Round to nearest integer (should be ~500 Hz)
+    sfreq = round(sfreq)
 
     # Channel names: 60 EEG + 4 EOG channels
     # Based on standard 10-20 extended montage for EEG channels
@@ -96,70 +170,37 @@ def _load_data_001_2024(
     ch_names = ch_names_eeg + ch_names_eog
     ch_types = ["eeg"] * 60 + ["eog"] * 4
 
-    # Process the data - assuming similar structure to other BNCI datasets
-    runs = []
-
-    if isinstance(data["data"], np.ndarray):
-        run_array = data["data"]
-    else:
-        run_array = [data["data"]]
-
-    for run in run_array:
-        raw = _convert_run_001_2024(run, ch_names, ch_types, verbose)
-        if raw is not None:
-            runs.append(raw)
-
-    # Return in sessions format
-    sessions = {"0": {str(ii): run for ii, run in enumerate(runs)}}
-    return sessions
-
-
-@verbose
-def _convert_run_001_2024(run, ch_names, ch_types, verbose=None):
-    """Convert one run from 001-2024 dataset to raw.
-
-    Parameters
-    ----------
-    run : object
-        Run data from MAT file.
-    ch_names : list of str
-        List of channel names.
-    ch_types : list of str
-        List of channel types.
-    verbose : bool, str, int, or None
-        Verbosity level.
-
-    Returns
-    -------
-    raw : instance of RawArray
-        Raw MNE object.
-    """
-    # Parse EEG data
-    eeg_data = np.asarray(run.X)
-    n_expected = 64  # 60 EEG + 4 EOG
-    eeg_data = ensure_data_orientation(eeg_data, n_expected)
-    n_chan = eeg_data.shape[0]
-    montage = "standard_1005"
-    eeg_data = convert_units(eeg_data, from_unit="uV", to_unit="V")
-    sfreq = run.fs
-
     # Adjust channel names/types if necessary
     if n_chan != len(ch_names):
         # Fall back to generic channel names if mismatch
         ch_names = ["EEG%d" % ch for ch in range(1, n_chan + 1)]
         ch_types = ["eeg"] * n_chan
         montage = None
-
-    # Create trigger channel
-    trigger = np.zeros((1, eeg_data.shape[1]))
-
-    # Some runs may not contain trials (baseline runs)
-    if hasattr(run, "trial") and len(run.trial) > 0:
-        trial_idx = np.asarray(run.trial).astype(int) - 1
-        trigger[0, trial_idx] = np.asarray(run.y).astype(int)
     else:
-        return None
+        montage = "standard_1005"
 
+    # Convert from microvolts to volts
+    eeg_data = convert_units(eeg_data, from_unit="uV", to_unit="V")
+
+    # Create trigger channel from ParadigmMarker data
+    trigger = np.zeros((1, n_samples))
+
+    # Get markers and their timestamps
+    markers = np.asarray(run.ParadigmMarker_data)
+    marker_times = np.asarray(run.ParadigmMarker_time)
+
+    # Convert marker timestamps to sample indices
+    # marker_times are absolute timestamps, eeg_time[0] is start time
+    start_time = eeg_time[0]
+    for i, (marker, mtime) in enumerate(zip(markers, marker_times)):
+        # Only process letter markers (>= 100)
+        if marker in _LETTER_MARKER_MAP:
+            # Convert time to sample index
+            sample_idx = int(round((mtime - start_time) * sfreq))
+            if 0 <= sample_idx < n_samples:
+                trigger[0, sample_idx] = _LETTER_MARKER_MAP[marker]
+
+    # Stack EEG data with trigger channel
     eeg_data = np.vstack([eeg_data, trigger])
     ch_names = list(ch_names) + ["STI"]
     ch_types = list(ch_types) + ["stim"]
@@ -198,16 +239,18 @@ class BNCI2024_001(BNCIBaseDataset):
 
     **Recording Details**
 
-    - Equipment: EEG system with 60 EEG + 4 EOG channels
+    - Equipment: BrainVision EEG system with 60 EEG + 4 EOG channels
     - Channels: 60 EEG electrodes + 4 EOG electrodes = 64 total
     - Electrode montage: Extended 10-20 system
-    - Sampling rate: 512 Hz (estimated from similar Graz datasets)
+    - Sampling rate: 500 Hz
 
     **Experimental Procedure**
 
     - 10 letter classes: a, d, e, f, j, n, o, s, t, v
     - Participants wrote letters inside a box while fixating on the screen
     - No visual feedback of the writing was provided during the task
+    - 2 experimental rounds per subject, each containing ~32 trials per letter
+    - Additional motion capture data was recorded (pen position)
 
     **Event Codes**
 
