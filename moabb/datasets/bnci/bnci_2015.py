@@ -1091,10 +1091,10 @@ class BNCI2015_010(MNEBNCI):
 
     References
     ----------
-    .. [1] Acqualagna, L., & Blankertz, B. (2013). Gaze-independent BCI spellers
-           based on rapid serial visual presentation (RSVP). Clinical Neurophysiology,
+    .. [1] Acqualagna, L., & Blankertz, B. (2013). Gaze-independent BCI-spelling
+           using rapid serial visual presentation (RSVP). Clinical Neurophysiology,
            124(5), 901-908.
-           https://doi.org/10.1016/j.clinph.2012.08.027
+           https://doi.org/10.1016/j.clinph.2012.12.050
 
     Notes
     -----
@@ -1129,7 +1129,7 @@ class BNCI2015_010(MNEBNCI):
         "channel_types": {"eeg": 63},
         "paradigm": "p300",
         "events": {"Target": 1, "NonTarget": 2},
-        "doi": "10.1016/j.clinph.2012.08.027",
+        "doi": "10.1016/j.clinph.2012.12.050",
         "license": "CC BY 4.0",
         "montage": "standard_1005",
         "data_url": "http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-RSVP/",
@@ -1143,7 +1143,7 @@ class BNCI2015_010(MNEBNCI):
             code="BNCI2015-010",
             interval=[0, 0.8],
             paradigm="p300",
-            doi="10.1016/j.clinph.2012.08.027",
+            doi="10.1016/j.clinph.2012.12.050",
         )
 
     def _get_single_subject_data(self, subject):
