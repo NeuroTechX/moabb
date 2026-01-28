@@ -1980,8 +1980,8 @@ BI2013A_METADATA = DatasetMetadata(
 BI2014A_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=16,
-        channel_types={"eeg": 16},
+        n_channels=17,
+        channel_types={"eeg": 16, "stim": 1},
         sensors=[
             "Fp1",
             "Fp2",
@@ -2033,8 +2033,8 @@ BI2014A_METADATA = DatasetMetadata(
 BI2014B_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=32,
-        channel_types={"eeg": 32},
+        n_channels=33,
+        channel_types={"eeg": 32, "stim": 1},
         sensor_type="active wet",
         montage="standard_1020",
         line_freq=50.0,
@@ -2103,8 +2103,8 @@ BI2015A_METADATA = DatasetMetadata(
 BI2015B_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=32,
-        channel_types={"eeg": 32},
+        n_channels=33,
+        channel_types={"eeg": 32, "stim": 1},
         sensor_type="active wet",
         montage="standard_1020",
         line_freq=50.0,
@@ -2824,8 +2824,8 @@ LEE2019_SSVEP_METADATA = DatasetMetadata(
 KALUNGA2016_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=256.0,
-        n_channels=8,
-        channel_types={"eeg": 8},
+        n_channels=9,
+        channel_types={"eeg": 8, "stim": 1},
         sensors=["Oz", "O1", "O2", "POz", "PO3", "PO4", "PO7", "PO8"],
         hardware="g.Mobilab+",
         montage="standard_1020",
@@ -2868,7 +2868,7 @@ NAKANISHI2015_METADATA = DatasetMetadata(
         line_freq=60.0,
     ),
     participants=ParticipantMetadata(
-        n_subjects=10,
+        n_subjects=9,
         health_status="healthy",
     ),
     experiment=ExperimentMetadata(
@@ -2919,9 +2919,8 @@ WANG2016_METADATA = DatasetMetadata(
         line_freq=50.0,
     ),
     participants=ParticipantMetadata(
-        n_subjects=35,
+        n_subjects=34,
         health_status="healthy",
-        gender={"female": 17, "male": 18},
         age_mean=22.0,
     ),
     experiment=ExperimentMetadata(
