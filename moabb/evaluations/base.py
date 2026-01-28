@@ -111,7 +111,7 @@ class BaseEvaluation(ABC):
         optuna=False,
         time_out=60 * 15,
         verbose=None,
-        codecarbon_config=dict(save_to_file=False, log_level="error"),
+        codecarbon_config=None,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -126,7 +126,10 @@ class BaseEvaluation(ABC):
         self.optuna = optuna
         self.time_out = time_out
         self.verbose = verbose
+
         self.codecarbon_config = codecarbon_config
+        if codecarbon_config is None:
+            self.codecarbon_config = dict(save_to_file=False, log_level="error")
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
