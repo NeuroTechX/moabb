@@ -13,6 +13,7 @@ from moabb.evaluations.utils import (
     _create_scorer,
     _DictScorer,
     check_search_available,
+    Emissions,
 )
 from moabb.paradigms.base import BaseParadigm
 from moabb.utils import verbose
@@ -128,21 +129,7 @@ class BaseEvaluation(ABC):
         self.optuna = optuna
         self.time_out = time_out
         self.verbose = verbose
-
-        self.codecarbon_config = codecarbon_config
-        if codecarbon_config is None:
-            self.codecarbon_config = dict(save_to_file=False, log_level="error")
-        else:
-            offline_params = [
-                "country_iso_code",
-                "region",
-                "cloud_provider",
-                "cloud_region",
-                "country_2letter_iso_code",
-            ]
-            self.codecarbon_offline = any(
-                key in self.codecarbon_config for key in offline_params
-            )
+        self.emissions = Emissions(codecarbon_config=codecarbon_config)
 
         self.additional_columns = additional_columns
         if additional_columns is None:
