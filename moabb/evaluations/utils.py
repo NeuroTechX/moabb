@@ -472,26 +472,25 @@ def _score_and_update(res, scorer, model, X, y_true):
 
 class Emissions:
     def __init__(self, codecarbon_config=None):
-        if _carbonfootprint:
-            self.codecarbon_config = codecarbon_config
-            if codecarbon_config is None:
-                # Default CodeCarbon configurations
-                self.codecarbon_config = dict(save_to_file=False, log_level="error")
-            else:
-                # Offline mode parameters are a superset of online mode parameters
-                # Hardcode check avoids object reflection for security and compatibility
-                # For more information see CodeCarbon documentation
-                # https://mlco2.github.io/codecarbon/parameters.html#specific-parameters-for-offline-mode
-                offline_params = [
-                    "country_iso_code",
-                    "region",
-                    "cloud_provider",
-                    "cloud_region",
-                    "country_2letter_iso_code",
-                ]
-                self.codecarbon_offline = any(
-                    key in self.codecarbon_config for key in offline_params
-                )
+        self.codecarbon_config = codecarbon_config
+        if codecarbon_config is None:
+            # Default CodeCarbon configurations
+            self.codecarbon_config = dict(save_to_file=False, log_level="error")
+        else:
+            # Offline mode parameters are a superset of online mode parameters
+            # Hardcode check avoids object reflection for security and compatibility
+            # For more information see CodeCarbon documentation
+            # https://mlco2.github.io/codecarbon/parameters.html#specific-parameters-for-offline-mode
+            offline_params = [
+                "country_iso_code",
+                "region",
+                "cloud_provider",
+                "cloud_region",
+                "country_2letter_iso_code",
+            ]
+            self.codecarbon_offline = any(
+                key in self.codecarbon_config for key in offline_params
+            )
 
     def create_tracker(self):
         if self.codecarbon_offline:
