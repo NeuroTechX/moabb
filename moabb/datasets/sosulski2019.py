@@ -10,9 +10,8 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
-SPOT_PILOT_P300_URL = (
-    "https://freidok.uni-freiburg.de/fedora/objects/freidok:154576/datastreams"
-)
+# New freidok URL - the old fedora URLs no longer work
+SPOT_PILOT_P300_URL = "https://freidok.uni-freiburg.de/dnb/download/154576"
 
 
 class Sosulski2019(BaseDataset):
@@ -171,16 +170,25 @@ class Sosulski2019(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        # check if has the .zip
-        file_number = Sosulski2019._map_subject_to_filenumber(subject)
-        url = f"{SPOT_PILOT_P300_URL}/FILE{file_number}/content"
-        path_zip = dl.data_dl(url, "spot")
-        path_folder = path_zip[:-8] + f"/subject{subject}"
+        # Download the main ZIP file containing all subjects
+        path_zip = dl.data_dl(SPOT_PILOT_P300_URL, "spot")
+        path_base = os.path.dirname(path_zip)
+        path_extracted = os.path.join(path_base, "extracted")
 
-        # check if has to unzip
-        if not (os.path.isdir(path_folder)):
-            zip_ref = zipfile.ZipFile(path_zip, "r")
-            zip_ref.extractall(path_zip[:-7])
+        # Extract main ZIP if not already done
+        if not os.path.isdir(path_extracted):
+            with zipfile.ZipFile(path_zip, "r") as zip_ref:
+                zip_ref.extractall(path_extracted)
+
+        # Find and extract subject-specific ZIP
+        subject_zip_name = f"subject{subject}.zip"
+        subject_zip_path = os.path.join(path_extracted, subject_zip_name)
+        path_folder = os.path.join(path_extracted, f"subject{subject}")
+
+        if not os.path.isdir(path_folder):
+            if os.path.exists(subject_zip_path):
+                with zipfile.ZipFile(subject_zip_path, "r") as zip_ref:
+                    zip_ref.extractall(path_extracted)
 
         # get the path to all files
         # We only load data from the second run. The first run is a potpourri of SOAs
