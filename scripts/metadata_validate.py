@@ -431,6 +431,57 @@ def validate_acquisition_metadata(
             )
         )
 
+    # Line frequency vs actual data
+    if "line_freq" in extracted and extracted["line_freq"]:
+        if acq.line_freq != extracted["line_freq"]:
+            issues.append(
+                ValidationIssue(
+                    field="acquisition.line_freq",
+                    severity=Severity.WARNING,
+                    message=f"Line freq mismatch: catalog={acq.line_freq}, actual={extracted['line_freq']}",
+                    catalog_value=acq.line_freq,
+                    actual_value=extracted["line_freq"],
+                )
+            )
+
+    # Montage validation (check if valid MNE montage)
+    if acq.montage:
+        try:
+            import mne
+
+            valid_montages = mne.channels.get_builtin_montages()
+            if acq.montage not in valid_montages:
+                issues.append(
+                    ValidationIssue(
+                        field="acquisition.montage",
+                        severity=Severity.INFO,
+                        message=f"Montage '{acq.montage}' not in MNE built-in montages",
+                        catalog_value=acq.montage,
+                        suggestion="May be custom montage or typo",
+                    )
+                )
+        except Exception:
+            pass
+
+    # Channel types vs actual data
+    if "channel_types" in extracted and acq.channel_types:
+        actual_types = extracted["channel_types"]
+        catalog_types = acq.channel_types
+        if actual_types != catalog_types:
+            # Check if it's just missing stim channels (common)
+            actual_without_stim = {k: v for k, v in actual_types.items() if k != "stim"}
+            catalog_without_stim = {k: v for k, v in catalog_types.items() if k != "stim"}
+            if actual_without_stim != catalog_without_stim:
+                issues.append(
+                    ValidationIssue(
+                        field="acquisition.channel_types",
+                        severity=Severity.WARNING,
+                        message=f"Channel types mismatch: catalog={catalog_types}, actual={actual_types}",
+                        catalog_value=catalog_types,
+                        actual_value=actual_types,
+                    )
+                )
+
 
 def validate_participants_metadata(
     catalog_meta, dataset_class: Optional[Any], issues: List[ValidationIssue]
@@ -578,6 +629,26 @@ def validate_experiment_metadata(
                         actual_value=n_events,
                     )
                 )
+
+    # Trial duration vs dataset.interval
+    if dataset_class is not None and exp.trial_duration is not None:
+        try:
+            interval = dataset_class.interval
+            if interval is not None and len(interval) == 2:
+                actual_duration = interval[1] - interval[0]
+                if abs(exp.trial_duration - actual_duration) > 0.1:
+                    issues.append(
+                        ValidationIssue(
+                            field="experiment.trial_duration",
+                            severity=Severity.INFO,
+                            message=f"Trial duration ({exp.trial_duration}s) differs from interval ({actual_duration}s)",
+                            catalog_value=exp.trial_duration,
+                            actual_value=actual_duration,
+                            suggestion="Check if trial_duration should match interval duration",
+                        )
+                    )
+        except Exception:
+            pass
 
 
 def validate_documentation_metadata(catalog_meta, issues: List[ValidationIssue]) -> None:
