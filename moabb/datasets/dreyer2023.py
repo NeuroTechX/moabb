@@ -44,7 +44,7 @@ class _Dreyer2023Base(BaseDataset):
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
             code="Dreyer2023" + self.sub_id,
-            interval=[3, 8],
+            interval=[0, 5],
             paradigm="imagery",
             doi="10.5281/zenodo.7554429",
         )
@@ -72,6 +72,17 @@ class _Dreyer2023Base(BaseDataset):
                 # Read the subject's raw data and set the montage
                 raw = read_raw_bids(bids_path=file, verbose=False)
                 raw = raw.load_data()
+
+                # Set the channel montage
+                mapping = dict()
+                for ch in raw.ch_names:
+                    if "EOG" in ch:
+                        mapping[ch] = "eog"
+                    elif "EMG" in ch:
+                        mapping[ch] = "emg"
+
+                raw.set_channel_types(mapping)
+
                 # We are losting several annotations because there is no fuck
                 # place explaining what it is the events ids :)
                 raw.annotations.rename({"769": "left_hand", "770": "right_hand"})
@@ -121,7 +132,10 @@ class _Dreyer2023Base(BaseDataset):
 
         bids_path_list = []
         for task in tasks:
-            if "baseline" in task:
+            if "baseline" in task or "rest" in task:
+                continue
+
+            if subject == 59 and (("R5online" in task) or ("R6online" in task)):
                 continue
 
             # Create a BIDSPath object for all the tasks
@@ -216,12 +230,12 @@ class Dreyer2023A(_Dreyer2023Base):
     "A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research" [1]_ [2]_
 
-    Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
+    :Data collectors: Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
                       Dreyer Pauline; Pillette Léa
-    Data manager    : Dreyer Pauline
-    Project leader  : Lotte Fabien
-    Project members : Rimbert Sébastien; Monseigne Thibaut
+    :Data manager: Dreyer Pauline
+    :Project leader: Lotte Fabien
+    :Project members: Rimbert Sébastien; Monseigne Thibaut
 
     Dataset Dreyer2023A contains EEG, EOG and EMG signals recorded on 60 healthy subjects
     performing Left-Right Motor Imagery experiments
@@ -245,7 +259,7 @@ class Dreyer2023A(_Dreyer2023Base):
         - t=3.00s  a red arrow appears (subject starts to perform task)
         - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in form of a blue bar
-                   with update frequency of 16 Hz
+          with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
     EEG signals [1]_:
@@ -305,12 +319,12 @@ class Dreyer2023B(_Dreyer2023Base):
     "A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research" [1]_ [2]_
 
-    Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
+    :Data collectors: Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
                       Dreyer Pauline; Pillette Léa
-    Data manager    : Dreyer Pauline
-    Project leader  : Lotte Fabien
-    Project members : Rimbert Sébastien; Monseigne Thibaut
+    :Data manager: Dreyer Pauline
+    :Project leader: Lotte Fabien
+    :Project members: Rimbert Sébastien; Monseigne Thibaut
 
     Dataset Dreyer2023B contains EEG, EOG and EMG signals recorded on 21 healthy subjects
     performing Left-Right Motor Imagery experiments
@@ -334,7 +348,7 @@ class Dreyer2023B(_Dreyer2023Base):
         - t=3.00s  a red arrow appears (subject starts to perform task)
         - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in form of a blue bar
-                   with update frequency of 16 Hz
+          with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
     EEG signals [1]_:
@@ -393,12 +407,12 @@ class Dreyer2023C(_Dreyer2023Base):
     "A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research" [1]_ [2]_.
 
-    Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
+    :Data collectors: Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
                       Dreyer Pauline; Pillette Léa
-    Data manager    : Dreyer Pauline
-    Project leader  : Lotte Fabien
-    Project members : Rimbert Sébastien; Monseigne Thibaut
+    :Data manager: Dreyer Pauline
+    :Project leader: Lotte Fabien
+    :Project member: Rimbert Sébastien; Monseigne Thibaut
 
     Dataset Dreyer2023C contains EEG, EOG and EMG signals recorded on 6 healthy subjects
     performing Left-Right Motor Imagery experiments (4 women) who participated in datasets
@@ -418,7 +432,7 @@ class Dreyer2023C(_Dreyer2023Base):
         - t=3.00s  a red arrow appears (subject starts to perform task)
         - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in form of a blue bar
-                   with update frequency of 16 Hz
+          with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
     EEG signals [1]_:
@@ -477,12 +491,12 @@ class Dreyer2023(_Dreyer2023Base):
     "A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research" [1]_ [2]_
 
-    Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
+    :Data Collectors: Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
                       Dreyer Pauline; Pillette Léa
-    Data manager    : Dreyer Pauline
-    Project leader  : Lotte Fabien
-    Project members : Rimbert Sébastien; Monseigne Thibaut
+    :Data Manager: Dreyer Pauline
+    :Project leader: Lotte Fabien
+    :Project members: Rimbert Sébastien; Monseigne Thibaut
 
     Dataset Dreyer2023 contains concatenated datasets Dreyer2023A, Dreyer2023B and Dreyer2023C.
 
@@ -505,7 +519,7 @@ class Dreyer2023(_Dreyer2023Base):
         - t=3.00s  a red arrow appears (subject starts to perform task)
         - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in the form of a blue bar
-                   with update frequency of 16 Hz
+          with update frequency of 14 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
     EEG signals [1]_:

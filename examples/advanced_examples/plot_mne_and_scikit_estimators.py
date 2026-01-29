@@ -113,7 +113,7 @@ class MyVectorizer(BaseEstimator, TransformerMixin):
 
 mne_ppl = {}
 mne_ppl["MNE LR"] = make_pipeline(
-    MyVectorizer(), StandardScaler(), LogisticRegression(penalty="l1", solver="liblinear")
+    MyVectorizer(), StandardScaler(), LogisticRegression(l1_ratio=1.0, solver="saga")
 )
 
 mne_eval = CrossSessionEvaluation(
@@ -140,7 +140,7 @@ mne_adv["XDAWN LR"] = make_pipeline(
     Xdawn(n_components=5, reg="ledoit_wolf", correct_overlap=False),
     Vectorizer(),
     StandardScaler(),
-    LogisticRegression(penalty="l1", solver="liblinear"),
+    LogisticRegression(l1_ratio=1.0, solver="saga"),
 )
 adv_eval = CrossSessionEvaluation(
     paradigm=paradigm,
@@ -164,7 +164,7 @@ sk_ppl = {}
 sk_ppl["RG LR"] = make_pipeline(
     XdawnCovariances(nfilter=5, estimator="lwf", xdawn_estimator="scm"),
     TangentSpace(),
-    LogisticRegression(penalty="l1", solver="liblinear"),
+    LogisticRegression(l1_ratio=1.0, solver="saga"),
 )
 sk_eval = CrossSessionEvaluation(
     paradigm=paradigm,

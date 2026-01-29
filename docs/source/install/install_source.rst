@@ -4,7 +4,7 @@ Installation from Sources
 ===========================
 
 This guide is intended for users who want to test experimental features or contribute to MOABB’s development. If you only need the stable release, please refer to our
-`pip installation guide <https://neurotechx.github.io/moabb/install/install_pip.html#install-pip>`__.
+`pip installation guide <https://moabb.neurotechx.com/docs/install/install_pip.html#install-pip>`__.
 
 .. note::
    For a straightforward MOABB installation (without development), please see the pip installation guide.

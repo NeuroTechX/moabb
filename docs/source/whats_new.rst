@@ -5,36 +5,170 @@
 What's new
 ==========
 
+
 .. NOTE: there are 3 separate sections for changes, based on type:
+
 - "Enhancements" for new features
 - "Bugs" for bug fixes
 - "API changes" for backward-incompatible changes
+
 .. _current:
 
-
-Develop branch  - 1.2.1
-------------------------
+Version 1.5  (Source - GitHub)
+-------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
 - Implementation of Pseudo Online framework (:gh:`641` by `Igor Carrara`_)
-- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
-- Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
-- Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
-- Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
+- Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
+- Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
+- Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
+- Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
+- Allow custom paradigms to have multiple scores for evaluations (:gh:`948` by `Ethan Davis`_)
+- Ability to parameterize the scoring rule of paradigms (:gh:`948` by `Ethan Davis`_)
+- Extend scoring configuration to accept lists of metric callables, scorer objects, and tuple kwargs (e.g., `needs_proba`/`needs_threshold`) for multi-metric evaluations (:gh:`948` by `Ethan Davis`_ and `Bruno Aristimunha`_)
+- Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
 
+API changes
+~~~~~~~~~~~
+- Allow CodeCarbon script level configurations when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`866` by `Ethan Davis`_).
+- When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
+- Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
+- Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
+
+Requirements
+~~~~~~~~~~~~
+- Requires CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
 
 Bugs
 ~~~~
+- Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
+- Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
+- Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
+- Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
+- Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
+- Fix copytree FileExistsError in BrainInvaders2013a download by adding dirs_exist_ok=True (by `Bruno Aristimunha`_)
+
+Code health
+~~~~~~~~~~~
+- Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
+- Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
+
+Version 1.4.3 (Stable - PyPi)
+-------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Add “Open in Colab” buttons for gallery examples (:gh:`853` by `Bruno Aristimunha`_)
+- Refresh docs homepage design and citation visibility (:gh:`853` by `Bruno Aristimunha`_)
+- Add :class:`moabb.datasets.preprocessing.FixedPipeline` and :func:`moabb.datasets.preprocessing.make_fixed_pipeline` to avoid scikit-learn unfitted pipeline warnings (:gh:`850` by `Bruno Aristimunha`_)
+
+API changes
+~~~~~~~~~~~
+- None.
+
+Requirements
+~~~~~~~~~~~~
+- Improve compatibility with Python 3.14 (:gh:`848` by `Bruno Aristimunha`_)
+
+Bugs
+~~~~
+- Fixing warnings from the latest scikit-learn version within the Preprocessing logic (:gh:`850` by `Bruno Aristimunha`_)
+- Fixing compatibility with Scikit-learn 1.8 (:gh:`852` by `Bruno Aristimunha`_)
+
+Code health
+~~~~~~~~~~~
+- Generate notebooks in docs CI for Colab integration (:gh:`853` by `Bruno Aristimunha`_)
+
+
+Version 1.4.2
+---------------
+
+Enhancements
+~~~~~~~~~~~~
+- Adding dataset :class:`moabb.datasets.RomaniBF2025ERP` converted to BIDS (:gh:`825` by `Romani Michele`_)
+- Improve compute_pvals_perm function (:gh:`818` by `Quentin Barthelemy`_)
+
+Bugs
+~~~~
+- Fixes the management of include/exclude datasets in :func:`moabb.benchmark`, adds additional verifications (:gh:`834` by `Anton Andreev`_)
+- Fixing pagination issue with figshare (:gh:`839` by `Bruno Aristimunha`_)
+- Fixes :class:`moabb.datasets.preprocessing.SetRawAnnotations` in case no STIM channel is present (:gh:`838` by `Pierre Guetschel`_ and `Simon Kojima`_)
+
+API changes
+~~~~~~~~~~~
+- None.
+
+
+
+Version  - 1.4
+-----------------------
+Enhancements
+~~~~~~~~~~~~
+- Update to pyRiemann 0.9 and numpy 2.0 for improved compatibility (:gh:`789` by `Gregoire Cattan`_ and `Bruno Aristimunha`_)
+- Adding :class:`moabb.datasets.Kojima2024A` (:gh:`807` by `Simon Kojima`_)
+- Adding :class:`moabb.datasets.Kojima2024B` (:gh:`806` by `Simon Kojima`_)
+- Add new dataset :class:`moabb.datasets.BNCI2003_IVa` dataset (:gh:`811` by `Griffin Keeler`_)
+- Added the ability to feed pipelines using a list of dictionaries in :func:`moabb.benchmark` (:gh:`826` by `Anton Andreev`_)
+
+Bugs
+~~~~
+- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
+- Fix the :class:`moabb.datasets.Dreyer2023` (:gh:`828` by `Simon Kojima`_)
+
+API changes
+~~~~~~~~~~~
+- None.
+
+
+Version  - 1.3
+--------------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Adding a tutorial for :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`776` by `Thomas Kooiman`_, `Paul Verhoeven`_, `Jorge Sanmartin Martinez`_, and `Radovan Vodila`_ )
+- Adding new motor imagery dataset, Dreyer2023 (:gh:`404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
+- Reordering the examples in the documentation (:gh:`706` by `Bruno Aristimunha`_)
+- Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
+- Adding :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B` (:gh:`675` by `Samuel Boehm`_)
+- Adding :class:`moabb.evaluations.splitters.CrossSubjectSplitter` (:gh:`722` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
+- Adding :class:`moabb.evaluations.splitters.CrossSessionSplitter` (:gh:`720` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
+- Adding :class:`moabb.datasets.base.BaseBIDSDataset` and :class:`moabb.datasets.base.LocalBIDSDataset` (:gh:`724` by `Pierre Guetschel`_)
+- Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
+- Adding :func:`moabb.datasets.utils.plot_all_datasets` and update the tutorial (:gh:`758` by `Pierre Guetschel`_)
+- Improve the dataset model cards in each API page (:gh:`765` by `Pierre Guetschel`_)
+- Refactor :class:`moabb.evaluation.CrossSessionEvaluation`, :class:`moabb.evaluation.CrossSubjectEvaluation` and  :class:`moabb.evaluation.WithinSessionEvaluation` to use the new splitter classes (:gh:`769` by `Bruno Aristimunha`_)
+- Adding tutorial on using mne-features (:gh:`762` by `Alexander de Ranitz`_, `Luuk Neervens`_, `Charlynn van Osch`_ and `Bruno Aristimunha`_)
+- Creating tutorial to expose the pre-processing steps (:gh:`771` by `Bruno Aristimunha`_)
+- Add function to auto-generate tables for the paper results documentation page (:gh:`785` by `Lucas Heck`_)
+- Improving the Filterbank tutorial and implementing the mutual information selection to reproduce the FilterbankCSP (:gh:`787` by `Bruno Aristimunha`_)
+- A tutorial on how to create and use a MOABB dataset from X y (non continuous, epoched) data (:gh:`800` by `Anton Andreev`_)
+- Improving the parallel writing of results (:gh:`803` by `Bruno Aristimunha`_)
+
+Bugs
+~~~~
+- Fix regression in evaluations ignoring ``process_pipeline`` flag (:gh:`774` by `Bruno Aristimunha`_)
 - Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
+- Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
+- Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
+- Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
+- Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
+- Fix code carbon example code (:gh:`777` by `Amar Enkhbat`_)
+- Including the fix_bad_channels for the :class:`moabb.datasets.Stieger2021` (:gh:`783` by `Bruno Aristimunha`_)
+- Fix the :class:`moabb.datasets.Wang2016` (:gh:`781` by `Ulysse Durand`_)
+- Fix warnings raised when building the documentation (:gh:`784` by `Lucas Heck`_)
+- Remove an unnecessary line in the README.md (:gh:`791` by `Lionel Kusch`_)
+- Update the dead link about the tutorial of GitHub in CONTRIBUTING.md (:gh:`792` by `Lionel Kusch`_)
+- Fix: number of trial per class for PHMD_ML dataset (:gh:`797` by `Gregoire Cattan`_)
+- Converting the :class:`moabb.datasets.Zhou2016` to BIDS (:gh:`802` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
 - Removing the deep learning module from inside moabb in favour of braindecode integration (:gh:`692` by `Bruno Aristimunha`_ )
 
 
-Version - 1.2.0  (Stable - PyPi)
----------------------------------
+Version - 1.2.0
+----------------
 
 
 Enhancements
@@ -55,7 +189,7 @@ Bugs
 - Creating stimulus channels in :class:`moabb.datasets.Zhou2016` and :class:`moabb.datasets.PhysionetMI` to allow braindecode compatibility (:gh:`669` by `Bruno Aristimunha`_)
 - Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
 - Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
-- Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
+- Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>`__ (:gh:`685` by `AFF`)
 - Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_)
 - Change the way of creating the path to the folder (:gh:`697` by `Sebastien Velut`_)
 - Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
@@ -163,10 +297,10 @@ Enhancements
 - Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Add resting state paradigm with dataset and example (:gh:`400` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Speeding the augmentation method by 400% with NumPy vectorization  (:gh:`419` by `Bruno Aristimunha`_)
-- Add possibility to convert datasets to BIDS, plus `example <examples/example_bids_conversion.py>`_ (PR :gh:`408`, PR :gh:`391` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
-- Allow caching intermediate processing steps on disk, plus `example <examples/example_disk_cache.py>`_ (PR :gh:`408`, issue :gh:`385` by `Pierre Guetschel`_)
+- Add possibility to convert datasets to BIDS, plus `example <examples/example_bids_conversion.py>`__ (PR :gh:`408`, PR :gh:`391` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Allow caching intermediate processing steps on disk, plus `example <examples/example_disk_cache.py>`__ (PR :gh:`408`, issue :gh:`385` by `Pierre Guetschel`_)
 - Restructure the paradigms and datasets to move all preprocessing steps to :mod:`moabb.datasets.preprocessing` and as sklearn pipelines (PR :gh:`408` by `Pierre Guetschel`_)
-- Add :func:`moabb.paradigms.FixedIntervalWindowsProcessing` and :func:`moabb.paradigms.FilterBankFixedIntervalWindowsProcessing`, plus `example <examples/example_fixed_interval_windows.py>`_ (PR :gh:`408`, issue :gh:`424` by `Pierre Guetschel`_)
+- Add :func:`moabb.paradigms.FixedIntervalWindowsProcessing` and :func:`moabb.paradigms.FilterBankFixedIntervalWindowsProcessing`, plus `example <examples/example_fixed_interval_windows.py>`__ (PR :gh:`408`, issue :gh:`424` by `Pierre Guetschel`_)
 - Define :func:`moabb.paradigms.base.BaseProcessing`, common parent to :func:`moabb.paradigms.base.BaseParadigm` and :func:`moabb.paradigms.BaseFixedIntervalWindowsProcessing` (PR :gh:`408` by `Pierre Guetschel`_)
 - Allow passing a fixed processing pipeline to :func:`moabb.paradigms.base.BaseProcessing.get_data` and cache its result on disk (PR :gh:`408`, issue :gh:`367` by `Pierre Guetschel`_)
 - Update :func:`moabb.datasets.fake.FakeDataset`'s code to be unique for each parameter combination (PR :gh:`408` by `Pierre Guetschel`_)
@@ -509,6 +643,9 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+
+.. _Ethan Davis: https://github.com/davisethan
+.. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
@@ -536,7 +673,7 @@ API changes
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
 .. _Jordy Thielen: https://github.com/thijor
-.. _Sebastien Velut: https://github.com/swetbear
+.. _Sebastien Velut: https://github.com/sebVelut
 .. _Brian Irvine: https://github.com/brianjohannes
 .. _Bruna Lopes: https://github.com/brunaafl
 .. _Yash Chauhan: https://github.com/jiggychauhi
@@ -544,3 +681,19 @@ API changes
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
 .. _Samuel Boehm: https://github.com/Samuel-Boehm
+.. _Amar Enkhbat: https://github.com/amar-enkhbat
+.. _Alexander de Ranitz: https://github.com/alexander-de-ranitz
+.. _Luuk Neervens: https://github.com/LuukNeervens
+.. _Charlynn van Osch: https://github.com/charlynnvanosch
+.. _Paul Verhoeven: https://github.com/PaulusBoskabouter
+.. _Thomas Kooiman: https://github.com/jellymace
+.. _Jorge Sanmartin Martinez: https://github.com/jorgesanmar
+.. _Radovan Vodila: https://github.com/rvodila
+.. _Ulysse Durand: https://github.com/UlysseDurand
+.. _Lucas Heck: https://github.com/lucas-heck
+.. _Simon Kojima: https://github.com/simonkojima
+.. _Griffin Keeler: https://github.com/griffinkeeler
+.. _Kosei Nakada: https://github.com/ponpopon
+.. _Romani Michele: https://github.com/BRomans
+.. _Lionel Kusch: https://github.com/lionelkusch
+.. _Victor Martinez-Cagigal: https://github.com/vicmarcag

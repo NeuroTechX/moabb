@@ -6,11 +6,13 @@ import pandas as pd
 
 
 def prepare_table(df: pd.DataFrame):
+    # Convert column to string dtype first to avoid FutureWarning
+    df["PapersWithCode leaderboard"] = df["PapersWithCode leaderboard"].astype("object")
     no_pwc = df["PapersWithCode leaderboard"].isna()
     df.loc[no_pwc, "PapersWithCode leaderboard"] = "No"
     df.loc[~no_pwc, "PapersWithCode leaderboard"] = df.loc[
         ~no_pwc, "PapersWithCode leaderboard"
-    ].apply(lambda x: f"`Yes <{x}>`_")
+    ].apply(lambda x: f"`Yes <{x}>`__")
     df["Dataset"] = df["Dataset"].apply(lambda x: f":class:`{x}`")
 
 
@@ -32,3 +34,4 @@ if __name__ == "__main__":
     parser.add_argument("target_dir", type=str)
     args = parser.parse_args()
     main(args.source_dir, args.target_dir)
+    print(args.target_dir)

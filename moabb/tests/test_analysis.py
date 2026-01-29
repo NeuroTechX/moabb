@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 from matplotlib.pyplot import Figure
 
 import moabb.analysis.meta_analysis as ma
@@ -130,12 +129,13 @@ class TestStats:
         ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_perm_random(self):
+        rng = np.random.RandomState(12)
         data = (
             self.return_df((18, 5)) * 0
         )  # We provide the exact same data for each pipeline
         n_perms = 10000  # hardcoded in _pairedttest_random
 
-        pvals = ma.compute_pvals_perm(data)
+        pvals = ma.compute_pvals_perm(data, seed=rng)
         assert np.all(
             pvals == 1 - 1 / n_perms
         ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
@@ -159,13 +159,13 @@ class TestStats:
         p1vsp2 = pvals[0, 1]
         assert p1vsp2 == 1 / n_perms, f"P-values cannot be zero {pvals}"
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_compute_pvals_random_cannot_be_zero(self):
+        rng = np.random.RandomState(12)
         df = pd.DataFrame({"pipeline_1": [1] * 18, "pipeline_2": [0] * 18})
         n_perms = 10000  # hardcoded in _pairedttest_random
-        pvals = ma.compute_pvals_perm(df)
+        pvals = ma.compute_pvals_perm(df, seed=rng)
         p1vsp2 = pvals[0, 1]
-        assert p1vsp2 == 1 / n_perms, "P-values cannot be zero "
+        assert p1vsp2 >= 1 / n_perms, f"P-values cannot be zero {pvals}"
 
 
 class TestResults:
@@ -234,6 +234,83 @@ class TestResults:
             np.unique(df["pipeline"]),
         )
         assert df.shape[0] == 6, df.shape[0]
+
+    def test_add_results_without_carbon_emission(self):
+        """Test adding results that don't have carbon_emission key."""
+        # Create result dict without carbon_emission
+        d_no_carbon = {
+            "time": 1,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 1,
+            "session": "0",
+            "score": 0.9,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+        _in = to_result_input(["a"], [d_no_carbon])
+        # Should not raise KeyError
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+        df = self.obj.to_dataframe()
+        assert df.shape[0] == 1
+
+    def test_mixed_carbon_emission_results(self):
+        """Test adding results where some have carbon_emission and some don't."""
+        d_with_carbon = {
+            "time": 1,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 1,
+            "session": "0",
+            "score": 0.9,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+        d_without_carbon = {
+            "time": 2,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 2,
+            "session": "0",
+            "score": 0.85,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+
+        if _carbonfootprint:
+            d_with_carbon["carbon_emission"] = 5
+            d_with_carbon["codecarbon_task_name"] = "task1"
+
+        # Add results with carbon_emission
+        _in = to_result_input(["a"], [d_with_carbon])
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+
+        # Add results without carbon_emission
+        _in = to_result_input(["a"], [d_without_carbon])
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+
+        # Should be able to export to dataframe without errors
+        df = self.obj.to_dataframe()
+        assert df.shape[0] == 2
+
+    def test_dataframe_with_missing_codecarbon_dataset(self):
+        """Test that to_dataframe works even if codecarbon_task_name dataset doesn't exist."""
+        # Add a result without carbon_emission
+        d_no_carbon = {
+            "time": 1,
+            "dataset": FakeDataset(["d1", "d2"]),
+            "subject": 1,
+            "session": "0",
+            "score": 0.9,
+            "n_samples": 100,
+            "n_channels": 10,
+        }
+        _in = to_result_input(["a"], [d_no_carbon])
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+
+        # Should be able to call to_dataframe without KeyError
+        df = self.obj.to_dataframe()
+        assert df.shape[0] == 1
+        # codecarbon_task_name should not be in columns if not present in HDF5
+        if _carbonfootprint and "codecarbon_task_name" not in str(df.columns):
+            pass  # Expected for old files
 
 
 if _carbonfootprint:

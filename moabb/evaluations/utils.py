@@ -1,12 +1,20 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+import numpy as np
+from mne.utils.config import _open_lock
 from numpy import argmax
-from sklearn.metrics import matthews_corrcoef
+from sklearn.base import ClassifierMixin
+from sklearn.metrics import check_scoring, matthews_corrcoef
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
+
+
+log = logging.getLogger(__name__)
 
 
 try:
@@ -20,6 +28,67 @@ except ImportError:
 def _normalized_mcc(y_true, y_pred):
     mcc = matthews_corrcoef(y_true, y_pred)
     return (mcc + 1) / 2
+
+
+def _ensure_fitted(estimator):
+    """Ensure an estimator is properly marked as fitted for sklearn 1.8+.
+
+    In sklearn 1.8+, Pipeline.predict() calls check_is_fitted(self) which
+    may fail for some estimators (especially deep learning wrappers) that
+    don't properly set fitted attributes. This function adds the necessary
+    attributes to ensure the estimator passes sklearn's fitted check.
+
+    Parameters
+    ----------
+    estimator : sklearn-compatible estimator
+        The fitted estimator to mark as fitted. This should be called
+        after fit() has been called on the estimator.
+
+    Returns
+    -------
+    estimator : sklearn-compatible estimator
+        The same estimator with fitted attributes set.
+
+    Notes
+    -----
+    This function modifies the estimator in-place and returns it for
+    convenience. sklearn's check_is_fitted looks for:
+    1. __sklearn_is_fitted__() method returning True
+    2. Or any attribute ending with '_' (like classes_, coef_, etc.)
+
+    We add a __sklearn_is_fitted__ method that returns True.
+    """
+
+    # Define a method that returns True to indicate fitted state
+    def _sklearn_is_fitted_true(self):
+        return True
+
+    # Add __sklearn_is_fitted__ method if not present or if it returns False
+    if not hasattr(estimator, "__sklearn_is_fitted__"):
+        import types
+
+        estimator.__sklearn_is_fitted__ = types.MethodType(
+            _sklearn_is_fitted_true, estimator
+        )
+    else:
+        # Check if existing method returns False (unfitted)
+        try:
+            if not estimator.__sklearn_is_fitted__():
+                import types
+
+                estimator.__sklearn_is_fitted__ = types.MethodType(
+                    _sklearn_is_fitted_true, estimator
+                )
+        except Exception:
+            pass
+
+    # For Pipeline objects, also ensure all steps are marked
+    if isinstance(estimator, Pipeline):
+        for name, step in estimator.steps:
+            if step is not None:
+                _ensure_fitted(step)
+
+    return estimator
 
 
 def _check_if_is_pytorch_model(model):
@@ -54,7 +123,7 @@ def _check_if_is_pytorch_steps(model):
         return skorch_valid
 
 
-def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
+def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     """Save a model fitted to a given fold from cross-validation.
 
     Parameters
@@ -89,14 +158,14 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                     f_criterion=Path(save_path) / f"{file_step}_criterion.pkl",
                 )
             else:
-                with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
+                with _open_lock((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
                     dump(step, file, protocol=HIGHEST_PROTOCOL)
     else:
-        with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
+        with _open_lock((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
             dump(model, file, protocol=HIGHEST_PROTOCOL)
 
 
-def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
+def _save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
     """Save a list of models fitted to a folder.
 
     Parameters
@@ -120,14 +189,14 @@ def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path
         model_list = [model_list]
 
     for cv_index, model in enumerate(model_list):
-        save_model_cv(model, save_path, str(cv_index))
+        _save_model_cv(model, save_path, str(cv_index))
 
     best_model = model_list[argmax(score_list)]
 
-    save_model_cv(best_model, save_path, "best")
+    _save_model_cv(best_model, save_path, "best")
 
 
-def create_save_path(
+def _create_save_path(
     hdf5_path,
     code: str,
     subject: int | str,
@@ -185,7 +254,7 @@ def create_save_path(
 
         return str(path_save)
     else:
-        print("No hdf5_path provided, models will not be saved.")
+        log.warning("No hdf5_path provided, models will not be saved.")
 
 
 def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
@@ -219,3 +288,182 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
             except Exception as e:
                 raise ValueError(f"Conversion failed for parameter {key}: {e}")
         return optuna_params
+
+
+# Classifier-only OptunaSearchCV wrapper logic.
+#
+# MOABB currently benchmarks classification tasks only. We therefore provide a
+# single wrapper class adding ClassifierMixin and setting `_estimator_type` to
+# "classifier" so that scikit-learn>=1.7 correctly infers response methods.
+# This avoids the earlier need for dynamic factory logic and pickling issues
+# with locally scoped classes.
+
+try:
+    from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
+
+    class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
+        _estimator_type = "classifier"
+
+        def __sklearn_tags__(self):  # scikit-learn >=1.7 tag override
+            tags = super().__sklearn_tags__()
+
+            if isinstance(tags, dict):
+                tags["estimator_type"] = "classifier"
+                return tags
+
+            try:
+                tags["estimator_type"] = "classifier"
+            except Exception:
+                try:
+                    tags.estimator_type = "classifier"
+                except Exception:
+                    return {"estimator_type": "classifier"}
+
+            return tags
+
+    _classifier_wrapper_available = True
+except ImportError:  # pragma: no cover - optuna not installed path
+    OptunaSearchCVClassifier = None
+    _classifier_wrapper_available = False
+
+
+def check_search_available():
+    """Return available search methods and Optuna availability flag.
+
+    Always returns a classifier-only OptunaSearchCV when optuna is installed.
+    """
+    if _classifier_wrapper_available and OptunaSearchCVClassifier is not None:
+
+        def OptunaSearchCV(estimator, param_distributions, **kwargs):
+            return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
+
+        search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+        return search_methods, True
+    else:
+        return {"grid": GridSearchCV}, False
+
+
+class _DictScorer:
+    """Wrapper that converts a single scorer to return dict format."""
+
+    def __init__(self, scorer):
+        self.scorer = scorer
+
+    def __call__(self, estimator, X, y_true=None, **kwargs):
+        return {"score": self.scorer(estimator, X, y_true, **kwargs)}
+
+
+def _create_scorer(estimator, scoring):
+    """Create a scorer that always returns a dict.
+
+    Wraps single scorers to return {"score": value} while leaving
+    multi-metric scoring to sklearn's check_scoring.
+
+    Parameters
+    ----------
+    estimator : sklearn-compatible estimator
+        The fitted estimator to use for scoring validation.
+    scoring : str, callable, dict, list, or None
+        The scoring specification. Can be:
+        - None: uses default scorer
+        - str: a single scorer name (e.g., "accuracy")
+        - callable: a single scorer function
+        - dict: {name: scorer} for multiple metrics
+        - list: list of scorer names or callables
+
+    Returns
+    -------
+    scorer : callable
+        Scorer that always returns dict of scores.
+
+    """
+    if isinstance(scoring, (dict, list)):
+        # check_scoring returns a multi-metric scorer for dict/list inputs
+        return check_scoring(estimator, scoring=scoring)
+    else:
+        # Wrap single scorer to return dict with key "score"
+        single_scorer = check_scoring(estimator, scoring=scoring)
+        return _DictScorer(single_scorer)
+
+
+def _average_scores(fold_scores):
+    """Average scores across CV folds.
+
+    Parameters
+    ----------
+    fold_scores : list of dict
+        List of score dictionaries from each CV fold.
+        All dicts must have the same keys. Must not be empty.
+
+    Returns
+    -------
+    mean_scores : dict
+        Dictionary with same keys as input, values are means across folds.
+
+    Raises
+    ------
+    ValueError
+        If fold_scores is empty.
+    """
+    if not fold_scores:
+        raise ValueError("fold_scores cannot be empty")
+    keys = fold_scores[0].keys()
+    return {key: np.mean([fold[key] for fold in fold_scores]) for key in keys}
+
+
+def _update_result_with_scores(res, scores):
+    """Update result dict with scores.
+
+    For single-metric scoring (dict with only "score" key), only adds "score".
+    For multi-metric scoring, adds "score" (first metric) and
+    "score_{name}" for each metric.
+
+    Parameters
+    ----------
+    res : dict
+        Result dictionary to update in-place.
+    scores : dict
+        Dictionary of score values.
+
+    Returns
+    -------
+    res : dict
+        The updated result dictionary.
+    """
+    if list(scores.keys()) == ["score"]:
+        # Single scorer
+        res["score"] = scores["score"]
+    else:
+        # Multi-metric: primary score is first metric value
+        res["score"] = next(iter(scores.values()))
+        # Add individual score columns
+        res.update({f"score_{key}": value for key, value in scores.items()})
+    return res
+
+
+def _score_and_update(res, scorer, model, X, y_true):
+    """Score model and update result dict.
+
+    Combines scoring and result update into a single call.
+    This is a building block for future _evaluate_fold refactoring.
+
+    Parameters
+    ----------
+    res : dict
+        Result dictionary to update in-place.
+    scorer : callable
+        Scorer function that returns a dict of scores.
+    model : estimator
+        Fitted model to score.
+    X : array-like
+        Test features.
+    y_true : array-like
+        Test labels.
+
+    Returns
+    -------
+    res : dict
+        The updated result dictionary.
+    """
+    score = scorer(model, X, y_true)
+    return _update_result_with_scores(res, score)

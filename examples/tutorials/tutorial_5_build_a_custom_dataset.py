@@ -22,7 +22,7 @@ from moabb.paradigms.p300 import P300
 
 ##############################################################################
 # Initialization
-# ------------------
+# --------------
 #
 # This tutorial illustrates how to use the CompoundDataset to:
 # 1) Select a few subjects/sessions/runs in an existing dataset
@@ -39,17 +39,20 @@ pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="ri
 
 ##############################################################################
 # Creation a selection of subject
-# ------------------
+# -------------------------------
 #
 # We are going to great two CompoundDataset, namely CustomDataset1 &  2.
 # A CompoundDataset accepts a subjects_list of subjects.
 # It is a list of tuple. A tuple contains 4 values:
+#
 # - the original dataset
 # - the subject number to select
 # - the sessions. It can be:
+#
 #   - a session name ('0')
 #   - a list of sessions (['0', '1'])
 #   - `None` to select all the sessions attributed to a subject
+#
 # - the runs. As for sessions, it can be a single run name, a list or `None`` (to select all runs).
 
 
@@ -86,7 +89,7 @@ class CustomDataset2(CompoundDataset):
 
 ##############################################################################
 # Merging the datasets
-# ------------------
+# --------------------
 #
 # We are now going to merge the two CompoundDataset into a single one.
 # The implementation is straight forward. Instead of providing a list of subjects,
@@ -107,7 +110,7 @@ class CustomDataset3(CompoundDataset):
 
 ##############################################################################
 # Evaluate and display
-# ------------------
+# --------------------
 #
 # Let's use a WithinSessionEvaluation to evaluate our new dataset.
 # If you already new how to do this, nothing changed:
