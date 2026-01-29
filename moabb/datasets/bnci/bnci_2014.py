@@ -454,7 +454,7 @@ class BNCI2014_004(MNEBNCI):
 
     ARTICLE_METADATA = {
         "n_subjects": 9,
-        "sessions_per_subject": 2,
+        "sessions_per_subject": 5,
         "sampling_rate": 250,
         "n_channels": 3,
         "channel_types": {"eeg": 3, "eog": 3},
@@ -462,7 +462,7 @@ class BNCI2014_004(MNEBNCI):
         "ground": "right mastoid",
         "paradigm": "imagery",
         "events": {"left_hand": 1, "right_hand": 2},
-        "doi": "10.3389/fnins.2012.00055",
+        "doi": "10.1109/TNSRE.2007.906956",
         "license": "CC BY 4.0",
         "montage": "custom",
         "data_url": "http://bnci-horizon-2020.eu/database/data-sets/004-2014/",
@@ -471,12 +471,12 @@ class BNCI2014_004(MNEBNCI):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 10)),
-            sessions_per_subject=2,
+            sessions_per_subject=5,
             events={"left_hand": 1, "right_hand": 2},
             code="BNCI2014-004",
-            interval=[2, 6],
+            interval=[3, 7.5],
             paradigm="imagery",
-            doi="10.3389/fnins.2012.00055",
+            doi="10.1109/TNSRE.2007.906956",
         )
 
 
@@ -532,7 +532,7 @@ class BNCI2014_008(MNEBNCI):
         "n_channels": 8,
         "channel_types": {"eeg": 8},
         "paradigm": "p300",
-        "events": {"Target": 1, "NonTarget": 2},
+        "events": {"Target": 2, "NonTarget": 1},
         "doi": "10.3389/fnhum.2013.00732",
         "license": "CC BY 4.0",
         "montage": "standard_1005",
@@ -543,9 +543,9 @@ class BNCI2014_008(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
-            events={"Target": 1, "NonTarget": 2},
+            events={"Target": 2, "NonTarget": 1},
             code="BNCI2014-008",
-            interval=[0, 1],
+            interval=[0, 1.0],
             paradigm="p300",
             doi="10.3389/fnhum.2013.00732",
         )
@@ -594,13 +594,13 @@ class BNCI2014_009(MNEBNCI):
 
     ARTICLE_METADATA = {
         "n_subjects": 10,
-        "sessions_per_subject": 2,
+        "sessions_per_subject": 3,
         "sampling_rate": 256,
         "n_channels": 16,
         "channel_types": {"eeg": 16},
         "paradigm": "p300",
-        "events": {"Target": 1, "NonTarget": 2},
-        "doi": "10.3389/fnhum.2013.00732",
+        "events": {"Target": 2, "NonTarget": 1},
+        "doi": "10.1088/1741-2560/11/3/035008",
         "license": "CC BY 4.0",
         "montage": "standard_1005",
         "data_url": "http://bnci-horizon-2020.eu/database/data-sets/009-2014/",
@@ -609,10 +609,10 @@ class BNCI2014_009(MNEBNCI):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
-            sessions_per_subject=2,
-            events={"Target": 1, "NonTarget": 2},
+            sessions_per_subject=3,
+            events={"Target": 2, "NonTarget": 1},
             code="BNCI2014-009",
-            interval=[0, 1],
+            interval=[0, 0.8],
             paradigm="p300",
-            doi="10.3389/fnhum.2013.00732",
+            doi="10.1088/1741-2560/11/3/035008",
         )

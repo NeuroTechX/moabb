@@ -477,7 +477,7 @@ class BNCI2015_001(MNEBNCI):
         "n_channels": 13,
         "channel_types": {"eeg": 13},
         "paradigm": "imagery",
-        "events": {"left_hand": 1, "right_hand": 2},
+        "events": {"right_hand": 1, "feet": 2},
         "doi": "10.1371/journal.pone.0101168",
         "license": "CC BY 4.0",
         "montage": "standard_1005",
@@ -488,11 +488,11 @@ class BNCI2015_001(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=2,
-            events={"left_hand": 1, "right_hand": 2},
+            events={"right_hand": 1, "feet": 2},
             code="BNCI2015-001",
-            interval=[2, 6],
+            interval=[0, 5],
             paradigm="imagery",
-            doi="10.1371/journal.pone.0101168",
+            doi="10.1109/tnsre.2012.2189584",
         )
 
 
@@ -528,13 +528,13 @@ class BNCI2015_003(MNEBNCI):
 
     ARTICLE_METADATA = {
         "n_subjects": 10,
-        "sessions_per_subject": 2,
+        "sessions_per_subject": 1,
         "sampling_rate": 256,
         "n_channels": 8,
         "channel_types": {"eeg": 8},
         "paradigm": "p300",
-        "events": {"Target": 1, "NonTarget": 2},
-        "doi": "10.3389/fnins.2011.00112",
+        "events": {"Target": 2, "NonTarget": 1},
+        "doi": "10.1016/j.neulet.2009.06.045",
         "license": "CC BY 4.0",
         "montage": "standard_1005",
         "data_url": "http://bnci-horizon-2020.eu/database/data-sets/003-2015/",
@@ -543,12 +543,12 @@ class BNCI2015_003(MNEBNCI):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
-            sessions_per_subject=2,
-            events={"Target": 1, "NonTarget": 2},
+            sessions_per_subject=1,
+            events={"Target": 2, "NonTarget": 1},
             code="BNCI2015-003",
-            interval=[0, 1],
+            interval=[0, 0.8],
             paradigm="p300",
-            doi="10.3389/fnins.2011.00112",
+            doi="10.1016/j.neulet.2009.06.045",
         )
 
 

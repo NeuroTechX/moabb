@@ -205,7 +205,7 @@ BNCI2014_004_METADATA = DatasetMetadata(
         trial_duration=4.5,
     ),
     documentation=DocumentationMetadata(
-        doi="10.3389/fnins.2012.00055",
+        doi="10.1109/TNSRE.2007.906956",
         description="BCI Competition IV Dataset 2b - 2-class motor imagery with EOG artifacts",
         investigators=["R. Leeb", "C. Brunner", "G.R. Müller-Putz", "G. Pfurtscheller"],
         institution="Graz University of Technology",
@@ -213,7 +213,7 @@ BNCI2014_004_METADATA = DatasetMetadata(
         repository="BNCI Horizon 2020",
         data_url="http://bnci-horizon-2020.eu/database/data-sets/004-2014/",
         license="CC BY 4.0",
-        publication_year=2012,
+        publication_year=2007,
     ),
     sessions_per_subject=5,
     runs_per_session=1,
@@ -248,13 +248,13 @@ BNCI2015_001_METADATA = DatasetMetadata(
     ),
     experiment=ExperimentMetadata(
         paradigm="imagery",
-        task_type="right_hand_left_hand",
-        events={"right_hand": 1, "left_hand": 2},
+        task_type="right_hand_feet",
+        events={"right_hand": 1, "feet": 2},
         n_classes=2,
         trial_duration=5.0,
     ),
     documentation=DocumentationMetadata(
-        doi="10.1371/journal.pone.0101168",
+        doi="10.1109/tnsre.2012.2189584",
         description="BNCI 2015-001 Motor imagery dataset",
         investigators=[
             "J. Faller",
@@ -1429,7 +1429,7 @@ BNCI2014_008_METADATA = DatasetMetadata(
     experiment=ExperimentMetadata(
         paradigm="p300",
         task_type="speller",
-        events={"Target": 1, "NonTarget": 2},
+        events={"Target": 2, "NonTarget": 1},
         n_classes=2,
         trial_duration=1.0,
     ),
@@ -1472,12 +1472,12 @@ BNCI2014_009_METADATA = DatasetMetadata(
     experiment=ExperimentMetadata(
         paradigm="p300",
         task_type="speller",
-        events={"Target": 1, "NonTarget": 2},
+        events={"Target": 2, "NonTarget": 1},
         n_classes=2,
         trial_duration=0.8,
     ),
     documentation=DocumentationMetadata(
-        doi="10.3389/fnhum.2013.00732",
+        doi="10.1088/1741-2560/11/3/035008",
         description="P300 grid speller dataset",
         investigators=[
             "A. Riccio",
@@ -1515,12 +1515,12 @@ BNCI2015_003_METADATA = DatasetMetadata(
     experiment=ExperimentMetadata(
         paradigm="p300",
         task_type="speller",
-        events={"Target": 1, "NonTarget": 2},
+        events={"Target": 2, "NonTarget": 1},
         n_classes=2,
         trial_duration=0.8,
     ),
     documentation=DocumentationMetadata(
-        doi="10.3389/fnins.2011.00112",
+        doi="10.1016/j.neulet.2009.06.045",
         description="BNCI 2015-003 P300 Speller Dataset",
         investigators=["Schreuder, M.", "Rost, T.", "Tangermann, M."],
         institution="Graz University of Technology",
@@ -1528,9 +1528,9 @@ BNCI2015_003_METADATA = DatasetMetadata(
         repository="BNCI Horizon 2020",
         data_url="http://bnci-horizon-2020.eu/database/data-sets/003-2015/",
         license="CC BY 4.0",
-        publication_year=2011,
+        publication_year=2009,
     ),
-    sessions_per_subject=2,  # Fixed: was incorrectly 1
+    sessions_per_subject=1,
     runs_per_session=2,
 )
 
