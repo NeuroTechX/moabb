@@ -401,37 +401,6 @@ class BNCI2022_001(BNCIBaseDataset):
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     """
 
-    _participant_demographics = {
-        "n_subjects": 13,
-        "gender": {"female": 8, "male": 5},
-        "age_mean": 22.6,
-        "age_std": 1.04,
-        "health_status": "healthy subjects with normal/corrected vision",
-        "motor_history": "no motor or neurological disease",
-        "location": "EPFL, Geneva, Switzerland",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 13,
-        "sessions_per_subject": 1,
-        "sampling_rate": 256,
-        "original_sampling_rate": 2048,
-        "n_channels": 67,
-        "channel_types": {"eeg": 64, "eog": 3},
-        "paradigm": "imagery",  # Used for compatibility, actual task is motor+cognitive
-        "events": {
-            "trajectory_start": 1,
-            "waypoint_miss": 16,
-            "waypoint_hit": 48,
-            "trajectory_end": 255,
-        },
-        "doi": "10.1109/THMS.2020.3038339",
-        "license": "CC BY 4.0",
-        "montage": "biosemi64",
-        "equipment": "Biosemi ActiveTwo",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/001-2022/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 14)),

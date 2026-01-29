@@ -79,28 +79,6 @@ class BNCI2019_001(BaseDataset):
 
     _MOVEMENT_RUNS = [3, 4, 5, 6, 7, 10, 11, 12, 13]
 
-    _participant_demographics = {
-        "n_subjects": 10,
-        "gender": {"male": 9, "female": 1},
-        "age_mean": 49.8,
-        "age_std": 17.6,
-        "age_range": (20, 78),
-        "handedness": {"right": 10},
-        "health_status": "cervical spinal cord injury patients",
-        "location": "Graz University of Technology, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 10,
-        "sessions_per_subject": 1,
-        "sampling_rate": 256,
-        "n_channels": 64,
-        "paradigm": "imagery",
-        "doi": "10.1038/s41598-019-43594-9",
-        "license": "CC BY 4.0",
-        "data_url": BNCI_URL_001_2019,
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),

@@ -311,33 +311,6 @@ class BNCI2016_002(BNCIBaseDataset):
     (CC BY-NC-ND 4.0)
     """
 
-    _participant_demographics = {
-        "n_subjects": 15,
-        "n_subjects_original": 18,
-        "gender": {"male": 14, "female": 4},
-        "age_mean": 30.6,
-        "age_std": 5.4,
-        "health_status": "healthy subjects with valid driver's licenses",
-        "location": "Berlin Institute of Technology (TU Berlin), Germany",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 15,
-        "n_subjects_original": 18,
-        "sessions_per_subject": 1,
-        "sampling_rate": 200,
-        "n_channels": 69,
-        "channel_types": {"eeg": 59, "eog": 2, "emg": 1, "misc": 7},
-        "paradigm": "p300",
-        "events": {
-            "Target": "emergency situation onset (lead car braking)",
-            "NonTarget": "lead car normal driving",
-        },
-        "doi": "10.1088/1741-2560/8/5/056001",
-        "license": "CC BY-NC-ND 4.0",
-        "data_url": BBCI_URL,
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(_SUBJECT_VP_CODES.keys()),

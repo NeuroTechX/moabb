@@ -269,31 +269,6 @@ class BNCI2014_001(MNEBNCI):
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
     """
 
-    _participant_demographics = {
-        "n_subjects": 9,
-        "health_status": "healthy subjects",
-        "handedness": "not specified",
-        "bci_experience": "not specified",
-        "location": "Graz University of Technology, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 9,
-        "sessions_per_subject": 2,
-        "sampling_rate": 250,
-        "n_channels": 22,
-        "channel_types": {"eeg": 22},
-        "reference": "left mastoid",
-        "ground": "right mastoid",
-        "paradigm": "imagery",
-        "events": {"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4},
-        "doi": "10.3389/fnins.2012.00055",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "equipment": "Ag/AgCl electrodes",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/001-2014/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 10)),
@@ -355,31 +330,6 @@ class BNCI2014_002(MNEBNCI):
     BNCI2014_001 : 4-class motor imagery (BCI Competition IV Dataset 2a)
     BNCI2014_004 : 2-class motor imagery (Dataset B)
     """
-
-    _participant_demographics = {
-        "n_subjects": 14,
-        "health_status": "healthy subjects",
-        "handedness": "right-handed",
-        "bci_experience": "mixed (8 naive)",
-        "age_range": (20, 30),
-        "location": "Guger Technologies OG, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 14,
-        "sessions_per_subject": 1,
-        "sampling_rate": 512,
-        "n_channels": 15,
-        "channel_types": {"eeg": 15},
-        "reference": "left mastoid",
-        "ground": "right mastoid",
-        "paradigm": "imagery",
-        "events": {"right_hand": 1, "feet": 2},
-        "doi": "10.1007/s00500-014-1547-8",
-        "license": "unknown",
-        "montage": "custom_laplacian",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/002-2014/",
-    }
 
     def __init__(self):
         super().__init__(
@@ -444,30 +394,6 @@ class BNCI2014_004(MNEBNCI):
     BNCI2014_002 : 2-class motor imagery with Laplacian derivations
     """
 
-    _participant_demographics = {
-        "n_subjects": 9,
-        "health_status": "healthy subjects",
-        "handedness": "not specified",
-        "bci_experience": "not specified",
-        "location": "Graz University of Technology, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 9,
-        "sessions_per_subject": 5,
-        "sampling_rate": 250,
-        "n_channels": 3,
-        "channel_types": {"eeg": 3, "eog": 3},
-        "reference": "left mastoid",
-        "ground": "right mastoid",
-        "paradigm": "imagery",
-        "events": {"left_hand": 1, "right_hand": 2},
-        "doi": "10.1109/TNSRE.2007.906956",
-        "license": "CC BY 4.0",
-        "montage": "custom",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/004-2014/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 10)),
@@ -517,28 +443,6 @@ class BNCI2014_008(MNEBNCI):
     .. versionadded:: 0.4.0
     """
 
-    _participant_demographics = {
-        "n_subjects": 8,
-        "health_status": "ALS patients",
-        "gender": {"male": 6, "female": 2},
-        "age_range": (25, 60),
-        "location": "Fondazione Santa Lucia, Italy",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 8,
-        "sessions_per_subject": 1,
-        "sampling_rate": 256,
-        "n_channels": 8,
-        "channel_types": {"eeg": 8},
-        "paradigm": "p300",
-        "events": {"Target": 2, "NonTarget": 1},
-        "doi": "10.3389/fnhum.2013.00732",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/008-2014/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 9)),
@@ -585,26 +489,6 @@ class BNCI2014_009(MNEBNCI):
     -----
     .. versionadded:: 0.4.0
     """
-
-    _participant_demographics = {
-        "n_subjects": 10,
-        "health_status": "healthy subjects",
-        "location": "Fondazione Santa Lucia, Italy",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 10,
-        "sessions_per_subject": 3,
-        "sampling_rate": 256,
-        "n_channels": 16,
-        "channel_types": {"eeg": 16},
-        "paradigm": "p300",
-        "events": {"Target": 2, "NonTarget": 1},
-        "doi": "10.1088/1741-2560/11/3/035008",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/009-2014/",
-    }
 
     def __init__(self):
         super().__init__(

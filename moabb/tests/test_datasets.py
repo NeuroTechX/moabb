@@ -28,6 +28,7 @@ from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.kojima2024b import EVENTS
+from moabb.datasets.metadata import DatasetMetadata, get_dataset_metadata
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
@@ -698,3 +699,110 @@ class TestKojima2024B:
         assert "D1" in Y
         assert "D2" in Y
         assert "S1" in Y
+
+
+class TestDatasetMetadata:
+    """Tests for the metadata property on BaseDataset."""
+
+    def test_metadata_property_returns_datasetmetadata_or_none(self):
+        """Ensure metadata property returns DatasetMetadata or None."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        # Should return DatasetMetadata for datasets in the catalog
+        assert metadata is not None
+        assert isinstance(metadata, DatasetMetadata)
+
+    def test_metadata_property_is_cached(self):
+        """Ensure metadata property uses caching."""
+        dataset = BNCI2014_001()
+
+        # Access metadata twice
+        metadata1 = dataset.metadata
+        metadata2 = dataset.metadata
+
+        # Should be the same object (cached)
+        assert metadata1 is metadata2
+
+    def test_metadata_has_required_fields(self):
+        """Ensure metadata has required fields populated."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        assert metadata is not None
+
+        # Check required fields exist and are valid
+        assert metadata.participants is not None
+        assert metadata.participants.n_subjects > 0
+
+        assert metadata.acquisition is not None
+        assert metadata.acquisition.sampling_rate > 0
+
+        assert metadata.experiment is not None
+        assert metadata.experiment.paradigm in [
+            "imagery",
+            "p300",
+            "ssvep",
+            "cvep",
+            "rstate",
+        ]
+
+    def test_metadata_matches_dataset_properties(self):
+        """Ensure metadata is consistent with dataset properties."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        assert metadata is not None
+
+        # Number of subjects should match
+        assert metadata.participants.n_subjects == len(dataset.subject_list)
+
+        # Paradigm should match
+        assert metadata.experiment.paradigm == dataset.paradigm
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_all_datasets_have_metadata_property(self, dataset_class):
+        """Ensure every dataset class has the metadata property."""
+        kwargs = {}
+        if inspect.signature(dataset_class).parameters.get("accept"):
+            kwargs["accept"] = True
+
+        dataset = dataset_class(**kwargs)
+
+        # All datasets should have the metadata property
+        assert hasattr(dataset, "metadata")
+
+        # The property should return DatasetMetadata or None
+        metadata = dataset.metadata
+        assert metadata is None or isinstance(metadata, DatasetMetadata)
+
+    def test_fake_dataset_metadata_is_none(self):
+        """Ensure FakeDataset returns None for metadata (not in catalog)."""
+        dataset = FakeDataset()
+        metadata = dataset.metadata
+
+        # FakeDataset is not in the catalog, should return None
+        assert metadata is None
+
+    def test_get_dataset_metadata_consistency(self):
+        """Ensure get_dataset_metadata and .metadata property return same data."""
+        dataset = BNCI2014_001()
+        metadata_from_property = dataset.metadata
+        metadata_from_function = get_dataset_metadata("BNCI2014_001")
+
+        assert metadata_from_property is not None
+        assert metadata_from_function is not None
+
+        # Should have same values (but may be different objects after serialization)
+        assert (
+            metadata_from_property.participants.n_subjects
+            == metadata_from_function.participants.n_subjects
+        )
+        assert (
+            metadata_from_property.acquisition.sampling_rate
+            == metadata_from_function.acquisition.sampling_rate
+        )
+        assert (
+            metadata_from_property.experiment.paradigm
+            == metadata_from_function.experiment.paradigm
+        )

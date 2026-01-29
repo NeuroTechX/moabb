@@ -285,12 +285,6 @@ class BNCI2024_001(BNCIBaseDataset):
     movement kinematics prior to classification improves performance.
     """
 
-    _participant_demographics = {
-        "n_subjects": 20,
-        "health_status": "healthy subjects",
-        "location": "Graz University of Technology, Austria",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 21)),

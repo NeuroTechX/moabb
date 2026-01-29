@@ -252,18 +252,6 @@ class BNCI2020_001(BNCIBaseDataset):
     movement paradigms. Data is available under CC BY 4.0 license.
     """
 
-    _participant_demographics = {
-        "n_subjects": 45,
-        "subjects_per_electrode_type": 15,
-        "health_status": "healthy able-bodied subjects",
-        "location": "Graz University of Technology, Austria",
-        "electrode_types": [
-            "gel (g.tec)",
-            "water (BitBrain Versatile)",
-            "dry (BitBrain Hero)",
-        ],
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, TOTAL_SUBJECTS_001 + 1)),
@@ -578,32 +566,6 @@ class BNCI2020_002(BNCIBaseDataset):
     >>> dataset.subject_list
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     """
-
-    _participant_demographics = {
-        "n_subjects": 18,
-        "gender": {"female": 10, "male": 8},
-        "age_range": (19, 38),
-        "age_mean": 27,
-        "handedness": "all right-handed",
-        "health_status": "healthy subjects with normal/corrected vision",
-        "location": "Otto-von-Guericke University Magdeburg, Germany",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 18,
-        "sessions_per_subject": 1,
-        "sampling_rate": 250,
-        "n_channels": 31,
-        "channel_types": {"eeg": 29, "eog": 2},
-        "paradigm": "p300",  # ERP-based paradigm
-        "events": {"NonTarget": 1, "Target": 2},
-        "doi": "10.3389/fnins.2020.591777",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "reference": "right mastoid",
-        "equipment": "BrainAmp DC (Brain Products GmbH)",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/002-2020/",
-    }
 
     def __init__(self):
         super().__init__(

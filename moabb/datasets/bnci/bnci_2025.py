@@ -248,32 +248,6 @@ class BNCI2025_001(BNCIBaseDataset):
     processing purposes, though the underlying task is movement execution.
     """
 
-    _participant_demographics = {
-        "n_subjects": 20,
-        "gender": {"male": 12, "female": 8},
-        "age_mean": 26.1,
-        "age_std": 4.1,
-        "handedness": {"right": 17, "left": 3},
-        "health_status": "healthy subjects",
-        "location": "Institute of Neural Engineering, Graz University of Technology, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 20,
-        "sessions_per_subject": 1,
-        "sampling_rate": 500,
-        "n_channels": 64,
-        "channel_types": {"eeg": 60, "eog": 4},
-        "reference": "common average",
-        "paradigm": "imagery",  # Compatible paradigm for MOABB processing
-        "task_type": "movement_execution",
-        "doi": "10.1088/1741-2552/ada0ea",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "filters": "0.3-100 Hz bandpass, 50 Hz notch",
-        "data_url": "https://lampx.tugraz.at/~bci/database/001-2025/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 21)),
@@ -802,34 +776,6 @@ class BNCI2025_002(BNCIBaseDataset):
     BNCI2014_001 : 4-class motor imagery dataset
     BNCI2014_004 : 2-class motor imagery dataset
     """
-
-    _participant_demographics = {
-        "n_subjects": 2,
-        "gender": {"male": 10, "female": 10},  # Original study demographics
-        "age_mean": 24,
-        "age_std": 5,
-        "handedness": "all right-handed",
-        "health_status": "able-bodied participants",
-        "bci_experience": "4 had prior EEG experience",
-        "location": "Institute of Neural Engineering, Graz University of Technology, Austria",
-        "note": "Only 2 of 20 subjects currently available on server",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 2,
-        "sessions_per_subject": 3,
-        "sampling_rate": 200,
-        "n_channels": 64,
-        "channel_types": {"eeg": 60, "eog": 4},
-        "paradigm": "imagery",
-        "events": EVENT_ID_002,
-        "doi": "10.1088/1741-2552/ac689f",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "reference": "common average",
-        "filters": "0.18-3 Hz (final processing)",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/002-2025/",
-    }
 
     def __init__(self):
         super().__init__(

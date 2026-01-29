@@ -102,28 +102,6 @@ class BNCI2003_004(MNEBNCI):
     BNCI2014_004 : BCI Competition 2008 2-class motor imagery dataset
     """
 
-    _participant_demographics = {
-        "n_subjects": 5,
-        "health_status": "healthy subjects",
-        "handedness": "not specified",
-        "bci_experience": "not specified",
-        "location": "Berlin Institute of Technology, Germany",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 5,
-        "sessions_per_subject": 1,
-        "sampling_rate": 100,
-        "n_channels": 118,
-        "channel_types": {"eeg": 118},
-        "paradigm": "imagery",
-        "events": {"right_hand": 0, "feet": 1},
-        "doi": "10.1109/TBME.2004.827088",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/004-2003/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 6)),

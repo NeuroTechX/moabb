@@ -464,26 +464,6 @@ class BNCI2015_001(MNEBNCI):
     .. versionadded:: 0.4.0
     """
 
-    _participant_demographics = {
-        "n_subjects": 12,
-        "health_status": "healthy subjects",
-        "location": "Guger Technologies OG, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 12,
-        "sessions_per_subject": 2,
-        "sampling_rate": 512,
-        "n_channels": 13,
-        "channel_types": {"eeg": 13},
-        "paradigm": "imagery",
-        "events": {"right_hand": 1, "feet": 2},
-        "doi": "10.1371/journal.pone.0101168",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/001-2015/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 13)),
@@ -520,26 +500,6 @@ class BNCI2015_003(MNEBNCI):
     .. versionadded:: 0.4.0
     """
 
-    _participant_demographics = {
-        "n_subjects": 10,
-        "health_status": "healthy subjects",
-        "location": "Graz University of Technology, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 10,
-        "sessions_per_subject": 1,
-        "sampling_rate": 256,
-        "n_channels": 8,
-        "channel_types": {"eeg": 8},
-        "paradigm": "p300",
-        "events": {"Target": 2, "NonTarget": 1},
-        "doi": "10.1016/j.neulet.2009.06.045",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/003-2015/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -575,32 +535,6 @@ class BNCI2015_004(MNEBNCI):
     -----
     .. versionadded:: 0.4.0
     """
-
-    _participant_demographics = {
-        "n_subjects": 9,
-        "health_status": "healthy subjects",
-        "location": "Graz University of Technology, Austria",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 9,
-        "sessions_per_subject": 1,
-        "sampling_rate": 512,
-        "n_channels": 30,
-        "channel_types": {"eeg": 30},
-        "paradigm": "imagery",
-        "events": {
-            "math": 1,
-            "letter": 2,
-            "rotation": 3,
-            "count": 4,
-            "baseline": 5,
-        },
-        "doi": "10.1109/TCDS.2017.2688350",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/004-2015/",
-    }
 
     def __init__(self):
         super().__init__(
@@ -642,22 +576,6 @@ class BNCI2015_006(MNEBNCI):
     -----
     .. versionadded:: 1.2.0
     """
-
-    _participant_demographics = {
-        "n_subjects": 11,
-        "health_status": "healthy subjects",
-        "location": "Technische Universitat Berlin, Germany",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 11,
-        "sessions_per_subject": 1,
-        "sampling_rate": 200,
-        "n_channels": 64,
-        "paradigm": "p300",
-        "events": {"Target": 1, "NonTarget": 2},
-        "doi": "10.1088/1741-2560/11/2/026009",
-    }
 
     def __init__(self):
         super().__init__(
@@ -775,45 +693,6 @@ class BNCI2015_007(MNEBNCI):
     BNCI2015_010 : RSVP visual speller (gaze-independent visual paradigm)
     """
 
-    _participant_demographics = {
-        "n_subjects": 16,
-        "health_status": "healthy subjects",
-        "bci_experience": "not specified",
-        "location": "Neurotechnology Group, TU Berlin, Germany",
-        "subject_codes": [
-            "fat",
-            "gdf",
-            "gdg",
-            "iac",
-            "iba",
-            "ibe",
-            "ibq",
-            "ibs",
-            "ibt",
-            "ibu",
-            "ibv",
-            "ibw",
-            "ibx",
-            "iby",
-            "ice",
-            "icv",
-        ],
-    }
-
-    # Technical metadata for programmatic access
-    ARTICLE_METADATA = {
-        "n_subjects": 16,
-        "sessions_per_subject": 1,
-        "sampling_rate": 100,
-        "n_channels": 63,
-        "channel_types": {"eeg": 63},
-        "reference": "nose",
-        "montage": "standard_1005",
-        "file_format": "MAT",
-        "paradigm": "p300",  # Uses oddball-like Target/Non-target detection
-        "data_url": "http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-MVEP/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 17)),
@@ -899,42 +778,6 @@ class BNCI2015_008(MNEBNCI):
     .. versionadded:: 1.2.0
     """
 
-    _participant_demographics = {
-        "n_subjects": 13,
-        "health_status": "healthy subjects",
-        "bci_experience": "previous experience with P300-based BCIs",
-        "location": "Machine Learning Laboratory, TU Berlin, Germany",
-        "subject_codes": [
-            "iac",
-            "iba",
-            "ibb",
-            "ibc",
-            "ibd",
-            "ibe",
-            "ibf",
-            "ibg",
-            "ibh",
-            "ibi",
-            "ibj",
-            "ica",
-            "saf",
-        ],
-    }
-
-    # Technical metadata for programmatic access
-    ARTICLE_METADATA = {
-        "n_subjects": 13,
-        "sessions_per_subject": 2,
-        "sampling_rate": 250,
-        "n_channels": 63,
-        "channel_types": {"eeg": 63},
-        "reference": "nose",
-        "montage": "standard_1005",
-        "file_format": "MAT",
-        "paradigm": "p300",
-        "data_url": "http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-CenterSpeller/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 14)),
@@ -1017,49 +860,6 @@ class BNCI2015_009(MNEBNCI):
     .. versionadded:: 1.2.0
     """
 
-    _participant_demographics = {
-        "n_subjects": 21,
-        "health_status": "healthy subjects",
-        "location": "Berlin Institute of Technology, Germany",
-        "subject_codes": [
-            "fce",
-            "kw",
-            "faz",
-            "fcj",
-            "fcg",
-            "far",
-            "faw",
-            "fax",
-            "fcc",
-            "fcm",
-            "fas",
-            "fch",
-            "fcd",
-            "fca",
-            "fcb",
-            "fau",
-            "fci",
-            "fav",
-            "fat",
-            "fcl",
-            "fck",
-        ],
-    }
-
-    # Technical metadata for programmatic access
-    ARTICLE_METADATA = {
-        "n_subjects": 21,
-        "sessions_per_subject": 1,
-        "sampling_rate": 1000,
-        "n_channels": 62,
-        "channel_types": {"eeg": 60, "eog": 2},
-        "reference": "nose",
-        "montage": "standard_1005",
-        "file_format": "MAT",
-        "paradigm": "p300",
-        "data_url": "http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-AMUSE/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 22)),
@@ -1100,40 +900,6 @@ class BNCI2015_010(MNEBNCI):
     -----
     .. versionadded:: 1.2.0
     """
-
-    _participant_demographics = {
-        "n_subjects": 12,
-        "health_status": "healthy subjects",
-        "location": "Berlin Institute of Technology, Germany",
-        "subject_codes": [
-            "fat",
-            "gcb",
-            "gcc",
-            "gcd",
-            "gce",
-            "gcf",
-            "gcg",
-            "gch",
-            "iay",
-            "icn",
-            "icr",
-            "pia",
-        ],
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 12,
-        "sessions_per_subject": 1,
-        "sampling_rate": 100,
-        "n_channels": 63,
-        "channel_types": {"eeg": 63},
-        "paradigm": "p300",
-        "events": {"Target": 1, "NonTarget": 2},
-        "doi": "10.1016/j.clinph.2012.12.050",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-RSVP/",
-    }
 
     def __init__(self):
         super().__init__(
@@ -1178,38 +944,6 @@ class BNCI2015_012(MNEBNCI):
     .. versionadded:: 1.2.0
     """
 
-    _participant_demographics = {
-        "n_subjects": 10,
-        "health_status": "healthy subjects",
-        "location": "Berlin Institute of Technology, Germany",
-        "subject_codes": [
-            "nv",
-            "nw",
-            "ny",
-            "nz",
-            "oa",
-            "ob",
-            "oc",
-            "od",
-            "ja",
-            "oe",
-        ],
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 10,
-        "sessions_per_subject": 1,
-        "sampling_rate": 100,
-        "n_channels": 63,
-        "channel_types": {"eeg": 63},
-        "paradigm": "p300",
-        "events": {"Target": 1, "NonTarget": 2},
-        "doi": "10.3389/fnins.2011.00112",
-        "license": "CC BY 4.0",
-        "montage": "standard_1005",
-        "data_url": "http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-PASS2D/",
-    }
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -1249,23 +983,6 @@ class BNCI2015_013(MNEBNCI):
     -----
     .. versionadded:: 1.2.0
     """
-
-    _participant_demographics = {
-        "n_subjects": 6,
-        "health_status": "healthy subjects",
-        "location": "EPFL, Switzerland",
-    }
-
-    ARTICLE_METADATA = {
-        "n_subjects": 6,
-        "sessions_per_subject": 2,
-        "n_channels": 64,
-        "channel_types": {"eeg": 64},
-        "paradigm": "p300",
-        "events": {"Target": 1, "NonTarget": 2},
-        "doi": "10.1109/TNSRE.2010.2053387",
-        "data_url": "http://bnci-horizon-2020.eu/database/data-sets/013-2015/",
-    }
 
     def __init__(self):
         super().__init__(
