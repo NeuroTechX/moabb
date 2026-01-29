@@ -47,7 +47,7 @@ def _pipeline_requires_epochs(pipeline):
 
 
 try:
-    from codecarbon import EmissionsTracker
+    from codecarbon import EmissionsTracker  # noqa
 
     _carbonfootprint = True
 except ImportError:
