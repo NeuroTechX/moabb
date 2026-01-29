@@ -27,6 +27,7 @@ except ImportError:
 
 try:
     from codecarbon import EmissionsTracker, OfflineEmissionsTracker
+
     _carbonfootprint = True
 except ImportError:
     _carbonfootprint = False
@@ -469,6 +470,7 @@ def _score_and_update(res, scorer, model, X, y_true):
     """
     score = scorer(model, X, y_true)
     return _update_result_with_scores(res, score)
+
 
 class Emissions:
     def __init__(self, codecarbon_config=None):
