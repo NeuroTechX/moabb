@@ -25,6 +25,7 @@ Enhancements
 - Added ``_participant_demographics`` class attribute to BNCI2014-002, BNCI2014-009, BNCI2015-001, and BNCI2015-004 for programmatic access to demographics (by `Bruno Aristimunha`_)
 - Improved BIDS conversion with guaranteed montage preservation for all BNCI datasets (by `Bruno Aristimunha`_)
 - Dataset-specific metadata extraction for BNCI2014-001, BNCI2014-004, and BNCI2014-008 with age, gender, and clinical information (by `Bruno Aristimunha`_)
+- Improved error messages for dataset compatibility checks in evaluations - now provides specific reasons when datasets are incompatible (e.g., "dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions") by `Bruno Aristimunha`_
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
 - Allow custom paradigms to have multiple scores for evaluations (:gh:`948` by `Ethan Davis`_)
@@ -56,6 +57,7 @@ Bugs
 - Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
 - Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
 - Fix copytree FileExistsError in BrainInvaders2013a download by adding dirs_exist_ok=True (by `Bruno Aristimunha`_)
+- Ensure optional additional scoring columns in evaluation results (:gh:`957` by `Ethan Davis`_)
 
 Code health
 ~~~~~~~~~~~
