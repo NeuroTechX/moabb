@@ -8,7 +8,7 @@ from moabb.evaluations.utils import Emissions
 
 
 try:
-    from codecarbon import EmissionsTracker, OfflineEmissionsTracker
+    from codecarbon import EmissionsTracker, OfflineEmissionsTracker  # noqa
 
     CODECARBON_AVAILABLE = True
 except ImportError:
