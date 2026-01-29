@@ -478,6 +478,7 @@ class Emissions:
         if codecarbon_config is None:
             # Default CodeCarbon configurations
             self.codecarbon_config = dict(save_to_file=False, log_level="error")
+            self.codecarbon_offline = False
         else:
             # Offline mode parameters are a superset of online mode parameters
             # Hardcode check avoids object reflection for security and compatibility
