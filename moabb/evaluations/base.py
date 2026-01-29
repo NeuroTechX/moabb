@@ -335,10 +335,16 @@ class BaseEvaluation(ABC):
                 else:
                     search = search_methods["grid"]
 
+                # Use primary scorer for grid search
+                if isinstance(self.paradigm.scoring, dict):
+                    refit = next(iter(self.paradigm.scoring))
+                else:
+                    refit = True
+
                 search = search(
                     grid_clf,
                     param_grid[name],
-                    refit=True,
+                    refit=refit,
                     cv=inner_cv,
                     n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,

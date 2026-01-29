@@ -27,6 +27,9 @@ Enhancements
 - Dataset-specific metadata extraction for BNCI2014-001, BNCI2014-004, and BNCI2014-008 with age, gender, and clinical information (by `Bruno Aristimunha`_)
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
+- Allow custom paradigms to have multiple scores for evaluations (:gh:`948` by `Ethan Davis`_)
+- Ability to parameterize the scoring rule of paradigms (:gh:`948` by `Ethan Davis`_)
+- Extend scoring configuration to accept lists of metric callables, scorer objects, and tuple kwargs (e.g., `needs_proba`/`needs_threshold`) for multi-metric evaluations (:gh:`948` by `Ethan Davis`_ and `Bruno Aristimunha`_)
 - Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
 
 API changes
@@ -37,7 +40,6 @@ API changes
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
 - Renamed stimulus channel from ``stim`` to ``STI`` in BNCI motor imagery and error-related potential datasets for clarity and BIDS compliance (by `Bruno Aristimunha`_).
 - Added four new BNCI P300/ERP dataset classes: :class:`moabb.datasets.BNCI2015_009` (AMUSE), :class:`moabb.datasets.BNCI2015_010` (RSVP), :class:`moabb.datasets.BNCI2015_012` (PASS2D), and :class:`moabb.datasets.BNCI2015_013` (ErrP) (by `Bruno Aristimunha`_).
-
 
 Requirements
 ~~~~~~~~~~~~
@@ -53,6 +55,7 @@ Bugs
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 - Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
 - Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
+- Fix copytree FileExistsError in BrainInvaders2013a download by adding dirs_exist_ok=True (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
@@ -60,6 +63,7 @@ Code health
 - Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
 
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
+- Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------

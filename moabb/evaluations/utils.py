@@ -5,9 +5,11 @@ from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+import numpy as np
 from mne.utils.config import _open_lock
 from numpy import argmax
 from sklearn.base import ClassifierMixin
+from sklearn.metrics import check_scoring
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
@@ -229,7 +231,7 @@ def _create_save_path(
         if grid:
             path_save = (
                 Path(hdf5_path)
-                / f"Search_{eval_type}"
+                / f"GridSearch_{eval_type}"
                 / code
                 / f"{str(subject)}"
                 / str(session)
@@ -334,3 +336,129 @@ def check_search_available():
         return search_methods, True
     else:
         return {"grid": GridSearchCV}, False
+
+
+class _DictScorer:
+    """Wrapper that converts a single scorer to return dict format."""
+
+    def __init__(self, scorer):
+        self.scorer = scorer
+
+    def __call__(self, estimator, X, y_true=None, **kwargs):
+        return {"score": self.scorer(estimator, X, y_true, **kwargs)}
+
+
+def _create_scorer(estimator, scoring):
+    """Create a scorer that always returns a dict.
+
+    Wraps single scorers to return {"score": value} while leaving
+    multi-metric scoring to sklearn's check_scoring.
+
+    Parameters
+    ----------
+    estimator : sklearn-compatible estimator
+        The fitted estimator to use for scoring validation.
+    scoring : str, callable, dict, list, or None
+        The scoring specification. Can be:
+        - None: uses default scorer
+        - str: a single scorer name (e.g., "accuracy")
+        - callable: a single scorer function
+        - dict: {name: scorer} for multiple metrics
+        - list: list of scorer names or callables
+
+    Returns
+    -------
+    scorer : callable
+        Scorer that always returns dict of scores.
+
+    """
+    if isinstance(scoring, (dict, list)):
+        # check_scoring returns a multi-metric scorer for dict/list inputs
+        return check_scoring(estimator, scoring=scoring)
+    else:
+        # Wrap single scorer to return dict with key "score"
+        single_scorer = check_scoring(estimator, scoring=scoring)
+        return _DictScorer(single_scorer)
+
+
+def _average_scores(fold_scores):
+    """Average scores across CV folds.
+
+    Parameters
+    ----------
+    fold_scores : list of dict
+        List of score dictionaries from each CV fold.
+        All dicts must have the same keys. Must not be empty.
+
+    Returns
+    -------
+    mean_scores : dict
+        Dictionary with same keys as input, values are means across folds.
+
+    Raises
+    ------
+    ValueError
+        If fold_scores is empty.
+    """
+    if not fold_scores:
+        raise ValueError("fold_scores cannot be empty")
+    keys = fold_scores[0].keys()
+    return {key: np.mean([fold[key] for fold in fold_scores]) for key in keys}
+
+
+def _update_result_with_scores(res, scores):
+    """Update result dict with scores.
+
+    For single-metric scoring (dict with only "score" key), only adds "score".
+    For multi-metric scoring, adds "score" (first metric) and
+    "score_{name}" for each metric.
+
+    Parameters
+    ----------
+    res : dict
+        Result dictionary to update in-place.
+    scores : dict
+        Dictionary of score values.
+
+    Returns
+    -------
+    res : dict
+        The updated result dictionary.
+    """
+    if list(scores.keys()) == ["score"]:
+        # Single scorer
+        res["score"] = scores["score"]
+    else:
+        # Multi-metric: primary score is first metric value
+        res["score"] = next(iter(scores.values()))
+        # Add individual score columns
+        res.update({f"score_{key}": value for key, value in scores.items()})
+    return res
+
+
+def _score_and_update(res, scorer, model, X, y_true):
+    """Score model and update result dict.
+
+    Combines scoring and result update into a single call.
+    This is a building block for future _evaluate_fold refactoring.
+
+    Parameters
+    ----------
+    res : dict
+        Result dictionary to update in-place.
+    scorer : callable
+        Scorer function that returns a dict of scores.
+    model : estimator
+        Fitted model to score.
+    X : array-like
+        Test features.
+    y_true : array-like
+        Test labels.
+
+    Returns
+    -------
+    res : dict
+        The updated result dictionary.
+    """
+    score = scorer(model, X, y_true)
+    return _update_result_with_scores(res, score)
