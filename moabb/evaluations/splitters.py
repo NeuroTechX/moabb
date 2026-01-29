@@ -359,7 +359,7 @@ class CrossSessionSplitter(BaseCrossValidator):
 
             if len(sessions) <= 1:
                 log.info(
-                    f"Skipping subject {subject}: Only one session available"
+                    f"Skipping subject {subject}: Only one session available. "
                     f"Cross-session evaluation requires at least two sessions."
                 )
                 continue  # Skip subjects with only one session

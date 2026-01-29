@@ -19,8 +19,9 @@ def test_verbose_warning(caplog):
         with caplog.at_level(logging.WARNING):
             CrossSessionEvaluation(paradigm=paradigm, datasets=[dataset])
 
-    # Check if warning was logged
-    assert "not compatible with evaluation" in caplog.text
+    # Check if warning was logged with specific incompatibility reason
+    assert "not compatible with CrossSessionEvaluation" in caplog.text
+    assert "requires at least 2 sessions" in caplog.text
 
 
 def test_verbose_error_suppression(caplog):
@@ -35,7 +36,7 @@ def test_verbose_error_suppression(caplog):
             CrossSessionEvaluation(paradigm=paradigm, datasets=[dataset], verbose="ERROR")
 
     # Check if warning was suppressed
-    assert "not compatible with evaluation" not in caplog.text
+    assert "not compatible with CrossSessionEvaluation" not in caplog.text
 
 
 def test_verbose_false_warning(caplog):
@@ -50,5 +51,6 @@ def test_verbose_false_warning(caplog):
         ):  # Set to INFO to see if behavior is consistent
             CrossSessionEvaluation(paradigm=paradigm, datasets=[dataset], verbose=False)
 
-    # Check if warning was logged (since verbose=False -> WARNING)
-    assert "not compatible with evaluation" in caplog.text
+    # Check if warning was logged (since verbose=False -> WARNING) with new specific message
+    assert "not compatible with CrossSessionEvaluation" in caplog.text
+    assert "requires at least 2 sessions" in caplog.text

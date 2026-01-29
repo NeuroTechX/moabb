@@ -10,6 +10,8 @@ from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import (
     _convert_sklearn_params_to_optuna,
+    _create_scorer,
+    _DictScorer,
     check_search_available,
 )
 from moabb.paradigms.base import BaseParadigm
@@ -142,6 +144,10 @@ class BaseEvaluation(ABC):
                 key in self.codecarbon_config for key in offline_params
             )
 
+        self.additional_columns = additional_columns
+        if additional_columns is None:
+            self.additional_columns = []
+
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
         if (self.time_out != 60 * 15) and not self.optuna:
@@ -153,6 +159,10 @@ class BaseEvaluation(ABC):
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
+        scorer = _create_scorer(None, self.paradigm.scoring)
+        if not isinstance(scorer, _DictScorer):
+            scoring_keys = [f"score_{key}" for key in scorer._scorers.keys()]
+            self.additional_columns.extend(scoring_keys)
 
         # check labels
         if self.mne_labels and not self.return_epochs:
@@ -182,8 +192,11 @@ class BaseEvaluation(ABC):
                 )
                 rm.append(dataset)
             elif not valid_for_eval:
+                # Get specific reason for incompatibility
+                eval_type = self.__class__.__name__
+                reason = self._get_incompatibility_reason(dataset)
                 log.warning(
-                    f"{dataset} not compatible with evaluation. "
+                    f"{dataset} not compatible with {eval_type}: {reason}. "
                     "Removing this dataset from the list."
                 )
                 rm.append(dataset)
@@ -203,7 +216,7 @@ class BaseEvaluation(ABC):
             overwrite=overwrite,
             suffix=suffix,
             hdf5_path=self.hdf5_path,
-            additional_columns=additional_columns,
+            additional_columns=self.additional_columns,
         )
 
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
@@ -337,6 +350,25 @@ class BaseEvaluation(ABC):
         dataset : dataset instance
             The dataset to verify.
         """
+
+    def _get_incompatibility_reason(self, dataset):
+        """Get a human-readable reason why dataset is incompatible.
+
+        This method should be overridden by subclasses to provide
+        specific incompatibility reasons.
+
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset to check.
+
+        Returns
+        -------
+        str
+            A human-readable reason for incompatibility.
+
+        """
+        return "requirements not met"
 
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
         extra_params = {}

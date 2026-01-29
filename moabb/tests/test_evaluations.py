@@ -382,6 +382,17 @@ class Test_CrossSess(TestWithinSess):
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
         assert self.eval.is_valid(dataset=ds)
 
+    def test_incompatibility_error_message(self):
+        """Test that incompatibility error message is clear and informative."""
+        ds = FakeDataset(["left_hand", "right_hand"], n_sessions=1)
+        # Test that the error message includes the dataset code and reason
+        with pytest.raises(AssertionError) as exc_info:
+            list(self.eval.evaluate(ds, pipelines, None, None))
+        error_msg = str(exc_info.value)
+        assert "CrossSessionEvaluation" in error_msg
+        assert "1 session" in error_msg
+        assert "requires at least 2 sessions" in error_msg
+
 
 class UtilEvaluation:
     def test_save_model_cv(self):
