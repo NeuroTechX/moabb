@@ -39,8 +39,9 @@ class BNCI2019_001(BaseDataset):
     **Participants**
 
     - 10 participants with cervical spinal cord injury
-    - Age range: 20-69 years
+    - Age range: 20-78 years (mean 49.8, SD 17.6)
     - Gender: 9 male, 1 female
+    - Handedness: All right-handed
 
     **Recording Details**
 
@@ -81,8 +82,12 @@ class BNCI2019_001(BaseDataset):
     _participant_demographics = {
         "n_subjects": 10,
         "gender": {"male": 9, "female": 1},
-        "age_range": (20, 69),
+        "age_mean": 49.8,
+        "age_std": 17.6,
+        "age_range": (20, 78),
+        "handedness": {"right": 10},
         "health_status": "cervical spinal cord injury patients",
+        "location": "Graz University of Technology, Austria",
     }
 
     ARTICLE_METADATA = {
