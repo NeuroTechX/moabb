@@ -13,7 +13,6 @@ from .utils import (
     bnci_data_path,
     convert_units,
     make_raw,
-    standardize_channel_names,
     validate_subject,
 )
 
@@ -390,9 +389,6 @@ def _convert_attention_shift(filename, verbose=None):
 
     # Get channel names - these are EEG channels
     ch_names = list(bciexp.label)
-
-    # Standardize channel names for montage compatibility
-    ch_names = standardize_channel_names(ch_names)
 
     # Channel types: all EEG
     ch_types = ["eeg"] * n_channels

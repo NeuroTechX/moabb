@@ -1,8 +1,6 @@
 """Metadata schema module for MOABB datasets.
 
-This module provides standardized dataclasses for documenting dataset metadata,
-combining MOABB's paradigm-focused structure with EEGDash's comprehensive
-schema for compatibility with the broader EEG data ecosystem.
+This module provides standardized dataclasses for documenting dataset metadata.
 
 Core Classes
 ------------
@@ -17,8 +15,8 @@ ExperimentMetadata
 DatasetMetadata
     Top-level container combining all metadata sections
 
-EEGDash-Compatible Classes
---------------------------
+Additional Classes
+------------------
 Demographics
     Extended subject demographics (subjects_count, ages, age_min, age_max)
 ExternalLinks
@@ -26,11 +24,7 @@ ExternalLinks
 Timestamps
     Dataset creation and modification dates
 Tags
-    Classification tags with confidence scores
-TagConfidence
-    Confidence scores for each tag category
-TagReasoning
-    Reasoning explanations for tag assignments
+    Classification tags
 ChannelCount
     Channel count distribution entry
 SamplingRateCount
@@ -40,6 +34,12 @@ Functions
 ---------
 get_dataset_metadata
     Retrieve pre-defined metadata for a specific MOABB dataset
+validate_country_code
+    Validate ISO 3166-1 alpha-2 country codes
+validate_metadata_against_dataset
+    Validate metadata matches actual dataset structure
+get_dataset_description
+    Extract description from dataset class docstring
 
 Constants
 ---------
@@ -60,8 +60,6 @@ Example
 ...     ),
 ...     participants=ParticipantMetadata(n_subjects=20),
 ...     experiment=ExperimentMetadata(paradigm="imagery"),
-...     dataset_id="my_dataset",
-...     source="OpenNeuro",
 ... )
 
 >>> # Get pre-defined metadata for a dataset
@@ -69,15 +67,10 @@ Example
 >>> bnci_metadata = get_dataset_metadata("BNCI2014_001")
 >>> print(bnci_metadata.participants.n_subjects)
 9
-
-References
-----------
-- EEGDash API: https://eegdash.org/
-- EEGDash Data API: https://data.eegdash.org/api/eegdash/datasets/summary/
 """
 
 from .catalog import DATASET_METADATA_CATALOG, get_dataset_metadata
-from .schema import (  # Core MOABB classes; EEGDash-compatible classes
+from .schema import (
     AcquisitionMetadata,
     ChannelCount,
     DatasetMetadata,
@@ -87,10 +80,11 @@ from .schema import (  # Core MOABB classes; EEGDash-compatible classes
     ExternalLinks,
     ParticipantMetadata,
     SamplingRateCount,
-    TagConfidence,
-    TagReasoning,
     Tags,
     Timestamps,
+    get_dataset_description,
+    validate_country_code,
+    validate_metadata_against_dataset,
 )
 
 
@@ -101,16 +95,18 @@ __all__ = [
     "ParticipantMetadata",
     "ExperimentMetadata",
     "DatasetMetadata",
-    # EEGDash-compatible classes
+    # Additional classes
     "Demographics",
     "ExternalLinks",
     "Timestamps",
     "Tags",
-    "TagConfidence",
-    "TagReasoning",
     "ChannelCount",
     "SamplingRateCount",
     # Catalog
     "DATASET_METADATA_CATALOG",
     "get_dataset_metadata",
+    # Validation functions
+    "validate_country_code",
+    "validate_metadata_against_dataset",
+    "get_dataset_description",
 ]

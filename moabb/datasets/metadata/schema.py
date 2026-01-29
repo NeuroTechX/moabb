@@ -1,8 +1,6 @@
 """Metadata schema dataclasses for MOABB datasets.
 
-This module provides a standardized way to document dataset metadata,
-combining MOABB's paradigm-focused structure with EEGDash's comprehensive
-schema for compatibility with the broader EEG data ecosystem.
+This module provides a standardized way to document dataset metadata.
 
 The schema is organized into logical sections:
 - AcquisitionMetadata: Technical recording parameters
@@ -11,18 +9,11 @@ The schema is organized into logical sections:
 - ExperimentMetadata: Paradigm and task details
 - DatasetMetadata: Top-level container combining all sections
 
-Additional EEGDash-compatible classes:
-- Demographics: Extended subject demographics (EEGDash format)
+Additional classes:
+- Demographics: Extended subject demographics
 - ExternalLinks: URLs and data sources
 - Timestamps: Dataset creation/modification dates
-- Storage: Data location information
-- Tags: Classification tags with confidence scores
-- TaggerMeta: Automatic tagging metadata
-
-References
-----------
-- EEGDash API: https://eegdash.org/
-- EEGDash Data API: https://data.eegdash.org/api/eegdash/datasets/summary/
+- Tags: Classification tags
 """
 
 from __future__ import annotations
@@ -31,9 +22,38 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional
 
+import pycountry
+
+
+def validate_country_code(code: str) -> bool:
+    """Validate that a string is a valid ISO 3166-1 alpha-2 country code.
+
+    Parameters
+    ----------
+    code : str
+        Country code to validate (e.g., "US", "FR", "DE").
+
+    Returns
+    -------
+    bool
+        True if the code is a valid ISO 3166-1 alpha-2 country code.
+
+    Examples
+    --------
+    >>> validate_country_code("US")
+    True
+    >>> validate_country_code("FR")
+    True
+    >>> validate_country_code("XX")
+    False
+    """
+    if not isinstance(code, str) or len(code) != 2:
+        return False
+    return pycountry.countries.get(alpha_2=code.upper()) is not None
+
 
 # =============================================================================
-# EEGDash-compatible nested classes
+# Additional nested classes
 # =============================================================================
 
 
@@ -109,50 +129,6 @@ class Timestamps:
 
 
 @dataclass
-class TagConfidence:
-    """Confidence scores for automatic tags following EEGDash schema.
-
-    Parameters
-    ----------
-    pathology : float, optional
-        Confidence score for pathology tag (0-1).
-    modality : float, optional
-        Confidence score for modality tag (0-1).
-    type : float, optional
-        Confidence score for experiment type tag (0-1).
-    """
-
-    pathology: Optional[float] = None
-    modality: Optional[float] = None
-    type: Optional[float] = None
-
-
-@dataclass
-class TagReasoning:
-    """Reasoning explanations for automatic tags following EEGDash schema.
-
-    Parameters
-    ----------
-    few_shot_analysis : str, optional
-        Analysis from few-shot examples.
-    metadata_analysis : str, optional
-        Analysis from dataset metadata.
-    paper_abstract_analysis : str, optional
-        Analysis from associated paper abstract.
-    evidence_alignment_check : str, optional
-        Cross-validation of evidence sources.
-    decision_summary : str, optional
-        Summary of final tagging decision.
-    """
-
-    few_shot_analysis: Optional[str] = None
-    metadata_analysis: Optional[str] = None
-    paper_abstract_analysis: Optional[str] = None
-    evidence_alignment_check: Optional[str] = None
-    decision_summary: Optional[str] = None
-
-
-@dataclass
 class Tags:
     """Classification tags for the dataset following EEGDash schema.
 
@@ -164,17 +140,11 @@ class Tags:
         Stimulus/task modality, e.g., ["visual", "auditory", "motor"].
     type : List[str], optional
         Experiment type, e.g., ["perception", "imagery", "resting_state"].
-    confidence : TagConfidence, optional
-        Confidence scores for each tag category.
-    reasoning : TagReasoning, optional
-        Reasoning explanations for tag assignments.
     """
 
     pathology: Optional[List[str]] = None
     modality: Optional[List[str]] = None
     type: Optional[List[str]] = None
-    confidence: Optional[TagConfidence] = None
-    reasoning: Optional[TagReasoning] = None
 
 
 @dataclass
@@ -411,8 +381,7 @@ class DatasetMetadata:
     """Complete dataset metadata combining all sections.
 
     This is the top-level container that aggregates all metadata sections
-    into a single, comprehensive dataset description. Supports both MOABB's
-    paradigm-focused structure and EEGDash's comprehensive fields.
+    into a single, comprehensive dataset description.
 
     Parameters
     ----------
@@ -428,19 +397,6 @@ class DatasetMetadata:
         Number of sessions per subject. Default is 1.
     runs_per_session : int
         Number of runs per session. Default is 1.
-    format_version : str
-        Metadata schema version. Default is "1.0.0".
-
-    EEGDash-compatible Parameters
-    -----------------------------
-    total_files : int, optional
-        Total number of files in the dataset.
-    size_bytes : int, optional
-        Total dataset size in bytes.
-    datatypes : str, optional
-        Data types present, e.g., "eeg, meg, anat, func".
-    experimental_modalities : List[str], optional
-        List of experimental modalities.
     sessions : List[str], optional
         List of session identifiers.
     contributing_labs : List[str], optional
@@ -487,31 +443,119 @@ class DatasetMetadata:
     documentation: Optional[DocumentationMetadata] = None
     sessions_per_subject: int = 1
     runs_per_session: int = 1
-    format_version: str = "1.0.0"
 
-    # EEGDash file/size information
-    total_files: Optional[int] = None
-    size_bytes: Optional[int] = None
-
-    # EEGDash data types and modalities
-    datatypes: Optional[str] = None
-    experimental_modalities: Optional[List[str]] = None
-
-    # EEGDash sessions
+    # Sessions
     sessions: Optional[List[str]] = None
 
-    # EEGDash institutions
+    # Institutions
     contributing_labs: Optional[List[str]] = None
     n_contributing_labs: Optional[int] = None
 
-    # EEGDash processing status
+    # Processing status
     data_processed: bool = False
 
-    # EEGDash nested objects
+    # Nested objects
     external_links: Optional[ExternalLinks] = None
     timestamps: Optional[Timestamps] = None
     tags: Optional[Tags] = None
 
-    # EEGDash distributions
+    # Distributions
     nchans_counts: Optional[List[ChannelCount]] = None
     sfreq_counts: Optional[List[SamplingRateCount]] = None
+
+
+def validate_metadata_against_dataset(dataset, metadata: DatasetMetadata) -> List[str]:
+    """Validate metadata matches actual dataset structure.
+
+    Compares metadata values against properties of a dataset object to ensure
+    consistency between documented metadata and actual data.
+
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The dataset object to validate against.
+    metadata : DatasetMetadata
+        The metadata to validate.
+
+    Returns
+    -------
+    List[str]
+        List of validation error messages. Empty if validation passes.
+
+    Examples
+    --------
+    >>> from moabb.datasets import BNCI2014_001
+    >>> from moabb.datasets.metadata import get_dataset_metadata
+    >>> dataset = BNCI2014_001()
+    >>> metadata = get_dataset_metadata("BNCI2014_001")
+    >>> errors = validate_metadata_against_dataset(dataset, metadata)
+    >>> if errors:
+    ...     print("Validation errors:", errors)
+    """
+    errors = []
+
+    # Validate sessions_per_subject
+    if hasattr(dataset, "n_sessions"):
+        if metadata.sessions_per_subject != dataset.n_sessions:
+            errors.append(
+                f"sessions_per_subject mismatch: metadata={metadata.sessions_per_subject}, "
+                f"dataset={dataset.n_sessions}"
+            )
+
+    # Validate n_subjects
+    if hasattr(dataset, "subject_list"):
+        n_subjects = len(dataset.subject_list)
+        if metadata.participants.n_subjects != n_subjects:
+            errors.append(
+                f"n_subjects mismatch: metadata={metadata.participants.n_subjects}, "
+                f"dataset={n_subjects}"
+            )
+
+    # Validate country code if present
+    if (
+        metadata.documentation
+        and metadata.documentation.country
+        and not validate_country_code(metadata.documentation.country)
+    ):
+        errors.append(
+            f"Invalid country code: {metadata.documentation.country}. "
+            "Must be a valid ISO 3166-1 alpha-2 code."
+        )
+
+    return errors
+
+
+def get_dataset_description(dataset_class) -> Optional[str]:
+    """Extract description from dataset class docstring.
+
+    Parameters
+    ----------
+    dataset_class : type
+        The dataset class to extract description from.
+
+    Returns
+    -------
+    str or None
+        The first paragraph of the docstring as description, or None if
+        no docstring is available.
+
+    Examples
+    --------
+    >>> from moabb.datasets import BNCI2014_001
+    >>> desc = get_dataset_description(BNCI2014_001)
+    >>> print(desc[:50])
+    BNCI 2014-001 Motor Imagery dataset.
+    """
+    if dataset_class.__doc__:
+        # Parse first paragraph as abstract
+        doc = dataset_class.__doc__.strip()
+        # Split on double newlines to get paragraphs
+        paragraphs = doc.split("\n\n")
+        if paragraphs:
+            # Clean up the first paragraph
+            first_para = paragraphs[0].strip()
+            # Remove any leading indentation from subsequent lines
+            lines = first_para.split("\n")
+            cleaned_lines = [lines[0]] + [line.strip() for line in lines[1:]]
+            return " ".join(cleaned_lines)
+    return None

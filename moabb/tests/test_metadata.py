@@ -225,7 +225,6 @@ class TestDatasetMetadata:
         assert meta.documentation is None
         assert meta.sessions_per_subject == 1
         assert meta.runs_per_session == 1
-        assert meta.format_version == "1.0.0"
 
     def test_all_fields(
         self, minimal_acquisition, minimal_participants, minimal_experiment
@@ -242,12 +241,10 @@ class TestDatasetMetadata:
             documentation=doc,
             sessions_per_subject=3,
             runs_per_session=2,
-            format_version="1.1.0",
         )
         assert meta.documentation == doc
         assert meta.sessions_per_subject == 3
         assert meta.runs_per_session == 2
-        assert meta.format_version == "1.1.0"
 
     def test_nested_access(
         self, minimal_acquisition, minimal_participants, minimal_experiment
@@ -414,12 +411,11 @@ class TestMetadataCatalog:
         assert metadata.participants.health_status == "healthy"
         # Experiment
         assert metadata.experiment.n_classes == 4
-        assert "left_hand" in metadata.experiment.events
-        assert "right_hand" in metadata.experiment.events
+        # Note: events are now extracted dynamically from dataset.event_id
         # Documentation
         assert metadata.documentation is not None
         assert "10.3389" in metadata.documentation.doi
-        assert metadata.documentation.country == "Austria"
+        assert metadata.documentation.country == "AT"  # ISO alpha-2 code
         # Structure
         assert metadata.sessions_per_subject == 2
         assert metadata.runs_per_session == 6
@@ -430,7 +426,7 @@ class TestMetadataCatalog:
         assert metadata.participants.n_subjects == 109
         assert metadata.acquisition.sampling_rate == 160.0
         assert metadata.experiment.paradigm == "imagery"
-        assert "feet" in metadata.experiment.events
+        # Note: events are now extracted dynamically from dataset.event_id
 
     def test_lee2019_mi_metadata(self):
         """Test Lee2019_MI metadata."""
@@ -475,7 +471,7 @@ class TestMetadataCatalog:
         metadata = get_dataset_metadata("Dreyer2023")
         assert metadata.participants.n_subjects == 87
         assert metadata.acquisition.n_channels == 27
-        assert metadata.documentation.country == "France"
+        assert metadata.documentation.country == "FR"  # ISO alpha-2 code
         assert "10.1038/s41597-023-02445-z" in metadata.documentation.doi
 
     @pytest.mark.parametrize(

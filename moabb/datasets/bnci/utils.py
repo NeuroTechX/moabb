@@ -10,17 +10,6 @@ from moabb.datasets import download as dl
 
 BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
 
-# Standard channel name aliases for BNCI datasets
-# Maps non-standard names to standard 10-10/10-20 names
-CHANNEL_ALIASES = {
-    "O9": "PO9",
-    "O10": "PO10",
-    "T3": "T7",
-    "T4": "T8",
-    "T5": "P7",
-    "T6": "P8",
-}
-
 
 def bnci_data_path(url, path=None, force_update=False, update_path=None, verbose=None):
     """Download data file from URL."""
@@ -147,25 +136,3 @@ def convert_units(data, from_unit="uV", to_unit="V", channel_mask=None):
     else:
         result[channel_mask] *= scale
     return result
-
-
-def standardize_channel_names(ch_names, aliases=None):
-    """Apply standard and custom channel name mappings.
-
-    Parameters
-    ----------
-    ch_names : list of str
-        Original channel names.
-    aliases : dict or None
-        Additional name mappings to apply. If None, only standard
-        CHANNEL_ALIASES are used.
-
-    Returns
-    -------
-    ch_names : list of str
-        Standardized channel names.
-    """
-    mapping = CHANNEL_ALIASES.copy()
-    if aliases:
-        mapping.update(aliases)
-    return [mapping.get(ch, ch) for ch in ch_names]
