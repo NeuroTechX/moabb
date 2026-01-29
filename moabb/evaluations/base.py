@@ -9,11 +9,11 @@ from sklearn.base import BaseEstimator
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import (
+    Emissions,
     _convert_sklearn_params_to_optuna,
     _create_scorer,
     _DictScorer,
     check_search_available,
-    Emissions,
 )
 from moabb.paradigms.base import BaseParadigm
 from moabb.utils import verbose
