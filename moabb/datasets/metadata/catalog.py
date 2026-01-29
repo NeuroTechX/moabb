@@ -80,7 +80,7 @@ ALEXMI_METADATA = DatasetMetadata(
 BNCI2014_001_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=250.0,
-        n_channels=26,
+        n_channels=22,
         channel_types={"eeg": 22, "eog": 3, "stim": 1},
         sensors=[
             "Fz",
@@ -773,7 +773,7 @@ LIU2024_METADATA = DatasetMetadata(
 DREYER2023_METADATA = DatasetMetadata(
     acquisition=AcquisitionMetadata(
         sampling_rate=512.0,
-        n_channels=32,
+        n_channels=27,
         channel_types={"eeg": 27, "eog": 3, "emg": 2},
         sensors=[
             "Fz",
