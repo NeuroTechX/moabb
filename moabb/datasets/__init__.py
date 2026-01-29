@@ -15,15 +15,7 @@ from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 from .beetl import Beetl2021_A, Beetl2021_B
 
-# Depreciated datasets (will be removed in the future):
-from .bnci import BNCI2014001  # noqa: F401
-from .bnci import BNCI2014002  # noqa: F401
-from .bnci import BNCI2014004  # noqa: F401
-from .bnci import BNCI2014008  # noqa: F401
-from .bnci import BNCI2014009  # noqa: F401
-from .bnci import BNCI2015001  # noqa: F401
-from .bnci import BNCI2015003  # noqa: F401
-from .bnci import BNCI2015004  # noqa: F401
+# BNCI datasets (from bnci subpackage)
 from .bnci import (
     BNCI2003_004,
     BNCI2014_001,
@@ -34,6 +26,21 @@ from .bnci import (
     BNCI2015_001,
     BNCI2015_003,
     BNCI2015_004,
+    BNCI2015_006,
+    BNCI2015_007,
+    BNCI2015_008,
+    BNCI2015_009,
+    BNCI2015_010,
+    BNCI2015_012,
+    BNCI2015_013,
+    BNCI2016_002,
+    BNCI2019_001,
+    BNCI2020_001,
+    BNCI2020_002,
+    BNCI2022_001,
+    BNCI2024_001,
+    BNCI2025_001,
+    BNCI2025_002,
 )
 from .braininvaders import VirtualReality  # noqa: F401
 from .braininvaders import bi2012  # noqa: F401

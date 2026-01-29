@@ -10,7 +10,7 @@ from typing import Any, Dict, Tuple
 import mne
 import numpy as np
 import pandas as pd
-from mne.channels import read_custom_montage
+from mne.channels import make_dig_montage
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -249,10 +249,13 @@ class Liu2024(BaseDataset):
         # Set the new channel types
         raw.set_channel_types(mapping)
 
-        # Normalize and Read the montage
-        path_electrodes = self._normalize_extension(path_electrodes)
-        # Read and set the montage
-        montage = read_custom_montage(path_electrodes)
+        # Read electrode positions from TSV file and create montage
+        electrodes_df = pd.read_csv(path_electrodes, sep="\t")
+        ch_pos = {
+            row["name"]: np.array([row["X"], row["Y"], row["Z"]])
+            for _, row in electrodes_df.iterrows()
+        }
+        montage = make_dig_montage(ch_pos=ch_pos, coord_frame="head")
 
         events_df = pd.read_csv(path_events, sep="\t")
 

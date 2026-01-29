@@ -766,10 +766,27 @@ def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0,
         )
 
 
-def _match_int(s):
-    """Match the first integer in a string."""
+def _match_int(s, default=None):
+    """Match the first integer in a string.
+
+    Parameters
+    ----------
+    s : str
+        String to search for an integer.
+    default : int or None, optional
+        Default value to return if no integer is found. If None and no
+        integer is found, raises AssertionError.
+
+    Returns
+    -------
+    int
+        The first integer found in the string, or default if not found.
+    """
     match = re.search(r"(\d+)", str(s))
-    assert match, f"Cannot parse number from '{s}'"
+    if match is None:
+        if default is not None:
+            return default
+        raise AssertionError(f"Cannot parse number from '{s}'")
     return int(match.group(1))
 
 
@@ -787,17 +804,22 @@ def _get_dataset_parameters(dataset):
     n_subjects = len(dataset.subject_list)
     n_sessions = _match_int(row["#Sessions"])
     if paradigm in ["imagery", "ssvep"]:
-        n_trials = _match_int(row["#Trials / class"]) * _match_int(row["#Classes"])
+        # Handle "varies" in trials per class - use 1 as default for variable trials
+        trials_per_class = _match_int(row["#Trials / class"], default=1)
+        n_trials = trials_per_class * _match_int(row["#Classes"])
     elif paradigm == "rstate":
         n_trials = _match_int(row["#Classes"]) * _match_int(row["#Blocks / class"])
     elif paradigm == "cvep":
-        n_trials = _match_int(row["#Trials / class"]) * _match_int(row["#Trial classes"])
+        # Handle "varies" in trials per class - use 1 as default for variable trials
+        trials_per_class = _match_int(row["#Trials / class"], default=1)
+        n_trials = trials_per_class * _match_int(row["#Trial classes"])
     else:  # p300
         match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
         if match is not None:
             n_trials = int(match.group(1)) + int(match.group(2))
         else:
-            n_trials = _match_int(row["#Trials / class"])
+            # Handle "varies" in trials per class - use 1 as default for variable trials
+            n_trials = _match_int(row["#Trials / class"], default=1)
     trial_len = _match_float(row["Trials length (s)"])
     return (
         dataset_name,

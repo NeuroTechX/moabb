@@ -9,12 +9,11 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import requests
-from mne import get_config
 from mne.utils import _open_lock
 
 from .base import BaseBIDSDataset
 from .bids_interface import get_bids_root
-from .download import download_if_missing, get_user_agent
+from .download import download_if_missing, get_dataset_path, get_user_agent
 
 
 log = logging.getLogger(__name__)
@@ -74,10 +73,7 @@ class Zhou2016(BaseBIDSDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        if not path:
-            path = get_config("MNE_DATA")
-
-        path = Path(update_path) if update_path else Path(path)
+        path = Path(get_dataset_path(self.code, path))
         dataset_path = get_bids_root(code=self.code, path=path)
 
         if not dataset_path.exists():

@@ -21,6 +21,10 @@ Enhancements
 ~~~~~~~~~~~~
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
+- Enhanced BNCI datasets with comprehensive participant demographics documentation (by `Bruno Aristimunha`_)
+- Added ``_participant_demographics`` class attribute to BNCI2014-002, BNCI2014-009, BNCI2015-001, and BNCI2015-004 for programmatic access to demographics (by `Bruno Aristimunha`_)
+- Improved BIDS conversion with guaranteed montage preservation for all BNCI datasets (by `Bruno Aristimunha`_)
+- Dataset-specific metadata extraction for BNCI2014-001, BNCI2014-004, and BNCI2014-008 with age, gender, and clinical information (by `Bruno Aristimunha`_)
 - Improved error messages for dataset compatibility checks in evaluations - now provides specific reasons when datasets are incompatible (e.g., "dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions") by `Bruno Aristimunha`_
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
@@ -36,6 +40,8 @@ API changes
 - Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
 - Enable choice of online or offline CodeCarbon through the parameterization of `codecarbon_config` when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`956` by `Ethan Davis`_)
+- Renamed stimulus channel from ``stim`` to ``STI`` in BNCI motor imagery and error-related potential datasets for clarity and BIDS compliance (by `Bruno Aristimunha`_).
+- Added four new BNCI P300/ERP dataset classes: :class:`moabb.datasets.BNCI2015_009` (AMUSE), :class:`moabb.datasets.BNCI2015_010` (RSVP), :class:`moabb.datasets.BNCI2015_012` (PASS2D), and :class:`moabb.datasets.BNCI2015_013` (ErrP) (by `Bruno Aristimunha`_).
 
 Requirements
 ~~~~~~~~~~~~
@@ -43,6 +49,9 @@ Requirements
 
 Bugs
 ~~~~
+- Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
+- Fixed measurement date setting for BNCI datasets to use specific collection years from papers (by `Bruno Aristimunha`_)
+- Ensured proper subject ID assignment for BIDS compliance across all BNCI datasets (by `Bruno Aristimunha`_)
 - Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
 - Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
@@ -54,6 +63,9 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
+- Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
+- Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
+
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 - Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
 

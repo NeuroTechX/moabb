@@ -52,6 +52,7 @@ dependencies = [
     "pytest>=8.3.5",
     "mne-bids>=0.16",
     "scikit-learn>=1.6",
+    "pycountry>=24.6.1",
 ]
 
 [project.urls]
