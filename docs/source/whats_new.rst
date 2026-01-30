@@ -46,6 +46,7 @@ API changes
 Requirements
 ~~~~~~~~~~~~
 - Allows CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
+- Added ``filelock`` as a core dependency to fix missing import errors in utils (:gh:`959` by `Mateusz Naklicki`_).
 
 Bugs
 ~~~~
@@ -711,3 +712,4 @@ API changes
 .. _Romani Michele: https://github.com/BRomans
 .. _Lionel Kusch: https://github.com/lionelkusch
 .. _Victor Martinez-Cagigal: https://github.com/vicmarcag
+.. _Mateusz Naklicki: https://github.com/luluu9
