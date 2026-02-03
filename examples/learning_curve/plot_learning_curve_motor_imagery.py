@@ -36,7 +36,6 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.paradigms import LeftRightImagery
 
-
 moabb.set_log_level("info")
 
 ##############################################################################
