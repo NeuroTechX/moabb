@@ -511,3 +511,44 @@ def test_learning_curve_splitter_metadata():
         meta = splitter.get_metadata()
         assert meta["data_size"] is not None
         assert meta["permutation"] is not None
+
+
+@pytest.mark.parametrize(
+    "splitter",
+    [
+        WithinSessionSplitter,
+        WithinSubjectSplitter,
+        CrossSessionSplitter,
+        CrossSubjectSplitter,
+    ],
+)
+def test_learning_curve_as_cv_class(splitter, data):
+    """Test that LearningCurveSplitter can be used as cv_class for all splitters."""
+    _, y, metadata = data
+
+    data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
+    n_perms = np.array([2, 1])
+
+    # CrossSessionSplitter requires shuffle=True when using random_state
+    extra_kwargs = {}
+    if splitter == CrossSessionSplitter:
+        extra_kwargs["shuffle"] = True
+
+    split = splitter(
+        cv_class=LearningCurveSplitter,
+        data_size=data_size,
+        n_perms=n_perms,
+        test_size=0.2,
+        random_state=42,
+        **extra_kwargs,
+    )
+
+    splits = list(split.split(y, metadata))
+    assert len(splits) > 0
+
+    for train, test in splits:
+        # Check that we get valid train/test indices
+        assert len(train) > 0
+        assert len(test) > 0
+        # Check no overlap between train and test
+        assert len(set(train) & set(test)) == 0
