@@ -23,6 +23,7 @@ from moabb.evaluations.utils import _create_save_path as create_save_path
 from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
+
 try:
     from codecarbon import EmissionsTracker  # noqa
 
@@ -280,14 +281,18 @@ class TestWithinSessLearningCurve:
             },
             **kwargs,
         )
+        # Invalid policy should raise ValueError when evaluation is run
+        # (LearningCurveSplitter is instantiated at evaluation time, not construction)
+        evaluation = ev.WithinSessionEvaluation(
+            cv_kwargs={
+                "data_size": {"policy": "does_not_exist", "value": [0.2, 0.5]},
+                "n_perms": [2, 2],
+            },
+            overwrite=True,
+            **kwargs,
+        )
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(
-                cv_kwargs={
-                    "data_size": {"policy": "does_not_exist", "value": [0.2, 0.5]},
-                    "n_perms": [2, 2],
-                },
-                **kwargs,
-            )
+            evaluation.process(pipelines)
 
     @pytest.mark.skip(reason="This test is not working")
     def test_data_sanity(self):
@@ -330,10 +335,12 @@ class TestWithinSessLearningCurve:
 
     def test_datasize_parameters(self):
         # Fail if not values are not correctly ordered
+        # (LearningCurveSplitter is instantiated at evaluation time, not construction)
         kwargs = dict(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             cv_class=LearningCurveSplitter,
+            overwrite=True,
         )
         decreasing_datasize = dict(
             cv_kwargs={
@@ -357,11 +364,11 @@ class TestWithinSessLearningCurve:
             **kwargs,
         )
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(**decreasing_datasize)
+            ev.WithinSessionEvaluation(**decreasing_datasize).process(pipelines)
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(**constant_datasize)
+            ev.WithinSessionEvaluation(**constant_datasize).process(pipelines)
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(**increasing_perms)
+            ev.WithinSessionEvaluation(**increasing_perms).process(pipelines)
 
     def test_postprocess_pipeline(self):
         learning_curve_eval = ev.WithinSessionEvaluation(
