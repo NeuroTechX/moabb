@@ -33,6 +33,7 @@ from sklearn.pipeline import make_pipeline
 import moabb
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
+from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.paradigms import LeftRightImagery
 
 
@@ -86,8 +87,8 @@ evaluation = WithinSessionEvaluation(
     datasets=datasets,
     suffix="examples",
     overwrite=overwrite,
-    data_size=data_size,
-    n_perms=n_perms,
+    cv_class=LearningCurveSplitter,
+    cv_kwargs=dict(data_size=data_size, n_perms=n_perms),
 )
 
 results = evaluation.process(pipelines)

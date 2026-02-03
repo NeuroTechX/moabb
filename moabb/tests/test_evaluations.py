@@ -18,6 +18,7 @@ from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import optuna_available
+from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.evaluations.utils import _create_save_path as create_save_path
 from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
@@ -241,8 +242,8 @@ class TestWithinSessLearningCurve:
         learning_curve_eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
-            n_perms=np.array([2, 2]),
+            cv_class=LearningCurveSplitter,
+            cv_kwargs={"data_size": {"policy": "ratio", "value": np.array([0.2, 0.5])}, "n_perms": np.array([2, 2])},
         )
         process_pipeline = learning_curve_eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
@@ -257,17 +258,17 @@ class TestWithinSessLearningCurve:
         assert "data_size" in keys
 
     def test_all_policies_work(self):
-        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
+        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], cv_class=LearningCurveSplitter)
         # The next two should work without issue
         ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 10]}, **kwargs
+            cv_kwargs={"data_size": {"policy": "per_class", "value": [5, 10]}, "n_perms": [2, 2]}, **kwargs
         )
         ev.WithinSessionEvaluation(
-            data_size={"policy": "ratio", "value": [0.2, 0.5]}, **kwargs
+            cv_kwargs={"data_size": {"policy": "ratio", "value": [0.2, 0.5]}, "n_perms": [2, 2]}, **kwargs
         )
         with pytest.raises(ValueError):
             ev.WithinSessionEvaluation(
-                data_size={"policy": "does_not_exist", "value": [0.2, 0.5]},
+                cv_kwargs={"data_size": {"policy": "does_not_exist", "value": [0.2, 0.5]}, "n_perms": [2, 2]},
                 **kwargs,
             )
 
@@ -283,12 +284,12 @@ class TestWithinSessLearningCurve:
             )
 
         # E.g. if number of samples too high -> expect error
-        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
+        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], cv_class=LearningCurveSplitter)
         should_work = ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 10]}, **kwargs
+            cv_kwargs={"data_size": {"policy": "per_class", "value": [5, 10]}, "n_perms": [2, 2]}, **kwargs
         )
         too_many_samples = ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 100000]}, **kwargs
+            cv_kwargs={"data_size": {"policy": "per_class", "value": [5, 100000]}, "n_perms": [2, 2]}, **kwargs
         )
         # This one should run
         run_evaluation(should_work, dataset, pipelines)
@@ -300,15 +301,15 @@ class TestWithinSessLearningCurve:
 
     def test_datasize_parameters(self):
         # Fail if not values are not correctly ordered
-        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset])
+        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], cv_class=LearningCurveSplitter)
         decreasing_datasize = dict(
-            data_size={"policy": "per_class", "value": [5, 4]}, n_perms=[2, 1], **kwargs
+            cv_kwargs={"data_size": {"policy": "per_class", "value": [5, 4]}, "n_perms": [2, 1]}, **kwargs
         )
         constant_datasize = dict(
-            data_size={"policy": "per_class", "value": [5, 5]}, n_perms=[2, 3], **kwargs
+            cv_kwargs={"data_size": {"policy": "per_class", "value": [5, 5]}, "n_perms": [2, 3]}, **kwargs
         )
         increasing_perms = dict(
-            data_size={"policy": "per_class", "value": [3, 4]}, n_perms=[2, 3], **kwargs
+            cv_kwargs={"data_size": {"policy": "per_class", "value": [3, 4]}, "n_perms": [2, 3]}, **kwargs
         )
         with pytest.raises(ValueError):
             ev.WithinSessionEvaluation(**decreasing_datasize)
@@ -321,8 +322,8 @@ class TestWithinSessLearningCurve:
         learning_curve_eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
-            n_perms=np.array([2, 2]),
+            cv_class=LearningCurveSplitter,
+            cv_kwargs={"data_size": {"policy": "ratio", "value": np.array([0.2, 0.5])}, "n_perms": np.array([2, 2])},
         )
 
         cov = Covariances("oas")
