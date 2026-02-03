@@ -23,6 +23,7 @@ from moabb.evaluations.utils import _create_save_path as create_save_path
 from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
+
 try:
     from codecarbon import EmissionsTracker  # noqa
 

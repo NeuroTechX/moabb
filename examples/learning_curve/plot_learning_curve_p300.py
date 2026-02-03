@@ -36,6 +36,7 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.paradigms import P300
 
+
 # getting rid of the warnings about the future (on s'en fout !)
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
