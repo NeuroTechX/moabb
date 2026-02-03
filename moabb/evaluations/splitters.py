@@ -88,7 +88,8 @@ class WithinSessionSplitter(BaseCrossValidator):
         all_index = metadata.index.values
 
         # Shuffle subjects if required
-        subjects = metadata["subject"].unique()
+        # Convert to numpy array to avoid ArrowStringArray shuffle warning
+        subjects = np.array(metadata["subject"].unique())
         if self.shuffle:
             self._rng.shuffle(subjects)
 
@@ -99,7 +100,8 @@ class WithinSessionSplitter(BaseCrossValidator):
             y_subject = y[subject_mask]
 
             # Shuffle sessions if required
-            sessions = subject_metadata["session"].unique()
+            # Convert to numpy array to avoid ArrowStringArray shuffle warning
+            sessions = np.array(subject_metadata["session"].unique())
 
             if self.shuffle:
                 self._rng.shuffle(sessions)
@@ -221,7 +223,8 @@ class WithinSubjectSplitter(BaseCrossValidator):
         all_index = metadata.index.values
 
         # Shuffle subjects if required
-        subjects = metadata["subject"].unique()
+        # Convert to numpy array to avoid ArrowStringArray shuffle warning
+        subjects = np.array(metadata["subject"].unique())
         if self.shuffle:
             self._rng.shuffle(subjects)
 
@@ -741,12 +744,21 @@ class LearningCurveSplitter(BaseCrossValidator):
                 if perm_i >= self.n_perms[di]:
                     continue
 
+                # Get the actual training indices (subset of the full training set)
+                train_idx = train_idx_full[subset_indices]
+
+                # Skip splits where training set collapses to single class
+                # (can happen with small data_size values or imbalanced datasets)
+                if len(np.unique(y[train_idx])) < 2:
+                    log.warning(
+                        "Skipping split: training set has only one class "
+                        f"(data_size={len(subset_indices)}, perm={perm_i + 1})"
+                    )
+                    continue
+
                 # Update current split metadata
                 self._current_perm = perm_i + 1  # 1-indexed for user display
                 self._current_data_size = len(subset_indices)
-
-                # Get the actual training indices (subset of the full training set)
-                train_idx = train_idx_full[subset_indices]
 
                 yield train_idx, test_idx
 

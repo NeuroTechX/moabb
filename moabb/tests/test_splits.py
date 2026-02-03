@@ -43,7 +43,8 @@ def eval_split_within_session(shuffle, random_state, data):
     rng = check_random_state(random_state) if shuffle else None
 
     all_index = metadata.index.values
-    subjects = metadata["subject"].unique()
+    # Convert to numpy array to avoid ArrowStringArray shuffle warning
+    subjects = np.array(metadata["subject"].unique())
     if shuffle:
         rng.shuffle(subjects)
 
@@ -52,7 +53,8 @@ def eval_split_within_session(shuffle, random_state, data):
 
         subject_indices = all_index[subject_mask]
         subject_metadata = metadata[subject_mask]
-        sessions = subject_metadata["session"].unique()
+        # Convert to numpy array to avoid ArrowStringArray shuffle warning
+        sessions = np.array(subject_metadata["session"].unique())
         y_subject = y[subject_mask]
 
         if shuffle:
@@ -75,7 +77,8 @@ def eval_split_within_subject(shuffle, random_state, data):
     rng = check_random_state(random_state) if shuffle else None
 
     all_index = metadata.index.values
-    subjects = metadata["subject"].unique()
+    # Convert to numpy array to avoid ArrowStringArray shuffle warning
+    subjects = np.array(metadata["subject"].unique())
     if shuffle:
         rng.shuffle(subjects)
 
