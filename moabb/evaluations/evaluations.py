@@ -1,7 +1,7 @@
 import logging
 from copy import deepcopy
 from time import perf_counter
-from typing import Optional, Union
+from typing import Union
 from uuid import uuid4
 
 import numpy as np
@@ -11,7 +11,6 @@ from sklearn.model_selection import (
     GroupKFold,
     LeaveOneGroupOut,
     StratifiedKFold,
-    StratifiedShuffleSplit,
 )
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
