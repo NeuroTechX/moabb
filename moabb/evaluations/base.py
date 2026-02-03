@@ -1,5 +1,4 @@
 import logging
-import math
 from abc import ABC, abstractmethod
 from warnings import warn
 
@@ -9,7 +8,6 @@ from sklearn.base import BaseEstimator
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
-from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.evaluations.utils import (
     Emissions,
     _convert_sklearn_params_to_optuna,
@@ -145,10 +143,6 @@ class BaseEvaluation(ABC):
         self.additional_columns = additional_columns
         if additional_columns is None:
             self.additional_columns = []
-        if self.cv_class is LearningCurveSplitter:
-            for col in ("data_size", "permutation"):
-                if col not in self.additional_columns:
-                    self.additional_columns.append(col)
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -230,28 +224,6 @@ class BaseEvaluation(ABC):
             cv_class = self.cv_class
             cv_kwargs = {} if self.cv_kwargs is None else dict(self.cv_kwargs)
         return cv_class, cv_kwargs
-
-    def _add_cv_metadata(self, res):
-        """Add learning-curve metadata to results when available."""
-        if (
-            "data_size" not in self.additional_columns
-            and "permutation" not in self.additional_columns
-        ):
-            return
-
-        meta = None
-        if hasattr(self, "cv"):
-            if hasattr(self.cv, "get_inner_splitter_metadata"):
-                meta = self.cv.get_inner_splitter_metadata()
-            elif hasattr(self.cv, "get_metadata"):
-                meta = self.cv.get_metadata()
-        if meta is None:
-            meta = {}
-
-        if "data_size" in self.additional_columns:
-            res.setdefault("data_size", meta.get("data_size", math.nan))
-        if "permutation" in self.additional_columns:
-            res.setdefault("permutation", meta.get("permutation", math.nan))
 
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
         """Runs all pipelines on all datasets.

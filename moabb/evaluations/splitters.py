@@ -235,19 +235,10 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
             # Instantiate a new internal splitter for each subject
             splitter = self.cv_class(**self._cv_kwargs)
-            self._current_splitter = splitter
 
             # Split using the cross-validation strategy across all sessions of the subject
             for train_ix, test_ix in splitter.split(subject_indices, y_subject):
                 yield subject_indices[train_ix], subject_indices[test_ix]
-
-    def get_inner_splitter_metadata(self):
-        """Get metadata from the current inner splitter if available."""
-        if hasattr(self, "_current_splitter") and hasattr(
-            self._current_splitter, "get_metadata"
-        ):
-            return self._current_splitter.get_metadata()
-        return None
 
 
 class CrossSessionSplitter(BaseCrossValidator):
@@ -495,7 +486,6 @@ class CrossSubjectSplitter(BaseCrossValidator):
         all_index = metadata.index.values
 
         splitter = self.cv_class(**self._cv_kwargs)
-        self._current_splitter = splitter
 
         # Yield the splits for the entire dataset
         for train_session_idx, test_session_idx in splitter.split(
@@ -503,14 +493,6 @@ class CrossSubjectSplitter(BaseCrossValidator):
         ):
             # returning the index
             yield all_index[train_session_idx], all_index[test_session_idx]
-
-    def get_inner_splitter_metadata(self):
-        """Get metadata from the current splitter if available."""
-        if hasattr(self, "_current_splitter") and hasattr(
-            self._current_splitter, "get_metadata"
-        ):
-            return self._current_splitter.get_metadata()
-        return None
 
 
 class LearningCurveSplitter(BaseCrossValidator):
