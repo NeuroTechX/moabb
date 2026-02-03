@@ -32,6 +32,8 @@ Enhancements
 - Ability to parameterize the scoring rule of paradigms (:gh:`948` by `Ethan Davis`_)
 - Extend scoring configuration to accept lists of metric callables, scorer objects, and tuple kwargs (e.g., `needs_proba`/`needs_threshold`) for multi-metric evaluations (:gh:`948` by `Ethan Davis`_ and `Bruno Aristimunha`_)
 - Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
+- Add ``cv_class`` and ``cv_kwargs`` parameters to all evaluation classes (WithinSessionEvaluation, CrossSessionEvaluation, CrossSubjectEvaluation) for custom cross-validation strategies (:gh:`963` by `Bruno Aristimunha`_)
+- Implement :class:`moabb.evaluations.splitters.LearningCurveSplitter` as a dedicated sklearn-compatible cross-validator for learning curves, enabling learning curve analysis with any evaluation type (:gh:`963` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -42,6 +44,8 @@ API changes
 - Enable choice of online or offline CodeCarbon through the parameterization of `codecarbon_config` when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`956` by `Ethan Davis`_)
 - Renamed stimulus channel from ``stim`` to ``STI`` in BNCI motor imagery and error-related potential datasets for clarity and BIDS compliance (by `Bruno Aristimunha`_).
 - Added four new BNCI P300/ERP dataset classes: :class:`moabb.datasets.BNCI2015_009` (AMUSE), :class:`moabb.datasets.BNCI2015_010` (RSVP), :class:`moabb.datasets.BNCI2015_012` (PASS2D), and :class:`moabb.datasets.BNCI2015_013` (ErrP) (by `Bruno Aristimunha`_).
+- Removed ``data_size`` and ``n_perms`` parameters from :class:`moabb.evaluations.WithinSessionEvaluation`. Use ``cv_class=LearningCurveSplitter`` with ``cv_kwargs=dict(data_size=..., n_perms=...)`` instead (:gh:`963` by `Bruno Aristimunha`_)
+- Learning curve results now automatically include "data_size" and "permutation" columns when using ``LearningCurveSplitter`` (:gh:`963` by `Bruno Aristimunha`_)
 
 Requirements
 ~~~~~~~~~~~~
@@ -69,6 +73,8 @@ Code health
 
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 - Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
+- Centralize CV resolution in BaseEvaluation with new ``_resolve_cv()`` method for consistent cross-validation handling across all evaluation types (:gh:`963` by `Bruno Aristimunha`_)
+- Remove redundant learning curve methods (``get_data_size_subsets()``, ``score_explicit()``, ``_evaluate_learning_curve()``) from WithinSessionEvaluation in favor of unified splitter-based approach (:gh:`963` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
