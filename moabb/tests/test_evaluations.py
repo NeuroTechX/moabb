@@ -237,7 +237,6 @@ class TestWithinSessLearningCurve:
     initialization instead of during running the evaluation
     """
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_correct_results_integrity(self):
         learning_curve_eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
@@ -247,6 +246,7 @@ class TestWithinSessLearningCurve:
                 "data_size": {"policy": "ratio", "value": np.array([0.2, 0.5])},
                 "n_perms": np.array([2, 2]),
             },
+            overwrite=True,
         )
         process_pipeline = learning_curve_eval.paradigm.make_process_pipelines(dataset)[0]
         results = [

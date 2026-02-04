@@ -19,6 +19,7 @@ from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
+    LearningCurveSplitter,
     WithinSessionSplitter,
 )
 from moabb.evaluations.utils import (
@@ -176,6 +177,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                     y_ = y[ix] if self.mne_labels else y_cv
                     meta_ = metadata[ix].reset_index(drop=True)
                     acc = list()
+                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+                    is_learning_curve = self.cv_class is LearningCurveSplitter
 
                     if _carbonfootprint:
                         # Initialise CodeCarbon per cross-validation
@@ -218,32 +221,45 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         _ensure_fitted(cvclf)
-                        # scorer always returns dict
                         score = scorer(cvclf, X_[test], y_[test])
-                        acc.append(score)
+
+                        if is_learning_curve:
+                            res = self._build_result(
+                                dataset,
+                                subject,
+                                session,
+                                name,
+                                len(train),
+                                nchan,
+                                duration,
+                                **self.cv._current_splitter.get_metadata(),
+                            )
+                            _update_result_with_scores(res, score)
+                            if _carbonfootprint:
+                                res["carbon_emission"] = (1000 * emissions,)
+                                res["codecarbon_task_name"] = task_name
+                            yield res
+                        else:
+                            acc.append(score)
 
                     if _carbonfootprint:
                         tracker.stop()
 
-                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
-                    res = {
-                        "time": duration / self.cv.n_folds,  # 5 fold CV
-                        "dataset": dataset,
-                        "subject": subject,
-                        "session": session,
-                        "n_samples": len(y_cv),  # not training sample
-                        "n_channels": nchan,
-                        "pipeline": name,
-                    }
-
-                    mean_scores = _average_scores(acc)
-                    _update_result_with_scores(res, mean_scores)
-
-                    if _carbonfootprint:
-                        res["carbon_emission"] = (1000 * emissions,)
-                        res["codecarbon_task_name"] = task_name
-
-                    yield res
+                    if not is_learning_curve:
+                        res = self._build_result(
+                            dataset,
+                            subject,
+                            session,
+                            name,
+                            len(y_cv),
+                            nchan,
+                            duration / self.cv.n_folds,
+                        )
+                        _update_result_with_scores(res, _average_scores(acc))
+                        if _carbonfootprint:
+                            res["carbon_emission"] = (1000 * emissions,)
+                            res["codecarbon_task_name"] = task_name
+                        yield res
 
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
@@ -342,6 +358,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             le = LabelEncoder()
             y = y if self.mne_labels else le.fit_transform(y)
             groups = metadata.session.values
+            nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
             for name, clf in run_pipes.items():
                 # we want to store a results per session
@@ -400,18 +417,16 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                     _ensure_fitted(cvclf)
                     model_list.append(cvclf)
-                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
-                    res = {
-                        "time": duration,
-                        "dataset": dataset,
-                        "subject": subject,
-                        "session": groups[test][0],
-                        "n_samples": len(train),
-                        "n_channels": nchan,
-                        "pipeline": name,
-                    }
-
+                    res = self._build_result(
+                        dataset,
+                        subject,
+                        groups[test][0],
+                        name,
+                        len(train),
+                        nchan,
+                        duration,
+                    )
                     _score_and_update(res, scorer, cvclf, X[test], y[test])
 
                     if _carbonfootprint:
@@ -530,6 +545,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         groups = metadata.subject.values
         sessions = metadata.session.values
         n_subjects = len(dataset.subject_list)
+        nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
         # perform leave one subject out CV
         if self.n_splits is None:
@@ -609,18 +625,16 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # Evaluate on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
-                    res = {
-                        "time": duration,
-                        "dataset": dataset,
-                        "subject": subject,
-                        "session": session,
-                        "n_samples": len(train),
-                        "n_channels": nchan,
-                        "pipeline": name,
-                    }
-
+                    res = self._build_result(
+                        dataset,
+                        subject,
+                        session,
+                        name,
+                        len(train),
+                        nchan,
+                        duration,
+                    )
                     _score_and_update(res, scorer, cvclf, X[test[ix]], y[test[ix]])
 
                     if _carbonfootprint:

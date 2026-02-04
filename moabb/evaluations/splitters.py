@@ -122,20 +122,6 @@ class WithinSessionSplitter(BaseCrossValidator):
 
                     yield indices[train_ix], indices[test_ix]
 
-    def get_inner_splitter_metadata(self):
-        """Get metadata from the current inner splitter if available.
-
-        Returns
-        -------
-        metadata : dict or None
-            Metadata dict if the inner splitter supports it, None otherwise.
-        """
-        if hasattr(self, "_current_splitter") and hasattr(
-            self._current_splitter, "get_metadata"
-        ):
-            return self._current_splitter.get_metadata()
-        return None
-
 
 class WithinSubjectSplitter(BaseCrossValidator):
     """Data splitter for within subject evaluation.
@@ -235,6 +221,9 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
             # Instantiate a new internal splitter for each subject
             splitter = self.cv_class(**self._cv_kwargs)
+
+            # Store reference to the current inner splitter for metadata access
+            self._current_splitter = splitter
 
             # Split using the cross-validation strategy across all sessions of the subject
             for train_ix, test_ix in splitter.split(subject_indices, y_subject):
@@ -487,6 +476,9 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         splitter = self.cv_class(**self._cv_kwargs)
 
+        # Store reference to the current inner splitter for metadata access
+        self._current_splitter = splitter
+
         # Yield the splits for the entire dataset
         for train_session_idx, test_session_idx in splitter.split(
             X=all_index, y=y, groups=metadata["subject"]
@@ -558,6 +550,7 @@ class LearningCurveSplitter(BaseCrossValidator):
     """
 
     VALID_POLICIES = ["per_class", "ratio"]
+    metadata_columns = ("data_size", "permutation")
 
     def __init__(
         self,

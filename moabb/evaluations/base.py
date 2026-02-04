@@ -1,4 +1,5 @@
 import logging
+import math
 from abc import ABC, abstractmethod
 from warnings import warn
 
@@ -144,6 +145,11 @@ class BaseEvaluation(ABC):
         if additional_columns is None:
             self.additional_columns = []
 
+        if self.cv_class is not None and hasattr(self.cv_class, "metadata_columns"):
+            for col in self.cv_class.metadata_columns:
+                if col not in self.additional_columns:
+                    self.additional_columns.append(col)
+
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
         if (self.time_out != 60 * 15) and not self.optuna:
@@ -224,6 +230,41 @@ class BaseEvaluation(ABC):
             cv_class = self.cv_class
             cv_kwargs = {} if self.cv_kwargs is None else dict(self.cv_kwargs)
         return cv_class, cv_kwargs
+
+    def _build_result(
+        self,
+        dataset,
+        subject,
+        session,
+        pipeline,
+        n_samples,
+        n_channels,
+        duration,
+        **extra,
+    ):
+        """Build a result dictionary with all required columns.
+
+        This is the single place where the evaluation result schema is defined.
+        All evaluation subclasses should use this instead of constructing the
+        dict manually, so the schema stays consistent when columns are added
+        or evaluations are merged.
+
+        Any ``additional_columns`` not provided via *extra* are defaulted to
+        NaN so that ``Results.add()`` never fails on a missing key.
+        """
+        res = {
+            "time": duration,
+            "dataset": dataset,
+            "subject": subject,
+            "session": session,
+            "n_samples": n_samples,
+            "n_channels": n_channels,
+            "pipeline": pipeline,
+        }
+        for col in self.additional_columns:
+            if col not in res:
+                res[col] = extra.get(col, math.nan)
+        return res
 
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
         """Runs all pipelines on all datasets.
