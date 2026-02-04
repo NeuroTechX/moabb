@@ -381,6 +381,7 @@ class CrossSessionSplitter(BaseCrossValidator):
 
             # by default, I am using LeaveOneGroupOut
             splitter = self.cv_class(**cv_kwargs)
+            self._current_splitter = splitter
 
             # Yield the splits for a given subject
             for train_session_idx, test_session_idx in splitter.split(

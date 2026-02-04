@@ -552,3 +552,45 @@ def test_learning_curve_as_cv_class(splitter, data):
         assert len(test) > 0
         # Check no overlap between train and test
         assert len(set(train) & set(test)) == 0
+
+
+@pytest.mark.parametrize(
+    "splitter_cls",
+    [
+        WithinSessionSplitter,
+        WithinSubjectSplitter,
+        CrossSessionSplitter,
+        CrossSubjectSplitter,
+    ],
+)
+def test_current_splitter_is_set(splitter_cls, data):
+    """Test that _current_splitter is set after split() for all splitters."""
+    _, y, metadata = data
+
+    data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
+    n_perms = np.array([2, 1])
+
+    extra_kwargs = {}
+    if splitter_cls == CrossSessionSplitter:
+        extra_kwargs["shuffle"] = True
+
+    split = splitter_cls(
+        cv_class=LearningCurveSplitter,
+        data_size=data_size,
+        n_perms=n_perms,
+        test_size=0.2,
+        random_state=42,
+        **extra_kwargs,
+    )
+
+    splits = list(split.split(y, metadata))
+    assert len(splits) > 0
+
+    # Verify _current_splitter is set and accessible
+    assert hasattr(split, "_current_splitter")
+    assert split._current_splitter is not None
+
+    # Verify metadata is accessible through _current_splitter
+    meta = split._current_splitter.get_metadata()
+    assert meta["data_size"] is not None
+    assert meta["permutation"] is not None
