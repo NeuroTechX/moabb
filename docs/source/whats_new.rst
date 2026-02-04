@@ -65,6 +65,8 @@ Bugs
 - Prevent Python mutable default argument when defining CodeCarbon configurations (:gh:`956` by `Ethan Davis`_)
 - Fix copytree FileExistsError in BrainInvaders2013a download by adding dirs_exist_ok=True (by `Bruno Aristimunha`_)
 - Ensure optional additional scoring columns in evaluation results (:gh:`957` by `Ethan Davis`_)
+- Fix pandas ``ArrowStringArray`` shuffle warning by converting ``.unique()`` results to numpy arrays in splitters, avoiding issues with newer pandas versions (:gh:`963` by `Bruno Aristimunha`_)
+- ``LearningCurveSplitter`` now skips training splits that collapse to a single class (e.g., with very small ``data_size``) and emits a ``RuntimeWarning`` instead of producing NaN results (:gh:`963` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
@@ -73,8 +75,16 @@ Code health
 
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 - Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
-- Centralize CV resolution in BaseEvaluation with new ``_resolve_cv()`` method for consistent cross-validation handling across all evaluation types (:gh:`963` by `Bruno Aristimunha`_)
+- Centralize CV resolution in BaseEvaluation with new ``_resolve_cv()`` method for consistent cross-validation handling across all evaluation types. Add ``_build_result()`` and ``_build_scored_result()`` helpers to centralize result dict construction across WithinSession, CrossSession, and CrossSubject evaluations, replacing manual dict assembly in each (:gh:`963` by `Bruno Aristimunha`_)
 - Remove redundant learning curve methods (``get_data_size_subsets()``, ``score_explicit()``, ``_evaluate_learning_curve()``) from WithinSessionEvaluation in favor of unified splitter-based approach (:gh:`963` by `Bruno Aristimunha`_)
+- Generic metadata column registration: ``LearningCurveSplitter`` declares a ``metadata_columns`` class attribute, and ``BaseEvaluation`` auto-detects it via ``hasattr(cv_class, "metadata_columns")`` instead of hardcoding class checks, making it extensible to future custom splitters (:gh:`963` by `Bruno Aristimunha`_)
+- Fix ``get_n_splits()`` delegation in ``WithinSessionSplitter`` and ``WithinSubjectSplitter`` to properly forward to the inner ``cv_class.get_n_splits()`` instead of hardcoding ``n_folds``, giving correct split counts when using custom CV classes like ``LearningCurveSplitter`` (:gh:`963` by `Bruno Aristimunha`_)
+- Remove duplicate ``get_inner_splitter_metadata()`` from ``WithinSessionSplitter``, ``WithinSubjectSplitter``, and ``CrossSubjectSplitter``. All splitters now store a ``_current_splitter`` reference, and ``BaseEvaluation._build_scored_result()`` reads metadata generically from it (:gh:`963` by `Bruno Aristimunha`_)
+- Extract ``_fit_cv()``, ``_maybe_save_model_cv()``, and ``_attach_emissions()`` into ``BaseEvaluation``, removing duplicated model-fitting, model-saving, and carbon-tracking boilerplate from ``WithinSessionEvaluation``, ``CrossSessionEvaluation``, and ``CrossSubjectEvaluation`` (:gh:`963` by `Bruno Aristimunha`_)
+- Extract ``_load_data()`` helper into ``BaseEvaluation`` to centralize data loading logic (epoch requirement checking and ``paradigm.get_data()`` call) that was duplicated across all three evaluation classes (:gh:`963` by `Bruno Aristimunha`_)
+- Extract ``_get_nchan()`` helper into ``BaseEvaluation`` to replace repeated channel count extraction (``X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]``) in all evaluation classes (:gh:`963` by `Bruno Aristimunha`_)
+- Move ``_pipeline_requires_epochs()`` from ``evaluations.py`` to ``utils.py`` for shared access by ``BaseEvaluation._load_data()`` (:gh:`963` by `Bruno Aristimunha`_)
+- Move ``WithinSessionSplitter`` creation outside the per-session loop in ``WithinSessionEvaluation``, since splitter parameters do not change per session (:gh:`963` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
