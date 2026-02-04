@@ -472,6 +472,27 @@ def _score_and_update(res, scorer, model, X, y_true):
     return _update_result_with_scores(res, score)
 
 
+def _pipeline_requires_epochs(pipeline):
+    """Check if any step in the pipeline requires MNE Epochs objects."""
+    from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
+
+    # Handle non-pipeline classifiers (like DummyClassifier)
+    if not hasattr(pipeline, "steps"):
+        return isinstance(pipeline, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA))
+
+    for name, step in pipeline.steps:
+        if isinstance(step, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA)):
+            return True
+    return False
+
+
+def _get_nchan(X):
+    """Extract number of channels from data (Epochs or ndarray)."""
+    from mne.epochs import BaseEpochs
+
+    return X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+
+
 class Emissions:
     def __init__(self, codecarbon_config=None):
         self.codecarbon_config = codecarbon_config

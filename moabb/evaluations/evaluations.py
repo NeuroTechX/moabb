@@ -3,7 +3,6 @@ from copy import deepcopy
 from typing import Union
 
 import numpy as np
-from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.model_selection import (
     GroupKFold,
@@ -24,19 +23,6 @@ from moabb.evaluations.utils import (
     _create_scorer,
     _update_result_with_scores,
 )
-from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
-
-
-def _pipeline_requires_epochs(pipeline):
-    """Check if any step in the pipeline requires MNE Epochs objects."""
-    # Handle non-pipeline classifiers (like DummyClassifier)
-    if not hasattr(pipeline, "steps"):
-        return isinstance(pipeline, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA))
-
-    for name, step in pipeline.steps:
-        if isinstance(step, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA)):
-            return True
-    return False
 
 
 try:
@@ -116,35 +102,26 @@ class WithinSessionEvaluation(BaseEvaluation):
             if len(run_pipes) == 0:
                 continue
 
-            # get the data
-            # Force return_epochs=True if any pipeline requires MNE Epochs objects
-            requires_epochs = any(
-                _pipeline_requires_epochs(clf) for clf in run_pipes.values()
-            )
-            return_epochs = True if requires_epochs else self.return_epochs
-            # For pipelines requiring epochs, don't pass process_pipeline to ensure it's created
-            # with return_epochs=True
-            X, y, metadata = self.paradigm.get_data(
-                dataset=dataset,
+            X, y, metadata = self._load_data(
+                dataset,
+                run_pipes,
+                process_pipeline,
+                postprocess_pipeline,
                 subjects=[subject],
-                return_epochs=return_epochs,
-                return_raws=self.return_raws,
-                cache_config=self.cache_config,
-                postprocess_pipeline=postprocess_pipeline,
-                process_pipelines=None if requires_epochs else [process_pipeline],
             )
+
+            cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
+            self.cv = WithinSessionSplitter(
+                n_folds=5,
+                shuffle=True,
+                random_state=self.random_state,
+                cv_class=cv_class,
+                **cv_kwargs,
+            )
+
             # iterate over sessions
             for session in np.unique(metadata.session):
                 ix = metadata.session == session
-
-                cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
-                self.cv = WithinSessionSplitter(
-                    n_folds=5,
-                    shuffle=True,
-                    random_state=self.random_state,
-                    cv_class=cv_class,
-                    **cv_kwargs,
-                )
 
                 for name, clf in run_pipes.items():
                     inner_cv = StratifiedKFold(
@@ -167,7 +144,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     meta_ = metadata[ix].reset_index(drop=True)
                     acc = list()
                     durations = []
-                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+                    nchan = self._get_nchan(X)
 
                     if _carbonfootprint:
                         # Initialise CodeCarbon per cross-validation
@@ -318,27 +295,17 @@ class CrossSessionEvaluation(BaseEvaluation):
                 log.info(f"Subject {subject} already processed")
                 continue
 
-            # get the data
-            # Force return_epochs=True if any pipeline requires MNE Epochs objects
-            requires_epochs = any(
-                _pipeline_requires_epochs(clf) for clf in run_pipes.values()
-            )
-            return_epochs = True if requires_epochs else self.return_epochs
-            # For pipelines requiring epochs, don't pass process_pipeline to ensure it's created
-            # with return_epochs=True
-            X, y, metadata = self.paradigm.get_data(
-                dataset=dataset,
+            X, y, metadata = self._load_data(
+                dataset,
+                run_pipes,
+                process_pipeline,
+                postprocess_pipeline,
                 subjects=[subject],
-                return_epochs=return_epochs,
-                return_raws=self.return_raws,
-                cache_config=self.cache_config,
-                postprocess_pipeline=postprocess_pipeline,
-                process_pipelines=None if requires_epochs else [process_pipeline],
             )
             le = LabelEncoder()
             y = y if self.mne_labels else le.fit_transform(y)
             groups = metadata.session.values
-            nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+            nchan = self._get_nchan(X)
 
             for name, clf in run_pipes.items():
                 # we want to store a results per session
@@ -490,20 +457,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if len(run_pipes) == 0:
             return
 
-        # Force return_epochs=True if any pipeline requires MNE Epochs objects
-        requires_epochs = any(
-            _pipeline_requires_epochs(clf) for clf in run_pipes.values()
-        )
-        return_epochs = True if requires_epochs else self.return_epochs
-        # For pipelines requiring epochs, don't pass process_pipeline to ensure it's created
-        # with return_epochs=True
-        X, y, metadata = self.paradigm.get_data(
-            dataset=dataset,
-            return_epochs=return_epochs,
-            return_raws=self.return_raws,
-            cache_config=self.cache_config,
-            postprocess_pipeline=postprocess_pipeline,
-            process_pipelines=None if requires_epochs else [process_pipeline],
+        X, y, metadata = self._load_data(
+            dataset,
+            run_pipes,
+            process_pipeline,
+            postprocess_pipeline,
         )
         le = LabelEncoder()
         y = y if self.mne_labels else le.fit_transform(y)
@@ -512,7 +470,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         groups = metadata.subject.values
         sessions = metadata.session.values
         n_subjects = len(dataset.subject_list)
-        nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+        nchan = self._get_nchan(X)
 
         # perform leave one subject out CV
         if self.n_splits is None:

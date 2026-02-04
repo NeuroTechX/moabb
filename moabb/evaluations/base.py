@@ -18,6 +18,8 @@ from moabb.evaluations.utils import (
     _create_scorer,
     _DictScorer,
     _ensure_fitted,
+    _get_nchan,
+    _pipeline_requires_epochs,
     _save_model_cv,
     _score_and_update,
     check_search_available,
@@ -236,6 +238,59 @@ class BaseEvaluation(ABC):
             cv_class = self.cv_class
             cv_kwargs = dict(self.cv_kwargs)
         return cv_class, cv_kwargs
+
+    def _load_data(
+        self,
+        dataset,
+        run_pipes,
+        process_pipeline,
+        postprocess_pipeline,
+        subjects=None,
+    ):
+        """Load data for an evaluation, handling epoch requirements.
+
+        Parameters
+        ----------
+        dataset : BaseDataset
+            The dataset to load.
+        run_pipes : dict
+            Pipelines to run (used to check epoch requirements).
+        process_pipeline : Pipeline
+            The processing pipeline.
+        postprocess_pipeline : Pipeline | None
+            Optional post-processing pipeline.
+        subjects : list | None
+            List of subjects to load. If None, loads all subjects.
+
+        Returns
+        -------
+        X : array-like or Epochs
+            The loaded data.
+        y : array-like
+            The labels.
+        metadata : DataFrame
+            The metadata.
+        """
+        requires_epochs = any(
+            _pipeline_requires_epochs(clf) for clf in run_pipes.values()
+        )
+        return_epochs = True if requires_epochs else self.return_epochs
+        kwargs = dict(
+            dataset=dataset,
+            return_epochs=return_epochs,
+            return_raws=self.return_raws,
+            cache_config=self.cache_config,
+            postprocess_pipeline=postprocess_pipeline,
+            process_pipelines=None if requires_epochs else [process_pipeline],
+        )
+        if subjects is not None:
+            kwargs["subjects"] = subjects
+        return self.paradigm.get_data(**kwargs)
+
+    @staticmethod
+    def _get_nchan(X):
+        """Extract number of channels from data (Epochs or ndarray)."""
+        return _get_nchan(X)
 
     def _build_scored_result(
         self,
