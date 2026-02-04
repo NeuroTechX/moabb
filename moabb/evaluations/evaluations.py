@@ -19,7 +19,6 @@ from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
-    LearningCurveSplitter,
     WithinSessionSplitter,
 )
 from moabb.evaluations.utils import (
@@ -172,7 +171,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                     meta_ = metadata[ix].reset_index(drop=True)
                     acc = list()
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
-                    is_learning_curve = self.cv_class is LearningCurveSplitter
 
                     if _carbonfootprint:
                         # Initialise CodeCarbon per cross-validation
@@ -182,6 +180,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     # Create scorer once before CV loop
                     scorer = _create_scorer(grid_clf, self.paradigm.scoring)
 
+                    per_split = hasattr(self.cv.cv_class, "get_metadata")
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
 
@@ -215,8 +214,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         _ensure_fitted(cvclf)
-
-                        if is_learning_curve:
+                        if per_split:
                             res = self._build_scored_result(
                                 dataset,
                                 subject,
@@ -241,7 +239,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     if _carbonfootprint:
                         tracker.stop()
 
-                    if not is_learning_curve:
+                    if not per_split:
                         res = self._build_result(
                             dataset,
                             subject,

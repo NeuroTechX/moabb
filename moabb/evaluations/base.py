@@ -232,14 +232,6 @@ class BaseEvaluation(ABC):
             cv_kwargs = {} if self.cv_kwargs is None else dict(self.cv_kwargs)
         return cv_class, cv_kwargs
 
-    def _get_split_metadata(self):
-        """Return metadata from the current inner splitter if available."""
-        splitter = getattr(getattr(self, "cv", None), "_current_splitter", None)
-        if splitter is None or not hasattr(splitter, "get_metadata"):
-            return {}
-        metadata = splitter.get_metadata()
-        return {} if metadata is None else dict(metadata)
-
     def _build_scored_result(
         self,
         dataset,
@@ -253,10 +245,17 @@ class BaseEvaluation(ABC):
         model,
         X_test,
         y_test,
+        split_metadata=None,
         **extra,
     ):
         """Build a result dict and score it in one place."""
-        metadata = self._get_split_metadata()
+        metadata = {}
+        if split_metadata is None:
+            splitter = getattr(getattr(self, "cv", None), "_current_splitter", None)
+            if splitter is not None and hasattr(splitter, "get_metadata"):
+                split_metadata = splitter.get_metadata()
+        if split_metadata:
+            metadata.update(split_metadata)
         metadata.update(extra)
         res = self._build_result(
             dataset,
