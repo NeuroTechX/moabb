@@ -234,7 +234,7 @@ class BaseEvaluation(ABC):
             cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
         else:
             cv_class = self.cv_class
-            cv_kwargs = {} if self.cv_kwargs is None else dict(self.cv_kwargs)
+            cv_kwargs = dict(self.cv_kwargs)
         return cv_class, cv_kwargs
 
     def _build_scored_result(
@@ -272,7 +272,13 @@ class BaseEvaluation(ABC):
             duration,
             **metadata,
         )
-        return _score_and_update(res, scorer, model, X_test, y_test)
+        try:
+            return _score_and_update(res, scorer, model, X_test, y_test)
+        except ValueError as err:
+            if self.error_score == "raise":
+                raise err
+            res["score"] = self.error_score
+            return res
 
     def _fit_cv(self, model, X_train, y_train, tracker=None):
         """Fit a model for a CV fold with optional CodeCarbon tracking."""

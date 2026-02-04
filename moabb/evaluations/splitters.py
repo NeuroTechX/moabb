@@ -85,10 +85,18 @@ class WithinSessionSplitter(BaseCrossValidator):
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
         splitter = self.cv_class(**self._cv_kwargs)
+        inner_splits = None
         try:
             inner_splits = splitter.get_n_splits()
         except TypeError:
-            inner_splits = splitter.get_n_splits(None, None, None)
+            try:
+                inner_splits = splitter.get_n_splits(None, None, None)
+            except (TypeError, ValueError):
+                inner_splits = None
+        except ValueError:
+            inner_splits = None
+        if inner_splits is None:
+            inner_splits = self.n_folds
         return inner_splits * num_sessions_subjects
 
     def split(self, y, metadata):
@@ -211,10 +219,18 @@ class WithinSubjectSplitter(BaseCrossValidator):
         """
         num_subjects = metadata["subject"].nunique()
         splitter = self.cv_class(**self._cv_kwargs)
+        inner_splits = None
         try:
             inner_splits = splitter.get_n_splits()
         except TypeError:
-            inner_splits = splitter.get_n_splits(None, None, None)
+            try:
+                inner_splits = splitter.get_n_splits(None, None, None)
+            except (TypeError, ValueError):
+                inner_splits = None
+        except ValueError:
+            inner_splits = None
+        if inner_splits is None:
+            inner_splits = self.n_folds
         return inner_splits * num_subjects
 
     def split(self, y, metadata):
@@ -640,7 +656,8 @@ class LearningCurveSplitter(BaseCrossValidator):
         Returns
         -------
         n_splits : int
-            Total number of splits.
+            Total number of splits (upper bound; can be lower if some splits
+            are skipped due to single-class training sets).
         """
         return self.n_splits_
 

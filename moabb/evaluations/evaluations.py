@@ -137,15 +137,16 @@ class WithinSessionEvaluation(BaseEvaluation):
             for session in np.unique(metadata.session):
                 ix = metadata.session == session
 
+                cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
+                self.cv = WithinSessionSplitter(
+                    n_folds=5,
+                    shuffle=True,
+                    random_state=self.random_state,
+                    cv_class=cv_class,
+                    **cv_kwargs,
+                )
+
                 for name, clf in run_pipes.items():
-                    cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
-                    self.cv = WithinSessionSplitter(
-                        n_folds=5,
-                        shuffle=True,
-                        random_state=self.random_state,
-                        cv_class=cv_class,
-                        **cv_kwargs,
-                    )
                     inner_cv = StratifiedKFold(
                         3, shuffle=True, random_state=self.random_state
                     )
@@ -165,6 +166,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     y_ = y[ix] if self.mne_labels else y_cv
                     meta_ = metadata[ix].reset_index(drop=True)
                     acc = list()
+                    durations = []
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
 
                     if _carbonfootprint:
@@ -176,6 +178,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                     scorer = _create_scorer(grid_clf, self.paradigm.scoring)
 
                     per_split = hasattr(self.cv.cv_class, "get_metadata")
+                    # Initialize variables for edge case where CV split returns zero iterations
+                    duration = 0
+                    emissions = np.nan
+                    task_name = None
                     for cv_ind, (train, test) in enumerate(self.cv.split(y_, meta_)):
                         cvclf = clone(grid_clf)
 
@@ -185,6 +191,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                             y_[train],
                             tracker if _carbonfootprint else None,
                         )
+                        durations.append(duration)
                         self._maybe_save_model_cv(
                             cvclf,
                             dataset,
@@ -219,6 +226,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         tracker.stop()
 
                     if not per_split:
+                        avg_duration = float(np.mean(durations)) if durations else 0.0
                         res = self._build_result(
                             dataset,
                             subject,
@@ -226,7 +234,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                             name,
                             len(y_cv),
                             nchan,
-                            duration / self.cv.n_folds,
+                            avg_duration,
                         )
                         _update_result_with_scores(res, _average_scores(acc))
                         if _carbonfootprint:
@@ -357,7 +365,6 @@ class CrossSessionEvaluation(BaseEvaluation):
                 scorer = _create_scorer(grid_clf, self.paradigm.scoring)
 
                 for cv_ind, (train, test) in enumerate(self.cv.split(y, metadata)):
-                    model_list = []
                     cvclf = clone(grid_clf)
 
                     duration, emissions, task_name = self._fit_cv(
@@ -375,7 +382,6 @@ class CrossSessionEvaluation(BaseEvaluation):
                         cv_ind,
                         eval_type="CrossSession",
                     )
-                    model_list.append(cvclf)
 
                     res = self._build_scored_result(
                         dataset,

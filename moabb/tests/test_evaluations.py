@@ -294,7 +294,6 @@ class TestWithinSessLearningCurve:
         with pytest.raises(ValueError):
             evaluation.process(pipelines)
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_data_sanity(self):
         # need this helper to iterate over the generator
         def run_evaluation(eval, dataset, pipelines):
@@ -310,6 +309,7 @@ class TestWithinSessLearningCurve:
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             cv_class=LearningCurveSplitter,
+            overwrite=True,
         )
         should_work = ev.WithinSessionEvaluation(
             cv_kwargs={
