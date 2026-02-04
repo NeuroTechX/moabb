@@ -476,7 +476,7 @@ def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
     if simplify:
         effect_df.columns = effect_df.columns.map(_simplify_names)
         sig_df.columns = sig_df.columns.map(_simplify_names)
-    annot_df = effect_df.copy()
+    annot_df = effect_df.copy().astype(object)
     for row in annot_df.index:
         for col in annot_df.columns:
             if effect_df.loc[row, col] > 0:
@@ -575,10 +575,10 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     _min = 0
     _max = 0
     for ind, d in enumerate(dsets):
-        nsub = float(df_fw.loc[df_fw.dataset == d, "nsub"])
+        nsub = df_fw.loc[df_fw.dataset == d, "nsub"].item()
         t_dof = nsub - 1
         ci.append(t.ppf(0.95, t_dof) / np.sqrt(nsub))
-        v = float(df_fw.loc[df_fw.dataset == d, "smd"])
+        v = df_fw.loc[df_fw.dataset == d, "smd"].item()
         if v > 0:
             p = df_fw.loc[df_fw.dataset == d, "p"].item()
             if p < 0.05:

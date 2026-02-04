@@ -145,7 +145,7 @@ results = evaluation.process(pipelines)
 # in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.
 
 print("Averaging the session performance:")
-print(results.groupby("pipeline").mean("score")[["score", "time"]])
+print(results.groupby("pipeline")[["score", "time"]].mean())
 
 ###############################################################################
 # Plot Results
