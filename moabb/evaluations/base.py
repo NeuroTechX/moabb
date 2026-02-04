@@ -1,6 +1,8 @@
 import logging
 import math
 from abc import ABC, abstractmethod
+from time import perf_counter
+from uuid import uuid4
 from warnings import warn
 
 import pandas as pd
@@ -12,8 +14,11 @@ from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import (
     Emissions,
     _convert_sklearn_params_to_optuna,
+    _create_save_path,
     _create_scorer,
     _DictScorer,
+    _ensure_fitted,
+    _save_model_cv,
     _score_and_update,
     check_search_available,
 )
@@ -268,6 +273,44 @@ class BaseEvaluation(ABC):
             **metadata,
         )
         return _score_and_update(res, scorer, model, X_test, y_test)
+
+    def _fit_cv(self, model, X_train, y_train, tracker=None):
+        """Fit a model for a CV fold with optional CodeCarbon tracking."""
+        task_name = None
+        emissions = math.nan
+        if tracker is not None:
+            task_name = str(uuid4())
+            tracker.start_task(task_name)
+        t_start = perf_counter()
+        model.fit(X_train, y_train)
+        duration = perf_counter() - t_start
+        if tracker is not None:
+            emissions_data = tracker.stop_task()
+            emissions = emissions_data.emissions if emissions_data else math.nan
+        _ensure_fitted(model)
+        return duration, emissions, task_name
+
+    def _maybe_save_model_cv(
+        self, model, dataset, subject, session, name, cv_ind, eval_type
+    ):
+        """Save model for a CV fold when saving is enabled."""
+        if self.hdf5_path is None or not self.save_model:
+            return
+        model_save_path = _create_save_path(
+            hdf5_path=self.hdf5_path,
+            code=dataset.code,
+            subject=subject,
+            session=session,
+            name=name,
+            grid=self.search,
+            eval_type=eval_type,
+        )
+        _save_model_cv(model=model, save_path=model_save_path, cv_index=str(cv_ind))
+
+    @staticmethod
+    def _attach_emissions(res, emissions, task_name):
+        res["carbon_emission"] = (1000 * emissions,)
+        res["codecarbon_task_name"] = task_name
 
     def _build_result(
         self,

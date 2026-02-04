@@ -6,6 +6,7 @@ from warnings import warn
 import numpy as np
 from sklearn.model_selection import (
     BaseCrossValidator,
+    GroupShuffleSplit,
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
@@ -697,7 +698,8 @@ class LearningCurveSplitter(BaseCrossValidator):
         y : array-like of shape (n_samples,)
             Target labels.
         groups : array-like of shape (n_samples,), optional
-            Ignored.
+            Group labels. If provided, splits are made on groups (no group
+            appears in both train and test).
 
         Yields
         ------
@@ -707,18 +709,30 @@ class LearningCurveSplitter(BaseCrossValidator):
             The testing set indices for that split.
         """
         y = np.asarray(y)
+        if groups is not None:
+            groups = np.asarray(groups)
 
-        # Create StratifiedShuffleSplit for the base train/test splits
-        # Use the maximum number of permutations
+        # Create base train/test splits
+        # Use StratifiedShuffleSplit when no groups are provided, otherwise
+        # split by groups to avoid session/subject leakage.
         max_perms = int(np.max(self.n_perms))
-        sss = StratifiedShuffleSplit(
-            n_splits=max_perms,
-            test_size=self.test_size,
-            random_state=self.random_state,
-        )
+        if groups is None:
+            splitter = StratifiedShuffleSplit(
+                n_splits=max_perms,
+                test_size=self.test_size,
+                random_state=self.random_state,
+            )
+            base_splits = splitter.split(X, y)
+        else:
+            splitter = GroupShuffleSplit(
+                n_splits=max_perms,
+                test_size=self.test_size,
+                random_state=self.random_state,
+            )
+            base_splits = splitter.split(X, y, groups=groups)
 
         # Generate all permutations
-        for perm_i, (train_idx_full, test_idx) in enumerate(sss.split(X, y)):
+        for perm_i, (train_idx_full, test_idx) in enumerate(base_splits):
             # For this permutation, get the training data labels
             y_train_full = y[train_idx_full]
 

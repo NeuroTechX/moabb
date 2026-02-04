@@ -552,6 +552,20 @@ def test_learning_curve_as_cv_class(splitter, data):
         assert len(test) > 0
         # Check no overlap between train and test
         assert len(set(train) & set(test)) == 0
+        if splitter == CrossSessionSplitter:
+            train_meta = metadata.loc[train]
+            test_meta = metadata.loc[test]
+            train_subjects = set(train_meta["subject"])
+            test_subjects = set(test_meta["subject"])
+            assert len(train_subjects) == 1
+            assert train_subjects == test_subjects
+            train_sessions = set(train_meta["session"])
+            test_sessions = set(test_meta["session"])
+            assert train_sessions.isdisjoint(test_sessions)
+        elif splitter == CrossSubjectSplitter:
+            train_subjects = set(metadata.loc[train]["subject"])
+            test_subjects = set(metadata.loc[test]["subject"])
+            assert train_subjects.isdisjoint(test_subjects)
 
 
 @pytest.mark.parametrize(
