@@ -28,7 +28,6 @@ from moabb.evaluations.utils import (
     _create_scorer,
     _ensure_fitted,
     _save_model_cv,
-    _score_and_update,
     _update_result_with_scores,
 )
 from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
@@ -102,11 +101,6 @@ class WithinSessionEvaluation(BaseEvaluation):
     cv_kwargs: dict, default=None
         Keyword arguments for cv_class.
 
-    Notes
-    -----
-    .. deprecated:: 1.2.0
-        The ``data_size`` and ``n_perms`` parameters are deprecated.
-        Use ``cv_class=LearningCurveSplitter`` with ``cv_kwargs`` instead.
     """
 
     # flake8: noqa: C901
@@ -221,10 +215,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                             )
 
                         _ensure_fitted(cvclf)
-                        score = scorer(cvclf, X_[test], y_[test])
 
                         if is_learning_curve:
-                            res = self._build_result(
+                            res = self._build_scored_result(
                                 dataset,
                                 subject,
                                 session,
@@ -232,14 +225,17 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 len(train),
                                 nchan,
                                 duration,
-                                **self.cv._current_splitter.get_metadata(),
+                                scorer,
+                                cvclf,
+                                X_[test],
+                                y_[test],
                             )
-                            _update_result_with_scores(res, score)
                             if _carbonfootprint:
                                 res["carbon_emission"] = (1000 * emissions,)
                                 res["codecarbon_task_name"] = task_name
                             yield res
                         else:
+                            score = scorer(cvclf, X_[test], y_[test])
                             acc.append(score)
 
                     if _carbonfootprint:
@@ -418,7 +414,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     _ensure_fitted(cvclf)
                     model_list.append(cvclf)
 
-                    res = self._build_result(
+                    res = self._build_scored_result(
                         dataset,
                         subject,
                         groups[test][0],
@@ -426,8 +422,11 @@ class CrossSessionEvaluation(BaseEvaluation):
                         len(train),
                         nchan,
                         duration,
+                        scorer,
+                        cvclf,
+                        X[test],
+                        y[test],
                     )
-                    _score_and_update(res, scorer, cvclf, X[test], y[test])
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
@@ -626,7 +625,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
 
-                    res = self._build_result(
+                    res = self._build_scored_result(
                         dataset,
                         subject,
                         session,
@@ -634,8 +633,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         len(train),
                         nchan,
                         duration,
+                        scorer,
+                        cvclf,
+                        X[test[ix]],
+                        y[test[ix]],
                     )
-                    _score_and_update(res, scorer, cvclf, X[test[ix]], y[test[ix]])
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)

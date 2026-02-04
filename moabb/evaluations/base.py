@@ -14,6 +14,7 @@ from moabb.evaluations.utils import (
     _convert_sklearn_params_to_optuna,
     _create_scorer,
     _DictScorer,
+    _score_and_update,
     check_search_available,
 )
 from moabb.paradigms.base import BaseParadigm
@@ -230,6 +231,44 @@ class BaseEvaluation(ABC):
             cv_class = self.cv_class
             cv_kwargs = {} if self.cv_kwargs is None else dict(self.cv_kwargs)
         return cv_class, cv_kwargs
+
+    def _get_split_metadata(self):
+        """Return metadata from the current inner splitter if available."""
+        splitter = getattr(getattr(self, "cv", None), "_current_splitter", None)
+        if splitter is None or not hasattr(splitter, "get_metadata"):
+            return {}
+        metadata = splitter.get_metadata()
+        return {} if metadata is None else dict(metadata)
+
+    def _build_scored_result(
+        self,
+        dataset,
+        subject,
+        session,
+        pipeline,
+        n_samples,
+        n_channels,
+        duration,
+        scorer,
+        model,
+        X_test,
+        y_test,
+        **extra,
+    ):
+        """Build a result dict and score it in one place."""
+        metadata = self._get_split_metadata()
+        metadata.update(extra)
+        res = self._build_result(
+            dataset,
+            subject,
+            session,
+            pipeline,
+            n_samples,
+            n_channels,
+            duration,
+            **metadata,
+        )
+        return _score_and_update(res, scorer, model, X_test, y_test)
 
     def _build_result(
         self,

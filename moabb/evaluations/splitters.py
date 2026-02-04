@@ -1,6 +1,7 @@
 import inspect
 import logging
 from typing import Optional, Union
+from warnings import warn
 
 import numpy as np
 from sklearn.model_selection import (
@@ -82,7 +83,12 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
-        return self.n_folds * num_sessions_subjects
+        splitter = self.cv_class(**self._cv_kwargs)
+        try:
+            inner_splits = splitter.get_n_splits()
+        except TypeError:
+            inner_splits = splitter.get_n_splits(None, None, None)
+        return inner_splits * num_sessions_subjects
 
     def split(self, y, metadata):
         all_index = metadata.index.values
@@ -203,7 +209,12 @@ class WithinSubjectSplitter(BaseCrossValidator):
             The number of splits for the cross-validation
         """
         num_subjects = metadata["subject"].nunique()
-        return self.n_folds * num_subjects
+        splitter = self.cv_class(**self._cv_kwargs)
+        try:
+            inner_splits = splitter.get_n_splits()
+        except TypeError:
+            inner_splits = splitter.get_n_splits(None, None, None)
+        return inner_splits * num_subjects
 
     def split(self, y, metadata):
         all_index = metadata.index.values
@@ -726,9 +737,11 @@ class LearningCurveSplitter(BaseCrossValidator):
                 # Skip splits where training set collapses to single class
                 # (can happen with small data_size values or imbalanced datasets)
                 if len(np.unique(y[train_idx])) < 2:
-                    log.warning(
+                    warn(
                         "Skipping split: training set has only one class "
-                        f"(data_size={len(subset_indices)}, perm={perm_i + 1})"
+                        f"(data_size={len(subset_indices)}, perm={perm_i + 1})",
+                        RuntimeWarning,
+                        stacklevel=2,
                     )
                     continue
 
