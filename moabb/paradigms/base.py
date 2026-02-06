@@ -269,12 +269,13 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
         additional_metadata: Literal["all"] | list[str] | None
-            Additional metadata to be loaded if return_epochs=True.
-            If None, the default metadata will be loaded containing containing
+            Additional metadata to be loaded from the dataset.
+            If None, the default metadata will be loaded containing
             `subject`, `session` and `run`. If "all", all columns of the `events.tsv`
             file will be loaded. A list of column names can be passed to just
             select these columns in addition to the three default values mentioned
-            before.
+            before. This parameter works regardless of the return type
+            (epochs, raws, or array).
 
         Returns
         -------
@@ -597,30 +598,3 @@ class BaseParadigm(BaseProcessing):
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
         return RawToEvents(event_id=event_id, interval=dataset.interval)
-
-
-# def load_bids_event_metadata(
-#     data_set: BaseBIDSDataset, subject: str, session: str, run: str
-# ) -> pd.DataFrame:
-#     bids_paths = data_set.bids_paths(subject)
-#
-#     # select only with matching session and run
-#     bids_path_selected = [
-#         pth
-#         for pth in bids_paths
-#         if f"ses-{session}" in pth.basename and f"run-{run}" in pth.basename
-#     ]
-#
-#     if len(bids_path_selected) > 1:
-#         raise ValueError("More than one matching BIDS path found.")
-#     bids_path = bids_path_selected[0]
-#
-#     events_fname = _find_matching_sidecar(
-#         bids_path, suffix="events", extension=".tsv", on_error="warn"
-#     )
-#
-#     dm = pd.read_csv(events_fname, sep="\t").assign(
-#         subject=subject, session=session, run=run
-#     )
-#
-#     return dm
