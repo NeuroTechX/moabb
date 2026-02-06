@@ -18,7 +18,9 @@ from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import optuna_available
-from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
+from moabb.evaluations.splitters import LearningCurveSplitter
+from moabb.evaluations.utils import _create_save_path as create_save_path
+from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
@@ -235,13 +237,16 @@ class TestWithinSessLearningCurve:
     initialization instead of during running the evaluation
     """
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_correct_results_integrity(self):
         learning_curve_eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
-            n_perms=np.array([2, 2]),
+            cv_class=LearningCurveSplitter,
+            cv_kwargs={
+                "data_size": {"policy": "ratio", "value": np.array([0.2, 0.5])},
+                "n_perms": np.array([2, 2]),
+            },
+            overwrite=True,
         )
         process_pipeline = learning_curve_eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
@@ -256,21 +261,39 @@ class TestWithinSessLearningCurve:
         assert "data_size" in keys
 
     def test_all_policies_work(self):
-        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
+        kwargs = dict(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            cv_class=LearningCurveSplitter,
+        )
         # The next two should work without issue
         ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 10]}, **kwargs
+            cv_kwargs={
+                "data_size": {"policy": "per_class", "value": [5, 10]},
+                "n_perms": [2, 2],
+            },
+            **kwargs,
         )
         ev.WithinSessionEvaluation(
-            data_size={"policy": "ratio", "value": [0.2, 0.5]}, **kwargs
+            cv_kwargs={
+                "data_size": {"policy": "ratio", "value": [0.2, 0.5]},
+                "n_perms": [2, 2],
+            },
+            **kwargs,
+        )
+        # Invalid policy should raise ValueError when evaluation is run
+        # (LearningCurveSplitter is instantiated at evaluation time, not construction)
+        evaluation = ev.WithinSessionEvaluation(
+            cv_kwargs={
+                "data_size": {"policy": "does_not_exist", "value": [0.2, 0.5]},
+                "n_perms": [2, 2],
+            },
+            overwrite=True,
+            **kwargs,
         )
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(
-                data_size={"policy": "does_not_exist", "value": [0.2, 0.5]},
-                **kwargs,
-            )
+            evaluation.process(pipelines)
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_data_sanity(self):
         # need this helper to iterate over the generator
         def run_evaluation(eval, dataset, pipelines):
@@ -282,12 +305,25 @@ class TestWithinSessLearningCurve:
             )
 
         # E.g. if number of samples too high -> expect error
-        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
+        kwargs = dict(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            cv_class=LearningCurveSplitter,
+            overwrite=True,
+        )
         should_work = ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 10]}, **kwargs
+            cv_kwargs={
+                "data_size": {"policy": "per_class", "value": [5, 10]},
+                "n_perms": [2, 2],
+            },
+            **kwargs,
         )
         too_many_samples = ev.WithinSessionEvaluation(
-            data_size={"policy": "per_class", "value": [5, 100000]}, **kwargs
+            cv_kwargs={
+                "data_size": {"policy": "per_class", "value": [5, 100000]},
+                "n_perms": [2, 2],
+            },
+            **kwargs,
         )
         # This one should run
         run_evaluation(should_work, dataset, pipelines)
@@ -299,29 +335,50 @@ class TestWithinSessLearningCurve:
 
     def test_datasize_parameters(self):
         # Fail if not values are not correctly ordered
-        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset])
+        # (LearningCurveSplitter is instantiated at evaluation time, not construction)
+        kwargs = dict(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            cv_class=LearningCurveSplitter,
+            overwrite=True,
+        )
         decreasing_datasize = dict(
-            data_size={"policy": "per_class", "value": [5, 4]}, n_perms=[2, 1], **kwargs
+            cv_kwargs={
+                "data_size": {"policy": "per_class", "value": [5, 4]},
+                "n_perms": [2, 1],
+            },
+            **kwargs,
         )
         constant_datasize = dict(
-            data_size={"policy": "per_class", "value": [5, 5]}, n_perms=[2, 3], **kwargs
+            cv_kwargs={
+                "data_size": {"policy": "per_class", "value": [5, 5]},
+                "n_perms": [2, 3],
+            },
+            **kwargs,
         )
         increasing_perms = dict(
-            data_size={"policy": "per_class", "value": [3, 4]}, n_perms=[2, 3], **kwargs
+            cv_kwargs={
+                "data_size": {"policy": "per_class", "value": [3, 4]},
+                "n_perms": [2, 3],
+            },
+            **kwargs,
         )
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(**decreasing_datasize)
+            ev.WithinSessionEvaluation(**decreasing_datasize).process(pipelines)
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(**constant_datasize)
+            ev.WithinSessionEvaluation(**constant_datasize).process(pipelines)
         with pytest.raises(ValueError):
-            ev.WithinSessionEvaluation(**increasing_perms)
+            ev.WithinSessionEvaluation(**increasing_perms).process(pipelines)
 
     def test_postprocess_pipeline(self):
         learning_curve_eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
-            n_perms=np.array([2, 2]),
+            cv_class=LearningCurveSplitter,
+            cv_kwargs={
+                "data_size": {"policy": "ratio", "value": np.array([0.2, 0.5])},
+                "n_perms": np.array([2, 2]),
+            },
         )
 
         cov = Covariances("oas")
@@ -381,6 +438,17 @@ class Test_CrossSess(TestWithinSess):
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
         assert self.eval.is_valid(dataset=ds)
 
+    def test_incompatibility_error_message(self):
+        """Test that incompatibility error message is clear and informative."""
+        ds = FakeDataset(["left_hand", "right_hand"], n_sessions=1)
+        # Test that the error message includes the dataset code and reason
+        with pytest.raises(AssertionError) as exc_info:
+            list(self.eval.evaluate(ds, pipelines, None, None))
+        error_msg = str(exc_info.value)
+        assert "CrossSessionEvaluation" in error_msg
+        assert "1 session" in error_msg
+        assert "requires at least 2 sessions" in error_msg
+
 
 class UtilEvaluation:
     def test_save_model_cv(self):
@@ -392,17 +460,6 @@ class UtilEvaluation:
 
         # Assert that the saved model file exists
         assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
-
-    def test_save_model_list(self):
-        step = Dummy()
-        model = Pipeline([("step", step)])
-        model_list = [model]
-        score_list = [0.8]
-        save_path = "test_save_path"
-        save_model_list(model_list, score_list, save_path)
-
-        # Assert that the saved model file for best model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
     def test_create_save_path(self):
         hdf5_path = "base_path"
@@ -454,21 +511,6 @@ class UtilEvaluation:
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_history.json"))
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_criterion.pkl"))
 
-    def test_save_model_list_with_multiple_models(self):
-        model1 = Dummy()
-        model2 = Dummy()
-        model_list = [model1, model2]
-        score_list = [0.8, 0.9]
-        save_path = "test_save_path"
-        save_model_list(model_list, score_list, save_path)
-
-        # Assert that the saved model files for each model exist
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_1.pkl"))
-
-        # Assert that the saved model file for the best model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
-
     def test_create_save_path_with_cross_session_evaluation(self):
         hdf5_path = "base_path"
         code = "evaluation_code"
@@ -515,19 +557,6 @@ class UtilEvaluation:
         # Assert that calling save_model_cv without a save_path does raise an IOError
         with pytest.raises(IOError):
             save_model_cv(model, save_path, cv_index)
-
-    def test_save_model_list_with_single_model(self):
-        model = Dummy()
-        model_list = model
-        score_list = [0.8]
-        save_path = "test_save_path"
-        save_model_list(model_list, score_list, save_path)
-
-        # Assert that the saved model file for the single model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
-
-        # Assert that the saved model file for the best model exists
-        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
     def test_create_save_path_with_cross_subject_evaluation(self):
         hdf5_path = "base_path"

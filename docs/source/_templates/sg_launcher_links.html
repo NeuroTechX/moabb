@@ -1,0 +1,34 @@
+{#
+  Custom launcher links for Sphinx-Gallery example pages.
+  Adds an "Open in Colab" button that opens the generated notebook version
+  of the current example.
+#}
+
+{% if pagename.startswith('auto_examples/') and not pagename.endswith('/index') and pagename != 'auto_examples/index' and not pagename.endswith('sg_execution_times') %}
+
+{# Where notebooks are published in GitHub for Colab to load from. #}
+{% set colab_repo = colab_repo|default('NeuroTechX/moabb') %}
+{% set colab_branch = colab_branch|default('gh-pages') %}
+{% set colab_docs_path = colab_docs_path|default('docs') %}
+
+{% if colab_docs_path %}
+  {% set colab_prefix = colab_docs_path ~ '/' %}
+{% else %}
+  {% set colab_prefix = '' %}
+{% endif %}
+
+{#
+  Pages live at: auto_examples/<section>/<name>
+  Notebooks are generated into: <colab_docs_path>/auto_examples/_notebooks/<section>/<name>.ipynb
+#}
+{% set example_ipynb_repo_path = pagename.replace('auto_examples/', colab_prefix ~ 'auto_examples/_notebooks/') + '.ipynb' %}
+
+<div class="sd-card sd-shadow-sm sd-mb-3 moabb-colab-card">
+  <div class="sd-card-body moabb-colab-card-body">
+    <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-0">Run this example</p>
+    <a class="sd-btn sd-btn-primary" href="https://colab.research.google.com/github/{{ colab_repo }}/blob/{{ colab_branch }}/{{ example_ipynb_repo_path }}" target="_blank" rel="noopener">
+      <img class="moabb-colab-badge" alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    </a>
+  </div>
+</div>
+{% endif %}

@@ -4,10 +4,11 @@
 # License: BSD Style.
 
 import json
+import logging
 import os
 import os.path as osp
-import urllib
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pandas as pd
 import requests
@@ -17,6 +18,45 @@ from mne.utils import _url_to_local_path, verbose, warn
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
+
+
+logger = logging.getLogger(__name__)
+
+
+def get_user_agent():
+    """Return a user agent string for outbound requests."""
+    try:
+        from importlib import metadata
+
+        version = metadata.version("moabb")
+        return f"moabb/{version} (https://github.com/NeuroTechX/moabb)"
+    except Exception:
+        return "moabb (https://github.com/NeuroTechX/moabb)"
+
+
+def _set_user_agent(downloader):
+    headers = downloader.kwargs.setdefault("headers", {})
+    headers.setdefault("User-Agent", get_user_agent())
+
+
+def _sanitize_path(path: Path) -> Path:
+    table = {ord(c): "-" for c in ':*?"<>|'}
+    return Path(str(path).translate(table))
+
+
+def _normalize_destination(url: str, root: Path) -> Path:
+    parsed = urlparse(url)
+    if parsed.scheme in {"http", "https"} and parsed.netloc == "zenodo.org":
+        parts = [p for p in parsed.path.split("/") if p]
+        if len(parts) >= 4 and parts[0] in {"record", "records"} and parts[2] == "files":
+            record_id = parts[1]
+            fname = parts[-1]
+            return root / "zenodo" / record_id / fname
+        if len(parts) >= 5 and parts[0] == "api" and parts[1] == "records":
+            record_id = parts[2]
+            fname = parts[-1]
+            return root / "zenodo" / record_id / fname
+    return Path(_url_to_local_path(url, root))
 
 
 def get_dataset_path(sign, path):
@@ -44,7 +84,7 @@ def get_dataset_path(sign, path):
     if get_config(key) is None:
         if get_config("MNE_DATA") is None:
             path_def = Path.home() / "mne_data"
-            print(
+            logger.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
                 + str(path_def)
@@ -137,14 +177,20 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     """
     path = Path(get_dataset_path(sign, path))
     key_dest = "MNE-{:s}-data".format(sign.lower())
-    destination = _url_to_local_path(url, path / key_dest)
-    destination = str(path) + destination.split(str(path))[1]
-    table = {ord(c): "-" for c in ':*?"<>|'}
-    destination = Path(str(path) + destination.split(str(path))[1].translate(table))
+    root = path / key_dest
+    destination = _sanitize_path(_normalize_destination(url, root))
+    legacy_destination = _sanitize_path(Path(_url_to_local_path(url, root)))
+    if legacy_destination.exists() and not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            legacy_destination.replace(destination)
+        except OSError:
+            destination = legacy_destination
 
     downloader = choose_downloader(url, progressbar=True)
     if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
         downloader.kwargs.setdefault("verify", False)
+    _set_user_agent(downloader)
 
     # Fetch the file
     if not destination.is_file() or force_update:
@@ -157,7 +203,7 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     dlpath = retrieve(
         url,
         known_hash,
-        fname=Path(url).name,
+        fname=destination.name,
         path=str(destination.parent),
         progressbar=True,
         downloader=downloader,
@@ -199,11 +245,33 @@ def fs_issue_request(method, url, headers, data=None, binary=False):
         except ValueError:
             response_data = response.content
     except HTTPError as error:
-        print("Caught an HTTPError: {}".format(error))
-        print("Body:\n", response.text)
+        logger.error("Caught an HTTPError: {}".format(error))
+        logger.error("Body:\n{}".format(response.text))
         raise
 
     return response_data
+
+
+def _fs_paginated_file_list(base_url, headers, page_size=1000):
+    files = []
+    page = 1
+
+    while True:
+        page_url = f"{base_url}?page={page}&page_size={page_size}"
+        response = fs_issue_request("GET", page_url, headers=headers)
+
+        if isinstance(response, dict):
+            page_files = response.get("files", [])
+        else:
+            page_files = response
+
+        if not page_files:
+            break
+
+        files.extend(page_files)
+        page += 1
+
+    return files
 
 
 def fs_get_file_list(article_id, version=None):
@@ -222,16 +290,14 @@ def fs_get_file_list(article_id, version=None):
         HTTP request response as a python dict
     """
     fsurl = "https://api.figshare.com/v2"
+    headers = {"Content-Type": "application/json"}
+
     if version is None:
-        url = fsurl + "/articles/{}".format(article_id)
-        headers = {"Content-Type": "application/json"}
-        response = fs_issue_request("GET", url, headers=headers)
-        return response["files"]
+        url = fsurl + "/articles/{}/files".format(article_id)
     else:
-        url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
-        headers = {"Content-Type": "application/json"}
-        request = fs_issue_request("GET", url, headers=headers)
-        return request["files"]
+        url = fsurl + "/articles/{}/versions/{}/files".format(article_id, version)
+
+    return _fs_paginated_file_list(url, headers=headers)
 
 
 def fs_get_file_hash(filelist):
@@ -282,7 +348,7 @@ def fs_get_file_name(filelist):
     return {str(f["id"]): f["name"] for f in filelist}
 
 
-def download_if_missing(file_path, url, warn_missing=True):
+def download_if_missing(file_path, url, warn_missing=True, verbose=True):
     """Download file from url to a specified path if it is not already there."""
 
     folder_path = osp.dirname(file_path)
@@ -297,7 +363,21 @@ def download_if_missing(file_path, url, warn_missing=True):
     if not osp.exists(file_path):
         if warn_missing:
             warn(f"{file_path} not found. Downloading from {url}")
-        urllib.request.urlretrieve(url, file_path)
+
+        downloader = choose_downloader(url, progressbar=verbose)
+        if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
+            downloader.kwargs.setdefault("verify", False)
+        _set_user_agent(downloader)
+
+        path = retrieve(
+            url,
+            None,
+            fname=osp.basename(file_path),
+            path=osp.dirname(file_path),
+            downloader=downloader,
+        )
+
+        return path
 
 
 def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
@@ -315,7 +395,7 @@ def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
             response = requests.get(url)
             data = response.json()
         except Exception as e:
-            print(f"Failed to fetch {url}: {e}")
+            logger.error(f"Failed to fetch {url}: {e}")
             continue
 
         # Loop through items in this page

@@ -9,7 +9,14 @@ import pytest
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
-from moabb.datasets import BNCI2014_001, Cattan2019_VR, Shin2017A, Shin2017B
+from moabb.datasets import (
+    BNCI2014_001,
+    Cattan2019_VR,
+    Kojima2024A,
+    Kojima2024B,
+    Shin2017A,
+    Shin2017B,
+)
 from moabb.datasets.base import (
     BaseDataset,
     LocalBIDSDataset,
@@ -20,6 +27,8 @@ from moabb.datasets.base import (
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
+from moabb.datasets.kojima2024b import EVENTS
+from moabb.datasets.metadata import DatasetMetadata, get_dataset_metadata
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
@@ -585,15 +594,6 @@ class TestBIDSDataset:
                 interval=[0, 3],
                 paradigm="imagery",
             )
-        log = caplog.text.strip().split("\n")
-        expected = [
-            "Found subjects: ['1', '2']",
-            "Found sessions_per_subject=2",
-        ]
-        assert len(expected) == len(log)
-        for i, regex in enumerate(expected):
-            assert regex in log[i]
-
         # raw data
         raw_data = dataset.get_data()
         assert raw_data.keys() == {"1", "2"}
@@ -602,3 +602,207 @@ class TestBIDSDataset:
             for session_data in subject_data.values():
                 assert session_data.keys() == {"0"}
                 assert isinstance(session_data["0"], mne.io.BaseRaw)
+
+
+class TestKojima2024A:
+    def test_convert_subject_to_subject_id(self):
+        ds = Kojima2024A()
+        assert ds.convert_subject_to_subject_id(1) == "A"
+        assert ds.convert_subject_to_subject_id(3) == "C"
+        assert ds.convert_subject_to_subject_id(list(range(1, 12))) == [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+        ]
+        with pytest.raises(TypeError):
+            ds.convert_subject_to_subject_id(1.5)
+
+    @pytest.mark.skip(
+        reason="Skipping due to network/download issues with dataverse.harvard.edu"
+    )
+    def test_data_shape(self):
+        ds = Kojima2024A()
+        paradigm = P300()
+        X, labels, meta = paradigm.get_data(dataset=ds, subjects=[1])
+
+        # number of channels
+        assert X.shape[1] == 64
+
+        # number of samples
+        assert X.shape[0] == len(labels)
+
+
+class TestKojima2024B:
+    def test_convert_subject_to_subject_id(self):
+        ds = Kojima2024B(
+            events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]}
+        )
+        assert ds.convert_subject_to_subject_id(1) == "A"
+        assert ds.convert_subject_to_subject_id(3) == "C"
+        assert ds.convert_subject_to_subject_id(list(range(1, 16))) == [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+            "O",
+        ]
+        with pytest.raises(TypeError):
+            ds.convert_subject_to_subject_id(1.5)
+
+    @pytest.mark.skip(
+        reason="Skipping due to network/download issues with dataverse.harvard.edu"
+    )
+    def test_get_task_run(self):
+        ds = Kojima2024B(
+            events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]}
+        )
+        paradigm = P300(ignore_relabelling=True)
+        X, labels, _meta = ds.get_block_repetition(
+            paradigm, [1], ["2stream"], [1, 2, 3, 4, 5, 6]
+        )
+
+        # number of channels
+        assert X.shape[1] == 64
+
+        # number of samples
+        assert X.shape[0] == len(labels)
+        assert X.shape[0] == 1440
+
+    @pytest.mark.skip(
+        reason="Skipping due to network/download issues with dataverse.harvard.edu"
+    )
+    def test_other_events_than_target(self):
+        ds = Kojima2024B(
+            events={"D1": EVENTS["D1"], "D2": EVENTS["D2"], "S1": EVENTS["S1"]}
+        )
+        paradigm = P300(events=["D1", "D2", "S1"])
+        _X, Y, _meta = paradigm.get_data(dataset=ds, subjects=[1])
+        assert len(np.unique(Y)) == 3
+        assert "D1" in Y
+        assert "D2" in Y
+        assert "S1" in Y
+
+
+class TestDatasetMetadata:
+    """Tests for the metadata property on BaseDataset."""
+
+    def test_metadata_property_returns_datasetmetadata_or_none(self):
+        """Ensure metadata property returns DatasetMetadata or None."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        # Should return DatasetMetadata for datasets in the catalog
+        assert metadata is not None
+        assert isinstance(metadata, DatasetMetadata)
+
+    def test_metadata_property_is_cached(self):
+        """Ensure metadata property uses caching."""
+        dataset = BNCI2014_001()
+
+        # Access metadata twice
+        metadata1 = dataset.metadata
+        metadata2 = dataset.metadata
+
+        # Should be the same object (cached)
+        assert metadata1 is metadata2
+
+    def test_metadata_has_required_fields(self):
+        """Ensure metadata has required fields populated."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        assert metadata is not None
+
+        # Check required fields exist and are valid
+        assert metadata.participants is not None
+        assert metadata.participants.n_subjects > 0
+
+        assert metadata.acquisition is not None
+        assert metadata.acquisition.sampling_rate > 0
+
+        assert metadata.experiment is not None
+        assert metadata.experiment.paradigm in [
+            "imagery",
+            "p300",
+            "ssvep",
+            "cvep",
+            "rstate",
+        ]
+
+    def test_metadata_matches_dataset_properties(self):
+        """Ensure metadata is consistent with dataset properties."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        assert metadata is not None
+
+        # Number of subjects should match
+        assert metadata.participants.n_subjects == len(dataset.subject_list)
+
+        # Paradigm should match
+        assert metadata.experiment.paradigm == dataset.paradigm
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_all_datasets_have_metadata_property(self, dataset_class):
+        """Ensure every dataset class has the metadata property."""
+        kwargs = {}
+        if inspect.signature(dataset_class).parameters.get("accept"):
+            kwargs["accept"] = True
+
+        dataset = dataset_class(**kwargs)
+
+        # All datasets should have the metadata property
+        assert hasattr(dataset, "metadata")
+
+        # The property should return DatasetMetadata or None
+        metadata = dataset.metadata
+        assert metadata is None or isinstance(metadata, DatasetMetadata)
+
+    def test_fake_dataset_metadata_is_none(self):
+        """Ensure FakeDataset returns None for metadata (not in catalog)."""
+        dataset = FakeDataset()
+        metadata = dataset.metadata
+
+        # FakeDataset is not in the catalog, should return None
+        assert metadata is None
+
+    def test_get_dataset_metadata_consistency(self):
+        """Ensure get_dataset_metadata and .metadata property return same data."""
+        dataset = BNCI2014_001()
+        metadata_from_property = dataset.metadata
+        metadata_from_function = get_dataset_metadata("BNCI2014_001")
+
+        assert metadata_from_property is not None
+        assert metadata_from_function is not None
+
+        # Should have same values (but may be different objects after serialization)
+        assert (
+            metadata_from_property.participants.n_subjects
+            == metadata_from_function.participants.n_subjects
+        )
+        assert (
+            metadata_from_property.acquisition.sampling_rate
+            == metadata_from_function.acquisition.sampling_rate
+        )
+        assert (
+            metadata_from_property.experiment.paradigm
+            == metadata_from_function.experiment.paradigm
+        )

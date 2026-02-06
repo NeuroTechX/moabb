@@ -8,17 +8,22 @@ import re
 import traceback
 from collections.abc import Sequence
 from dataclasses import dataclass
+from functools import cached_property
 from inspect import signature
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import TYPE_CHECKING, Any, Dict, Union
 
 import mne_bids
+import numpy as np
 import pandas as pd
 from mne_bids.path import _find_matching_sidecar
-from sklearn.pipeline import Pipeline
 
 from moabb.datasets.bids_interface import StepType, _interface_map
-from moabb.datasets.preprocessing import SetRawAnnotations
+from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
+
+
+if TYPE_CHECKING:
+    from moabb.datasets.metadata import DatasetMetadata
 
 
 log = logging.getLogger(__name__)
@@ -125,7 +130,7 @@ class CacheConfig:
         Create a CacheConfig object from a dict or another CacheConfig object.
 
         Examples
-        -------
+        --------
         Using default parameters:
 
         >>> CacheConfig.make()
@@ -392,8 +397,38 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.doi = doi
         self.unit_factor = unit_factor
 
+    @cached_property
+    def metadata(self) -> "DatasetMetadata | None":
+        """Return structured metadata for this dataset.
+
+        Returns the DatasetMetadata object from the centralized catalog,
+        or None if metadata is not available for this dataset.
+
+        Returns
+        -------
+        DatasetMetadata | None
+            The metadata object containing acquisition parameters,
+            participant demographics, experiment details, and documentation.
+            Returns None if no metadata is registered for this dataset.
+
+        Examples
+        --------
+        >>> from moabb.datasets import BNCI2014_001
+        >>> dataset = BNCI2014_001()
+        >>> dataset.metadata.participants.n_subjects
+        9
+        >>> dataset.metadata.acquisition.sampling_rate
+        250.0
+        """
+        from moabb.datasets.metadata import get_dataset_metadata
+
+        try:
+            return get_dataset_metadata(self.__class__.__name__)
+        except KeyError:
+            return None
+
     def _create_process_pipeline(self):
-        return Pipeline(
+        return FixedPipeline(
             [
                 (
                     StepType.RAW,
@@ -404,6 +439,50 @@ class BaseDataset(metaclass=MetaclassDataset):
                 ),
             ]
         )
+
+    def _block_rep(self, block, repetition):
+        raise NotImplementedError()
+
+    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
+        """Select data for all provided subjects, blocks and repetitions.
+
+        subject -> session -> run -> block -> repetition
+
+        See also
+        --------
+        BaseDataset.get_data
+
+        Parameters
+        ----------
+        subjects: List of int
+            List of subject number
+        block_list: List of int
+            List of block number
+        repetition_list: List of int
+            List of repetition number inside a block
+
+        Returns
+        -------
+        data: Dict
+            dict containing the raw data
+        """
+        X, labels, meta = paradigm.get_data(self, subjects)
+        X_select = []
+        labels_select = []
+        meta_select = []
+        for block in block_list:
+            for repetition in repetition_list:
+                run = self._block_rep(block, repetition)
+                X_select.append(X[meta["run"] == run])
+                labels_select.append(labels[meta["run"] == run])
+                meta_select.append(meta[meta["run"] == run])
+        X_select = np.concatenate(X_select)
+        labels_select = np.concatenate(labels_select)
+        meta_select = np.concatenate(meta_select)
+        df = pd.DataFrame(meta_select, columns=meta.columns)
+        meta_select = df
+
+        return X_select, labels_select, meta_select
 
     def get_data(
         self,
@@ -576,7 +655,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                     self,
                     subject,
                     path=cache_config.path,
-                    process_pipeline=Pipeline(cached_steps),
+                    process_pipeline=FixedPipeline(cached_steps),
                     verbose=cache_config.verbose,
                 )
 
@@ -623,7 +702,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                         self,
                         subject,
                         path=cache_config.path,
-                        process_pipeline=Pipeline(
+                        process_pipeline=FixedPipeline(
                             cached_steps + remaining_steps[: step_idx + 1]
                         ),
                         verbose=cache_config.verbose,

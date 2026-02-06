@@ -144,6 +144,7 @@ plt.show()
 # file, as the figure is quite large and may be long to render.
 
 fig = plot_datasets_grid(n_col=5)
+fig.tight_layout()
 plt.show()
 
 ###############################################################################
@@ -151,4 +152,5 @@ plt.show()
 # function to visualize the datasets in more compact format.
 
 fig = plot_datasets_cluster()
+fig.tight_layout()
 plt.show()

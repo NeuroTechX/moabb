@@ -1,31 +1,38 @@
 import logging
+import math
 from abc import ABC, abstractmethod
+from time import perf_counter
+from uuid import uuid4
 from warnings import warn
 
 import pandas as pd
+from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
-from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
-from moabb.evaluations.utils import _convert_sklearn_params_to_optuna
+from moabb.evaluations.utils import (
+    Emissions,
+    _convert_sklearn_params_to_optuna,
+    _create_save_path,
+    _create_scorer,
+    _DictScorer,
+    _ensure_fitted,
+    _get_nchan,
+    _pipeline_requires_epochs,
+    _save_model_cv,
+    _score_and_update,
+    check_search_available,
+)
 from moabb.paradigms.base import BaseParadigm
+from moabb.utils import verbose
 
+
+search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
 # Making the optuna soft dependency
-try:
-    from optuna.integration import OptunaSearchCV
-
-    optuna_available = True
-except ImportError:
-    optuna_available = False
-
-if optuna_available:
-    search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
-else:
-    search_methods = {"grid": GridSearchCV}
 
 
 class BaseEvaluation(ABC):
@@ -64,6 +71,11 @@ class BaseEvaluation(ABC):
     n_splits: int, default=None
         Number of splits for cross-validation. If None, the number of splits
         is equal to the number of subjects.
+    cv_class: type, default=None
+        Optional cross-validation class to override the evaluation's default
+        splitter behavior.
+    cv_kwargs: dict, default=None
+        Keyword arguments passed to cv_class when constructing the splitter.
     save_model: bool, default=False
         Save model after training, for each fold of cross-validation if needed
     cache_config: bool, default=None
@@ -74,6 +86,14 @@ class BaseEvaluation(ABC):
     time_out: default=60*15
         Cut off time for the optuna search expressed in seconds, the default value is 15 minutes.
         Only used with optuna equal to True.
+    verbose: bool, str, int, default=None
+        If not None, override the default MOABB logging level used by this evaluation
+        (see :func:`moabb.utils.verbose` for more information on how this is handled).
+        If used, it should be passed as a keyword-argument only.
+    codecarbon_config: dict of CodeCarbon parameters, default=dict(save_to_file=False, log_level="error")
+        Allow CodeCarbon script level configurations.
+        Can use combination of CodeCarbon environment variable and configuration files.
+        See CodeCarbon developer documentation for more information.
 
     Notes
     -----
@@ -81,8 +101,13 @@ class BaseEvaluation(ABC):
        n_splits, save_model, cache_config parameters.
     .. versionadded:: 1.1.1
        optuna, time_out parameters.
+    .. versionadded:: 1.5
+       verbose parameter.
     """
 
+    search = False
+
+    @verbose
     def __init__(
         self,
         paradigm,
@@ -98,10 +123,14 @@ class BaseEvaluation(ABC):
         return_raws=False,
         mne_labels=False,
         n_splits=None,
+        cv_class=None,
+        cv_kwargs=None,
         save_model=False,
         cache_config=None,
         optuna=False,
         time_out=60 * 15,
+        verbose=None,
+        codecarbon_config=None,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -111,10 +140,23 @@ class BaseEvaluation(ABC):
         self.return_raws = return_raws
         self.mne_labels = mne_labels
         self.n_splits = n_splits
+        self.cv_class = cv_class
+        self.cv_kwargs = {} if cv_kwargs is None else cv_kwargs
         self.save_model = save_model
         self.cache_config = cache_config
         self.optuna = optuna
         self.time_out = time_out
+        self.verbose = verbose
+        self.emissions = Emissions(codecarbon_config=codecarbon_config)
+
+        self.additional_columns = additional_columns
+        if additional_columns is None:
+            self.additional_columns = []
+
+        if self.cv_class is not None and hasattr(self.cv_class, "metadata_columns"):
+            for col in self.cv_class.metadata_columns:
+                if col not in self.additional_columns:
+                    self.additional_columns.append(col)
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -127,6 +169,10 @@ class BaseEvaluation(ABC):
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
+        scorer = _create_scorer(None, self.paradigm.scoring)
+        if not isinstance(scorer, _DictScorer):
+            scoring_keys = [f"score_{key}" for key in scorer._scorers.keys()]
+            self.additional_columns.extend(scoring_keys)
 
         # check labels
         if self.mne_labels and not self.return_epochs:
@@ -156,8 +202,11 @@ class BaseEvaluation(ABC):
                 )
                 rm.append(dataset)
             elif not valid_for_eval:
+                # Get specific reason for incompatibility
+                eval_type = self.__class__.__name__
+                reason = self._get_incompatibility_reason(dataset)
                 log.warning(
-                    f"{dataset} not compatible with evaluation. "
+                    f"{dataset} not compatible with {eval_type}: {reason}. "
                     "Removing this dataset from the list."
                 )
                 rm.append(dataset)
@@ -177,8 +226,187 @@ class BaseEvaluation(ABC):
             overwrite=overwrite,
             suffix=suffix,
             hdf5_path=self.hdf5_path,
-            additional_columns=additional_columns,
+            additional_columns=self.additional_columns,
         )
+
+    def _resolve_cv(self, default_class, default_kwargs=None):
+        """Resolve the cross-validation class and kwargs for a splitter."""
+        if self.cv_class is None:
+            cv_class = default_class
+            cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
+        else:
+            cv_class = self.cv_class
+            cv_kwargs = dict(self.cv_kwargs)
+        return cv_class, cv_kwargs
+
+    def _load_data(
+        self,
+        dataset,
+        run_pipes,
+        process_pipeline,
+        postprocess_pipeline,
+        subjects=None,
+    ):
+        """Load data for an evaluation, handling epoch requirements.
+
+        Parameters
+        ----------
+        dataset : BaseDataset
+            The dataset to load.
+        run_pipes : dict
+            Pipelines to run (used to check epoch requirements).
+        process_pipeline : Pipeline
+            The processing pipeline.
+        postprocess_pipeline : Pipeline | None
+            Optional post-processing pipeline.
+        subjects : list | None
+            List of subjects to load. If None, loads all subjects.
+
+        Returns
+        -------
+        X : array-like or Epochs
+            The loaded data.
+        y : array-like
+            The labels.
+        metadata : DataFrame
+            The metadata.
+        """
+        requires_epochs = any(
+            _pipeline_requires_epochs(clf) for clf in run_pipes.values()
+        )
+        return_epochs = True if requires_epochs else self.return_epochs
+        kwargs = dict(
+            dataset=dataset,
+            return_epochs=return_epochs,
+            return_raws=self.return_raws,
+            cache_config=self.cache_config,
+            postprocess_pipeline=postprocess_pipeline,
+            process_pipelines=None if requires_epochs else [process_pipeline],
+        )
+        if subjects is not None:
+            kwargs["subjects"] = subjects
+        return self.paradigm.get_data(**kwargs)
+
+    @staticmethod
+    def _get_nchan(X):
+        """Extract number of channels from data (Epochs or ndarray)."""
+        return _get_nchan(X)
+
+    def _build_scored_result(
+        self,
+        dataset,
+        subject,
+        session,
+        pipeline,
+        n_samples,
+        n_channels,
+        duration,
+        scorer,
+        model,
+        X_test,
+        y_test,
+        split_metadata=None,
+        **extra,
+    ):
+        """Build a result dict and score it in one place."""
+        metadata = {}
+        if split_metadata is None:
+            splitter = getattr(getattr(self, "cv", None), "_current_splitter", None)
+            if splitter is not None and hasattr(splitter, "get_metadata"):
+                split_metadata = splitter.get_metadata()
+        if split_metadata:
+            metadata.update(split_metadata)
+        metadata.update(extra)
+        res = self._build_result(
+            dataset,
+            subject,
+            session,
+            pipeline,
+            n_samples,
+            n_channels,
+            duration,
+            **metadata,
+        )
+        try:
+            return _score_and_update(res, scorer, model, X_test, y_test)
+        except ValueError as err:
+            if self.error_score == "raise":
+                raise err
+            res["score"] = self.error_score
+            return res
+
+    def _fit_cv(self, model, X_train, y_train, tracker=None):
+        """Fit a model for a CV fold with optional CodeCarbon tracking."""
+        task_name = None
+        emissions = math.nan
+        if tracker is not None:
+            task_name = str(uuid4())
+            tracker.start_task(task_name)
+        t_start = perf_counter()
+        model.fit(X_train, y_train)
+        duration = perf_counter() - t_start
+        if tracker is not None:
+            emissions_data = tracker.stop_task()
+            emissions = emissions_data.emissions if emissions_data else math.nan
+        _ensure_fitted(model)
+        return duration, emissions, task_name
+
+    def _maybe_save_model_cv(
+        self, model, dataset, subject, session, name, cv_ind, eval_type
+    ):
+        """Save model for a CV fold when saving is enabled."""
+        if self.hdf5_path is None or not self.save_model:
+            return
+        model_save_path = _create_save_path(
+            hdf5_path=self.hdf5_path,
+            code=dataset.code,
+            subject=subject,
+            session=session,
+            name=name,
+            grid=self.search,
+            eval_type=eval_type,
+        )
+        _save_model_cv(model=model, save_path=model_save_path, cv_index=str(cv_ind))
+
+    @staticmethod
+    def _attach_emissions(res, emissions, task_name):
+        res["carbon_emission"] = (1000 * emissions,)
+        res["codecarbon_task_name"] = task_name
+
+    def _build_result(
+        self,
+        dataset,
+        subject,
+        session,
+        pipeline,
+        n_samples,
+        n_channels,
+        duration,
+        **extra,
+    ):
+        """Build a result dictionary with all required columns.
+
+        This is the single place where the evaluation result schema is defined.
+        All evaluation subclasses should use this instead of constructing the
+        dict manually, so the schema stays consistent when columns are added
+        or evaluations are merged.
+
+        Any ``additional_columns`` not provided via *extra* are defaulted to
+        NaN so that ``Results.add()`` never fails on a missing key.
+        """
+        res = {
+            "time": duration,
+            "dataset": dataset,
+            "subject": subject,
+            "session": session,
+            "n_samples": n_samples,
+            "n_channels": n_channels,
+            "pipeline": pipeline,
+        }
+        for col in self.additional_columns:
+            if col not in res:
+                res[col] = extra.get(col, math.nan)
+        return res
 
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
         """Runs all pipelines on all datasets.
@@ -201,7 +429,6 @@ class BaseEvaluation(ABC):
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
 
-
         Returns
         -------
         results: pd.DataFrame
@@ -216,26 +443,44 @@ class BaseEvaluation(ABC):
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
-        res_per_db = []
-        for dataset in self.datasets:
-            log.info("Processing dataset: {}".format(dataset.code))
-            process_pipeline = self.paradigm.make_process_pipelines(
+        # Prepare dataset processing parameters
+        processing_params = [
+            (
                 dataset,
-                return_epochs=self.return_epochs,
-                return_raws=self.return_raws,
-                postprocess_pipeline=postprocess_pipeline,
-            )[0]
-            # (we only keep the pipeline for the first frequency band, better ideas?)
-
-            results = self.evaluate(
-                dataset,
-                pipelines,
-                param_grid=param_grid,
-                process_pipeline=process_pipeline,
-                postprocess_pipeline=postprocess_pipeline,
+                self.paradigm.make_process_pipelines(
+                    dataset,
+                    return_epochs=self.return_epochs,
+                    return_raws=self.return_raws,
+                    postprocess_pipeline=postprocess_pipeline,
+                )[0],
             )
+            for dataset in self.datasets
+        ]
+
+        # Parallel processing...
+        parallel_results = Parallel(n_jobs=self.n_jobs)(
+            delayed(
+                lambda d, p: list(
+                    self.evaluate(
+                        d,
+                        pipelines,
+                        param_grid=param_grid,
+                        process_pipeline=p,
+                        postprocess_pipeline=postprocess_pipeline,
+                    )
+                )
+            )(dataset, process_pipeline)
+            for dataset, process_pipeline in processing_params
+        )
+
+        res_per_db = []
+        # Process results in order
+        for (dataset, process_pipeline), results in zip(
+            processing_params, parallel_results
+        ):
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
+
             res_per_db.append(
                 self.results.to_dataframe(
                     pipelines=pipelines, process_pipeline=process_pipeline
@@ -295,6 +540,25 @@ class BaseEvaluation(ABC):
             The dataset to verify.
         """
 
+    def _get_incompatibility_reason(self, dataset):
+        """Get a human-readable reason why dataset is incompatible.
+
+        This method should be overridden by subclasses to provide
+        specific incompatibility reasons.
+
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset to check.
+
+        Returns
+        -------
+        str
+            A human-readable reason for incompatibility.
+
+        """
+        return "requirements not met"
+
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
         extra_params = {}
         if param_grid is not None:
@@ -306,19 +570,28 @@ class BaseEvaluation(ABC):
                 else:
                     search = search_methods["grid"]
 
+                # Use primary scorer for grid search
+                if isinstance(self.paradigm.scoring, dict):
+                    refit = next(iter(self.paradigm.scoring))
+                else:
+                    refit = True
+
                 search = search(
                     grid_clf,
                     param_grid[name],
-                    refit=True,
+                    refit=refit,
                     cv=inner_cv,
                     n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
                     **extra_params,
                 )
+                self.search = True
                 return search
             else:
+                self.search = True
                 return grid_clf
 
         else:
+            self.search = False
             return grid_clf

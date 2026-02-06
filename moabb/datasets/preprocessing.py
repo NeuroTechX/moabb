@@ -6,10 +6,61 @@ from typing import Dict, List, Tuple, Union
 import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import FunctionTransformer, Pipeline
+from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
+
+
+# Handle different scikit-learn versions for _VisualBlock import
+# sklearn >= 1.6 moved _VisualBlock to sklearn.utils._repr_html.estimator
+# sklearn < 1.6 has it in sklearn.utils._estimator_html_repr
+try:
+    from sklearn.utils._repr_html.estimator import _VisualBlock
+except (ImportError, ModuleNotFoundError):
+    try:
+        from sklearn.utils._estimator_html_repr import _VisualBlock
+    except (ImportError, ModuleNotFoundError):
+        # Fallback: create a dummy _VisualBlock for older sklearn versions
+        # that don't have HTML representation support
+        _VisualBlock = None
 
 
 log = logging.getLogger(__name__)
+
+
+class FixedPipeline(Pipeline):
+    """A Pipeline that is always considered fitted.
+
+    This is useful for pre-processing pipelines that don't require fitting,
+    as they only apply fixed transformations (e.g., filtering, epoching).
+    This avoids the FutureWarning from sklearn 1.8+ about unfitted pipelines.
+    """
+
+    def __sklearn_is_fitted__(self):
+        """Return True to indicate this pipeline is always considered fitted."""
+        return True
+
+
+def make_fixed_pipeline(*steps, memory=None, verbose=False):
+    """Create a FixedPipeline that is always considered fitted.
+
+    This is a drop-in replacement for sklearn's make_pipeline that creates
+    a pipeline marked as fitted, suitable for fixed transformations.
+
+    Parameters
+    ----------
+    *steps : list of estimators
+        List of (name, transform) tuples that are chained in the pipeline.
+    memory : str or object with the joblib.Memory interface, default=None
+        Used to cache the fitted transformers of the pipeline.
+    verbose : bool, default=False
+        If True, the time elapsed while fitting each step will be printed.
+
+    Returns
+    -------
+    p : FixedPipeline
+        A FixedPipeline object.
+    """
+
+    return FixedPipeline(_name_estimators(steps), memory=memory, verbose=verbose)
 
 
 def _is_none_pipeline(pipeline):
@@ -35,6 +86,7 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         for _, t in transformers:
             assert hasattr(t, "transform")
         self.transformers = transformers
+        self._is_fitted = True
 
     def transform(self, X, y=None):
         return OrderedDict([(n, t.transform(X)) for n, t in self.transformers])
@@ -42,11 +94,70 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
     def fit(self, X, y=None):
         for _, t in self.transformers:
             t.fit(X)
+        return self
+
+    def __sklearn_is_fitted__(self):
+        """Return True to indicate this transformer is always considered fitted."""
+        return True
+
+    def _sk_visual_block_(self):
+        """Tell sklearn's diagrammer to lay us out in parallel."""
+        if _VisualBlock is None:
+            return NotImplemented
+        names, estimators = zip(*self.transformers)
+        return _VisualBlock(
+            kind="parallel",
+            estimators=list(estimators),
+            names=list(names),
+            name_caption=self.__class__.__name__,
+            dash_wrapped=True,
+        )
 
 
 class FixedTransformer(TransformerMixin, BaseEstimator):
+    def __init__(self):
+        self._is_fitted = True
+        # fixing transformers that are not fitted
+        # to avoid the warning "This estimator has not been fitted yet"
+        # when using the pipeline
+
     def fit(self, X, y=None):
-        pass
+        return self
+
+    def __sklearn_is_fitted__(self):
+        """Return True to indicate this transformer is always considered fitted."""
+        return True
+
+    def _sk_visual_block_(self):
+        """Tell sklearn's diagrammer to lay us out in parallel."""
+        if _VisualBlock is None:
+            return NotImplemented
+        return _VisualBlock(
+            kind="parallel",
+            name_caption=str(self.__class__.__name__),
+            estimators=[str(self.get_params())],
+            name_details=str(self.__class__.__name__),
+            dash_wrapped=True,
+        )
+
+
+def _get_event_id_values(event_id):
+    event_id_values = list(event_id.values())
+    if len(event_id_values) == 0:
+        return []
+    arrays = [np.atleast_1d(val) for val in event_id_values]
+    return np.concatenate(arrays).tolist()
+
+
+def _compute_events_desc(event_id):
+    ret = {}
+    for ev in event_id:
+        codes = event_id[ev]
+        if not isinstance(codes, list):
+            codes = [codes]
+        for code in codes:
+            ret[code] = ev
+    return ret
 
 
 class SetRawAnnotations(FixedTransformer):
@@ -55,25 +166,35 @@ class SetRawAnnotations(FixedTransformer):
     """
 
     def __init__(self, event_id, interval: Tuple[float, float]):
+        super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
-        if len(set(event_id.values())) != len(event_id):
+        values = _get_event_id_values(self.event_id)
+        if len(np.unique(values)) != len(values):
             raise ValueError("Duplicate event code")
-        self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
+        self.event_desc = _compute_events_desc(self.event_id)
         self.interval = interval
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
         offset = int(self.interval[0] * raw.info["sfreq"])
-
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
-            log.warning(
-                "No stim channel nor annotations found, skipping setting annotations."
+            if raw.annotations is None:
+                log.warning(
+                    "No stim channel nor annotations found, skipping setting annotations."
+                )
+                return raw
+            if not all(isinstance(mrk, int) for mrk in self.event_id.values()):
+                raise ValueError(
+                    "When no stim channel is present, event_id values must be integers (not lists)."
+                )
+            events, _ = mne.events_from_annotations(
+                raw, event_id=self.event_id, verbose=False
             )
-            return raw
-        events = mne.find_events(raw, shortest_event=0, verbose=False)
-        events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+        else:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
+        events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
         events[:, 0] += offset
         if len(events) != 0:
             annotations = mne.annotations_from_events(
@@ -96,6 +217,7 @@ class RawToEvents(FixedTransformer):
     """
 
     def __init__(self, event_id: dict[str, int], interval: Tuple[float, float]):
+        super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.interval = interval
@@ -124,11 +246,16 @@ class RawToEvents(FixedTransformer):
 
 
 class RawToEventsP300(RawToEvents):
+    def __init__(self, event_id, interval, ignore_relabelling=False):
+        self.ignore_relabelling = ignore_relabelling
+        super().__init__(event_id, interval)
+
     def transform(self, raw, y=None):
         events = self._find_events(raw)
         event_id = self.event_id
         if (
-            "Target" in event_id
+            not self.ignore_relabelling
+            and "Target" in event_id
             and "NonTarget" in event_id
             and isinstance(event_id["Target"], list)
             and isinstance(event_id["NonTarget"], list)
@@ -137,7 +264,8 @@ class RawToEventsP300(RawToEvents):
             events = mne.merge_events(events, event_id["Target"], 1)
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
-        return _unsafe_pick_events(events, list(event_id.values()))
+        ret = _unsafe_pick_events(events, _get_event_id_values(self.event_id))
+        return ret
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
@@ -149,6 +277,7 @@ class RawToFixedIntervalEvents(FixedTransformer):
         stop_offset,
         marker=1,
     ):
+        super().__init__()
         self.length = length
         self.stride = stride
         self.start_offset = start_offset
@@ -182,16 +311,20 @@ class RawToFixedIntervalEvents(FixedTransformer):
 
 
 class EpochsToEvents(FixedTransformer):
+    def __init__(self):
+        super().__init__()
+
     def transform(self, epochs, y=None):
         return epochs.events
 
 
 class EventsToLabels(FixedTransformer):
     def __init__(self, event_id):
+        super().__init__()
         self.event_id = event_id
 
     def transform(self, events, y=None):
-        inv_events = {k: v for v, k in self.event_id.items()}
+        inv_events = _compute_events_desc(self.event_id)
         labels = [inv_events[e] for e in events[:, -1]]
         return labels
 
@@ -206,6 +339,7 @@ class RawToEpochs(FixedTransformer):
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
     ):
+        super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.tmin = tmin
@@ -263,7 +397,7 @@ class RawToEpochs(FixedTransformer):
         epochs = mne.Epochs(
             raw,
             events,
-            event_id=self.event_id,
+            event_id=_get_event_id_values(self.event_id),
             tmin=self.tmin,
             tmax=self.tmax,
             proj=False,
@@ -277,9 +411,31 @@ class RawToEpochs(FixedTransformer):
         return epochs
 
 
+class NamedFunctionTransformer(FunctionTransformer):
+    def __init__(self, func, *, display_name=None, validate=False, **kwargs):
+        super().__init__(func=func, validate=validate, **kwargs)
+        self.display_name = display_name
+        self._display_name = display_name or getattr(func, "__name__", "<func>")
+        self._kwargs = {"name": getattr(func, "__name__", "<func>")}
+
+    def __repr__(self):
+        return self._display_name
+
+    def _sk_visual_block_(self):
+        if _VisualBlock is None:
+            return NotImplemented
+        return _VisualBlock(
+            kind="single",
+            estimators=self,
+            names=self._display_name,
+            name_details=str(self._kwargs),
+            dash_wrapped=False,
+        )
+
+
 def get_filter_pipeline(fmin, fmax):
-    return FunctionTransformer(
-        methodcaller(
+    return NamedFunctionTransformer(
+        func=methodcaller(
             "filter",
             l_freq=fmin,
             h_freq=fmax,
@@ -287,16 +443,28 @@ def get_filter_pipeline(fmin, fmax):
             picks="data",
             verbose=False,
         ),
+        display_name=f"Band Pass Filter ({fmin}–{fmax} Hz)",
     )
 
 
 def get_crop_pipeline(tmin, tmax):
-    return FunctionTransformer(
-        methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "crop",
+            tmin=tmin,
+            tmax=tmax,
+            verbose=False,
+        ),
+        display_name=f"Crop ({tmin}–{tmax} s)",
     )
 
 
 def get_resample_pipeline(sfreq):
-    return FunctionTransformer(
-        methodcaller("resample", sfreq=sfreq, verbose=False),
+    return NamedFunctionTransformer(
+        func=methodcaller(
+            "resample",
+            sfreq=sfreq,
+            verbose=False,
+        ),
+        display_name=f"Resample ({sfreq} Hz)",
     )

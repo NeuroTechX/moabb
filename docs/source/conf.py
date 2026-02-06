@@ -71,7 +71,12 @@ extensions = [
     "numpydoc",
     "sphinx_favicon",
     "sphinxcontrib.jquery",
+    "sphinx_sitemap",
 ]
+
+_build_sitemap = os.environ.get("MOABB_BUILD_SITEMAP", "1").strip().lower()
+if _build_sitemap in {"0", "false", "no"}:
+    extensions = [ext for ext in extensions if ext != "sphinx_sitemap"]
 
 
 def linkcode_resolve(domain, info):  # noqa: C901
@@ -163,7 +168,7 @@ sphinx_gallery_conf = {
     "show_memory": True,
     "reference_url": dict(moabb=None),
     "filename_pattern": "(/plot_|/tutorial_)",
-    "default_thumb_file": "../images/M.png",
+    "default_thumb_file": "../images/moabb_logo_copy.png",
     "subsection_order": ExplicitOrder(
         [
             "../../examples/tutorials",
@@ -174,7 +179,9 @@ sphinx_gallery_conf = {
             "../../examples/learning_curve",
         ]
     ),
-    "within_subsection_order": FileNameSortKey,
+    "within_subsection_order": "FileNameSortKey",
+    # Disable parallel when cache is cold to avoid Zenodo rate limiting
+    "parallel": os.environ.get("SPHINX_GALLERY_PARALLEL", "true").lower() == "true",
 }
 
 
@@ -184,7 +191,7 @@ autosummary_generate = True
 
 numpydoc_show_class_members = False
 
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
+exclude_patterns = ["build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -207,15 +214,10 @@ language = "en"
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
-
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
 
 
 html_theme = "pydata_sphinx_theme"
@@ -229,19 +231,30 @@ html_theme_options = {
         dict(
             name="GitHub",
             url="https://github.com/NeuroTechX/moabb",
-            icon="fa-brands fa-square-github",
+            icon="fa-brands fa-github",
+        ),
+        dict(
+            name="PyPI",
+            url="https://pypi.org/project/moabb/",
+            icon="fa-brands fa-python",
         ),
     ],
-    "github_url": "https://github.com/NeuroTechX/moabb",
     "icon_links_label": "External Links",  # for screen reader
-    "use_edit_page_button": False,
+    "use_edit_page_button": True,
     "navigation_with_keys": False,
     "collapse_navigation": False,
     "navigation_depth": -1,
     "show_toc_level": 1,
     "nosidebar": True,
-    "navbar_end": ["theme-switcher"],
-    "announcement": "https://raw.githubusercontent.com/neurotechx/moabb/develop/docs/source/_templates/custom-template.html",
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "announcement": (
+        "<strong>Using MOABB in academic work?</strong> "
+        "<a class='moabb-announcement-cta' href='cite.html'>Cite MOABB</a> "
+        "<span class='moabb-announcement-secondary'>"
+        "DOI: <a href='https://doi.org/10.5281/zenodo.10034223'>10.5281/zenodo.10034223</a> · "
+        "Explore <a href='paper_results.html'>benchmark results</a>"
+        "</span>"
+    ),
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
     "pygments_light_style": "tango",
@@ -250,6 +263,15 @@ html_theme_options = {
         "image_light": "moabb_light.svg",
         "image_dark": "moabb_dark.svg",
     },
+    "secondary_sidebar_items": {
+        "**": [
+            "page-toc",
+            "sg_download_links",
+            "sg_launcher_links",
+        ],
+    },
+    "footer_start": ["copyright"],
+    "footer_end": ["sphinx-version", "theme-version"],
 }
 
 html_sidebars = {
@@ -261,15 +283,21 @@ html_sidebars = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "images/moabb_logo.svg"
+html_logo = "_static/moabb_logo.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+# Base URL for sitemap generation (required by sphinx_sitemap)
+html_baseurl = "https://moabb.neurotechx.com/docs/"
+
+# Sitemap configuration
+sitemap_url_scheme = "{link}"
+
 html_css_files = [
-    "https://raw.githubusercontent.com/neurotechx/moabb/refs/heads/develop/docs/source/_static/css/custom.css",
+    "css/custom.css",
     "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css",
 ]
 
@@ -307,6 +335,56 @@ html_context = {
     "github_repo": "moabb",
     "github_version": "develop",
     "doc_path": "docs",
+    # Colab launcher for Sphinx-Gallery examples (see _templates/sg_launcher_links.html)
+    "colab_repo": "NeuroTechX/moabb",
+    "colab_branch": "gh-pages",
+    # Docs are deployed under docs/ in gh-pages and moabb.github.io
+    "colab_docs_path": "docs",
+    # Homepage carousel highlighting MOABB components
+    "carousel": [
+        dict(
+            title="Datasets",
+            text="Access 67+ open EEG datasets for motor imagery, P300, and SSVEP paradigms.",
+            url="dataset_summary.html",
+            img="datasets_overview.png",
+            alt="Datasets overview",
+        ),
+        dict(
+            title="Evaluations",
+            text="Cross-session, cross-subject, and within-session evaluation schemes.",
+            url="api.html#evaluations",
+            img="crosssubj.png",
+            alt="Cross-subject evaluation",
+        ),
+        dict(
+            title="Preprocessing",
+            text="Flexible preprocessing pipelines with MNE-Python integration.",
+            url="auto_examples/advanced_examples/plot_pre_processing_steps.html",
+            img="architecture.png",
+            alt="Preprocessing steps",
+        ),
+        dict(
+            title="Paradigms",
+            text="Motor imagery, P300, SSVEP, and other BCI paradigms ready to use.",
+            url="auto_examples/paradigm_examples/index.html",
+            img="moabb_logo_copy.png",
+            alt="Paradigms",
+        ),
+        dict(
+            title="Analysis & Statistics",
+            text="Comprehensive analysis tools, statistical tests, and visualizations.",
+            url="auto_examples/advanced_examples/plot_statistical_analysis.html",
+            img="statistical_analysis.png",
+            alt="Statistical analysis",
+        ),
+        dict(
+            title="Benchmark Results",
+            text="Explore the largest BCI EEG benchmark with standardized results.",
+            url="paper_results.html",
+            img="withinsess.png",
+            alt="Benchmark results",
+        ),
+    ],
 }
 
 
@@ -327,7 +405,7 @@ latex_elements = {
     # "figure_align": "htbp",
 }
 
-latex_logo = "images/moabb_logo.svg"
+latex_logo = "_static/moabb_logo.svg"
 latex_toplevel_sectioning = "part"
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -435,23 +513,21 @@ intersphinx_mapping = {
     "mne": ("http://mne.tools/stable", None),
     "skorch": ("https://skorch.readthedocs.io/en/stable/", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
-    "moabb": ("https://neurotechx.github.io/moabb/", None),
 }
-
-# -- Options for todo extension ----------------------------------------------
-
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
 
 # -- Options for sphinx-gallery ----------------------------------------------
 favicons = [
     {
         "rel": "moabb icon",
         "sizes": "180x180",
-        "href": "moabb_logo.png",  # use a local file in _static
+        "href": "_static/moabb_logo.png",  # use a local file in _static
     },
     {"rel": "icon", "href": "favicon.svg", "type": "image/svg+xml"},
     {"rel": "icon", "sizes": "144x144", "href": "favicon-144.png", "type": "image/png"},
     {"rel": "mask-icon", "href": "favicon_mask-icon.svg", "color": "#222832"},
     {"rel": "apple-touch-icon", "sizes": "500x500", "href": "favicon-500.png"},
 ]
+
+# -- Options for MyST --------------------------------------------------------
+# Required due to README.md file starting at H2 not H1
+suppress_warnings = ["myst.header"]

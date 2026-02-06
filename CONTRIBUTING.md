@@ -1,13 +1,12 @@
 # Contributing
 
-:tada::clinking_glasses: First off, thanks for taking the time to contribute!
-:tada::clinking_glasses:
+🎉🥂 First off, thanks for taking the time to contribute! 🎉🥂
 
 Contributions are always welcome, no matter how small!
 
 If you think you can help in any of the areas of MOABB (and we bet you can) or in any of
 the many areas that we haven't yet thought of (and here we're _sure_ you can) then please
-check out our [roadmap](https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md).
+check out our [issues](https://github.com/NeuroTechX/moabb/issues).
 
 Please note that it's very important to us that we maintain a positive and supportive
 environment for everyone who wants to participate. When you join us we ask that you follow
@@ -20,7 +19,7 @@ The following is a small set of guidelines for how to contribute to the project
 
 ### Code of Conduct
 
-This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By
+This project adheres to the Contributor Covenant [Code of Conduct](https://github.com/NeuroTechX/moabb/blob/master/CODE_OF_CONDUCT.md). By
 participating you are expected to adhere to these expectations. Please report unacceptable
 behavior.
 
@@ -28,17 +27,17 @@ behavior.
 
 If you're new to Git and want to learn how to fork this repo, make your own additions, and
 include those additions in the master version of this project, check out this
-[great tutorial](http://blog.davidecoppola.com/2016/11/howto-contribute-to-open-source-project-on-github/).
+[great tutorial](https://hackerbits.com/how-to-contribute-to-an-open-source-project-on-github-davide-coppola/).
 
 ### Community
 
-This project is maintained by the [NeuroTechX](www.neurotechx.com) community.
+This project is maintained by the [NeuroTechX](http://www.neurotechx.com) community.
 
 ## How can I contribute?
 
 If there's a feature you'd be interested in building or you find a bug or have a
 suggestion on how to improve the project, go ahead! Let us know on the
-[open an issue](../../issues) so others
+[open an issue](https://github.com/NeuroTechX/moabb/issues) so others
 can follow along and we'll support you as much as we can. When you're finished submit a
 pull request to the master branch referencing the specific issue you addressed.
 
@@ -61,7 +60,7 @@ pull request to the master branch referencing the specific issue you addressed.
    [what's new](http://moabb.neurotechx.com/docs/whats_new.html) and
    [documentation](http://moabb.neurotechx.com/docs/index.html) pages if needed
 
-
+(setup-development-environment)=
 ## Setup development environment
 
 1. Install pre-commit to start to code:\
@@ -77,7 +76,7 @@ That's OK and it is intended behavior. This will be done once per machine automa
 _Note 2 (deep learning):_\
 In case you want to install the optional deep learning dependencies (i.e. `pip install .[deeplearning]`),
 
-
+(tools-used)=
 ### Tools used
 
 MOABB uses [`pre-commit`](https://pre-commit.com/). It automatically runs variety of Code Quality
@@ -85,9 +84,7 @@ instruments against the code you produced.
 
 For Code Quality verification, we use:
 
-- [`black`](https://github.com/psf/black) - Python code formatting
-- [`isort`](https://github.com/timothycrosley/isort) - imports sorting and grouping
-- [`flake8`](https://gitlab.com/pycqa/flake8) - code style checking
+- [`ruff`](https://github.com/astral-sh/ruff) - Python linting and formatting
 - [`prettier`](https://github.com/prettier/prettier) - `.yml` and `.md` files formatting
 - and more checkers.
 

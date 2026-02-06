@@ -4,13 +4,13 @@ Citing MOABB and related publications
 If you use MOABB in your experiments, please cite this library when
 publishing a paper to increase the visibility of open science initiatives:
 
--  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2025). Mother of all BCI Benchmarks (v1.2.0). Zenodo. `10.5281/zenodo.10034223 <https://www.doi.org/10.5281/zenodo.10034223>`__
+-  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Andreev, A., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2025). Mother of all BCI Benchmarks (Version 1.4.3). Zenodo. `10.5281/zenodo.10034223 <https://doi.org/10.5281/zenodo.10034223>`__
 
 and here is the Bibtex version:
 
 .. code-block:: bibtex
 
-    @software{Aristimunha_Mother_of_all_2023,
+    @software{Aristimunha_Mother_of_all,
       author       = {Aristimunha, Bruno and
                       Carrara, Igor and
                       Guetschel, Pierre and
@@ -25,19 +25,20 @@ and here is the Bibtex version:
                       Kalunga, Emmanuel and
                       Darmet, Ludovic and
                       Gregoire, Cattan and
-                      Abdul Hussain, Ali and
-                      Gatti, Ramiro and
-                      Goncharenko, Vladislav and
-                      Thielen, Jordy and
-                      Moreau, Thomas and
-                      Roy, Yannick and
-                      Jayaram, Vinay and
-                      Barachant, Alexandre and
+	                      Abdul Hussain, Ali and
+	                      Gatti, Ramiro and
+	                      Goncharenko, Vladislav and
+	                      Andreev, Anton and
+	                      Thielen, Jordy and
+	                      Moreau, Thomas and
+	                      Roy, Yannick and
+	                      Jayaram, Vinay and
+	                      Barachant, Alexandre and
                       Chevallier, Sylvain},
             title        = {Mother of all BCI Benchmarks},
             year         = 2025,
             publisher    = {Zenodo},
-            version      = {v1.2.0},
+            version      = {1.4.3},
             url = {https://github.com/NeuroTechX/moabb},
             doi = {10.5281/zenodo.10034223},
     }

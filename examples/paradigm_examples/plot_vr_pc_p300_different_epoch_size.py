@@ -133,7 +133,7 @@ for tmax in [0.2, 1.0]:
 
 ###############################################################################
 # Display of the data
-# ---------------
+# -------------------
 #
 # Let's transform or array to a dataframe.
 # We can then print it on the console, and

@@ -5,8 +5,8 @@ Within Session P300 with Learning Curve
 
 This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
-Additionally, we will evaluate external code. Make sure to have toeplitzlda installed,
-which can be found in requirements_external.txt
+Additionally, we will evaluate external code. Make sure to have tdlda installed
+, which can be `pip install git+https://github.com/jsosulski/tdlda.git`.
 
 We will compare three pipelines :
 
@@ -30,12 +30,13 @@ from pyriemann.estimation import XdawnCovariances
 from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import FunctionTransformer
-from toeplitzlda.classification import EpochsVectorizer, ToeplitzLDA
+from tdlda import TimeDecoupledLda
+from tdlda import Vectorizer as JumpingMeansVectorizer
 
 import moabb
 from moabb.datasets import BNCI2014_009
 from moabb.evaluations import WithinSessionEvaluation
+from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.paradigms import P300
 
 
@@ -60,7 +61,6 @@ labels_dict = {"Target": 1, "NonTarget": 0}
 
 # Riemannian geometry based classification
 pipelines["RG+LDA"] = make_pipeline(
-    FunctionTransformer(lambda epochs: epochs.get_data()),
     XdawnCovariances(nfilter=5, estimator="lwf", xdawn_estimator="scm"),
     TangentSpace(),
     LDA(solver="lsqr", shrinkage="auto"),
@@ -79,16 +79,18 @@ jumping_mean_ivals = [
     [0.41, 0.449],
     [0.45, 0.499],
 ]
-jmv = EpochsVectorizer(jumping_mean_ivals=jumping_mean_ivals)
+jmv = JumpingMeansVectorizer(
+    fs=processing_sampling_rate, jumping_mean_ivals=jumping_mean_ivals
+)
 
 pipelines["JM+LDA"] = make_pipeline(jmv, LDA(solver="lsqr", shrinkage="auto"))
 
-# ToeplitzLDA makes use of block-Toeplitz shaped covariance matrices
-c = ToeplitzLDA(n_channels=16)
-pipelines["JM+ToeplitzLDA"] = make_pipeline(jmv, c)
-c = ToeplitzLDA(n_channels=16)
-raw = EpochsVectorizer(select_ival=[0.1, 0.5])
-pipelines["ToeplitzLDA"] = make_pipeline(raw, c)
+# Time-decoupled Covariance classifier, needs information about number of
+# channels and time intervals
+c = TimeDecoupledLda(N_channels=16, N_times=10)
+# TD-LDA needs to know about the used jumping means intervals
+c.preproc = jmv
+pipelines["JM+TD-LDA"] = make_pipeline(jmv, c)
 
 ##############################################################################
 # Evaluation
@@ -114,11 +116,10 @@ np.random.seed(7536298)
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm,
     datasets=datasets,
-    data_size=data_size,
-    n_perms=n_perms,
+    cv_class=LearningCurveSplitter,
+    cv_kwargs=dict(data_size=data_size, n_perms=n_perms),
     suffix="examples_lr",
     overwrite=overwrite,
-    return_epochs=True,
 )
 
 results = evaluation.process(pipelines)

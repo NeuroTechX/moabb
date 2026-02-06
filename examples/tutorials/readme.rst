@@ -1,4 +1,3 @@
-:html_theme.sidebar_secondary.remove:
 Getting Started!
 -----------------
 Tutorials: Step-by-step introductions to MOABB’s usage and concepts. These cover getting started with MOABB, using multiple datasets,
