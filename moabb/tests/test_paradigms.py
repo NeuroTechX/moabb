@@ -1383,3 +1383,45 @@ class TestMetadata:
         assert "n/a" not in df.trial_type
 
         assert (epo.metadata.fillna(0) == metadata.fillna(0)).all().all()
+
+    def test_extras_preserved_through_set_raw_annotations(self, cached_dataset_root):
+        """
+        Test that annotation extras populated by mne-bids are preserved
+        through SetRawAnnotations.transform().
+        """
+        from collections.abc import Mapping
+
+        import mne
+
+        from moabb.datasets.preprocessing import SetRawAnnotations
+
+        dataset = LocalBIDSDataset(
+            cached_dataset_root,
+            events={"fake1": 1, "fake2": 2},
+            interval=[0, 3],
+            paradigm="imagery",
+        )
+        bids_path = dataset.bids_paths("1")[0]
+        raw = mne.io.read_raw(bids_path.fpath, preload=True, verbose=False)
+
+        # Manually set extras on the raw annotations to simulate mne-bids behavior
+        extras = [
+            {"value": str(i), "custom_col": f"meta_{i}"}
+            for i in range(len(raw.annotations))
+        ]
+        raw.annotations.extras = extras
+
+        transformer = SetRawAnnotations(
+            event_id={"fake1": 1, "fake2": 2}, interval=(0, 3)
+        )
+        raw_out = transformer.transform(raw)
+
+        # Verify extras are preserved
+        assert raw_out.annotations.extras is not None
+        assert len(raw_out.annotations.extras) == len(raw_out.annotations)
+        assert all(isinstance(e, Mapping) for e in raw_out.annotations.extras)
+        # Check that non-empty extras were transferred
+        assert any(len(e) > 0 for e in raw_out.annotations.extras)
+        # Verify specific extra fields are present
+        non_empty = [e for e in raw_out.annotations.extras if len(e) > 0]
+        assert all("value" in e and "custom_col" in e for e in non_empty)
