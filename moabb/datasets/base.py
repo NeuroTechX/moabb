@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any, Dict, Union
 import mne_bids
 import numpy as np
 import pandas as pd
-from mne_bids.path import _find_matching_sidecar
+from mne_bids import events_file_to_annotation_kwargs
 
 from moabb.datasets.bids_interface import StepType, _interface_map
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
@@ -930,22 +930,37 @@ class BaseBIDSDataset(BaseDataset):
             raise ValueError("More than one matching BIDS path found.")
         bids_path = bids_path_selected[0]
 
-        events_fname = _find_matching_sidecar(
-            bids_path, suffix="events", extension=".tsv", on_error="warn"
+        events_fname = bids_path.find_matching_sidecar(
+            suffix="events", extension=".tsv", on_error="warn"
+        )
+        if events_fname is None:
+            return None
+
+        # Use official mne-bids API — handles n/a filtering, stim_type compat, etc.
+        annot_kwargs = events_file_to_annotation_kwargs(events_fname)
+
+        # Build DataFrame from API output
+        dm = pd.DataFrame(
+            {
+                "onset": annot_kwargs["onset"],
+                "duration": annot_kwargs["duration"],
+                "trial_type": annot_kwargs["description"],
+            }
         )
 
-        dm = pd.read_csv(events_fname, sep="\t").assign(
-            subject=subject, session=session, run=run
-        )
+        # Reconstruct 'value' from event_id mapping (description -> integer)
+        dm["value"] = dm["trial_type"].map(annot_kwargs["event_id"])
 
-        # Filter rows with valid onset values
-        dm = dm[(dm.onset != "n/a") & (~dm.onset.isna())]
-        dm["onset"] = dm["onset"].astype(float)
+        # Add extras (custom columns beyond standard BIDS columns)
+        extras = annot_kwargs.get("extras")
+        if extras and len(extras) > 0:
+            extras_df = pd.DataFrame(extras)
+            dm = pd.concat([dm, extras_df], axis=1)
 
-        # Filter on trial_type to match the dataset's event_id
-        if "trial_type" in dm.columns:
-            dm = dm[(dm.trial_type != "n/a") & (dm.trial_type.isin(self.event_id.keys()))]
+        # Filter by dataset's event_id
+        dm = dm[dm["trial_type"].isin(self.event_id.keys())]
 
+        dm = dm.assign(subject=subject, session=session, run=run)
         return dm
 
 

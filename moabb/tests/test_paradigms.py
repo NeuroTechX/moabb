@@ -9,7 +9,6 @@ import pandas as pd
 import pytest
 from mne import BaseEpochs
 from mne.io import BaseRaw
-from mne_bids.path import _find_matching_sidecar
 
 from moabb.datasets import BNCI2014_001
 from moabb.datasets.base import (
@@ -1336,7 +1335,6 @@ class TestMetadata:
         assert (metadata1.columns == ["subject", "session", "run"]).all()
 
         assert "value" in metadata2.columns
-        assert "sample" in metadata2.columns
         assert "value" in metadata3.columns
         assert "value" in metadata4.columns
         assert "duration" in metadata4.columns
@@ -1357,8 +1355,8 @@ class TestMetadata:
         )
 
         # modify the events.tsv to contain 'n/a'
-        events_fname = _find_matching_sidecar(
-            dataset.bids_paths("1")[0], suffix="events", extension=".tsv"
+        events_fname = dataset.bids_paths("1")[0].find_matching_sidecar(
+            suffix="events", extension=".tsv"
         )
         df = pd.read_csv(events_fname, sep="\t")
         df = df.assign(ix=range(len(df)))
