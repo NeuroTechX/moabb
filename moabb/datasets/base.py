@@ -944,10 +944,7 @@ class BaseBIDSDataset(BaseDataset):
 
         # Filter on trial_type to match the dataset's event_id
         if "trial_type" in dm.columns:
-            dm = dm[
-                (dm.trial_type != "n/a")
-                & (dm.trial_type.isin(self.event_id.keys()))
-            ]
+            dm = dm[(dm.trial_type != "n/a") & (dm.trial_type.isin(self.event_id.keys()))]
 
         return dm
 
