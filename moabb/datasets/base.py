@@ -901,9 +901,6 @@ class BaseBIDSDataset(BaseDataset):
     ) -> None | pd.DataFrame:
         """
         Load additional metadata for a specific subject, session, and run.
-        This is just loading all metadata, filtering down to epochs levels
-        is done at ...
-
 
         Parameters
         ----------
@@ -920,7 +917,6 @@ class BaseBIDSDataset(BaseDataset):
             A DataFrame containing the additional metadata if available,
             otherwise None.
         """
-
         bids_paths = self.bids_paths(subject)
 
         # select only with matching session and run
@@ -942,20 +938,16 @@ class BaseBIDSDataset(BaseDataset):
             subject=subject, session=session, run=run
         )
 
-        # As long as this is not part of mne-bids https://github.com/mne-tools/mne-bids/pull/1389,
-        # we cannot will functionally replicate the filtering (as we only)
-        # need the dropping part
+        # Filter rows with valid onset values
         dm = dm[(dm.onset != "n/a") & (~dm.onset.isna())]
         dm["onset"] = dm["onset"].astype(float)
 
+        # Filter on trial_type to match the dataset's event_id
         if "trial_type" in dm.columns:
-            dm = dm[(dm.trial_type != "n/a") & (~dm.onset.isna())]
-        elif "value" in dm.columns:
-            dm = dm[(dm.value != "n/a") & (~dm.onset.isna())]
-
-        # for the bids_dataset we can assume that the events are taken from
-        # a `trial_type` columns -> filter on this
-        dm = dm[dm["trial_type"].isin(self.event_id.keys())]
+            dm = dm[
+                (dm.trial_type != "n/a")
+                & (dm.trial_type.isin(self.event_id.keys()))
+            ]
 
         return dm
 
