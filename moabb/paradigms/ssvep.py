@@ -15,44 +15,11 @@ class BaseSSVEP(BaseParadigm):
 
     Parameters
     ----------
-    filters: list of list | None (default [7, 45])
+    filters: list of list | None (default ((7, 45),))
         Bank of bandpass filter to apply.
-
-    events: list of str | None (default None)
-        List of stimulation frequencies. If None, use all stimulus
-        found in the dataset.
 
     n_classes: int or None (default None)
         Number of classes each dataset must have. All dataset classes if None.
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        List of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -192,49 +159,35 @@ class SSVEP(BaseSSVEP):
 
     fmax: float (default 45)
         cutoff frequency (Hz) for the low pass filter
-
-    events: list of str | None (default None)
-        List of stimulation frequencies. If None, use all stimulus
-        found in the dataset.
-
-    n_classes: int or None (default None)
-        Number of classes each dataset must have. All dataset classes if None
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        List of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
-    def __init__(self, fmin=7, fmax=45, **kwargs):
-        """Init function for the SSVEP."""
-        if "filters" in kwargs.keys():
-            raise (ValueError("SSVEP does not take argument filters"))
-        super().__init__(filters=[(fmin, fmax)], **kwargs)
+    def __init__(
+        self,
+        fmin=7,
+        fmax=45,
+        filters=None,
+        events=None,
+        n_classes=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        if filters is not None:
+            raise ValueError("SSVEP does not take argument filters")
+        super().__init__(
+            filters=[(fmin, fmax)],
+            events=events,
+            n_classes=n_classes,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
 
 
 class FilterBankSSVEP(BaseSSVEP):
@@ -248,39 +201,31 @@ class FilterBankSSVEP(BaseSSVEP):
     ----------
     filters: list of list | None (default None)
         If None, bandpass set around freqs of events with [f_n-0.5, f_n+0.5]
-    events: List of str,
-        List of stimulation frequencies. If None, use all stimulus
-        found in the dataset.
-    n_classes: int or None (default 2)
-        Number of classes each dataset must have. All dataset classes if None
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-    baseline: None | tuple of length 2
-        The time interval to consider as “baseline” when applying baseline
-        correction. If None, do not apply baseline correction.
-        If a tuple (a, b), the interval is between a and b (in seconds),
-        including the endpoints.
-        Correction is applied by computing the mean of the baseline period
-        and subtracting it from the data (see mne.Epochs)
-    channels: list of str | None (default None)
-        List of channel to select. If None, use all EEG channels available in
-        the dataset.
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
-    def __init__(self, filters=None, **kwargs):
-        """Init in the FilterBankSSVEP paradigm."""
-        super().__init__(filters=filters, **kwargs)
+    def __init__(
+        self,
+        filters=None,
+        events=None,
+        n_classes=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        super().__init__(
+            filters=filters,
+            events=events,
+            n_classes=n_classes,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
 
 
 class FakeSSVEPParadigm(BaseSSVEP):

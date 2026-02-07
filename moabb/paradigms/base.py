@@ -8,6 +8,7 @@ from typing import List, Literal, Optional, Tuple
 import mne
 import numpy as np
 import pandas as pd
+from docstring_inheritance import NumpyDocstringInheritanceInitMeta
 from sklearn.metrics import check_scoring, make_scorer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
@@ -188,7 +189,11 @@ def _normalize_scorer(scorer):
     return scorer
 
 
-class BaseProcessing(metaclass=abc.ABCMeta):
+class _DocstringABCMeta(abc.ABCMeta, NumpyDocstringInheritanceInitMeta):
+    pass
+
+
+class BaseProcessing(metaclass=_DocstringABCMeta):
     """Base Processing.
 
     Please use one of the child classes

@@ -15,45 +15,6 @@ class BaseMotorImagery(BaseParadigm):
     """Base Motor imagery paradigm.
 
     Please use one of the child classes
-
-    Parameters
-    ----------
-
-    filters: list of list (defaults [[7, 35]])
-        bank of bandpass filter to apply.
-
-    events: List of str | None (default None)
-        event to use for epoching. If None, default to all events defined in
-        the dataset.
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        list of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -124,45 +85,30 @@ class SinglePass(BaseMotorImagery):
 
     fmax: float (default 32)
         cutoff frequency (Hz) for the low pass filter
-
-    events: List of str | None (default None)
-        event to use for epoching. If None, default to all events defined in
-        the dataset.
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        list of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
-    def __init__(self, fmin=8, fmax=32, **kwargs):
-        if "filters" in kwargs.keys():
-            raise (ValueError("MotorImagery does not take argument filters"))
-        super().__init__(filters=[[fmin, fmax]], **kwargs)
+    def __init__(
+        self,
+        fmin=8,
+        fmax=32,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        super().__init__(
+            filters=[[fmin, fmax]],
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
 
 
 class FilterBank(BaseMotorImagery):
@@ -171,10 +117,24 @@ class FilterBank(BaseMotorImagery):
     def __init__(
         self,
         filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
-        **kwargs,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
     ):
-        """init."""
-        super().__init__(filters=filters, **kwargs)
+        super().__init__(
+            filters=filters,
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
 
 
 class LeftRightImagery(SinglePass):
@@ -183,10 +143,31 @@ class LeftRightImagery(SinglePass):
     Metric is 'roc_auc' by default
     """
 
-    def __init__(self, **kwargs):
-        if "events" in kwargs.keys():
-            raise (ValueError("LeftRightImagery dont accept events"))
-        super().__init__(events=["left_hand", "right_hand"], **kwargs)
+    def __init__(
+        self,
+        fmin=8,
+        fmax=32,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        if events is not None:
+            raise ValueError("LeftRightImagery dont accept events")
+        super().__init__(
+            fmin=fmin,
+            fmax=fmax,
+            events=["left_hand", "right_hand"],
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
@@ -204,10 +185,29 @@ class FilterBankLeftRightImagery(FilterBank):
     Metric is 'roc_auc' by default
     """
 
-    def __init__(self, **kwargs):
-        if "events" in kwargs.keys():
-            raise (ValueError("LeftRightImagery dont accept events"))
-        super().__init__(events=["left_hand", "right_hand"], **kwargs)
+    def __init__(
+        self,
+        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        if events is not None:
+            raise ValueError("LeftRightImagery dont accept events")
+        super().__init__(
+            filters=filters,
+            events=["left_hand", "right_hand"],
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
@@ -236,9 +236,28 @@ class FilterBankMotorImagery(FilterBank):
         requires all imagery sorts to be within the events list.
     """
 
-    def __init__(self, n_classes=2, **kwargs):
-        "docstring"
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        n_classes=2,
+        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        super().__init__(
+            filters=filters,
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
         self.n_classes = n_classes
 
         if self.events is None:
@@ -318,45 +337,32 @@ class MotorImagery(SinglePass):
     n_classes: int,
         number of classes each dataset must have. If events is given,
         requires all imagery sorts to be within the events list.
-
-    fmin: float (default 8)
-        cutoff frequency (Hz) for the high pass filter
-
-    fmax: float (default 32)
-        cutoff frequency (Hz) for the low pass filter
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        list of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
-    def __init__(self, n_classes=None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        n_classes=None,
+        fmin=8,
+        fmax=32,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        super().__init__(
+            fmin=fmin,
+            fmax=fmax,
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
         self.n_classes = n_classes
 
         if self.events is None:
