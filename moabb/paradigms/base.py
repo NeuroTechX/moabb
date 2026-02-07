@@ -14,7 +14,6 @@ from sklearn.preprocessing import FunctionTransformer
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bids_interface import StepType
-from moabb.utils import MoabbMetaClass
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
     EventsToLabels,
@@ -28,6 +27,7 @@ from moabb.datasets.preprocessing import (
     get_resample_pipeline,
     make_fixed_pipeline,
 )
+from moabb.utils import MoabbMetaClass
 
 
 log = logging.getLogger(__name__)
