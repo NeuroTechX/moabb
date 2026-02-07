@@ -146,7 +146,9 @@ class P300(BaseP300):
         if "filters" in kwargs.keys():
             raise (ValueError("P300 does not take argument filters"))
         if "events" not in kwargs.keys():
-            super().__init__(filters=[[fmin, fmax]], events=["Target", "NonTarget"], **kwargs)
+            super().__init__(
+                filters=[[fmin, fmax]], events=["Target", "NonTarget"], **kwargs
+            )
         else:
             super().__init__(filters=[[fmin, fmax]], **kwargs)
 
