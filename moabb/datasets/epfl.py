@@ -1,5 +1,6 @@
 import datetime as dt
 import glob
+import logging
 import os
 import zipfile
 
@@ -12,20 +13,14 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
+logger = logging.getLogger(__name__)
+
+
 EPFLP300_URL = "http://documents.epfl.ch/groups/m/mm/mmspg/www/BCI/p300/"
 
 
 class EPFLP300(BaseDataset):
     """P300 dataset from Hoffmann et al 2008.
-
-    .. admonition:: Dataset summary
-
-
-        ========  =======  =======  =================  ===============  ===============  ===========
-        Name        #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ========  =======  =======  =================  ===============  ===============  ===========
-        EPFLP300        8       32  2753 NT / 551 T    1s               2048Hz                     4
-        ========  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from the paper [1]_.
 
@@ -181,7 +176,7 @@ class EPFLP300(BaseDataset):
 
         # check if has to unzip
         if not (os.path.isdir(path_folder + "subject{:d}".format(subject))):
-            print("unzip", path_zip)
+            logger.info("unzip", path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 

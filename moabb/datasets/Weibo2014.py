@@ -64,15 +64,6 @@ def eeg_data_path(base_path, subject):
 class Weibo2014(BaseDataset):
     """Motor Imagery dataset from Weibo et al 2014.
 
-    .. admonition:: Dataset summary
-
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Weibo2014       10       60           7                 80  4s            200Hz                      1
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
     Dataset from the article *Evaluation of EEG oscillatory patterns and
     cognitive process during simple and compound limb motor imagery* [1]_.
 
@@ -101,7 +92,7 @@ class Weibo2014(BaseDataset):
     tasks was randomized. Intersection break was about 5 to 10 minutes.
 
     References
-    -----------
+    ----------
     .. [1] Yi, Weibo, et al. "Evaluation of EEG oscillatory patterns and
            cognitive process during simple and compound limb motor imagery."
            PloS one 9.12 (2014). https://doi.org/10.1371/journal.pone.0114853

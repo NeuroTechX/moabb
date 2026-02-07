@@ -22,16 +22,7 @@ BASE_URL = "https://ndownloader.figshare.com/files/"
 
 
 class Stieger2021(BaseDataset):
-    """Motor Imagery dataset from Stieger et al. 2021.
-
-    .. admonition:: Dataset summary
-
-
-        ============= ======= ======= ========== ================= ============ =============== ===========
-        Name          #Subj   #Chan   #Classes   #Trials / class   Trials len   Sampling rate   #Sessions
-        ============= ======= ======= ========== ================= ============ =============== ===========
-        Stieger2021   62      64      4          450               3s           1000Hz          10
-        ============= ======= ======= ========== ================= ============ =============== ===========
+    """Motor Imagery dataset from Stieger et al. 2021 [1]_.
 
     The main goals of our original study were to characterize how individuals
     learn to control SMR-BCIs and to test whether this learning can be improved
@@ -129,7 +120,7 @@ class Stieger2021(BaseDataset):
     .. versionadded:: 1.1.0
     """
 
-    def __init__(self, interval=[0, 3], sessions=None):
+    def __init__(self, interval=[0, 3], sessions=None, fix_bads=True):
         super().__init__(
             subjects=list(range(1, 63)),
             sessions_per_subject=11,
@@ -139,7 +130,7 @@ class Stieger2021(BaseDataset):
             paradigm="imagery",
             doi="10.1038/s41597-021-00883-1",
         )
-
+        self.fix_bads = fix_bads
         self.sessions = sessions
         self.figshare_id = 13123148  # id on figshare
 
@@ -236,8 +227,9 @@ class Stieger2021(BaseDataset):
                     and (container.TrialData[i].triallength + 2) > self.interval[1]
                 ):
                     # this should be the cue time-point
-                    if container.time[i][2 * srate] == 0:
-                        raise ValueError("This should be the cue time-point,")
+                    assert (
+                        container.time[i][2 * srate] == 0
+                    ), "This should be the cue time-point"
                     stim[2 * srate] = y
                 X_flat.append(x)
                 stim_flat.append(stim[None, :])
@@ -272,18 +264,28 @@ class Stieger2021(BaseDataset):
                 badchanidxs = []
 
             for idx in badchanidxs:
-                used_channels = ch_names if self.channels is None else self.channels
+                used_channels = (
+                    ch_names
+                    if (not hasattr(self, "channels") or self.channels is None)
+                    else self.channels
+                )
                 if eeg_ch_names[idx - 1] in used_channels:
                     raw.info["bads"].append(eeg_ch_names[idx - 1])
 
             if len(raw.info["bads"]) > 0:
                 LOGGER.info(
-                    "Record {subject}/{session} (subject/session) contains "
-                    "bad channels: {bad_info}",
-                    subject=subject,
-                    session=session,
-                    bad_info=raw.info["bads"],
+                    "Record %s/%s (subject/session) contains bad channels: %s",
+                    subject,
+                    session,
+                    raw.info["bads"],
                 )
+                if self.fix_bads:
+                    raw = raw.interpolate_bads()
+                    LOGGER.info(
+                        "Bad channels were interpolated for record %s/%s (subject/session)",
+                        subject,
+                        session,
+                    )
 
-            subject_data[session] = {"run_0": raw}
+            subject_data[str(session)] = {"0": raw}
         return subject_data

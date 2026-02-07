@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import abc
 import logging
 from operator import methodcaller
-from typing import List, Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 import mne
 import numpy as np
@@ -393,6 +395,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         cache_config=None,
         postprocess_pipeline=None,
         process_pipelines=None,
+        additional_metadata: Literal["all"] | list[str] = None,
     ):
         """
         Return the data for a list of subject.
@@ -432,6 +435,14 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             accordingly, i.e., if your custom pipeline returns raw objects,
             you must also set ``return_raws=True``, otherwise you will get unexpected results.
             Only use it if you know what you are doing.
+        additional_metadata: Literal["all"] | list[str] | None
+            Additional metadata to be loaded from the dataset.
+            If None, the default metadata will be loaded containing
+            `subject`, `session` and `run`. If "all", all columns of the `events.tsv`
+            file will be loaded. A list of column names can be passed to just
+            select these columns in addition to the three default values mentioned
+            before. This parameter works regardless of the return type
+            (epochs, raws, or array).
 
         Returns
         -------
@@ -489,6 +500,22 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             for session, runs in sessions.items():
                 for run in runs.keys():
                     proc = [data_i[subject][session][run] for data_i in data]
+
+                    if additional_metadata:
+                        ext_metadata = [
+                            dataset.get_additional_metadata(
+                                subject=subject, session=session, run=run
+                            )
+                        ] * len(process_pipelines)
+
+                        if isinstance(additional_metadata, list):
+                            ext_metadata = [
+                                dm[["session", "subject", "run"] + additional_metadata]
+                                for dm in ext_metadata
+                            ]
+                    else:
+                        ext_metadata = [None] * len(process_pipelines)
+
                     if any(obj is None for obj in proc):
                         # this mean the run did not contain any selected event
                         # go to next
@@ -504,6 +531,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                             if len(self.filters) == 1
                             else mne.concatenate_epochs(proc)
                         )
+
                     elif return_raws:
                         assert all(len(proc[0]) == len(p) for p in proc[1:])
                         n = 1
@@ -533,16 +561,30 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                     met["subject"] = subject
                     met["session"] = session
                     met["run"] = run
+
                     metadata.append(met)
+
+                    # overwrite if additional is required
+                    if additional_metadata:
+                        # extend the metadata according to the filters
+
+                        dmeta_ext = (
+                            ext_metadata[0].copy()
+                            if isinstance(ext_metadata[0], pd.DataFrame)
+                            else pd.DataFrame()
+                        )
+                        metadata[-1] = dmeta_ext
 
                     if return_epochs:
                         x.metadata = (
-                            met.copy()
+                            metadata[-1].copy()
                             if len(self.filters) == 1
                             else pd.concat(
-                                [met.copy()] * len(self.filters), ignore_index=True
+                                [metadata[-1].copy()] * len(self.filters),
+                                ignore_index=True,
                             )
                         )
+
                     X.append(x)
                     labels.append(lbs)
 

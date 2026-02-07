@@ -1,3 +1,4 @@
+import logging
 import re
 import zipfile
 from abc import ABC
@@ -8,6 +9,9 @@ import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+
+
+logger = logging.getLogger(__name__)
 
 
 VSPELL_BASE_URL = "https://zenodo.org/record/"
@@ -51,7 +55,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
         if not vhdr_file_patter_match:
             # TODO: raise a wild exception?
-            print(vhdr_file_path)
+            logger.info(vhdr_file_path)
 
         session_name = "0"
         block_idx = vhdr_file_patter_match.group(1)
@@ -117,15 +121,6 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
     """Learning from label proportions for a visual matrix speller (ERP)
     dataset from Hübner et al 2017 [1]_.
 
-    .. admonition:: Dataset summary
-
-
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        Huebner2017       13       31  364 NT / 112 T     0.9s             1000Hz                     3
-        ===========  =======  =======  =================  ===============  ===============  ===========
-
     **Dataset description**
 
     The subjects were asked to spell the sentence: “Franzy jagt im komplett verwahrlosten Taxi quer durch Freiburg”.
@@ -183,15 +178,6 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
 class Huebner2018(_BaseVisualMatrixSpellerDataset):
     """Mixture of LLP and EM for a visual matrix speller (ERP) dataset from
     Hübner et al 2018 [1]_.
-
-    .. admonition:: Dataset summary
-
-
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        Huebner2018       12       31  364 NT / 112 T     0.9s             1000Hz                     3
-        ===========  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -263,7 +249,7 @@ def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
         preload=True,
         verbose=verbose,
     )  # type: mne.io.Raw
-    raw_bvr.set_montage("standard_1020")
+    raw_bvr = raw_bvr.set_montage("standard_1020")
 
     events = _parse_events(raw_bvr)
 

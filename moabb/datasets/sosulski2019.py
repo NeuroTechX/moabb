@@ -7,26 +7,17 @@ import mne
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
-SPOT_PILOT_P300_URL = (
-    "https://freidok.uni-freiburg.de/fedora/objects/freidok:154576/datastreams"
-)
+# New freidok URL - the old fedora URLs no longer work
+SPOT_PILOT_P300_URL = "https://freidok.uni-freiburg.de/dnb/download/154576"
 
 
 class Sosulski2019(BaseDataset):
     """P300 dataset from initial spot study.
 
     Dataset [1]_, study on spatial transfer between SOAs [2]_, actual paradigm / online optimization [3]_.
-
-    .. admonition:: Dataset summary
-
-
-        =============  =======  =======  =================  ===============  ===============  ===========
-        Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        =============  =======  =======  =================  ===============  ===============  ===========
-        Sosulski2019       13       31   7500 NT / 1500 T        1.2s        1000Hz                     1
-        =============  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
     This dataset contains multiple small trials of an auditory oddball paradigm. The paradigm presented two different
@@ -104,12 +95,13 @@ class Sosulski2019(BaseDataset):
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
         self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
+        self.events = dict(Target=21, NonTarget=1)
         code = "Sosulski2019"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
             subjects=list(range(1, 13 + 1)),
             sessions_per_subject=1,
-            events=dict(Target=21, NonTarget=1),
+            events=self.events,
             code=code,
             interval=interval,
             paradigm="p300",
@@ -142,7 +134,7 @@ class Sosulski2019(BaseDataset):
         if self.reject_non_iid:
             raw.set_annotations(raw.annotations[7:85])  # non-iid rejection
         raw.annotations.rename(self.description_map)
-        return raw
+        return stim_channels_with_selected_ids(raw, self.events)
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -178,17 +170,25 @@ class Sosulski2019(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        # check if has the .zip
-        file_number = Sosulski2019._map_subject_to_filenumber(subject)
-        url = f"{SPOT_PILOT_P300_URL}/FILE{file_number}/content"
-        path_zip = dl.data_dl(url, "spot")
-        path_folder = path_zip[:-8] + f"/subject{subject}"
+        # Download the main ZIP file containing all subjects
+        path_zip = dl.data_dl(SPOT_PILOT_P300_URL, "spot")
+        path_base = os.path.dirname(path_zip)
+        path_extracted = os.path.join(path_base, "extracted")
 
-        # check if has to unzip
-        if not (os.path.isdir(path_folder)):
-            print("unzip", path_zip)
-            zip_ref = zipfile.ZipFile(path_zip, "r")
-            zip_ref.extractall(path_zip[:-7])
+        # Extract main ZIP if not already done
+        if not os.path.isdir(path_extracted):
+            with zipfile.ZipFile(path_zip, "r") as zip_ref:
+                zip_ref.extractall(path_extracted)
+
+        # Find and extract subject-specific ZIP
+        subject_zip_name = f"subject{subject}.zip"
+        subject_zip_path = os.path.join(path_extracted, subject_zip_name)
+        path_folder = os.path.join(path_extracted, f"subject{subject}")
+
+        if not os.path.isdir(path_folder):
+            if os.path.exists(subject_zip_path):
+                with zipfile.ZipFile(subject_zip_path, "r") as zip_ref:
+                    zip_ref.extractall(path_extracted)
 
         # get the path to all files
         # We only load data from the second run. The first run is a potpourri of SOAs

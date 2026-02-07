@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 import logging
+import re
+from typing import Any, Literal, Sequence
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sea
+from matplotlib.collections import PatchCollection
+from matplotlib.patches import Circle, RegularPolygon
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import (
@@ -86,32 +92,87 @@ def score_plot(data, pipelines=None, orientation="vertical"):
         ax.axhline(0.5, linestyle="--", color="k", linewidth=2)
     ax.set_title("Scores per dataset and algorithm")
     handles, labels = ax.get_legend_handles_labels()
-    color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
+    color_dict = {}
+    for lb, h in zip(labels, handles):
+        if hasattr(h, "get_facecolor"):
+            color_dict[lb] = h.get_facecolor()[0]
+        elif hasattr(h, "get_color"):
+            color_dict[lb] = h.get_color()
+        elif hasattr(h, "get_markerfacecolor"):
+            color_dict[lb] = h.get_markerfacecolor()
+        else:
+            # Fallback: try to get color from the line
+            color_dict[lb] = h.get_color() if hasattr(h, "get_color") else "C0"
     plt.tight_layout()
 
     return fig, color_dict
 
 
-def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
-    """Plot code carbon consume for the results from the benchmark.
+def codecarbon_plot(
+    data,
+    order_list=None,
+    pipelines=None,
+    country="",
+    include_efficiency=False,
+    include_power_vs_score=False,
+):
+    """Plot code carbon consumption for results from the benchmark.
+
+    Creates comprehensive emissions visualizations leveraging detailed CodeCarbon
+    tracking data. By default, shows CO2 emissions per dataset and algorithm.
+    Additional metrics can be enabled to show efficiency trade-offs and hardware
+    utilization.
 
     Parameters
     ----------
-    data: output of Results.to_dataframe()
-        results on datasets
-    order_list: list of str | None
-        order of pipelines to include in this plot
-    pipelines: list of str | None
-        pipelines to include in this plot
-    country: str
-        country to include in the title
-    pipelines: list of str | None
-        pipelines to include in this plot
+    data : DataFrame
+        Output of Results.to_dataframe() containing benchmark results.
+        Should include 'carbon_emission' and 'score' columns for enhanced analysis.
+    order_list : list of str | None, default=None
+        Order of pipelines to include in the plot. If None, uses default order.
+    pipelines : list of str | None, default=None
+        Specific pipelines to include in the plot. If None, includes all pipelines.
+    country : str, default=""
+        Country name to include in plot titles for geographic context.
+    include_efficiency : bool, default=False
+        If True, adds subplot showing energy efficiency (score per kg CO2).
+        Highlights pipelines with best accuracy-to-emissions ratio.
+    include_power_vs_score : bool, default=False
+        If True, adds subplot showing accuracy vs emissions scatter plot.
+        Useful for identifying Pareto-optimal pipelines balancing performance
+        and sustainability.
 
     Returns
     -------
-    fig: Figure
-        Pyplot handle
+    fig : Figure
+        Pyplot figure handle containing the requested visualizations.
+
+    Notes
+    -----
+    The function expects CodeCarbon to have been enabled during benchmark with
+    save_to_file=True to capture detailed emissions data. If detailed metrics
+    are unavailable, falls back to basic CO2 emissions visualization.
+
+    The plot uses logarithmic scale for CO2 emissions due to potential wide
+    variance across different datasets and pipeline types.
+
+    Examples
+    --------
+    Basic usage (emissions only):
+    >>> results = benchmark(pipelines="./pipelines/", codecarbon_config={"save_to_file": True})
+    >>> fig = codecarbon_plot(results)
+
+    With efficiency metrics:
+    >>> fig = codecarbon_plot(results, include_efficiency=True, country="France")
+
+    With multiple views:
+    >>> fig = codecarbon_plot(
+    ...     results,
+    ...     include_efficiency=True,
+    ...     include_power_vs_score=True,
+    ...     order_list=["CSP+SVM", "Tangent Space LR"],
+    ...     pipelines=["CSP+SVM", "Tangent Space LR"],
+    ... )
     """
     data = collapse_session_scores(data)
     unique_ids = data["dataset"].apply(_simplify_names)
@@ -123,24 +184,243 @@ def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
     if pipelines is not None:
         data = data[data.pipeline.isin(pipelines)]
 
-    data = data.rename(columns={"carbon emission": "carbon_emission"})
+    # Rename for consistency
+    if "carbon emission" in data.columns:
+        data = data.rename(columns={"carbon emission": "carbon_emission"})
 
-    fig = sea.catplot(
-        kind="bar",
-        data=data,
-        x="dataset",
-        y="carbon_emission",
-        hue="pipeline",
-        palette=PIPELINE_PALETTE,
-        height=8.5,
-        hue_order=order_list,
-    ).set(title=r"$CO_2$ emission per dataset and algorithm" + country)
-    fig.set(yscale="log")
-    fig.tight_layout()
-    fig.set_ylabels(r"$CO_2$ emission (Log Scale)")
-    fig.set_xlabels("Dataset")
+    # Prepare data for main plot
+    plot_data = data.copy()
 
+    # Determine number of subplots
+    n_plots = 1
+    if include_efficiency and "carbon_emission" in plot_data.columns:
+        n_plots += 1
+    if include_power_vs_score and "carbon_emission" in plot_data.columns:
+        n_plots += 1
+
+    # Create figure with subplots if needed
+    if n_plots > 1:
+        fig, axes = plt.subplots(1, n_plots, figsize=(7 * n_plots, 8))
+        # axes is already a numpy array of Axes objects
+    else:
+        fig, ax = plt.subplots(1, 1, figsize=(12, 8.5))
+        axes = [ax]  # Wrap single axis in list for consistent indexing
+
+    # Plot 1: Main CO2 emissions by dataset and algorithm
+    ax = axes[0]
+    pivot_data = (
+        plot_data.groupby(["dataset", "pipeline"])["carbon_emission"].mean().reset_index()
+    )
+
+    # Get unique pipelines in the desired order
+    unique_pipelines = (
+        [p for p in order_list if p in pivot_data["pipeline"].unique()]
+        if order_list
+        else list(pivot_data["pipeline"].unique())
+    )
+
+    # Create bar plot
+    for idx, pipeline in enumerate(unique_pipelines):
+        pipeline_data = pivot_data[pivot_data["pipeline"] == pipeline]
+        color = PIPELINE_PALETTE[idx % len(PIPELINE_PALETTE)]
+        ax.bar(
+            pipeline_data["dataset"],
+            pipeline_data["carbon_emission"],
+            label=pipeline,
+            alpha=0.8,
+            width=0.8 / len(unique_pipelines),
+            color=color,
+        )
+
+    ax.set_yscale("log")
+    ax.set_ylabel(r"$CO_2$ Emission (kg, Log Scale)")
+    ax.set_xlabel("Dataset")
+    title = r"$CO_2$ Emission per Dataset and Algorithm"
+    if country:
+        title += f" {country}"
+    ax.set_title(title, fontsize=12, fontweight="bold")
+    ax.legend(title="Pipeline", bbox_to_anchor=(1.05, 1), loc="upper left")
+    ax.grid(True, alpha=0.3)
+
+    # Plot 2: Energy efficiency (score per kg CO2)
+    if include_efficiency and n_plots > 1:
+        ax = axes[1]
+        efficiency_data = plot_data.groupby("pipeline").apply(
+            lambda x: pd.Series(
+                {
+                    "avg_score": x["score"].mean(),
+                    "avg_emissions": x["carbon_emission"].mean(),
+                    "n_evals": len(x),
+                }
+            )
+        )
+        efficiency_data["efficiency"] = (
+            efficiency_data["avg_score"] / efficiency_data["avg_emissions"]
+        )
+        efficiency_data = efficiency_data.sort_values("efficiency", ascending=False)
+
+        colors = [
+            (
+                PIPELINE_PALETTE[unique_pipelines.index(p) % len(PIPELINE_PALETTE)]
+                if p in unique_pipelines
+                else PIPELINE_PALETTE[0]
+            )
+            for p in efficiency_data.index
+        ]
+        bars = ax.barh(efficiency_data.index, efficiency_data["efficiency"], color=colors)
+
+        # Add value labels on bars
+        for bar in bars:
+            width = bar.get_width()
+            ax.text(
+                width,
+                bar.get_y() + bar.get_height() / 2,
+                f"{width:.2f}",
+                ha="left",
+                va="center",
+                fontsize=9,
+            )
+
+        ax.set_xlabel("Energy Efficiency (Accuracy / kg CO2)")
+        ax.set_title(
+            "Pipeline Energy Efficiency\n(Higher is Better)",
+            fontsize=12,
+            fontweight="bold",
+        )
+        ax.grid(True, alpha=0.3, axis="x")
+
+    # Plot 3: Accuracy vs Emissions scatter
+    if include_power_vs_score and n_plots > 2:
+        ax = axes[2]
+        scatter_data = plot_data.groupby("pipeline").apply(
+            lambda x: pd.Series(
+                {
+                    "avg_score": x["score"].mean(),
+                    "avg_emissions": x["carbon_emission"].mean(),
+                    "count": len(x),
+                }
+            )
+        )
+
+        for idx, (pipeline, row) in enumerate(scatter_data.iterrows()):
+            color = (
+                PIPELINE_PALETTE[unique_pipelines.index(pipeline) % len(PIPELINE_PALETTE)]
+                if pipeline in unique_pipelines
+                else PIPELINE_PALETTE[0]
+            )
+            ax.scatter(
+                row["avg_emissions"],
+                row["avg_score"],
+                s=300,
+                alpha=0.7,
+                color=color,
+                edgecolors="black",
+                linewidth=1.5,
+            )
+            ax.annotate(
+                pipeline,
+                (row["avg_emissions"], row["avg_score"]),
+                xytext=(5, 5),
+                textcoords="offset points",
+                fontsize=9,
+                fontweight="bold",
+            )
+
+        ax.set_xlabel(r"Avg CO$_2$ Emissions (kg)")
+        ax.set_ylabel("Avg Accuracy Score")
+        ax.set_title(
+            "Accuracy vs Emissions Trade-off\n(Upper-Right is Better)",
+            fontsize=12,
+            fontweight="bold",
+        )
+        ax.grid(True, alpha=0.3)
+        ax.set_xscale("log")
+
+    plt.tight_layout()
     return fig
+
+
+def emissions_summary(data, order_list=None, pipelines=None):
+    """Generate a summary report of emissions metrics from benchmark results.
+
+    Provides comprehensive analysis of energy consumption and sustainability
+    metrics across pipelines, including efficiency rankings and trade-offs.
+
+    Parameters
+    ----------
+    data : DataFrame
+        Output of Results.to_dataframe() containing benchmark results.
+        Must include 'carbon_emission' and 'score' columns.
+    order_list : list of str | None, default=None
+        Order of pipelines to include in the summary.
+    pipelines : list of str | None, default=None
+        Specific pipelines to include in the summary.
+
+    Returns
+    -------
+    summary : DataFrame
+        Summary statistics with columns:
+        - pipeline : Pipeline name
+        - avg_score : Average accuracy score
+        - avg_emissions : Average CO2 emissions (kg)
+        - total_emissions : Total CO2 emissions (kg)
+        - efficiency : Score per kg CO2 (higher is better)
+        - n_evaluations : Number of evaluations performed
+
+    Examples
+    --------
+    >>> results = benchmark(pipelines="./pipelines/", ...)
+    >>> summary = emissions_summary(results)
+    >>> print(summary.sort_values("efficiency", ascending=False))
+    """
+    data = collapse_session_scores(data)
+
+    if pipelines is not None:
+        data = data[data.pipeline.isin(pipelines)]
+
+    if "carbon emission" in data.columns:
+        data = data.rename(columns={"carbon emission": "carbon_emission"})
+
+    if "carbon_emission" not in data.columns:
+        log.warning("No carbon_emission data found in results")
+        return None
+
+    # Calculate summary statistics per pipeline
+    summary = data.groupby("pipeline").apply(
+        lambda x: pd.Series(
+            {
+                "avg_score": x["score"].mean(),
+                "std_score": x["score"].std(),
+                "avg_emissions": x["carbon_emission"].mean(),
+                "total_emissions": x["carbon_emission"].sum(),
+                "n_evaluations": len(x),
+            }
+        )
+    )
+
+    # Calculate efficiency metrics
+    summary["efficiency"] = summary["avg_score"] / summary["avg_emissions"]
+    summary["emissions_per_eval"] = summary["total_emissions"] / summary["n_evaluations"]
+
+    # Reorder columns
+    summary = summary[
+        [
+            "avg_score",
+            "std_score",
+            "avg_emissions",
+            "total_emissions",
+            "emissions_per_eval",
+            "efficiency",
+            "n_evaluations",
+        ]
+    ]
+
+    # Apply ordering if provided
+    if order_list is not None:
+        existing_order = [p for p in order_list if p in summary.index]
+        summary = summary.loc[existing_order]
+
+    return summary
 
 
 def paired_plot(data, alg1, alg2):
@@ -196,7 +476,7 @@ def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
     if simplify:
         effect_df.columns = effect_df.columns.map(_simplify_names)
         sig_df.columns = sig_df.columns.map(_simplify_names)
-    annot_df = effect_df.copy()
+    annot_df = effect_df.copy().astype(object)
     for row in annot_df.index:
         for col in annot_df.columns:
             if effect_df.loc[row, col] > 0:
@@ -295,10 +575,10 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     _min = 0
     _max = 0
     for ind, d in enumerate(dsets):
-        nsub = float(df_fw.loc[df_fw.dataset == d, "nsub"])
+        nsub = df_fw.loc[df_fw.dataset == d, "nsub"].item()
         t_dof = nsub - 1
         ci.append(t.ppf(0.95, t_dof) / np.sqrt(nsub))
-        v = float(df_fw.loc[df_fw.dataset == d, "smd"])
+        v = df_fw.loc[df_fw.dataset == d, "smd"].item()
         if v > 0:
             p = df_fw.loc[df_fw.dataset == d, "p"].item()
             if p < 0.05:
@@ -383,3 +663,363 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     fig.tight_layout()
 
     return fig
+
+
+def _get_hexa_grid(n, diameter, center):
+    x = np.arange(n) - n // 2 + np.random.rand()  # TODO
+    y = np.arange(n) - n // 2 + np.random.rand()
+    x, y = np.meshgrid(x, y)
+    x = x.flatten()
+    y = y.flatten()
+    return (
+        np.concatenate([x, x + 0.5]) * diameter + center[0],
+        np.concatenate([y, y + 0.5]) * diameter * np.sqrt(3) + center[1],
+    )
+
+
+def _get_bubble_coordinates(n, diameter, center):
+    x, y = _get_hexa_grid(n, diameter, center)
+    dist = np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
+    dort_idx = dist.argsort()
+    x = x[dort_idx]
+    y = y[dort_idx]
+    return x[:n], y[:n]
+
+
+def _plot_shape(shape, *args, **kwargs):
+    if shape == "circle":
+        return Circle(*args, **kwargs)
+    elif shape == "hexagon":
+        return RegularPolygon(*args, numVertices=6, **kwargs)
+    else:
+        raise ValueError(f"Unknown shape {shape}")
+
+
+def _plot_hexa_bubbles(
+    *,
+    n: int,
+    diameter: float,
+    center: tuple[float, float] = (0.0, 0.0),
+    ax,
+    shape: Literal["circle", "hexagon"] = "circle",
+    gap: float = 0.0,
+    gid: str | None = None,
+    **kwargs,
+):
+    x, y = _get_bubble_coordinates(n, diameter + gap, center)
+    bubbles = [
+        _plot_shape(shape, (xi, yi), radius=diameter / 2, **kwargs)
+        for xi, yi in zip(x, y)
+    ]
+    collection = PatchCollection(bubbles, match_original=True)
+    if gid is not None:
+        collection.set_gid(gid)
+    ax.add_collection(collection)
+    return x, y
+
+
+def _add_bubble_legend(scale, size_mode, color_map, alphas, fontsize, shape, x0, y0, ax):
+    circles = []  # (text, diameter, alpha, color)
+    alpha = alphas[0]
+    # sizes
+    if size_mode == "count":
+        sizes = [("100 trials", 100), ("1000 trials", 1000), ("10000 trials", 10000)]
+    elif size_mode == "duration":
+        sizes = [("6 minutes", 60 * 6), ("1 hour", 60 * 60), ("10 hours", 60 * 60 * 10)]
+    else:
+        raise ValueError(f"Unknown size_mode {size_mode}")
+    for desc, size in sizes:
+        circles.append((desc, np.log(size) * scale, alpha, "black"))
+    circles.append(None)
+    # colour
+    for paradigm, c in color_map.items():
+        circles.append((paradigm, np.log(1000) * scale, alpha, c))
+    circles.append(None)
+    # intensity
+    circles.append(("1 session", np.log(1000) * scale, alphas[0], "black"))
+    circles.append(("3 sessions", np.log(1000) * scale, alphas[2], "black"))
+    circles.append(("5 sessions", np.log(1000) * scale, alphas[4], "black"))
+
+    for i, item in enumerate(reversed(circles)):
+        if item is None:
+            continue
+        text, diameter, alpha, color = item
+        y = i * fontsize / 2 + y0
+        bubble = _plot_shape(
+            shape,
+            (x0, y),
+            radius=diameter / 2,
+            alpha=alpha,
+            color=color,
+            lw=0,
+            gid=f"legend/bubble/{text}",
+        )
+        ax.add_patch(bubble)
+        ax.text(
+            x0 + 5,
+            y,
+            text,
+            ha="left",
+            va="center",
+            fontsize=fontsize,
+            gid=f"legend/text/{text}",
+        )
+
+
+def _match_int(s, default=None):
+    """Match the first integer in a string.
+
+    Parameters
+    ----------
+    s : str
+        String to search for an integer.
+    default : int or None, optional
+        Default value to return if no integer is found. If None and no
+        integer is found, raises AssertionError.
+
+    Returns
+    -------
+    int
+        The first integer found in the string, or default if not found.
+    """
+    match = re.search(r"(\d+)", str(s))
+    if match is None:
+        if default is not None:
+            return default
+        raise AssertionError(f"Cannot parse number from '{s}'")
+    return int(match.group(1))
+
+
+def _match_float(s):
+    """Match the first float in a string."""
+    match = re.search(r"(\d+\.?\d*)", str(s))
+    assert match, f"Cannot parse float from '{s}'"
+    return float(match.group(1))
+
+
+def _get_dataset_parameters(dataset):
+    row = dataset._summary_table
+    dataset_name = dataset.__class__.__name__
+    paradigm = dataset.paradigm
+    n_subjects = len(dataset.subject_list)
+    n_sessions = _match_int(row["#Sessions"])
+    if paradigm in ["imagery", "ssvep"]:
+        # Handle "varies" in trials per class - use 1 as default for variable trials
+        trials_per_class = _match_int(row["#Trials / class"], default=1)
+        n_trials = trials_per_class * _match_int(row["#Classes"])
+    elif paradigm == "rstate":
+        n_trials = _match_int(row["#Classes"]) * _match_int(row["#Blocks / class"])
+    elif paradigm == "cvep":
+        # Handle "varies" in trials per class - use 1 as default for variable trials
+        trials_per_class = _match_int(row["#Trials / class"], default=1)
+        n_trials = trials_per_class * _match_int(row["#Trial classes"])
+    else:  # p300
+        match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
+        if match is not None:
+            n_trials = int(match.group(1)) + int(match.group(2))
+        else:
+            # Handle "varies" in trials per class - use 1 as default for variable trials
+            n_trials = _match_int(row["#Trials / class"], default=1)
+    trial_len = _match_float(row["Trials length (s)"])
+    return (
+        dataset_name,
+        paradigm,
+        n_subjects,
+        n_sessions,
+        n_trials,
+        trial_len,
+    )
+
+
+def get_bubble_size(size_mode, n_sessions, n_trials, trial_len):
+    if size_mode == "duration":
+        return n_trials * n_sessions * trial_len
+    elif size_mode == "count":
+        return n_trials * n_sessions
+    else:
+        raise ValueError(f"Unknown size_mode {size_mode}")
+
+
+def get_dataset_area(
+    n_subjects: int,
+    n_sessions: int,
+    n_trials: int,
+    trial_len: float,
+    scale: float = 0.5,
+    size_mode: Literal["count", "duration"] = "count",
+    gap: float = 0.0,
+):
+    size = get_bubble_size(
+        size_mode=size_mode,
+        n_sessions=n_sessions,
+        n_trials=n_trials,
+        trial_len=trial_len,
+    )
+    diameter = np.log(size) * scale + gap
+    return n_subjects * 3 * 3**0.5 / 8 * diameter**2  # area of hexagons
+
+
+def dataset_bubble_plot(
+    dataset=None,
+    center: tuple[float, float] = (0.0, 0.0),
+    scale: float = 0.5,
+    size_mode: Literal["count", "duration"] = "count",
+    shape: Literal["circle", "hexagon"] = "circle",
+    gap: float = 0.0,
+    color_map: dict[str, Any] | None = None,
+    alphas: Sequence[float] | None = None,
+    title: bool = True,
+    legend: bool = True,
+    legend_position: tuple[float, float] | None = None,
+    fontsize: int = 8,
+    ax=None,
+    scale_ax: bool = True,
+    dataset_name: str | None = None,
+    paradigm: str | None = None,
+    n_subjects: int | None = None,
+    n_sessions: int | None = None,
+    n_trials: int | None = None,
+    trial_len: float | None = None,
+):
+    """Plot a bubble plot for a dataset.
+
+    Each bubble represents one subject. The size of the bubble is
+    proportional to the number of trials per subject on a log scale,
+    the color represents the paradigm, and the alpha is proportional to
+    the number of sessions.
+
+    You may pass a :class:`moabb.datasets.base.BaseDataset` object
+    via the ``dataset`` parameret, and all the characteristics of this dataset
+    will be extracted automatically.
+    Alternatively, if you want to plot a dataset not present in MOABB,
+    you can directly pass the characteristics of the dataset via the
+    ``dataset_name``, ``paradigm``, ``n_subjects``, ``n_sessions``,
+    ``n_trials``, and ``trial_len`` parameters.
+    If you pass both the dataset object and some parameters, the parameters
+    passed will override the ones extracted from the dataset object.
+
+    Parameters
+    ----------
+    dataset: Dataset
+        Dataset to plot
+    center: tuple[float, float]
+        Coordinates of the center of the plot
+    scale: float
+        Scaling factor applied to the bubble sizes.
+    size_mode: Literal["count", "duration"]
+        Specifies how the size of the bubbles is calculated.
+        Either "count" (number of trials) or "duration"
+        (number of trials times trial duration).
+    shape: Literal["circle", "hexagon"]
+        Shape of the bubbles. Either "circle" or "hexagon".
+    gap: float
+        Gap between the bubbles.
+    color_map: dict[str, Any] | None
+        Dictionary that maps paradigms to colors. If None,
+        the tab10 color map is used.
+    alphas: Sequence[float] | None
+        List of alpha values for the bubbles. If None, a default
+        list is used.
+    title: bool
+        Whether to display the dataset title in the center of the plot.
+    legend: bool
+        Whether to display the legend.
+    legend_position: tuple[float, float] | None, default=None
+        Coordinates of the bottom left corner of the legend.
+        If None, the legend is placed at the bottom right of the plot.
+    fontsize: int
+        Font size of the legend text.
+    ax: Axes | None
+        Axes to plot on. If None, the default axes are used.
+    scale_ax: bool
+        Whether to scale the axes to be equal and in the correct range.
+    dataset_name: str | None
+        Name of the dataset. Required if ``dataset`` is None.
+    paradigm: str | None
+        Paradigm name. Required if ``dataset`` is None.
+    n_subjects: int | None
+        Number of subjects. Required if ``dataset`` is None.
+    n_sessions: int | None
+        Number of sessions. Required if ``dataset`` is None.
+    n_trials: int | None
+        Number of trials per session. Required if ``dataset`` is None.
+    trial_len: float | None
+        Duration of one trial, in seconds. Required if ``dataset`` is None.
+    """
+    p = sea.color_palette("tab10", 5)
+    color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
+
+    alphas = alphas or [0.8, 0.65, 0.5, 0.35, 0.2]
+
+    if dataset is not None:
+        _dataset_name, _paradigm, _n_subjects, _n_sessions, _n_trials, _trial_len = (
+            _get_dataset_parameters(dataset)
+        )
+        dataset_name = dataset_name or _dataset_name
+        paradigm = paradigm or _paradigm
+        n_subjects = n_subjects or _n_subjects
+        n_sessions = n_sessions or _n_sessions
+        n_trials = n_trials or _n_trials
+        trial_len = trial_len or _trial_len
+    else:
+        if any(
+            x is None for x in [dataset_name, n_subjects, n_sessions, n_trials, trial_len]
+        ):
+            raise ValueError(
+                "If dataset is None, then dataset_name, n_subjects, n_sessions, "
+                "n_trials and trial_len must be provided"
+            )
+    size = get_bubble_size(
+        size_mode=size_mode,
+        n_sessions=n_sessions,
+        n_trials=n_trials,
+        trial_len=trial_len,
+    )
+
+    ax = ax or plt.gca()
+    x, y = _plot_hexa_bubbles(
+        n=n_subjects,
+        color=color_map[paradigm],
+        ax=ax,
+        diameter=np.log(size) * scale,
+        alpha=alphas[min(n_sessions, len(alphas)) - 1],
+        lw=0,
+        center=center,
+        shape=shape,
+        gap=gap,
+        gid=f"bubbles/{dataset_name}",
+    )
+    if title:
+        ax.text(
+            center[0],
+            center[1],
+            dataset_name,
+            ha="center",
+            va="center",
+            fontsize=fontsize,
+            color="black",
+            bbox=dict(
+                facecolor="white", alpha=0.6, linewidth=0, boxstyle="round,pad=0.5"
+            ),
+            gid=f"title/{dataset_name}",
+        )
+        # bbox is better than path_effects as the text is not converted to a path.
+        # we can still select it in a pdf. Also the file is lighter.
+    if legend:
+        legend_position = legend_position or (x.max() + fontsize, y.min())
+        _add_bubble_legend(
+            scale=scale,
+            size_mode=size_mode,
+            color_map=color_map,
+            alphas=alphas,
+            fontsize=fontsize,
+            x0=legend_position[0],
+            y0=legend_position[1],
+            ax=ax,
+            shape=shape,
+        )
+    ax.axis("off")
+    if scale_ax:
+        ax.axis("equal")
+        ax.autoscale()
+    return ax

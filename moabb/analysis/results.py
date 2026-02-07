@@ -13,6 +13,8 @@ from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
 
+from moabb.utils import _open_lock_hdf5
+
 
 try:
     from codecarbon import EmissionsTracker  # noqa
@@ -38,7 +40,7 @@ def get_string_rep(obj):
             stacklevel=2,
         )
     str_no_addresses = re.sub(
-        "0x[\w]+>", "0x__", str_repr
+        r"0x[\w]+>", "0x__", str_repr
     )  # \w also includes _ for address such as 0x__
     return str_no_addresses.replace("\n", "").encode("utf8")
 
@@ -111,8 +113,8 @@ class Results:
             os.remove(self.filepath)
 
         if not osp.isfile(self.filepath):
-            with h5py.File(self.filepath, "w") as f:
-                f.attrs["create_time"] = np.string_(
+            with _open_lock_hdf5(self.filepath, "w") as f:
+                f.attrs["create_time"] = np.bytes_(
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
                 )
 
@@ -137,7 +139,7 @@ class Results:
         else:
             n_cols = 3
 
-        with h5py.File(self.filepath, "r+") as f:
+        with _open_lock_hdf5(self.filepath, "r+") as f:
             for name, data_dict in results.items():
                 digest = get_pipeline_digest(process_pipeline, pipelines[name])
                 if digest not in f.keys():
@@ -158,6 +160,16 @@ class Results:
                     dset.attrs["n_subj"] = len(d1["dataset"].subject_list)
                     dset.attrs["n_sessions"] = d1["dataset"].n_sessions
                     dt = h5py.special_dtype(vlen=str)
+
+                    # Create unique CodeCarbon task name attritbute
+                    if _carbonfootprint:
+                        dset.create_dataset(
+                            "codecarbon_task_name",
+                            (0,),
+                            dtype=dt,
+                            maxshape=(None,),
+                        )
+
                     dset.create_dataset("id", (0, 2), dtype=dt, maxshape=(None, 2))
                     dset.create_dataset(
                         "data",
@@ -187,10 +199,23 @@ class Results:
                         ) from None
                     cols = [d["score"], d["time"], d["n_samples"]]
                     if _carbonfootprint:
-                        if isinstance(d["carbon_emission"], tuple):
-                            cols.append(*d["carbon_emission"])
+                        # Always add carbon_emission column if codecarbon is available
+                        if "carbon_emission" in d:
+                            if isinstance(d["carbon_emission"], tuple):
+                                cols.append(*d["carbon_emission"])
+                            else:
+                                cols.append(d["carbon_emission"])
                         else:
-                            cols.append(d["carbon_emission"])
+                            # Add NaN if carbon_emission is not available
+                            cols.append(np.nan)
+
+                        # Save unique CodeCarbon task name (only if dataset exists)
+                        if "codecarbon_task_name" in dset:
+                            dset["codecarbon_task_name"].resize(length, 0)
+                            dset["codecarbon_task_name"][-1] = str(
+                                d.get("codecarbon_task_name", "")
+                            )
+
                     dset["data"][-1, :] = np.asarray(
                         [
                             *cols,
@@ -213,7 +238,7 @@ class Results:
                 "Either both of none of pipelines and process_pipeline must be specified."
             )
 
-        with h5py.File(self.filepath, "r") as f:
+        with _open_lock_hdf5(self.filepath, "r") as f:
             for digest, p_group in f.items():
                 # skip if not in pipeline list
                 if (pipelines is not None) and (digest not in digests):
@@ -230,12 +255,35 @@ class Results:
                     df["n_sessions"] = dset.attrs["n_sessions"]
                     df["dataset"] = dname
                     df["pipeline"] = name
+                    if _carbonfootprint and "codecarbon_task_name" in dset:
+                        df["codecarbon_task_name"] = np.array(
+                            dset["codecarbon_task_name"]
+                        ).astype(str)
                     df_list.append(df)
 
         return pd.concat(df_list, ignore_index=True)
 
     def not_yet_computed(self, pipelines, dataset, subj, process_pipeline):
-        """Check if a results has already been computed."""
+        """Check if a results is missing.
+
+        Parameters
+        ----------
+        pipelines : dict of pipeline instance.
+            A dict containing the sklearn pipeline to evaluate.
+        dataset : Dataset instance
+            The dataset to check for
+        subj : str
+            The subject to check for
+        process_pipeline : Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+
+        Returns
+        -------
+        dict
+            A dict containing the pipelines to compute.
+        """
         ret = {
             k: pipelines[k]
             for k in pipelines.keys()
@@ -246,8 +294,29 @@ class Results:
     def _already_computed(
         self, pipeline, dataset, subject, process_pipeline, session=None
     ):
-        """Check if we have results for a current combination of pipeline /
-        dataset / subject."""
+        """Check existing results for pipeline / dataset / subject combination.
+
+        Parameters
+        ----------
+        pipeline : dict of pipeline instance.
+            A dict containing the sklearn pipeline to evaluate.
+        dataset : Dataset instance
+            The dataset to check for
+        subject : str
+            The subject to check for
+        process_pipeline : Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+        session : str | None
+            Not used, kept for compatibility reason.
+
+        Returns
+        -------
+        bool
+            True if the pipeline has already been computed for the given
+            dataset and subject, False otherwise.
+        """
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
             digest = get_pipeline_digest(process_pipeline, pipeline)

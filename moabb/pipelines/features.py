@@ -113,7 +113,7 @@ class AugmentedDataset(BaseEstimator, TransformerMixin):
 
 
 class StandardScaler_Epoch(BaseEstimator, TransformerMixin):
-    """Function to standardize the X raw data for the DeepLearning Method."""
+    """Function to standardize the X raw data."""
 
     def __init__(self):
         """Init."""

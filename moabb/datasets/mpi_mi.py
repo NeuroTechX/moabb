@@ -5,6 +5,7 @@ import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import stim_channels_with_selected_ids
 from moabb.utils import depreciated_alias
 
 
@@ -14,15 +15,6 @@ DOWNLOAD_URL = "https://zenodo.org/record/1217449/files/"
 @depreciated_alias("MunichMI", "1.1")
 class GrosseWentrup2009(BaseDataset):
     """Munich Motor Imagery dataset.
-
-    .. admonition:: Dataset summary
-
-
-        =================  =======  =======  ==========  =================  ============  ===============  ===========
-        Name                 #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        =================  =======  =======  ==========  =================  ============  ===============  ===========
-        GrosseWentrup2009       10      128           2                150  7s            500Hz                      1
-        =================  =======  =======  ==========  =================  ============  ===============  ===========
 
     Motor imagery dataset from Grosse-Wentrup et al. 2009 [1]_.
 
@@ -65,10 +57,11 @@ class GrosseWentrup2009(BaseDataset):
     """
 
     def __init__(self):
+        self.events_id = dict(right_hand=2, left_hand=1)
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
-            events=dict(right_hand=2, left_hand=1),
+            events=self.events_id,
             code="GrosseWentrup2009",
             interval=[0, 7],
             paradigm="imagery",
@@ -85,7 +78,7 @@ class GrosseWentrup2009(BaseDataset):
         stim[stim == "20"] = "right_hand"
         stim[stim == "10"] = "left_hand"
         raw.annotations.description = stim
-        return {"0": {"0": raw}}
+        return {"0": {"0": stim_channels_with_selected_ids(raw, self.event_id)}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

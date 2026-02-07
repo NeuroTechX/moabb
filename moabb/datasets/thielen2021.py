@@ -74,14 +74,6 @@ class Thielen2021(BaseDataset):
 
     Dataset [1]_ from the study on zero-training c-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class    Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
-        Thielen2021          30        1          512Hz      8        31.5s          20               5              2         94500 NT / 94500 T Gold codes  60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
-
     **Dataset description**
 
     EEG recordings were acquired at a sampling rate of 512 Hz, employing 8 Ag/AgCl electrodes. The Biosemi ActiveTwo EEG

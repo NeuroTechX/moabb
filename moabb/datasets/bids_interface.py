@@ -1,7 +1,6 @@
 """BIDS Interface for MOABB.
 
 ========================
-
 This module contains the BIDS interface for MOABB, which allows to convert
 any MOABB dataset to BIDS with Cache.
 We can convert at the Raw, Epochs or Array level.
@@ -38,6 +37,37 @@ if TYPE_CHECKING:
     from moabb.datasets.base import BaseDataset
 
 log = logging.getLogger(__name__)
+
+
+def get_bids_root(code, path=None):
+    """Path to the root of the BIDS structure used for caching.
+
+    See :class:`moabb.datasets.base.BaseDataset` and
+    :class:`moabb.datasets.base.CacheConfig` for more information
+     on the MOABB caching mechanism.
+
+    Parameters
+    ----------
+    code : str
+        The dataset code from the MOABB dataset.
+    path : None | str
+        Location of where to look for the data storing location.
+        If None, the environment variable or config parameter
+        ``MNE_DATASETS_(dataset)_PATH`` is used. If it doesn't exist, the
+        "~/mne_data" directory is used. If the dataset
+        is not found under the given path, the data
+        will be automatically downloaded to the specified folder.
+
+    Returns
+    -------
+    root : Path
+        Path to the root of the BIDS structure.
+    """
+
+    mne_path = Path(dl.get_dataset_path(code, path))
+    cache_dir = f"MNE-BIDS-{camel_to_kebab_case(code)}"
+    root = mne_path / cache_dir
+    return root
 
 
 def camel_to_kebab_case(name):
@@ -121,17 +151,13 @@ class BIDSInterfaceBase(abc.ABC):
         """Return the representation of the BIDSInterface."""
         return (
             f"{self.dataset.code!r} sub-{self.subject} "
-            f"datatype-{self._datatype} desc-{self.desc:.7}"
+            f"suffix-{self._suffix} desc-{self.desc:.7}"
         )
 
     @property
     def root(self):
         """Return the root path of the BIDS dataset."""
-        code = self.dataset.code
-        mne_path = Path(dl.get_dataset_path(code, self.path))
-        cache_dir = f"MNE-BIDS-{camel_to_kebab_case(code)}"
-        cache_path = mne_path / cache_dir
-        return cache_path
+        return get_bids_root(self.dataset.code, self.path)
 
     @property
     def lock_file(self):
@@ -152,12 +178,14 @@ class BIDSInterfaceBase(abc.ABC):
     def erase(self):
         """Erase the cache of the subject if it exists."""
         log.info("Starting erasing cache of %s...", repr(self))
+
         path = mne_bids.BIDSPath(
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
             description=self.desc,
             check=False,
         )
+
         path.rm(safe_remove=False)
         log.info("Finished erasing cache of %s.", repr(self))
 
@@ -182,8 +210,8 @@ class BIDSInterfaceBase(abc.ABC):
             descriptions=self.desc,
             extensions=self._extension,
             check=self._check,
-            datatypes=self._datatype,
-            suffixes=self._datatype,
+            # datatypes="eeg", # commented for compatibility with cache saved in previous versions
+            suffixes=self._suffix,
         )
         sessions_data = {}
         for path in paths:
@@ -250,8 +278,8 @@ class BIDSInterfaceBase(abc.ABC):
                     **run_kwargs,
                     description=self.desc,
                     extension=self._extension,
-                    datatype=self._datatype,
-                    suffix=self._datatype,
+                    datatype="eeg",
+                    suffix=self._suffix,
                     check=self._check,
                 )
 
@@ -284,7 +312,7 @@ class BIDSInterfaceBase(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def _datatype(self):
+    def _suffix(self):
         pass
 
 
@@ -303,7 +331,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         return True
 
     @property
-    def _datatype(self):
+    def _suffix(self):
         return "eeg"
 
     def _load_file(self, bids_path, preload):
@@ -376,9 +404,7 @@ class BIDSInterfaceEpochs(BIDSInterfaceBase):
         return False
 
     @property
-    def _datatype(self):
-        # because of mne conventions, we need the suffix to be "epo"
-        # because of mne_bids conventions, we need datatype and suffix to match
+    def _suffix(self):
         return "epo"
 
     def _load_file(self, bids_path, preload):
@@ -408,7 +434,7 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
         return False
 
     @property
-    def _datatype(self):
+    def _suffix(self):
         return "array"
 
     def _load_file(self, bids_path, preload):

@@ -58,6 +58,9 @@ class RestingStateToP300Adapter(SinglePass):
     channels: list of str | None (default None)
         list of channel to select. If None, use all EEG channels available in
         the dataset.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(self, fmin=1, fmax=35, tmin=10, tmax=50, resample=128, **kwargs):
@@ -87,4 +90,6 @@ class RestingStateToP300Adapter(SinglePass):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "roc_auc"

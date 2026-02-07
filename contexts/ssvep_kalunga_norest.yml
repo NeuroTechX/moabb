@@ -1,0 +1,6 @@
+SSVEP:
+  events:
+    - "13"
+    - "17"
+    - "21"
+  n_classes: 3

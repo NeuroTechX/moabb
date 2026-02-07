@@ -1,15 +1,13 @@
 name: Test
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
   cancel-in-progress: true
 
-
 on:
   push:
-    branches: [master]
+    branches: [ develop, master ]
   pull_request:
-    branches: [master]
+    branches: [ develop, master ]
 
 jobs:
   test:
@@ -18,65 +16,113 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ["3.9"]
+        os: [ ubuntu-latest ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        include:
+          - os: macOS-latest
+            python-version: "3.12"
+          - os: windows-latest
+            python-version: "3.12"
     defaults:
       run:
         shell: bash
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: true
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      # Cache MNE Data
+      - name: Restore MNE Data Cache
+        id: cache-mne_data
+        uses: actions/cache/restore@v4
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-mne-data-v2-
 
-      - name: Load cached venv
-        if: runner.os != 'Windows'
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key:
-            venv-${{ matrix.os }}-py${{matrix.python-version}}-${{
-            hashFiles('**/poetry.lock') }}
+      - name: Install moabb
+        run: |
+          uv pip install -e .[tests,deeplearning,optuna]
 
-      - name: Install dependencies
-        if: |
-          (runner.os != 'Windows') &&
-          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --extras deeplearning
+      - name: Pre-download BNCI datasets (cold cache only)
+        if: steps.cache-mne_data.outputs.cache-matched-key == ''
+        run: |
+          echo "Cache is cold, pre-downloading BNCI datasets..."
+          python << 'EOF'
+          import sys
+          import time
 
-      - name: Install library (Linux/OSX)
-        if: ${{ runner.os != 'Windows' }}
-        run: poetry install --no-interaction --extras deeplearning
+          datasets_to_download = [
+              ("moabb.datasets", "BNCI2014_001", None),
+              ("moabb.datasets", "BNCI2015_001", None),
+          ]
 
-      - name: Install library (Windows)
-        if: ${{ runner.os == 'Windows' }}
-        run: poetry install --no-interaction
+          failed = []
+          for module_path, class_name, n_subjects in datasets_to_download:
+              print(f"\n{'='*60}")
+              print(f"Pre-downloading {class_name}...")
+              print(f"{'='*60}")
+              success = False
+              for attempt in range(5):
+                  try:
+                      import importlib
+                      module = importlib.import_module(module_path)
+                      cls = getattr(module, class_name)
+                      ds = cls()
+                      subjects = ds.subject_list if n_subjects is None else ds.subject_list[:n_subjects]
+                      ds.download(subject_list=subjects)
+                      print(f"SUCCESS: {class_name} downloaded")
+                      success = True
+                      break
+                  except Exception as e:
+                      print(f"Attempt {attempt + 1}/5 failed: {e}")
+                      if attempt < 4:
+                          wait = 90 * (attempt + 1)
+                          print(f"Waiting {wait}s before retry...")
+                          time.sleep(wait)
+              if not success:
+                  failed.append(class_name)
+                  print(f"FAILED: {class_name} after 5 attempts")
+              print("Waiting 60s before next dataset...")
+              time.sleep(60)
+
+          if failed:
+              print(f"\n{'='*60}")
+              print(f"ERROR: Failed to download: {', '.join(failed)}")
+              print(f"{'='*60}")
+              sys.exit(1)
+          else:
+              print(f"\n{'='*60}")
+              print("All BNCI datasets downloaded successfully!")
+              print(f"{'='*60}")
+          EOF
 
       - name: Run tests
         run: |
-          source $VENV
-          poetry run coverage run -m pytest moabb/tests
-          poetry run coverage xml
+          echo "Running tests"
+          pytest -vv -s --tb=long --durations=0 --log-cli-level=INFO --cov=moabb --cov-report=xml moabb/tests --verbose
 
       - name: Run pipelines
         run: |
-          source $VENV
-          poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+          python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         if: success()
         with:
           verbose: true
           directory: /home/runner/work/moabb/moabb
           files: ./.coverage,coverage.xml
           env_vars: OS,PYTHON
+
+      - name: Save MNE Data Cache
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}
