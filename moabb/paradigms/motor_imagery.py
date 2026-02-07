@@ -14,8 +14,46 @@ log = logging.getLogger(__name__)
 class BaseMotorImagery(BaseParadigm):
     """Base Motor imagery paradigm.
 
-    Not to be instantiated.
+    Please use one of the child classes
 
+    Parameters
+    ----------
+
+    filters: list of list (defaults [[7, 35]])
+        bank of bandpass filter to apply.
+
+    events: List of str | None (default None)
+        events to use for epoching. If None, default to all events defined in
+        the dataset.
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the beginning of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the beginning of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the beginning of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    baseline: None | tuple of length 2
+            The time interval to consider as "baseline" when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided.
+
+    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
+        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -27,6 +65,7 @@ class BaseMotorImagery(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
+        scorer=None,
     ):
         super().__init__(
             filters=filters,
@@ -36,12 +75,13 @@ class BaseMotorImagery(BaseParadigm):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            scorer=scorer,
         )
 
     def is_valid(self, dataset):
-        ret = dataset.paradigm == "imagery"
-        if not ret:
-            return ret
+        ret = True
+        if not (dataset.paradigm == "imagery"):
+            ret = False
 
         # check if dataset has required events
         if self.events:
@@ -67,11 +107,15 @@ class BaseMotorImagery(BaseParadigm):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "accuracy"
 
 
 class LeftRightImagery(BaseMotorImagery):
     """Motor Imagery for left hand/right hand classification.
+
+    Metric is 'roc_auc' by default
 
     Parameters
     -----------
@@ -98,11 +142,23 @@ class LeftRightImagery(BaseMotorImagery):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         return "roc_auc"
 
 
 class FilterBankLeftRightImagery(LeftRightImagery):
-    """Filter Bank Motor Imagery for left/right hand classification."""
+    """Filter Bank Motor Imagery for left hand/right hand classification.
+
+    Metric is 'roc_auc' by default
+
+    Parameters
+    ----------
+
+    filters: list of list (defaults ([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]))
+        bank of bandpass filter to apply.
+
+    """
 
     def __init__(
         self,
@@ -115,12 +171,31 @@ class FilterBankLeftRightImagery(LeftRightImagery):
             filters=filters, events=["left_hand", "right_hand"], **kwargs
         )
 
+    def used_events(self, dataset):
+        return {ev: dataset.event_id[ev] for ev in self.events}
+
+    @property
+    def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
+        return "roc_auc"
+
 
 class MotorImagery(BaseMotorImagery):
-    """N-class Motor Imagery.
+    """N-class motor imagery.
+
+    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
-    -----------
+    ----------
+
+    events: List of str
+        event labels used to filter datasets (e.g. if only motor imagery is
+        desired).
+
+    n_classes: int,
+        number of classes each dataset must have. If events is given,
+        requires all imagery sorts to be within the events list.
 
     fmin: float (default 8)
         cutoff frequency (Hz) for the high pass filter.
@@ -128,32 +203,32 @@ class MotorImagery(BaseMotorImagery):
     fmax: float (default 32)
         cutoff frequency (Hz) for the low pass filter.
 
-    n_classes: int (default number of available classes)
-        number of MotorImagery classes/events to select.
-
     """
 
     def __init__(self, fmin=8, fmax=32, n_classes=None, **kwargs):
         if "filters" in kwargs.keys():
             raise (ValueError("MotorImagery does not take argument filters"))
+        super().__init__(filters=[[fmin, fmax]], **kwargs)
         self.n_classes = n_classes
+
         if self.events is None:
             log.warning("Choosing from all possible events")
         elif self.n_classes is not None:
             assert n_classes <= len(self.events), "More classes than events specified"
-        super().__init__(filters=[[fmin, fmax]], **kwargs)
 
     def is_valid(self, dataset):
-        ret = dataset.paradigm == "imagery"
-        if not ret:
-            return ret
-
-        if self.events is None and self.n_classes:
-            ret = len(dataset.event_id) >= self.n_classes
-        elif self.events and self.n_classes:
+        ret = True
+        if not dataset.paradigm == "imagery":
+            ret = False
+        elif self.n_classes is None and self.events is None:
+            pass
+        elif self.events is None:
+            if not len(dataset.event_id) >= self.n_classes:
+                ret = False
+        else:
             overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            ret = overlap >= self.n_classes
-
+            if self.n_classes is not None and not overlap >= self.n_classes:
+                ret = False
         return ret
 
     def used_events(self, dataset):
@@ -193,34 +268,99 @@ class MotorImagery(BaseMotorImagery):
 
     @property
     def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
         if self.n_classes == 2:
             return "roc_auc"
-        else:
-            return "accuracy"
+        return "accuracy"
 
 
 class FilterBankMotorImagery(MotorImagery):
-    """Filter bank N-class motor imagery.
+    """Filter bank n-class motor imagery.
+
+    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
-    -----------
+    ----------
 
-    n_classes: int (default number of available classes)
-        number of MotorImagery classes/events to select.
+    events: List of str
+        event labels used to filter datasets (e.g. if only motor imagery is
+        desired).
+
+    n_classes: int,
+        number of classes each dataset must have. If events is given,
+        requires all imagery sorts to be within the events list.
     """
 
     def __init__(
         self,
         filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
-        n_classes=None,
+        n_classes=2,
         **kwargs,
     ):
+        super(MotorImagery, self).__init__(filters=filters, **kwargs)
         self.n_classes = n_classes
+
         if self.events is None:
             log.warning("Choosing from all possible events")
-        elif self.n_classes is not None:
+        else:
             assert n_classes <= len(self.events), "More classes than events specified"
-        super(MotorImagery, self).__init__(filters=filters, **kwargs)
+
+    def is_valid(self, dataset):
+        ret = True
+        if not dataset.paradigm == "imagery":
+            ret = False
+        if self.events is None:
+            if not len(dataset.event_id) >= self.n_classes:
+                ret = False
+        else:
+            overlap = len(set(self.events) & set(dataset.event_id.keys()))
+            if not overlap >= self.n_classes:
+                ret = False
+        return ret
+
+    def used_events(self, dataset):
+        out = {}
+        if self.events is None:
+            for k, v in dataset.event_id.items():
+                out[k] = v
+                if len(out) == self.n_classes:
+                    break
+        else:
+            for event in self.events:
+                if event in dataset.event_id.keys():
+                    out[event] = dataset.event_id[event]
+                if len(out) == self.n_classes:
+                    break
+        if len(out) < self.n_classes:
+            raise (
+                ValueError(
+                    f"Dataset {dataset.code} did not have enough "
+                    f"events in {self.events} to run analysis"
+                )
+            )
+        return out
+
+    @property
+    def datasets(self):
+        if self.tmax is None:
+            interval = None
+        else:
+            interval = self.tmax - self.tmin
+        return utils.dataset_search(
+            paradigm="imagery",
+            events=self.events,
+            interval=interval,
+            has_all_events=False,
+        )
+
+    @property
+    def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
+        if self.n_classes == 2:
+            return "roc_auc"
+        return "accuracy"
 
 
 class FakeImageryParadigm(LeftRightImagery):
