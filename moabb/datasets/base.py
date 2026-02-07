@@ -347,8 +347,18 @@ def _format_bandpass(preprocessing) -> str | None:
 
     bandpass = getattr(filter_details, "bandpass", None)
     if isinstance(bandpass, dict):
-        low = bandpass.get("low", bandpass.get("highpass"))
-        high = bandpass.get("high", bandpass.get("lowpass"))
+        low = bandpass.get(
+            "low",
+            bandpass.get(
+                "highpass", bandpass.get("low_cutoff_hz", bandpass.get("highpass_hz"))
+            ),
+        )
+        high = bandpass.get(
+            "high",
+            bandpass.get(
+                "lowpass", bandpass.get("high_cutoff_hz", bandpass.get("lowpass_hz"))
+            ),
+        )
         if low is not None and high is not None:
             return f"{_format_metadata_value(low)}-{_format_metadata_value(high)} Hz"
     elif isinstance(bandpass, (list, tuple)) and len(bandpass) >= 2:

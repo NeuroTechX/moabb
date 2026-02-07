@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import pycountry
 
@@ -83,8 +83,9 @@ class Demographics:
         List of ages for each subject.
     gender : Dict[str, int], optional
         Gender distribution, e.g., {"male": 12, "female": 8}.
-    handedness : Dict[str, int], optional
-        Handedness distribution, e.g., {"right": 18, "left": 2}.
+    handedness : dict or str, optional
+        Handedness distribution, e.g., ``{"right": 18, "left": 2}`` or a
+        free-text description like ``"right-handed (Edinburgh Handedness Inventory)"``.
     clinical_population : str, optional
         Clinical diagnosis if patient population.
     """
@@ -94,7 +95,7 @@ class Demographics:
     age_max: Optional[float] = None
     ages: Optional[List[int]] = None
     gender: Optional[Dict[str, int]] = None
-    handedness: Optional[Dict[str, int]] = None
+    handedness: Optional[Union[Dict[str, int], str]] = None
     clinical_population: Optional[str] = None
 
 
@@ -512,14 +513,16 @@ class AcquisitionMetadata:
         Recording system/amplifier, e.g., "BrainAmp DC", "g.USBamp".
     software : str, optional
         Recording software used.
-    filters : str, optional
-        Online filters applied during recording, e.g., "0.1-100 Hz bandpass".
+    filters : str or dict, optional
+        Online filters applied during recording, e.g., "0.1-100 Hz bandpass"
+        or a dict like ``{"bandpass": [0.1, 100]}``.
     line_freq : float
         Power line frequency in Hz. Default is 50.0.
     montage : str
         Standard montage name for channel positions. Default is "standard_1005".
-    impedance_threshold_kohm : float, optional
-        Impedance threshold in kOhm used during recording.
+    impedance_threshold_kohm : float or dict, optional
+        Impedance threshold in kOhm used during recording. May be a scalar
+        or a per-channel-type dict like ``{"eeg": 20, "emg": 50}``.
     auxiliary_channels : AuxiliaryChannelsMetadata, optional
         Information about EOG, EMG, and other auxiliary channels.
     """
@@ -533,10 +536,10 @@ class AcquisitionMetadata:
     ground: Optional[str] = None
     hardware: Optional[str] = None
     software: Optional[str] = None
-    filters: Optional[str] = None
+    filters: Optional[Union[str, Dict[str, Any]]] = None
     line_freq: float = 50.0
     montage: str = "standard_1005"
-    impedance_threshold_kohm: Optional[float] = None
+    impedance_threshold_kohm: Optional[Union[float, Dict[str, float]]] = None
     auxiliary_channels: Optional[AuxiliaryChannelsMetadata] = None
 
 
@@ -621,8 +624,9 @@ class ParticipantMetadata:
         Maximum age (EEGDash field).
     ages : List[int], optional
         Per-subject ages (EEGDash field).
-    handedness : Dict[str, int], optional
-        Handedness distribution, e.g., {"right": 18, "left": 2}.
+    handedness : dict or str, optional
+        Handedness distribution, e.g., ``{"right": 18, "left": 2}`` or a
+        free-text description like ``"right-handed (Edinburgh Handedness Inventory)"``.
     clinical_population : str, optional
         Clinical diagnosis if patient population,
         e.g., "stroke", "ALS", "spinal cord injury".
@@ -639,7 +643,7 @@ class ParticipantMetadata:
     age_min: Optional[float] = None
     age_max: Optional[float] = None
     ages: Optional[List[int]] = None
-    handedness: Optional[Dict[str, int]] = None
+    handedness: Optional[Union[Dict[str, int], str]] = None
     clinical_population: Optional[str] = None
     # RALPH additional fields
     bci_experience: Optional[str] = None

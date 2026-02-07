@@ -436,6 +436,9 @@ def _build_dataset_metadata_catalog():
     # Include base ERP CORE dataset to match expected catalog counts
     dataset_classes.setdefault("ErpCore2021", ErpCore2021)
 
+    # Canonicalize class-level METADATA before building the catalog
+    canonicalize_dataset_class_catalog(dataset_classes)
+
     for name, dataset_cls in dataset_classes.items():
         if "Fake" in name:
             continue
@@ -481,7 +484,7 @@ class _LazyMetadataCatalog:
         self._catalog = None
 
     def _ensure(self):
-        if not self._catalog:
+        if self._catalog is None:
             self._catalog = _build_dataset_metadata_catalog()
         return self._catalog
 

@@ -5,9 +5,12 @@ import typing
 
 import pytest
 
-import moabb.datasets as datasets_module
-import moabb.datasets.metadata as metadata_module
-import moabb.datasets.utils as dataset_utils
+# Module-level imports used as monkeypatch targets (setattr requires the module object)
+import moabb.datasets as datasets_module  # noqa: F401
+import moabb.datasets.metadata as metadata_module  # noqa: F401
+import moabb.datasets.utils as dataset_utils  # noqa: F401
+
+# Named imports for direct use in test assertions and setup
 from moabb.datasets.metadata import (
     DATASET_METADATA_CATALOG,
     AcquisitionMetadata,
@@ -670,7 +673,7 @@ class TestMetadataCatalog:
         assert fallback.experiment.paradigm == "imagery"
 
     def test_removed_dataset_error_is_explicit(self):
-        with pytest.raises(ImportError, match="DemonsP300 has been removed"):
+        with pytest.raises(AttributeError, match="DemonsP300 has been removed"):
             _ = datasets_module.DemonsP300
 
     def test_metadata_type_consistency(self):

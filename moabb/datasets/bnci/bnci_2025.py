@@ -872,8 +872,8 @@ class BNCI2025_002(BNCIBaseDataset):
 
     **Participants**
 
-    - 10 subjects available (from original 20 able-bodied subjects)
-    - Original study: 10 male, mean age 24 +/- 5 years, all right-handed
+    - 10 able-bodied subjects (5 male, 5 female)
+    - Mean age 24 +/- 5 years, all right-handed
     - 4 had prior EEG experience
     - Location: Institute of Neural Engineering, Graz University of
       Technology, Austria
@@ -1020,9 +1020,9 @@ class BNCI2025_002(BNCIBaseDataset):
             ),
         ),
         participants=ParticipantMetadata(
-            n_subjects=30,
-            health_status="spinal_cord_injury",
-            gender={"male": 10, "female": 10},
+            n_subjects=10,
+            health_status="healthy",
+            gender={"male": 5, "female": 5},
             age_mean=24,
             handedness="right-handed (Edinburgh Handedness Inventory)",
             bci_experience="naive BCI users in terms of motor decoding (4 had previous EEG experience)",
@@ -1041,7 +1041,7 @@ class BNCI2025_002(BNCIBaseDataset):
             has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
-            doi="10.1088/1741-",
+            doi="10.1088/1741-2552/ac689f",
             repository="GitHub",
             data_url="https://github.com/sccn/labstreaminglayer",
             funding=["European Research Council"],

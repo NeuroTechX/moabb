@@ -111,11 +111,8 @@ from .Zhou2016 import Zhou2016
 # the datasets imported in this file.
 _init_dataset()
 
-# Keep class-level METADATA authoritative by aligning it to dataset attributes.
-from moabb.datasets.metadata import canonicalize_dataset_class_catalog
-
-
-canonicalize_dataset_class_catalog(dict(dataset_dict))
+# Defer canonicalization to lazy catalog build time to avoid instantiating
+# all dataset classes on every import of moabb.datasets.
 
 
 _REMOVED_DATASETS = {
@@ -125,5 +122,5 @@ _REMOVED_DATASETS = {
 
 def __getattr__(name):
     if name in _REMOVED_DATASETS:
-        raise ImportError(_REMOVED_DATASETS[name])
+        raise AttributeError(_REMOVED_DATASETS[name])
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
