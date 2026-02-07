@@ -118,7 +118,7 @@ class LeftRightImagery(BaseMotorImagery):
     Metric is 'roc_auc' by default
 
     Parameters
-    -----------
+    ----------
 
     fmin: float (default 8)
         cutoff frequency (Hz) for the high pass filter.
@@ -167,8 +167,8 @@ class FilterBankLeftRightImagery(LeftRightImagery):
     ):
         if "events" in kwargs.keys():
             raise (ValueError("LeftRightImagery dont accept events"))
-        super(LeftRightImagery, self).__init__(
-            filters=filters, events=["left_hand", "right_hand"], **kwargs
+        BaseMotorImagery.__init__(
+            self, filters=filters, events=["left_hand", "right_hand"], **kwargs
         )
 
     def used_events(self, dataset):
@@ -298,7 +298,7 @@ class FilterBankMotorImagery(MotorImagery):
         n_classes=2,
         **kwargs,
     ):
-        super(MotorImagery, self).__init__(filters=filters, **kwargs)
+        BaseMotorImagery.__init__(self, filters=filters, **kwargs)
         self.n_classes = n_classes
 
         if self.events is None:

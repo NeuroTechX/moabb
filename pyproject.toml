@@ -54,6 +54,7 @@ dependencies = [
     "mne-bids>=0.17",
     "scikit-learn>=1.6",
     "pycountry>=24.6.1",
+    "docstring-inheritance>=2.0.0",
 ]
 
 [project.urls]
