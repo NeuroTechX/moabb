@@ -11,13 +11,13 @@ experiment.
 
 from scipy.signal import welch
 
-from moabb.paradigms.p300 import SinglePass
+from moabb.paradigms.p300 import BaseP300
 
 
-class RestingStateToP300Adapter(SinglePass):
+class RestingStateToP300Adapter(BaseP300):
     """Adapter to the P300 paradigm for resting state experiments.
 
-    It implements a SinglePass processing as for P300, except that:
+    It implements a single bandpass processing as for P300, except that:
     - the name of the event is free (it is not enforced to Target/NonTarget as for P300)
     - the default values are different. In particular, the length of the epochs is larger.
 
@@ -64,8 +64,10 @@ class RestingStateToP300Adapter(SinglePass):
     """
 
     def __init__(self, fmin=1, fmax=35, tmin=10, tmax=50, resample=128, **kwargs):
+        if "filters" in kwargs.keys():
+            raise (ValueError("RestingStateToP300Adapter does not take argument filters"))
         super().__init__(
-            fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax, resample=resample, **kwargs
+            filters=[[fmin, fmax]], tmin=tmin, tmax=tmax, resample=resample, **kwargs
         )
 
     def used_events(self, dataset):
