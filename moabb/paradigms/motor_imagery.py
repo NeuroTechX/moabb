@@ -15,45 +15,6 @@ class BaseMotorImagery(BaseParadigm):
     """Base Motor imagery paradigm.
 
     Please use one of the child classes
-
-    Parameters
-    ----------
-
-    filters: list of list (defaults [[7, 35]])
-        bank of bandpass filter to apply.
-
-    events: List of str | None (default None)
-        events to use for epoching. If None, default to all events defined in
-        the dataset.
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as "baseline" when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        list of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(
@@ -128,13 +89,29 @@ class LeftRightImagery(BaseMotorImagery):
 
     """
 
-    def __init__(self, fmin=8, fmax=32, **kwargs):
-        if "events" in kwargs.keys():
-            raise (ValueError("LeftRightImagery dont accept events"))
-        if "filters" in kwargs.keys():
-            raise (ValueError("LeftRightImagery does not take argument filters"))
+    def __init__(
+        self,
+        fmin=8,
+        fmax=32,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        if events is not None:
+            raise ValueError("LeftRightImagery dont accept events")
         super().__init__(
-            filters=[[fmin, fmax]], events=["left_hand", "right_hand"], **kwargs
+            filters=[[fmin, fmax]],
+            events=["left_hand", "right_hand"],
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
         )
 
     def used_events(self, dataset):
@@ -163,12 +140,26 @@ class FilterBankLeftRightImagery(LeftRightImagery):
     def __init__(
         self,
         filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
-        **kwargs,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
     ):
-        if "events" in kwargs.keys():
-            raise (ValueError("LeftRightImagery dont accept events"))
+        if events is not None:
+            raise ValueError("LeftRightImagery dont accept events")
         BaseMotorImagery.__init__(
-            self, filters=filters, events=["left_hand", "right_hand"], **kwargs
+            self,
+            filters=filters,
+            events=["left_hand", "right_hand"],
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
         )
 
     def used_events(self, dataset):
@@ -205,10 +196,29 @@ class MotorImagery(BaseMotorImagery):
 
     """
 
-    def __init__(self, fmin=8, fmax=32, n_classes=None, **kwargs):
-        if "filters" in kwargs.keys():
-            raise (ValueError("MotorImagery does not take argument filters"))
-        super().__init__(filters=[[fmin, fmax]], **kwargs)
+    def __init__(
+        self,
+        n_classes=None,
+        fmin=8,
+        fmax=32,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        super().__init__(
+            filters=[[fmin, fmax]],
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
         self.n_classes = n_classes
 
         if self.events is None:
@@ -294,11 +304,27 @@ class FilterBankMotorImagery(MotorImagery):
 
     def __init__(
         self,
-        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
         n_classes=2,
-        **kwargs,
+        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
     ):
-        BaseMotorImagery.__init__(self, filters=filters, **kwargs)
+        BaseMotorImagery.__init__(
+            self,
+            filters=filters,
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
         self.n_classes = n_classes
 
         if self.events is None:
