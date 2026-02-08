@@ -232,8 +232,7 @@ P300 Paradigms
     :toctree: generated/
     :template: class.rst
 
-     SinglePass
-     P300
+    P300
 
 ---------------
 SSVEP Paradigms
@@ -287,8 +286,6 @@ Base & Utils
     :template: class.rst
 
     motor_imagery.BaseMotorImagery
-    motor_imagery.SinglePass
-    motor_imagery.FilterBank
     p300.BaseP300
     ssvep.BaseSSVEP
     BaseFixedIntervalWindowsProcessing

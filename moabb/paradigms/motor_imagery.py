@@ -73,74 +73,20 @@ class BaseMotorImagery(BaseParadigm):
         return "accuracy"
 
 
-class SinglePass(BaseMotorImagery):
-    """Single Bandpass filter motor Imagery.
-
-    Motor imagery paradigm with only one bandpass filter (default 8 to 32 Hz)
-
-    Parameters
-    ----------
-    fmin: float (default 8)
-        cutoff frequency (Hz) for the high pass filter
-
-    fmax: float (default 32)
-        cutoff frequency (Hz) for the low pass filter
-    """
-
-    def __init__(
-        self,
-        fmin=8,
-        fmax=32,
-        events=None,
-        tmin=0.0,
-        tmax=None,
-        baseline=None,
-        channels=None,
-        resample=None,
-        scorer=None,
-    ):
-        super().__init__(
-            filters=[[fmin, fmax]],
-            events=events,
-            tmin=tmin,
-            tmax=tmax,
-            baseline=baseline,
-            channels=channels,
-            resample=resample,
-            scorer=scorer,
-        )
-
-
-class FilterBank(BaseMotorImagery):
-    """Filter Bank MI."""
-
-    def __init__(
-        self,
-        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
-        events=None,
-        tmin=0.0,
-        tmax=None,
-        baseline=None,
-        channels=None,
-        resample=None,
-        scorer=None,
-    ):
-        super().__init__(
-            filters=filters,
-            events=events,
-            tmin=tmin,
-            tmax=tmax,
-            baseline=baseline,
-            channels=channels,
-            resample=resample,
-            scorer=scorer,
-        )
-
-
-class LeftRightImagery(SinglePass):
+class LeftRightImagery(BaseMotorImagery):
     """Motor Imagery for left hand/right hand classification.
 
     Metric is 'roc_auc' by default
+
+    Parameters
+    ----------
+
+    fmin: float (default 8)
+        cutoff frequency (Hz) for the high pass filter.
+
+    fmax: float (default 32)
+        cutoff frequency (Hz) for the low pass filter.
+
     """
 
     def __init__(
@@ -158,8 +104,7 @@ class LeftRightImagery(SinglePass):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
         super().__init__(
-            fmin=fmin,
-            fmax=fmax,
+            filters=[[fmin, fmax]],
             events=["left_hand", "right_hand"],
             tmin=tmin,
             tmax=tmax,
@@ -179,10 +124,17 @@ class LeftRightImagery(SinglePass):
         return "roc_auc"
 
 
-class FilterBankLeftRightImagery(FilterBank):
+class FilterBankLeftRightImagery(LeftRightImagery):
     """Filter Bank Motor Imagery for left hand/right hand classification.
 
     Metric is 'roc_auc' by default
+
+    Parameters
+    ----------
+
+    filters: list of list (defaults ([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]))
+        bank of bandpass filter to apply.
+
     """
 
     def __init__(
@@ -198,7 +150,8 @@ class FilterBankLeftRightImagery(FilterBank):
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
-        super().__init__(
+        BaseMotorImagery.__init__(
+            self,
             filters=filters,
             events=["left_hand", "right_hand"],
             tmin=tmin,
@@ -219,110 +172,7 @@ class FilterBankLeftRightImagery(FilterBank):
         return "roc_auc"
 
 
-class FilterBankMotorImagery(FilterBank):
-    """Filter bank n-class motor imagery.
-
-    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
-
-    Parameters
-    ----------
-
-    events: List of str
-        event labels used to filter datasets (e.g. if only motor imagery is
-        desired).
-
-    n_classes: int,
-        number of classes each dataset must have. If events is given,
-        requires all imagery sorts to be within the events list.
-    """
-
-    def __init__(
-        self,
-        n_classes=2,
-        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
-        events=None,
-        tmin=0.0,
-        tmax=None,
-        baseline=None,
-        channels=None,
-        resample=None,
-        scorer=None,
-    ):
-        super().__init__(
-            filters=filters,
-            events=events,
-            tmin=tmin,
-            tmax=tmax,
-            baseline=baseline,
-            channels=channels,
-            resample=resample,
-            scorer=scorer,
-        )
-        self.n_classes = n_classes
-
-        if self.events is None:
-            log.warning("Choosing from all possible events")
-        else:
-            assert n_classes <= len(self.events), "More classes than events specified"
-
-    def is_valid(self, dataset):
-        ret = True
-        if not dataset.paradigm == "imagery":
-            ret = False
-        if self.events is None:
-            if not len(dataset.event_id) >= self.n_classes:
-                ret = False
-        else:
-            overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            if not overlap >= self.n_classes:
-                ret = False
-        return ret
-
-    def used_events(self, dataset):
-        out = {}
-        if self.events is None:
-            for k, v in dataset.event_id.items():
-                out[k] = v
-                if len(out) == self.n_classes:
-                    break
-        else:
-            for event in self.events:
-                if event in dataset.event_id.keys():
-                    out[event] = dataset.event_id[event]
-                if len(out) == self.n_classes:
-                    break
-        if len(out) < self.n_classes:
-            raise (
-                ValueError(
-                    f"Dataset {dataset.code} did not have enough "
-                    f"events in {self.events} to run analysis"
-                )
-            )
-        return out
-
-    @property
-    def datasets(self):
-        if self.tmax is None:
-            interval = None
-        else:
-            interval = self.tmax - self.tmin
-        return utils.dataset_search(
-            paradigm="imagery",
-            events=self.events,
-            interval=interval,
-            has_all_events=False,
-        )
-
-    @property
-    def scoring(self):
-        if self.scorer is not None:
-            return self.scorer
-        if self.n_classes == 2:
-            return "roc_auc"
-        return "accuracy"
-
-
-class MotorImagery(SinglePass):
+class MotorImagery(BaseMotorImagery):
     """N-class motor imagery.
 
     By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
@@ -337,6 +187,13 @@ class MotorImagery(SinglePass):
     n_classes: int,
         number of classes each dataset must have. If events is given,
         requires all imagery sorts to be within the events list.
+
+    fmin: float (default 8)
+        cutoff frequency (Hz) for the high pass filter.
+
+    fmax: float (default 32)
+        cutoff frequency (Hz) for the low pass filter.
+
     """
 
     def __init__(
@@ -353,8 +210,7 @@ class MotorImagery(SinglePass):
         scorer=None,
     ):
         super().__init__(
-            fmin=fmin,
-            fmax=fmax,
+            filters=[[fmin, fmax]],
             events=events,
             tmin=tmin,
             tmax=tmax,
@@ -392,6 +248,110 @@ class MotorImagery(SinglePass):
                 out[k] = v
             if self.n_classes is None:
                 self.n_classes = len(out)
+        else:
+            for event in self.events:
+                if event in dataset.event_id.keys():
+                    out[event] = dataset.event_id[event]
+                if len(out) == self.n_classes:
+                    break
+        if len(out) < self.n_classes:
+            raise (
+                ValueError(
+                    f"Dataset {dataset.code} did not have enough "
+                    f"events in {self.events} to run analysis"
+                )
+            )
+        return out
+
+    @property
+    def datasets(self):
+        if self.tmax is None:
+            interval = None
+        else:
+            interval = self.tmax - self.tmin
+        return utils.dataset_search(
+            paradigm="imagery",
+            events=self.events,
+            interval=interval,
+            has_all_events=False,
+        )
+
+    @property
+    def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
+        if self.n_classes == 2:
+            return "roc_auc"
+        return "accuracy"
+
+
+class FilterBankMotorImagery(MotorImagery):
+    """Filter bank n-class motor imagery.
+
+    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
+
+    Parameters
+    ----------
+
+    events: List of str
+        event labels used to filter datasets (e.g. if only motor imagery is
+        desired).
+
+    n_classes: int,
+        number of classes each dataset must have. If events is given,
+        requires all imagery sorts to be within the events list.
+    """
+
+    def __init__(
+        self,
+        n_classes=2,
+        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+    ):
+        BaseMotorImagery.__init__(
+            self,
+            filters=filters,
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+        )
+        self.n_classes = n_classes
+
+        if self.events is None:
+            log.warning("Choosing from all possible events")
+        else:
+            assert n_classes <= len(self.events), "More classes than events specified"
+
+    def is_valid(self, dataset):
+        ret = True
+        if not dataset.paradigm == "imagery":
+            ret = False
+        if self.events is None:
+            if not len(dataset.event_id) >= self.n_classes:
+                ret = False
+        else:
+            overlap = len(set(self.events) & set(dataset.event_id.keys()))
+            if not overlap >= self.n_classes:
+                ret = False
+        return ret
+
+    def used_events(self, dataset):
+        out = {}
+        if self.events is None:
+            for k, v in dataset.event_id.items():
+                out[k] = v
+                if len(out) == self.n_classes:
+                    break
         else:
             for event in self.events:
                 if event in dataset.event_id.keys():

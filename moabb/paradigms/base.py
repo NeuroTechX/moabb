@@ -28,6 +28,7 @@ from moabb.datasets.preprocessing import (
     get_resample_pipeline,
     make_fixed_pipeline,
 )
+from moabb.utils import MoabbMetaClass
 
 
 log = logging.getLogger(__name__)
@@ -189,11 +190,7 @@ def _normalize_scorer(scorer):
     return scorer
 
 
-class _DocstringABCMeta(abc.ABCMeta, NumpyDocstringInheritanceInitMeta):
-    pass
-
-
-class BaseProcessing(metaclass=_DocstringABCMeta):
+class BaseProcessing(metaclass=MoabbMetaClass):
     """Base Processing.
 
     Please use one of the child classes
@@ -749,7 +746,7 @@ class BaseParadigm(BaseProcessing):
     ----------
 
     events: List of str | None (default None)
-        event to use for epoching. If None, default to all events defined in
+        events to use for epoching. If None, default to all events defined in
         the dataset.
 
     scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)

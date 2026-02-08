@@ -83,52 +83,6 @@ class BaseP300(BaseParadigm):
         )
 
     @property
-    def scoring(self):
-        if self.scorer is not None:
-            return self.scorer
-        return "roc_auc"
-
-
-class SinglePass(BaseP300):
-    """Single Bandpass filter P300.
-
-    P300 paradigm with only one bandpass filter (default 1 to 24 Hz)
-
-    Parameters
-    ----------
-    fmin: float (default 1)
-        cutoff frequency (Hz) for the high pass filter
-
-    fmax: float (default 24)
-        cutoff frequency (Hz) for the low pass filter
-    """
-
-    def __init__(
-        self,
-        fmin=1,
-        fmax=24,
-        events=None,
-        tmin=0.0,
-        tmax=None,
-        baseline=None,
-        channels=None,
-        resample=None,
-        ignore_relabelling=False,
-        scorer=None,
-    ):
-        super().__init__(
-            filters=[[fmin, fmax]],
-            events=events,
-            tmin=tmin,
-            tmax=tmax,
-            baseline=baseline,
-            channels=channels,
-            resample=resample,
-            ignore_relabelling=ignore_relabelling,
-            scorer=scorer,
-        )
-
-    @property
     def fmax(self):
         return self.filters[0][1]
 
@@ -136,14 +90,27 @@ class SinglePass(BaseP300):
     def fmin(self):
         return self.filters[0][0]
 
+    @property
+    def scoring(self):
+        if self.scorer is not None:
+            return self.scorer
+        return "roc_auc"
 
-class P300(SinglePass):
+
+class P300(BaseP300):
     """P300 for Target/NonTarget classification.
 
     Metric is 'roc_auc' by default
 
     Parameters
     ----------
+
+    fmin: float (default 1)
+        cutoff frequency (Hz) for the high pass filter.
+
+    fmax: float (default 24)
+        cutoff frequency (Hz) for the low pass filter.
+
     events: List of str (default ["Target", "NonTarget"])
         event to use for epoching.
     """
@@ -164,8 +131,7 @@ class P300(SinglePass):
         if events is None:
             events = ["Target", "NonTarget"]
         super().__init__(
-            fmin=fmin,
-            fmax=fmax,
+            filters=[[fmin, fmax]],
             events=events,
             tmin=tmin,
             tmax=tmax,
