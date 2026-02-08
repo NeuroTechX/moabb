@@ -737,8 +737,7 @@ class BNCI2014_004(MNEBNCI):
             synchronicity="asynchronous",
             mode="both",
         ),
-        documentation=DocumentationMetadata(
-        ),
+        documentation=DocumentationMetadata(),
         tags=Tags(
             pathology=["Healthy"],
             modality=["Motor"],
