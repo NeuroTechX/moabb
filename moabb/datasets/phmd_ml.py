@@ -137,7 +137,7 @@ class Cattan2019_PHMD(BaseDataset):
             code="Cattan2019-PHMD",  # Before: "PHMD-ML"
             interval=[0, 1],
             paradigm="rstate",
-            doi="https://doi.org/10.5281/zenodo.2617084 ",
+            doi="10.5281/zenodo.2617084",
         )
         self._chnames = [
             "Fp1",

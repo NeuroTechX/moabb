@@ -367,7 +367,7 @@ class BNCI2020_001(BNCIBaseDataset):
             has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
-            doi="10.1038/s41598-018-36326-y",
+            doi="10.3389/fnins.2020.00849",
             repository="BNCI Horizon 2020",
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
             readme='Conflicting metadata across sources:\\n- experimental_design.trial_structure: main=Gaze at object for 2s, perform reach-and-grasp, hold object for 1-2s, return hand to base position, inter-trial interval...; description=Gaze on object for 2 seconds, self-initiated reach-and-grasp, hold object for 1-2 seconds (kept description)\\n- participants.n_subjects: main=45; description=15 (kept description)\\n- preprocessing.preprocessing_details.artifact_methods: main=["trial rejection", "amplitude threshold", "ICA"]; description=["ICA"] (kept description)\\n- preprocessing.claude_preprocessing_applied: main=True; description=False (kept description)\\n- preprocessing.data_state: main=preprocessed with artifact rejection; description=raw (kept description)\\n- preprocessing_claude.preprocessing_applied: main=True; description=False (kept description)\\n- preprocessing_claude.data_state: main=preprocessed with artifact rejection; description=raw (kept description)\\n- preprocessing_claude.notes: main=ICA not applied to dry electrode recordings due to low channel count (n=11). For classification, data was resampled to 1...; description=Data stored in .mat format with EEG and EOG signals (kept description)\\n- recording_setup.electrode_type: main=active electrodes; description=Gel-based electrodes (kept description)',

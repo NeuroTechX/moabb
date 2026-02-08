@@ -396,7 +396,7 @@ class Dreyer2023A(_Dreyer2023Base):
         documentation=DocumentationMetadata(
             doi="10.1016/j.ijhcs.2021.102603",
             repository="Zenodo",
-            data_url="https://doi.org/10.5281/zenodo.808982032",
+            data_url="https://doi.org/10.5281/zenodo.8089820",
             funding=[
                 "European \nResearch Council",
                 "grant ERC-2016- ERC-2016-",

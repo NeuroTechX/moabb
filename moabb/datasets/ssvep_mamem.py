@@ -383,7 +383,7 @@ class MAMEM1(BaseMAMEM):
             sessions_per_subject=1,
             # 5 runs per sessions, except 3 for S001, S003, S008, 4 for S004
             code="MAMEM1",
-            doi="https://arxiv.org/abs/1602.00904",
+            doi="10.48550/arXiv.1602.00904",
             figshare_id=2068677,
         )
 
@@ -563,7 +563,7 @@ class MAMEM2(BaseMAMEM):
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
             code="MAMEM2",
-            doi="https://arxiv.org/abs/1602.00904",
+            doi="10.48550/arXiv.1602.00904",
             figshare_id=3153409,
         )
 
@@ -757,6 +757,6 @@ class MAMEM3(BaseMAMEM):
             },
             sessions_per_subject=1,
             code="MAMEM3",
-            doi="https://arxiv.org/abs/1602.00904",
+            doi="10.48550/arXiv.1602.00904",
             figshare_id=3413851,
         )

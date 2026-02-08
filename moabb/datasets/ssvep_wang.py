@@ -287,7 +287,7 @@ class Wang2016(BaseDataset):
             code="Wang2016",
             interval=[0.5, 5.5],
             paradigm="ssvep",
-            doi="doi://10.1109/TNSRE.2016.2627556",
+            doi="10.1109/TNSRE.2016.2627556",
         )
 
     def _get_single_subject_data(self, subject):

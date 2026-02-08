@@ -102,8 +102,8 @@ class Kalunga2016(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.neucom.2016.01.007",
-            repository="GitHub",
-            data_url="https://github.com/sylvchev/dataset-",
+            repository="Zenodo",
+            data_url="https://zenodo.org/record/2392979",
         ),
         tags=Tags(
             pathology=["Healthy"],

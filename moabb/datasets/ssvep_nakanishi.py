@@ -139,7 +139,7 @@ class Nakanishi2015(BaseDataset):
             code="Nakanishi2015",
             interval=[0.15, 4.3],
             paradigm="ssvep",
-            doi="doi.org/10.1371/journal.pone.0140703",
+            doi="10.1371/journal.pone.0140703",
         )
 
     def _get_single_subject_data(self, subject):
