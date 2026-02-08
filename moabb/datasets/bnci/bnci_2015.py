@@ -518,7 +518,7 @@ class BNCI2015_001(MNEBNCI):
             health_status="ALS",
             gender={"male": 7, "female": 5},
             age_mean=24.8,
-            handedness={"right": "all"},
+            handedness="all right-handed",
             bci_experience="naive",
         ),
         experiment=ExperimentMetadata(
