@@ -118,30 +118,40 @@ def _insert_rest_events(events, task_duration_samples):
 def _generate_sliding_window_events(events, window_length, overlap, sfreq, interval):
     """Generate sliding window events from original trial events.
 
-    Starting from the first event onset, generates new events at regular
-    stride intervals. Rest periods are inferred from gaps between trials
-    using the dataset interval. Each window's label is determined by
-    majority vote across the segments it covers. Windows labeled as rest
-    are included in the output and expected to be filtered downstream.
+    Simulates a pseudo-online BCI scenario by sliding a fixed-size window
+    across the full recording timeline (task + rest periods). Each window
+    is assigned the label of whichever class occupies the majority of the
+    window. Rest-labeled windows are kept in the output and expected to be
+    filtered out downstream by ``_unsafe_pick_events``.
+
+    The timeline is reconstructed as a continuous sequence of segments::
+
+        [task_1] [rest] [task_2] [rest] ... [task_N] [rest]
+
+    where rest periods are inferred from the gaps between consecutive
+    task trials using the dataset ``interval``.
 
     Parameters
     ----------
     events : ndarray of shape (n_events, 3)
-        Original MNE-style events array (task events only).
+        Original MNE-style events array (task events only, sorted by onset).
     window_length : float
-        Window length in seconds.
+        Window length in seconds (typically ``tmax - tmin``).
     overlap : float
-        Overlap percentage (0-100).
+        Overlap percentage (0-100). Controls how much consecutive windows
+        overlap. For example, 50 means each window shares half its length
+        with the previous one.
     sfreq : float
         Sampling frequency in Hz.
     interval : tuple of (float, float)
-        Dataset interval (tmin, tmax) in seconds, used to compute task
-        duration and infer rest periods.
+        Dataset interval ``(tmin, tmax)`` in seconds, used to compute task
+        trial duration and infer where rest periods fall.
 
     Returns
     -------
     events_new : ndarray of shape (n_new_events, 3)
         New events array with sliding window onsets and majority-vote labels.
+        Contains both task-labeled and rest-labeled (``_REST_LABEL``) windows.
     """
     if len(events) == 0:
         return np.zeros((0, 3), dtype="int32")
@@ -150,22 +160,34 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq, inter
     if window_samples <= 0:
         raise ValueError("Window length must be strictly positive")
 
+    # Compute task trial duration from the dataset interval and determine
+    # the end of the last trial (used to bound the sliding window range).
     task_duration_samples = int(round((interval[1] - interval[0]) * sfreq))
     last_task_end = int(events[-1, 0]) + task_duration_samples
+
+    # Insert synthetic rest events in the gaps between trials (and after
+    # the last trial) so the sliding window can traverse rest periods too.
     events = _insert_rest_events(events, task_duration_samples)
 
+    # Stride = how far the window advances each step.
+    # overlap=50 with a 750-sample window gives stride=375.
     stride_samples = int(round(window_samples * (1.0 - overlap / 100.0)))
     stride_samples = max(1, stride_samples)
 
+    # Generate all candidate window start positions. Windows are allowed
+    # to start anywhere from the first event up to one stride before the
+    # last task trial ends, so the last trial is fully covered.
     first_onset = int(events[0, 0])
-    # Allow windows that start within the last trial's task region,
-    # matching the original's loop semantics where the check applies
-    # to the previous onset before generating the next one.
     max_start = last_task_end - stride_samples
     if max_start < first_onset:
         return np.zeros((0, 3), dtype="int32")
 
     onsets = np.arange(first_onset, max_start + 1, stride_samples, dtype="int32")
+
+    # Build arrays of segment boundaries (transitions) and their labels.
+    # Each event marks the start of a new segment that extends until the
+    # next event. Example: transitions=[0, 1000, 1500, 2500] means
+    # segment 0 runs from sample 0 to 999, segment 1 from 1000 to 1499, etc.
     transitions = events[:, 0].astype(np.int64, copy=False)
     labels = events[:, 2].astype(np.int32, copy=False)
 
@@ -175,30 +197,33 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq, inter
     for start in onsets:
         end = int(start + window_samples)
 
+        # Find which segment the window starts in using binary search.
+        # searchsorted(right) - 1 gives the index of the last transition
+        # that is <= start.
         seg_idx = max(np.searchsorted(transitions, start, side="right") - 1, 0)
         seg_start = int(start)
-        order = 0
         durations_by_label = {}
-        tie_break_order = {}
 
+        # Walk through all segment boundaries that fall inside this window,
+        # accumulating how many samples each label occupies.
         while seg_idx + 1 < len(transitions) and transitions[seg_idx + 1] < end:
             current_label = int(labels[seg_idx])
             next_transition = int(transitions[seg_idx + 1])
             durations_by_label[current_label] = durations_by_label.get(
                 current_label, 0
             ) + (next_transition - seg_start)
-            tie_break_order[current_label] = order
-            order += 1
             seg_start = next_transition
             seg_idx += 1
 
+        # Account for the final segment (from last transition to window end).
         last_label = int(labels[seg_idx])
         durations_by_label[last_label] = durations_by_label.get(last_label, 0) + (
             end - seg_start
         )
-        tie_break_order[last_label] = order
 
-        # On ties, favor task labels (non-rest) over rest.
+        # Pick the label that occupies the most samples in this window.
+        # On ties, favor task labels over rest so that boundary windows
+        # are more likely to retain a meaningful class label.
         label = max(
             durations_by_label,
             key=lambda lbl: (durations_by_label[lbl], lbl != _REST_LABEL),
