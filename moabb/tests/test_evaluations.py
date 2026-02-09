@@ -766,6 +766,50 @@ class TestParallelProcess:
         assert "permutation" in results.columns
         assert "data_size" in results.columns
 
+    def test_within_session_dataset_order_deterministic(self, tmp_path):
+        """Fixed random_state should give same scores regardless dataset order."""
+        ds1 = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_runs=2, seed=12)
+        ds2 = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_runs=3, seed=12)
+
+        eval_ab = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[ds1, ds2],
+            random_state=42,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "order_ab"),
+        )
+        results_ab = eval_ab.process(pipelines)
+
+        eval_ba = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[ds2, ds1],
+            random_state=42,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "order_ba"),
+        )
+        results_ba = eval_ba.process(pipelines)
+
+        keys = ["dataset", "subject", "session", "pipeline"]
+        left = (
+            results_ab[keys + ["score"]]
+            .drop_duplicates(subset=keys, keep="first")
+            .rename(columns={"score": "score_ab"})
+        )
+        right = (
+            results_ba[keys + ["score"]]
+            .drop_duplicates(subset=keys, keep="first")
+            .rename(columns={"score": "score_ba"})
+        )
+
+        merged = left.merge(right, on=keys, how="inner").sort_values(keys)
+        assert len(merged) == len(left) == len(right)
+        np.testing.assert_allclose(
+            merged["score_ab"].to_numpy(),
+            merged["score_ba"].to_numpy(),
+            rtol=0,
+            atol=0,
+        )
+
     def teardown_method(self):
         import glob
 

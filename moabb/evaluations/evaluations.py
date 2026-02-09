@@ -483,6 +483,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
     def _score_per_session(self):
         return True
 
+    def _needs_all_subjects(self):
+        return True
+
     # flake8: noqa: C901
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None

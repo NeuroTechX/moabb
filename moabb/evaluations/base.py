@@ -108,7 +108,7 @@ def _grid_search_static(
             )
             return search, True
         else:
-            return grid_clf, True
+            return grid_clf, False
     else:
         return grid_clf, False
 
@@ -136,6 +136,7 @@ def _evaluate_fold(
     hdf5_path,
     eval_type,
     cv_ind,
+    mne_labels=False,
     codecarbon_config=None,
     split_metadata=None,
     score_per_session=False,
@@ -189,6 +190,8 @@ def _evaluate_fold(
         Evaluation type name (e.g., "WithinSession").
     cv_ind : int
         Cross-validation fold index.
+    mne_labels : bool
+        If True, skip label encoding (use original MNE labels).
     codecarbon_config : dict | None
         CodeCarbon configuration.
     split_metadata : dict | None
@@ -202,6 +205,17 @@ def _evaluate_fold(
         Result dicts for this fold.
     """
     results = []
+
+    # Label encode per fold (matching old per-session/per-subject scoping)
+    if not mne_labels:
+        le = LabelEncoder()
+        combined_y = np.concatenate([y[train_idx], y[test_idx]])
+        le.fit(combined_y)
+        y_train = le.transform(y[train_idx])
+        y_test = le.transform(y[test_idx])
+    else:
+        y_train = y[train_idx]
+        y_test = y[test_idx]
 
     inner_cv = StratifiedKFold(3, shuffle=True, random_state=random_state)
     grid_clf = clone(pipeline)
@@ -233,7 +247,7 @@ def _evaluate_fold(
         task_name = str(uuid4())
         tracker.start_task(task_name)
     t_start = perf_counter()
-    cvclf.fit(X[train_idx], y[train_idx])
+    cvclf.fit(X[train_idx], y_train)
     duration = perf_counter() - t_start
     if tracker is not None:
         emissions_data = tracker.stop_task()
@@ -264,12 +278,14 @@ def _evaluate_fold(
         for sess in np.unique(test_sessions):
             ix = test_sessions == sess
             sess_test_idx = test_idx[ix]
+            is_error = False
             try:
-                score = scorer(cvclf, X[sess_test_idx], y[sess_test_idx])
+                score = scorer(cvclf, X[sess_test_idx], y_test[ix])
             except ValueError as err:
                 if error_score == "raise":
                     raise err
                 score = {"score": error_score}
+                is_error = True
 
             res = {
                 "time": duration,
@@ -277,8 +293,10 @@ def _evaluate_fold(
                 "subject": subject,
                 "session": sess,
                 "n_samples": len(train_idx),
+                "n_samples_total": len(train_idx) + len(test_idx),
                 "n_channels": nchan,
                 "pipeline": pipeline_name,
+                "is_error": is_error,
             }
             for col in additional_columns:
                 if col not in res:
@@ -293,12 +311,14 @@ def _evaluate_fold(
             results.append(res)
     else:
         # Standard: score on full test set
+        is_error = False
         try:
-            score = scorer(cvclf, X[test_idx], y[test_idx])
+            score = scorer(cvclf, X[test_idx], y_test)
         except ValueError as err:
             if error_score == "raise":
                 raise err
             score = {"score": error_score}
+            is_error = True
 
         res = {
             "time": duration,
@@ -306,8 +326,10 @@ def _evaluate_fold(
             "subject": subject,
             "session": session,
             "n_samples": len(train_idx),
+            "n_samples_total": len(train_idx) + len(test_idx),
             "n_channels": nchan,
             "pipeline": pipeline_name,
+            "is_error": is_error,
         }
         for col in additional_columns:
             if col not in res:
@@ -786,6 +808,7 @@ class BaseEvaluation(ABC):
                         hdf5_path=self.hdf5_path,
                         eval_type=self._get_eval_type(),
                         cv_ind=cv_ind,
+                        mne_labels=self.mne_labels,
                         codecarbon_config=(
                             self.emissions.codecarbon_config if _carbonfootprint else None
                         ),
@@ -799,6 +822,14 @@ class BaseEvaluation(ABC):
         """Whether to score separately per session in each fold.
 
         CrossSubject evaluation scores per session; others don't.
+        """
+        return False
+
+    def _needs_all_subjects(self):
+        """Whether all subjects must be loaded for correct CV splits.
+
+        CrossSubject needs all subjects even if some are already computed,
+        because the cross-validation splits depend on the full subject list.
         """
         return False
 
@@ -839,6 +870,11 @@ class BaseEvaluation(ABC):
 
         aggregated = []
         for key, group in groups.items():
+            # Filter out error folds to match old behavior (errors were skipped)
+            group = [r for r in group if not r.get("is_error", False)]
+            if not group:
+                continue  # All folds errored, skip this group entirely
+
             # Average the scores
             scores = [{"score": r["score"]} for r in group]
             # Include additional score columns
@@ -850,12 +886,17 @@ class BaseEvaluation(ABC):
 
             avg_scores = _average_scores(scores)
             avg_duration = float(np.mean([r["time"] for r in group]))
-            n_samples = sum(r["n_samples"] for r in group)
+            # Use total samples (train + test) from any fold, matching old
+            # behavior where n_samples = len(y_cv) (total session samples)
+            n_samples = group[0].get("n_samples_total", group[0]["n_samples"])
 
             # Use first result as template
             res = dict(group[0])
             res["time"] = avg_duration
             res["n_samples"] = n_samples
+            # Clean up internal fields not needed in final results
+            res.pop("n_samples_total", None)
+            res.pop("is_error", None)
             _update_result_with_scores(res, avg_scores)
             aggregated.append(res)
 
@@ -968,6 +1009,12 @@ class BaseEvaluation(ABC):
         res_per_db = []
 
         for dataset in self.datasets:
+            # Recreate splitter per dataset so random_state does not drift
+            # across datasets due mutable splitter internal RNG state.
+            dataset_splitter = self._create_splitter()
+            if dataset_splitter is None:
+                dataset_splitter = splitter
+
             process_pipeline = self.paradigm.make_process_pipelines(
                 dataset,
                 return_epochs=self.return_epochs,
@@ -987,8 +1034,12 @@ class BaseEvaluation(ABC):
                 )
                 continue
 
-            # Step 2: Load all data for subjects that need computation
-            subjects_to_load = list(work_plan.keys())
+            # Step 2: Load data. CrossSubject needs ALL subjects for correct
+            # CV splits, even if some are already computed.
+            if self._needs_all_subjects():
+                subjects_to_load = dataset.subject_list
+            else:
+                subjects_to_load = list(work_plan.keys())
             X, y, metadata = self._load_data(
                 dataset,
                 # Pass all pipelines to check for epoch requirements
@@ -1002,14 +1053,16 @@ class BaseEvaluation(ABC):
                 subjects=subjects_to_load,
             )
 
-            # Label encode if not using mne_labels
-            if not self.mne_labels:
-                le = LabelEncoder()
-                y = le.fit_transform(y)
-
             # Step 3: Build flat task list from splits
             tasks = self._build_task_list(
-                dataset, X, y, metadata, splitter, work_plan, pipelines, param_grid
+                dataset,
+                X,
+                y,
+                metadata,
+                dataset_splitter,
+                work_plan,
+                pipelines,
+                param_grid,
             )
 
             if not tasks:
@@ -1034,7 +1087,7 @@ class BaseEvaluation(ABC):
                 all_results.extend(fold_result_list)
 
             # Step 5: Optionally aggregate fold results (WithinSession default)
-            if self._should_aggregate_folds(splitter):
+            if self._should_aggregate_folds(dataset_splitter):
                 all_results = self._aggregate_fold_results(all_results)
 
             # Step 6: Collect results sequentially (safe HDF5 writes)
