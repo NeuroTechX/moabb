@@ -27,7 +27,11 @@ class BaseMotorImagery(BaseParadigm):
         channels=None,
         resample=None,
         scorer=None,
+        overlap=None,
     ):
+        if overlap is not None and not (0 <= overlap < 100):
+            raise ValueError("overlap must be in [0, 100)")
+
         super().__init__(
             filters=filters,
             events=events,
@@ -36,6 +40,7 @@ class BaseMotorImagery(BaseParadigm):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            overlap=overlap,
             scorer=scorer,
         )
 
@@ -100,6 +105,7 @@ class LeftRightImagery(BaseMotorImagery):
         channels=None,
         resample=None,
         scorer=None,
+        overlap=None,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -111,6 +117,7 @@ class LeftRightImagery(BaseMotorImagery):
             baseline=baseline,
             channels=channels,
             resample=resample,
+            overlap=overlap,
             scorer=scorer,
         )
 
@@ -147,6 +154,7 @@ class FilterBankLeftRightImagery(LeftRightImagery):
         channels=None,
         resample=None,
         scorer=None,
+        overlap=None,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -159,6 +167,7 @@ class FilterBankLeftRightImagery(LeftRightImagery):
             baseline=baseline,
             channels=channels,
             resample=resample,
+            overlap=overlap,
             scorer=scorer,
         )
 
@@ -208,6 +217,7 @@ class MotorImagery(BaseMotorImagery):
         channels=None,
         resample=None,
         scorer=None,
+        overlap=None,
     ):
         super().__init__(
             filters=[[fmin, fmax]],
@@ -217,6 +227,7 @@ class MotorImagery(BaseMotorImagery):
             baseline=baseline,
             channels=channels,
             resample=resample,
+            overlap=overlap,
             scorer=scorer,
         )
         self.n_classes = n_classes
@@ -313,6 +324,7 @@ class FilterBankMotorImagery(MotorImagery):
         channels=None,
         resample=None,
         scorer=None,
+        overlap=None,
     ):
         BaseMotorImagery.__init__(
             self,
@@ -323,6 +335,7 @@ class FilterBankMotorImagery(MotorImagery):
             baseline=baseline,
             channels=channels,
             resample=resample,
+            overlap=overlap,
             scorer=scorer,
         )
         self.n_classes = n_classes

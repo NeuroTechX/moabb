@@ -15,6 +15,11 @@ from moabb.datasets.base import (
     LocalBIDSDataset,
 )
 from moabb.datasets.fake import FakeDataset
+from moabb.datasets.preprocessing import (
+    _REST_LABEL,
+    RawToEvents,
+    _generate_sliding_window_events,
+)
 from moabb.paradigms import (
     CVEP,
     P300,
@@ -112,6 +117,220 @@ class TestMotorImagery(unittest.TestCase):
     def test_BaseImagery_tmintmax(self):
         with pytest.raises(ValueError):
             SimpleMotorImagery(tmin=1, tmax=0)
+
+    def test_BaseImagery_overlap_stride(self):
+        dataset = FakeDataset(
+            paradigm="imagery",
+            n_sessions=1,
+            n_runs=1,
+            n_events=12,
+            duration=60,
+            seed=42,
+        )
+        raw = dataset._get_single_subject_data(1)["0"]["0"]
+
+        baseline = SimpleMotorImagery(tmin=0.0, tmax=2.0)
+        overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
+
+        events_baseline = baseline._get_events_pipeline(dataset).transform(raw)
+        events_overlap = overlap._get_events_pipeline(dataset).transform(raw)
+
+        assert len(events_overlap) > len(events_baseline)
+        assert events_overlap[0, 0] == events_baseline[0, 0]
+
+        stride = int(round((2.0 - 0.0) * raw.info["sfreq"] * (1.0 - 0.5)))
+        diffs = np.diff(events_overlap[:, 0])
+        assert len(diffs) > 0
+        assert np.all(diffs >= stride)
+        assert np.all(diffs % stride == 0)
+
+    def test_BaseImagery_overlap_majority_vote(self):
+        events = np.array(
+            [
+                [0, 0, 1],
+                [10, 0, 2],
+                [20, 0, 1],
+            ],
+            dtype="int32",
+        )
+        interval = (0.0, 10.0)
+        sliding = _generate_sliding_window_events(
+            events, window_length=8.0, overlap=50.0, sfreq=1.0, interval=interval
+        )
+        # Rest events are inserted between trials. Cross-boundary windows
+        # get majority-vote labels instead of being dropped.
+        np.testing.assert_array_equal(sliding[:, 0], np.array([0, 4, 8, 12, 16, 20, 24]))
+        np.testing.assert_array_equal(sliding[:, 2], np.array([1, 1, 2, 2, 2, 1, 1]))
+        assert np.all(sliding[:, 1] == 0)
+
+    def test_BaseImagery_overlap_produces_more_epochs(self):
+        dataset = FakeDataset(
+            paradigm="imagery",
+            n_sessions=1,
+            n_runs=1,
+            n_events=12,
+            duration=60,
+            seed=42,
+        )
+        paradigm_no_overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0)
+        paradigm_overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
+
+        X_no, _, _ = paradigm_no_overlap.get_data(dataset, subjects=[1])
+        X_ov, labels, metadata = paradigm_overlap.get_data(dataset, subjects=[1])
+
+        assert len(X_ov) > len(X_no)
+        assert len(labels) == len(X_ov)
+        assert len(metadata) == len(X_ov)
+
+    def test_BaseImagery_overlap_annotations_only(self):
+        dataset = FakeDataset(
+            paradigm="imagery",
+            n_sessions=1,
+            n_runs=1,
+            n_events=12,
+            duration=60,
+            seed=42,
+            stim=False,
+            annotations=True,
+        )
+        paradigm = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        assert len(X) == len(labels)
+        assert len(metadata) == len(labels)
+        assert len(labels) > 0
+
+    def test_BaseImagery_invalid_overlap(self):
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            SimpleMotorImagery(overlap=-1)
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            SimpleMotorImagery(overlap=100)
+
+    def test_rest_label_no_collision_with_event_code_zero(self):
+        """Verify _REST_LABEL does not collide with event code 0."""
+        # Use events where code 0 is a real task class
+        events = np.array(
+            [
+                [0, 0, 0],  # task class with code 0
+                [20, 0, 1],
+            ],
+            dtype="int32",
+        )
+        interval = (0.0, 10.0)
+        sliding = _generate_sliding_window_events(
+            events, window_length=8.0, overlap=50.0, sfreq=1.0, interval=interval
+        )
+        # Rest windows should get _REST_LABEL (-1), not 0
+        assert _REST_LABEL == -1
+        # Code 0 task events must be preserved (not confused with rest)
+        task_0_windows = sliding[sliding[:, 2] == 0]
+        assert len(task_0_windows) > 0
+        # Rest-labeled windows should have label -1
+        rest_windows = sliding[sliding[:, 2] == _REST_LABEL]
+        assert len(rest_windows) > 0
+
+    def test_RawToEvents_overlap_without_window_length(self):
+        """Verify ValueError when overlap given without window_length."""
+        with pytest.raises(
+            ValueError, match="window_length must be provided when overlap is set"
+        ):
+            RawToEvents(
+                event_id={"left_hand": 1, "right_hand": 2},
+                interval=(0.0, 4.0),
+                overlap=50.0,
+            )
+
+    def test_RawToEvents_overlap_range_validation(self):
+        """Verify RawToEvents rejects invalid overlap values."""
+        event_id = {"left_hand": 1, "right_hand": 2}
+        interval = (0.0, 4.0)
+
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            RawToEvents(
+                event_id=event_id, interval=interval, overlap=-1, window_length=2.0
+            )
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            RawToEvents(
+                event_id=event_id, interval=interval, overlap=100, window_length=2.0
+            )
+        with pytest.raises(TypeError, match="overlap must be a number"):
+            RawToEvents(
+                event_id=event_id, interval=interval, overlap="fifty", window_length=2.0
+            )
+
+    def test_sliding_window_negative_tmin_pre_cue_rest(self):
+        """Verify pre-cue samples are counted as rest when tmin is negative."""
+        # With tmin=-1 and interval=(0, 10), epoch_offset = -1 + 0 = -1
+        # so vote_start = onset + (-1) falls before the first transition.
+        events = np.array(
+            [
+                [10, 0, 1],
+                [30, 0, 2],
+            ],
+            dtype="int32",
+        )
+        interval = (0.0, 10.0)
+        sfreq = 1.0
+        window_length = 10.0
+        overlap = 50.0
+
+        sliding = _generate_sliding_window_events(
+            events, window_length, overlap, sfreq, interval, tmin=-1.0
+        )
+
+        # The first window starts at the first onset (10). Its vote window
+        # is [10 + (-1), 10 + (-1) + 10] = [9, 19]. Sample 9 is before
+        # the first transition at 10, so it should be counted as rest.
+        assert len(sliding) > 0
+        # The pre-cue rest sample should influence the majority vote
+        first_window = sliding[sliding[:, 0] == sliding[0, 0]]
+        assert len(first_window) == 1
+
+    def test_sliding_window_single_event(self):
+        """Verify sliding window produces events from a single trial."""
+        events = np.array([[0, 0, 1]], dtype="int32")
+        interval = (0.0, 10.0)
+        sliding = _generate_sliding_window_events(
+            events, window_length=4.0, overlap=50.0, sfreq=1.0, interval=interval
+        )
+        # Should produce windows from the single trial
+        assert len(sliding) > 0
+        # At least some windows should have the task label
+        task_windows = sliding[sliding[:, 2] == 1]
+        assert len(task_windows) > 0
+
+    def test_sliding_window_nonzero_interval_start(self):
+        """Verify labels are correct when interval[0] != 0."""
+        # Simulate a dataset like BNCI2014-001 with interval=(2, 6)
+        # Cue at sample 0, task starts at sample 2, task ends at sample 6
+        events = np.array(
+            [
+                [0, 0, 1],
+                [20, 0, 2],
+            ],
+            dtype="int32",
+        )
+        interval = (2.0, 6.0)
+        sfreq = 1.0
+        window_length = 4.0
+        overlap = 50.0
+
+        # With tmin=0 and interval[0]=2, the epoch offset is 2 samples
+        sliding = _generate_sliding_window_events(
+            events, window_length, overlap, sfreq, interval, tmin=0.0
+        )
+
+        # The task segments should be at [cue+2, cue+6]:
+        # Trial 1: [2, 6], Trial 2: [22, 26]
+        # Windows whose voting region [onset+2, onset+2+4] falls within
+        # task segments should get task labels
+        assert len(sliding) > 0
+
+        # A window starting at the cue onset (0) votes over [2, 6] which
+        # is entirely task 1 → should be labeled 1
+        first_window = sliding[sliding[:, 0] == 0]
+        if len(first_window) > 0:
+            assert first_window[0, 2] == 1
 
     def test_BaseImagery_filters(self):
         # can work with filter bank

@@ -81,6 +81,211 @@ def _unsafe_pick_events(events, include):
         raise e
 
 
+_REST_LABEL = -1
+
+
+def _insert_rest_events(events, task_duration_samples, interval_start_samples=0):
+    """Insert rest events in gaps between consecutive task trials.
+
+    Adds rest events between trials and after the last trial so that
+    the sliding window can cover the trial timeline.
+
+    Parameters
+    ----------
+    events : ndarray of shape (n_events, 3)
+        Task events sorted by onset (cue onsets).
+    task_duration_samples : int
+        Duration of each task trial in samples.
+    interval_start_samples : int
+        Offset from cue onset to actual task start, in samples.
+        For datasets where ``interval[0] != 0`` (e.g. ``interval=(2, 6)``),
+        this shifts the task segment to ``[cue + offset, cue + offset + duration]``.
+
+    Returns
+    -------
+    all_events : ndarray of shape (n_all_events, 3)
+        Merged task + rest events, sorted by onset.
+    """
+    rest = []
+    for i in range(len(events)):
+        # Task segment starts at cue + interval_start_samples
+        task_start = events[i, 0] + interval_start_samples
+        task_end = task_start + task_duration_samples
+
+        # Pre-task rest: from cue onset to task start (if interval_start > 0)
+        if interval_start_samples > 0:
+            rest.append([events[i, 0], 0, _REST_LABEL])
+
+        # Post-task rest: from task end to next trial's task start
+        if i + 1 < len(events):
+            next_task_start = events[i + 1, 0] + interval_start_samples
+        else:
+            next_task_start = task_end + 1
+        if next_task_start > task_end:
+            rest.append([task_end, 0, _REST_LABEL])
+
+    # Move task event onsets to actual task start positions
+    events = events.copy()
+    events[:, 0] += interval_start_samples
+
+    if not rest:
+        return events
+    rest = np.array(rest, dtype=events.dtype)
+    merged = np.vstack([events, rest])
+    return merged[merged[:, 0].argsort()]
+
+
+def _generate_sliding_window_events(
+    events, window_length, overlap, sfreq, interval, tmin=0.0
+):
+    """Generate sliding window events from original trial events.
+
+    Simulates a pseudo-online BCI scenario by sliding a fixed-size window
+    across the trial timeline starting from the first event onset (task + rest
+    periods). Each window
+    is assigned the label of whichever class occupies the majority of the
+    window. Rest-labeled windows are kept in the output and expected to be
+    filtered out downstream by ``_unsafe_pick_events``.
+
+    The timeline is reconstructed as a continuous sequence of segments::
+
+        [task_1] [rest] [task_2] [rest] ... [task_N] [rest]
+
+    where rest periods are inferred from the gaps between consecutive
+    task trials using the dataset ``interval``.
+
+    Parameters
+    ----------
+    events : ndarray of shape (n_events, 3)
+        Original MNE-style events array (task events only, sorted by onset).
+    window_length : float
+        Window length in seconds (typically ``tmax - tmin``).
+    overlap : float
+        Overlap percentage (0-100). Controls how much consecutive windows
+        overlap. For example, 50 means each window shares half its length
+        with the previous one.
+    sfreq : float
+        Sampling frequency in Hz.
+    interval : tuple of (float, float)
+        Dataset interval ``(tmin, tmax)`` in seconds, used to compute task
+        trial duration and infer where rest periods fall.
+    tmin : float
+        Start time of the epoch relative to the dataset interval, in seconds.
+        Used together with ``interval[0]`` to compute the epoch offset so that
+        the label voting window aligns with the actual extracted data.
+
+    Returns
+    -------
+    events_new : ndarray of shape (n_new_events, 3)
+        New events array with sliding window onsets and majority-vote labels.
+        Contains both task-labeled and rest-labeled (``_REST_LABEL``) windows.
+    """
+    if len(events) == 0:
+        return np.zeros((0, 3), dtype="int32")
+
+    window_samples = int(round(window_length * sfreq))
+    if window_samples <= 0:
+        raise ValueError("Window length must be strictly positive")
+
+    # Compute task trial duration from the dataset interval and determine
+    # the end of the last trial (used to bound the sliding window range).
+    task_duration_samples = int(round((interval[1] - interval[0]) * sfreq))
+    interval_start_samples = int(round(interval[0] * sfreq))
+
+    # The epoch offset accounts for the fact that epoch extraction uses
+    # tmin + interval[0] as the actual start time. This offset aligns the
+    # label voting window with the data that will actually be extracted.
+    epoch_offset_samples = int(round((tmin + interval[0]) * sfreq))
+
+    last_task_end = int(events[-1, 0]) + interval_start_samples + task_duration_samples
+
+    # Insert synthetic rest events in the gaps between trials (and after
+    # the last trial) so the sliding window can traverse rest periods too.
+    events = _insert_rest_events(events, task_duration_samples, interval_start_samples)
+
+    # Stride = how far the window advances each step.
+    # overlap=50 with a 750-sample window gives stride=375.
+    stride_samples = int(round(window_samples * (1.0 - overlap / 100.0)))
+    stride_samples = max(1, stride_samples)
+
+    # Generate all candidate window start positions. Windows are allowed
+    # to start anywhere from the first event up to one stride before the
+    # last task trial ends, so the last trial is fully covered.
+    first_onset = int(events[0, 0])
+    max_start = last_task_end - stride_samples
+    if max_start < first_onset:
+        return np.zeros((0, 3), dtype="int32")
+
+    onsets = np.arange(first_onset, max_start + 1, stride_samples, dtype="int32")
+
+    # Build arrays of segment boundaries (transitions) and their labels.
+    # Each event marks the start of a new segment that extends until the
+    # next event. Example: transitions=[0, 1000, 1500, 2500] means
+    # segment 0 runs from sample 0 to 999, segment 1 from 1000 to 1499, etc.
+    transitions = events[:, 0].astype(np.int64, copy=False)
+    labels = events[:, 2].astype(np.int32, copy=False)
+
+    kept_onsets = []
+    kept_labels = []
+
+    for start in onsets:
+        # The voting window is shifted by the epoch offset so that
+        # label assignment matches the actual data extracted by epoching
+        # (which uses tmin + interval[0] as start).
+        vote_start = int(start + epoch_offset_samples)
+        vote_end = int(vote_start + window_samples)
+
+        # Find which segment the window starts in using binary search.
+        # searchsorted(right) - 1 gives the index of the last transition
+        # that is <= vote_start.
+        seg_idx = np.searchsorted(transitions, vote_start, side="right") - 1
+        durations_by_label = {}
+
+        if seg_idx < 0:
+            # vote_start is before the first transition -- treat as rest
+            pre_samples = int(transitions[0]) - vote_start
+            durations_by_label[_REST_LABEL] = pre_samples
+            seg_start = int(transitions[0])
+            seg_idx = 0
+        else:
+            seg_start = int(vote_start)
+
+        # Walk through all segment boundaries that fall inside this window,
+        # accumulating how many samples each label occupies.
+        while seg_idx + 1 < len(transitions) and transitions[seg_idx + 1] < vote_end:
+            current_label = int(labels[seg_idx])
+            next_transition = int(transitions[seg_idx + 1])
+            durations_by_label[current_label] = durations_by_label.get(
+                current_label, 0
+            ) + (next_transition - seg_start)
+            seg_start = next_transition
+            seg_idx += 1
+
+        # Account for the final segment (from last transition to window end).
+        last_label = int(labels[seg_idx])
+        durations_by_label[last_label] = durations_by_label.get(last_label, 0) + (
+            vote_end - seg_start
+        )
+
+        # Pick the label that occupies the most samples in this window.
+        # On ties, favor task labels over rest so that boundary windows
+        # are more likely to retain a meaningful class label.
+        label = max(
+            durations_by_label,
+            key=lambda lbl: (durations_by_label[lbl], lbl != _REST_LABEL),
+        )
+
+        kept_onsets.append(start)
+        kept_labels.append(label)
+
+    events_new = np.zeros((len(kept_onsets), 3), dtype="int32")
+    if len(kept_onsets) > 0:
+        events_new[:, 0] = np.asarray(kept_onsets, dtype="int32")
+        events_new[:, 2] = np.asarray(kept_labels, dtype="int32")
+
+    return events_new
+
+
 class ForkPipelines(TransformerMixin, BaseEstimator):
     def __init__(self, transformers: List[Tuple[str, Union[Pipeline, TransformerMixin]]]):
         for _, t in transformers:
@@ -234,14 +439,50 @@ class SetRawAnnotations(FixedTransformer):
 
 class RawToEvents(FixedTransformer):
     """
-    Always returns an array for shape (n_events, 3), even if no events found
+    Always returns an array for shape (n_events, 3), even if no events found.
+
+    When ``overlap`` and ``window_length`` are provided, generates overlapping
+    sliding window events from the original trial events instead.
+
+    Parameters
+    ----------
+    event_id : dict
+        Mapping of event names to codes.
+    interval : tuple of (float, float)
+        Dataset interval.
+    overlap : float | None
+        Overlap percentage (0-100). If None, no sliding window is applied.
+    window_length : float | None
+        Window length in seconds. Required when overlap is not None.
     """
 
-    def __init__(self, event_id: dict[str, int], interval: Tuple[float, float]):
+    def __init__(
+        self,
+        event_id: dict[str, int],
+        interval: Tuple[float, float],
+        overlap=None,
+        window_length=None,
+        tmin=0.0,
+    ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.interval = interval
+        self.overlap = overlap
+        self.window_length = window_length
+        self.tmin = tmin
+        if self.overlap is not None and self.window_length is None:
+            raise ValueError("window_length must be provided when overlap is set")
+        if self.overlap is not None:
+            try:
+                overlap_value = float(self.overlap)
+            except (TypeError, ValueError):
+                raise TypeError(
+                    f"overlap must be a number in [0, 100), got {self.overlap!r}"
+                )
+            if not (0.0 <= overlap_value < 100.0):
+                raise ValueError(f"overlap must be in [0, 100), got {self.overlap!r}")
+            self.overlap = overlap_value
 
     def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
@@ -263,7 +504,19 @@ class RawToEvents(FixedTransformer):
 
     def transform(self, raw, y=None):
         events = self._find_events(raw)
-        return _unsafe_pick_events(events, list(self.event_id.values()))
+        events = _unsafe_pick_events(events, list(self.event_id.values()))
+        if self.overlap is not None and len(events) >= 1:
+            sfreq = raw.info["sfreq"]
+            events = _generate_sliding_window_events(
+                events,
+                self.window_length,
+                self.overlap,
+                sfreq,
+                self.interval,
+                tmin=self.tmin,
+            )
+            events = _unsafe_pick_events(events, list(self.event_id.values()))
+        return events
 
 
 class RawToEventsP300(RawToEvents):

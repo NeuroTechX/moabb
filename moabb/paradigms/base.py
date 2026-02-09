@@ -220,6 +220,11 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         the dataset.
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+    overlap: float | None (default None)
+        Overlap percentage (0-100) for the sliding window approach used in
+        pseudo-online evaluation. If None, no overlap is applied. When overlap
+        is used, windows may cross event boundaries; such windows are kept and
+        labeled using a majority vote over the events they cover.
     """
 
     def __init__(
@@ -230,6 +235,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         baseline: Optional[Tuple[float, float]] = None,
         channels: Optional[List[str]] = None,
         resample: Optional[float] = None,
+        overlap: Optional[float] = None,
     ):
         if tmax is not None:
             if tmin >= tmax:
@@ -241,6 +247,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         self.tmin = tmin
         self.tmax = tmax
         self.interpolate_missing_channels = False
+        self.overlap = overlap
 
     @property
     @abc.abstractmethod
@@ -336,7 +343,10 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                 f"events to generate labels: {dataset.event_id}"
             )
             events_pipeline = (
-                RawToEvents(dataset.event_id, interval=dataset.interval)
+                RawToEvents(
+                    dataset.event_id,
+                    interval=dataset.interval,
+                )
                 if epochs_pipeline is None
                 else EpochsToEvents()
             )
@@ -761,6 +771,7 @@ class BaseParadigm(BaseProcessing):
         baseline=None,
         channels=None,
         resample=None,
+        overlap=None,
         scorer=None,
     ):
         super().__init__(
@@ -770,6 +781,7 @@ class BaseParadigm(BaseProcessing):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            overlap=overlap,
         )
         self.events = events
 
@@ -795,4 +807,18 @@ class BaseParadigm(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
+        if self.overlap is not None:
+            tmax = (
+                self.tmax
+                if self.tmax is not None
+                else (dataset.interval[1] - dataset.interval[0])
+            )
+            window_length = tmax - self.tmin
+            return RawToEvents(
+                event_id=event_id,
+                interval=dataset.interval,
+                overlap=self.overlap,
+                window_length=window_length,
+                tmin=self.tmin,
+            )
         return RawToEvents(event_id=event_id, interval=dataset.interval)
