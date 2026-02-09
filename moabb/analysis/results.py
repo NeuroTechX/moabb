@@ -263,6 +263,55 @@ class Results:
 
         return pd.concat(df_list, ignore_index=True)
 
+    def batch_not_yet_computed(self, pipelines, dataset, subjects, process_pipeline):
+        """Check all subjects at once with a single HDF5 read.
+
+        Parameters
+        ----------
+        pipelines : dict of pipeline instance.
+            A dict containing the sklearn pipeline to evaluate.
+        dataset : Dataset instance
+            The dataset to check for.
+        subjects : list
+            List of subjects to check.
+        process_pipeline : Pipeline | None
+            The processing pipeline.
+
+        Returns
+        -------
+        dict
+            A dict mapping subject -> {pipeline_name: pipeline} for subjects
+            that still need computation. Subjects with all pipelines computed
+            are omitted.
+        """
+        with h5py.File(self.filepath, "r") as f:
+            # Pre-compute all digests and load computed subjects per pipeline
+            computed_subjects = {}
+            for name, pipeline in pipelines.items():
+                digest = get_pipeline_digest(process_pipeline, pipeline)
+                if digest in f.keys():
+                    pipe_grp = f[digest]
+                    if dataset.code in pipe_grp.keys():
+                        dset = pipe_grp[dataset.code]
+                        ids = set(dset["id"][:, 0])
+                        computed_subjects[name] = ids
+                    else:
+                        computed_subjects[name] = set()
+                else:
+                    computed_subjects[name] = set()
+
+        result = {}
+        for subject in subjects:
+            subj_encoded = str(subject).encode("utf-8")
+            missing = {
+                name: pipelines[name]
+                for name in pipelines
+                if subj_encoded not in computed_subjects[name]
+            }
+            if missing:
+                result[subject] = missing
+        return result
+
     def not_yet_computed(self, pipelines, dataset, subj, process_pipeline):
         """Check if a results is missing.
 

@@ -83,6 +83,25 @@ class WithinSessionEvaluation(BaseEvaluation):
 
     """
 
+    def _create_splitter(self):
+        """Create the WithinSessionSplitter for parallel evaluation."""
+        cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
+        return WithinSessionSplitter(
+            n_folds=5,
+            shuffle=True,
+            random_state=self.random_state,
+            cv_class=cv_class,
+            **cv_kwargs,
+        )
+
+    def _get_eval_type(self):
+        return "WithinSession"
+
+    def _should_aggregate_folds(self, splitter):
+        """Aggregate folds when using default CV (not LearningCurve)."""
+        per_split = hasattr(getattr(splitter, "cv_class", None), "get_metadata")
+        return not per_split
+
     # flake8: noqa: C901
     def _evaluate(
         self,
@@ -275,6 +294,16 @@ class CrossSessionEvaluation(BaseEvaluation):
        Add save_model and cache_config parameters.
     """
 
+    def _create_splitter(self):
+        """Create the CrossSessionSplitter for parallel evaluation."""
+        cv_class, cv_kwargs = self._resolve_cv(LeaveOneGroupOut)
+        return CrossSessionSplitter(
+            cv_class=cv_class, random_state=self.random_state, **cv_kwargs
+        )
+
+    def _get_eval_type(self):
+        return "CrossSession"
+
     # flake8: noqa: C901
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
@@ -433,6 +462,26 @@ class CrossSubjectEvaluation(BaseEvaluation):
     .. versionadded:: 1.1.0
          Add save_model, cache_config and n_splits parameters
     """
+
+    def _create_splitter(self):
+        """Create the CrossSubjectSplitter for parallel evaluation."""
+        if self.n_splits is None:
+            default_class = LeaveOneGroupOut
+            default_kwargs = {}
+        else:
+            default_class = GroupKFold
+            default_kwargs = {"n_splits": self.n_splits}
+
+        cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
+        return CrossSubjectSplitter(
+            cv_class=cv_class, random_state=self.random_state, **cv_kwargs
+        )
+
+    def _get_eval_type(self):
+        return "CrossSubject"
+
+    def _score_per_session(self):
+        return True
 
     # flake8: noqa: C901
     def evaluate(

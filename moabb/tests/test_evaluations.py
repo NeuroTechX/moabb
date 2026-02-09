@@ -620,3 +620,157 @@ class UtilEvaluation:
             hdf5_path, "Models_WithinSession", code, "1", "0", "evalu@tion#name"
         )
         assert save_path == expected_path
+
+
+class TestGetSplitMetadata:
+    """Tests for paradigm.get_split_metadata()."""
+
+    def test_returns_same_metadata_as_get_data(self):
+        """get_split_metadata() returns same (y, metadata) as get_data() minus X."""
+        from moabb.paradigms.motor_imagery import FakeImageryParadigm
+
+        paradigm = FakeImageryParadigm()
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=42)
+
+        X, y_full, meta_full = paradigm.get_data(ds)
+        y_split, meta_split = paradigm.get_split_metadata(ds)
+
+        np.testing.assert_array_equal(y_full, y_split)
+        assert list(meta_full.columns) == list(meta_split.columns)
+        assert len(meta_full) == len(meta_split)
+        for col in meta_full.columns:
+            assert list(meta_full[col]) == list(meta_split[col])
+
+    def test_subset_subjects(self):
+        """get_split_metadata() works with a subset of subjects."""
+        from moabb.paradigms.motor_imagery import FakeImageryParadigm
+
+        paradigm = FakeImageryParadigm()
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, seed=42)
+
+        y_split, meta_split = paradigm.get_split_metadata(ds, subjects=[1, 2])
+        assert set(meta_split["subject"].unique()) == {1, 2}
+
+
+class TestBatchNotYetComputed:
+    """Tests for Results.batch_not_yet_computed()."""
+
+    def test_matches_per_subject_not_yet_computed(self):
+        """batch_not_yet_computed() matches per-subject not_yet_computed()."""
+        evaluation = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+        )
+        process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
+
+        # Check via batch
+        batch_result = evaluation.results.batch_not_yet_computed(
+            pipelines, dataset, dataset.subject_list, process_pipeline
+        )
+
+        # Check per subject
+        for subject in dataset.subject_list:
+            per_subj = evaluation.results.not_yet_computed(
+                pipelines, dataset, subject, process_pipeline
+            )
+            if per_subj:
+                assert subject in batch_result
+                assert set(per_subj.keys()) == set(batch_result[subject].keys())
+            else:
+                assert subject not in batch_result
+
+    def test_after_computation(self):
+        """batch_not_yet_computed returns empty after results are computed."""
+        evaluation = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+        )
+        process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
+
+        # Run evaluation to populate results
+        for res in evaluation.evaluate(
+            dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+        ):
+            evaluation.push_result(res, pipelines, process_pipeline)
+
+        # Now batch_not_yet_computed should return empty
+        batch_result = evaluation.results.batch_not_yet_computed(
+            pipelines, dataset, dataset.subject_list, process_pipeline
+        )
+        assert batch_result == {}
+
+    def teardown_method(self):
+        # Clean up any result files
+        import glob
+
+        for f in glob.glob("**/results*.hdf5", recursive=True):
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+
+
+class TestParallelProcess:
+    """Tests for the flattened parallel process() approach."""
+
+    def test_within_session_process_structure(self):
+        """WithinSession process() returns correct number of results."""
+        evaluation = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+        )
+        results = evaluation.process(pipelines)
+        # 2 subjects × 2 sessions = 4 results
+        assert len(results) == 4
+        assert "score" in results.columns
+
+    def test_cross_session_process_structure(self):
+        """CrossSession process() returns correct number of results."""
+        evaluation = ev.CrossSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+        )
+        results = evaluation.process(pipelines)
+        # 2 subjects × 2 sessions (leave-one-out) = 4 results
+        assert len(results) == 4
+
+    def test_cross_subject_process_structure(self):
+        """CrossSubject process() returns correct number of results."""
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+        )
+        results = evaluation.process(pipelines)
+        # 2 subjects × 2 sessions = 4 results
+        assert len(results) == 4
+
+    def test_learning_curve_parallel(self):
+        """LearningCurve evaluation via parallel process()."""
+        evaluation = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            cv_class=LearningCurveSplitter,
+            cv_kwargs={
+                "data_size": {"policy": "ratio", "value": np.array([0.2, 0.5])},
+                "n_perms": np.array([2, 2]),
+            },
+            overwrite=True,
+        )
+        results = evaluation.process(pipelines)
+        assert len(results) > 0
+        assert "permutation" in results.columns
+        assert "data_size" in results.columns
+
+    def teardown_method(self):
+        import glob
+
+        for f in glob.glob("**/results*.hdf5", recursive=True):
+            try:
+                os.remove(f)
+            except OSError:
+                pass
