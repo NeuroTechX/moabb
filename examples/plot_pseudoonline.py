@@ -39,9 +39,8 @@ paradigm = MotorImagery(
 )
 
 X, y, meta = paradigm.get_data(dataset=dataset, subjects=[sub])
-print("Print Events_id:", y)
 unique, counts = np.unique(y, return_counts=True)
-print("Number of events per class:", dict(zip(unique, counts)))
+print("Number of trials per class:", dict(zip(unique, counts)))
 
 
 pipelines = {}

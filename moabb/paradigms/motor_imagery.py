@@ -26,8 +26,8 @@ class BaseMotorImagery(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
-        overlap=None,
         scorer=None,
+        overlap=None,
     ):
         if overlap is not None and not (0 <= overlap < 100):
             raise ValueError("overlap must be in [0, 100)")
@@ -104,8 +104,8 @@ class LeftRightImagery(BaseMotorImagery):
         baseline=None,
         channels=None,
         resample=None,
-        overlap=None,
         scorer=None,
+        overlap=None,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -153,8 +153,8 @@ class FilterBankLeftRightImagery(LeftRightImagery):
         baseline=None,
         channels=None,
         resample=None,
-        overlap=None,
         scorer=None,
+        overlap=None,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -216,8 +216,8 @@ class MotorImagery(BaseMotorImagery):
         baseline=None,
         channels=None,
         resample=None,
-        overlap=None,
         scorer=None,
+        overlap=None,
     ):
         super().__init__(
             filters=[[fmin, fmax]],
@@ -323,8 +323,8 @@ class FilterBankMotorImagery(MotorImagery):
         baseline=None,
         channels=None,
         resample=None,
-        overlap=None,
         scorer=None,
+        overlap=None,
     ):
         BaseMotorImagery.__init__(
             self,

@@ -238,9 +238,17 @@ def _generate_sliding_window_events(
         # Find which segment the window starts in using binary search.
         # searchsorted(right) - 1 gives the index of the last transition
         # that is <= vote_start.
-        seg_idx = max(np.searchsorted(transitions, vote_start, side="right") - 1, 0)
-        seg_start = int(vote_start)
+        seg_idx = np.searchsorted(transitions, vote_start, side="right") - 1
         durations_by_label = {}
+
+        if seg_idx < 0:
+            # vote_start is before the first transition -- treat as rest
+            pre_samples = int(transitions[0]) - vote_start
+            durations_by_label[_REST_LABEL] = pre_samples
+            seg_start = int(transitions[0])
+            seg_idx = 0
+        else:
+            seg_start = int(vote_start)
 
         # Walk through all segment boundaries that fall inside this window,
         # accumulating how many samples each label occupies.
@@ -465,6 +473,16 @@ class RawToEvents(FixedTransformer):
         self.tmin = tmin
         if self.overlap is not None and self.window_length is None:
             raise ValueError("window_length must be provided when overlap is set")
+        if self.overlap is not None:
+            try:
+                overlap_value = float(self.overlap)
+            except (TypeError, ValueError):
+                raise TypeError(
+                    f"overlap must be a number in [0, 100), got {self.overlap!r}"
+                )
+            if not (0.0 <= overlap_value < 100.0):
+                raise ValueError(f"overlap must be in [0, 100), got {self.overlap!r}")
+            self.overlap = overlap_value
 
     def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)

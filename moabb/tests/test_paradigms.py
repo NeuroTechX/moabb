@@ -240,6 +240,52 @@ class TestMotorImagery(unittest.TestCase):
                 overlap=50.0,
             )
 
+    def test_RawToEvents_overlap_range_validation(self):
+        """Verify RawToEvents rejects invalid overlap values."""
+        event_id = {"left_hand": 1, "right_hand": 2}
+        interval = (0.0, 4.0)
+
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            RawToEvents(
+                event_id=event_id, interval=interval, overlap=-1, window_length=2.0
+            )
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            RawToEvents(
+                event_id=event_id, interval=interval, overlap=100, window_length=2.0
+            )
+        with pytest.raises(TypeError, match="overlap must be a number"):
+            RawToEvents(
+                event_id=event_id, interval=interval, overlap="fifty", window_length=2.0
+            )
+
+    def test_sliding_window_negative_tmin_pre_cue_rest(self):
+        """Verify pre-cue samples are counted as rest when tmin is negative."""
+        # With tmin=-1 and interval=(0, 10), epoch_offset = -1 + 0 = -1
+        # so vote_start = onset + (-1) falls before the first transition.
+        events = np.array(
+            [
+                [10, 0, 1],
+                [30, 0, 2],
+            ],
+            dtype="int32",
+        )
+        interval = (0.0, 10.0)
+        sfreq = 1.0
+        window_length = 10.0
+        overlap = 50.0
+
+        sliding = _generate_sliding_window_events(
+            events, window_length, overlap, sfreq, interval, tmin=-1.0
+        )
+
+        # The first window starts at the first onset (10). Its vote window
+        # is [10 + (-1), 10 + (-1) + 10] = [9, 19]. Sample 9 is before
+        # the first transition at 10, so it should be counted as rest.
+        assert len(sliding) > 0
+        # The pre-cue rest sample should influence the majority vote
+        first_window = sliding[sliding[:, 0] == sliding[0, 0]]
+        assert len(first_window) == 1
+
     def test_sliding_window_single_event(self):
         """Verify sliding window produces events from a single trial."""
         events = np.array([[0, 0, 1]], dtype="int32")
