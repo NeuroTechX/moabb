@@ -9,7 +9,7 @@ import numpy as np
 from mne.utils.config import _open_lock
 from numpy import argmax
 from sklearn.base import ClassifierMixin
-from sklearn.metrics import check_scoring, matthews_corrcoef
+from sklearn.metrics import check_scoring
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
@@ -23,11 +23,6 @@ try:
     optuna_available = True
 except ImportError:
     optuna_available = False
-
-
-def _normalized_mcc(y_true, y_pred):
-    mcc = matthews_corrcoef(y_true, y_pred)
-    return (mcc + 1) / 2
 
 
 def _ensure_fitted(estimator):
