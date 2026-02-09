@@ -1,7 +1,7 @@
 """
-===================================
+==================================================
 Pseudo-Online Motor Imagery with Sliding Window
-===================================
+==================================================
 
 This example shows how to perform a pseudo-online motor imagery evaluation
 using sliding window overlap. The ``overlap`` parameter in the paradigm
