@@ -83,6 +83,9 @@ class WithinSessionEvaluation(BaseEvaluation):
 
     """
 
+    _eval_type = "WithinSession"
+    _aggregate_folds = True
+
     def _create_splitter(self):
         """Create the WithinSessionSplitter for parallel evaluation."""
         cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
@@ -93,14 +96,6 @@ class WithinSessionEvaluation(BaseEvaluation):
             cv_class=cv_class,
             **cv_kwargs,
         )
-
-    def _get_eval_type(self):
-        return "WithinSession"
-
-    def _should_aggregate_folds(self, splitter):
-        """Aggregate folds when using default CV (not LearningCurve)."""
-        per_split = hasattr(getattr(splitter, "cv_class", None), "get_metadata")
-        return not per_split
 
     # flake8: noqa: C901
     def _evaluate(
@@ -294,15 +289,14 @@ class CrossSessionEvaluation(BaseEvaluation):
        Add save_model and cache_config parameters.
     """
 
+    _eval_type = "CrossSession"
+
     def _create_splitter(self):
         """Create the CrossSessionSplitter for parallel evaluation."""
         cv_class, cv_kwargs = self._resolve_cv(LeaveOneGroupOut)
         return CrossSessionSplitter(
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
-
-    def _get_eval_type(self):
-        return "CrossSession"
 
     # flake8: noqa: C901
     def evaluate(
@@ -463,6 +457,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
          Add save_model, cache_config and n_splits parameters
     """
 
+    _eval_type = "CrossSubject"
+    _score_per_session = True
+    _needs_all_subjects = True
+
     def _create_splitter(self):
         """Create the CrossSubjectSplitter for parallel evaluation."""
         if self.n_splits is None:
@@ -476,15 +474,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         return CrossSubjectSplitter(
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
-
-    def _get_eval_type(self):
-        return "CrossSubject"
-
-    def _score_per_session(self):
-        return True
-
-    def _needs_all_subjects(self):
-        return True
 
     # flake8: noqa: C901
     def evaluate(
