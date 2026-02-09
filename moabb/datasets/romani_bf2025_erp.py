@@ -11,6 +11,20 @@ from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    BCIApplicationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 
 
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
@@ -73,7 +87,6 @@ class RomaniBF2025ERP(BaseDataset):
 
     You can test the dataset with the following code:
 
-
     Examples
     --------
     Loading the dataset and then create a subset of the available sessions and runs for subject P01 and P02:
@@ -112,8 +125,88 @@ class RomaniBF2025ERP(BaseDataset):
     .. [2] M. Romani, F. Paissan, A. Fossà, and E. Farella, "Explicit modelling of subject dependency in BCI decoding,"
            Sept. 27, 2025, arXiv: arXiv:2509.23247. doi: 10.48550/arXiv.2509.23247.
 
-
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=8,
+            channel_types={"eeg": 8},
+            montage="10-20",
+            hardware="g.tec",
+            sensor_type="conductive gel electrodes",
+            reference="mastoid",
+            ground="mastoid",
+            software="OpenViBE",
+            sensors=["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"],
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=22,
+            health_status="healthy",
+            gender={"female": 10, "male": 12},
+            age_mean=21.87,
+            bci_experience="naive",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="p300",
+            n_classes=1,
+            class_labels=["rest"],
+            trial_duration=0.9,
+            study_design="minimize move-\nment during recording to reduce motion artifacts.",
+            feedback_type="real-time visual feedback (green outline on spelled symbol), calibration feedback color-coded (red <80%, yellow 80-90%, green >90%)",
+            stimulus_type="flickering",
+            stimulus_modalities=["visual", "multisensory"],
+            primary_modality="multisensory",
+            synchronicity="asynchronous",
+            mode="online",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1371/journal.pone.0111070",
+            repository="GitHub",
+            data_url="https://github.com/BRomans/BrainForm",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw EEG data available in public dataset",
+            preprocessing_applied=True,
+            preprocessing_steps=["notch filter", "bandpass filter", "segmentation"],
+            filter_details=FilterDetails(
+                highpass_hz=0.5,
+                lowpass_hz=15,
+                bandpass=[0.5, 15],
+                notch_hz=[50, 60],
+                filter_order="2nd-order for notch, 6th-order for bandpass",
+            ),
+            artifact_methods=["ICA"],
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=[
+                "speller",
+                "wheelchair/navigation",
+                "prosthetic",
+                "gaming",
+                "vr_ar",
+                "communication",
+            ],
+            environment="home",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=60,
+            trials_context="total",
+        ),
+        data_processed=True,
+    )
 
     def __init__(
         self,

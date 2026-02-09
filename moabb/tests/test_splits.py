@@ -21,6 +21,7 @@ from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
+    LearningCurveSplitter,
     WithinSessionSplitter,
     WithinSubjectSplitter,
 )
@@ -42,7 +43,8 @@ def eval_split_within_session(shuffle, random_state, data):
     rng = check_random_state(random_state) if shuffle else None
 
     all_index = metadata.index.values
-    subjects = metadata["subject"].unique()
+    # Convert to numpy array to avoid ArrowStringArray shuffle warning
+    subjects = np.array(metadata["subject"].unique())
     if shuffle:
         rng.shuffle(subjects)
 
@@ -51,7 +53,8 @@ def eval_split_within_session(shuffle, random_state, data):
 
         subject_indices = all_index[subject_mask]
         subject_metadata = metadata[subject_mask]
-        sessions = subject_metadata["session"].unique()
+        # Convert to numpy array to avoid ArrowStringArray shuffle warning
+        sessions = np.array(subject_metadata["session"].unique())
         y_subject = y[subject_mask]
 
         if shuffle:
@@ -74,7 +77,8 @@ def eval_split_within_subject(shuffle, random_state, data):
     rng = check_random_state(random_state) if shuffle else None
 
     all_index = metadata.index.values
-    subjects = metadata["subject"].unique()
+    # Convert to numpy array to avoid ArrowStringArray shuffle warning
+    subjects = np.array(metadata["subject"].unique())
     if shuffle:
         rng.shuffle(subjects)
 
@@ -490,3 +494,117 @@ def test_cross_session_splitter_without_error(
     splitter = CrossSessionSplitter(shuffle=True, cv_class=cv_class)
     assert splitter is not None
     assert isinstance(splitter, CrossSessionSplitter)
+
+
+def test_learning_curve_splitter_metadata():
+    y = np.array([0, 1] * 10)
+    data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
+    n_perms = np.array([2, 1])
+    splitter = LearningCurveSplitter(
+        data_size=data_size, n_perms=n_perms, test_size=0.2, random_state=0
+    )
+
+    splits = list(splitter.split(np.arange(len(y)), y))
+    assert len(splits) == int(np.sum(n_perms))
+
+    for _train, _test in splits:
+        meta = splitter.get_metadata()
+        assert meta["data_size"] is not None
+        assert meta["permutation"] is not None
+
+
+@pytest.mark.parametrize(
+    "splitter",
+    [
+        WithinSessionSplitter,
+        WithinSubjectSplitter,
+        CrossSessionSplitter,
+        CrossSubjectSplitter,
+    ],
+)
+def test_learning_curve_as_cv_class(splitter, data):
+    """Test that LearningCurveSplitter can be used as cv_class for all splitters."""
+    _, y, metadata = data
+
+    data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
+    n_perms = np.array([2, 1])
+
+    # CrossSessionSplitter requires shuffle=True when using random_state
+    extra_kwargs = {}
+    if splitter == CrossSessionSplitter:
+        extra_kwargs["shuffle"] = True
+
+    split = splitter(
+        cv_class=LearningCurveSplitter,
+        data_size=data_size,
+        n_perms=n_perms,
+        test_size=0.2,
+        random_state=42,
+        **extra_kwargs,
+    )
+
+    splits = list(split.split(y, metadata))
+    assert len(splits) > 0
+
+    for train, test in splits:
+        # Check that we get valid train/test indices
+        assert len(train) > 0
+        assert len(test) > 0
+        # Check no overlap between train and test
+        assert len(set(train) & set(test)) == 0
+        if splitter == CrossSessionSplitter:
+            train_meta = metadata.loc[train]
+            test_meta = metadata.loc[test]
+            train_subjects = set(train_meta["subject"])
+            test_subjects = set(test_meta["subject"])
+            assert len(train_subjects) == 1
+            assert train_subjects == test_subjects
+            train_sessions = set(train_meta["session"])
+            test_sessions = set(test_meta["session"])
+            assert train_sessions.isdisjoint(test_sessions)
+        elif splitter == CrossSubjectSplitter:
+            train_subjects = set(metadata.loc[train]["subject"])
+            test_subjects = set(metadata.loc[test]["subject"])
+            assert train_subjects.isdisjoint(test_subjects)
+
+
+@pytest.mark.parametrize(
+    "splitter_cls",
+    [
+        WithinSessionSplitter,
+        WithinSubjectSplitter,
+        CrossSessionSplitter,
+        CrossSubjectSplitter,
+    ],
+)
+def test_current_splitter_is_set(splitter_cls, data):
+    """Test that _current_splitter is set after split() for all splitters."""
+    _, y, metadata = data
+
+    data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
+    n_perms = np.array([2, 1])
+
+    extra_kwargs = {}
+    if splitter_cls == CrossSessionSplitter:
+        extra_kwargs["shuffle"] = True
+
+    split = splitter_cls(
+        cv_class=LearningCurveSplitter,
+        data_size=data_size,
+        n_perms=n_perms,
+        test_size=0.2,
+        random_state=42,
+        **extra_kwargs,
+    )
+
+    splits = list(split.split(y, metadata))
+    assert len(splits) > 0
+
+    # Verify _current_splitter is set and accessible
+    assert hasattr(split, "_current_splitter")
+    assert split._current_splitter is not None
+
+    # Verify metadata is accessible through _current_splitter
+    meta = split._current_splitter.get_metadata()
+    assert meta["data_size"] is not None
+    assert meta["permutation"] is not None

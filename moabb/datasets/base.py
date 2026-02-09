@@ -8,16 +8,22 @@ import re
 import traceback
 from collections.abc import Sequence
 from dataclasses import dataclass
+from functools import cached_property
 from inspect import signature
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import TYPE_CHECKING, Any, Dict, Union
 
 import mne_bids
 import numpy as np
 import pandas as pd
+from mne_bids import events_file_to_annotation_kwargs
 
 from moabb.datasets.bids_interface import StepType, _interface_map
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
+
+
+if TYPE_CHECKING:
+    from moabb.datasets.metadata import DatasetMetadata
 
 
 log = logging.getLogger(__name__)
@@ -287,24 +293,225 @@ def format_row(row: pd.Series, horizontal: bool = True):
     return out, row
 
 
+def _has_nonempty(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, tuple, dict, set)):
+        return len(value) > 0
+    return True
+
+
+def _format_metadata_value(value: Any) -> str:
+    if isinstance(value, float):
+        return str(int(value)) if value.is_integer() else f"{value:g}"
+    if isinstance(value, (list, tuple, set)):
+        return ", ".join(_format_metadata_value(v) for v in value)
+    return str(value)
+
+
+def _metadata_admonition_block(
+    title: str, items: list[tuple[str, Any]], existing_doc: str
+) -> str | None:
+    if f".. admonition:: {title}" in existing_doc:
+        return None
+
+    lines = []
+    for label, value in items:
+        if not _has_nonempty(value):
+            continue
+        lines.append(f"        - **{label}**: {_format_metadata_value(value)}")
+
+    if not lines:
+        return None
+    return "\n".join([f"    .. admonition:: {title}", "", *lines])
+
+
+def _format_age(participants) -> str | None:
+    age_mean = getattr(participants, "age_mean", None)
+    age_min = getattr(participants, "age_min", None)
+    age_max = getattr(participants, "age_max", None)
+    if age_mean is None:
+        return None
+    age_text = _format_metadata_value(age_mean)
+    if age_min is not None and age_max is not None:
+        age_text += f" (range: {_format_metadata_value(age_min)}-{_format_metadata_value(age_max)})"
+    return f"{age_text} years"
+
+
+def _format_bandpass(preprocessing) -> str | None:
+    filter_details = getattr(preprocessing, "filter_details", None)
+    if filter_details is None:
+        return None
+
+    bandpass = getattr(filter_details, "bandpass", None)
+    if isinstance(bandpass, dict):
+        low = bandpass.get(
+            "low",
+            bandpass.get(
+                "highpass", bandpass.get("low_cutoff_hz", bandpass.get("highpass_hz"))
+            ),
+        )
+        high = bandpass.get(
+            "high",
+            bandpass.get(
+                "lowpass", bandpass.get("high_cutoff_hz", bandpass.get("lowpass_hz"))
+            ),
+        )
+        if low is not None and high is not None:
+            return f"{_format_metadata_value(low)}-{_format_metadata_value(high)} Hz"
+    elif isinstance(bandpass, (list, tuple)) and len(bandpass) >= 2:
+        return (
+            f"{_format_metadata_value(bandpass[0])}"
+            f"-{_format_metadata_value(bandpass[1])} Hz"
+        )
+
+    highpass = getattr(filter_details, "highpass_hz", None)
+    lowpass = getattr(filter_details, "lowpass_hz", None)
+    if highpass is not None and lowpass is not None:
+        return f"{_format_metadata_value(highpass)}-{_format_metadata_value(lowpass)} Hz"
+    return None
+
+
+def _metadata_doc_sections(metadata: Any, existing_doc: str) -> str:
+    if metadata is None:
+        return ""
+
+    participants = getattr(metadata, "participants", None)
+    acquisition = getattr(metadata, "acquisition", None)
+    experiment = getattr(metadata, "experiment", None)
+    documentation = getattr(metadata, "documentation", None)
+    preprocessing = getattr(metadata, "preprocessing", None)
+    external_links = getattr(metadata, "external_links", None)
+
+    blocks = []
+
+    if participants is not None:
+        blocks.append(
+            _metadata_admonition_block(
+                "Participants",
+                [
+                    ("Population", getattr(participants, "health_status", None)),
+                    (
+                        "Clinical population",
+                        getattr(participants, "clinical_population", None),
+                    ),
+                    ("Age", _format_age(participants)),
+                    ("Handedness", getattr(participants, "handedness", None)),
+                    ("BCI experience", getattr(participants, "bci_experience", None)),
+                ],
+                existing_doc,
+            )
+        )
+
+    if acquisition is not None:
+        blocks.append(
+            _metadata_admonition_block(
+                "Equipment",
+                [
+                    ("Amplifier", getattr(acquisition, "hardware", None)),
+                    ("Electrodes", getattr(acquisition, "sensor_type", None)),
+                    ("Montage", getattr(acquisition, "montage", None)),
+                    ("Reference", getattr(acquisition, "reference", None)),
+                ],
+                existing_doc,
+            )
+        )
+
+    if preprocessing is not None:
+        steps = getattr(preprocessing, "preprocessing_steps", None)
+        steps_text = ", ".join(steps) if isinstance(steps, list) else steps
+        blocks.append(
+            _metadata_admonition_block(
+                "Preprocessing",
+                [
+                    ("Data state", getattr(preprocessing, "data_state", None)),
+                    ("Bandpass filter", _format_bandpass(preprocessing)),
+                    ("Steps", steps_text),
+                    ("Re-reference", getattr(preprocessing, "re_reference", None)),
+                    ("Notes", getattr(preprocessing, "notes", None)),
+                ],
+                existing_doc,
+            )
+        )
+
+    data_url = None
+    if documentation is not None:
+        data_url = getattr(documentation, "data_url", None)
+    if data_url is None and external_links is not None:
+        data_url = getattr(external_links, "source_url", None)
+
+    if documentation is not None or _has_nonempty(data_url):
+        blocks.append(
+            _metadata_admonition_block(
+                "Data Access",
+                [
+                    (
+                        "DOI",
+                        getattr(documentation, "doi", None) if documentation else None,
+                    ),
+                    ("Data URL", data_url),
+                    (
+                        "Repository",
+                        (
+                            getattr(documentation, "repository", None)
+                            if documentation
+                            else None
+                        ),
+                    ),
+                ],
+                existing_doc,
+            )
+        )
+
+    if experiment is not None:
+        blocks.append(
+            _metadata_admonition_block(
+                "Experimental Protocol",
+                [
+                    ("Paradigm", getattr(experiment, "paradigm", None)),
+                    ("Task type", getattr(experiment, "task_type", None)),
+                    ("Tasks", getattr(experiment, "tasks", None)),
+                    ("Feedback", getattr(experiment, "feedback_type", None)),
+                    ("Stimulus", getattr(experiment, "stimulus_type", None)),
+                ],
+                existing_doc,
+            )
+        )
+
+    blocks = [block for block in blocks if block is not None]
+    return "\n\n".join(blocks)
+
+
 class MetaclassDataset(abc.ABCMeta):
     def __new__(cls, name, bases, attrs):
-        doc = attrs.get("__doc__", "")
+        doc = attrs.get("__doc__", "") or ""
+        insert_blocks = []
+
         try:
             row = _summary_table.loc[name]
             row_str, row = format_row(row, horizontal=False)
-            doc_list = doc.split("\n\n")
-            if len(doc_list) >= 2:
-                doc_list = [doc_list[0], row_str] + doc_list[1:]
-            else:
-                doc_list.append(row_str)
-            attrs["__doc__"] = "\n\n".join(doc_list)
+            insert_blocks.append(row_str)
             attrs["_summary_table"] = row.to_dict()
         except KeyError:
             log.debug(
                 f"No description found for dataset {name}. "
                 f"Complete the appropriate moabb/datasets/summary_*.csv file"
             )
+
+        metadata_sections = _metadata_doc_sections(attrs.get("METADATA"), doc)
+        if metadata_sections:
+            insert_blocks.append(metadata_sections)
+
+        if insert_blocks:
+            if doc.strip():
+                doc_list = doc.split("\n\n")
+                doc_list = [doc_list[0], *insert_blocks, *doc_list[1:]]
+                attrs["__doc__"] = "\n\n".join(doc_list)
+            else:
+                attrs["__doc__"] = "\n\n".join(insert_blocks)
+
         return super().__new__(cls, name, bases, attrs)
 
 
@@ -390,6 +597,36 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.paradigm = paradigm
         self.doi = doi
         self.unit_factor = unit_factor
+
+    @cached_property
+    def metadata(self) -> "DatasetMetadata | None":
+        """Return structured metadata for this dataset.
+
+        Returns the DatasetMetadata object from the centralized catalog,
+        or None if metadata is not available for this dataset.
+
+        Returns
+        -------
+        DatasetMetadata | None
+            The metadata object containing acquisition parameters,
+            participant demographics, experiment details, and documentation.
+            Returns None if no metadata is registered for this dataset.
+
+        Examples
+        --------
+        >>> from moabb.datasets import BNCI2014_001
+        >>> dataset = BNCI2014_001()
+        >>> dataset.metadata.participants.n_subjects
+        9
+        >>> dataset.metadata.acquisition.sampling_rate
+        250.0
+        """
+        from moabb.datasets.metadata import get_dataset_metadata
+
+        try:
+            return get_dataset_metadata(self.__class__.__name__)
+        except KeyError:
+            return None
 
     def _create_process_pipeline(self):
         return FixedPipeline(
@@ -742,6 +979,34 @@ class BaseDataset(metaclass=MetaclassDataset):
         """  # noqa: E501
         pass
 
+    def get_additional_metadata(
+        self, subject: str, session: str, run: str
+    ) -> None | pd.DataFrame:
+        """
+        Load additional metadata for a specific subject, session, and run.
+
+        This method is intended to be overridden by subclasses to provide
+        additional metadata specific to the dataset. The metadata is typically
+        loaded from an `events.tsv` file or similar data source.
+
+        Parameters
+        ----------
+        subject : str
+            The identifier for the subject.
+        session : str
+            The identifier for the session.
+        run : str
+            The identifier for the run.
+
+        Returns
+        -------
+        None | pd.DataFrame
+            A DataFrame containing the additional metadata if available,
+            otherwise None.
+        """
+
+        return None
+
 
 class BaseBIDSDataset(BaseDataset):
     """Abstract BIDS dataset class.
@@ -831,6 +1096,73 @@ class BaseBIDSDataset(BaseDataset):
                 run = bids_path.run
             data.setdefault(session, {})[run] = raw
         return data
+
+    def get_additional_metadata(
+        self, subject: str, session: str, run: str
+    ) -> None | pd.DataFrame:
+        """
+        Load additional metadata for a specific subject, session, and run.
+
+        Parameters
+        ----------
+        subject : str
+            The identifier for the subject.
+        session : str
+            The identifier for the session.
+        run : str
+            The identifier for the run.
+
+        Returns
+        -------
+        None | pd.DataFrame
+            A DataFrame containing the additional metadata if available,
+            otherwise None.
+        """
+        bids_paths = self.bids_paths(subject)
+
+        # select only with matching session and run
+        bids_path_selected = [
+            pth
+            for pth in bids_paths
+            if f"ses-{session}" in pth.basename and f"run-{run}" in pth.basename
+        ]
+
+        if len(bids_path_selected) > 1:
+            raise ValueError("More than one matching BIDS path found.")
+        bids_path = bids_path_selected[0]
+
+        events_fname = bids_path.find_matching_sidecar(
+            suffix="events", extension=".tsv", on_error="warn"
+        )
+        if events_fname is None:
+            return None
+
+        # Use official mne-bids API — handles n/a filtering, stim_type compat, etc.
+        annot_kwargs = events_file_to_annotation_kwargs(events_fname)
+
+        # Build DataFrame from API output
+        dm = pd.DataFrame(
+            {
+                "onset": annot_kwargs["onset"],
+                "duration": annot_kwargs["duration"],
+                "trial_type": annot_kwargs["description"],
+            }
+        )
+
+        # Reconstruct 'value' from event_id mapping (description -> integer)
+        dm["value"] = dm["trial_type"].map(annot_kwargs["event_id"])
+
+        # Add extras (custom columns beyond standard BIDS columns)
+        extras = annot_kwargs.get("extras")
+        if extras and len(extras) > 0:
+            extras_df = pd.DataFrame(extras)
+            dm = pd.concat([dm, extras_df], axis=1)
+
+        # Filter by dataset's event_id
+        dm = dm[dm["trial_type"].isin(self.event_id.keys())]
+
+        dm = dm.assign(subject=subject, session=session, run=run)
+        return dm
 
 
 class LocalBIDSDataset(BaseBIDSDataset):

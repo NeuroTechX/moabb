@@ -2,6 +2,21 @@
 
 from mne.io import Raw
 
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 from moabb.utils import depreciated_alias
 
 from . import download as dl
@@ -58,6 +73,85 @@ class Kalunga2016(BaseDataset):
            arXiv report: https://arxiv.org/abs/1501.03227
 
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            n_channels=8,
+            channel_types={"eeg": 8},
+            montage="oz o1 o2 poz po3 po4 po7 po8",
+            hardware="g.tec",
+            reference="Car",
+            sensors=["Oz", "O1", "O2", "POz", "PO3", "PO4", "PO7", "PO8"],
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=12,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=4,
+            class_labels=["13hz", "17hz", "21hz", "rest"],
+            trial_duration=31.0,
+            study_design="SSVEP",
+            stimulus_type="flickering",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="asynchronous",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1016/j.neucom.2016.01.007",
+            repository="Zenodo",
+            data_url="https://zenodo.org/record/2392979",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            preprocessing_applied=True,
+            preprocessing_steps=["band-pass filtering around each stimulus frequency"],
+            filter_details=FilterDetails(
+                bandpass="around stimulus frequencies (13 Hz, 17 Hz, 21 Hz)",
+                filter_type="Butterworth",
+                filter_order=8,
+            ),
+            artifact_methods=["ICA"],
+            re_reference="car",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "SVM", "Neural Network", "Riemannian", "CCA"],
+            feature_extraction=[
+                "CSP",
+                "ERD",
+                "ERS",
+                "PSD",
+                "Covariance/Riemannian",
+                "Time-Frequency",
+                "Tangent Space",
+            ],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="bootstrap",
+            evaluation_type=["cross_subject", "cross_session"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["prosthetic", "vr_ar", "communication"],
+            environment="laboratory",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            n_targets=2,
+            stimulus_frequencies_hz=[13.0, 17.0],
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials="32 trials per session (8 per visual stimulus, 8 for resting class)",
+            trials_context="per session",
+        ),
+        data_processed=True,
+    )
 
     def __init__(self):
         super().__init__(

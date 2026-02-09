@@ -1,5 +1,6 @@
 """Util functions for moabb."""
 
+import abc
 import contextlib
 import functools
 import inspect
@@ -14,6 +15,7 @@ from typing import TYPE_CHECKING
 import filelock
 import h5py
 import numpy as np
+from docstring_inheritance import NumpyDocstringInheritanceInitMeta
 from mne import get_config, set_config
 from mne import set_log_level as sll
 from mne.utils import warn
@@ -282,3 +284,7 @@ def _open_lock_hdf5(path, *args, **kwargs):
 
     with lock_context, h5py.File(path, *args, **kwargs) as fid:
         yield fid
+
+
+class MoabbMetaClass(abc.ABCMeta, NumpyDocstringInheritanceInitMeta):
+    pass

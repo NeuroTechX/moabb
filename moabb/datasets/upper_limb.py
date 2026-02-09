@@ -3,6 +3,21 @@ from mne.channels import make_standard_montage
 from mne.io import read_raw_gdf
 
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 from moabb.datasets.utils import stim_channels_with_selected_ids
 
 from . import download as dl
@@ -55,6 +70,139 @@ class Ofner2017(BaseDataset):
            low-frequency EEG. PloS one, 12(8), p.e0182578.
            https://doi.org/10.1371/journal.pone.0182578
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=512.0,
+            n_channels=61,
+            channel_types={"eeg": 61},
+            hardware="g.tec",
+            sensor_type="active electrodes",
+            reference="right mastoid",
+            software="EEGLAB",
+            filters="0.3-3.0 Hz bandpass, 50 Hz notch",
+            sensors=[
+                "Fp1",
+                "Fpz",
+                "Fp2",
+                "AF7",
+                "AF3",
+                "AFz",
+                "AF4",
+                "AF8",
+                "F7",
+                "F5",
+                "F3",
+                "F1",
+                "Fz",
+                "F2",
+                "F4",
+                "F6",
+                "F8",
+                "FT7",
+                "FC5",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "FC6",
+                "FT8",
+                "T7",
+                "C5",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "C6",
+                "T8",
+                "TP7",
+                "CP5",
+                "CP3",
+                "CP1",
+                "CPz",
+                "CP2",
+                "CP4",
+                "CP6",
+                "TP8",
+                "P7",
+                "P5",
+                "P3",
+                "P1",
+                "Pz",
+                "P2",
+                "P4",
+                "P6",
+                "P8",
+                "PO7",
+                "PO3",
+                "POz",
+                "PO4",
+                "PO8",
+                "O1",
+                "Oz",
+                "O2",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_emg=True,
+                other_physiological=["gsr", "ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=152,
+            health_status="healthy",
+            gender={"female": 9, "male": 6},
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=4,
+            class_labels=["right_hand", "right_arm", "left_hand", "feet"],
+            trial_duration=17.0,
+            study_design="avoid any movement and to stay in the starting position.",
+            feedback_type="visual cues on computer screen",
+            stimulus_type="avatar",
+            synchronicity="asynchronous",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1371/journal.pone.0182578",
+            repository="BNCI Horizon 2020",
+            data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            funding=["Grant ERC- ERC-"],
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            filter_details=FilterDetails(
+                bandpass={"low_cutoff_hz": 0.01, "high_cutoff_hz": 200.0},
+                notch_hz=[50],
+                filter_type="Butterworth",
+                filter_order=4,
+            ),
+            artifact_methods=["ICA"],
+            re_reference="common average reference",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "Shrinkage LDA"],
+            feature_extraction=["ERD", "Covariance/Riemannian", "ICA"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["prosthetic", "robotic_arm", "vr_ar"],
+            environment="outdoor",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=42,
+            trials_context="per_run",
+        ),
+    )
 
     def __init__(self, imagined=True, executed=False):
         self.imagined = imagined

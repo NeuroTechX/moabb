@@ -28,6 +28,16 @@ from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.kojima2024b import EVENTS
+from moabb.datasets.metadata import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    get_dataset_metadata,
+)
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
@@ -266,6 +276,122 @@ class Test_Datasets:
             if ds.__name__ in depreciated_names:
                 continue
             assert ".. admonition:: Dataset summary" in ds.__doc__
+
+    def test_metadata_docstring_sections_auto_generated(self):
+        class AutoDocMetadataDataset(BaseDataset):
+            """Dataset doc for auto metadata generation."""
+
+            METADATA = DatasetMetadata(
+                acquisition=AcquisitionMetadata(
+                    sampling_rate=256.0,
+                    n_channels=8,
+                    channel_types={"eeg": 8},
+                    hardware="BrainAmp",
+                    sensor_type="Ag/AgCl",
+                    montage="10-20",
+                ),
+                participants=ParticipantMetadata(
+                    n_subjects=4,
+                    health_status="healthy",
+                    age_mean=29.5,
+                    age_min=24,
+                    age_max=35,
+                    handedness={"right": 4},
+                    bci_experience="experienced",
+                ),
+                experiment=ExperimentMetadata(
+                    paradigm="imagery",
+                    task_type="left_right_hand",
+                    feedback_type="visual",
+                ),
+                documentation=DocumentationMetadata(doi="10.1093/gigascience/giz002"),
+                preprocessing=PreprocessingMetadata(
+                    filter_details=FilterDetails(bandpass=[0.5, 40.0]),
+                    preprocessing_steps=["common average reference"],
+                ),
+            )
+
+            def __init__(self):
+                super().__init__(
+                    subjects=[1],
+                    sessions_per_subject=1,
+                    events={"left_hand": 1, "right_hand": 2},
+                    code="AutoDocMetadataDataset",
+                    interval=[0, 1],
+                    paradigm="imagery",
+                )
+
+            def _get_single_subject_data(self, subject):
+                return {}
+
+            def data_path(
+                self,
+                subject,
+                path=None,
+                force_update=False,
+                update_path=None,
+                verbose=None,
+            ):
+                return []
+
+        doc = AutoDocMetadataDataset.__doc__
+        assert ".. admonition:: Participants" in doc
+        assert "- **Population**: healthy" in doc
+        assert "- **Age**: 29.5 (range: 24-35) years" in doc
+        assert ".. admonition:: Equipment" in doc
+        assert "- **Amplifier**: BrainAmp" in doc
+        assert ".. admonition:: Preprocessing" in doc
+        assert "- **Bandpass filter**: 0.5-40 Hz" in doc
+        assert ".. admonition:: Data Access" in doc
+        assert "- **DOI**: 10.1093/gigascience/giz002" in doc
+        assert ".. admonition:: Experimental Protocol" in doc
+        assert "- **Paradigm**: imagery" in doc
+
+    def test_metadata_docstring_sections_do_not_duplicate_manual_admonitions(self):
+        class ManualParticipantsDataset(BaseDataset):
+            """
+            Dataset doc with a manual participants section.
+
+            .. admonition:: Participants
+
+                - **Population**: healthy
+            """
+
+            METADATA = DatasetMetadata(
+                acquisition=AcquisitionMetadata(
+                    sampling_rate=256.0,
+                    n_channels=8,
+                    channel_types={"eeg": 8},
+                ),
+                participants=ParticipantMetadata(n_subjects=4, health_status="healthy"),
+                experiment=ExperimentMetadata(paradigm="imagery"),
+            )
+
+            def __init__(self):
+                super().__init__(
+                    subjects=[1],
+                    sessions_per_subject=1,
+                    events={"left_hand": 1, "right_hand": 2},
+                    code="ManualParticipantsDataset",
+                    interval=[0, 1],
+                    paradigm="imagery",
+                )
+
+            def _get_single_subject_data(self, subject):
+                return {}
+
+            def data_path(
+                self,
+                subject,
+                path=None,
+                force_update=False,
+                update_path=None,
+                verbose=None,
+            ):
+                return []
+
+        doc = ManualParticipantsDataset.__doc__
+        assert doc.count(".. admonition:: Participants") == 1
 
     def test_completeness_summary_table(self):
         # The dataset summary table will be automatically added to the docstring of
@@ -698,3 +824,110 @@ class TestKojima2024B:
         assert "D1" in Y
         assert "D2" in Y
         assert "S1" in Y
+
+
+class TestDatasetMetadata:
+    """Tests for the metadata property on BaseDataset."""
+
+    def test_metadata_property_returns_datasetmetadata_or_none(self):
+        """Ensure metadata property returns DatasetMetadata or None."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        # Should return DatasetMetadata for datasets in the catalog
+        assert metadata is not None
+        assert isinstance(metadata, DatasetMetadata)
+
+    def test_metadata_property_is_cached(self):
+        """Ensure metadata property uses caching."""
+        dataset = BNCI2014_001()
+
+        # Access metadata twice
+        metadata1 = dataset.metadata
+        metadata2 = dataset.metadata
+
+        # Should be the same object (cached)
+        assert metadata1 is metadata2
+
+    def test_metadata_has_required_fields(self):
+        """Ensure metadata has required fields populated."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        assert metadata is not None
+
+        # Check required fields exist and are valid
+        assert metadata.participants is not None
+        assert metadata.participants.n_subjects > 0
+
+        assert metadata.acquisition is not None
+        assert metadata.acquisition.sampling_rate > 0
+
+        assert metadata.experiment is not None
+        assert metadata.experiment.paradigm in [
+            "imagery",
+            "p300",
+            "ssvep",
+            "cvep",
+            "rstate",
+        ]
+
+    def test_metadata_matches_dataset_properties(self):
+        """Ensure metadata is consistent with dataset properties."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+
+        assert metadata is not None
+
+        # Number of subjects should match
+        assert metadata.participants.n_subjects == len(dataset.subject_list)
+
+        # Paradigm should match
+        assert metadata.experiment.paradigm == dataset.paradigm
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_all_datasets_have_metadata_property(self, dataset_class):
+        """Ensure every dataset class has the metadata property."""
+        kwargs = {}
+        if inspect.signature(dataset_class).parameters.get("accept"):
+            kwargs["accept"] = True
+
+        dataset = dataset_class(**kwargs)
+
+        # All datasets should have the metadata property
+        assert hasattr(dataset, "metadata")
+
+        # The property should return DatasetMetadata or None
+        metadata = dataset.metadata
+        assert metadata is None or isinstance(metadata, DatasetMetadata)
+
+    def test_fake_dataset_metadata_is_none(self):
+        """Ensure FakeDataset returns None for metadata (not in catalog)."""
+        dataset = FakeDataset()
+        metadata = dataset.metadata
+
+        # FakeDataset is not in the catalog, should return None
+        assert metadata is None
+
+    def test_get_dataset_metadata_consistency(self):
+        """Ensure get_dataset_metadata and .metadata property return same data."""
+        dataset = BNCI2014_001()
+        metadata_from_property = dataset.metadata
+        metadata_from_function = get_dataset_metadata("BNCI2014_001")
+
+        assert metadata_from_property is not None
+        assert metadata_from_function is not None
+
+        # Should have same values (but may be different objects after serialization)
+        assert (
+            metadata_from_property.participants.n_subjects
+            == metadata_from_function.participants.n_subjects
+        )
+        assert (
+            metadata_from_property.acquisition.sampling_rate
+            == metadata_from_function.acquisition.sampling_rate
+        )
+        assert (
+            metadata_from_property.experiment.paradigm
+            == metadata_from_function.experiment.paradigm
+        )

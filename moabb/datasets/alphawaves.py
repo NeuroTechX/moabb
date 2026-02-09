@@ -9,6 +9,20 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    BCIApplicationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FrequencyBands,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 
 
 ALPHAWAVES_URL = "https://zenodo.org/record/2348892/files/"
@@ -72,6 +86,84 @@ class Rodrigues2017(BaseDataset):
     .. versionadded:: 1.1.0
 
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=512.0,
+            n_channels=16,
+            channel_types={"eeg": 16},
+            montage="10-10",
+            hardware="g.tec",
+            sensor_type="wet electrodes",
+            reference="right earlobe",
+            software="OpenVibe",
+            filters="no digital filter",
+            sensors=[
+                "FC5",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "FC6",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "CP3",
+                "CPz",
+                "CP4",
+                "Pz",
+            ],
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=20,
+            health_status="healthy",
+            gender={"female": 7, "male": 13},
+            age_mean=25.8,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="rstate",
+            n_classes=1,
+            class_labels=["rest"],
+            trial_duration=10,
+            study_design="Subjects alternated between keeping eyes closed (condition 1) and eyes open (condition 2) while EEG was recorded",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.5281/zenodo.2348891",
+            repository="Zenodo",
+            data_url="https://doi.org/10.5281/zenodo.2348891",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Resting State"],
+            type=["Resting-state"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw",
+            preprocessing_applied=False,
+            artifact_methods=["ICA"],
+            re_reference="car",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            feature_extraction=["ERS"],
+            frequency_bands=FrequencyBands(
+                alpha=[8, 13],
+            ),
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["vr_ar", "communication"],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="rstate",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=10,
+        ),
+        data_processed=False,
+    )
 
     def __init__(self):
         subject_list = list(range(1, 6 + 1)) + list(range(8, 20 + 1))

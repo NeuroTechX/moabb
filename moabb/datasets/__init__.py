@@ -15,15 +15,7 @@ from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 from .beetl import Beetl2021_A, Beetl2021_B
 
-# Depreciated datasets (will be removed in the future):
-from .bnci import BNCI2014001  # noqa: F401
-from .bnci import BNCI2014002  # noqa: F401
-from .bnci import BNCI2014004  # noqa: F401
-from .bnci import BNCI2014008  # noqa: F401
-from .bnci import BNCI2014009  # noqa: F401
-from .bnci import BNCI2015001  # noqa: F401
-from .bnci import BNCI2015003  # noqa: F401
-from .bnci import BNCI2015004  # noqa: F401
+# BNCI datasets (from bnci subpackage)
 from .bnci import (
     BNCI2003_004,
     BNCI2014_001,
@@ -34,6 +26,21 @@ from .bnci import (
     BNCI2015_001,
     BNCI2015_003,
     BNCI2015_004,
+    BNCI2015_006,
+    BNCI2015_007,
+    BNCI2015_008,
+    BNCI2015_009,
+    BNCI2015_010,
+    BNCI2015_012,
+    BNCI2015_013,
+    BNCI2016_002,
+    BNCI2019_001,
+    BNCI2020_001,
+    BNCI2020_002,
+    BNCI2022_001,
+    BNCI2024_001,
+    BNCI2025_001,
+    BNCI2025_002,
 )
 from .braininvaders import VirtualReality  # noqa: F401
 from .braininvaders import bi2012  # noqa: F401
@@ -80,7 +87,6 @@ from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import MunichMI  # noqa: F401
 from .mpi_mi import GrosseWentrup2009
-from .neiry import DemonsP300
 from .phmd_ml import HeadMountedDisplay  # noqa: F401
 from .phmd_ml import Cattan2019_PHMD
 from .physionet_mi import PhysionetMI
@@ -96,7 +102,7 @@ from .stieger2021 import Stieger2021
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .upper_limb import Ofner2017
-from .utils import _init_dataset
+from .utils import _init_dataset, dataset_dict
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
 
@@ -104,3 +110,17 @@ from .Zhou2016 import Zhou2016
 # Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.
 _init_dataset()
+
+# Defer canonicalization to lazy catalog build time to avoid instantiating
+# all dataset classes on every import of moabb.datasets.
+
+
+_REMOVED_DATASETS = {
+    "DemonsP300": "DemonsP300 has been removed due to unresolved data issues.",
+}
+
+
+def __getattr__(name):
+    if name in _REMOVED_DATASETS:
+        raise AttributeError(_REMOVED_DATASETS[name])
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

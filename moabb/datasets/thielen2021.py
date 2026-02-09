@@ -5,6 +5,24 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    FrequencyBands,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PerformanceMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 
@@ -119,6 +137,96 @@ class Thielen2021(BaseDataset):
     .. versionadded:: 0.6.0
 
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=512.0,
+            n_channels=8,
+            channel_types={"eeg": 8},
+            montage="10-20",
+            hardware="Biosemi ActiveTwo",
+            sensor_type="sintered Ag/AgCl active electrodes",
+            reference="Car",
+            software="FieldTrip",
+            sensors=["Fz", "T7", "T8", "POz", "O1", "Oz", "O2", "Iz"],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                other_physiological=["ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=30,
+            health_status="healthy",
+            gender={"female": 17, "male": 13},
+            age_mean=40.5,
+            age_min=19,
+            age_max=62,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="cvep",
+            n_classes=1,
+            class_labels=["rest"],
+            trial_duration=9.0,
+            study_design="Code-modulated visual evoked potentials BCI task where participants fixated on target cells in a calculator grid while all cells flashed with unique pseudo-random bit-sequences",
+            feedback_type="none",
+            stimulus_type="avatar",
+            stimulus_modalities=["visual", "multisensory"],
+            primary_modality="multisensory",
+            synchronicity="asynchronous",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1088/1741-2552/abecef",
+            funding=["Grant Nos s", "Grant No. 14054 14054"],
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="preprocessed",
+            preprocessing_applied=True,
+            preprocessing_steps=["high-pass filter", "low-pass filter", "downsampling"],
+            filter_details=FilterDetails(
+                highpass_hz=2.0,
+                lowpass_hz=30.0,
+                bandpass=[2, 30],
+                filter_type="Butterworth",
+                filter_order="2nd order (highpass), 6th order (lowpass)",
+            ),
+            artifact_methods=["ICA"],
+            re_reference="car",
+            downsampled_to_hz=120,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SVM", "CNN", "Neural Network", "CCA"],
+            feature_extraction=["Bandpower", "ERS", "Covariance/Riemannian"],
+            frequency_bands=FrequencyBands(
+                theta=[4, 8],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="holdout",
+            evaluation_type=["transfer_learning"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=95.0,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["speller", "wheelchair/navigation", "vr_ar", "communication"],
+            environment="outdoor",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="cvep",
+            code_type="m_sequence",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=20,
+            trials_context="per_run",
+        ),
+        data_processed=True,
+    )
 
     def __init__(self):
         super().__init__(

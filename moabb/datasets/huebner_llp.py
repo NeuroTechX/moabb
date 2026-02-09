@@ -9,10 +9,25 @@ import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 
 
 logger = logging.getLogger(__name__)
-
 
 VSPELL_BASE_URL = "https://zenodo.org/record/"
 VISUAL_SPELLER_LLP_URL = VSPELL_BASE_URL + "5831826/files/"
@@ -161,6 +176,132 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
     .. versionadded:: 0.4.5
     """
 
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=29,
+            channel_types={"eeg": 29},
+            montage="10-20",
+            hardware="BrainAmp",
+            sensor_type="Ag/AgCl",
+            reference="Car",
+            software="OpenViBE",
+            impedance_threshold_kohm=20,
+            sensors=[
+                "Fp1",
+                "Fp2",
+                "F7",
+                "F3",
+                "Fz",
+                "F4",
+                "F8",
+                "FC5",
+                "FC1",
+                "FC2",
+                "FC6",
+                "T7",
+                "C3",
+                "Cz",
+                "C4",
+                "T8",
+                "CP5",
+                "CP1",
+                "CP2",
+                "CP6",
+                "P7",
+                "P3",
+                "Pz",
+                "P4",
+                "P8",
+                "PO9",
+                "O1",
+                "Oz",
+                "O2",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=1,
+                eog_type=["horizontal", "vertical"],
+                other_physiological=["respiration", "gsr", "ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=13,
+            health_status="healthy",
+            gender={"female": 5, "male": 8},
+            age_mean=26,
+            bci_experience="experienced",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="p300",
+            n_classes=1,
+            class_labels=["rest"],
+            trial_duration=11.0,
+            study_design="Visual ERP speller copy-spelling task using a 6x7 grid with learning from label proportions (LLP) classifier",
+            feedback_type="visual feedback after each character",
+            stimulus_type="rsvp",
+            stimulus_modalities=["visual", "auditory", "tactile"],
+            primary_modality="multisensory",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1371/journal.pone.0175856",
+            repository="Zenodo",
+            data_url="https://doi.org/10.5281/zenodo.192684",
+            funding=[
+                "grant No.\n2012-005741 2012-005741",
+                "European Union",
+                "grant number\nEXC EXC",
+                "grant agreement agreement",
+                "grant INST INST",
+            ],
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="preprocessed",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "bandpass filtering (0.5-8 Hz)",
+                "downsampling to 100 Hz",
+                "epoching",
+                "baseline correction",
+            ],
+            filter_details=FilterDetails(
+                highpass_hz=0.5,
+                lowpass_hz=8,
+                bandpass=[0.5, 8],
+                filter_type="Chebyshev",
+                filter_order=3,
+            ),
+            artifact_methods=["ICA"],
+            re_reference="car",
+            downsampled_to_hz=100,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "Neural Network"],
+            feature_extraction=["Covariance/Riemannian"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-out",
+            evaluation_type=["cross_subject", "transfer_learning"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["speller", "prosthetic", "gaming", "vr_ar", "communication"],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=189,
+        ),
+        data_processed=True,
+    )
+
     def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
         llp_speller_paper_doi = "10.1371/journal.pone.0175856"
         super().__init__(
@@ -210,6 +351,110 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
 
     .. versionadded:: 0.4.5
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=15,
+            channel_types={"eeg": 15},
+            montage="10-20",
+            hardware="BrainAmp",
+            sensor_type="Ag/AgCl",
+            reference="Car",
+            software="Matlab",
+            sensors=[
+                "Fz",
+                "FC5",
+                "FC1",
+                "FC2",
+                "FC6",
+                "C3",
+                "Cz",
+                "C4",
+                "CP5",
+                "CP1",
+                "CP2",
+                "CP6",
+                "O1",
+                "Oz",
+                "O2",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                other_physiological=["gsr"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=13,
+            health_status="healthy",
+            gender={"female": 8, "male": 4},
+            age_mean=26,
+            bci_experience="2 subjects had prior EEG experience",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="p300",
+            n_classes=1,
+            class_labels=["rest"],
+            trial_duration=0.8999999999999999,
+            study_design="Copy-spelling task using visual ERP paradigm with modified matrix speller including # symbols for LLP",
+            feedback_type="Visual feedback showing predicted character after each trial",
+            stimulus_type="cursor_feedback",
+            stimulus_modalities=["visual", "auditory"],
+            primary_modality="multisensory",
+            synchronicity="asynchronous",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.5281/zenodo.192684",
+            repository="Zenodo",
+            data_url="https://doi.org/10.5281/zenodo.192684",
+            funding=[
+                "grant \nagreement agreement",
+                "BMBF No",
+                "European Union",
+                "grant number EXC EXC",
+                "grant INST INST",
+                "DFG SPP",
+            ],
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            filter_details=FilterDetails(
+                filter_type="Chebyshev",
+            ),
+            artifact_methods=["ICA"],
+            re_reference="car",
+            downsampled_to_hz=100,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "Shrinkage LDA", "Riemannian"],
+            feature_extraction=["CSP", "ERS", "Covariance/Riemannian"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["cross_subject", "transfer_learning"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=[
+                "speller",
+                "wheelchair/navigation",
+                "prosthetic",
+                "gaming",
+                "vr_ar",
+                "communication",
+            ],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=35,
+            trials_context="per_run",
+        ),
+    )
 
     def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
         mix_speller_paper_doi = "10.1109/MCI.2018.2807039"

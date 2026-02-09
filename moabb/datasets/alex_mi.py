@@ -2,6 +2,21 @@
 
 from mne.io import Raw
 
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    ExperimentMetadata,
+    FrequencyBands,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
+
 from . import download as dl
 from .base import BaseDataset
 
@@ -29,11 +44,109 @@ class AlexMI(BaseDataset):
 
     references
     ----------
+
     .. [1] Barachant, A., 2012. Commande robuste d'un effecteur par une
            interface cerveau machine EEG asynchrone (Doctoral dissertation,
            Université de Grenoble).
            https://tel.archives-ouvertes.fr/tel-01196752
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=22,
+            channel_types={"eeg": 22},
+            reference="Car",
+            software="OpenViBE.",
+            sensors=[
+                "Fz",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "C5",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "C6",
+                "CP3",
+                "CP1",
+                "CPz",
+                "CP2",
+                "CP4",
+                "P1",
+                "Pz",
+                "P2",
+                "POz",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                other_physiological=["gsr", "ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=8,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=1,
+            class_labels=["rest"],
+            study_design="Brain-switch based on motor imagery for asynchronous BCI control of an effector",
+            feedback_type="visual (primarily), auditory, haptic (rare cases)",
+            stimulus_type="avatar",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+        ),
+        tags=Tags(
+            pathology=["Other"],
+            modality=["Visual"],
+            type=["Clinical/Intervention"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            artifact_methods=["ICA"],
+            re_reference="car",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=[
+                "LDA",
+                "SVM",
+                "MDM",
+                "xDAWN",
+                "Riemannian",
+                "kNN",
+                "Naive Bayes",
+            ],
+            feature_extraction=[
+                "CSP",
+                "FBCSP",
+                "ERD",
+                "ERS",
+                "PSD",
+                "Covariance/Riemannian",
+                "AR",
+                "ICA",
+                "xDAWN",
+            ],
+            frequency_bands=FrequencyBands(
+                alpha=[8.0, 12.0],
+                mu=[8, 12],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="30-fold",
+            cv_folds=30,
+            evaluation_type=["cross_session"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["vr_ar", "communication"],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+        ),
+    )
 
     def __init__(self):
         super().__init__(

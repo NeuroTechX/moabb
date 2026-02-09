@@ -9,16 +9,33 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import requests
-from mne import get_config
 from mne.utils import _open_lock
+
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    FrequencyBands,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PerformanceMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 
 from .base import BaseBIDSDataset
 from .bids_interface import get_bids_root
-from .download import download_if_missing, get_user_agent
+from .download import download_if_missing, get_dataset_path, get_user_agent
 
 
 log = logging.getLogger(__name__)
-
 
 ZENODO_RECORD_ID = 16534752
 # Zenodo API endpoint for published records
@@ -54,6 +71,116 @@ class Zhou2016(BaseBIDSDataset):
            https://doi.org/10.1371/journal.pone.0162657
     """
 
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=9,
+            channel_types={"eeg": 9},
+            montage="10-20",
+            hardware="BCI2000",
+            reference="Car",
+            ground="mastoid",
+            software="BCI2000",
+            filters="50 Hz notch",
+            sensors=[
+                "FP1",
+                "FP2",
+                "FC3",
+                "FCz",
+                "FC4",
+                "C3",
+                "Cz",
+                "C4",
+                "CP3",
+                "CPz",
+                "CP4",
+                "O1",
+                "Oz",
+                "O2",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_type=["horizontal"],
+                has_emg=True,
+                other_physiological=["ecg", "gsr"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=4,
+            health_status="healthy",
+            gender={"male": 1, "female": 3},
+            bci_experience="prior experience in the experimental paradigm",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=3,
+            class_labels=["right_hand", "left_hand", "feet"],
+            trial_duration=9.0,
+            study_design="Three-class motor imagery (left hand, right hand, foot movement imagination) according to cue direction",
+            feedback_type="visual cue (red arrow)",
+            stimulus_type="avatar",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            mode="online",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1371/journal.pone.0162657",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw EEG available",
+            preprocessing_applied=True,
+            preprocessing_steps=["bandpass filtering"],
+            filter_details=FilterDetails(
+                highpass_hz=8,
+                lowpass_hz=30,
+                bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 100.0},
+                notch_hz=[50],
+                filter_type="zero-phase",
+            ),
+            artifact_methods=["trial rejection", "ICA"],
+            re_reference="car",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=[
+                "CSP",
+                "Bandpower",
+                "ERD",
+                "ERS",
+                "Covariance/Riemannian",
+                "Time-Frequency",
+                "ICA",
+            ],
+            frequency_bands=FrequencyBands(
+                analyzed_range=[8.0, 30.0],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["cross_session"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=80.6,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["vr_ar", "communication"],
+            environment="outdoor",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=25,
+            trials_context="per_class",
+        ),
+        data_processed=True,
+    )
+
     def __init__(self):
         """Initialize the BIDS dataset."""
         super().__init__(
@@ -74,10 +201,7 @@ class Zhou2016(BaseBIDSDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        if not path:
-            path = get_config("MNE_DATA")
-
-        path = Path(update_path) if update_path else Path(path)
+        path = Path(get_dataset_path(self.code, path))
         dataset_path = get_bids_root(code=self.code, path=path)
 
         if not dataset_path.exists():

@@ -1,15 +1,23 @@
 import inspect
 import logging
+from typing import Optional, Union
+from warnings import warn
 
+import numpy as np
 from sklearn.model_selection import (
     BaseCrossValidator,
+    GroupShuffleSplit,
     LeaveOneGroupOut,
     StratifiedKFold,
+    StratifiedShuffleSplit,
 )
 from sklearn.utils import check_random_state
 
 
 log = logging.getLogger(__name__)
+
+# Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
+Vector = Union[list, tuple, np.ndarray]
 
 
 class WithinSessionSplitter(BaseCrossValidator):
@@ -76,13 +84,27 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
-        return self.n_folds * num_sessions_subjects
+        splitter = self.cv_class(**self._cv_kwargs)
+        inner_splits = None
+        try:
+            inner_splits = splitter.get_n_splits()
+        except TypeError:
+            try:
+                inner_splits = splitter.get_n_splits(None, None, None)
+            except (TypeError, ValueError):
+                inner_splits = None
+        except ValueError:
+            inner_splits = None
+        if inner_splits is None:
+            inner_splits = self.n_folds
+        return inner_splits * num_sessions_subjects
 
     def split(self, y, metadata):
         all_index = metadata.index.values
 
         # Shuffle subjects if required
-        subjects = metadata["subject"].unique()
+        # Convert to numpy array to avoid ArrowStringArray shuffle warning
+        subjects = np.array(metadata["subject"].unique())
         if self.shuffle:
             self._rng.shuffle(subjects)
 
@@ -93,7 +115,8 @@ class WithinSessionSplitter(BaseCrossValidator):
             y_subject = y[subject_mask]
 
             # Shuffle sessions if required
-            sessions = subject_metadata["session"].unique()
+            # Convert to numpy array to avoid ArrowStringArray shuffle warning
+            sessions = np.array(subject_metadata["session"].unique())
 
             if self.shuffle:
                 self._rng.shuffle(sessions)
@@ -105,6 +128,9 @@ class WithinSessionSplitter(BaseCrossValidator):
 
                 # Instantiate a new internal splitter for each session
                 splitter = self.cv_class(**self._cv_kwargs)
+
+                # Store reference to the current inner splitter for metadata access
+                self._current_splitter = splitter
 
                 # Split using the current instance of StratifiedKFold by default
                 for train_ix, test_ix in splitter.split(indices, y_session):
@@ -192,13 +218,27 @@ class WithinSubjectSplitter(BaseCrossValidator):
             The number of splits for the cross-validation
         """
         num_subjects = metadata["subject"].nunique()
-        return self.n_folds * num_subjects
+        splitter = self.cv_class(**self._cv_kwargs)
+        inner_splits = None
+        try:
+            inner_splits = splitter.get_n_splits()
+        except TypeError:
+            try:
+                inner_splits = splitter.get_n_splits(None, None, None)
+            except (TypeError, ValueError):
+                inner_splits = None
+        except ValueError:
+            inner_splits = None
+        if inner_splits is None:
+            inner_splits = self.n_folds
+        return inner_splits * num_subjects
 
     def split(self, y, metadata):
         all_index = metadata.index.values
 
         # Shuffle subjects if required
-        subjects = metadata["subject"].unique()
+        # Convert to numpy array to avoid ArrowStringArray shuffle warning
+        subjects = np.array(metadata["subject"].unique())
         if self.shuffle:
             self._rng.shuffle(subjects)
 
@@ -209,6 +249,9 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
             # Instantiate a new internal splitter for each subject
             splitter = self.cv_class(**self._cv_kwargs)
+
+            # Store reference to the current inner splitter for metadata access
+            self._current_splitter = splitter
 
             # Split using the cross-validation strategy across all sessions of the subject
             for train_ix, test_ix in splitter.split(subject_indices, y_subject):
@@ -359,13 +402,14 @@ class CrossSessionSplitter(BaseCrossValidator):
 
             if len(sessions) <= 1:
                 log.info(
-                    f"Skipping subject {subject}: Only one session available"
+                    f"Skipping subject {subject}: Only one session available. "
                     f"Cross-session evaluation requires at least two sessions."
                 )
                 continue  # Skip subjects with only one session
 
             # by default, I am using LeaveOneGroupOut
             splitter = self.cv_class(**cv_kwargs)
+            self._current_splitter = splitter
 
             # Yield the splits for a given subject
             for train_session_idx, test_session_idx in splitter.split(
@@ -461,9 +505,293 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         splitter = self.cv_class(**self._cv_kwargs)
 
+        # Store reference to the current inner splitter for metadata access
+        self._current_splitter = splitter
+
         # Yield the splits for the entire dataset
         for train_session_idx, test_session_idx in splitter.split(
             X=all_index, y=y, groups=metadata["subject"]
         ):
             # returning the index
             yield all_index[train_session_idx], all_index[test_session_idx]
+
+
+class LearningCurveSplitter(BaseCrossValidator):
+    """Learning curve splitter following sklearn CV interface.
+
+    This splitter creates train/test splits for learning curve evaluation,
+    where the training set is progressively subsampled to different sizes
+    while the test set remains fixed within each permutation.
+
+    Can be used as cv_class for WithinSessionSplitter, CrossSessionSplitter, etc.
+
+    Parameters
+    ----------
+    data_size : dict
+        Dictionary with 'policy' (either 'ratio' or 'per_class') and 'value'
+        (array of sizes). For 'ratio', values should be floats between 0 and 1
+        representing the fraction of training data to use. For 'per_class',
+        values should be integers representing the number of samples per class.
+    n_perms : int or array-like
+        Number of permutations per data_size value. If an int, the same number
+        of permutations is used for all data sizes. If an array, it should have
+        the same length as data_size['value'] and values should be monotonically
+        decreasing (more permutations for smaller data sizes).
+    test_size : float, default=0.2
+        Fraction of data to use for testing.
+    random_state : int, RandomState instance, or None, default=None
+        Controls the randomness of the permutations. Pass an int for
+        reproducible output across multiple function calls.
+
+    Attributes
+    ----------
+    n_splits_ : int
+        Total number of splits (permutations x data_size steps).
+    _current_perm : int
+        Current permutation index (set during split iteration).
+    _current_data_size : int
+        Current data size (set during split iteration).
+
+    Examples
+    --------
+    Using LearningCurveSplitter with WithinSessionSplitter:
+
+    >>> from moabb.evaluations.splitters import (
+    ...     WithinSessionSplitter, LearningCurveSplitter
+    ... )
+    >>> import numpy as np
+    >>> splitter = WithinSessionSplitter(
+    ...     n_folds=1,  # LearningCurveSplitter handles its own permutations
+    ...     cv_class=LearningCurveSplitter,
+    ...     data_size={'policy': 'ratio', 'value': np.array([0.1, 0.5, 1.0])},
+    ...     n_perms=10,
+    ...     test_size=0.2,
+    ... )
+
+    Notes
+    -----
+    The splitter yields (train_indices, test_indices) pairs where:
+    - The test set is fixed for each permutation
+    - The training set is subsampled according to data_size policy
+
+    This replicates the old _evaluate_learning_curve behavior from
+    WithinSessionEvaluation.
+    """
+
+    VALID_POLICIES = ["per_class", "ratio"]
+    metadata_columns = ("data_size", "permutation")
+
+    def __init__(
+        self,
+        data_size: dict,
+        n_perms: Union[int, Vector],
+        test_size: float = 0.2,
+        random_state: Optional[int] = None,
+        # The following are accepted but not used (for compatibility with parent splitters)
+        n_splits: Optional[int] = None,
+        shuffle: bool = True,
+    ):
+        self.data_size = data_size
+        self.test_size = test_size
+        self.random_state = random_state
+
+        # Validate and process data_size
+        if data_size is None:
+            raise ValueError("data_size must be provided")
+
+        if "policy" not in data_size or "value" not in data_size:
+            raise ValueError("data_size must have 'policy' and 'value' keys")
+
+        if data_size["policy"] not in self.VALID_POLICIES:
+            raise ValueError(
+                f"{data_size['policy']} is not valid. "
+                f"Please use one of {self.VALID_POLICIES}"
+            )
+
+        data_size_values = np.asarray(data_size["value"])
+        if not np.all(np.diff(data_size_values) > 0):
+            raise ValueError(
+                "data_size['value'] must be sorted in strictly "
+                "monotonically increasing order."
+            )
+
+        # Validate and process n_perms
+        if n_perms is None:
+            raise ValueError("n_perms must be provided")
+
+        if isinstance(n_perms, int):
+            self.n_perms = np.full_like(data_size_values, n_perms, dtype=int)
+        else:
+            self.n_perms = np.asarray(n_perms, dtype=int)
+            if len(self.n_perms) != len(data_size_values):
+                raise ValueError(
+                    "Number of elements in n_perms must be equal "
+                    "to number of elements in data_size['value']"
+                )
+            if not np.all(np.diff(self.n_perms) <= 0):
+                raise ValueError(
+                    "If n_perms is passed as an array, it has to be "
+                    "monotonically decreasing"
+                )
+
+        # Calculate total number of splits
+        self.n_splits_ = int(np.sum(self.n_perms))
+
+        # Store metadata about current split (updated during iteration)
+        self._current_perm = None
+        self._current_data_size = None
+
+    def get_n_splits(self, X=None, y=None, groups=None):
+        """Return total number of splits.
+
+        Parameters
+        ----------
+        X : array-like, optional
+            Ignored.
+        y : array-like, optional
+            Ignored.
+        groups : array-like, optional
+            Ignored.
+
+        Returns
+        -------
+        n_splits : int
+            Total number of splits (upper bound; can be lower if some splits
+            are skipped due to single-class training sets).
+        """
+        return self.n_splits_
+
+    def _get_data_size_subsets(self, y):
+        """Get indices for each data size step.
+
+        Parameters
+        ----------
+        y : array-like
+            Target labels for the training set.
+
+        Returns
+        -------
+        indices : list of arrays
+            List of index arrays, one for each data size step.
+        """
+        if self.data_size["policy"] == "ratio":
+            vals = np.array(self.data_size["value"])
+            if np.any(vals < 0) or np.any(vals > 1):
+                raise ValueError("Data subset ratios must be in range [0, 1]")
+            upto = np.ceil(vals * len(y)).astype(int)
+            indices = [np.array(range(i)) for i in upto]
+        elif self.data_size["policy"] == "per_class":
+            classwise_indices = {}
+            n_smallest_class = np.inf
+            for cl in np.unique(y):
+                cl_i = np.where(cl == y)[0]
+                classwise_indices[cl] = cl_i
+                n_smallest_class = (
+                    len(cl_i) if len(cl_i) < n_smallest_class else n_smallest_class
+                )
+            indices = []
+            for ds in self.data_size["value"]:
+                if ds > n_smallest_class:
+                    raise ValueError(
+                        f"Smallest class has {n_smallest_class} samples. "
+                        f"Desired samples per class {ds} is too large."
+                    )
+                indices.append(
+                    np.concatenate(
+                        [classwise_indices[cl][:ds] for cl in classwise_indices]
+                    )
+                )
+        else:
+            raise ValueError(f"Unknown policy {self.data_size['policy']}")
+        return indices
+
+    def split(self, X, y, groups=None):
+        """Generate train/test indices for learning curve evaluation.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            Training data.
+        y : array-like of shape (n_samples,)
+            Target labels.
+        groups : array-like of shape (n_samples,), optional
+            Group labels. If provided, splits are made on groups (no group
+            appears in both train and test).
+
+        Yields
+        ------
+        train : ndarray
+            The training set indices for that split.
+        test : ndarray
+            The testing set indices for that split.
+        """
+        y = np.asarray(y)
+        if groups is not None:
+            groups = np.asarray(groups)
+
+        # Create base train/test splits
+        # Use StratifiedShuffleSplit when no groups are provided, otherwise
+        # split by groups to avoid session/subject leakage.
+        max_perms = int(np.max(self.n_perms))
+        if groups is None:
+            splitter = StratifiedShuffleSplit(
+                n_splits=max_perms,
+                test_size=self.test_size,
+                random_state=self.random_state,
+            )
+            base_splits = splitter.split(X, y)
+        else:
+            splitter = GroupShuffleSplit(
+                n_splits=max_perms,
+                test_size=self.test_size,
+                random_state=self.random_state,
+            )
+            base_splits = splitter.split(X, y, groups=groups)
+
+        # Generate all permutations
+        for perm_i, (train_idx_full, test_idx) in enumerate(base_splits):
+            # For this permutation, get the training data labels
+            y_train_full = y[train_idx_full]
+
+            # Get subset indices for each data size step
+            data_size_steps = self._get_data_size_subsets(y_train_full)
+
+            # Iterate over data size steps
+            for di, subset_indices in enumerate(data_size_steps):
+                # Skip if we've exceeded n_perms for this data size
+                if perm_i >= self.n_perms[di]:
+                    continue
+
+                # Get the actual training indices (subset of the full training set)
+                train_idx = train_idx_full[subset_indices]
+
+                # Skip splits where training set collapses to single class
+                # (can happen with small data_size values or imbalanced datasets)
+                if len(np.unique(y[train_idx])) < 2:
+                    warn(
+                        "Skipping split: training set has only one class "
+                        f"(data_size={len(subset_indices)}, perm={perm_i + 1})",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
+                    continue
+
+                # Update current split metadata
+                self._current_perm = perm_i + 1  # 1-indexed for user display
+                self._current_data_size = len(subset_indices)
+
+                yield train_idx, test_idx
+
+    def get_metadata(self):
+        """Get metadata about the current split.
+
+        Returns
+        -------
+        metadata : dict
+            Dictionary with 'permutation' and 'data_size' keys.
+            Only valid during or after iteration.
+        """
+        return {
+            "permutation": self._current_perm,
+            "data_size": self._current_data_size,
+        }

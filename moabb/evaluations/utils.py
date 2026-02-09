@@ -25,6 +25,14 @@ except ImportError:
     optuna_available = False
 
 
+try:
+    from codecarbon import EmissionsTracker, OfflineEmissionsTracker
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
+
+
 def _ensure_fitted(estimator):
     """Ensure an estimator is properly marked as fitted for sklearn 1.8+.
 
@@ -462,3 +470,55 @@ def _score_and_update(res, scorer, model, X, y_true):
     """
     score = scorer(model, X, y_true)
     return _update_result_with_scores(res, score)
+
+
+def _pipeline_requires_epochs(pipeline):
+    """Check if any step in the pipeline requires MNE Epochs objects."""
+    from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
+
+    # Handle non-pipeline classifiers (like DummyClassifier)
+    if not hasattr(pipeline, "steps"):
+        return isinstance(pipeline, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA))
+
+    for name, step in pipeline.steps:
+        if isinstance(step, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA)):
+            return True
+    return False
+
+
+def _get_nchan(X):
+    """Extract number of channels from data (Epochs or ndarray)."""
+    from mne.epochs import BaseEpochs
+
+    return X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+
+
+class Emissions:
+    def __init__(self, codecarbon_config=None):
+        self.codecarbon_config = codecarbon_config
+        if codecarbon_config is None:
+            # Default CodeCarbon configurations
+            self.codecarbon_config = dict(save_to_file=False, log_level="error")
+            self.codecarbon_offline = False
+        else:
+            # Offline mode parameters are a superset of online mode parameters
+            # Hardcode check avoids object reflection for security and compatibility
+            # For more information see CodeCarbon documentation
+            # https://mlco2.github.io/codecarbon/parameters.html#specific-parameters-for-offline-mode
+            offline_params = [
+                "country_iso_code",
+                "region",
+                "cloud_provider",
+                "cloud_region",
+                "country_2letter_iso_code",
+            ]
+            self.codecarbon_offline = any(
+                key in self.codecarbon_config for key in offline_params
+            )
+
+    def create_tracker(self):
+        if self.codecarbon_offline:
+            tracker = OfflineEmissionsTracker(**self.codecarbon_config)
+        else:
+            tracker = EmissionsTracker(**self.codecarbon_config)
+        return tracker

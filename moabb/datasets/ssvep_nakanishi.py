@@ -8,6 +8,23 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 from scipy.io import loadmat
 
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
+
 from . import download as dl
 from .base import BaseDataset
 
@@ -27,12 +44,79 @@ class Nakanishi2015(BaseDataset):
 
     references
     ----------
+
     .. [1] Masaki Nakanishi, Yijun Wang, Yu-Te Wang and Tzyy-Ping Jung,
            "A Comparison Study of Canonical Correlation Analysis Based Methods for
            Detecting Steady-State Visual Evoked Potentials," PLoS One, vol.10, no.10,
            e140703, 2015.
            `<http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0140703>`_
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=2048.0,
+            n_channels=8,
+            channel_types={"eeg": 8},
+            hardware="Biosemi ActiveTwo",
+            reference="cms",
+            software="MATLAB",
+            sensors=["PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2"],
+            line_freq=60.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                other_physiological=["ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=10,
+            health_status="healthy",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=1,
+            class_labels=["rest"],
+            trial_duration=7.0,
+            study_design="12-class SSVEP target identification task",
+            stimulus_type="flickering",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="asynchronous",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1371/journal.pone.0140703",
+            funding=["NIH\nGrant", "Grant Award Award"],
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            filter_details=FilterDetails(
+                bandpass={"low_cutoff_hz": 6.0, "high_cutoff_hz": 80.0},
+                filter_type="IIR",
+            ),
+            artifact_methods=["ICA"],
+            downsampled_to_hz=256,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CCA"],
+            feature_extraction=["CSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-out",
+            evaluation_type=["cross_subject"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["vr_ar", "communication"],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=14,
+        ),
+    )
 
     def __init__(self):
         super().__init__(
@@ -55,7 +139,7 @@ class Nakanishi2015(BaseDataset):
             code="Nakanishi2015",
             interval=[0.15, 4.3],
             paradigm="ssvep",
-            doi="doi.org/10.1371/journal.pone.0140703",
+            doi="10.1371/journal.pone.0140703",
         )
 
     def _get_single_subject_data(self, subject):

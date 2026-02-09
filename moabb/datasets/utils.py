@@ -31,6 +31,10 @@ dataset_dict = {}
 
 
 def _init_dataset():
+    # Recompute dataset registries on each call to avoid duplicate accumulation
+    # from repeated initialization in long-lived test sessions.
+    dataset_list.clear()
+    dataset_dict.clear()
 
     for ds in inspect.getmembers(db, inspect.isclass):
         if issubclass(ds[1], BaseDataset):
@@ -42,8 +46,7 @@ def _init_dataset():
         if dataset.__name__ not in list(zip(*aliases_list))[0]
     }
 
-    if not dataset_dict:
-        dataset_dict.update(dataset_class)
+    dataset_dict.update(dataset_class)
 
 
 def dataset_search(  # noqa: C901

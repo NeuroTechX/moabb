@@ -7,6 +7,22 @@ from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    FrequencyBands,
+    ParticipantMetadata,
+    PerformanceMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 
 
 log = logging.getLogger(__name__)
@@ -55,6 +71,96 @@ class Schirrmeister2017(BaseDataset):
            neural networks for EEG decoding and visualization." Human brain mapping 38.11
            (2017): 5391-5420.
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=22,
+            channel_types={"eeg": 22},
+            hardware="Emotiv EPOC",
+            reference="Car",
+            sensors=[
+                "Fz",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "C5",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "C6",
+                "CP3",
+                "CP1",
+                "CPz",
+                "CP2",
+                "CP4",
+                "P1",
+                "Pz",
+                "P2",
+                "POz",
+            ],
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=14,
+            gender={"female": 6, "male": 8},
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=2,
+            class_labels=["feet", "rest"],
+            study_design="Imagined or executed movements including hand (left), hand (right), feet, and rest conditions",
+            stimulus_type="avatar",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1002/hbm.23730",
+            repository="GitHub",
+            data_url="https://github.com/robintibor/braindecode/",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Other"],
+            type=["Other"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="preprocessed signals of recorded electrodes",
+            preprocessing_applied=True,
+            filter_details=FilterDetails(
+                bandpass="multiple frequency bands (filter bank approach)",
+                filter_type="Butterworth",
+            ),
+            artifact_methods=["ICA"],
+            re_reference="car",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CNN", "RNN", "Neural Network", "EEGNet", "xDAWN"],
+            feature_extraction=["CSP", "FBCSP", "Bandpower", "ERD", "xDAWN"],
+            frequency_bands=FrequencyBands(
+                alpha=[7.0, 13.0],
+                analyzed_range=[20.0, 30.0],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="holdout",
+            evaluation_type=["within_subject", "cross_subject", "transfer_learning"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=67.8,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["gaming", "vr_ar"],
+            environment="outdoor",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials={"BCI_competition_IV_2a": 288, "High_Gamma_Dataset": 880},
+        ),
+        data_processed=True,
+    )
 
     def __init__(self):
         super().__init__(

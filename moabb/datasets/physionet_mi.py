@@ -6,6 +6,18 @@ from mne.io import read_raw_edf
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.download import data_dl, get_dataset_path
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    DatasetMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
@@ -67,6 +79,88 @@ class PhysionetMI(BaseDataset):
            resource for complex physiologic signals Circulation 2000 Volume
            101 Issue 23 pp. E215–E220.
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=160.0,
+            n_channels=16,
+            channel_types={"eeg": 16},
+            hardware="Brain Products",
+            reference="mastoid",
+            software="BCI2000",
+            sensors=[
+                "FC5",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "FC6",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "CP3",
+                "CPz",
+                "CP4",
+                "Pz",
+            ],
+            line_freq=60.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_emg=True,
+                other_physiological=["ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=109,
+            health_status="healthy",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=1,
+            class_labels=["rest"],
+            study_design="Multiple BCI paradigms implemented: (1) mu/beta rhythm cursor control where users control vertical cursor movement via sensorimotor rhythm amplitude, (2) SCP cursor control where users control slow co...",
+            feedback_type="visual",
+            stimulus_type="oddball",
+            stimulus_modalities=["visual", "auditory"],
+            primary_modality="multisensory",
+            mode="both",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw EEG stored with all event markers for offline reconstruction",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "calibration (linear transformation to microvolts)",
+                "spatial filtering",
+                "temporal filtering",
+            ],
+            artifact_methods=["ICA"],
+            re_reference="car",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            feature_extraction=["CSP", "ERD", "ERS", "AR"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=[
+                "speller",
+                "wheelchair/navigation",
+                "cursor_control",
+                "prosthetic",
+                "vr_ar",
+                "communication",
+            ],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+        ),
+        data_processed=True,
+    )
 
     def __init__(self, imagined=True, executed=False):
         super().__init__(

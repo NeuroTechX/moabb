@@ -12,6 +12,7 @@ from .evaluations import (
 from .splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
+    LearningCurveSplitter,
     WithinSessionSplitter,
     WithinSubjectSplitter,
 )

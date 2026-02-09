@@ -10,6 +10,23 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 from scipy.io import loadmat
 
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PerformanceMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
+
 from .base import BaseDataset
 from .download import (
     fs_get_file_hash,
@@ -23,7 +40,6 @@ from .download import (
 log = logging.getLogger(__name__)
 
 MAMEM_URL = "https://ndownloader.figshare.com/files/"
-
 
 # Specific release
 # MAMEM1_URL = 'https://ndownloader.figshare.com/articles/2068677/versions/6'
@@ -260,14 +276,106 @@ class MAMEM1(BaseMAMEM):
 
     References
     ----------
-    .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
+    .. [1] Oikonomou, V. P., Liaros, G., Georgiadis, K., Chatzilari, E., Adam, K.,
+           Nikolopoulos, S., & Kompatsiaris, I. (2016). Comparative evaluation of
+           state-of-the-art algorithms for SSVEP-based BCIs. arXiv preprint
+           arXiv:1602.00904.
+    .. [2] MAMEM Steady State Visually Evoked Potential EEG Database
            `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
-    .. [2] V.P. Oikonomou et al, 2016, Comparative evaluation of state-of-the-art
-           algorithms for SSVEP-based BCIs. arXiv.
-           `<http://arxiv.org/abs/1602.00904>`-
     .. [3] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
-           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738>`_  # noqa: E501
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738>`_
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=256,
+            channel_types={"eeg": 256},
+            montage="10-20",
+            hardware="EGI",
+            sensor_type="scalp electrodes",
+            reference="Car",
+            software="Bci2000",
+            filters="22.0-48.0 Hz bandpass",
+            sensors=["O1", "O2", "Oz"],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_type=["vertical"],
+                has_emg=True,
+                other_physiological=["ecg", "gsr", "ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=11,
+            health_status="healthy",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=1,
+            class_labels=["rest"],
+            study_design="Subjects focus attention on visual stimuli flickering at different frequencies to select commands",
+            stimulus_type="cursor_feedback",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            mode="offline",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.6084/m9.figshare.2068677.v1",
+            repository="GitHub",
+            data_url="https://github.com/MAMEM/ssvep-eeg-processing-toolbox",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "bandpass filtering",
+                "notch filtering",
+                "artifact removal (AMUSE, ICA)",
+            ],
+            filter_details=FilterDetails(
+                highpass_hz=5,
+                lowpass_hz=48,
+                bandpass={"low_cutoff_hz": 5.0, "high_cutoff_hz": 48.0},
+                notch_hz=50,
+                filter_type="Chebyshev",
+            ),
+            artifact_methods=["ICA"],
+            re_reference="CAR",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "SVM", "Random Forest", "kNN", "Naive Bayes", "CCA"],
+            feature_extraction=[
+                "CSP",
+                "ERD",
+                "ERS",
+                "PSD",
+                "Wavelet",
+                "Covariance/Riemannian",
+                "AR",
+                "ICA",
+            ],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="bootstrap",
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=74.42,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["vr_ar"],
+            environment="outdoor",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+        ),
+        data_processed=True,
+    )
 
     def __init__(self):
         super().__init__(
@@ -275,7 +383,7 @@ class MAMEM1(BaseMAMEM):
             sessions_per_subject=1,
             # 5 runs per sessions, except 3 for S001, S003, S008, 4 for S004
             code="MAMEM1",
-            doi="https://arxiv.org/abs/1602.00904",
+            doi="10.48550/arXiv.1602.00904",
             figshare_id=2068677,
         )
 
@@ -348,18 +456,114 @@ class MAMEM2(BaseMAMEM):
 
     References
     ----------
-    .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
+    .. [1] Oikonomou, V. P., Liaros, G., Georgiadis, K., Chatzilari, E., Adam, K.,
+           Nikolopoulos, S., & Kompatsiaris, I. (2016). Comparative evaluation of
+           state-of-the-art algorithms for SSVEP-based BCIs. arXiv preprint
+           arXiv:1602.00904.
+    .. [2] MAMEM Steady State Visually Evoked Potential EEG Database
            `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
-    .. [2] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
-           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931>`_  # noqa: E501
+    .. [3] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931>`_
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=256,
+            channel_types={"eeg": 256},
+            montage="10-20",
+            hardware="EGI",
+            sensor_type="scalp electrodes",
+            reference="Car",
+            software="Bci2000",
+            filters="22.0-48.0 Hz bandpass",
+            sensors=["O1", "O2", "Oz"],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_type=["vertical"],
+                has_emg=True,
+                other_physiological=["ecg", "gsr", "ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=11,
+            health_status="healthy",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=1,
+            class_labels=["rest"],
+            study_design="Subjects focus attention on visual stimuli (colored lights flickering at different frequencies) to select commands",
+            stimulus_type="cursor_feedback",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            mode="offline",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.6084/m9.figshare.2068677.v1",
+            repository="GitHub",
+            data_url="https://github.com/MAMEM/ssvep-eeg-processing-toolbox",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="comparative study - multiple preprocessing approaches evaluated",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "bandpass filtering",
+                "notch filtering (50Hz line frequency)",
+                "artifact removal (AMUSE or ICA)",
+            ],
+            filter_details=FilterDetails(
+                highpass_hz=5,
+                lowpass_hz=48,
+                bandpass={"low_cutoff_hz": 5.0, "high_cutoff_hz": 48.0},
+                notch_hz=50,
+                filter_type="Chebyshev",
+            ),
+            artifact_methods=["ICA"],
+            re_reference="CAR",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "SVM", "Random Forest", "kNN", "Naive Bayes", "CCA"],
+            feature_extraction=[
+                "CSP",
+                "ERD",
+                "ERS",
+                "PSD",
+                "Wavelet",
+                "Covariance/Riemannian",
+                "AR",
+                "ICA",
+            ],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="bootstrap",
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=74.42,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["vr_ar"],
+            environment="outdoor",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+        ),
+        data_processed=True,
+    )
 
     def __init__(self):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
             code="MAMEM2",
-            doi="https://arxiv.org/abs/1602.00904",
+            doi="10.48550/arXiv.1602.00904",
             figshare_id=3153409,
         )
 
@@ -441,11 +645,106 @@ class MAMEM3(BaseMAMEM):
 
     References
     ----------
-    .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
+    .. [1] Oikonomou, V. P., Liaros, G., Georgiadis, K., Chatzilari, E., Adam, K.,
+           Nikolopoulos, S., & Kompatsiaris, I. (2016). Comparative evaluation of
+           state-of-the-art algorithms for SSVEP-based BCIs. arXiv preprint
+           arXiv:1602.00904.
+    .. [2] MAMEM Steady State Visually Evoked Potential EEG Database
            `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
-    .. [2] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
-           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851>`_  # noqa: E501
+    .. [3] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851>`_
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=256,
+            channel_types={"eeg": 256},
+            montage="10-20",
+            hardware="EGI",
+            sensor_type="scalp electrodes",
+            reference="Car",
+            software="Bci2000",
+            filters="22.0-48.0 Hz bandpass",
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_type=["vertical"],
+                has_emg=True,
+                other_physiological=["ecg", "gsr", "ppg"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=11,
+            health_status="healthy",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=1,
+            class_labels=["rest"],
+            study_design="User focuses attention on visual stimuli flickering at different frequencies to select commands",
+            stimulus_type="cursor_feedback",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            mode="offline",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.6084/m9.figshare.2068677.v1",
+            repository="GitHub",
+            data_url="https://github.com/MAMEM/ssvep-eeg-processing-toolbox",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw EEG provided in dataset",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "bandpass filtering",
+                "notch filter (50Hz line frequency)",
+                "artifact removal (AMUSE or ICA)",
+            ],
+            filter_details=FilterDetails(
+                highpass_hz=5,
+                lowpass_hz=48,
+                bandpass={"low_cutoff_hz": 5.0, "high_cutoff_hz": 48.0},
+                notch_hz=50,
+                filter_type="Chebyshev",
+            ),
+            artifact_methods=["ICA"],
+            re_reference="CAR",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "SVM", "Random Forest", "kNN", "Naive Bayes", "CCA"],
+            feature_extraction=[
+                "CSP",
+                "ERD",
+                "ERS",
+                "PSD",
+                "Wavelet",
+                "Covariance/Riemannian",
+                "AR",
+                "ICA",
+            ],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="bootstrap",
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=74.42,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["vr_ar"],
+            environment="outdoor",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+        ),
+        data_processed=True,
+    )
 
     def __init__(self):
         super().__init__(
@@ -458,6 +757,6 @@ class MAMEM3(BaseMAMEM):
             },
             sessions_per_subject=1,
             code="MAMEM3",
-            doi="https://arxiv.org/abs/1602.00904",
+            doi="10.48550/arXiv.1602.00904",
             figshare_id=3413851,
         )

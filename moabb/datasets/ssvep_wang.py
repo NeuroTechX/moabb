@@ -8,6 +8,24 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 from scipy.io import loadmat
 
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    FrequencyBands,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
+
 from . import download as dl
 from .base import BaseDataset
 
@@ -86,14 +104,160 @@ class Wang2016(BaseDataset):
     Users should be aware of this ambiguity when interpreting spatial analyses
     or when comparing to other datasets with strictly standard montages.
 
-
     References
     ----------
-    .. [1] Y. Wang, X. Chen, X. Gao and S. Gao, 2017, "A Benchmark Dataset for
-           SSVEP-Based Brain–Computer Interfaces," in IEEE Transactions on Neural
-           Systems and Rehabilitation Engineering, vol. 25, no. 10, pp. 1746-1752,
+    .. [1] Wang, Y., Chen, X., Gao, X., & Gao, S. (2016). A benchmark dataset for
+           SSVEP-based brain–computer interfaces. IEEE Transactions on Neural
+           Systems and Rehabilitation Engineering, 25(10), 1746-1752.
            doi: 10.1109/TNSRE.2016.2627556.
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1000.0,
+            n_channels=64,
+            channel_types={"eeg": 64},
+            montage="10-20",
+            hardware="Neuroscan SynAmps",
+            software="EEGLAB",
+            filters="50 Hz notch",
+            impedance_threshold_kohm=10,
+            sensors=[
+                "Fp1",
+                "Fpz",
+                "Fp2",
+                "AF7",
+                "AF3",
+                "AFz",
+                "AF4",
+                "AF8",
+                "F7",
+                "F5",
+                "F3",
+                "F1",
+                "Fz",
+                "F2",
+                "F4",
+                "F6",
+                "F8",
+                "FT7",
+                "FC5",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "FC6",
+                "FT8",
+                "T7",
+                "C5",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "C6",
+                "T8",
+                "TP7",
+                "CP5",
+                "CP3",
+                "CP1",
+                "CPz",
+                "CP2",
+                "CP4",
+                "CP6",
+                "TP8",
+                "P7",
+                "P5",
+                "P3",
+                "P1",
+                "Pz",
+                "P2",
+                "P4",
+                "P6",
+                "P8",
+                "PO7",
+                "PO3",
+                "POz",
+                "PO4",
+                "PO8",
+                "O1",
+                "Oz",
+                "O2",
+                "Iz",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                other_physiological=["gsr"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=34,
+            health_status="healthy",
+            gender={"female": 17, "male": 18},
+            age_mean=25.5,
+            age_min=17,
+            age_max=34,
+            bci_experience="8 experienced, 27 naïve",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=2,
+            class_labels=["15.8hz", "0.2hz"],
+            trial_duration=6.0,
+            study_design="Cue-guided target selecting task using a 40-target BCI speller with joint frequency and phase modulation (JFPM) approach",
+            stimulus_type="avatar",
+            stimulus_modalities=["visual", "multisensory"],
+            primary_modality="multisensory",
+            mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            repository="BNCI Horizon 2020",
+            data_url="https://bnci-horizon-2020.eu/database/data-sets",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="Raw epochs without digital filters applied in preprocessing",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "Epoch extraction according to stimulus onsets",
+                "Downsampling to 250 Hz",
+            ],
+            filter_details=FilterDetails(
+                bandpass={"low_cutoff_hz": 7.0, "high_cutoff_hz": 70.0},
+                notch_hz=[50],
+                filter_type="zero-phase",
+            ),
+            artifact_methods=["ICA"],
+            downsampled_to_hz=250,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CCA"],
+            feature_extraction=["Time-Frequency", "ICA"],
+            frequency_bands=FrequencyBands(
+                analyzed_range=[8.0, 15.0],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-out",
+            evaluation_type=["cross_subject"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["speller", "gaming", "vr_ar", "communication"],
+            environment="outdoor",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=240,
+        ),
+        data_processed=True,
+    )
 
     # fmt: off
     _events = {
@@ -123,7 +287,7 @@ class Wang2016(BaseDataset):
             code="Wang2016",
             interval=[0.5, 5.5],
             paradigm="ssvep",
-            doi="doi://10.1109/TNSRE.2016.2627556",
+            doi="10.1109/TNSRE.2016.2627556",
         )
 
     def _get_single_subject_data(self, subject):
@@ -155,7 +319,8 @@ class Wang2016(BaseDataset):
         info = create_info(self._ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
         montage = make_standard_montage("standard_1005")
-        raw.set_montage(montage)
+        # CB1 and CB2 are not in standard_1005 montage - ignore them
+        raw.set_montage(montage, on_missing="ignore")
         return {"0": {"0": raw}}
 
     def data_path(

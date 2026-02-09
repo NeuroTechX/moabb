@@ -22,37 +22,75 @@ Enhancements
 - Implementation of Pseudo Online framework (:gh:`641` by `Igor Carrara`_)
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
+- Enhanced BNCI datasets with comprehensive participant demographics documentation (by `Bruno Aristimunha`_)
+- Added ``_participant_demographics`` class attribute to BNCI2014-002, BNCI2014-009, BNCI2015-001, and BNCI2015-004 for programmatic access to demographics (by `Bruno Aristimunha`_)
+- Improved BIDS conversion with guaranteed montage preservation for all BNCI datasets (by `Bruno Aristimunha`_)
+- Dataset-specific metadata extraction for BNCI2014-001, BNCI2014-004, and BNCI2014-008 with age, gender, and clinical information (by `Bruno Aristimunha`_)
+- Improved error messages for dataset compatibility checks in evaluations - now provides specific reasons when datasets are incompatible (e.g., "dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions") by `Bruno Aristimunha`_
 - Ability to join rows from the tables of MOABB predictive performance scores and detailed CodeCarbon compute profiling metrics by the column `codecarbon_task_name` in MOABB results and the column `task_name` in CodeCarbon results (:gh:`866` by `Ethan Davis`_).
 - Adding two c-VEP datasets: :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` by `Victor Martinez-Cagigal`_
 - Allow custom paradigms to have multiple scores for evaluations (:gh:`948` by `Ethan Davis`_)
 - Ability to parameterize the scoring rule of paradigms (:gh:`948` by `Ethan Davis`_)
 - Extend scoring configuration to accept lists of metric callables, scorer objects, and tuple kwargs (e.g., `needs_proba`/`needs_threshold`) for multi-metric evaluations (:gh:`948` by `Ethan Davis`_ and `Bruno Aristimunha`_)
 - Implement :class:`moabb.evaluations.WithinSubjectSplitter` for k-fold cross-validation within each subject across all sessions (by `Bruno Aristimunha`_)
+- Add ``cv_class`` and ``cv_kwargs`` parameters to all evaluation classes (WithinSessionEvaluation, CrossSessionEvaluation, CrossSubjectEvaluation) for custom cross-validation strategies (:gh:`963` by `Bruno Aristimunha`_)
+- Implement :class:`moabb.evaluations.splitters.LearningCurveSplitter` as a dedicated sklearn-compatible cross-validator for learning curves, enabling learning curve analysis with any evaluation type (:gh:`963` by `Bruno Aristimunha`_)
+- Auto-generate dataset documentation admonitions (Participants, Equipment, Preprocessing, Data Access, Experimental Protocol) from class-level ``METADATA`` when missing, while preserving manually written sections (:gh:`960` by `Bruno Aristimunha`_)
+- Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
+- Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
 
 API changes
 ~~~~~~~~~~~
+- Removed ``SinglePass`` and ``FilterBank`` intermediate classes from motor imagery and P300 paradigms. ``FilterBankLeftRightImagery`` now inherits from ``LeftRightImagery``, ``FilterBankMotorImagery`` inherits from ``MotorImagery``, and ``P300`` inherits directly from ``BaseP300``. ``RestingStateToP300Adapter`` now inherits from ``BaseP300``. Docstring inheritance is handled via ``NumpyDocstringInheritanceInitMeta`` (:gh:`467` by `Bruno Aristimunha`_).
 - Allow CodeCarbon script level configurations when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`866` by `Ethan Davis`_).
 - When CodeCarbon is installed, MOABB HDF5 results have an additional column `codecarbon_task_name`. If CodeCarbon is configured to save to file, its own tabular results have a column `task_name`. These columns are unique UUID4s. Related rows can be joined to see detailed costs and benefits of predictive performance and computing profiling metrics (:gh:`866` by `Ethan Davis`_).
 - Isolated model fitting, duration tracking, and CodeCarbon compute profiling tracking. New and consistent ordering of duration and CodeCarbon tracking across all evaluations: (Higher priority, closest to model fitting) required duration tracking, (lower priority, second closest to model fitting) optional CodeCarbon tracking (:gh:`866` by `Ethan Davis`_).
 - Replaced unreliable wall clock duration tracking (Python's `time.time()`) in favor of performance counter duration tracking (Python's `time.perf_counter()`) (:gh:`866` by `Ethan Davis`_).
+- Enable choice of online or offline CodeCarbon through the parameterization of `codecarbon_config` when instantiating a :class:`moabb.evaluations.base.BaseEvaluation` child class (:gh:`956` by `Ethan Davis`_)
+- Renamed stimulus channel from ``stim`` to ``STI`` in BNCI motor imagery and error-related potential datasets for clarity and BIDS compliance (by `Bruno Aristimunha`_).
+- Added four new BNCI P300/ERP dataset classes: :class:`moabb.datasets.BNCI2015_009` (AMUSE), :class:`moabb.datasets.BNCI2015_010` (RSVP), :class:`moabb.datasets.BNCI2015_012` (PASS2D), and :class:`moabb.datasets.BNCI2015_013` (ErrP) (by `Bruno Aristimunha`_).
+- Removed ``data_size`` and ``n_perms`` parameters from :class:`moabb.evaluations.WithinSessionEvaluation`. Use ``cv_class=LearningCurveSplitter`` with ``cv_kwargs=dict(data_size=..., n_perms=...)`` instead (:gh:`963` by `Bruno Aristimunha`_)
+- Learning curve results now automatically include "data_size" and "permutation" columns when using ``LearningCurveSplitter`` (:gh:`963` by `Bruno Aristimunha`_)
 
 Requirements
 ~~~~~~~~~~~~
-- Requires CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
+- Allows CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
+- Added ``filelock`` as a core dependency to fix missing import errors in utils (:gh:`959` by `Mateusz Naklicki`_).
 
 Bugs
 ~~~~
+- Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
+- Fixed measurement date setting for BNCI datasets to use specific collection years from papers (by `Bruno Aristimunha`_)
+- Ensured proper subject ID assignment for BIDS compliance across all BNCI datasets (by `Bruno Aristimunha`_)
 - Correct :class:`moabb.pipelines.classification.SSVEP_CCA`, :class:`moabb.pipelines.classification.SSVEP_TRCA` and :class:`moabb.pipelines.classification.SSVEP_MsetCCA` behavior (:gh:`625` by `Sylvain Chevallier`_)
 - Fix scikit-learn LogisticRegression elasticnet penalty parameter deprecation by re-adding `penalty='elasticnet'` for ElasticNet configurations with `0 < l1_ratio < 1` (:gh:`869` by `Bruno Aristimunha`_)
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 - Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
 - Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
+- Prevent Python mutable default argument when defining CodeCarbon configurations (:gh:`956` by `Ethan Davis`_)
 - Fix copytree FileExistsError in BrainInvaders2013a download by adding dirs_exist_ok=True (by `Bruno Aristimunha`_)
+- Ensure optional additional scoring columns in evaluation results (:gh:`957` by `Ethan Davis`_)
+- Fix pandas ``ArrowStringArray`` shuffle warning by converting ``.unique()`` results to numpy arrays in splitters, avoiding issues with newer pandas versions (:gh:`963` by `Bruno Aristimunha`_)
+- ``LearningCurveSplitter`` now skips training splits that collapse to a single class (e.g., with very small ``data_size``) and emits a ``RuntimeWarning`` instead of producing NaN results (:gh:`963` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
+- Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
+- Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
+
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 - Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
+- Centralize CV resolution in BaseEvaluation with new ``_resolve_cv()`` method for consistent cross-validation handling across all evaluation types. Add ``_build_result()`` and ``_build_scored_result()`` helpers to centralize result dict construction across WithinSession, CrossSession, and CrossSubject evaluations, replacing manual dict assembly in each (:gh:`963` by `Bruno Aristimunha`_)
+- Remove redundant learning curve methods (``get_data_size_subsets()``, ``score_explicit()``, ``_evaluate_learning_curve()``) from WithinSessionEvaluation in favor of unified splitter-based approach (:gh:`963` by `Bruno Aristimunha`_)
+- Generic metadata column registration: ``LearningCurveSplitter`` declares a ``metadata_columns`` class attribute, and ``BaseEvaluation`` auto-detects it via ``hasattr(cv_class, "metadata_columns")`` instead of hardcoding class checks, making it extensible to future custom splitters (:gh:`963` by `Bruno Aristimunha`_)
+- Fix ``get_n_splits()`` delegation in ``WithinSessionSplitter`` and ``WithinSubjectSplitter`` to properly forward to the inner ``cv_class.get_n_splits()`` instead of hardcoding ``n_folds``, giving correct split counts when using custom CV classes like ``LearningCurveSplitter`` (:gh:`963` by `Bruno Aristimunha`_)
+- Remove duplicate ``get_inner_splitter_metadata()`` from ``WithinSessionSplitter``, ``WithinSubjectSplitter``, and ``CrossSubjectSplitter``. All splitters now store a ``_current_splitter`` reference, and ``BaseEvaluation._build_scored_result()`` reads metadata generically from it (:gh:`963` by `Bruno Aristimunha`_)
+- Extract ``_fit_cv()``, ``_maybe_save_model_cv()``, and ``_attach_emissions()`` into ``BaseEvaluation``, removing duplicated model-fitting, model-saving, and carbon-tracking boilerplate from ``WithinSessionEvaluation``, ``CrossSessionEvaluation``, and ``CrossSubjectEvaluation`` (:gh:`963` by `Bruno Aristimunha`_)
+- Extract ``_load_data()`` helper into ``BaseEvaluation`` to centralize data loading logic (epoch requirement checking and ``paradigm.get_data()`` call) that was duplicated across all three evaluation classes (:gh:`963` by `Bruno Aristimunha`_)
+- Extract ``_get_nchan()`` helper into ``BaseEvaluation`` to replace repeated channel count extraction (``X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]``) in all evaluation classes (:gh:`963` by `Bruno Aristimunha`_)
+- Move ``_pipeline_requires_epochs()`` from ``evaluations.py`` to ``utils.py`` for shared access by ``BaseEvaluation._load_data()`` (:gh:`963` by `Bruno Aristimunha`_)
+- Move ``WithinSessionSplitter`` creation outside the per-session loop in ``WithinSessionEvaluation``, since splitter parameters do not change per session (:gh:`963` by `Bruno Aristimunha`_)
+- Add a compile smoke test (``moabb/tests/test_compilation.py``) that validates syntax for all Python files under ``moabb/`` using ``py_compile`` (:gh:`960` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
@@ -697,3 +735,5 @@ API changes
 .. _Romani Michele: https://github.com/BRomans
 .. _Lionel Kusch: https://github.com/lionelkusch
 .. _Victor Martinez-Cagigal: https://github.com/vicmarcag
+.. _Mateusz Naklicki: https://github.com/luluu9
+.. _Matthias Dold: https://github.com/matthiasdold

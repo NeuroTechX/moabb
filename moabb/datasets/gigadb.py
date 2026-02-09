@@ -8,6 +8,25 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 from scipy.io import loadmat
 
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    FrequencyBands,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PerformanceMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
+
 from . import download as dl
 from .base import BaseDataset
 
@@ -54,6 +73,161 @@ class Cho2017(BaseDataset):
            EEG datasets for motor imagery brain computer interface.
            GigaScience. https://doi.org/10.1093/gigascience/gix034
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=512.0,
+            n_channels=64,
+            channel_types={"eeg": 64},
+            montage="10-10",
+            hardware="Biosemi ActiveTwo",
+            sensor_type="active electrodes",
+            reference="Car",
+            software="BCI2000",
+            sensors=[
+                "Fp1",
+                "Fpz",
+                "Fp2",
+                "AF7",
+                "AF3",
+                "AFz",
+                "AF4",
+                "AF8",
+                "F7",
+                "F5",
+                "F3",
+                "F1",
+                "Fz",
+                "F2",
+                "F4",
+                "F6",
+                "F8",
+                "FT7",
+                "FC5",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "FC6",
+                "FT8",
+                "T7",
+                "C5",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "C6",
+                "T8",
+                "TP7",
+                "CP5",
+                "CP3",
+                "CP1",
+                "CPz",
+                "CP2",
+                "CP4",
+                "CP6",
+                "TP8",
+                "P7",
+                "P5",
+                "P3",
+                "P1",
+                "Pz",
+                "P2",
+                "P4",
+                "P6",
+                "P8",
+                "PO7",
+                "PO3",
+                "POz",
+                "PO4",
+                "PO8",
+                "O1",
+                "Oz",
+                "O2",
+                "Iz",
+            ],
+            line_freq=60.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_emg=True,
+                emg_channels=4,
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=52,
+            health_status="healthy",
+            gender={"female": 19, "male": 33},
+            bci_experience="collected via questionnaire (0 = no, number = how many times)",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=2,
+            class_labels=["right_hand", "left_hand"],
+            trial_duration=25.0,
+            study_design="motor imagery",
+            stimulus_type="cursor_feedback",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            mode="online",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.5524/100295",
+            funding=["grant funded funded", "grant\nfunded funded"],
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw with bad trial indices provided",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "high-pass filtering above 0.5 Hz",
+                "common average reference",
+                "band-pass filtering (8-30 Hz for analysis, 8-14 Hz for ERD/ERS)",
+                "Laplacian filtering (for ERD/ERS)",
+                "Hilbert transform",
+                "bad trial rejection (amplitude > ±100 μV)",
+                "EMG correlation detection",
+            ],
+            filter_details=FilterDetails(
+                highpass_hz=0.5,
+                bandpass="8-30 Hz (SMR analysis), 8-14 Hz (mu rhythm ERD/ERS), 50-250 Hz (EMG)",
+                filter_type="Butterworth",
+                filter_order=4,
+            ),
+            artifact_methods=["EMG removal", "ICA"],
+            re_reference="Car",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=["CSP", "ERD", "ERS"],
+            frequency_bands=FrequencyBands(
+                alpha=[8.0, 14.0],
+                mu=[8, 12],
+                analyzed_range=[8.0, 30.0],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["cross_subject"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=60.42,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["smart_home", "vr_ar", "communication"],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=10,
+            trials_context="per_class",
+        ),
+        data_processed=True,
+    )
 
     def __init__(self):
         super().__init__(

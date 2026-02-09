@@ -33,11 +33,18 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    BNCI2003_004
     BNCI2014_001
     BNCI2014_002
     BNCI2014_004
     BNCI2015_001
     BNCI2015_004
+    BNCI2019_001
+    BNCI2020_001
+    BNCI2022_001
+    BNCI2024_001
+    BNCI2025_001
+    BNCI2025_002
     Cho2017
     Dreyer2023
     Dreyer2023A
@@ -75,7 +82,15 @@ ERP/P300 Datasets
     BNCI2014_008
     BNCI2014_009
     BNCI2015_003
-    DemonsP300
+    BNCI2015_006
+    BNCI2015_007
+    BNCI2015_008
+    BNCI2015_009
+    BNCI2015_010
+    BNCI2015_012
+    BNCI2015_013
+    BNCI2016_002
+    BNCI2020_002
     EPFLP300
     Huebner2017
     Huebner2018
@@ -122,6 +137,8 @@ c-VEP Datasets
     CastillosBurstVEP100
     CastillosCVEP40
     CastillosCVEP100
+    MartinezCagigal2023Checker
+    MartinezCagigal2023Pary
 
 ----------------------
 Resting State Datasets
@@ -215,8 +232,7 @@ P300 Paradigms
     :toctree: generated/
     :template: class.rst
 
-     SinglePass
-     P300
+    P300
 
 ---------------
 SSVEP Paradigms
@@ -270,8 +286,6 @@ Base & Utils
     :template: class.rst
 
     motor_imagery.BaseMotorImagery
-    motor_imagery.SinglePass
-    motor_imagery.FilterBank
     p300.BaseP300
     ssvep.BaseSSVEP
     BaseFixedIntervalWindowsProcessing

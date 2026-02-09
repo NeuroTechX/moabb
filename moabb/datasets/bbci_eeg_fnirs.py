@@ -13,6 +13,24 @@ from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
 
 from moabb.datasets.download import get_dataset_path
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    FrequencyBands,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PerformanceMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 
 from .base import BaseDataset
 
@@ -191,7 +209,6 @@ class Shin2017A(BaseShin2017):
 
     Dataset from [1]_.
 
-
     .. caution::
        You should accept the licence term [2]_ to download this dataset, using:
        ``Shin2017A(accept=True)``
@@ -289,6 +306,142 @@ class Shin2017A(BaseShin2017):
     .. [2] GNU General Public License, Version 3
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1000.0,
+            n_channels=30,
+            channel_types={"eeg": 30},
+            montage="10-5",
+            hardware="BrainAmp",
+            sensor_type="active electrodes",
+            reference="Car",
+            software="EEGLAB",
+            sensors=[
+                "Fp1",
+                "Fp2",
+                "F7",
+                "F3",
+                "Fz",
+                "F4",
+                "F8",
+                "FC5",
+                "FC1",
+                "FC2",
+                "FC6",
+                "T7",
+                "C3",
+                "Cz",
+                "C4",
+                "T8",
+                "CP5",
+                "CP1",
+                "CP2",
+                "CP6",
+                "P7",
+                "P3",
+                "Pz",
+                "P4",
+                "P8",
+                "PO9",
+                "O1",
+                "Oz",
+                "O2",
+                "PO10",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                other_physiological=["ecg", "respiration", "gsr"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=29,
+            health_status="paralysis",
+            gender={"male": 14, "female": 15},
+            age_mean=28.5,
+            handedness={"right": 29, "left": 1},
+            bci_experience="naive to MI experiment",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=3,
+            class_labels=["right_hand", "rest", "subtraction"],
+            trial_duration=10.0,
+            study_design="Dataset A: left vs right hand motor imagery (kinesthetic imagery of opening and closing hands); Dataset B: mental arithmetic (serial subtraction) vs baseline/rest",
+            feedback_type="visual",
+            stimulus_type="avatar",
+            stimulus_modalities=["visual", "multisensory"],
+            primary_modality="multisensory",
+            synchronicity="asynchronous",
+            mode="online",
+        ),
+        documentation=DocumentationMetadata(
+            repository="GitHub",
+            data_url="https://github.com/bbci/bbci_public/",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw data available",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "common average reference",
+                "bandpass filtering (0.5-50 Hz)",
+                "ICA-based EOG rejection",
+                "downsampling to 200 Hz",
+            ],
+            filter_details=FilterDetails(
+                highpass_hz=0.5,
+                lowpass_hz=50,
+                bandpass=[0.5, 50],
+                filter_type="Butterworth",
+                filter_order=4,
+            ),
+            artifact_methods=["EOG correction", "ICA"],
+            re_reference="car",
+            downsampled_to_hz=200,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "SVM", "Shrinkage LDA"],
+            feature_extraction=["CSP", "Bandpower", "Wavelet", "Time-Frequency", "ICA"],
+            frequency_bands=FrequencyBands(
+                mu=[8, 12],
+                analyzed_range=[8.0, 25.0],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["cross_subject"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=75.0,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=[
+                "speller",
+                "wheelchair/navigation",
+                "gaming",
+                "vr_ar",
+                "communication",
+                "neurofeedback",
+            ],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+            n_repetitions=20,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials={"per_session": 20, "per_condition_total": 30},
+        ),
+        data_processed=True,
+    )
 
     def __init__(self, accept=False):
         super().__init__(
@@ -396,6 +549,142 @@ class Shin2017B(BaseShin2017):
     .. [2] GNU General Public License, Version 3
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1000.0,
+            n_channels=30,
+            channel_types={"eeg": 30},
+            montage="10-5",
+            hardware="BrainAmp",
+            sensor_type="active electrodes",
+            reference="Car",
+            software="EEGLAB",
+            sensors=[
+                "Fp1",
+                "Fp2",
+                "F7",
+                "F3",
+                "Fz",
+                "F4",
+                "F8",
+                "FC5",
+                "FC1",
+                "FC2",
+                "FC6",
+                "T7",
+                "C3",
+                "Cz",
+                "C4",
+                "T8",
+                "CP5",
+                "CP1",
+                "CP2",
+                "CP6",
+                "P7",
+                "P3",
+                "Pz",
+                "P4",
+                "P8",
+                "PO9",
+                "O1",
+                "Oz",
+                "O2",
+                "PO10",
+            ],
+            line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                other_physiological=["ecg", "respiration", "gsr"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=29,
+            health_status="paralysis",
+            gender={"male": 14, "female": 15},
+            age_mean=28.5,
+            handedness={"right": 29, "left": 1},
+            bci_experience="naive to MI experiment",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="imagery",
+            n_classes=2,
+            class_labels=["right_hand", "left_hand"],
+            trial_duration=10.0,
+            study_design="Left vs right hand motor imagery (kinesthetic, imagining opening and closing hands); Mental arithmetic vs resting state (repeated subtraction)",
+            feedback_type="visual",
+            stimulus_type="avatar",
+            stimulus_modalities=["visual", "multisensory"],
+            primary_modality="multisensory",
+            synchronicity="asynchronous",
+            mode="online",
+        ),
+        documentation=DocumentationMetadata(
+            repository="GitHub",
+            data_url="https://github.com/bbci/bbci_public/",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Visual"],
+            type=["Perception"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw data available",
+            preprocessing_applied=True,
+            preprocessing_steps=[
+                "re-referencing (common average reference)",
+                "bandpass filtering",
+                "ICA-based EOG rejection",
+                "downsampling",
+            ],
+            filter_details=FilterDetails(
+                highpass_hz=0.5,
+                lowpass_hz=50,
+                bandpass=[0.5, 50],
+                filter_type="Butterworth",
+                filter_order=4,
+            ),
+            artifact_methods=["EOG correction", "ICA"],
+            re_reference="car",
+            downsampled_to_hz=200,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "SVM", "Shrinkage LDA"],
+            feature_extraction=["CSP", "Bandpower", "Wavelet", "Time-Frequency", "ICA"],
+            frequency_bands=FrequencyBands(
+                mu=[8, 12],
+                analyzed_range=[8.0, 25.0],
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["cross_subject"],
+        ),
+        performance=PerformanceMetadata(
+            accuracy_percent=75.0,
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=[
+                "speller",
+                "wheelchair/navigation",
+                "gaming",
+                "vr_ar",
+                "communication",
+                "neurofeedback",
+            ],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+            n_repetitions=20,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=60,
+        ),
+        data_processed=True,
+    )
 
     def __init__(self, accept=False):
         super().__init__(

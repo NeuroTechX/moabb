@@ -14,7 +14,6 @@ Huebner2018, 12, 31, 364 NT / 112 T, 0.9, 1000, 3,https://paperswithcode.com/dat
 Sosulski2019, 13, 31, 7500 NT / 1500 T, 1.2, 1000, 1,https://paperswithcode.com/dataset/sosulski2019-moabb
 EPFLP300, 8, 32, 2753 NT / 551 T, 1, 2048, 4,https://paperswithcode.com/dataset/epflp300-moabb
 Lee2019_ERP, 54, 62, 6900 NT / 1380 T, 1, 1000, 2,https://paperswithcode.com/dataset/lee2019-erp-moabb-1
-DemonsP300, 60, 8, 935 NT / 50 T, 1, 500, 1,
 ErpCore2021_N170, 40, 30, 240 NT / 80 T, 1, 1024, 1,
 ErpCore2021_MMN, 40, 30, 800 NT / 200 T, 1, 1024, 1,
 ErpCore2021_N2pc, 40, 30, 160 NT / 160 T, 1, 1024, 1,
@@ -25,3 +24,12 @@ ErpCore2021_LRP, 40, 30, ~400 All, 1, 1024, 1,
 Kojima2024A, 11, 64, ~130 NT / ~65 T, 1, 1000, 1,
 Kojima2024B, 15, 64, 2160 NT / 720 T, 1, 1000, 1,
 RomaniBF2025ERP,22,8,540 NT / 60 T,1,250,up to 3,
+BNCI2015_009, 21, 62, 10071 NT / 2014 T, 0.8, 1000, 2,
+BNCI2015_010, 12, 63, 18850 NT / 650 T, 0.8, 1000, 1,
+BNCI2015_012, 10, 63, 6075 NT / 759 T, 1.0, 1000, 1,
+BNCI2015_013, 6, 64, 809 NT / 235 T, 0.6, 512, 2,
+BNCI2016_002, 15, 69, varies brake / EMG, 1.5, 200, 1,
+BNCI2020_002, 18, 31, varies NT / T, 16, 250, 1,
+BNCI2015_006, 11, 64, ~875 NT / ~856 T, 1.0, 200, 1,
+BNCI2015_007, 16, 63, varies NT / T, 0.7, 100, 1,
+BNCI2015_008, 13, 63, varies NT / T, 1.0, 250, 2,
