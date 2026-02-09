@@ -15,6 +15,7 @@ from moabb.datasets.base import (
     LocalBIDSDataset,
 )
 from moabb.datasets.fake import FakeDataset
+from moabb.datasets.preprocessing import _generate_sliding_window_events
 from moabb.paradigms import (
     CVEP,
     P300,
@@ -136,7 +137,47 @@ class TestMotorImagery(unittest.TestCase):
         stride = int(round((2.0 - 0.0) * raw.info["sfreq"] * (1.0 - 0.5)))
         diffs = np.diff(events_overlap[:, 0])
         assert len(diffs) > 0
-        np.testing.assert_array_equal(diffs, np.full_like(diffs, stride))
+        assert np.all(diffs >= stride)
+        assert np.all(diffs % stride == 0)
+
+    def test_BaseImagery_overlap_drops_at_generation(self):
+        events = np.array(
+            [
+                [0, 0, 1],
+                [10, 0, 2],
+                [20, 0, 1],
+            ],
+            dtype="int32",
+        )
+        sliding = _generate_sliding_window_events(
+            events, window_length=8.0, overlap=50.0, sfreq=1.0
+        )
+
+        # Crossing windows (onsets 4 and 8) are dropped during generation.
+        np.testing.assert_array_equal(sliding[:, 0], np.array([0, 12]))
+        np.testing.assert_array_equal(sliding[:, 2], np.array([1, 2]))
+        assert np.all(sliding[:, 1] == 0)
+
+    def test_BaseImagery_overlap_drops_boundary_windows(self):
+        dataset = FakeDataset(
+            paradigm="imagery",
+            n_sessions=1,
+            n_runs=1,
+            n_events=12,
+            duration=60,
+            seed=42,
+        )
+        raw = dataset._get_single_subject_data(1)["0"]["0"]
+        paradigm = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
+
+        events_overlap = paradigm._get_events_pipeline(dataset).transform(raw)
+        assert np.all(events_overlap[:, 1] == 0)
+        expected_kept = len(events_overlap)
+
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+        assert len(X) == expected_kept
+        assert len(labels) == expected_kept
+        assert len(metadata) == expected_kept
 
     def test_BaseImagery_overlap_annotations_only(self):
         dataset = FakeDataset(

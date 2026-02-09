@@ -103,6 +103,7 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq):
     -------
     events_new : ndarray of shape (n_new_events, 3)
         New events array with sliding window onsets and majority-vote labels.
+        Windows that cross trial boundaries are discarded.
     """
     if len(events) == 0:
         return np.zeros((0, 3), dtype="int32")
@@ -123,10 +124,10 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq):
     transitions = events[:, 0].astype(np.int64, copy=False)
     labels = events[:, 2].astype(np.int32, copy=False)
 
-    events_new = np.zeros((len(onsets), 3), dtype="int32")
-    events_new[:, 0] = onsets
+    kept_onsets = []
+    kept_labels = []
 
-    for i, start in enumerate(onsets):
+    for start in onsets:
         end = int(start + window_samples)
 
         # Segment index active at window start.
@@ -135,8 +136,10 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq):
         order = 0
         durations_by_label = {}
         tie_break_order = {}
+        boundary_crossed = False
 
         while seg_idx + 1 < len(transitions) and transitions[seg_idx + 1] < end:
+            boundary_crossed = True
             current_label = int(labels[seg_idx])
             next_transition = int(transitions[seg_idx + 1])
             durations_by_label[current_label] = durations_by_label.get(
@@ -153,11 +156,23 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq):
         )
         tie_break_order[last_label] = order
 
+        # Drop windows that invade the next trial.
+        if boundary_crossed:
+            continue
+
         # Choose predominant label in the window. Ties favor the label seen later.
-        events_new[i, 2] = max(
+        label = max(
             durations_by_label,
             key=lambda lbl: (durations_by_label[lbl], tie_break_order[lbl]),
         )
+
+        kept_onsets.append(start)
+        kept_labels.append(label)
+
+    events_new = np.zeros((len(kept_onsets), 3), dtype="int32")
+    if len(kept_onsets) > 0:
+        events_new[:, 0] = np.asarray(kept_onsets, dtype="int32")
+        events_new[:, 2] = np.asarray(kept_labels, dtype="int32")
 
     return events_new
 
@@ -352,7 +367,8 @@ class RawToSlidingWindowEvents(RawToEvents):
 
     Extracts original events via RawToEvents, then generates new events at
     regular stride intervals. Each new event's label is determined by which
-    original trial's region dominates the window (majority vote).
+    original trial's region dominates the window (majority vote). Windows
+    crossing trial boundaries are dropped.
 
     Parameters
     ----------
