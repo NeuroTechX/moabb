@@ -17,11 +17,9 @@ fmin = 8
 fmax = 30
 tmax = 3
 
-# Load Dataset and switch to Pseudoonline mode
+# Load dataset and configure overlap in the paradigm pipeline
 dataset = BNCI2014_001()
-dataset.pseudoonline = True
 
-# events = ["right_hand", "left_hand"]
 events = list(dataset.event_id.keys())
 
 paradigm = MotorImagery(

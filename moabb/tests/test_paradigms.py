@@ -110,6 +110,55 @@ class TestMotorImagery(unittest.TestCase):
         with pytest.raises(ValueError):
             SimpleMotorImagery(tmin=1, tmax=0)
 
+    def test_BaseImagery_overlap_stride(self):
+        dataset = FakeDataset(
+            paradigm="imagery",
+            n_sessions=1,
+            n_runs=1,
+            n_events=12,
+            duration=60,
+            seed=42,
+        )
+        raw = dataset._get_single_subject_data(1)["0"]["0"]
+
+        baseline = SimpleMotorImagery(tmin=0.0, tmax=2.0)
+        overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
+
+        events_baseline = baseline._get_events_pipeline(dataset).transform(raw)
+        events_overlap = overlap._get_events_pipeline(dataset).transform(raw)
+
+        assert len(events_overlap) > len(events_baseline)
+        assert events_overlap[0, 0] == events_baseline[0, 0]
+
+        stride = int(round((2.0 - 0.0) * raw.info["sfreq"] * (1.0 - 0.5)))
+        diffs = np.diff(events_overlap[:, 0])
+        assert len(diffs) > 0
+        np.testing.assert_array_equal(diffs, np.full_like(diffs, stride))
+
+    def test_BaseImagery_overlap_annotations_only(self):
+        dataset = FakeDataset(
+            paradigm="imagery",
+            n_sessions=1,
+            n_runs=1,
+            n_events=12,
+            duration=60,
+            seed=42,
+            stim=False,
+            annotations=True,
+        )
+        paradigm = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        assert len(X) == len(labels)
+        assert len(metadata) == len(labels)
+        assert len(labels) > 0
+
+    def test_BaseImagery_invalid_overlap(self):
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            SimpleMotorImagery(overlap=-1)
+        with pytest.raises(ValueError, match="overlap must be in \\[0, 100\\)"):
+            SimpleMotorImagery(overlap=100)
+
     def test_BaseImagery_filters(self):
         # can work with filter bank
         paradigm = SimpleMotorImagery(filters=[[7, 12], [12, 24]])

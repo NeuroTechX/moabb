@@ -3,11 +3,8 @@
 import abc
 import logging
 
-from sklearn.metrics import make_scorer
-
 from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
-from moabb.evaluations.utils import _normalized_mcc
 from moabb.paradigms.base import BaseParadigm
 
 
@@ -73,10 +70,8 @@ class BaseMotorImagery(BaseParadigm):
         overlap=None,
         scorer=None,
     ):
-
-        if overlap is not None:
-            print("Overlap available only for pseudo online evaluation")
-            tmin = 0.0
+        if overlap is not None and not (0 <= overlap < 100):
+            raise ValueError("overlap must be in [0, 100)")
 
         super().__init__(
             filters=filters,
