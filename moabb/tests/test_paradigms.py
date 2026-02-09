@@ -140,7 +140,7 @@ class TestMotorImagery(unittest.TestCase):
         assert np.all(diffs >= stride)
         assert np.all(diffs % stride == 0)
 
-    def test_BaseImagery_overlap_drops_at_generation(self):
+    def test_BaseImagery_overlap_majority_vote(self):
         events = np.array(
             [
                 [0, 0, 1],
@@ -149,16 +149,17 @@ class TestMotorImagery(unittest.TestCase):
             ],
             dtype="int32",
         )
+        interval = (0.0, 10.0)
         sliding = _generate_sliding_window_events(
-            events, window_length=8.0, overlap=50.0, sfreq=1.0
+            events, window_length=8.0, overlap=50.0, sfreq=1.0, interval=interval
         )
-
-        # Crossing windows (onsets 4 and 8) are dropped during generation.
-        np.testing.assert_array_equal(sliding[:, 0], np.array([0, 12]))
-        np.testing.assert_array_equal(sliding[:, 2], np.array([1, 2]))
+        # Rest events are inserted between trials. Cross-boundary windows
+        # get majority-vote labels instead of being dropped.
+        np.testing.assert_array_equal(sliding[:, 0], np.array([0, 4, 8, 12, 16, 20, 24]))
+        np.testing.assert_array_equal(sliding[:, 2], np.array([1, 1, 2, 2, 2, 1, 1]))
         assert np.all(sliding[:, 1] == 0)
 
-    def test_BaseImagery_overlap_drops_boundary_windows(self):
+    def test_BaseImagery_overlap_produces_more_epochs(self):
         dataset = FakeDataset(
             paradigm="imagery",
             n_sessions=1,
@@ -167,17 +168,15 @@ class TestMotorImagery(unittest.TestCase):
             duration=60,
             seed=42,
         )
-        raw = dataset._get_single_subject_data(1)["0"]["0"]
-        paradigm = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
+        paradigm_no_overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0)
+        paradigm_overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
 
-        events_overlap = paradigm._get_events_pipeline(dataset).transform(raw)
-        assert np.all(events_overlap[:, 1] == 0)
-        expected_kept = len(events_overlap)
+        X_no, _, _ = paradigm_no_overlap.get_data(dataset, subjects=[1])
+        X_ov, labels, metadata = paradigm_overlap.get_data(dataset, subjects=[1])
 
-        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
-        assert len(X) == expected_kept
-        assert len(labels) == expected_kept
-        assert len(metadata) == expected_kept
+        assert len(X_ov) > len(X_no)
+        assert len(labels) == len(X_ov)
+        assert len(metadata) == len(X_ov)
 
     def test_BaseImagery_overlap_annotations_only(self):
         dataset = FakeDataset(

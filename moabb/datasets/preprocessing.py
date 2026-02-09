@@ -81,29 +81,67 @@ def _unsafe_pick_events(events, include):
         raise e
 
 
-def _generate_sliding_window_events(events, window_length, overlap, sfreq):
-    """Generate sliding window events from original trial events.
+_REST_LABEL = 0
 
-    Starting from the first event onset, generates new events at regular
-    stride intervals. Each new event's label is determined by which
-    original trial's region dominates the window (majority vote).
+
+def _insert_rest_events(events, task_duration_samples):
+    """Insert rest events in gaps between consecutive task trials.
+
+    Adds rest events between trials and after the last trial so that
+    the sliding window can cover the full recording timeline.
 
     Parameters
     ----------
     events : ndarray of shape (n_events, 3)
-        Original MNE-style events array.
+        Task events sorted by onset.
+    task_duration_samples : int
+        Duration of each task trial in samples.
+
+    Returns
+    -------
+    all_events : ndarray of shape (n_all_events, 3)
+        Merged task + rest events, sorted by onset.
+    """
+    rest = []
+    for i in range(len(events)):
+        trial_end = events[i, 0] + task_duration_samples
+        next_onset = events[i + 1, 0] if i + 1 < len(events) else trial_end + 1
+        if next_onset > trial_end:
+            rest.append([trial_end, 0, _REST_LABEL])
+    if not rest:
+        return events
+    rest = np.array(rest, dtype=events.dtype)
+    merged = np.vstack([events, rest])
+    return merged[merged[:, 0].argsort()]
+
+
+def _generate_sliding_window_events(events, window_length, overlap, sfreq, interval):
+    """Generate sliding window events from original trial events.
+
+    Starting from the first event onset, generates new events at regular
+    stride intervals. Rest periods are inferred from gaps between trials
+    using the dataset interval. Each window's label is determined by
+    majority vote across the segments it covers. Windows labeled as rest
+    are included in the output and expected to be filtered downstream.
+
+    Parameters
+    ----------
+    events : ndarray of shape (n_events, 3)
+        Original MNE-style events array (task events only).
     window_length : float
         Window length in seconds.
     overlap : float
         Overlap percentage (0-100).
     sfreq : float
         Sampling frequency in Hz.
+    interval : tuple of (float, float)
+        Dataset interval (tmin, tmax) in seconds, used to compute task
+        duration and infer rest periods.
 
     Returns
     -------
     events_new : ndarray of shape (n_new_events, 3)
         New events array with sliding window onsets and majority-vote labels.
-        Windows that cross trial boundaries are discarded.
     """
     if len(events) == 0:
         return np.zeros((0, 3), dtype="int32")
@@ -112,11 +150,18 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq):
     if window_samples <= 0:
         raise ValueError("Window length must be strictly positive")
 
+    task_duration_samples = int(round((interval[1] - interval[0]) * sfreq))
+    last_task_end = int(events[-1, 0]) + task_duration_samples
+    events = _insert_rest_events(events, task_duration_samples)
+
     stride_samples = int(round(window_samples * (1.0 - overlap / 100.0)))
     stride_samples = max(1, stride_samples)
 
     first_onset = int(events[0, 0])
-    max_start = int(events[-1, 0]) - window_samples
+    # Allow windows that start within the last trial's task region,
+    # matching the original's loop semantics where the check applies
+    # to the previous onset before generating the next one.
+    max_start = last_task_end - stride_samples
     if max_start < first_onset:
         return np.zeros((0, 3), dtype="int32")
 
@@ -130,16 +175,13 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq):
     for start in onsets:
         end = int(start + window_samples)
 
-        # Segment index active at window start.
         seg_idx = max(np.searchsorted(transitions, start, side="right") - 1, 0)
         seg_start = int(start)
         order = 0
         durations_by_label = {}
         tie_break_order = {}
-        boundary_crossed = False
 
         while seg_idx + 1 < len(transitions) and transitions[seg_idx + 1] < end:
-            boundary_crossed = True
             current_label = int(labels[seg_idx])
             next_transition = int(transitions[seg_idx + 1])
             durations_by_label[current_label] = durations_by_label.get(
@@ -156,14 +198,10 @@ def _generate_sliding_window_events(events, window_length, overlap, sfreq):
         )
         tie_break_order[last_label] = order
 
-        # Drop windows that invade the next trial.
-        if boundary_crossed:
-            continue
-
-        # Choose predominant label in the window. Ties favor the label seen later.
+        # On ties, favor task labels (non-rest) over rest.
         label = max(
             durations_by_label,
-            key=lambda lbl: (durations_by_label[lbl], tie_break_order[lbl]),
+            key=lambda lbl: (durations_by_label[lbl], lbl != _REST_LABEL),
         )
 
         kept_onsets.append(start)
@@ -385,8 +423,9 @@ class RawToEvents(FixedTransformer):
         if self.overlap is not None and len(events) >= 2:
             sfreq = raw.info["sfreq"]
             events = _generate_sliding_window_events(
-                events, self.window_length, self.overlap, sfreq
+                events, self.window_length, self.overlap, sfreq, self.interval
             )
+            events = _unsafe_pick_events(events, list(self.event_id.values()))
         return events
 
 
