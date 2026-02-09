@@ -105,12 +105,9 @@ class WithinSessionSplitter(BaseCrossValidator):
         # Shuffle subjects if required
         # Convert to numpy array to avoid ArrowStringArray shuffle warning
         subjects = np.array(metadata["subject"].unique())
+        rng = check_random_state(self.random_state) if self.shuffle else None
         if self.shuffle:
-            # Use a separate RNG for shuffling to avoid advancing the
-            # per-session RNG state, which would make folds depend on the
-            # number of subjects/sessions.
-            shuffle_rng = check_random_state(self.random_state)
-            shuffle_rng.shuffle(subjects)
+            rng.shuffle(subjects)
 
         for subject in subjects:
             subject_mask = metadata["subject"] == subject
@@ -123,20 +120,17 @@ class WithinSessionSplitter(BaseCrossValidator):
             sessions = np.array(subject_metadata["session"].unique())
 
             if self.shuffle:
-                shuffle_rng.shuffle(sessions)
+                rng.shuffle(sessions)
 
             for session in sessions:
                 session_mask = subject_metadata["session"] == session
                 indices = subject_indices[session_mask]
                 y_session = y_subject[session_mask]
 
-                # Create a fresh, independent RNG per session so that fold
-                # splits are deterministic and independent of how many
-                # subjects/sessions exist (matching legacy per-subject behavior).
                 cv_kwargs = dict(self._cv_kwargs)
                 params = inspect.signature(self.cv_class).parameters
                 if "random_state" in params:
-                    cv_kwargs["random_state"] = check_random_state(self.random_state)
+                    cv_kwargs["random_state"] = rng
 
                 # Instantiate a new internal splitter for each session
                 splitter = self.cv_class(**cv_kwargs)
@@ -146,7 +140,6 @@ class WithinSessionSplitter(BaseCrossValidator):
 
                 # Split using the current instance of StratifiedKFold by default
                 for train_ix, test_ix in splitter.split(indices, y_session):
-
                     yield indices[train_ix], indices[test_ix]
 
 
