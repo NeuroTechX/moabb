@@ -81,51 +81,83 @@ def _unsafe_pick_events(events, include):
         raise e
 
 
-def _events_pseudoonline(events, tmin, tmax, sfreq, overlap):
-    """
-    This function create new events every duration length.
-    :param events: Real event created during registrations of the dataset
-    :param tmin: Minimum time where create new events(tmin MUST be 0). Is the starting time of epoch, and we consider as starting time
-    the initial value of the interval in normal MOABB [2, 6]
-    :param tmax: Maximum time of the windows. Is the final time of epoch.
-    :param sfreq: Sfreq of the recorded signal
-    :param overlap: Percentage of overlapping that we want in the sliding windows
-    :return:
-        return the new events, ove every starting point of the sliding windows and with univocal label
-    """
-    # Compute duration of the windows in seconds
-    duration_s = tmax - tmin
-    # Convert the duration in time point.
-    duration = duration_s * sfreq
-    # The starting point of the new windows in time point
-    ove = (((tmax - tmin) / 100) * (100 - overlap)) * sfreq
+def _generate_sliding_window_events(events, window_length, overlap, sfreq):
+    """Generate sliding window events from original trial events.
 
-    # Total number of new events that need to be created
-    total = int((events[-1, 0] - events[0, 0]) / (100 - overlap))
-    events_new = np.zeros((total, 3), dtype=int)
-    # Fill the first event with the same old events
-    events_new[0, :] = events[0, :]
+    Starting from the first event onset, generates new events at regular
+    stride intervals. Each new event's label is determined by which
+    original trial's region dominates the window (majority vote).
 
-    j = 0
-    i = 1
-    # Go on while we are at a time sample less than the last events in the data acquisition
-    while events_new[i - 1, 0] + duration <= events[-1, -0]:
-        # Assign the time stamp to the new events, so we add ove
-        events_new[i, 0] = events_new[i - 1, 0] + ove
-        # Now we have to check. If the new added events plus the duration is less then the time stamp of the new event
-        # we assign an univocal label. If is not we check the percentage of time stamp associate with a label is predominant in a windows.
-        # If we have 50/50 we assign the label as the next event since the subject want to switch in that direction.
-        if events_new[i, 0] + duration <= events[j + 1, 0]:
-            events_new[i, 2] = events[j, 2]
-        else:
-            First = abs(events[j + 1, 0] - events_new[i, 0])
-            Second = abs((events_new[i, 0] + duration) - events[j + 1, 0])
-            if First > Second:
-                events_new[i, 2] = events[j, 2]
-            else:
-                events_new[i, 2] = events[j + 1, 2]
-            j = j + 1
-        i = i + 1
+    Parameters
+    ----------
+    events : ndarray of shape (n_events, 3)
+        Original MNE-style events array.
+    window_length : float
+        Window length in seconds.
+    overlap : float
+        Overlap percentage (0-100).
+    sfreq : float
+        Sampling frequency in Hz.
+
+    Returns
+    -------
+    events_new : ndarray of shape (n_new_events, 3)
+        New events array with sliding window onsets and majority-vote labels.
+    """
+    if len(events) == 0:
+        return np.zeros((0, 3), dtype="int32")
+
+    window_samples = int(round(window_length * sfreq))
+    if window_samples <= 0:
+        raise ValueError("Window length must be strictly positive")
+
+    stride_samples = int(round(window_samples * (1.0 - overlap / 100.0)))
+    stride_samples = max(1, stride_samples)
+
+    first_onset = int(events[0, 0])
+    max_start = int(events[-1, 0]) - window_samples
+    if max_start < first_onset:
+        return np.zeros((0, 3), dtype="int32")
+
+    onsets = np.arange(first_onset, max_start + 1, stride_samples, dtype="int32")
+    transitions = events[:, 0].astype(np.int64, copy=False)
+    labels = events[:, 2].astype(np.int32, copy=False)
+
+    events_new = np.zeros((len(onsets), 3), dtype="int32")
+    events_new[:, 0] = onsets
+
+    for i, start in enumerate(onsets):
+        end = int(start + window_samples)
+
+        # Segment index active at window start.
+        seg_idx = max(np.searchsorted(transitions, start, side="right") - 1, 0)
+        seg_start = int(start)
+        order = 0
+        durations_by_label = {}
+        tie_break_order = {}
+
+        while seg_idx + 1 < len(transitions) and transitions[seg_idx + 1] < end:
+            current_label = int(labels[seg_idx])
+            next_transition = int(transitions[seg_idx + 1])
+            durations_by_label[current_label] = durations_by_label.get(
+                current_label, 0
+            ) + (next_transition - seg_start)
+            tie_break_order[current_label] = order
+            order += 1
+            seg_start = next_transition
+            seg_idx += 1
+
+        last_label = int(labels[seg_idx])
+        durations_by_label[last_label] = durations_by_label.get(last_label, 0) + (
+            end - seg_start
+        )
+        tie_break_order[last_label] = order
+
+        # Choose predominant label in the window. Ties favor the label seen later.
+        events_new[i, 2] = max(
+            durations_by_label,
+            key=lambda lbl: (durations_by_label[lbl], tie_break_order[lbl]),
+        )
 
     return events_new
 
@@ -245,7 +277,6 @@ class SetRawAnnotations(FixedTransformer):
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
         events[:, 0] += offset
-
         if len(events) != 0:
             annotations = mne.annotations_from_events(
                 events,
@@ -256,60 +287,6 @@ class SetRawAnnotations(FixedTransformer):
             )
             annotations.set_durations(duration)
             raw.set_annotations(annotations)
-            # raw.plot()
-            # print("OK")
-        else:
-            log.warning("No events found, skipping setting annotations.")
-        return raw
-
-
-class SetRawAnnotations_PseudoOnline(FixedTransformer):
-    """
-    Always sets the annotations, even if the events list is empty
-    """
-
-    def __init__(self, event_id, interval: Tuple[float, float], tmin, tmax, overlap):
-        assert isinstance(event_id, dict)  # not None
-        self.event_id = event_id
-        if len(set(event_id.values())) != len(event_id):
-            raise ValueError("Duplicate event code")
-        self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
-        self.interval = interval
-        self.overlap = overlap
-        self.tmin = tmin
-        self.tmax = tmax
-
-    def transform(self, raw, y=None):
-        if raw.annotations:
-            return raw
-        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
-        if len(stim_channels) == 0:
-            log.warning(
-                "No stim channel nor annotations found, skipping setting annotations."
-            )
-            return raw
-        events_ = mne.find_events(raw, shortest_event=0, verbose=False)
-        events = _events_pseudoonline(
-            events_,
-            tmin=self.tmin,
-            tmax=self.tmax,
-            sfreq=raw.info["sfreq"],
-            overlap=self.overlap,
-        )
-        duration = self.tmax - self.tmin
-
-        if len(events) != 0:
-            annotations = mne.annotations_from_events(
-                events,
-                raw.info["sfreq"],
-                self.event_desc,
-                first_samp=raw.first_samp,
-                verbose=False,
-            )
-            annotations.set_durations(duration)
-            raw.set_annotations(annotations)
-            # raw.plot()
-            # print("OK")
         else:
             log.warning("No events found, skipping setting annotations.")
         return raw
@@ -349,52 +326,39 @@ class RawToEvents(FixedTransformer):
         return _unsafe_pick_events(events, list(self.event_id.values()))
 
 
-class RawToEvents_PseudoOnline(FixedTransformer):
-    """
-    Always returns an array for shape (n_events, 3), even if no events found
+class RawToSlidingWindowEvents(RawToEvents):
+    """Generate overlapping sliding window events from original trial events.
+
+    Extracts original events via RawToEvents, then generates new events at
+    regular stride intervals. Each new event's label is determined by which
+    original trial's region dominates the window (majority vote).
+
+    Parameters
+    ----------
+    event_id : dict
+        Mapping of event names to codes.
+    interval : tuple of (float, float)
+        Dataset interval.
+    window_length : float
+        Window length in seconds.
+    overlap : float
+        Overlap percentage (0-100).
     """
 
-    def __init__(
-        self, event_id: dict[str, int], interval: Tuple[float, float], tmin, tmax, overlap
-    ):
-        assert isinstance(event_id, dict)  # not None
-        self.event_id = event_id
-        self.interval = interval
-        self.tmin = tmin
-        self.tmax = tmax
+    def __init__(self, event_id, interval, window_length, overlap):
+        super().__init__(event_id=event_id, interval=interval)
+        self.window_length = window_length
         self.overlap = overlap
-
-    def _find_events(self, raw):
-        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
-        if len(stim_channels) > 0:
-            # returns empty array if none found
-            if self.overlap is None:
-                events = mne.find_events(raw, shortest_event=0, verbose=False)
-            else:
-                events_ = mne.find_events(raw, shortest_event=0, verbose=False)
-                events = _events_pseudoonline(
-                    events_,
-                    tmin=self.tmin,
-                    tmax=self.tmax,
-                    sfreq=raw.info["sfreq"],
-                    overlap=self.overlap,
-                )
-        else:
-            try:
-                events, _ = mne.events_from_annotations(
-                    raw, event_id=self.event_id, verbose=False
-                )
-                offset = int(self.interval[0] * raw.info["sfreq"])
-                events[:, 0] -= offset  # return the original events onset
-            except ValueError as e:
-                if str(e) == "Could not find any of the events you specified.":
-                    return np.zeros((0, 3), dtype="int32")
-                raise e
-        return events
 
     def transform(self, raw, y=None):
         events = self._find_events(raw)
-        return _unsafe_pick_events(events, list(self.event_id.values()))
+        events = _unsafe_pick_events(events, list(self.event_id.values()))
+        if len(events) < 2:
+            return events
+        sfreq = raw.info["sfreq"]
+        return _generate_sliding_window_events(
+            events, self.window_length, self.overlap, sfreq
+        )
 
 
 class RawToEventsP300(RawToEvents):
