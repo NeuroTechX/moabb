@@ -121,8 +121,7 @@ class BaseMotorImagery(BaseParadigm):
     def scoring(self):
         if self.scorer is not None:
             return self.scorer
-        else:
-            return "accuracy"
+        return "accuracy"
 
 
 class SinglePass(BaseMotorImagery):
@@ -433,8 +432,7 @@ class MotorImagery(SinglePass):
             return self.scorer
         if self.n_classes == 2:
             return "roc_auc"
-        else:
-            return "accuracy"
+        return "accuracy"
 
 
 class FakeImageryParadigm(LeftRightImagery):
