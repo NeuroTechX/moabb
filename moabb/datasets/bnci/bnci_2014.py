@@ -719,7 +719,7 @@ class BNCI2014_004(MNEBNCI):
         ),
         participants=ParticipantMetadata(
             n_subjects=9,
-            health_status="paralysis",
+            health_status="healthy",
             gender={"male": 6, "female": 4},
             age_mean=24.6,
             handedness="right",
