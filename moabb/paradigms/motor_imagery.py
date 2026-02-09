@@ -15,49 +15,6 @@ class BaseMotorImagery(BaseParadigm):
     """Base Motor imagery paradigm.
 
     Please use one of the child classes
-
-    Parameters
-    ----------
-
-    filters: list of list (defaults [[7, 35]])
-        bank of bandpass filter to apply.
-
-    events: List of str | None (default None)
-        event to use for epoching. If None, default to all events defined in
-        the dataset.
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as "baseline" when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        list of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-
-    overlap: float | None (default None)
-        Overlap percentage (0-100) for the sliding window approach used in
-        pseudo-online evaluation. If None, no overlap is applied.
-
-    scorer: sklearn-compatible string or a compatible sklearn scorer | None (default None)
-        If None, and n_classes==2 use the roc_auc, else use accuracy.
     """
 
     def __init__(

@@ -221,6 +221,9 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         the dataset.
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+    overlap: float | None (default None)
+        Overlap percentage (0-100) for the sliding window approach used in
+        pseudo-online evaluation. If None, no overlap is applied.
     """
 
     def __init__(
