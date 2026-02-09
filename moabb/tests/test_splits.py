@@ -40,13 +40,13 @@ def data():
 # Split done for the Within Session evaluation
 def eval_split_within_session(shuffle, random_state, data):
     _, y, metadata = data
-    rng = check_random_state(random_state) if shuffle else None
 
     all_index = metadata.index.values
     # Convert to numpy array to avoid ArrowStringArray shuffle warning
     subjects = np.array(metadata["subject"].unique())
     if shuffle:
-        rng.shuffle(subjects)
+        shuffle_rng = check_random_state(random_state)
+        shuffle_rng.shuffle(subjects)
 
     for i, subject in enumerate(subjects):
         subject_mask = metadata["subject"] == subject
@@ -58,7 +58,7 @@ def eval_split_within_session(shuffle, random_state, data):
         y_subject = y[subject_mask]
 
         if shuffle:
-            rng.shuffle(sessions)
+            shuffle_rng.shuffle(sessions)
 
         for session in sessions:
             session_mask = subject_metadata["session"] == session
@@ -66,7 +66,8 @@ def eval_split_within_session(shuffle, random_state, data):
             metadata_ = subject_metadata[session_mask]
             y_ = y_subject[session_mask]
 
-            cv = StratifiedKFold(n_splits=5, shuffle=shuffle, random_state=rng)
+            cv_rng = check_random_state(random_state) if shuffle else None
+            cv = StratifiedKFold(n_splits=5, shuffle=shuffle, random_state=cv_rng)
 
             for idx_train, idx_test in cv.split(metadata_, y_):
                 yield indices[idx_train], indices[idx_test]
