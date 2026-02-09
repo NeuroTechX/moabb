@@ -19,7 +19,7 @@ Version 1.5  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Implementation of Pseudo Online framework (:gh:`641` by `Igor Carrara`_)
+- Implementation of Pseudo Online framework (:gh:`641` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
 - Enhanced BNCI datasets with comprehensive participant demographics documentation (by `Bruno Aristimunha`_)
