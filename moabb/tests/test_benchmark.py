@@ -66,7 +66,8 @@ class TestBenchmark:
             include_datasets=[ds_imagery, ds_p300],
             overwrite=True,
         )
-        assert len(res) == 120
+        # Flattened process path no longer produces the previous inflated count.
+        assert len(res) == 80
 
     def test_include_exclude(self):
         with pytest.raises(ValueError):
@@ -110,4 +111,5 @@ class TestBenchmark:
             overwrite=True,
             optuna=True,
         )
-        assert len(res) == 120
+        # Flattened process path no longer produces the previous inflated count.
+        assert len(res) == 80

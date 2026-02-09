@@ -106,7 +106,11 @@ class WithinSessionSplitter(BaseCrossValidator):
         # Convert to numpy array to avoid ArrowStringArray shuffle warning
         subjects = np.array(metadata["subject"].unique())
         if self.shuffle:
-            self._rng.shuffle(subjects)
+            # Use a separate RNG for shuffling to avoid advancing the
+            # per-session RNG state, which would make folds depend on the
+            # number of subjects/sessions.
+            shuffle_rng = check_random_state(self.random_state)
+            shuffle_rng.shuffle(subjects)
 
         for subject in subjects:
             subject_mask = metadata["subject"] == subject
@@ -119,15 +123,23 @@ class WithinSessionSplitter(BaseCrossValidator):
             sessions = np.array(subject_metadata["session"].unique())
 
             if self.shuffle:
-                self._rng.shuffle(sessions)
+                shuffle_rng.shuffle(sessions)
 
             for session in sessions:
                 session_mask = subject_metadata["session"] == session
                 indices = subject_indices[session_mask]
                 y_session = y_subject[session_mask]
 
+                # Create a fresh, independent RNG per session so that fold
+                # splits are deterministic and independent of how many
+                # subjects/sessions exist (matching legacy per-subject behavior).
+                cv_kwargs = dict(self._cv_kwargs)
+                params = inspect.signature(self.cv_class).parameters
+                if "random_state" in params:
+                    cv_kwargs["random_state"] = check_random_state(self.random_state)
+
                 # Instantiate a new internal splitter for each session
-                splitter = self.cv_class(**self._cv_kwargs)
+                splitter = self.cv_class(**cv_kwargs)
 
                 # Store reference to the current inner splitter for metadata access
                 self._current_splitter = splitter

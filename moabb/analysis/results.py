@@ -284,7 +284,7 @@ class Results:
             that still need computation. Subjects with all pipelines computed
             are omitted.
         """
-        with h5py.File(self.filepath, "r") as f:
+        with _open_lock_hdf5(self.filepath, "r") as f:
             # Pre-compute all digests and load computed subjects per pipeline
             computed_subjects = {}
             for name, pipeline in pipelines.items():

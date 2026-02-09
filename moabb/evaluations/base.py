@@ -1,6 +1,7 @@
 import logging
 import math
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from time import perf_counter
 from uuid import uuid4
 from warnings import warn
@@ -799,10 +800,12 @@ class BaseEvaluation(ABC):
                         scoring=self.paradigm.scoring,
                         error_score=self.error_score,
                         random_state=self.random_state,
-                        param_grid=param_grid,
+                        param_grid=(
+                            deepcopy(param_grid) if param_grid is not None else None
+                        ),
                         optuna=self.optuna,
                         time_out=self.time_out,
-                        n_jobs_grid=self.n_jobs,
+                        n_jobs_grid=1,
                         additional_columns=self.additional_columns,
                         save_model=self.save_model,
                         hdf5_path=self.hdf5_path,
@@ -938,11 +941,8 @@ class BaseEvaluation(ABC):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
         # Try flattened parallel approach first
-        splitter = self._create_splitter()
-        if splitter is not None:
-            return self._process_parallel(
-                pipelines, param_grid, postprocess_pipeline, splitter
-            )
+        if self._create_splitter() is not None:
+            return self._process_parallel(pipelines, param_grid, postprocess_pipeline)
 
         # Fallback to old approach (dataset-level parallelism)
         return self._process_legacy(pipelines, param_grid, postprocess_pipeline)
@@ -995,7 +995,7 @@ class BaseEvaluation(ABC):
 
         return pd.concat(res_per_db, ignore_index=True)
 
-    def _process_parallel(self, pipelines, param_grid, postprocess_pipeline, splitter):
+    def _process_parallel(self, pipelines, param_grid, postprocess_pipeline):
         """Flattened parallel process: all folds across all datasets in parallel.
 
         Steps:
@@ -1009,11 +1009,12 @@ class BaseEvaluation(ABC):
         res_per_db = []
 
         for dataset in self.datasets:
+            if not self.is_valid(dataset):
+                continue
+
             # Recreate splitter per dataset so random_state does not drift
             # across datasets due mutable splitter internal RNG state.
             dataset_splitter = self._create_splitter()
-            if dataset_splitter is None:
-                dataset_splitter = splitter
 
             process_pipeline = self.paradigm.make_process_pipelines(
                 dataset,
@@ -1092,6 +1093,9 @@ class BaseEvaluation(ABC):
 
             # Step 6: Collect results sequentially (safe HDF5 writes)
             for res in all_results:
+                # Clean up internal fields not needed in final results
+                res.pop("n_samples_total", None)
+                res.pop("is_error", None)
                 self.push_result(res, pipelines, process_pipeline)
 
             res_per_db.append(

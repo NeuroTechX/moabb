@@ -386,41 +386,6 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             labels_pipeline = EventsToLabels(event_id=self.used_events(dataset))
         return labels_pipeline
 
-    def get_split_metadata(self, dataset, subjects=None, cache_config=None):
-        """Return labels and metadata for split computation.
-
-        Uses the paradigm's processing pipeline to extract trial-level metadata
-        without keeping signal data X in memory. This is useful for pre-computing
-        cross-validation splits before parallelized evaluation.
-
-        Parameters
-        ----------
-        dataset : BaseDataset
-            A dataset instance.
-        subjects : list of int | None
-            List of subject numbers. If None, use all subjects.
-        cache_config : dict | CacheConfig | None
-            Configuration for caching of datasets.
-
-        Returns
-        -------
-        y : np.ndarray
-            Labels for all trials.
-        metadata : pd.DataFrame
-            DataFrame with columns: subject, session, run.
-        """
-        # Use a single filter band to minimize work
-        process_pipelines = self.make_process_pipelines(dataset)[:1]
-        X, y, metadata = self.get_data(
-            dataset,
-            subjects=subjects,
-            cache_config=cache_config,
-            process_pipelines=process_pipelines,
-        )
-        # Discard X to free memory
-        del X
-        return y, metadata
-
     def get_data(  # noqa: C901
         self,
         dataset,

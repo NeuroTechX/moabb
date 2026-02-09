@@ -622,36 +622,6 @@ class UtilEvaluation:
         assert save_path == expected_path
 
 
-class TestGetSplitMetadata:
-    """Tests for paradigm.get_split_metadata()."""
-
-    def test_returns_same_metadata_as_get_data(self):
-        """get_split_metadata() returns same (y, metadata) as get_data() minus X."""
-        from moabb.paradigms.motor_imagery import FakeImageryParadigm
-
-        paradigm = FakeImageryParadigm()
-        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=42)
-
-        X, y_full, meta_full = paradigm.get_data(ds)
-        y_split, meta_split = paradigm.get_split_metadata(ds)
-
-        np.testing.assert_array_equal(y_full, y_split)
-        assert list(meta_full.columns) == list(meta_split.columns)
-        assert len(meta_full) == len(meta_split)
-        for col in meta_full.columns:
-            assert list(meta_full[col]) == list(meta_split[col])
-
-    def test_subset_subjects(self):
-        """get_split_metadata() works with a subset of subjects."""
-        from moabb.paradigms.motor_imagery import FakeImageryParadigm
-
-        paradigm = FakeImageryParadigm()
-        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, seed=42)
-
-        y_split, meta_split = paradigm.get_split_metadata(ds, subjects=[1, 2])
-        assert set(meta_split["subject"].unique()) == {1, 2}
-
-
 class TestBatchNotYetComputed:
     """Tests for Results.batch_not_yet_computed()."""
 
@@ -818,3 +788,77 @@ class TestParallelProcess:
                 os.remove(f)
             except OSError:
                 pass
+
+
+class TestParallelLegacyEquivalence:
+    """Tests verifying parallel process() produces same results as legacy."""
+
+    def _compare_parallel_vs_legacy(self, eval_class, tmp_path, **kwargs):
+        """Helper to compare parallel vs legacy results."""
+        paradigm = FakeImageryParadigm()
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=12)
+
+        # Run parallel path
+        eval_parallel = eval_class(
+            paradigm=paradigm,
+            datasets=[ds],
+            random_state=42,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "parallel"),
+            **kwargs,
+        )
+        results_parallel = eval_parallel.process(pipelines)
+
+        # Run legacy path
+        eval_legacy = eval_class(
+            paradigm=paradigm,
+            datasets=[ds],
+            random_state=42,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "legacy"),
+            **kwargs,
+        )
+        results_legacy = eval_legacy._process_legacy(
+            pipelines, param_grid=None, postprocess_pipeline=None
+        )
+
+        # Compare
+        keys = ["subject", "session", "pipeline"]
+        left = (
+            results_parallel[keys + ["score"]]
+            .sort_values(keys)
+            .reset_index(drop=True)
+            .rename(columns={"score": "score_parallel"})
+        )
+        right = (
+            results_legacy[keys + ["score"]]
+            .sort_values(keys)
+            .reset_index(drop=True)
+            .rename(columns={"score": "score_legacy"})
+        )
+
+        assert len(left) == len(
+            right
+        ), f"Different number of results: parallel={len(left)}, legacy={len(right)}"
+        merged = left.merge(right, on=keys, how="inner")
+        assert len(merged) == len(
+            left
+        ), "Not all rows matched between parallel and legacy"
+        np.testing.assert_allclose(
+            merged["score_parallel"].to_numpy(),
+            merged["score_legacy"].to_numpy(),
+            rtol=1e-10,
+            atol=1e-10,
+        )
+
+    def test_within_session_equivalence(self, tmp_path):
+        """WithinSession parallel matches legacy scores."""
+        self._compare_parallel_vs_legacy(ev.WithinSessionEvaluation, tmp_path)
+
+    def test_cross_session_equivalence(self, tmp_path):
+        """CrossSession parallel matches legacy scores."""
+        self._compare_parallel_vs_legacy(ev.CrossSessionEvaluation, tmp_path)
+
+    def test_cross_subject_equivalence(self, tmp_path):
+        """CrossSubject parallel matches legacy scores."""
+        self._compare_parallel_vs_legacy(ev.CrossSubjectEvaluation, tmp_path)
