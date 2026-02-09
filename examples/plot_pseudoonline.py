@@ -1,4 +1,16 @@
-# Set up the Directory for made it run on a server.
+"""
+===================================
+Pseudo-Online Motor Imagery with Sliding Window
+===================================
+
+This example shows how to perform a pseudo-online motor imagery evaluation
+using sliding window overlap. The ``overlap`` parameter in the paradigm
+generates overlapping epochs from the original trials, simulating an online
+BCI scenario.
+
+We use the BNCI2014-001 dataset with two Riemannian pipelines (MDM and FgMDM)
+and a within-session evaluation.
+"""
 
 import numpy as np
 from pyriemann.classification import MDM, FgMDM
