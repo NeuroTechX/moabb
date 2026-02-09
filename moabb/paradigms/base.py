@@ -222,8 +222,9 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         If not None, resample the eeg data with the sampling rate provided.
     overlap: float | None (default None)
         Overlap percentage (0-100) for the sliding window approach used in
-        pseudo-online evaluation. If None, no overlap is applied. Boundary-
-        crossing windows are dropped during event generation.
+        pseudo-online evaluation. If None, no overlap is applied. When overlap
+        is used, windows may cross event boundaries; such windows are kept and
+        labeled using a majority vote over the events they cover.
     """
 
     def __init__(
@@ -818,5 +819,6 @@ class BaseParadigm(BaseProcessing):
                 interval=dataset.interval,
                 overlap=self.overlap,
                 window_length=window_length,
+                tmin=self.tmin,
             )
         return RawToEvents(event_id=event_id, interval=dataset.interval)
