@@ -5,14 +5,18 @@ from time import perf_counter
 from uuid import uuid4
 from warnings import warn
 
+import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, clone
+from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import LabelEncoder
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import (
     Emissions,
+    _average_scores,
     _convert_sklearn_params_to_optuna,
     _create_save_path,
     _create_scorer,
@@ -22,6 +26,7 @@ from moabb.evaluations.utils import (
     _pipeline_requires_epochs,
     _save_model_cv,
     _score_and_update,
+    _update_result_with_scores,
     check_search_available,
 )
 from moabb.paradigms.base import BaseParadigm
@@ -32,7 +37,291 @@ search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
+try:
+    from codecarbon import EmissionsTracker  # noqa
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
+
 # Making the optuna soft dependency
+
+
+def _grid_search_static(
+    param_grid, name, grid_clf, inner_cv, scoring, n_jobs, optuna, time_out
+):
+    """Create a grid search wrapper around a classifier.
+
+    Pure function version of BaseEvaluation._grid_search() for use in
+    parallel workers. Returns (wrapped_clf, is_search).
+
+    Parameters
+    ----------
+    param_grid : dict | None
+        Parameter grid for grid search.
+    name : str
+        Pipeline name.
+    grid_clf : estimator
+        The classifier to optionally wrap.
+    inner_cv : cross-validator
+        Inner cross-validation strategy.
+    scoring : str | dict | callable
+        Scoring metric.
+    n_jobs : int
+        Number of jobs for grid search.
+    optuna : bool
+        Whether to use Optuna for search.
+    time_out : int
+        Timeout for Optuna search.
+
+    Returns
+    -------
+    clf : estimator
+        The (optionally wrapped) classifier.
+    is_search : bool
+        Whether grid search is active.
+    """
+    extra_params = {}
+    if param_grid is not None:
+        if name in param_grid:
+            if optuna:
+                search = search_methods["optuna"]
+                param_grid[name] = _convert_sklearn_params_to_optuna(param_grid[name])
+                extra_params["timeout"] = time_out
+            else:
+                search = search_methods["grid"]
+
+            if isinstance(scoring, dict):
+                refit = next(iter(scoring))
+            else:
+                refit = True
+
+            search = search(
+                grid_clf,
+                param_grid[name],
+                refit=refit,
+                cv=inner_cv,
+                n_jobs=n_jobs,
+                scoring=scoring,
+                return_train_score=True,
+                **extra_params,
+            )
+            return search, True
+        else:
+            return grid_clf, True
+    else:
+        return grid_clf, False
+
+
+def _evaluate_fold(
+    X,
+    y,
+    metadata,
+    dataset,
+    pipeline_name,
+    pipeline,
+    train_idx,
+    test_idx,
+    subject,
+    session,
+    scoring,
+    error_score,
+    random_state,
+    param_grid,
+    optuna,
+    time_out,
+    n_jobs_grid,
+    additional_columns,
+    save_model,
+    hdf5_path,
+    eval_type,
+    cv_ind,
+    codecarbon_config=None,
+    split_metadata=None,
+    score_per_session=False,
+):
+    """Evaluate a single CV fold. Pure function, no shared mutable state.
+
+    Fits the pipeline on training data, scores on test data, and returns
+    a list of result dicts. This is the universal unit of parallel work.
+
+    Parameters
+    ----------
+    X : array-like
+        Full data array.
+    y : array-like
+        Full labels array.
+    metadata : DataFrame
+        Full metadata DataFrame.
+    dataset : BaseDataset
+        The dataset being evaluated.
+    pipeline_name : str
+        Name of the pipeline.
+    pipeline : estimator
+        The sklearn pipeline to evaluate.
+    train_idx, test_idx : array-like
+        Indices for train/test split.
+    subject : int | str
+        Subject identifier.
+    session : str
+        Session identifier (ignored if score_per_session=True).
+    scoring : str | dict | callable | None
+        Scoring metric specification.
+    error_score : str | numeric
+        Value to assign on error.
+    random_state : int | None
+        Random state for reproducibility.
+    param_grid : dict | None
+        Parameter grid for grid search.
+    optuna : bool
+        Whether to use Optuna.
+    time_out : int
+        Timeout for Optuna.
+    n_jobs_grid : int
+        Number of jobs for grid search.
+    additional_columns : list
+        Additional result columns.
+    save_model : bool
+        Whether to save the model.
+    hdf5_path : str | None
+        Path for model saving.
+    eval_type : str
+        Evaluation type name (e.g., "WithinSession").
+    cv_ind : int
+        Cross-validation fold index.
+    codecarbon_config : dict | None
+        CodeCarbon configuration.
+    split_metadata : dict | None
+        Extra metadata from the splitter (e.g., learning curve info).
+    score_per_session : bool
+        If True, score separately per session in the test set (CrossSubject).
+
+    Returns
+    -------
+    list of dict
+        Result dicts for this fold.
+    """
+    results = []
+
+    inner_cv = StratifiedKFold(3, shuffle=True, random_state=random_state)
+    grid_clf = clone(pipeline)
+    grid_clf, is_search = _grid_search_static(
+        param_grid=param_grid,
+        name=pipeline_name,
+        grid_clf=grid_clf,
+        inner_cv=inner_cv,
+        scoring=scoring,
+        n_jobs=n_jobs_grid,
+        optuna=optuna,
+        time_out=time_out,
+    )
+
+    cvclf = clone(grid_clf)
+    nchan = _get_nchan(X)
+
+    # Set up emissions tracker
+    tracker = None
+    if _carbonfootprint and codecarbon_config is not None:
+        emissions_obj = Emissions(codecarbon_config=codecarbon_config)
+        tracker = emissions_obj.create_tracker()
+        tracker.start()
+
+    # Fit model
+    task_name = None
+    emissions = math.nan
+    if tracker is not None:
+        task_name = str(uuid4())
+        tracker.start_task(task_name)
+    t_start = perf_counter()
+    cvclf.fit(X[train_idx], y[train_idx])
+    duration = perf_counter() - t_start
+    if tracker is not None:
+        emissions_data = tracker.stop_task()
+        emissions = emissions_data.emissions if emissions_data else math.nan
+    _ensure_fitted(cvclf)
+
+    if tracker is not None:
+        tracker.stop()
+
+    # Optionally save model
+    if hdf5_path is not None and save_model:
+        model_save_path = _create_save_path(
+            hdf5_path=hdf5_path,
+            code=dataset.code,
+            subject=subject,
+            session="" if score_per_session else session,
+            name=pipeline_name,
+            grid=is_search,
+            eval_type=eval_type,
+        )
+        _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
+
+    scorer = _create_scorer(cvclf, scoring)
+
+    if score_per_session:
+        # CrossSubject: score separately per session in test set
+        test_sessions = metadata.iloc[test_idx]["session"].values
+        for sess in np.unique(test_sessions):
+            ix = test_sessions == sess
+            sess_test_idx = test_idx[ix]
+            try:
+                score = scorer(cvclf, X[sess_test_idx], y[sess_test_idx])
+            except ValueError as err:
+                if error_score == "raise":
+                    raise err
+                score = {"score": error_score}
+
+            res = {
+                "time": duration,
+                "dataset": dataset,
+                "subject": subject,
+                "session": sess,
+                "n_samples": len(train_idx),
+                "n_channels": nchan,
+                "pipeline": pipeline_name,
+            }
+            for col in additional_columns:
+                if col not in res:
+                    if split_metadata and col in split_metadata:
+                        res[col] = split_metadata[col]
+                    else:
+                        res[col] = math.nan
+            _update_result_with_scores(res, score)
+            if _carbonfootprint:
+                res["carbon_emission"] = (1000 * emissions,)
+                res["codecarbon_task_name"] = task_name
+            results.append(res)
+    else:
+        # Standard: score on full test set
+        try:
+            score = scorer(cvclf, X[test_idx], y[test_idx])
+        except ValueError as err:
+            if error_score == "raise":
+                raise err
+            score = {"score": error_score}
+
+        res = {
+            "time": duration,
+            "dataset": dataset,
+            "subject": subject,
+            "session": session,
+            "n_samples": len(train_idx),
+            "n_channels": nchan,
+            "pipeline": pipeline_name,
+        }
+        for col in additional_columns:
+            if col not in res:
+                if split_metadata and col in split_metadata:
+                    res[col] = split_metadata[col]
+                else:
+                    res[col] = math.nan
+        _update_result_with_scores(res, score)
+        if _carbonfootprint:
+            res["carbon_emission"] = (1000 * emissions,)
+            res["codecarbon_task_name"] = task_name
+        results.append(res)
+
+    return results
 
 
 class BaseEvaluation(ABC):
@@ -408,6 +697,170 @@ class BaseEvaluation(ABC):
                 res[col] = extra.get(col, math.nan)
         return res
 
+    def _create_splitter(self):
+        """Create the splitter for this evaluation type.
+
+        Subclasses should override this to return their specific splitter.
+        Returns None if the subclass doesn't support the flattened parallel
+        approach (falls back to the old process flow).
+        """
+        return None
+
+    def _get_eval_type(self):
+        """Return the evaluation type string for model saving."""
+        return self.__class__.__name__
+
+    def _build_task_list(
+        self, dataset, X, y, metadata, splitter, work_plan, pipelines, param_grid
+    ):
+        """Build a flat list of fold tasks for parallel execution.
+
+        Parameters
+        ----------
+        dataset : BaseDataset
+            The dataset being evaluated.
+        X : array-like
+            Full data array.
+        y : array-like
+            Full labels array (possibly label-encoded).
+        metadata : DataFrame
+            Full metadata DataFrame.
+        splitter : BaseCrossValidator
+            The splitter to generate train/test splits.
+        work_plan : dict
+            {subject: {pipeline_name: pipeline}} from batch_not_yet_computed.
+        pipelines : dict
+            All pipelines.
+        param_grid : dict | None
+            Parameter grid for grid search.
+
+        Returns
+        -------
+        list of dict
+            List of task parameter dicts for _evaluate_fold.
+        """
+        tasks = []
+        score_per_session = self._score_per_session()
+
+        per_split = hasattr(getattr(splitter, "cv_class", None), "get_metadata")
+
+        for cv_ind, (train_idx, test_idx) in enumerate(splitter.split(y, metadata)):
+            # Determine subject from test indices
+            test_meta = metadata.iloc[test_idx]
+            subject = test_meta["subject"].iloc[0]
+
+            # Check if this subject needs computation
+            if subject not in work_plan:
+                continue
+            run_pipes = work_plan[subject]
+
+            # Determine session (for non-per-session scoring)
+            session = test_meta["session"].iloc[0]
+
+            # Get split metadata if available
+            split_meta = None
+            if per_split and hasattr(splitter, "_current_splitter"):
+                inner = splitter._current_splitter
+                if hasattr(inner, "get_metadata"):
+                    split_meta = inner.get_metadata()
+
+            for name, clf in run_pipes.items():
+                tasks.append(
+                    dict(
+                        dataset=dataset,
+                        pipeline_name=name,
+                        pipeline=clf,
+                        train_idx=train_idx,
+                        test_idx=test_idx,
+                        subject=subject,
+                        session=session,
+                        scoring=self.paradigm.scoring,
+                        error_score=self.error_score,
+                        random_state=self.random_state,
+                        param_grid=param_grid,
+                        optuna=self.optuna,
+                        time_out=self.time_out,
+                        n_jobs_grid=self.n_jobs,
+                        additional_columns=self.additional_columns,
+                        save_model=self.save_model,
+                        hdf5_path=self.hdf5_path,
+                        eval_type=self._get_eval_type(),
+                        cv_ind=cv_ind,
+                        codecarbon_config=(
+                            self.emissions.codecarbon_config if _carbonfootprint else None
+                        ),
+                        split_metadata=split_meta,
+                        score_per_session=score_per_session,
+                    )
+                )
+        return tasks
+
+    def _score_per_session(self):
+        """Whether to score separately per session in each fold.
+
+        CrossSubject evaluation scores per session; others don't.
+        """
+        return False
+
+    def _should_aggregate_folds(self, splitter):
+        """Whether fold results should be averaged per (subject, session, pipeline).
+
+        Returns True for WithinSession with default CV (not LearningCurve),
+        where the original behavior averages folds into one result.
+        """
+        return False
+
+    @staticmethod
+    def _aggregate_fold_results(fold_results):
+        """Aggregate per-fold results into averaged results.
+
+        Groups by (subject, session, pipeline) and averages scores/durations.
+
+        Parameters
+        ----------
+        fold_results : list of dict
+            Per-fold result dicts.
+
+        Returns
+        -------
+        list of dict
+            Aggregated result dicts.
+        """
+        if not fold_results:
+            return []
+
+        # Group by (subject, session, pipeline)
+        groups = {}
+        for res in fold_results:
+            key = (res["subject"], res["session"], res["pipeline"])
+            if key not in groups:
+                groups[key] = []
+            groups[key].append(res)
+
+        aggregated = []
+        for key, group in groups.items():
+            # Average the scores
+            scores = [{"score": r["score"]} for r in group]
+            # Include additional score columns
+            for r in group:
+                for k in r:
+                    if k.startswith("score_"):
+                        for s, r2 in zip(scores, group):
+                            s[k] = r2.get(k, math.nan)
+
+            avg_scores = _average_scores(scores)
+            avg_duration = float(np.mean([r["time"] for r in group]))
+            n_samples = sum(r["n_samples"] for r in group)
+
+            # Use first result as template
+            res = dict(group[0])
+            res["time"] = avg_duration
+            res["n_samples"] = n_samples
+            _update_result_with_scores(res, avg_scores)
+            aggregated.append(res)
+
+        return aggregated
+
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
         """Runs all pipelines on all datasets.
 
@@ -443,6 +896,18 @@ class BaseEvaluation(ABC):
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
+        # Try flattened parallel approach first
+        splitter = self._create_splitter()
+        if splitter is not None:
+            return self._process_parallel(
+                pipelines, param_grid, postprocess_pipeline, splitter
+            )
+
+        # Fallback to old approach (dataset-level parallelism)
+        return self._process_legacy(pipelines, param_grid, postprocess_pipeline)
+
+    def _process_legacy(self, pipelines, param_grid, postprocess_pipeline):
+        """Original process() implementation with dataset-level parallelism."""
         # Prepare dataset processing parameters
         processing_params = [
             (
@@ -479,6 +944,101 @@ class BaseEvaluation(ABC):
             processing_params, parallel_results
         ):
             for res in results:
+                self.push_result(res, pipelines, process_pipeline)
+
+            res_per_db.append(
+                self.results.to_dataframe(
+                    pipelines=pipelines, process_pipeline=process_pipeline
+                )
+            )
+
+        return pd.concat(res_per_db, ignore_index=True)
+
+    def _process_parallel(self, pipelines, param_grid, postprocess_pipeline, splitter):
+        """Flattened parallel process: all folds across all datasets in parallel.
+
+        Steps:
+        1. For each dataset, load all data
+        2. Get split metadata
+        3. Batch-check what needs computing
+        4. Generate all splits and build flat task list
+        5. Execute all fold tasks in parallel
+        6. Collect results sequentially
+        """
+        res_per_db = []
+
+        for dataset in self.datasets:
+            process_pipeline = self.paradigm.make_process_pipelines(
+                dataset,
+                return_epochs=self.return_epochs,
+                return_raws=self.return_raws,
+                postprocess_pipeline=postprocess_pipeline,
+            )[0]
+
+            # Step 1: Batch-check what needs computing (single HDF5 read)
+            work_plan = self.results.batch_not_yet_computed(
+                pipelines, dataset, dataset.subject_list, process_pipeline
+            )
+            if not work_plan:
+                res_per_db.append(
+                    self.results.to_dataframe(
+                        pipelines=pipelines, process_pipeline=process_pipeline
+                    )
+                )
+                continue
+
+            # Step 2: Load all data for subjects that need computation
+            subjects_to_load = list(work_plan.keys())
+            X, y, metadata = self._load_data(
+                dataset,
+                # Pass all pipelines to check for epoch requirements
+                {
+                    name: pipe
+                    for subj_pipes in work_plan.values()
+                    for name, pipe in subj_pipes.items()
+                },
+                process_pipeline,
+                postprocess_pipeline,
+                subjects=subjects_to_load,
+            )
+
+            # Label encode if not using mne_labels
+            if not self.mne_labels:
+                le = LabelEncoder()
+                y = le.fit_transform(y)
+
+            # Step 3: Build flat task list from splits
+            tasks = self._build_task_list(
+                dataset, X, y, metadata, splitter, work_plan, pipelines, param_grid
+            )
+
+            if not tasks:
+                res_per_db.append(
+                    self.results.to_dataframe(
+                        pipelines=pipelines, process_pipeline=process_pipeline
+                    )
+                )
+                continue
+
+            # Step 4: Execute ALL fold tasks in parallel
+            # X, y, metadata are passed as top-level positional args so that
+            # joblib's loky backend can auto-mmap large numpy arrays, avoiding
+            # N full copies for N tasks.
+            fold_results = Parallel(n_jobs=self.n_jobs)(
+                delayed(_evaluate_fold)(X, y, metadata, **task) for task in tasks
+            )
+
+            # Flatten results from all folds
+            all_results = []
+            for fold_result_list in fold_results:
+                all_results.extend(fold_result_list)
+
+            # Step 5: Optionally aggregate fold results (WithinSession default)
+            if self._should_aggregate_folds(splitter):
+                all_results = self._aggregate_fold_results(all_results)
+
+            # Step 6: Collect results sequentially (safe HDF5 writes)
+            for res in all_results:
                 self.push_result(res, pipelines, process_pipeline)
 
             res_per_db.append(
