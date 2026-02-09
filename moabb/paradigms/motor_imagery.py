@@ -121,10 +121,8 @@ class BaseMotorImagery(BaseParadigm):
     def scoring(self):
         if self.scorer is not None:
             return self.scorer
-        if self.overlap is None:
-            return "accuracy"
         else:
-            return make_scorer(_normalized_mcc)
+            return "accuracy"
 
 
 class SinglePass(BaseMotorImagery):
@@ -435,10 +433,8 @@ class MotorImagery(SinglePass):
             return self.scorer
         if self.n_classes == 2:
             return "roc_auc"
-        if self.overlap is None:
-            return "accuracy"
         else:
-            return make_scorer(_normalized_mcc)
+            return "accuracy"
 
 
 class FakeImageryParadigm(LeftRightImagery):
