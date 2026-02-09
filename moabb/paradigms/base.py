@@ -21,7 +21,6 @@ from moabb.datasets.preprocessing import (
     ForkPipelines,
     RawToEpochs,
     RawToEvents,
-    RawToSlidingWindowEvents,
     SetRawAnnotations,
     get_crop_pipeline,
     get_filter_pipeline,
@@ -814,10 +813,10 @@ class BaseParadigm(BaseProcessing):
                 else (dataset.interval[1] - dataset.interval[0])
             )
             window_length = tmax - self.tmin
-            return RawToSlidingWindowEvents(
+            return RawToEvents(
                 event_id=event_id,
                 interval=dataset.interval,
-                window_length=window_length,
                 overlap=self.overlap,
+                window_length=window_length,
             )
         return RawToEvents(event_id=event_id, interval=dataset.interval)

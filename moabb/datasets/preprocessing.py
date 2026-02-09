@@ -330,14 +330,36 @@ class SetRawAnnotations(FixedTransformer):
 
 class RawToEvents(FixedTransformer):
     """
-    Always returns an array for shape (n_events, 3), even if no events found
+    Always returns an array for shape (n_events, 3), even if no events found.
+
+    When ``overlap`` and ``window_length`` are provided, generates overlapping
+    sliding window events from the original trial events instead.
+
+    Parameters
+    ----------
+    event_id : dict
+        Mapping of event names to codes.
+    interval : tuple of (float, float)
+        Dataset interval.
+    overlap : float | None
+        Overlap percentage (0-100). If None, no sliding window is applied.
+    window_length : float | None
+        Window length in seconds. Required when overlap is not None.
     """
 
-    def __init__(self, event_id: dict[str, int], interval: Tuple[float, float]):
+    def __init__(
+        self,
+        event_id: dict[str, int],
+        interval: Tuple[float, float],
+        overlap=None,
+        window_length=None,
+    ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.interval = interval
+        self.overlap = overlap
+        self.window_length = window_length
 
     def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
@@ -359,43 +381,13 @@ class RawToEvents(FixedTransformer):
 
     def transform(self, raw, y=None):
         events = self._find_events(raw)
-        return _unsafe_pick_events(events, list(self.event_id.values()))
-
-
-class RawToSlidingWindowEvents(RawToEvents):
-    """Generate overlapping sliding window events from original trial events.
-
-    Extracts original events via RawToEvents, then generates new events at
-    regular stride intervals. Each new event's label is determined by which
-    original trial's region dominates the window (majority vote). Windows
-    crossing trial boundaries are dropped.
-
-    Parameters
-    ----------
-    event_id : dict
-        Mapping of event names to codes.
-    interval : tuple of (float, float)
-        Dataset interval.
-    window_length : float
-        Window length in seconds.
-    overlap : float
-        Overlap percentage (0-100).
-    """
-
-    def __init__(self, event_id, interval, window_length, overlap):
-        super().__init__(event_id=event_id, interval=interval)
-        self.window_length = window_length
-        self.overlap = overlap
-
-    def transform(self, raw, y=None):
-        events = self._find_events(raw)
         events = _unsafe_pick_events(events, list(self.event_id.values()))
-        if len(events) < 2:
-            return events
-        sfreq = raw.info["sfreq"]
-        return _generate_sliding_window_events(
-            events, self.window_length, self.overlap, sfreq
-        )
+        if self.overlap is not None and len(events) >= 2:
+            sfreq = raw.info["sfreq"]
+            events = _generate_sliding_window_events(
+                events, self.window_length, self.overlap, sfreq
+            )
+        return events
 
 
 class RawToEventsP300(RawToEvents):
