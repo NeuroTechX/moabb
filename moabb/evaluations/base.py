@@ -875,12 +875,14 @@ class BaseEvaluation(ABC):
                 pipelines, dataset, dataset.subject_list, process_pipeline
             )
             if not work_plan:
-                res_per_db.append(
-                    self.results.to_dataframe(
-                        pipelines=pipelines, process_pipeline=process_pipeline
-                    )
+                cached_df = self.results.to_dataframe(
+                    pipelines=pipelines, process_pipeline=process_pipeline
                 )
-                continue
+                if not cached_df.empty:
+                    res_per_db.append(cached_df)
+                    continue
+                # Results claimed computed but not readable — recompute
+                work_plan = {subj: dict(pipelines) for subj in dataset.subject_list}
 
             subjects_to_load = (
                 dataset.subject_list

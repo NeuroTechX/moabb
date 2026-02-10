@@ -261,6 +261,8 @@ class Results:
                         ).astype(str)
                     df_list.append(df)
 
+        if not df_list:
+            return pd.DataFrame()
         return pd.concat(df_list, ignore_index=True)
 
     def batch_not_yet_computed(self, pipelines, dataset, subjects, process_pipeline):

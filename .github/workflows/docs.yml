@@ -54,6 +54,12 @@ jobs:
             echo "Removing incomplete BrainForm dataset"
             rm -rf ~/mne_data/BrainForm-BIDS-eeg-dataset
           fi
+          # Remove stale evaluation results to avoid race conditions
+          # between parallel sphinx-gallery examples sharing HDF5 files
+          if [ -d ~/mne_data/results ]; then
+            echo "Removing stale evaluation results"
+            rm -rf ~/mne_data/results
+          fi
 
       - name: Cache docs build
         id: cache-docs
