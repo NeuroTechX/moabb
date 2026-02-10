@@ -39,7 +39,7 @@ search_methods, optuna_available = check_search_available()
 log = logging.getLogger(__name__)
 
 try:
-    from codecarbon import EmissionsTracker  # noqa
+    import codecarbon  # noqa
 
     _carbonfootprint = True
 except ImportError:
@@ -682,9 +682,13 @@ class BaseEvaluation(ABC):
 
             for name, clf in run_pipes.items():
                 task_config = dict(config)
-                task_config["param_grid"] = (
-                    deepcopy(param_grid) if param_grid is not None else None
-                )
+                if param_grid is None:
+                    task_param_grid = None
+                elif isinstance(param_grid, dict) and name in param_grid:
+                    task_param_grid = {name: deepcopy(param_grid[name])}
+                else:
+                    task_param_grid = deepcopy(param_grid)
+                task_config["param_grid"] = task_param_grid
                 tasks.append(
                     dict(
                         config=task_config,

@@ -65,8 +65,13 @@ class WithinSessionSplitter(BaseCrossValidator):
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
-        self.random_state = random_state
-        self._rng = check_random_state(random_state) if shuffle else None
+        # Normalize RandomState to int seed so check_random_state() always
+        # creates independent instances in split().
+        if isinstance(random_state, np.random.RandomState):
+            self.random_state = int(random_state.randint(0, 2**31))
+        else:
+            self.random_state = random_state
+        self._rng = check_random_state(self.random_state) if shuffle else None
 
         if not shuffle and random_state is not None:
             raise ValueError("random_state should be None when shuffle is False")
@@ -193,8 +198,13 @@ class WithinSubjectSplitter(BaseCrossValidator):
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
-        self.random_state = random_state
-        self._rng = check_random_state(random_state) if shuffle else None
+        # Normalize RandomState to int seed so check_random_state() always
+        # creates independent instances in split().
+        if isinstance(random_state, np.random.RandomState):
+            self.random_state = int(random_state.randint(0, 2**31))
+        else:
+            self.random_state = random_state
+        self._rng = check_random_state(self.random_state) if shuffle else None
 
         if not shuffle and random_state is not None:
             raise ValueError("random_state should be None when shuffle is False")
