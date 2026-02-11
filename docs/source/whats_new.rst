@@ -72,6 +72,7 @@ Bugs
 - Ensure optional additional scoring columns in evaluation results (:gh:`957` by `Ethan Davis`_)
 - Fix pandas ``ArrowStringArray`` shuffle warning by converting ``.unique()`` results to numpy arrays in splitters, avoiding issues with newer pandas versions (:gh:`963` by `Bruno Aristimunha`_)
 - ``LearningCurveSplitter`` now skips training splits that collapse to a single class (e.g., with very small ``data_size``) and emits a ``RuntimeWarning`` instead of producing NaN results (:gh:`963` by `Bruno Aristimunha`_)
+- Fix double µV-to-V conversion in BNCI2003-004 and BNCI2015-006: data loaded in microvolts was labeled as volts without unit conversion, causing a second scaling during EDF export via ``mne_bids`` (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
