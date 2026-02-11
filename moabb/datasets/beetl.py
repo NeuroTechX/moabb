@@ -174,7 +174,11 @@ class Beetl2021_A(BaseDataset):
         )
 
         phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
-        subject_dir = Path(file_paths[0]) / phase_str / phase_str / f"S{subject}"
+        base = Path(file_paths[0])
+        subject_dir = base / phase_str / f"S{subject}"
+        if not subject_dir.exists():
+            # Backward compat: old extraction created double-nested dirs
+            subject_dir = base / phase_str / phase_str / f"S{subject}"
 
         data_list = []
         labels_list = []
@@ -255,6 +259,15 @@ class Beetl2021_A(BaseDataset):
         # Create the directory if it doesn't exist
         base_path.mkdir(parents=True, exist_ok=True)
 
+        # Skip Figshare API calls if data already exists locally
+        phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
+        subject_dir = base_path / phase_str / f"S{subject}"
+        if not subject_dir.exists():
+            subject_dir = base_path / phase_str / phase_str / f"S{subject}"
+        label_file = base_path / "final_MI_label.txt"
+        if not force_update and subject_dir.exists() and label_file.exists():
+            return [str(base_path)]
+
         # Download data if needed
         for article_id in [LEADERBOARD_ARTICLE_ID, FINAL_EVALUATION_ARTICLE_ID]:
             file_list = dl.fs_get_file_list(article_id)
@@ -263,7 +276,7 @@ class Beetl2021_A(BaseDataset):
 
             for file_name in id_file_list.keys():
                 file_path = os.path.join(base_path, file_name)
-                extract_dir = os.path.join(base_path, os.path.splitext(file_name)[0])
+                extract_dir = base_path / os.path.splitext(file_name)[0]
 
                 # Step 1: Download the zip file if not already downloaded
                 if not os.path.exists(file_path):
@@ -276,9 +289,9 @@ class Beetl2021_A(BaseDataset):
                     )
 
                 # Step 2: Unzip the file if not already extracted
-                if not os.path.exists(extract_dir):
+                if not extract_dir.exists():
                     with zipfile.ZipFile(file_path, "r") as zip_ref:
-                        zip_ref.extractall(extract_dir)
+                        zip_ref.extractall(base_path)
 
         # Download labels for final phase
         file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
@@ -422,7 +435,11 @@ class Beetl2021_B(BaseDataset):
 
         # Load data
         phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
-        subject_dir = Path(file_paths[0]) / phase_str / phase_str / f"S{subject}"
+        base = Path(file_paths[0])
+        subject_dir = base / phase_str / f"S{subject}"
+        if not subject_dir.exists():
+            # Backward compat: old extraction created double-nested dirs
+            subject_dir = base / phase_str / phase_str / f"S{subject}"
 
         # Load training data
         train_data = np.load(
@@ -495,6 +512,15 @@ class Beetl2021_B(BaseDataset):
         # Create the directory if it doesn't exist
         base_path.mkdir(parents=True, exist_ok=True)
 
+        # Skip Figshare API calls if data already exists locally
+        phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
+        subject_dir = base_path / phase_str / f"S{subject}"
+        if not subject_dir.exists():
+            subject_dir = base_path / phase_str / phase_str / f"S{subject}"
+        label_file = base_path / "final_MI_label.txt"
+        if not force_update and subject_dir.exists() and label_file.exists():
+            return [str(base_path)]
+
         # Download data if needed
         for article_id in [LEADERBOARD_ARTICLE_ID, FINAL_EVALUATION_ARTICLE_ID]:
             file_list = dl.fs_get_file_list(article_id)
@@ -503,7 +529,7 @@ class Beetl2021_B(BaseDataset):
 
             for file_name in id_file_list.keys():
                 file_path = os.path.join(base_path, file_name)
-                extract_dir = os.path.join(base_path, os.path.splitext(file_name)[0])
+                extract_dir = base_path / os.path.splitext(file_name)[0]
 
                 # Step 1: Download the zip file if not already downloaded
                 if not os.path.exists(file_path):
@@ -516,9 +542,9 @@ class Beetl2021_B(BaseDataset):
                     )
 
                 # Step 2: Unzip the file if not already extracted
-                if not os.path.exists(extract_dir):
+                if not extract_dir.exists():
                     with zipfile.ZipFile(file_path, "r") as zip_ref:
-                        zip_ref.extractall(extract_dir)
+                        zip_ref.extractall(base_path)
 
         # Download labels for final phase
         file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)

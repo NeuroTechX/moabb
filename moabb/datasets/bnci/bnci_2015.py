@@ -290,7 +290,7 @@ def _load_data_006_2015(
         return [filename]
     mat_data = loadmat(filename, struct_as_record=False, squeeze_me=True)
     data = mat_data["data"]
-    eeg_data = data.X
+    eeg_data = convert_units(data.X, from_unit="uV", to_unit="V")
     sfreq = float(data.fs)
     ch_names = [str(ch).strip() for ch in data.clab]
     ch_types = ["eeg"] * len(ch_names)

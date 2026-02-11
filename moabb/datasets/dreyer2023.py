@@ -34,7 +34,7 @@ from moabb.datasets.metadata.schema import (
 from .base import BaseDataset
 
 
-_manifest_link = "https://osf.io/download/67c9abecc1b99765d8bb36b0/"
+_manifest_link = "https://osf.io/download/p5av2/"
 _metainfo_link = "https://osf.io/download/67c9e8234f014fc76e0411ba/"
 
 _osf_tag = "8tdk5"
