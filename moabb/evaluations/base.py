@@ -734,31 +734,38 @@ class BaseEvaluation(ABC):
 
         aggregated = []
         for key, group in groups.items():
-            # Filter out error folds to match old behavior (errors were skipped)
-            group = [r for r in group if not r.get("is_error", False)]
             if not group:
-                continue  # All folds errored, skip this group entirely
+                continue
 
-            # Average the scores
-            score_keys = {"score"} | {
-                k for r in group for k in r if k.startswith("score_")
-            }
-            scores = [{k: r.get(k, math.nan) for k in score_keys} for r in group]
+            # Collect score keys from successful folds (they have all metric keys)
+            ok_folds = [r for r in group if not r.get("is_error", False)]
+            score_keys = {"score"}
+            if ok_folds:
+                score_keys |= {k for r in ok_folds for k in r if k.startswith("score_")}
+
+            # Include error folds in averaging: use their "score" value
+            # (the configured error_score fallback) for any missing metric keys
+            scores = []
+            for r in group:
+                fallback = r.get("score", math.nan)
+                scores.append({k: r.get(k, fallback) for k in score_keys})
 
             avg_scores = _average_scores(scores)
             avg_duration = float(np.mean([r["time"] for r in group]))
             # Use total samples (train + test) from any fold, matching old
             # behavior where n_samples = len(y_cv) (total session samples)
-            n_samples = group[0].get("n_samples_total", group[0]["n_samples"])
+            template = ok_folds[0] if ok_folds else group[0]
+            n_samples = template.get("n_samples_total", template["n_samples"])
 
-            # Use first result as template
-            res = dict(group[0])
+            # Use first non-error result as template (has all score columns)
+            res = dict(template)
             res["time"] = avg_duration
             res["n_samples"] = n_samples
             # Clean up internal fields not needed in final results
             res.pop("n_samples_total", None)
             res.pop("is_error", None)
-            _update_result_with_scores(res, avg_scores)
+            # Update directly — score keys are already correctly named
+            res.update(avg_scores)
             aggregated.append(res)
 
         return aggregated

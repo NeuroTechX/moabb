@@ -896,3 +896,90 @@ class TestParallelLegacyEquivalence:
     def test_cross_subject_equivalence(self, tmp_path):
         """CrossSubject parallel matches legacy scores."""
         self._compare_parallel_vs_legacy(ev.CrossSubjectEvaluation, tmp_path)
+
+
+class TestAggregateFoldResults:
+    """Tests for _aggregate_fold_results score handling."""
+
+    @staticmethod
+    def _make_fold(subject, session, pipeline, score, extras=None, is_error=False):
+        res = {
+            "subject": subject,
+            "session": session,
+            "pipeline": pipeline,
+            "time": 1.0,
+            "n_samples": 100,
+            "n_samples_total": 200,
+            "n_channels": 8,
+            "dataset": "FakeDataset",
+            "score": score,
+            "is_error": is_error,
+        }
+        if extras:
+            res.update(extras)
+        return res
+
+    def test_multi_metric_no_double_prefix(self):
+        """Averaged multi-metric scores keep correct score_* key names."""
+        from moabb.evaluations.base import BaseEvaluation
+
+        folds = [
+            self._make_fold(1, "0", "csp", 0.8, {"score_accuracy": 0.8, "score_f1": 0.7}),
+            self._make_fold(
+                1, "0", "csp", 0.9, {"score_accuracy": 0.9, "score_f1": 0.85}
+            ),
+        ]
+        agg = BaseEvaluation._aggregate_fold_results(folds)
+        assert len(agg) == 1
+        res = agg[0]
+        # Correct keys present
+        assert "score" in res
+        assert "score_accuracy" in res
+        assert "score_f1" in res
+        # No double-prefixed keys
+        assert not any(k.startswith("score_score_") for k in res)
+        np.testing.assert_almost_equal(res["score_accuracy"], 0.85)
+        np.testing.assert_almost_equal(res["score_f1"], 0.775)
+
+    def test_error_folds_included_in_average(self):
+        """Error folds contribute their error_score to the average."""
+        from moabb.evaluations.base import BaseEvaluation
+
+        folds = [
+            self._make_fold(1, "0", "csp", 0.9),
+            self._make_fold(1, "0", "csp", 0.0, is_error=True),
+        ]
+        agg = BaseEvaluation._aggregate_fold_results(folds)
+        assert len(agg) == 1
+        # Average of 0.9 and 0.0 = 0.45, not 0.9 (old behavior dropped errors)
+        np.testing.assert_almost_equal(agg[0]["score"], 0.45)
+
+    def test_all_folds_errored_still_produces_result(self):
+        """When every fold errors, the group still appears with error_score."""
+        from moabb.evaluations.base import BaseEvaluation
+
+        folds = [
+            self._make_fold(1, "0", "csp", 0.0, is_error=True),
+            self._make_fold(1, "0", "csp", 0.0, is_error=True),
+        ]
+        agg = BaseEvaluation._aggregate_fold_results(folds)
+        # Should produce a result instead of silently dropping the group
+        assert len(agg) == 1
+        np.testing.assert_almost_equal(agg[0]["score"], 0.0)
+
+    def test_error_folds_multi_metric_use_fallback(self):
+        """Error folds use their score value as fallback for missing metrics."""
+        from moabb.evaluations.base import BaseEvaluation
+
+        folds = [
+            self._make_fold(1, "0", "csp", 0.8, {"score_accuracy": 0.8, "score_f1": 0.7}),
+            # Error fold only has "score", missing score_accuracy/score_f1
+            self._make_fold(1, "0", "csp", 0.0, is_error=True),
+        ]
+        agg = BaseEvaluation._aggregate_fold_results(folds)
+        assert len(agg) == 1
+        res = agg[0]
+        # score_accuracy: avg(0.8, 0.0) = 0.4 (error fold uses score=0.0)
+        np.testing.assert_almost_equal(res["score_accuracy"], 0.4)
+        # score_f1: avg(0.7, 0.0) = 0.35
+        np.testing.assert_almost_equal(res["score_f1"], 0.35)
