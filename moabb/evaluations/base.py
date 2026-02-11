@@ -871,17 +871,23 @@ class BaseEvaluation(ABC):
                 postprocess_pipeline=postprocess_pipeline,
             )[0]
 
-            work_plan = self.results.batch_not_yet_computed(
-                pipelines, dataset, dataset.subject_list, process_pipeline
+            work_plan, cached_df = self.results.batch_not_yet_computed_or_cached_df(
+                pipelines,
+                dataset,
+                dataset.subject_list,
+                process_pipeline,
             )
             if not work_plan:
-                cached_df = self.results.to_dataframe(
-                    pipelines=pipelines, process_pipeline=process_pipeline
-                )
-                if not cached_df.empty:
+                if (cached_df is not None) and (not cached_df.empty):
                     res_per_db.append(cached_df)
                     continue
-                # Results claimed computed but not readable — recompute
+                # Inconsistent cache state: "all computed" but nothing readable.
+                # Recompute instead of returning an empty dataset result.
+                log.warning(
+                    "Empty cache detected for dataset %s in %s; recomputing.",
+                    dataset.code,
+                    self.__class__.__name__,
+                )
                 work_plan = {subj: dict(pipelines) for subj in dataset.subject_list}
 
             subjects_to_load = (

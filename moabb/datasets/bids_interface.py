@@ -380,7 +380,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             format="EDF",
             allow_preload=True,
             montage=raw.get_montage(),
-            overwrite=False,
+            overwrite=True,
             verbose=self.verbose,
         )
 

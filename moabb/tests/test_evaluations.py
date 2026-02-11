@@ -5,6 +5,7 @@ import warnings
 from collections import OrderedDict
 
 import numpy as np
+import pandas as pd
 import pytest
 import sklearn.base
 from pyriemann.estimation import Covariances
@@ -673,6 +674,28 @@ class TestBatchNotYetComputed:
         )
         assert batch_result == {}
 
+    def test_batch_or_cache_returns_cached_df_when_complete(self, tmp_path):
+        """Atomic helper returns cached dataframe when no work remains."""
+        evaluation = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+            hdf5_path=str(tmp_path / "batch_test"),
+        )
+        process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
+
+        for res in evaluation.evaluate(
+            dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+        ):
+            evaluation.push_result(res, pipelines, process_pipeline)
+
+        work_plan, cached_df = evaluation.results.batch_not_yet_computed_or_cached_df(
+            pipelines, dataset, dataset.subject_list, process_pipeline
+        )
+        assert work_plan == {}
+        assert cached_df is not None
+        assert not cached_df.empty
+
 
 class TestParallelProcess:
     """Tests for the flattened parallel process() approach."""
@@ -731,6 +754,30 @@ class TestParallelProcess:
         assert len(results) > 0
         assert "permutation" in results.columns
         assert "data_size" in results.columns
+
+    def test_process_recovers_from_empty_cached_dataframe(self, tmp_path, monkeypatch):
+        """Parallel path recomputes when cache says done but dataframe is empty."""
+        evaluation = ev.CrossSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+            hdf5_path=str(tmp_path / "parallel_test"),
+        )
+        original = evaluation.results.batch_not_yet_computed_or_cached_df
+        state = {"calls": 0}
+
+        def fake_batch_or_cache(*args, **kwargs):
+            state["calls"] += 1
+            if state["calls"] == 1:
+                return {}, pd.DataFrame()
+            return original(*args, **kwargs)
+
+        monkeypatch.setattr(
+            evaluation.results, "batch_not_yet_computed_or_cached_df", fake_batch_or_cache
+        )
+
+        results = evaluation.process(pipelines)
+        assert len(results) == 4
 
     def test_within_session_dataset_order_deterministic(self, tmp_path):
         """Fixed random_state should give same scores regardless dataset order."""

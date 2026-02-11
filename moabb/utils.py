@@ -268,22 +268,35 @@ def _open_lock_hdf5(path, *args, **kwargs):
         `open` function.
 
     """
-    lock_context = contextlib.nullcontext()  # default to no lock
+    if not filelock:
+        with h5py.File(path, *args, **kwargs) as fid:
+            yield fid
+        return
 
-    if filelock:
-        lock_path = f"{path}.lock"
-        try:
-            lock_context = filelock.FileLock(lock_path, timeout=5)
-            lock_context.acquire()
-        except TimeoutError:
-            warn(
-                "Could not acquire lock file after 5 seconds, consider deleting it "
-                f"if you know the corresponding file is usable:\n{lock_path}"
-            )
-            lock_context = contextlib.nullcontext()
+    lock_timeout = float(os.environ.get("MOABB_HDF5_LOCK_TIMEOUT", "30"))
+    allow_unlocked = os.environ.get("MOABB_ALLOW_UNLOCKED_HDF5", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    lock_path = f"{path}.lock"
+    lock = filelock.FileLock(lock_path, timeout=lock_timeout)
 
-    with lock_context, h5py.File(path, *args, **kwargs) as fid:
-        yield fid
+    try:
+        with lock, h5py.File(path, *args, **kwargs) as fid:
+            yield fid
+    except TimeoutError as err:
+        msg = (
+            "Could not acquire lock file after " f"{lock_timeout:g} seconds:\n{lock_path}"
+        )
+        if not allow_unlocked:
+            raise TimeoutError(msg) from err
+        warn(
+            msg + "\nProceeding without lock because "
+            "MOABB_ALLOW_UNLOCKED_HDF5 is enabled."
+        )
+        with h5py.File(path, *args, **kwargs) as fid:
+            yield fid
 
 
 class MoabbMetaClass(abc.ABCMeta, NumpyDocstringInheritanceInitMeta):

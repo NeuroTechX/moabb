@@ -109,10 +109,12 @@ class Results:
         os.makedirs(osp.dirname(self.filepath), exist_ok=True)
         self.filepath = self.filepath
 
-        if overwrite and osp.isfile(self.filepath):
-            os.remove(self.filepath)
-
-        if not osp.isfile(self.filepath):
+        if overwrite:
+            with _open_lock_hdf5(self.filepath, "w") as f:
+                f.attrs["create_time"] = np.bytes_(
+                    "{:%Y-%m-%d, %H:%M}".format(datetime.now())
+                )
+        elif not osp.isfile(self.filepath):
             with _open_lock_hdf5(self.filepath, "w") as f:
                 f.attrs["create_time"] = np.bytes_(
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
@@ -223,11 +225,39 @@ class Results:
                         ]
                     )
 
-    def to_dataframe(self, pipelines=None, process_pipeline=None):
+    @staticmethod
+    def _to_dataframe_from_file(f, digests=None):
         df_list = []
+        allowed = set(digests) if digests is not None else None
 
+        for digest, p_group in f.items():
+            if (allowed is not None) and (digest not in allowed):
+                continue
+
+            name = p_group.attrs["name"]
+            for dname, dset in p_group.items():
+                array = np.array(dset["data"])
+                ids = np.array(dset["id"])
+                df = pd.DataFrame(array, columns=dset.attrs["columns"])
+                df["subject"] = [s.decode() for s in ids[:, 0]]
+                df["session"] = [s.decode() for s in ids[:, 1]]
+                df["channels"] = dset.attrs["channels"]
+                df["n_sessions"] = dset.attrs["n_sessions"]
+                df["dataset"] = dname
+                df["pipeline"] = name
+                if _carbonfootprint and "codecarbon_task_name" in dset:
+                    df["codecarbon_task_name"] = np.array(
+                        dset["codecarbon_task_name"]
+                    ).astype(str)
+                df_list.append(df)
+
+        if not df_list:
+            return pd.DataFrame()
+        return pd.concat(df_list, ignore_index=True)
+
+    def to_dataframe(self, pipelines=None, process_pipeline=None):
         # get the list of pipeline hash
-        digests = []
+        digests = None
         if pipelines is not None and process_pipeline is not None:
             digests = [
                 get_pipeline_digest(process_pipeline, pipelines[name])
@@ -239,31 +269,54 @@ class Results:
             )
 
         with _open_lock_hdf5(self.filepath, "r") as f:
-            for digest, p_group in f.items():
-                # skip if not in pipeline list
-                if (pipelines is not None) and (digest not in digests):
-                    continue
+            return self._to_dataframe_from_file(f, digests=digests)
 
-                name = p_group.attrs["name"]
-                for dname, dset in p_group.items():
-                    array = np.array(dset["data"])
-                    ids = np.array(dset["id"])
-                    df = pd.DataFrame(array, columns=dset.attrs["columns"])
-                    df["subject"] = [s.decode() for s in ids[:, 0]]
-                    df["session"] = [s.decode() for s in ids[:, 1]]
-                    df["channels"] = dset.attrs["channels"]
-                    df["n_sessions"] = dset.attrs["n_sessions"]
-                    df["dataset"] = dname
-                    df["pipeline"] = name
-                    if _carbonfootprint and "codecarbon_task_name" in dset:
-                        df["codecarbon_task_name"] = np.array(
-                            dset["codecarbon_task_name"]
-                        ).astype(str)
-                    df_list.append(df)
+    def batch_not_yet_computed_or_cached_df(
+        self, pipelines, dataset, subjects, process_pipeline
+    ):
+        """Atomically compute work_plan and, if complete, return cached dataframe.
 
-        if not df_list:
-            return pd.DataFrame()
-        return pd.concat(df_list, ignore_index=True)
+        Returns
+        -------
+        work_plan : dict
+            Same format as :func:`batch_not_yet_computed`.
+        cached_df : pd.DataFrame | None
+            Dataframe for selected pipelines when ``work_plan`` is empty.
+            ``None`` when there is still work to do.
+        """
+        digests = {
+            name: get_pipeline_digest(process_pipeline, pipeline)
+            for name, pipeline in pipelines.items()
+        }
+        with _open_lock_hdf5(self.filepath, "r") as f:
+            computed_subjects = {}
+            for name, digest in digests.items():
+                if digest in f.keys():
+                    pipe_grp = f[digest]
+                    if dataset.code in pipe_grp.keys():
+                        dset = pipe_grp[dataset.code]
+                        computed_subjects[name] = set(dset["id"][:, 0])
+                    else:
+                        computed_subjects[name] = set()
+                else:
+                    computed_subjects[name] = set()
+
+            work_plan = {}
+            for subject in subjects:
+                subj_encoded = str(subject).encode("utf-8")
+                missing = {
+                    name: pipelines[name]
+                    for name in pipelines
+                    if subj_encoded not in computed_subjects[name]
+                }
+                if missing:
+                    work_plan[subject] = missing
+
+            if work_plan:
+                return work_plan, None
+
+            cached_df = self._to_dataframe_from_file(f, digests=list(digests.values()))
+            return work_plan, cached_df
 
     def batch_not_yet_computed(self, pipelines, dataset, subjects, process_pipeline):
         """Check all subjects at once with a single HDF5 read.
@@ -286,33 +339,10 @@ class Results:
             that still need computation. Subjects with all pipelines computed
             are omitted.
         """
-        with _open_lock_hdf5(self.filepath, "r") as f:
-            # Pre-compute all digests and load computed subjects per pipeline
-            computed_subjects = {}
-            for name, pipeline in pipelines.items():
-                digest = get_pipeline_digest(process_pipeline, pipeline)
-                if digest in f.keys():
-                    pipe_grp = f[digest]
-                    if dataset.code in pipe_grp.keys():
-                        dset = pipe_grp[dataset.code]
-                        ids = set(dset["id"][:, 0])
-                        computed_subjects[name] = ids
-                    else:
-                        computed_subjects[name] = set()
-                else:
-                    computed_subjects[name] = set()
-
-        result = {}
-        for subject in subjects:
-            subj_encoded = str(subject).encode("utf-8")
-            missing = {
-                name: pipelines[name]
-                for name in pipelines
-                if subj_encoded not in computed_subjects[name]
-            }
-            if missing:
-                result[subject] = missing
-        return result
+        work_plan, _ = self.batch_not_yet_computed_or_cached_df(
+            pipelines, dataset, subjects, process_pipeline
+        )
+        return work_plan
 
     def not_yet_computed(self, pipelines, dataset, subj, process_pipeline):
         """Check if a results is missing.
