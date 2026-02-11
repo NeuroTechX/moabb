@@ -5,8 +5,9 @@ https://doi.org/10.1371/journal.pone.0114853
 
 import json
 import logging
+import shutil
 from pathlib import Path
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
 
 import requests
 from mne.utils import _open_lock
@@ -196,6 +197,15 @@ class Zhou2016(BaseBIDSDataset):
         )
         self.zenodo_record_id = ZENODO_RECORD_ID
 
+    @staticmethod
+    def _subject_has_downloaded_data(folder_path: Path) -> bool:
+        """Check whether a subject directory contains minimally valid EEG BIDS data."""
+        if not folder_path.exists() or not folder_path.is_dir():
+            return False
+        has_eeg = any(folder_path.rglob("*_eeg.edf"))
+        has_events = any(folder_path.rglob("*_events.tsv"))
+        return has_eeg and has_events
+
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject data."""
         if subject not in self.subject_list:
@@ -219,21 +229,54 @@ class Zhou2016(BaseBIDSDataset):
                 # Check if the file corresponds to the current subject
                 if file_name == f"sub-{subject}.zip":
                     folder_path = file_path.with_suffix("")
+                    lock_path = dataset_path / f"sub-{subject}.download.lock"
+                    with _open_lock(lock_path, "w"):
+                        if force_update:
+                            if folder_path.exists():
+                                shutil.rmtree(folder_path)
+                            if file_path.exists():
+                                file_path.unlink()
+                        elif folder_path.exists() and (
+                            not self._subject_has_downloaded_data(folder_path)
+                        ):
+                            log.warning(
+                                "Found incomplete Zhou2016 data at %s; repairing subject %s",
+                                folder_path,
+                                subject,
+                            )
+                            shutil.rmtree(folder_path)
 
-                    if not folder_path.exists():
-                        log.info(
-                            f"Downloading {file_name} for subject {subject} to {file_path}"
-                        )
-                        download_if_missing(
-                            file_path=file_path,
-                            url=file_url,
-                            warn_missing=False,
-                            verbose=verbose,
-                        )
+                        if not self._subject_has_downloaded_data(folder_path):
+                            log.info(
+                                f"Downloading {file_name} for subject {subject} to {file_path}"
+                            )
+                            download_if_missing(
+                                file_path=file_path,
+                                url=file_url,
+                                warn_missing=False,
+                                verbose=verbose,
+                            )
 
-                        log.info(f"Extracting {file_name} to {folder_path}")
-                        with ZipFile(str(file_path), "r") as zip_ref:
-                            zip_ref.extractall(folder_path.parent)
+                            log.info(f"Extracting {file_name} to {folder_path}")
+                            try:
+                                with ZipFile(str(file_path), "r") as zip_ref:
+                                    zip_ref.extractall(folder_path.parent)
+                            except BadZipFile:
+                                log.warning(
+                                    "Corrupted archive at %s; redownloading %s",
+                                    file_path,
+                                    file_name,
+                                )
+                                if file_path.exists():
+                                    file_path.unlink()
+                                download_if_missing(
+                                    file_path=file_path,
+                                    url=file_url,
+                                    warn_missing=False,
+                                    verbose=verbose,
+                                )
+                                with ZipFile(str(file_path), "r") as zip_ref:
+                                    zip_ref.extractall(folder_path.parent)
 
             else:
                 download_if_missing(

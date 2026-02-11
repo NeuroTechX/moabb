@@ -68,6 +68,7 @@ Bugs
 - Fixing option to pickle model (:gh:`870` by `Ethan Davis`_)
 - Normalize Zenodo download paths and add a custom user-agent to improve download robustness (:gh:`946` by `Bruno Aristimunha`_)
 - Use the BNCI mirror host to avoid download timeouts (:gh:`946` by `Bruno Aristimunha`_)
+- Repair incomplete or corrupted :class:`moabb.datasets.Zhou2016` subject downloads by validating extracted EEG/events files and re-downloading under a subject-level lock, preventing empty-session failures during parallel docs/CI runs (by `Bruno Aristimunha`_)
 - Prevent Python mutable default argument when defining CodeCarbon configurations (:gh:`956` by `Ethan Davis`_)
 - Fix copytree FileExistsError in BrainInvaders2013a download by adding dirs_exist_ok=True (by `Bruno Aristimunha`_)
 - Ensure optional additional scoring columns in evaluation results (:gh:`957` by `Ethan Davis`_)
