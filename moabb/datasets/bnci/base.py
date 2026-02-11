@@ -533,7 +533,7 @@ def _convert_run_bbci2003(run, ch_names, ch_types, verbose=None):
     positions = raw_positions[labels_mask]
 
     sfreq = float(run["nfo"][0, 0]["fs"][0, 0])
-    eeg_data = run["cnt"]
+    eeg_data = convert_units(run["cnt"], from_unit="uV", to_unit="V")
     raw_classes = run["mrk"]["className"]
 
     while isinstance(raw_classes, (list, np.ndarray)) and len(raw_classes) == 1:
