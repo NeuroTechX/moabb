@@ -675,6 +675,8 @@ class ParticipantMetadata:
         Used for per-subject ``hand`` column in BIDS ``participants.tsv``.
     species : str
         Species of participants (BIDS RECOMMENDED). Default is "homo sapiens".
+    head_circumference : float, optional
+        Head circumference in cm (BIDS RECOMMENDED for EEG).
     """
 
     n_subjects: int
@@ -694,6 +696,7 @@ class ParticipantMetadata:
     sexes: Optional[List[str]] = None
     handedness_list: Optional[List[str]] = None
     species: str = "homo sapiens"
+    head_circumference: Optional[float] = None
 
 
 @dataclass
@@ -744,6 +747,12 @@ class ExperimentMetadata:
         Text instructions given to participants before recording (BIDS RECOMMENDED).
     cog_atlas_id : str, optional
         Cognitive Atlas task URI (BIDS RECOMMENDED).
+    cog_po_id : str, optional
+        Cognitive Paradigm Ontology URI (BIDS RECOMMENDED).
+    stimulus_presentation : Dict[str, str], optional
+        Stimulus presentation software details (BIDS RECOMMENDED). Keys:
+        ``SoftwareName``, ``SoftwareVersion``, ``SoftwareRRID``, ``Code``,
+        ``OperatingSystem``.
     hed_tags : Dict[str, str], optional
         Per-dataset HED tag overrides mapping event name to HED tag string.
         When set, these take priority over paradigm-level defaults during
@@ -772,6 +781,8 @@ class ExperimentMetadata:
     # BIDS fields
     instructions: Optional[str] = None
     cog_atlas_id: Optional[str] = None
+    cog_po_id: Optional[str] = None
+    stimulus_presentation: Optional[Dict[str, str]] = None
     # HED fields
     hed_tags: Optional[Dict[str, str]] = None
 

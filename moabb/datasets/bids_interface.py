@@ -449,6 +449,15 @@ def _build_sidecar_enrichment(metadata):
         elif exp.paradigm in _PARADIGM_COG_ATLAS:
             entries["CogAtlasID"] = _PARADIGM_COG_ATLAS[exp.paradigm]
 
+        # CogPOID (RECOMMENDED)
+        if exp.cog_po_id:
+            entries["CogPOID"] = exp.cog_po_id
+
+    # HeadCircumference (RECOMMENDED)
+    participants = metadata.participants
+    if participants and participants.head_circumference:
+        entries["HeadCircumference"] = participants.head_circumference
+
     # InstitutionName (RECOMMENDED)
     entries["InstitutionName"] = doc.institution if doc and doc.institution else "n/a"
 
@@ -694,6 +703,24 @@ def _update_participants_tsv(root, subject, metadata):
             "Description": "Species of the participant (binomial name)",
         }
         updated = True
+    # Ensure mne_bids-generated columns have Description (RECOMMENDED)
+    if "participant_id" not in sidecar:
+        sidecar["participant_id"] = {
+            "Description": "Unique participant identifier",
+        }
+        updated = True
+    if "weight" not in sidecar:
+        sidecar["weight"] = {
+            "Description": "Body weight of the participant",
+            "Units": "kg",
+        }
+        updated = True
+    if "height" not in sidecar:
+        sidecar["height"] = {
+            "Description": "Body height of the participant",
+            "Units": "m",
+        }
+        updated = True
 
     if updated:
         with open(json_path, "w") as f:
@@ -824,11 +851,11 @@ def _build_hed_sidecar_annotations(dataset):
     return hed
 
 
-def _update_events_json_with_hed(bids_path, hed_tags):
-    """Add HED annotations to the events.json sidecar.
+def _update_events_json_sidecar(bids_path, hed_tags, metadata):
+    """Enrich the events.json sidecar with HED and stimulus presentation.
 
-    Adds an ``"HED"`` key to the ``"trial_type"`` column definition mapping
-    each event name to its HED tag string.
+    Adds ``"HED"`` tags to the ``"trial_type"`` column and
+    ``"StimulusPresentation"`` when available from metadata.
 
     Parameters
     ----------
@@ -836,10 +863,9 @@ def _update_events_json_with_hed(bids_path, hed_tags):
         BIDS path for the current recording.
     hed_tags : dict
         Mapping of event names to HED tag strings.
+    metadata : DatasetMetadata or None
+        The dataset metadata.
     """
-    if not hed_tags:
-        return
-
     events_json_path = bids_path.copy().update(suffix="events", extension=".json").fpath
     if not events_json_path.exists():
         return
@@ -847,18 +873,32 @@ def _update_events_json_with_hed(bids_path, hed_tags):
     with open(events_json_path) as f:
         sidecar = json.load(f)
 
-    if "trial_type" not in sidecar:
-        sidecar["trial_type"] = {
-            "Description": "The type, category, or name of the event."
-        }
+    changed = False
 
-    existing_hed = sidecar["trial_type"].get("HED", {})
-    # Merge: new tags fill gaps, existing entries are preserved
-    merged = {**hed_tags, **existing_hed}
-    sidecar["trial_type"]["HED"] = merged
+    # HED annotations
+    if hed_tags:
+        if "trial_type" not in sidecar:
+            sidecar["trial_type"] = {
+                "Description": "The type, category, or name of the event."
+            }
+        existing_hed = sidecar["trial_type"].get("HED", {})
+        merged = {**hed_tags, **existing_hed}
+        sidecar["trial_type"]["HED"] = merged
+        changed = True
 
-    with open(events_json_path, "w") as f:
-        json.dump(sidecar, f, indent="\t")
+    # StimulusPresentation (RECOMMENDED)
+    if (
+        metadata
+        and metadata.experiment
+        and metadata.experiment.stimulus_presentation
+        and "StimulusPresentation" not in sidecar
+    ):
+        sidecar["StimulusPresentation"] = metadata.experiment.stimulus_presentation
+        changed = True
+
+    if changed:
+        with open(events_json_path, "w") as f:
+            json.dump(sidecar, f, indent="\t")
 
 
 def _update_dataset_description_extra(root, metadata):
@@ -1285,9 +1325,28 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             # Patch electrodes.tsv with material and type
             _update_electrodes_tsv(bids_path, metadata)
 
-        # Add HED annotations to events.json sidecar
+        # Enrich events.json sidecar with HED annotations and stimulus info
         hed_tags = _build_hed_sidecar_annotations(self.dataset)
-        _update_events_json_with_hed(bids_path, hed_tags)
+        _update_events_json_sidecar(bids_path, hed_tags, metadata)
+
+        # Create scans.json sidecar at session level (next to scans.tsv)
+        ses_dir = bids_path.root / f"sub-{bids_path.subject}"
+        if bids_path.session is not None:
+            ses_dir = ses_dir / f"ses-{bids_path.session}"
+        scans_tsv_files = list(ses_dir.glob("*_scans.tsv"))
+        if scans_tsv_files:
+            scans_json_path = scans_tsv_files[0].with_suffix(".json")
+            if not scans_json_path.exists():
+                scans_sidecar = {
+                    "filename": {
+                        "Description": "Relative path to the data file.",
+                    },
+                    "acq_time": {
+                        "Description": "Acquisition date and time.",
+                    },
+                }
+                with open(scans_json_path, "w") as f:
+                    json.dump(scans_sidecar, f, indent="\t")
 
 
 class BIDSInterfaceEpochs(BIDSInterfaceBase):

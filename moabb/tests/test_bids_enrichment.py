@@ -15,7 +15,7 @@ from moabb.datasets.bids_interface import (
     _split_manufacturer,
     _update_dataset_description_extra,
     _update_electrodes_tsv,
-    _update_events_json_with_hed,
+    _update_events_json_sidecar,
     _update_participants_tsv,
 )
 from moabb.datasets.metadata.schema import (
@@ -1256,7 +1256,7 @@ class TestBuildHedSidecarAnnotations:
 
 
 # ============================================================
-# _update_events_json_with_hed
+# _update_events_json_sidecar
 # ============================================================
 
 
@@ -1281,7 +1281,7 @@ class TestUpdateEventsJsonWithHed:
         content = {"trial_type": {"Description": "Event type."}}
         bp, json_path = self._make_bids_path(tmp_path, content)
         hed_tags = {"left_hand": "Sensory-event, Cue, (Imagine, (Move, Hand))"}
-        _update_events_json_with_hed(bp, hed_tags)
+        _update_events_json_sidecar(bp, hed_tags, None)
 
         with open(json_path) as f:
             sidecar = json.load(f)
@@ -1298,7 +1298,7 @@ class TestUpdateEventsJsonWithHed:
         }
         bp, json_path = self._make_bids_path(tmp_path, content)
         hed_tags = {"left_hand": "New-tag", "right_hand": "Right-tag"}
-        _update_events_json_with_hed(bp, hed_tags)
+        _update_events_json_sidecar(bp, hed_tags, None)
 
         with open(json_path) as f:
             sidecar = json.load(f)
@@ -1311,7 +1311,7 @@ class TestUpdateEventsJsonWithHed:
         content = {"onset": {"Description": "Event onset."}}
         bp, json_path = self._make_bids_path(tmp_path, content)
         hed_tags = {"Target": "Sensory-event, Target"}
-        _update_events_json_with_hed(bp, hed_tags)
+        _update_events_json_sidecar(bp, hed_tags, None)
 
         with open(json_path) as f:
             sidecar = json.load(f)
@@ -1323,13 +1323,13 @@ class TestUpdateEventsJsonWithHed:
         bp, json_path = self._make_bids_path(tmp_path, events_json_content=None)
         # File doesn't exist — should be a no-op
         hed_tags = {"left_hand": "Sensory-event, Cue"}
-        _update_events_json_with_hed(bp, hed_tags)
+        _update_events_json_sidecar(bp, hed_tags, None)
         assert not json_path.exists()
 
     def test_empty_hed_tags_no_op(self, tmp_path):
         content = {"trial_type": {"Description": "Event type."}}
         bp, json_path = self._make_bids_path(tmp_path, content)
-        _update_events_json_with_hed(bp, {})
+        _update_events_json_sidecar(bp, {}, None)
 
         with open(json_path) as f:
             sidecar = json.load(f)
