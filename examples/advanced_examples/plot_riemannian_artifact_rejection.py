@@ -115,15 +115,16 @@ moabb.set_log_level("info")
 #
 # We use the BNCI2014-009 dataset, a 16-channel P300 speller recorded at
 # 256 Hz from 10 subjects [4]_. The channels are:
-# Fz, Cz, Pz, Oz, P3, P4, PO7, PO8, F3, F4, FCz, C3, C4, CP3, CPz, CP4.
+# FC5, FC3, FC1, FCz, FC2, FC4, FC6, C3, C1, Cz, C2, C4, CP3, CPz, CP4, Pz.
 #
 # We load epochs using ``return_epochs=True`` to demonstrate the
 # Riemannian artifact detection concepts visually before integrating them
 # into the MOABB evaluation pipeline.
 #
-# .. [4] Riccio, A., et al. (2013). Attention and P300-based BCI
-#    performance in people with amyotrophic lateral sclerosis.
-#    Frontiers in Human Neuroscience, 7, 732.
+# .. [4] Hoffmann, U., Vesin, J.-M., Ebrahimi, T., & Diserens, K. (2008).
+#    An efficient P300-based brain-computer interface for disabled subjects.
+#    Journal of Neuroscience Methods, 167(1), 115-125.
+#    https://doi.org/10.1016/j.jneumeth.2007.03.005
 
 dataset = BNCI2014_009()
 dataset.subject_list = dataset.subject_list[:1]
@@ -227,15 +228,15 @@ plt.show()
 #
 # This visualization is inspired by Figure 1 of [3]_. We project the
 # covariance matrices onto a 2D plane defined by two selected channels
-# (Fz and Cz) and display the z-score isocontours. The characteristic
+# (FCz and Cz) and display the z-score isocontours. The characteristic
 # "potato" shape arises from the non-linearity of the Riemannian
 # manifold. Clean epochs cluster inside the potato, while artifacts
 # fall outside.
 
-# Select two frontal channels for 2D visualization
-ch_idx_fz = epochs.ch_names.index("Fz")
+# Select two central channels for 2D visualization
+ch_idx_fcz = epochs.ch_names.index("FCz")
 ch_idx_cz = epochs.ch_names.index("Cz")
-covs_2d = covs[:, [ch_idx_fz, ch_idx_cz], :][:, :, [ch_idx_fz, ch_idx_cz]]
+covs_2d = covs[:, [ch_idx_fcz, ch_idx_cz], :][:, :, [ch_idx_fcz, ch_idx_cz]]
 
 potato_2d = Potato(metric="riemann", threshold=3)
 potato_2d.fit(covs_2d)
@@ -244,7 +245,7 @@ is_clean_2d = potato_2d.predict(covs_2d).astype(bool)
 barycenter_2d = potato_2d._mdm.covmeans_[0]
 
 # Extract the (0,0) and (1,1) diagonal entries for plotting
-x_vals = covs_2d[:, 0, 0]  # variance of Fz
+x_vals = covs_2d[:, 0, 0]  # variance of FCz
 y_vals = covs_2d[:, 1, 1]  # variance of Cz
 
 fig, ax = plt.subplots(figsize=(7, 6), facecolor="white")
@@ -311,7 +312,7 @@ ax.scatter(
     zorder=5,
 )
 
-ax.set_xlabel("Variance of Fz")
+ax.set_xlabel("Variance of FCz")
 ax.set_ylabel("Variance of Cz")
 ax.set_title(
     "2D projection of the Riemannian Potato\n"
@@ -440,27 +441,27 @@ plt.show()
 #      - Freq (Hz)
 #      - Target Artifact
 #    * - 1
-#      - F3, Fz, F4
+#      - FC3, FCz, FC4
 #      - euclid
 #      - 1-7
 #      - Ocular (frontal, low-freq)
 #    * - 2
-#      - F3, Fz, F4
+#      - FC3, FCz, FC4
 #      - riemann
 #      - 1-7
 #      - Ocular (blinks, co-variation)
 #    * - 3
-#      - PO7, Oz, PO8
+#      - FC5, FC1, FC2, FC6
 #      - riemann
 #      - 16-24
-#      - Myogenic posterior
+#      - Myogenic lateral
 #    * - 4
 #      - C3, Cz, C4
 #      - riemann
 #      - 16-24
 #      - Myogenic central
 #    * - 5
-#      - CP3, CPz, CP4, P3, Pz, P4
+#      - CP3, CPz, CP4, Pz
 #      - riemann
 #      - 1-24
 #      - General parietal
@@ -475,7 +476,7 @@ plt.show()
 # reusable across datasets with different channel sets.
 POTATO_FIELD_CONFIG = [
     {
-        "channels": ["F3", "Fz", "F4"],
+        "channels": ["FC3", "FCz", "FC4"],
         "low_freq": 1.0,
         "high_freq": 7.0,
         "metric": "euclid",
@@ -483,7 +484,7 @@ POTATO_FIELD_CONFIG = [
         "target": "Ocular (low-freq)",
     },
     {
-        "channels": ["F3", "Fz", "F4"],
+        "channels": ["FC3", "FCz", "FC4"],
         "low_freq": 1.0,
         "high_freq": 7.0,
         "metric": "riemann",
@@ -491,12 +492,12 @@ POTATO_FIELD_CONFIG = [
         "target": "Ocular (blinks)",
     },
     {
-        "channels": ["PO7", "Oz", "PO8"],
+        "channels": ["FC5", "FC1", "FC2", "FC6"],
         "low_freq": 16.0,
         "high_freq": 24.0,
         "metric": "riemann",
         "normalization": "trace",
-        "target": "Myogenic posterior",
+        "target": "Myogenic lateral",
     },
     {
         "channels": ["C3", "Cz", "C4"],
@@ -507,7 +508,7 @@ POTATO_FIELD_CONFIG = [
         "target": "Myogenic central",
     },
     {
-        "channels": ["CP3", "CPz", "CP4", "P3", "Pz", "P4"],
+        "channels": ["CP3", "CPz", "CP4", "Pz"],
         "low_freq": 1.0,
         "high_freq": 24.0,
         "metric": "riemann",
