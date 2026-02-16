@@ -799,20 +799,18 @@ def riemannian_potato_field_rejection(epochs):
 
 
 # Build pipelines with artifact rejection inserted
-def build_pipeline_with_step(paradigm, dataset, rejection_func):
-    """Create a process pipeline with an artifact rejection step inserted."""
-    pipeline = paradigm.make_process_pipelines(dataset)[0]
-    pipeline.insert_step(
-        StepType.EPOCHS,
-        FunctionTransformer(rejection_func),
-        after=StepType.EPOCHS,
-    )
-    return pipeline
+rp_pipeline = paradigm.make_process_pipelines(dataset)[0]
+rp_pipeline.insert_step(
+    StepType.EPOCHS,
+    FunctionTransformer(riemannian_potato_rejection),
+    after=StepType.EPOCHS,
+)
 
-
-rp_pipeline = build_pipeline_with_step(paradigm, dataset, riemannian_potato_rejection)
-rpf_pipeline = build_pipeline_with_step(
-    paradigm, dataset, riemannian_potato_field_rejection
+rpf_pipeline = paradigm.make_process_pipelines(dataset)[0]
+rpf_pipeline.insert_step(
+    StepType.EPOCHS,
+    FunctionTransformer(riemannian_potato_field_rejection),
+    after=StepType.EPOCHS,
 )
 
 ##############################################################################
