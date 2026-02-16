@@ -197,12 +197,8 @@ aliases_list = []  # list of tuples containing (old name, new name, expire versi
 
 def update_docstring_list(doc, section, msg):
     header = rf"{section}[ ]*\n[ ]*[\-]+[ ]*\n"
-    if section not in doc:
-        doc = doc + f"\n\n    {section}\n    {'-' * len(section)}\n"
     if re.search(rf"[ ]*{header}", doc) is None:
-        raise ValueError(
-            f"Incorrect formatting of section {section!r} in docstring {doc!r}"
-        )
+        doc = doc + f"\n\n    {section}\n    {'-' * len(section)}\n"
     doc = re.sub(rf"([ ]*)({header})", rf"\g<1>\g<2>\n\g<1>{msg}\n", doc)
     return doc
 

@@ -87,6 +87,8 @@ class Kalunga2016(BaseDataset):
         ),
         participants=ParticipantMetadata(
             n_subjects=12,
+            health_status="healthy",
+            species="human",
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
@@ -99,11 +101,39 @@ class Kalunga2016(BaseDataset):
             primary_modality="visual",
             synchronicity="asynchronous",
             mode="both",
+            feedback_type="online",
+            stimulus_presentation={
+                "device": "LED stimuli",
+                "frequencies": "13 Hz, 17 Hz, 21 Hz",
+                "note": "No phase synchronization required",
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.neucom.2016.01.007",
             repository="Zenodo",
             data_url="https://zenodo.org/record/2392979",
+            publication_year=2016,
+            investigators=[
+                "Emmanuel K. Kalunga",
+                "Sylvain Chevallier",
+                "Quentin Barthélemy",
+                "Karim Djouani",
+                "Eric Monacelli",
+                "Yskandar Hamam",
+            ],
+            institution="Laboratoire d'Ingénierie des Systèmes de Versailles, Université de Versailles Saint-Quentin",
+            institution_address="78140 Velizy, France",
+            institution_department="Laboratoire d'Ingénierie des Systèmes de Versailles",
+            country="France",
+            senior_author="Sylvain Chevallier",
+            keywords=[
+                "Riemannian geometry",
+                "Online",
+                "Asynchronous",
+                "Brain-Computer Interfaces",
+                "Steady State Visually Evoked Potentials",
+            ],
+            description="Online SSVEP-based BCI using Riemannian geometry for assistive robotics with shared control scheme",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -122,7 +152,7 @@ class Kalunga2016(BaseDataset):
             re_reference="car",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA", "SVM", "Neural Network", "Riemannian", "CCA"],
+            classifiers=["LDA", "SVM", "Neural Network", "Riemannian", "CCA", "MDRM"],
             feature_extraction=[
                 "CSP",
                 "ERD",
@@ -138,18 +168,21 @@ class Kalunga2016(BaseDataset):
             evaluation_type=["cross_subject", "cross_session"],
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["prosthetic", "vr_ar", "communication"],
+            applications=["prosthetic", "vr_ar", "communication", "assistive_robotics"],
             environment="laboratory",
+            online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
-            n_targets=2,
-            stimulus_frequencies_hz=[13.0, 17.0],
+            n_targets=3,
+            stimulus_frequencies_hz=[13.0, 17.0, 21.0],
         ),
         data_structure=DataStructureMetadata(
             n_trials="32 trials per session (8 per visual stimulus, 8 for resting class)",
             trials_context="per session",
         ),
+        sessions_per_subject=1,
+        runs_per_session=1,
         data_processed=True,
     )
 

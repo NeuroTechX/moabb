@@ -210,6 +210,8 @@ class Hinss2021(BaseDataset):
             n_blocks=2,
             trials_context="total",
         ),
+        sessions_per_subject=2,
+        runs_per_session=1,
         data_processed=False,
     )
 

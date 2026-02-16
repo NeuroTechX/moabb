@@ -9,6 +9,7 @@ from moabb.datasets.metadata.schema import (
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
+    DocumentationMetadata,
     ExperimentMetadata,
     FilterDetails,
     FrequencyBands,
@@ -210,6 +211,43 @@ class BNCI2003_004(MNEBNCI):
             trial_duration=4.5,
             stimulus_type="cursor_feedback",
             mode="both",
+            stimulus_presentation={
+                "duration": "3 s",
+                "interval": "4.5 s",
+                "modality": "visual (letter on screen)",
+            },
+            instructions="subjects were instructed to imagine movement or sensation according to displayed letter",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1109/TBME.2004.827088",
+            investigators=[
+                "Guido Dornhege",
+                "Benjamin Blankertz",
+                "Gabriel Curio",
+                "Klaus-Robert Müller",
+            ],
+            institution="Fraunhofer FIRST (IDA); Charité University Medicine Berlin",
+            country="Germany",
+            publication_year=2004,
+            funding=[
+                "Bundesministerium für Bildung und Forschung (BMBF) under Grants FKZ 01IBB02A and FKZ 01IBB02B"
+            ],
+            keywords=[
+                "brain-computer interface",
+                "BCI",
+                "common spatial patterns",
+                "electroencephalogram",
+                "EEG",
+                "event-related desynchronization",
+                "feature combination",
+                "movement related potential",
+                "multiclass",
+                "single-trial analysis",
+            ],
+            institution_address="12489 Berlin, Germany; 12203 Berlin, Germany",
+            institution_department="Fraunhofer FIRST (IDA); Department of Neurology, Campus Benjamin Franklin",
+            senior_author="Klaus-Robert Müller",
+            contact_info=["guido.dornhege@first.fraunhofer.de"],
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -234,6 +272,7 @@ class BNCI2003_004(MNEBNCI):
             artifact_methods=["ICA"],
             re_reference="car",
             downsampled_to_hz=100,
+            notes="surface EMG at both forearms and one leg, as well as horizontal and vertical EOG signals were recorded to check for muscle activation and eye movements, but no trial was rejected",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA", "SVM", "Shrinkage LDA"],
@@ -241,9 +280,12 @@ class BNCI2003_004(MNEBNCI):
             frequency_bands=FrequencyBands(
                 alpha=[8, 13],
             ),
+            spatial_filters=["CSP", "spatial Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="leave-one-out",
+            cv_folds=10,
+            evaluation_type=["10x10-fold cross validation"],
         ),
         bci_application=BCIApplicationMetadata(
             applications=[
@@ -254,14 +296,26 @@ class BNCI2003_004(MNEBNCI):
                 "communication",
             ],
             environment="outdoor",
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
+            imagery_tasks=[
+                "left_hand",
+                "right_hand",
+                "feet",
+                "visual",
+                "auditory",
+                "tactile",
+            ],
+            cue_duration_s=3.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=200,
             trials_context="total",
         ),
+        sessions_per_subject=1,
+        runs_per_session=1,
         data_processed=True,
     )
 
