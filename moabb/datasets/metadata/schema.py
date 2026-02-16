@@ -525,6 +525,16 @@ class AcquisitionMetadata:
         or a per-channel-type dict like ``{"eeg": 20, "emg": 50}``.
     auxiliary_channels : AuxiliaryChannelsMetadata, optional
         Information about EOG, EMG, and other auxiliary channels.
+    cap_manufacturer : str, optional
+        Cap manufacturer company name (BIDS RECOMMENDED).
+    cap_model : str, optional
+        Cap model designation (BIDS RECOMMENDED).
+    electrode_type : str, optional
+        Electrode type: "cup", "ring", "clip-on", "wire", "needle".
+    electrode_material : str, optional
+        Electrode material: "Ag/AgCl", "Tin", "Gold".
+    device_serial : str, optional
+        Device serial number or pseudonym (BIDS RECOMMENDED).
     """
 
     sampling_rate: float
@@ -541,6 +551,12 @@ class AcquisitionMetadata:
     montage: str = "standard_1005"
     impedance_threshold_kohm: Optional[Union[float, Dict[str, float]]] = None
     auxiliary_channels: Optional[AuxiliaryChannelsMetadata] = None
+    # BIDS fields
+    cap_manufacturer: Optional[str] = None
+    cap_model: Optional[str] = None
+    electrode_type: Optional[str] = None
+    electrode_material: Optional[str] = None
+    device_serial: Optional[str] = None
 
 
 @dataclass
@@ -579,6 +595,18 @@ class DocumentationMetadata:
         Funding sources (EEGDash field).
     readme : str, optional
         Dataset README content (EEGDash field).
+    institution_address : str, optional
+        Full address of institution (BIDS RECOMMENDED).
+    institution_department : str, optional
+        Department within institution (BIDS RECOMMENDED).
+    ethics_approval : List[str], optional
+        Ethics committee approvals (BIDS RECOMMENDED).
+    acknowledgements : str, optional
+        Acknowledgement text (BIDS OPTIONAL).
+    how_to_acknowledge : str, optional
+        Citation/acknowledgement instructions (BIDS OPTIONAL).
+    keywords : List[str], optional
+        Dataset keywords for discoverability (BIDS OPTIONAL).
     """
 
     doi: Optional[str] = None
@@ -596,6 +624,13 @@ class DocumentationMetadata:
     associated_paper_doi: Optional[str] = None
     funding: Optional[List[str]] = None
     readme: Optional[str] = None
+    # BIDS fields
+    institution_address: Optional[str] = None
+    institution_department: Optional[str] = None
+    ethics_approval: Optional[List[str]] = None
+    acknowledgements: Optional[str] = None
+    how_to_acknowledge: Optional[str] = None
+    keywords: Optional[List[str]] = None
 
 
 @dataclass
@@ -632,6 +667,14 @@ class ParticipantMetadata:
         e.g., "stroke", "ALS", "spinal cord injury".
     bci_experience : str, optional
         BCI experience level, e.g., "naive", "experienced", "mixed".
+    sexes : List[str], optional
+        Per-subject sex list, e.g., ["male", "female", "male", ...].
+        Used for per-subject ``sex`` column in BIDS ``participants.tsv``.
+    handedness_list : List[str], optional
+        Per-subject handedness list, e.g., ["right", "left", "right", ...].
+        Used for per-subject ``hand`` column in BIDS ``participants.tsv``.
+    species : str
+        Species of participants (BIDS RECOMMENDED). Default is "homo sapiens".
     """
 
     n_subjects: int
@@ -647,6 +690,10 @@ class ParticipantMetadata:
     clinical_population: Optional[str] = None
     # RALPH additional fields
     bci_experience: Optional[str] = None
+    # BIDS per-subject fields
+    sexes: Optional[List[str]] = None
+    handedness_list: Optional[List[str]] = None
+    species: str = "homo sapiens"
 
 
 @dataclass
@@ -693,6 +740,14 @@ class ExperimentMetadata:
         BCI mode, e.g., "online", "offline", "simulated".
     has_training_test_split : bool, optional
         Whether data includes explicit training/test split.
+    instructions : str, optional
+        Text instructions given to participants before recording (BIDS RECOMMENDED).
+    cog_atlas_id : str, optional
+        Cognitive Atlas task URI (BIDS RECOMMENDED).
+    hed_tags : Dict[str, str], optional
+        Per-dataset HED tag overrides mapping event name to HED tag string.
+        When set, these take priority over paradigm-level defaults during
+        BIDS export.
     """
 
     paradigm: str
@@ -714,6 +769,11 @@ class ExperimentMetadata:
     synchronicity: Optional[str] = None
     mode: Optional[str] = None
     has_training_test_split: Optional[bool] = None
+    # BIDS fields
+    instructions: Optional[str] = None
+    cog_atlas_id: Optional[str] = None
+    # HED fields
+    hed_tags: Optional[Dict[str, str]] = None
 
 
 @dataclass

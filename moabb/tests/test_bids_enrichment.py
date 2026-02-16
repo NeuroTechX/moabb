@@ -1,0 +1,1337 @@
+"""Tests for BIDS enrichment helpers in bids_interface.py."""
+
+import csv
+import json
+from unittest.mock import MagicMock
+
+import mne
+import numpy as np
+
+from moabb.datasets.bids_interface import (
+    _build_dataset_description_kwargs,
+    _build_hed_sidecar_annotations,
+    _build_sidecar_enrichment,
+    _enrich_raw_info_from_metadata,
+    _split_manufacturer,
+    _update_dataset_description_extra,
+    _update_electrodes_tsv,
+    _update_events_json_with_hed,
+    _update_participants_tsv,
+)
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    FilterDetails,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    Tags,
+)
+
+
+# ============================================================
+# _split_manufacturer
+# ============================================================
+
+
+class TestSplitManufacturer:
+    def test_known_amplifier(self):
+        assert _split_manufacturer("BrainAmp") == ("Brain Products", "BrainAmp")
+
+    def test_known_amplifier_case_insensitive(self):
+        assert _split_manufacturer("brainamp DC") == ("Brain Products", "brainamp DC")
+
+    def test_biosemi(self):
+        assert _split_manufacturer("Biosemi ActiveTwo") == (
+            "BioSemi",
+            "Biosemi ActiveTwo",
+        )
+
+    def test_unknown_amplifier(self):
+        assert _split_manufacturer("CustomAmp v3") == ("CustomAmp v3", "CustomAmp v3")
+
+    def test_none(self):
+        assert _split_manufacturer(None) == (None, None)
+
+    def test_empty_string(self):
+        assert _split_manufacturer("") == (None, None)
+
+    def test_gtec(self):
+        assert _split_manufacturer("g.USBamp") == ("g.tec", "g.USBamp")
+
+
+# ============================================================
+# _enrich_raw_info_from_metadata
+# ============================================================
+
+
+class TestEnrichRawInfoFromMetadata:
+    def _make_raw(self):
+        """Create a minimal raw object for testing."""
+        info = mne.create_info(ch_names=["C3", "C4"], sfreq=256, ch_types="eeg")
+        raw = mne.io.RawArray(np.zeros((2, 256)), info)
+        return raw
+
+    def test_none_metadata_is_noop(self):
+        raw = self._make_raw()
+        _enrich_raw_info_from_metadata(raw, None, 1)
+        assert raw.info.get("subject_info") is None
+
+    def test_line_freq_from_metadata(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=2,
+                channel_types={"eeg": 2},
+                line_freq=60.0,
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        # raw.info line_freq is None by default — metadata should fill it
+        assert raw.info["line_freq"] is None
+        _enrich_raw_info_from_metadata(raw, metadata, 1)
+        assert raw.info["line_freq"] == 60.0
+
+    def test_sex_all_male(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=5, gender={"male": 5}),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _enrich_raw_info_from_metadata(raw, metadata, 1)
+        assert raw.info["subject_info"]["sex"] == 1
+
+    def test_sex_all_female(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=5, gender={"female": 5}),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _enrich_raw_info_from_metadata(raw, metadata, 1)
+        assert raw.info["subject_info"]["sex"] == 2
+
+    def test_sex_mixed_not_set(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=10, gender={"male": 5, "female": 5}
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _enrich_raw_info_from_metadata(raw, metadata, 1)
+        subj = raw.info.get("subject_info") or {}
+        assert "sex" not in subj
+
+    def test_hand_all_right_dict(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=5, handedness={"right": 5}),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _enrich_raw_info_from_metadata(raw, metadata, 1)
+        assert raw.info["subject_info"]["hand"] == 1
+
+    def test_hand_string_right(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=5, handedness="right-handed"),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _enrich_raw_info_from_metadata(raw, metadata, 1)
+        assert raw.info["subject_info"]["hand"] == 1
+
+    def test_no_participants(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        # No gender or handedness set — should not crash
+        _enrich_raw_info_from_metadata(raw, metadata, 1)
+
+    def test_per_subject_sex(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=3, sexes=["male", "female", "male"]
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        # Subject 2 → index 1 → female → code 2
+        _enrich_raw_info_from_metadata(raw, metadata, 2)
+        assert raw.info["subject_info"]["sex"] == 2
+
+    def test_per_subject_handedness(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=3, handedness_list=["right", "left", "ambidextrous"]
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        # Subject 2 → index 1 → left → code 2
+        _enrich_raw_info_from_metadata(raw, metadata, 2)
+        assert raw.info["subject_info"]["hand"] == 2
+
+        # Subject 3 → index 2 → ambidextrous → code 3
+        raw2 = self._make_raw()
+        _enrich_raw_info_from_metadata(raw2, metadata, 3)
+        assert raw2.info["subject_info"]["hand"] == 3
+
+    def test_per_subject_sex_overrides_aggregate(self):
+        raw = self._make_raw()
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=3,
+                gender={"male": 3},  # aggregate says all male
+                sexes=["male", "female", "male"],  # per-subject says #2 is female
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        # sexes should take priority: subject 2 → female → code 2
+        _enrich_raw_info_from_metadata(raw, metadata, 2)
+        assert raw.info["subject_info"]["sex"] == 2
+
+
+# ============================================================
+# _build_sidecar_enrichment
+# ============================================================
+
+
+class TestBuildSidecarEnrichment:
+    def test_none_metadata(self):
+        assert _build_sidecar_enrichment(None) == {}
+
+    def test_basic_acquisition(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                reference="left mastoid",
+                ground="AFz",
+                hardware="BrainAmp",
+                software="BCI2000",
+                montage="standard_1020",
+                sensor_type="Ag/AgCl",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["EEGReference"] == "left mastoid"
+        assert entries["EEGGround"] == "AFz"
+        assert entries["Manufacturer"] == "Brain Products"
+        assert entries["ManufacturersModelName"] == "BrainAmp"
+        assert entries["SoftwareVersions"] == "BCI2000"
+        assert entries["EEGPlacementScheme"] == "10-20 system"
+        assert entries["CapManufacturer"] == "Ag/AgCl"
+        assert entries["RecordingType"] == "continuous"
+        assert entries["SoftwareFilters"] == "n/a"
+
+    def test_filter_details_bandpass_dict(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(
+                filter_details=FilterDetails(
+                    bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
+                    notch_hz=50,
+                )
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert "HardwareFilters" in entries
+        hw = entries["HardwareFilters"]
+        assert "Bandpass" in hw
+        assert hw["Bandpass"]["low_cutoff_hz"] == 0.5
+        assert "Notch" in hw
+        assert hw["Notch"]["CutoffFrequency"] == [50]
+
+    def test_filter_details_bandpass_list(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(
+                filter_details=FilterDetails(bandpass=[0.5, 100.0])
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        bp = entries["HardwareFilters"]["Bandpass"]
+        assert bp["LowCutoffFrequency"] == 0.5
+        assert bp["HighCutoffFrequency"] == 100.0
+
+    def test_filter_details_individual_hp_lp(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(
+                filter_details=FilterDetails(highpass_hz=0.1, lowpass_hz=40.0)
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        bp = entries["HardwareFilters"]["Bandpass"]
+        assert bp["LowCutoffFrequency"] == 0.1
+        assert bp["HighCutoffFrequency"] == 40.0
+
+    def test_task_description(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(
+                paradigm="imagery",
+                study_design="Four-class motor imagery",
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["TaskDescription"] == "Four-class motor imagery"
+
+    def test_institution(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                institution="Graz University of Technology"
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["InstitutionName"] == "Graz University of Technology"
+
+    def test_montage_fallback(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                montage="custom_montage",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["EEGPlacementScheme"] == "custom_montage"
+
+    def test_cap_manufacturer_and_model(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                cap_manufacturer="EasyCap",
+                cap_model="actiCAP snap",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["CapManufacturer"] == "EasyCap"
+        assert entries["CapManufacturersModelName"] == "actiCAP snap"
+
+    def test_device_serial(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                device_serial="SN-12345",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["DeviceSerialNumber"] == "SN-12345"
+
+    def test_instructions(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(
+                paradigm="imagery",
+                instructions="Imagine moving your left or right hand.",
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["Instructions"] == "Imagine moving your left or right hand."
+
+    def test_cog_atlas_explicit(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(
+                paradigm="imagery",
+                cog_atlas_id="https://www.cognitiveatlas.org/task/id/custom123/",
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert (
+            entries["CogAtlasID"] == "https://www.cognitiveatlas.org/task/id/custom123/"
+        )
+
+    def test_cog_atlas_fallback(self):
+        # Motor imagery paradigm has a known fallback
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert (
+            entries["CogAtlasID"]
+            == "https://www.cognitiveatlas.org/task/id/trm_4c8a834779883/"
+        )
+
+        # P300 paradigm has a known fallback
+        metadata_p300 = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="p300"),
+        )
+        entries_p300 = _build_sidecar_enrichment(metadata_p300)
+        assert (
+            entries_p300["CogAtlasID"]
+            == "https://www.cognitiveatlas.org/task/id/tsk_GxjZBNiJorj1K/"
+        )
+
+        # SSVEP has no fallback
+        metadata_ssvep = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="ssvep"),
+        )
+        entries_ssvep = _build_sidecar_enrichment(metadata_ssvep)
+        assert "CogAtlasID" not in entries_ssvep
+
+    def test_institution_address(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                institution="TU Graz",
+                institution_address="Inffeldgasse 13, 8010 Graz, Austria",
+                institution_department="Institute of Neural Engineering",
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["InstitutionName"] == "TU Graz"
+        assert entries["InstitutionAddress"] == "Inffeldgasse 13, 8010 Graz, Austria"
+        assert entries["InstitutionalDepartmentName"] == "Institute of Neural Engineering"
+
+    def test_cap_manufacturer_fallback_to_sensor_type(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                sensor_type="Ag/AgCl",
+                # cap_manufacturer is None → should fall back to sensor_type
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["CapManufacturer"] == "Ag/AgCl"
+
+    def test_cap_manufacturer_overrides_sensor_type(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                sensor_type="Ag/AgCl",
+                cap_manufacturer="EasyCap",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        # cap_manufacturer should win over sensor_type
+        assert entries["CapManufacturer"] == "EasyCap"
+
+
+# ============================================================
+# _build_dataset_description_kwargs
+# ============================================================
+
+
+class TestBuildDatasetDescriptionKwargs:
+    def _make_dataset(self, metadata=None):
+        ds = MagicMock()
+        ds.code = "TestDataset"
+        ds.doi = "10.1234/test"
+        ds.metadata = metadata
+        return ds
+
+    def test_without_metadata(self):
+        ds = self._make_dataset(metadata=None)
+        kwargs = _build_dataset_description_kwargs(ds)
+        assert kwargs["name"] == "TestDataset"
+        assert kwargs["dataset_type"] == "derivative"
+        assert kwargs["source_datasets"][0]["DOI"] == "10.1234/test"
+        assert "data_license" not in kwargs
+        assert "authors" not in kwargs
+
+    def test_with_documentation(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                license="CC BY 4.0",
+                investigators=["Alice", "Bob"],
+                funding=["Grant 123"],
+                data_url="https://example.com/data",
+                associated_paper_doi="10.5678/paper",
+                doi="10.9999/dataset",
+            ),
+        )
+        ds = self._make_dataset(metadata=metadata)
+        kwargs = _build_dataset_description_kwargs(ds)
+        assert kwargs["data_license"] == "CC BY 4.0"
+        assert kwargs["authors"] == ["Alice", "Bob"]
+        assert kwargs["funding"] == ["Grant 123"]
+        assert kwargs["source_datasets"][0]["URL"] == "https://example.com/data"
+        assert "https://example.com/data" in kwargs["references_and_links"]
+        assert "10.5678/paper" in kwargs["references_and_links"]
+        assert kwargs["doi"] == "10.9999/dataset"
+
+    def test_partial_documentation(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(license="MIT"),
+        )
+        ds = self._make_dataset(metadata=metadata)
+        kwargs = _build_dataset_description_kwargs(ds)
+        assert kwargs["data_license"] == "MIT"
+        assert "authors" not in kwargs
+        assert "funding" not in kwargs
+        assert "references_and_links" not in kwargs
+
+    def test_hed_version_present(self):
+        ds = self._make_dataset(metadata=None)
+        kwargs = _build_dataset_description_kwargs(ds)
+        assert kwargs["hed_version"] == "8.4.0"
+
+    def test_ethics_and_acknowledgements(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                acknowledgements="Thanks to all participants.",
+                how_to_acknowledge="Please cite doi:10.1234/foo.",
+                ethics_approval=["IRB-2020-001", "EC-2020-042"],
+            ),
+        )
+        ds = self._make_dataset(metadata=metadata)
+        kwargs = _build_dataset_description_kwargs(ds)
+        assert kwargs["acknowledgements"] == "Thanks to all participants."
+        assert kwargs["how_to_acknowledge"] == "Please cite doi:10.1234/foo."
+        assert kwargs["ethics_approvals"] == ["IRB-2020-001", "EC-2020-042"]
+
+
+# ============================================================
+# _update_participants_tsv
+# ============================================================
+
+
+class TestUpdateParticipantsTsv:
+    def test_no_tsv_file(self, tmp_path):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=3, ages=[25, 30, 35], health_status="healthy"
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        # Should not crash even if no file exists
+        _update_participants_tsv(tmp_path, 1, metadata)
+
+    def test_adds_age_and_group(self, tmp_path):
+        # Create a minimal participants.tsv
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"participant_id": "sub-1"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=1, ages=[25], health_status="healthy"
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _update_participants_tsv(tmp_path, 1, metadata)
+
+        # Read back
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        assert len(rows) == 1
+        assert rows[0]["age"] == "25"
+        assert rows[0]["group"] == "healthy"
+
+    def test_uses_age_mean_fallback(self, tmp_path):
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"participant_id": "sub-1"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1, age_mean=27.5),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _update_participants_tsv(tmp_path, 1, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        assert rows[0]["age"] == "27.5"
+
+    def test_preserves_existing_data(self, tmp_path):
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(
+                f, fieldnames=["participant_id", "age"], delimiter="\t"
+            )
+            writer.writeheader()
+            writer.writerow({"participant_id": "sub-1", "age": "30"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=1, ages=[25], health_status="healthy"
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _update_participants_tsv(tmp_path, 1, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        # Should preserve existing age=30, not overwrite with 25
+        assert rows[0]["age"] == "30"
+        assert rows[0]["group"] == "healthy"
+
+    def test_updates_participants_json(self, tmp_path):
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"participant_id": "sub-1"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=1, ages=[25], health_status="healthy"
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _update_participants_tsv(tmp_path, 1, metadata)
+
+        json_path = tmp_path / "participants.json"
+        assert json_path.exists()
+        with open(json_path) as f:
+            sidecar = json.load(f)
+        assert "age" in sidecar
+        assert sidecar["age"]["Units"] == "years"
+        assert "group" in sidecar
+        assert "sex" in sidecar
+        assert "hand" in sidecar
+        assert "species" in sidecar
+
+    def test_none_metadata(self, tmp_path):
+        _update_participants_tsv(tmp_path, 1, None)
+
+    def test_none_participants(self, tmp_path):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        # health_status defaults to "healthy", but no ages — should still work
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"participant_id": "sub-1"})
+        _update_participants_tsv(tmp_path, 1, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+        # age should be n/a, group should be "healthy"
+        assert rows[0]["age"] == "n/a"
+        assert rows[0]["group"] == "healthy"
+
+    def test_per_subject_sex_and_hand(self, tmp_path):
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"participant_id": "sub-1"})
+            writer.writerow({"participant_id": "sub-2"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=2,
+                sexes=["male", "female"],
+                handedness_list=["right", "left"],
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _update_participants_tsv(tmp_path, 1, metadata)
+        _update_participants_tsv(tmp_path, 2, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        assert rows[0]["sex"] == "male"
+        assert rows[0]["hand"] == "right"
+        assert rows[1]["sex"] == "female"
+        assert rows[1]["hand"] == "left"
+
+    def test_species_column(self, tmp_path):
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"participant_id": "sub-1"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        _update_participants_tsv(tmp_path, 1, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        assert rows[0]["species"] == "homo sapiens"
+
+
+# ============================================================
+# _update_electrodes_tsv
+# ============================================================
+
+
+class TestUpdateElectrodesTsv:
+    def _make_bids_path(self, tmp_path, subject="1"):
+        bp = MagicMock()
+        bp.root = str(tmp_path)
+        bp.subject = subject
+        return bp
+
+    def test_adds_material_and_type(self, tmp_path):
+        # Create electrode TSV in the expected location
+        elec_dir = tmp_path / "sub-1" / "ses-1" / "eeg"
+        elec_dir.mkdir(parents=True)
+        tsv_path = elec_dir / "sub-1_ses-1_electrodes.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["name", "x", "y", "z"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"name": "C3", "x": "0", "y": "0", "z": "0"})
+            writer.writerow({"name": "C4", "x": "1", "y": "1", "z": "1"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=2,
+                channel_types={"eeg": 2},
+                electrode_type="cup",
+                electrode_material="Ag/AgCl",
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        bp = self._make_bids_path(tmp_path)
+        _update_electrodes_tsv(bp, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        assert rows[0]["type"] == "cup"
+        assert rows[0]["material"] == "Ag/AgCl"
+        assert rows[1]["type"] == "cup"
+        assert rows[1]["material"] == "Ag/AgCl"
+
+    def test_no_electrodes_file(self, tmp_path):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=2,
+                channel_types={"eeg": 2},
+                electrode_type="cup",
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        bp = self._make_bids_path(tmp_path)
+        # Should not crash
+        _update_electrodes_tsv(bp, metadata)
+
+    def test_preserves_existing_columns(self, tmp_path):
+        elec_dir = tmp_path / "sub-1" / "ses-1" / "eeg"
+        elec_dir.mkdir(parents=True)
+        tsv_path = elec_dir / "sub-1_ses-1_electrodes.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=["name", "x", "y", "z", "type", "material"],
+                delimiter="\t",
+            )
+            writer.writeheader()
+            writer.writerow(
+                {
+                    "name": "C3",
+                    "x": "0",
+                    "y": "0",
+                    "z": "0",
+                    "type": "ring",
+                    "material": "Gold",
+                }
+            )
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=2,
+                channel_types={"eeg": 2},
+                electrode_type="cup",
+                electrode_material="Ag/AgCl",
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        bp = self._make_bids_path(tmp_path)
+        _update_electrodes_tsv(bp, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        # Columns already existed — should NOT overwrite
+        assert rows[0]["type"] == "ring"
+        assert rows[0]["material"] == "Gold"
+
+    def test_material_fallback_to_sensor_type(self, tmp_path):
+        elec_dir = tmp_path / "sub-1" / "ses-1" / "eeg"
+        elec_dir.mkdir(parents=True)
+        tsv_path = elec_dir / "sub-1_ses-1_electrodes.tsv"
+        with open(tsv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["name", "x", "y", "z"], delimiter="\t")
+            writer.writeheader()
+            writer.writerow({"name": "C3", "x": "0", "y": "0", "z": "0"})
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=2,
+                channel_types={"eeg": 2},
+                sensor_type="Tin",
+                # electrode_material is None → should fall back to sensor_type
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        bp = self._make_bids_path(tmp_path)
+        _update_electrodes_tsv(bp, metadata)
+
+        with open(tsv_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            rows = list(reader)
+
+        assert rows[0]["material"] == "Tin"
+
+    def test_none_metadata(self, tmp_path):
+        bp = self._make_bids_path(tmp_path)
+        _update_electrodes_tsv(bp, None)
+
+
+# ============================================================
+# _update_dataset_description_extra
+# ============================================================
+
+
+class TestUpdateDatasetDescriptionExtra:
+    def test_adds_keywords(self, tmp_path):
+        desc_path = tmp_path / "dataset_description.json"
+        with open(desc_path, "w") as f:
+            json.dump({"Name": "Test", "BIDSVersion": "1.11.0"}, f)
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(keywords=["BCI", "EEG", "imagery"]),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        with open(desc_path) as f:
+            desc = json.load(f)
+        assert desc["Keywords"] == ["BCI", "EEG", "imagery"]
+        # Should preserve existing fields
+        assert desc["Name"] == "Test"
+
+    def test_keywords_from_tags(self, tmp_path):
+        desc_path = tmp_path / "dataset_description.json"
+        with open(desc_path, "w") as f:
+            json.dump({"Name": "Test"}, f)
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            tags=Tags(
+                pathology=["healthy"],
+                modality=["motor"],
+                type=["imagery"],
+            ),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        with open(desc_path) as f:
+            desc = json.load(f)
+        assert "Keywords" in desc
+        assert "healthy" in desc["Keywords"]
+        assert "motor" in desc["Keywords"]
+        assert "imagery" in desc["Keywords"]
+
+    def test_no_overwrite_existing(self, tmp_path):
+        desc_path = tmp_path / "dataset_description.json"
+        with open(desc_path, "w") as f:
+            json.dump(
+                {"Name": "Test", "Keywords": ["existing_keyword"]},
+                f,
+            )
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(keywords=["new_keyword"]),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        with open(desc_path) as f:
+            desc = json.load(f)
+        # Should preserve existing keywords, not overwrite
+        assert desc["Keywords"] == ["existing_keyword"]
+
+    def test_none_metadata(self, tmp_path):
+        _update_dataset_description_extra(tmp_path, None)
+
+    def test_no_description_file(self, tmp_path):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(keywords=["BCI"]),
+        )
+        # Should not crash
+        _update_dataset_description_extra(tmp_path, metadata)
+
+
+# ============================================================
+# _build_hed_sidecar_annotations
+# ============================================================
+
+
+class TestBuildHedSidecarAnnotations:
+    def _make_dataset(self, paradigm, event_id, metadata=None):
+        ds = MagicMock()
+        ds.paradigm = paradigm
+        ds.event_id = event_id
+        ds.metadata = metadata
+        return ds
+
+    def test_imagery_default_tags(self):
+        ds = self._make_dataset("imagery", {"left_hand": 1, "right_hand": 2, "feet": 3})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "left_hand" in hed
+        assert "Imagine" in hed["left_hand"]
+        assert "Experimental-stimulus" in hed["left_hand"]
+        assert "right_hand" in hed
+        assert "Experimental-stimulus" in hed["right_hand"]
+        assert "feet" in hed
+        assert "Experimental-stimulus" in hed["feet"]
+
+    def test_p300_default_tags(self):
+        ds = self._make_dataset("p300", {"Target": 2, "NonTarget": 1})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "Target" in hed
+        assert "Target" in hed["Target"]
+        assert "NonTarget" in hed
+        assert "Non-target" in hed["NonTarget"]
+
+    def test_ssvep_dynamic_tags(self):
+        ds = self._make_dataset("ssvep", {"9.25": 1, "11.25": 2, "rest": 3})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "9.25" in hed
+        assert "Visual-presentation" in hed["9.25"]
+        assert "Label/9_25" in hed["9.25"]
+        assert "11.25" in hed
+        assert "Label/11_25" in hed["11.25"]
+        assert "rest" in hed
+        assert "Rest" in hed["rest"]
+
+    def test_cvep_default_tags(self):
+        ds = self._make_dataset("cvep", {"1.0": 101, "0.0": 100})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "1.0" in hed
+        assert "Label/intensity_1_0" in hed["1.0"]
+        assert "0.0" in hed
+        assert "Label/intensity_0_0" in hed["0.0"]
+
+    def test_rstate_default_tags(self):
+        ds = self._make_dataset("rstate", {"closed": 1, "open": 2})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "closed" in hed
+        assert "Close" in hed["closed"]
+        assert "open" in hed
+        assert "Open" in hed["open"]
+
+    def test_metadata_override(self):
+        custom_tags = {
+            "left_hand": "Custom-tag, Left",
+            "right_hand": "Custom-tag, Right",
+        }
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery", hed_tags=custom_tags),
+        )
+        ds = self._make_dataset(
+            "imagery", {"left_hand": 1, "right_hand": 2}, metadata=metadata
+        )
+        hed = _build_hed_sidecar_annotations(ds)
+        # Custom tags take priority
+        assert hed["left_hand"] == "Custom-tag, Left"
+        assert hed["right_hand"] == "Custom-tag, Right"
+
+    def test_metadata_override_partial_merges_defaults(self):
+        """Partial hed_tags override merges with paradigm defaults."""
+        custom_tags = {
+            "left_hand": "Custom-tag, Left",
+        }
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery", hed_tags=custom_tags),
+        )
+        ds = self._make_dataset(
+            "imagery",
+            {"left_hand": 1, "right_hand": 2, "unknown_event": 99},
+            metadata=metadata,
+        )
+        hed = _build_hed_sidecar_annotations(ds)
+        # Custom tag takes priority
+        assert hed["left_hand"] == "Custom-tag, Left"
+        # Non-overridden event still gets paradigm default
+        assert "Imagine" in hed["right_hand"]
+        # Unknown event gets Label fallback
+        assert hed["unknown_event"] == "Sensory-event, (Label/unknown_event)"
+
+    def test_unknown_events_get_label_fallback(self):
+        ds = self._make_dataset("imagery", {"left_hand": 1, "unknown_event": 99})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "left_hand" in hed
+        assert "Imagine" in hed["left_hand"]
+        # Unknown events get Label fallback
+        assert "unknown_event" in hed
+        assert hed["unknown_event"] == "Sensory-event, (Label/unknown_event)"
+
+    def test_no_metadata_uses_defaults(self):
+        ds = self._make_dataset("imagery", {"left_hand": 1, "right_hand": 2})
+        ds.metadata = None
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "left_hand" in hed
+        assert "right_hand" in hed
+
+    def test_unknown_paradigm_uses_label_fallback(self):
+        ds = self._make_dataset("unknown_paradigm", {"event1": 1, "event2": 2})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert hed == {
+            "event1": "Sensory-event, (Label/event1)",
+            "event2": "Sensory-event, (Label/event2)",
+        }
+
+    def test_upper_limb_events(self):
+        ds = self._make_dataset(
+            "imagery",
+            {
+                "right_elbow_flexion": 1536,
+                "right_hand_open": 1541,
+                "rest": 1542,
+            },
+        )
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "Flex" in hed["right_elbow_flexion"]
+        assert "Elbow" in hed["right_elbow_flexion"]
+        assert "Experimental-stimulus" in hed["right_elbow_flexion"]
+        assert "Open" in hed["right_hand_open"]
+        assert "Experimental-stimulus" in hed["right_hand_open"]
+        assert "Rest" in hed["rest"]
+        assert "Experimental-stimulus" in hed["rest"]
+
+    def test_reaching_events(self):
+        ds = self._make_dataset(
+            "imagery",
+            {"up_slow_near": 1, "down_fast_far": 8, "left_fast_near": 11},
+        )
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "Reach" in hed["up_slow_near"]
+        assert "Upward" in hed["up_slow_near"]
+        assert "Experimental-stimulus" in hed["up_slow_near"]
+        assert "Downward" in hed["down_fast_far"]
+        assert "Experimental-stimulus" in hed["down_fast_far"]
+        assert "Left" in hed["left_fast_near"]
+        assert "Experimental-stimulus" in hed["left_fast_near"]
+
+    def test_letter_events(self):
+        ds = self._make_dataset("imagery", {"letter_a": 1, "letter_v": 10})
+        hed = _build_hed_sidecar_annotations(ds)
+        assert "Write" in hed["letter_a"]
+        assert "Label/a" in hed["letter_a"]
+        assert "Experimental-stimulus" in hed["letter_a"]
+        assert "Label/v" in hed["letter_v"]
+        assert "Experimental-stimulus" in hed["letter_v"]
+
+    def test_mental_task_events(self):
+        ds = self._make_dataset(
+            "imagery",
+            {
+                "math": 1,
+                "letter": 2,
+                "rotation": 3,
+                "count": 4,
+                "baseline": 5,
+                "subtraction": 6,
+            },
+        )
+        hed = _build_hed_sidecar_annotations(ds)
+        # Each mental task must be distinguishable via Label qualifier
+        assert (
+            hed["math"]
+            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/math))"
+        )
+        assert (
+            hed["letter"]
+            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/letter))"
+        )
+        assert (
+            hed["rotation"]
+            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/rotation))"
+        )
+        assert (
+            hed["subtraction"]
+            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/subtraction))"
+        )
+        assert "Count" in hed["count"]
+        assert "Experimental-stimulus" in hed["count"]
+        assert "Rest" in hed["baseline"]
+        assert "Experimental-stimulus" in hed["baseline"]
+
+    def test_label_fallback_sanitizes_dots(self):
+        """Label fallback sanitizes dots for HED nameClass compliance."""
+        ds = self._make_dataset(
+            paradigm="unknown_paradigm",
+            event_id={"13.5": 1, "event name": 2},
+        )
+        hed = _build_hed_sidecar_annotations(ds)
+        assert hed["13.5"] == "Sensory-event, (Label/13_5)"
+        assert hed["event name"] == "Sensory-event, (Label/event_name)"
+
+    def test_all_events_covered_no_gaps(self):
+        """Every event from dataset.event_id must appear in the output."""
+        ds = self._make_dataset(
+            "imagery",
+            {"left_hand": 1, "right_hand": 2, "novel_future_event": 99},
+        )
+        hed = _build_hed_sidecar_annotations(ds)
+        assert set(hed.keys()) == {"left_hand", "right_hand", "novel_future_event"}
+
+
+# ============================================================
+# _update_events_json_with_hed
+# ============================================================
+
+
+class TestUpdateEventsJsonWithHed:
+    def _make_bids_path(self, tmp_path, events_json_content=None):
+        """Create a mock BIDSPath that points to a real events.json file."""
+        events_json_path = tmp_path / "sub-1_task-imagery_events.json"
+        if events_json_content is not None:
+            with open(events_json_path, "w") as f:
+                json.dump(events_json_content, f)
+
+        bp = MagicMock()
+        # .copy().update(suffix="events", extension=".json").fpath
+        mock_copy = MagicMock()
+        mock_update = MagicMock()
+        mock_update.fpath = events_json_path
+        mock_copy.update.return_value = mock_update
+        bp.copy.return_value = mock_copy
+        return bp, events_json_path
+
+    def test_adds_hed_to_trial_type(self, tmp_path):
+        content = {"trial_type": {"Description": "Event type."}}
+        bp, json_path = self._make_bids_path(tmp_path, content)
+        hed_tags = {"left_hand": "Sensory-event, Cue, (Imagine, (Move, Hand))"}
+        _update_events_json_with_hed(bp, hed_tags)
+
+        with open(json_path) as f:
+            sidecar = json.load(f)
+        assert "HED" in sidecar["trial_type"]
+        assert sidecar["trial_type"]["HED"]["left_hand"] == hed_tags["left_hand"]
+
+    def test_existing_hed_preserved_on_conflict(self, tmp_path):
+        existing_hed = {"left_hand": "Existing-tag"}
+        content = {
+            "trial_type": {
+                "Description": "Event type.",
+                "HED": existing_hed,
+            }
+        }
+        bp, json_path = self._make_bids_path(tmp_path, content)
+        hed_tags = {"left_hand": "New-tag", "right_hand": "Right-tag"}
+        _update_events_json_with_hed(bp, hed_tags)
+
+        with open(json_path) as f:
+            sidecar = json.load(f)
+        # Existing entries preserved on conflict
+        assert sidecar["trial_type"]["HED"]["left_hand"] == "Existing-tag"
+        # New entries merged in
+        assert sidecar["trial_type"]["HED"]["right_hand"] == "Right-tag"
+
+    def test_creates_trial_type_if_missing(self, tmp_path):
+        content = {"onset": {"Description": "Event onset."}}
+        bp, json_path = self._make_bids_path(tmp_path, content)
+        hed_tags = {"Target": "Sensory-event, Target"}
+        _update_events_json_with_hed(bp, hed_tags)
+
+        with open(json_path) as f:
+            sidecar = json.load(f)
+        assert "trial_type" in sidecar
+        assert "HED" in sidecar["trial_type"]
+        assert sidecar["trial_type"]["HED"]["Target"] == hed_tags["Target"]
+
+    def test_no_events_json_no_op(self, tmp_path):
+        bp, json_path = self._make_bids_path(tmp_path, events_json_content=None)
+        # File doesn't exist — should be a no-op
+        hed_tags = {"left_hand": "Sensory-event, Cue"}
+        _update_events_json_with_hed(bp, hed_tags)
+        assert not json_path.exists()
+
+    def test_empty_hed_tags_no_op(self, tmp_path):
+        content = {"trial_type": {"Description": "Event type."}}
+        bp, json_path = self._make_bids_path(tmp_path, content)
+        _update_events_json_with_hed(bp, {})
+
+        with open(json_path) as f:
+            sidecar = json.load(f)
+        # Should not have added HED key
+        assert "HED" not in sidecar.get("trial_type", {})
