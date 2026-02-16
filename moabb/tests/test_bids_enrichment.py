@@ -2,10 +2,12 @@
 
 import csv
 import json
+from datetime import datetime
 from unittest.mock import MagicMock
 
 import mne
 import numpy as np
+import pytest
 
 from moabb.datasets.bids_interface import (
     _build_dataset_description_kwargs,
@@ -22,17 +24,23 @@ from moabb.datasets.bids_interface import (
 )
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ExternalLinks,
     FilterDetails,
+    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
+    Timestamps,
 )
 
 
@@ -1710,3 +1718,502 @@ class TestBuildReadme:
         readme = _build_readme(ds)
         assert "Hardware: n/a" not in readme
         assert "Ground: n/a" not in readme
+
+
+# ============================================================
+# Parametrized field-coverage tests for _build_readme
+# ============================================================
+
+
+def _minimal_metadata(**overrides):
+    """Build a DatasetMetadata with only required fields plus overrides."""
+    kwargs = dict(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+        ),
+        participants=ParticipantMetadata(n_subjects=10),
+        experiment=ExperimentMetadata(paradigm="imagery"),
+    )
+    kwargs.update(overrides)
+    return DatasetMetadata(**kwargs)
+
+
+def _mock_ds(metadata=None):
+    ds = MagicMock()
+    ds.code = "TestDS"
+    ds.paradigm = "imagery"
+    ds.doi = None
+    ds.subject_list = list(range(1, 11))
+    ds.n_sessions = 1
+    ds.event_id = {"left_hand": 1, "right_hand": 2}
+    ds.interval = [0, 4]
+    type(ds).__doc__ = "Test dataset."
+    ds.metadata = metadata
+    return ds
+
+
+class TestReadmeAcquisitionFields:
+    """Parametrize over every AcquisitionMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("sampling_rate", 512.0, "512.0 Hz"),
+            ("n_channels", 64, "64"),
+            ("channel_types", {"eeg": 60, "eog": 4}, "eeg=60, eog=4"),
+            ("sensors", ["Fp1", "Fp2"], "Fp1, Fp2"),
+            ("sensor_type", "Ag/AgCl wet", "Ag/AgCl wet"),
+            ("reference", "linked mastoids", "linked mastoids"),
+            ("ground", "AFz", "AFz"),
+            ("hardware", "BrainAmp DC", "BrainAmp DC"),
+            ("software", "BrainVision Recorder", "BrainVision Recorder"),
+            ("filters", "0.1-100 Hz bandpass", "0.1-100 Hz bandpass"),
+            ("line_freq", 60.0, "60.0 Hz"),
+            ("montage", "standard_1020", "standard_1020"),
+            ("impedance_threshold_kohm", 20.0, "20.0 kOhm"),
+            ("cap_manufacturer", "EasyCap", "EasyCap"),
+            ("cap_model", "actiCAP", "actiCAP"),
+            ("electrode_type", "ring", "ring"),
+            ("electrode_material", "Tin", "Tin"),
+            ("device_serial", "SN12345", "SN12345"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = dict(sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32})
+        kwargs[field] = value
+        meta = _minimal_metadata(acquisition=AcquisitionMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeAuxiliaryChannelsFields:
+    """Parametrize over AuxiliaryChannelsMetadata fields."""
+
+    @pytest.mark.parametrize(
+        "aux_kwargs,expected",
+        [
+            (
+                {"has_eog": True, "eog_channels": 2},
+                "EOG (2 ch)",
+            ),
+            (
+                {
+                    "has_eog": True,
+                    "eog_channels": 4,
+                    "eog_type": ["horizontal", "vertical"],
+                },
+                "EOG (4 ch, horizontal, vertical)",
+            ),
+            (
+                {"has_emg": True, "emg_channels": 3},
+                "EMG (3 ch)",
+            ),
+            (
+                {"other_physiological": ["ECG", "respiration"]},
+                "ECG",
+            ),
+        ],
+    )
+    def test_aux_field(self, aux_kwargs, expected):
+        acq = AcquisitionMetadata(
+            sampling_rate=256.0,
+            n_channels=32,
+            channel_types={"eeg": 32},
+            auxiliary_channels=AuxiliaryChannelsMetadata(**aux_kwargs),
+        )
+        meta = _minimal_metadata(acquisition=acq)
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeParticipantFields:
+    """Parametrize over every ParticipantMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("n_subjects", 20, "20"),
+            ("health_status", "patients", "patients"),
+            ("clinical_population", "stroke", "stroke"),
+            ("age_mean", 30.5, "mean=30.5"),
+            ("age_std", 5.2, "std=5.2"),
+            ("age_min", 18.0, "min=18.0"),
+            ("age_max", 55.0, "max=55.0"),
+            ("gender", {"male": 10, "female": 10}, "male=10"),
+            ("handedness", "all right-handed", "all right-handed"),
+            ("bci_experience", "experienced", "experienced"),
+            ("species", "mus musculus", "mus musculus"),
+            ("head_circumference", 58.0, "58.0 cm"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {"n_subjects": 10}
+        kwargs[field] = value
+        meta = _minimal_metadata(participants=ParticipantMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeExperimentFields:
+    """Parametrize over every ExperimentMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("paradigm", "ssvep", "ssvep"),
+            ("task_type", "frequency_detection", "frequency_detection"),
+            ("n_classes", 4, "4"),
+            ("class_labels", ["A", "B"], "A, B"),
+            ("trial_duration", 5.0, "5.0 s"),
+            ("trials_per_class", {"A": 40, "B": 40}, "A=40"),
+            ("tasks", ["task1", "task2"], "task1, task2"),
+            ("study_design", "Oddball paradigm", "Oddball paradigm"),
+            ("study_domain", "cognitive neuroscience", "cognitive neuroscience"),
+            ("feedback_type", "auditory", "auditory"),
+            ("stimulus_type", "visual flash", "visual flash"),
+            ("stimulus_modalities", ["visual", "auditory"], "visual, auditory"),
+            ("primary_modality", "visual", "visual"),
+            ("synchronicity", "asynchronous", "asynchronous"),
+            ("mode", "online", "online"),
+            ("has_training_test_split", True, "True"),
+            ("instructions", "Imagine moving your left hand", "Imagine moving"),
+            ("cog_atlas_id", "https://cogat.org/123", "cogat.org/123"),
+            ("cog_po_id", "https://cogpo.org/456", "cogpo.org/456"),
+            (
+                "stimulus_presentation",
+                {"SoftwareName": "PsychoPy", "SoftwareVersion": "3.0"},
+                "SoftwareName=PsychoPy",
+            ),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {"paradigm": "imagery"}
+        kwargs[field] = value
+        meta = _minimal_metadata(experiment=ExperimentMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeDocumentationFields:
+    """Parametrize over every DocumentationMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("doi", "10.1234/test", "10.1234/test"),
+            ("description", "A motor imagery dataset", "A motor imagery dataset"),
+            ("investigators", ["Alice", "Bob"], "Alice, Bob"),
+            ("institution", "MIT", "MIT"),
+            ("country", "US", "US"),
+            ("repository", "OpenNeuro", "OpenNeuro"),
+            ("data_url", "https://example.com/data", "https://example.com/data"),
+            ("license", "CC BY 4.0", "CC BY 4.0"),
+            ("publication_year", 2023, "2023"),
+            ("senior_author", "Prof. Smith", "Prof. Smith"),
+            ("contact_info", ["smith@mit.edu"], "smith@mit.edu"),
+            ("associated_paper_doi", "10.5678/paper", "10.5678/paper"),
+            ("funding", ["NIH R01", "ERC"], "NIH R01; ERC"),
+            ("institution_address", "77 Mass Ave", "77 Mass Ave"),
+            ("institution_department", "BCS", "BCS"),
+            ("ethics_approval", ["IRB-2023-001"], "IRB-2023-001"),
+            ("acknowledgements", "Thanks to lab members", "Thanks to lab members"),
+            ("how_to_acknowledge", "Please cite Smith 2023", "Please cite Smith 2023"),
+            ("keywords", ["EEG", "BCI", "motor imagery"], "EEG, BCI, motor imagery"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(documentation=DocumentationMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmePreprocessingFields:
+    """Parametrize over every PreprocessingMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("data_state", "raw", "raw"),
+            ("preprocessing_applied", True, "True"),
+            ("preprocessing_steps", ["bandpass", "ICA"], "bandpass, ICA"),
+            ("artifact_methods", ["ICA", "ASR"], "ICA, ASR"),
+            ("re_reference", "average", "average"),
+            ("downsampled_to_hz", 128.0, "128.0 Hz"),
+            ("epoch_window", [-0.2, 0.8], "[-0.2, 0.8]"),
+            ("notes", "Data was collected in two batches", "two batches"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(preprocessing=PreprocessingMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeFilterDetailsFields:
+    """Parametrize over every FilterDetails field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("highpass_hz", 0.1, "0.1 Hz"),
+            ("lowpass_hz", 40.0, "40.0 Hz"),
+            ("bandpass", [0.5, 45.0], "[0.5, 45.0]"),
+            ("notch_hz", 50.0, "50.0 Hz"),
+            ("filter_type", "butterworth", "butterworth"),
+            ("filter_order", 4, "4"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(
+            preprocessing=PreprocessingMetadata(filter_details=FilterDetails(**kwargs))
+        )
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeSignalProcessingFields:
+    """Parametrize over every SignalProcessingMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("classifiers", ["LDA", "SVM"], "LDA, SVM"),
+            ("feature_extraction", ["CSP", "PSD"], "CSP, PSD"),
+            ("spatial_filters", ["Laplacian", "CCA"], "Laplacian, CCA"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(signal_processing=SignalProcessingMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeFrequencyBandsFields:
+    """Parametrize over every FrequencyBands field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("delta", [0.5, 4.0], "delta=[0.5, 4.0] Hz"),
+            ("theta", [4.0, 8.0], "theta=[4.0, 8.0] Hz"),
+            ("alpha", [8.0, 13.0], "alpha=[8.0, 13.0] Hz"),
+            ("mu", [8.0, 12.0], "mu=[8.0, 12.0] Hz"),
+            ("beta", [13.0, 30.0], "beta=[13.0, 30.0] Hz"),
+            ("gamma", [30.0, 100.0], "gamma=[30.0, 100.0] Hz"),
+            ("analyzed_range", [1.0, 45.0], "analyzed=[1.0, 45.0] Hz"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(
+            signal_processing=SignalProcessingMetadata(
+                frequency_bands=FrequencyBands(**kwargs)
+            )
+        )
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeCrossValidationFields:
+    """Parametrize over every CrossValidationMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("cv_method", "leave-one-out", "leave-one-out"),
+            ("cv_folds", 10, "10"),
+            ("evaluation_type", ["within-subject", "cross-subject"], "within-subject"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(cross_validation=CrossValidationMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmePerformanceFields:
+    """Parametrize over every PerformanceMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("accuracy_percent", 85.5, "85.5%"),
+            ("itr_bits_per_min", 42.3, "42.3 bits/min"),
+            ("auc", 0.92, "0.92"),
+            ("kappa", 0.75, "0.75"),
+            ("other_metrics", {"f1": 0.88}, "f1=0.88"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(performance=PerformanceMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeBCIApplicationFields:
+    """Parametrize over every BCIApplicationMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("applications", ["speller", "wheelchair"], "speller, wheelchair"),
+            ("environment", "clinical", "clinical"),
+            ("online_feedback", True, "True"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(bci_application=BCIApplicationMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeParadigmSpecificFields:
+    """Parametrize over every ParadigmSpecificMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("detected_paradigm", "ssvep", "ssvep"),
+            ("stimulus_frequencies_hz", [9.25, 11.25], "[9.25, 11.25] Hz"),
+            ("frequency_resolution_hz", 0.25, "0.25 Hz"),
+            ("code_type", "m-sequence", "m-sequence"),
+            ("code_length", 127, "127"),
+            ("n_targets", 36, "36"),
+            ("n_repetitions", 15, "15"),
+            ("isi_ms", 125.0, "125.0 ms"),
+            ("soa_ms", 200.0, "200.0 ms"),
+            ("imagery_tasks", ["left_hand", "feet"], "left_hand, feet"),
+            ("cue_duration_s", 1.25, "1.25 s"),
+            ("imagery_duration_s", 4.0, "4.0 s"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(paradigm_specific=ParadigmSpecificMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeDataStructureFields:
+    """Parametrize over every DataStructureMetadata field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("n_trials", 200, "200"),
+            ("n_trials_per_class", {"A": 100, "B": 100}, "A=100"),
+            ("n_blocks", 6, "6"),
+            ("block_duration_s", 60.0, "60.0 s"),
+            ("trials_context", "per_class", "per_class"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(data_structure=DataStructureMetadata(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeTagsFields:
+    """Parametrize over every Tags field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("pathology", ["Healthy", "Epilepsy"], "Healthy, Epilepsy"),
+            ("modality", ["Motor", "Visual"], "Motor, Visual"),
+            ("type", ["Motor Imagery"], "Motor Imagery"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(tags=Tags(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeExternalLinksFields:
+    """Parametrize over every ExternalLinks field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("source_url", "https://openneuro.org/ds001", "openneuro.org/ds001"),
+            ("ftp_url", "ftp://example.com/data", "ftp://example.com/data"),
+            (
+                "alternative_urls",
+                {"Mirror": "https://mirror.com/data"},
+                "https://mirror.com/data",
+            ),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(external_links=ExternalLinks(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeTimestampsFields:
+    """Parametrize over every Timestamps field."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("dataset_created_at", datetime(2023, 1, 15), "2023-01-15"),
+            ("dataset_modified_at", datetime(2024, 6, 1), "2024-06-01"),
+            ("ingested_at", datetime(2024, 12, 25), "2024-12-25"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        kwargs = {field: value}
+        meta = _minimal_metadata(timestamps=Timestamps(**kwargs))
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+
+class TestReadmeTopLevelFields:
+    """Parametrize over DatasetMetadata top-level fields."""
+
+    @pytest.mark.parametrize(
+        "field,value,expected",
+        [
+            ("file_format", "GDF", "GDF"),
+            ("abstract", "This study explores motor imagery BCI.", "This study explores"),
+            ("methodology", "We recorded 64-channel EEG.", "64-channel EEG"),
+            ("sessions", ["train", "test"], "train, test"),
+            ("contributing_labs", ["Lab A", "Lab B"], "Lab A, Lab B"),
+            ("n_contributing_labs", 5, "5"),
+        ],
+    )
+    def test_field_present(self, field, value, expected):
+        meta = _minimal_metadata(**{field: value})
+        readme = _build_readme(_mock_ds(meta))
+        assert expected in readme
+
+    def test_runs_per_session_shown_when_gt_1(self):
+        meta = _minimal_metadata(runs_per_session=3)
+        readme = _build_readme(_mock_ds(meta))
+        assert "Runs per session: 3" in readme
+
+    def test_runs_per_session_hidden_when_1(self):
+        meta = _minimal_metadata(runs_per_session=1)
+        readme = _build_readme(_mock_ds(meta))
+        assert "Runs per session" not in readme
+
+    def test_data_processed_shown_when_true(self):
+        meta = _minimal_metadata(data_processed=True)
+        readme = _build_readme(_mock_ds(meta))
+        assert "Data preprocessed: True" in readme
+
+    def test_data_processed_hidden_when_false(self):
+        meta = _minimal_metadata(data_processed=False)
+        readme = _build_readme(_mock_ds(meta))
+        assert "Data preprocessed" not in readme

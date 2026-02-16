@@ -1031,12 +1031,18 @@ def _build_readme(dataset):
             "Runs per session",
             metadata.runs_per_session if metadata.runs_per_session > 1 else None,
         )
+        if metadata.sessions:
+            _kv(lines, "Session IDs", ", ".join(str(s) for s in metadata.sessions))
         _kv(lines, "File format", metadata.file_format)
         _kv(
             lines,
             "Data preprocessed",
             metadata.data_processed if metadata.data_processed else None,
         )
+        if metadata.contributing_labs:
+            _kv(lines, "Contributing labs", ", ".join(metadata.contributing_labs))
+        elif metadata.n_contributing_labs:
+            _kv(lines, "Number of contributing labs", metadata.n_contributing_labs)
     lines.append("")
 
     # ── Acquisition ──
@@ -1068,11 +1074,16 @@ def _build_readme(dataset):
         _kv(lines, "Cap model", acq.cap_model)
         _kv(lines, "Electrode type", acq.electrode_type)
         _kv(lines, "Electrode material", acq.electrode_material)
+        _kv(lines, "Device serial", acq.device_serial)
         if acq.auxiliary_channels:
             aux = acq.auxiliary_channels
             aux_parts = []
             if aux.has_eog and aux.eog_channels:
-                aux_parts.append(f"EOG ({aux.eog_channels} ch)")
+                eog_str = f"EOG ({aux.eog_channels} ch"
+                if aux.eog_type:
+                    eog_str += f", {', '.join(aux.eog_type)}"
+                eog_str += ")"
+                aux_parts.append(eog_str)
             if aux.has_emg and aux.emg_channels:
                 aux_parts.append(f"EMG ({aux.emg_channels} ch)")
             if aux.other_physiological:
@@ -1104,6 +1115,11 @@ def _build_readme(dataset):
         _kv(lines, "Handedness", part.handedness)
         _kv(lines, "BCI experience", part.bci_experience)
         _kv(lines, "Species", part.species if part.species != "homo sapiens" else None)
+        _kv(
+            lines,
+            "Head circumference",
+            f"{part.head_circumference} cm" if part.head_circumference else None,
+        )
         lines.append("")
 
     # ── Experiment ──
@@ -1124,7 +1140,10 @@ def _build_readme(dataset):
             f"{exp.trial_duration} s" if exp.trial_duration else None,
         )
         _kv(lines, "Trials per class", _format_dict(exp.trials_per_class))
+        if exp.tasks:
+            _kv(lines, "Tasks", ", ".join(exp.tasks))
         _kv(lines, "Study design", exp.study_design)
+        _kv(lines, "Study domain", exp.study_domain)
         _kv(lines, "Feedback type", exp.feedback_type)
         _kv(lines, "Stimulus type", exp.stimulus_type)
         _kv(
@@ -1427,15 +1446,29 @@ def _build_readme(dataset):
                 "license",
                 "publication_year",
                 "funding",
+                "senior_author",
+                "contact_info",
+                "associated_paper_doi",
+                "institution_address",
+                "institution_department",
+                "ethics_approval",
+                "acknowledgements",
+                "how_to_acknowledge",
+                "keywords",
             )
         )
         if has_content:
             lines.append("Documentation")
             lines.append("-" * 13)
+            _kv(lines, "Description", doc.description)
             _kv(lines, "DOI", doc.doi)
+            _kv(lines, "Associated paper DOI", doc.associated_paper_doi)
             _kv(lines, "License", doc.license)
             if doc.investigators:
                 _kv(lines, "Investigators", ", ".join(doc.investigators))
+            _kv(lines, "Senior author", doc.senior_author)
+            if doc.contact_info:
+                _kv(lines, "Contact", "; ".join(doc.contact_info))
             _kv(lines, "Institution", doc.institution)
             _kv(lines, "Department", doc.institution_department)
             _kv(lines, "Address", doc.institution_address)
@@ -1447,7 +1480,10 @@ def _build_readme(dataset):
                 _kv(lines, "Funding", "; ".join(doc.funding))
             if doc.ethics_approval:
                 _kv(lines, "Ethics approval", "; ".join(doc.ethics_approval))
+            _kv(lines, "Acknowledgements", doc.acknowledgements)
             _kv(lines, "How to acknowledge", doc.how_to_acknowledge)
+            if doc.keywords:
+                _kv(lines, "Keywords", ", ".join(doc.keywords))
             lines.append("")
 
     # ── External Links ──
@@ -1467,12 +1503,32 @@ def _build_readme(dataset):
                     _kv(lines, name, url)
             lines.append("")
 
-    # ── Abstract ──
+    # ── Abstract / Methodology ──
     if metadata and metadata.abstract:
         lines.append("Abstract")
         lines.append("-" * 8)
         lines.append(metadata.abstract)
         lines.append("")
+    if metadata and metadata.methodology:
+        lines.append("Methodology")
+        lines.append("-" * 11)
+        lines.append(metadata.methodology)
+        lines.append("")
+
+    # ── Timestamps ──
+    ts = metadata.timestamps if metadata else None
+    if ts:
+        has_content = any(
+            getattr(ts, f, None) is not None
+            for f in ("dataset_created_at", "dataset_modified_at", "ingested_at")
+        )
+        if has_content:
+            lines.append("Timestamps")
+            lines.append("-" * 10)
+            _kv(lines, "Created", ts.dataset_created_at)
+            _kv(lines, "Modified", ts.dataset_modified_at)
+            _kv(lines, "Ingested", ts.ingested_at)
+            lines.append("")
 
     # ── References ──
     # Extract references from the original class docstring (not the auto-generated one)
