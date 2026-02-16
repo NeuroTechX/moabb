@@ -146,6 +146,13 @@ class FixedPipeline(Pipeline):
         else:
             if len(self.steps) == 1:
                 raise ValueError("Cannot remove all steps from the pipeline.")
+            if not isinstance(index, int):
+                raise ValueError(f"'index' must be an int, got {type(index).__name__}.")
+            n_steps = len(self.steps)
+            if not -n_steps <= index < n_steps:
+                raise ValueError(
+                    f"'index' {index} out of range for pipeline with {n_steps} steps."
+                )
             del self.steps[index]
 
         return self
