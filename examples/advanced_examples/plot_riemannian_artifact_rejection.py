@@ -195,7 +195,7 @@ print(f"RP detected {(~is_clean).sum()}/{len(covs)} artifact epochs")
 fig, axes = plt.subplots(1, 5, figsize=(15, 3), facecolor="white")
 
 # Barycenter
-barycenter = potato._mdm.covmeans_[0]
+barycenter = potato.covmean_
 im = axes[0].imshow(barycenter, cmap="RdBu_r", aspect="equal")
 axes[0].set_title("Barycenter\n(geometric mean)", fontsize=9)
 
@@ -242,7 +242,7 @@ potato_2d = Potato(metric="riemann", threshold=3)
 potato_2d.fit(covs_2d)
 z_2d = potato_2d.transform(covs_2d)
 is_clean_2d = potato_2d.predict(covs_2d).astype(bool)
-barycenter_2d = potato_2d._mdm.covmeans_[0]
+barycenter_2d = potato_2d.covmean_
 
 # Extract the (0,0) and (1,1) diagonal entries for plotting
 x_vals = covs_2d[:, 0, 0]  # variance of FCz
