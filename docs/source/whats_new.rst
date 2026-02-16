@@ -39,6 +39,7 @@ Enhancements
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
 - Add advanced tutorial on Riemannian Artifact Rejection (Riemannian Potato and Potato Field) as a pre-processing step using pipeline surgery (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
+- Add pipeline surgery methods (``find_steps``, ``insert_step``, ``remove_step``) to :class:`moabb.pipelines.base.FixedPipeline` for easier pipeline manipulation (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
