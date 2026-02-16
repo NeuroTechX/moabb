@@ -16,6 +16,9 @@ from moabb.datasets.bids_interface import (
     _build_sidecar_enrichment,
     _enrich_raw_info_from_metadata,
     _extract_references_from_docstring,
+    _hed_element_to_tree,
+    _render_hed_tree,
+    _split_hed_top_level,
     _split_manufacturer,
     _update_dataset_description_extra,
     _update_electrodes_tsv,
@@ -1396,6 +1399,207 @@ class TestExtractReferencesFromDocstring:
     def test_empty_docstring(self):
         assert _extract_references_from_docstring("") == ""
         assert _extract_references_from_docstring(None) == ""
+
+
+# ============================================================
+# HED tree visualization helpers
+# ============================================================
+
+
+class TestSplitHedTopLevel:
+    def test_flat_tags(self):
+        result = _split_hed_top_level("Sensory-event, Cue, Rest")
+        assert result == ["Sensory-event", "Cue", "Rest"]
+
+    def test_single_group(self):
+        result = _split_hed_top_level("Sensory-event, (Imagine, (Move, Hand))")
+        assert result == ["Sensory-event", "(Imagine, (Move, Hand))"]
+
+    def test_nested_groups(self):
+        s = "A, (B, (C, D)), E"
+        result = _split_hed_top_level(s)
+        assert result == ["A", "(B, (C, D))", "E"]
+
+    def test_multiple_groups(self):
+        s = "(A, B), (C, D)"
+        result = _split_hed_top_level(s)
+        assert result == ["(A, B)", "(C, D)"]
+
+    def test_empty_string(self):
+        assert _split_hed_top_level("") == []
+
+    def test_single_tag(self):
+        assert _split_hed_top_level("Sensory-event") == ["Sensory-event"]
+
+    def test_whitespace_handling(self):
+        result = _split_hed_top_level("  A , B ,  C ")
+        assert result == ["A", "B", "C"]
+
+
+class TestHedElementToTree:
+    def test_simple_tag(self):
+        label, children = _hed_element_to_tree("Sensory-event")
+        assert label == "Sensory-event"
+        assert children == []
+
+    def test_leaf_only_group_inline(self):
+        """Groups with no sub-groups are rendered as inline labels."""
+        label, children = _hed_element_to_tree("(Right, Hand)")
+        assert label == "Right, Hand"
+        assert children == []
+
+    def test_group_with_subgroup(self):
+        label, children = _hed_element_to_tree("(Move, (Right, Hand))")
+        assert label == "Move"
+        assert len(children) == 1
+        assert children[0] == ("Right, Hand", [])
+
+    def test_deeply_nested(self):
+        tag = "(Imagine, (Move, (Right, Hand)))"
+        label, children = _hed_element_to_tree(tag)
+        assert label == "Imagine"
+        assert len(children) == 1
+        assert children[0][0] == "Move"
+        assert children[0][1] == [("Right, Hand", [])]
+
+    def test_multiple_subgroups(self):
+        tag = "(Imagine, (Move, (Right, Hand)), (Move, (Right, Foot)))"
+        label, children = _hed_element_to_tree(tag)
+        assert label == "Imagine"
+        assert len(children) == 2
+        assert children[0][0] == "Move"
+        assert children[1][0] == "Move"
+
+    def test_mixed_tags_and_subgroups(self):
+        tag = "(Grasp, Hand, (Label/lateral))"
+        label, children = _hed_element_to_tree(tag)
+        assert label == "Grasp"
+        assert len(children) == 2
+        assert children[0] == ("Hand", [])
+        assert children[1] == ("Label/lateral", [])
+
+    def test_label_tag(self):
+        tag = "(Label/9_25)"
+        label, children = _hed_element_to_tree(tag)
+        assert label == "Label/9_25"
+        assert children == []
+
+
+class TestRenderHedTree:
+    def test_single_leaf(self):
+        nodes = [("Sensory-event", [])]
+        lines = _render_hed_tree(nodes)
+        assert len(lines) == 1
+        assert "└─ Sensory-event" in lines[0]
+
+    def test_multiple_leaves(self):
+        nodes = [("A", []), ("B", []), ("C", [])]
+        lines = _render_hed_tree(nodes)
+        assert len(lines) == 3
+        assert "├─ A" in lines[0]
+        assert "├─ B" in lines[1]
+        assert "└─ C" in lines[2]
+
+    def test_nested_tree(self):
+        nodes = [
+            ("Sensory-event", []),
+            ("Cue", []),
+            ("Imagine", [("Move", [("Right, Hand", [])])]),
+        ]
+        lines = _render_hed_tree(nodes)
+        assert len(lines) == 5
+        assert "├─ Sensory-event" in lines[0]
+        assert "├─ Cue" in lines[1]
+        assert "└─ Imagine" in lines[2]
+        assert "└─ Move" in lines[3]
+        assert "└─ Right, Hand" in lines[4]
+
+    def test_box_characters(self):
+        """Verify proper box-drawing characters are used."""
+        nodes = [("A", []), ("B", [("C", [])])]
+        lines = _render_hed_tree(nodes)
+        assert "\u251c\u2500" in lines[0]  # ├─
+        assert "\u2514\u2500" in lines[1]  # └─
+        assert "\u2514\u2500" in lines[2]  # └─
+
+    def test_branching_tree(self):
+        """Multiple children at same level produce │ continuation lines."""
+        nodes = [("Imagine", [("Move", [("Right, Hand", [])]), ("Move", [("Foot", [])])])]
+        lines = _render_hed_tree(nodes)
+        assert len(lines) == 5
+        # Should have │ continuation character for first child branch
+        assert "\u2502" in lines[2]
+
+
+class TestReadmeHedSection:
+    """Test that the HED Event Annotations section renders in the README."""
+
+    def _make_dataset(self):
+        ds = MagicMock()
+        ds.code = "TestDataset"
+        ds.paradigm = "imagery"
+        ds.event_id = {"left_hand": 1, "right_hand": 2}
+        ds.interval = [0, 3]
+        ds.n_sessions = 1
+        ds.doi = None
+        type(ds).__doc__ = "Test dataset."
+        type(ds).__name__ = "TestDataset"
+        ds.metadata = None
+        return ds
+
+    def test_hed_section_present(self):
+        ds = self._make_dataset()
+        readme = _build_readme(ds)
+        assert "HED Event Annotations" in readme
+        assert "Schema: HED 8.4.0" in readme
+
+    def test_hed_event_names_shown(self):
+        ds = self._make_dataset()
+        readme = _build_readme(ds)
+        assert "left_hand" in readme
+        assert "right_hand" in readme
+
+    def test_hed_tree_has_box_chars(self):
+        ds = self._make_dataset()
+        readme = _build_readme(ds)
+        assert "\u251c\u2500" in readme  # ├─
+        assert "\u2514\u2500" in readme  # └─
+
+    def test_hed_tree_shows_tag_content(self):
+        ds = self._make_dataset()
+        readme = _build_readme(ds)
+        assert "Sensory-event" in readme
+        assert "Imagine" in readme
+
+    def test_hed_schema_link(self):
+        ds = self._make_dataset()
+        readme = _build_readme(ds)
+        assert "hedtags.org/hed-schema-browser" in readme
+
+    def test_no_hed_section_for_unknown_paradigm(self):
+        ds = self._make_dataset()
+        ds.paradigm = "unknown_paradigm_xyz"
+        ds.event_id = {"event_a": 1}
+        readme = _build_readme(ds)
+        # Should still have HED section due to Label fallback
+        assert "HED Event Annotations" in readme
+        assert "Label/event_a" in readme
+
+    def test_p300_events(self):
+        ds = self._make_dataset()
+        ds.paradigm = "p300"
+        ds.event_id = {"Target": 1, "NonTarget": 2}
+        readme = _build_readme(ds)
+        assert "Target" in readme
+        assert "Visual-presentation" in readme
+
+    def test_resting_state_events(self):
+        ds = self._make_dataset()
+        ds.paradigm = "rstate"
+        ds.event_id = {"open": 1, "closed": 2}
+        readme = _build_readme(ds)
+        assert "Experiment-structure" in readme
+        assert "Rest" in readme
 
 
 # ============================================================

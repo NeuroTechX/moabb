@@ -1162,6 +1162,22 @@ def _build_readme(dataset):
             _kv(lines, "Stimulus presentation", _format_dict(exp.stimulus_presentation))
         lines.append("")
 
+    # ── HED Event Annotations ──
+    hed_tags = _build_hed_sidecar_annotations(dataset)
+    if hed_tags:
+        lines.append("HED Event Annotations")
+        lines.append("-" * 21)
+        lines.append(
+            "  Schema: HED 8.4.0 | " "Browse: https://www.hedtags.org/hed-schema-browser"
+        )
+        lines.append("")
+        for event_name, tag_str in hed_tags.items():
+            elements = _split_hed_top_level(tag_str)
+            nodes = [_hed_element_to_tree(e) for e in elements]
+            lines.append(f"  {event_name}")
+            lines.extend(_render_hed_tree(nodes))
+            lines.append("")
+
     # ── Paradigm-Specific ──
     if ps:
         has_content = any(
@@ -1624,6 +1640,107 @@ def _extract_references_from_docstring(docstring):
     if current_ref:
         references.append(" ".join(current_ref))
     return "\n\n".join(references)
+
+
+def _split_hed_top_level(hed_str):
+    """Split a HED tag string by commas at the top level.
+
+    Respects parenthetical grouping so that commas inside groups
+    are not treated as separators.
+
+    Parameters
+    ----------
+    hed_str : str
+        A HED tag string, e.g. ``"Sensory-event, (Imagine, (Move, Hand))"``.
+
+    Returns
+    -------
+    list of str
+        Top-level elements (tags and groups with outer parentheses preserved).
+    """
+    elements = []
+    depth = 0
+    current = []
+    for char in hed_str:
+        if char == "(":
+            depth += 1
+            current.append(char)
+        elif char == ")":
+            depth -= 1
+            current.append(char)
+        elif char == "," and depth == 0:
+            s = "".join(current).strip()
+            if s:
+                elements.append(s)
+            current = []
+        else:
+            current.append(char)
+    s = "".join(current).strip()
+    if s:
+        elements.append(s)
+    return elements
+
+
+def _hed_element_to_tree(element):
+    """Convert a single HED element (tag or group) to a tree node.
+
+    Returns ``(label, children)`` where *children* is a list of similar
+    tuples.  Leaf-only groups (no nested sub-groups) are rendered as a
+    single comma-separated label to keep the tree compact.
+
+    Parameters
+    ----------
+    element : str
+        A HED tag (``"Sensory-event"``) or group
+        (``"(Imagine, (Move, Hand))"``).
+
+    Returns
+    -------
+    tuple
+        ``(label, children)`` tree node.
+    """
+    element = element.strip()
+    if element.startswith("(") and element.endswith(")"):
+        inner = element[1:-1]
+        parts = _split_hed_top_level(inner)
+        if not parts:
+            return (element, [])
+        # Leaf-only group (no nested sub-groups) → inline label
+        has_subgroups = any(p.strip().startswith("(") for p in parts)
+        if not has_subgroups:
+            return (", ".join(p.strip() for p in parts), [])
+        # Mixed: first element is the head, rest become children
+        head = parts[0].strip()
+        rest = parts[1:]
+        return (head, [_hed_element_to_tree(r) for r in rest])
+    return (element, [])
+
+
+def _render_hed_tree(nodes, prefix="    "):
+    """Render tree nodes as ASCII art using box-drawing characters.
+
+    Parameters
+    ----------
+    nodes : list of tuple
+        Each node is ``(label, children)`` as returned by
+        :func:`_hed_element_to_tree`.
+    prefix : str
+        Current indentation prefix.
+
+    Returns
+    -------
+    list of str
+        Lines of the rendered tree.
+    """
+    lines = []
+    for i, (label, children) in enumerate(nodes):
+        is_last = i == len(nodes) - 1
+        connector = "\u2514\u2500 " if is_last else "\u251c\u2500 "
+        lines.append(f"{prefix}{connector}{label}")
+        if children:
+            extension = "   " if is_last else "\u2502  "
+            lines.extend(_render_hed_tree(children, prefix + extension))
+    return lines
 
 
 def get_bids_root(code, path=None):
