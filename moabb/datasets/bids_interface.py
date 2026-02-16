@@ -955,6 +955,621 @@ def _update_dataset_description_extra(root, metadata):
             json.dump(desc, f, indent="\t")
 
 
+def _build_readme(dataset):
+    """Build a comprehensive BIDS README from dataset docstring and metadata.
+
+    Generates a plain-text README for the BIDS dataset root, incorporating
+    the class docstring, core dataset attributes, and all available structured
+    metadata sections.
+
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The MOABB dataset instance.
+
+    Returns
+    -------
+    str
+        The README content.
+    """
+    lines = []
+    metadata = getattr(dataset, "metadata", None)
+    doc = metadata.documentation if metadata else None
+    acq = metadata.acquisition if metadata else None
+    part = metadata.participants if metadata else None
+    exp = metadata.experiment if metadata else None
+    preproc = metadata.preprocessing if metadata else None
+    sig = metadata.signal_processing if metadata else None
+    cv = metadata.cross_validation if metadata else None
+    perf = metadata.performance if metadata else None
+    bci = metadata.bci_application if metadata else None
+    ps = metadata.paradigm_specific if metadata else None
+    ds = metadata.data_structure if metadata else None
+    tags = metadata.tags if metadata else None
+
+    # ── Title ──
+    lines.append(dataset.code)
+    lines.append("=" * len(dataset.code))
+    lines.append("")
+
+    # ── Description from docstring ──
+    raw_doc = getattr(type(dataset), "__doc__", "") or ""
+    if raw_doc:
+        # Extract the original (hand-written) docstring portion.
+        # MetaclassDataset prepends auto-generated blocks *after* the first
+        # paragraph.  The original docstring starts at the first paragraph and
+        # ends before the ".. admonition::" blocks or the auto-generated table.
+        paragraphs = raw_doc.split("\n\n")
+        desc_paragraphs = []
+        for para in paragraphs:
+            stripped = para.strip()
+            # Stop at auto-generated admonition blocks or rst table markers
+            if stripped.startswith(".. admonition::") or stripped.startswith("+--"):
+                break
+            desc_paragraphs.append(stripped)
+        if desc_paragraphs:
+            # Clean indentation from each line
+            for para in desc_paragraphs:
+                clean = " ".join(line.strip() for line in para.splitlines())
+                if clean:
+                    lines.append(clean)
+                    lines.append("")
+
+    # ── Dataset Overview ──
+    lines.append("Dataset Overview")
+    lines.append("-" * 16)
+    _kv(lines, "Code", dataset.code)
+    _kv(lines, "Paradigm", dataset.paradigm)
+    _kv(lines, "DOI", dataset.doi)
+    _kv(lines, "Subjects", len(dataset.subject_list))
+    _kv(lines, "Sessions per subject", dataset.n_sessions)
+    _kv(lines, "Events", _format_dict(dataset.event_id))
+    _kv(lines, "Trial interval", f"{dataset.interval} s" if dataset.interval else None)
+    if metadata:
+        _kv(
+            lines,
+            "Runs per session",
+            metadata.runs_per_session if metadata.runs_per_session > 1 else None,
+        )
+        _kv(lines, "File format", metadata.file_format)
+        _kv(
+            lines,
+            "Data preprocessed",
+            metadata.data_processed if metadata.data_processed else None,
+        )
+    lines.append("")
+
+    # ── Acquisition ──
+    if acq:
+        lines.append("Acquisition")
+        lines.append("-" * 11)
+        _kv(lines, "Sampling rate", f"{acq.sampling_rate} Hz")
+        _kv(lines, "Number of channels", acq.n_channels)
+        _kv(lines, "Channel types", _format_dict(acq.channel_types))
+        _kv(lines, "Channel names", ", ".join(acq.sensors) if acq.sensors else None)
+        _kv(lines, "Montage", acq.montage)
+        _kv(lines, "Hardware", acq.hardware)
+        _kv(lines, "Software", acq.software)
+        _kv(lines, "Reference", acq.reference)
+        _kv(lines, "Ground", acq.ground)
+        _kv(lines, "Sensor type", acq.sensor_type)
+        _kv(lines, "Line frequency", f"{acq.line_freq} Hz")
+        _kv(lines, "Online filters", acq.filters)
+        _kv(
+            lines,
+            "Impedance threshold",
+            (
+                f"{acq.impedance_threshold_kohm} kOhm"
+                if acq.impedance_threshold_kohm
+                else None
+            ),
+        )
+        _kv(lines, "Cap manufacturer", acq.cap_manufacturer)
+        _kv(lines, "Cap model", acq.cap_model)
+        _kv(lines, "Electrode type", acq.electrode_type)
+        _kv(lines, "Electrode material", acq.electrode_material)
+        if acq.auxiliary_channels:
+            aux = acq.auxiliary_channels
+            aux_parts = []
+            if aux.has_eog and aux.eog_channels:
+                aux_parts.append(f"EOG ({aux.eog_channels} ch)")
+            if aux.has_emg and aux.emg_channels:
+                aux_parts.append(f"EMG ({aux.emg_channels} ch)")
+            if aux.other_physiological:
+                aux_parts.extend(aux.other_physiological)
+            if aux_parts:
+                _kv(lines, "Auxiliary channels", ", ".join(aux_parts))
+        lines.append("")
+
+    # ── Participants ──
+    if part:
+        lines.append("Participants")
+        lines.append("-" * 12)
+        _kv(lines, "Number of subjects", part.n_subjects)
+        _kv(lines, "Health status", part.health_status)
+        _kv(lines, "Clinical population", part.clinical_population)
+        # Age
+        age_parts = []
+        if part.age_mean is not None:
+            age_parts.append(f"mean={part.age_mean}")
+        if part.age_std is not None:
+            age_parts.append(f"std={part.age_std}")
+        if part.age_min is not None:
+            age_parts.append(f"min={part.age_min}")
+        if part.age_max is not None:
+            age_parts.append(f"max={part.age_max}")
+        if age_parts:
+            _kv(lines, "Age", ", ".join(age_parts))
+        _kv(lines, "Gender distribution", _format_dict(part.gender))
+        _kv(lines, "Handedness", part.handedness)
+        _kv(lines, "BCI experience", part.bci_experience)
+        _kv(lines, "Species", part.species if part.species != "homo sapiens" else None)
+        lines.append("")
+
+    # ── Experiment ──
+    if exp:
+        lines.append("Experimental Protocol")
+        lines.append("-" * 21)
+        _kv(lines, "Paradigm", exp.paradigm)
+        _kv(lines, "Task type", exp.task_type)
+        _kv(lines, "Number of classes", exp.n_classes)
+        _kv(
+            lines,
+            "Class labels",
+            ", ".join(exp.class_labels) if exp.class_labels else None,
+        )
+        _kv(
+            lines,
+            "Trial duration",
+            f"{exp.trial_duration} s" if exp.trial_duration else None,
+        )
+        _kv(lines, "Trials per class", _format_dict(exp.trials_per_class))
+        _kv(lines, "Study design", exp.study_design)
+        _kv(lines, "Feedback type", exp.feedback_type)
+        _kv(lines, "Stimulus type", exp.stimulus_type)
+        _kv(
+            lines,
+            "Stimulus modalities",
+            ", ".join(exp.stimulus_modalities) if exp.stimulus_modalities else None,
+        )
+        _kv(lines, "Primary modality", exp.primary_modality)
+        _kv(lines, "Synchronicity", exp.synchronicity)
+        _kv(lines, "Mode", exp.mode)
+        _kv(lines, "Training/test split", exp.has_training_test_split)
+        _kv(lines, "Instructions", exp.instructions)
+        _kv(lines, "Cognitive Atlas ID", exp.cog_atlas_id)
+        _kv(lines, "Cognitive Paradigm Ontology ID", exp.cog_po_id)
+        if exp.stimulus_presentation:
+            _kv(lines, "Stimulus presentation", _format_dict(exp.stimulus_presentation))
+        lines.append("")
+
+    # ── Paradigm-Specific ──
+    if ps:
+        has_content = any(
+            getattr(ps, f, None) is not None
+            for f in (
+                "detected_paradigm",
+                "stimulus_frequencies_hz",
+                "frequency_resolution_hz",
+                "code_type",
+                "code_length",
+                "n_targets",
+                "n_repetitions",
+                "isi_ms",
+                "soa_ms",
+                "imagery_tasks",
+                "cue_duration_s",
+                "imagery_duration_s",
+            )
+        )
+        if has_content:
+            lines.append("Paradigm-Specific Parameters")
+            lines.append("-" * 28)
+            _kv(lines, "Detected paradigm", ps.detected_paradigm)
+            # SSVEP
+            _kv(
+                lines,
+                "Stimulus frequencies",
+                (
+                    f"{ps.stimulus_frequencies_hz} Hz"
+                    if ps.stimulus_frequencies_hz
+                    else None
+                ),
+            )
+            _kv(
+                lines,
+                "Frequency resolution",
+                (
+                    f"{ps.frequency_resolution_hz} Hz"
+                    if ps.frequency_resolution_hz
+                    else None
+                ),
+            )
+            # c-VEP
+            _kv(lines, "Code type", ps.code_type)
+            _kv(lines, "Code length", ps.code_length)
+            # P300
+            _kv(lines, "Number of targets", ps.n_targets)
+            _kv(lines, "Number of repetitions", ps.n_repetitions)
+            _kv(
+                lines, "Inter-stimulus interval", f"{ps.isi_ms} ms" if ps.isi_ms else None
+            )
+            _kv(
+                lines,
+                "Stimulus onset asynchrony",
+                f"{ps.soa_ms} ms" if ps.soa_ms else None,
+            )
+            # Motor Imagery
+            _kv(
+                lines,
+                "Imagery tasks",
+                ", ".join(ps.imagery_tasks) if ps.imagery_tasks else None,
+            )
+            _kv(
+                lines,
+                "Cue duration",
+                f"{ps.cue_duration_s} s" if ps.cue_duration_s else None,
+            )
+            _kv(
+                lines,
+                "Imagery duration",
+                f"{ps.imagery_duration_s} s" if ps.imagery_duration_s else None,
+            )
+            lines.append("")
+
+    # ── Data Structure ──
+    if ds:
+        has_content = any(
+            getattr(ds, f, None) is not None
+            for f in (
+                "n_trials",
+                "n_trials_per_class",
+                "n_blocks",
+                "block_duration_s",
+                "trials_context",
+            )
+        )
+        if has_content:
+            lines.append("Data Structure")
+            lines.append("-" * 14)
+            _kv(lines, "Trials", ds.n_trials)
+            _kv(
+                lines,
+                "Trials per class",
+                (
+                    _format_dict(ds.n_trials_per_class)
+                    if isinstance(ds.n_trials_per_class, dict)
+                    else ds.n_trials_per_class
+                ),
+            )
+            _kv(lines, "Blocks per session", ds.n_blocks)
+            _kv(
+                lines,
+                "Block duration",
+                f"{ds.block_duration_s} s" if ds.block_duration_s else None,
+            )
+            _kv(lines, "Trials context", ds.trials_context)
+            lines.append("")
+
+    # ── Preprocessing ──
+    if preproc:
+        has_content = any(
+            getattr(preproc, f, None) is not None
+            for f in (
+                "data_state",
+                "preprocessing_applied",
+                "preprocessing_steps",
+                "filter_details",
+                "artifact_methods",
+                "re_reference",
+                "downsampled_to_hz",
+                "epoch_window",
+                "notes",
+            )
+        )
+        if has_content:
+            lines.append("Preprocessing")
+            lines.append("-" * 13)
+            _kv(lines, "Data state", preproc.data_state)
+            _kv(lines, "Preprocessing applied", preproc.preprocessing_applied)
+            if preproc.preprocessing_steps:
+                _kv(lines, "Steps", ", ".join(preproc.preprocessing_steps))
+            if preproc.filter_details:
+                fd = preproc.filter_details
+                _kv(
+                    lines,
+                    "Highpass filter",
+                    f"{fd.highpass_hz} Hz" if fd.highpass_hz else None,
+                )
+                _kv(
+                    lines,
+                    "Lowpass filter",
+                    f"{fd.lowpass_hz} Hz" if fd.lowpass_hz else None,
+                )
+                _kv(lines, "Bandpass filter", fd.bandpass)
+                _kv(lines, "Notch filter", f"{fd.notch_hz} Hz" if fd.notch_hz else None)
+                _kv(lines, "Filter type", fd.filter_type)
+                _kv(lines, "Filter order", fd.filter_order)
+            if preproc.artifact_methods:
+                _kv(lines, "Artifact methods", ", ".join(preproc.artifact_methods))
+            _kv(lines, "Re-reference", preproc.re_reference)
+            _kv(
+                lines,
+                "Downsampled to",
+                f"{preproc.downsampled_to_hz} Hz" if preproc.downsampled_to_hz else None,
+            )
+            _kv(lines, "Epoch window", preproc.epoch_window)
+            _kv(lines, "Notes", preproc.notes)
+            lines.append("")
+
+    # ── Signal Processing ──
+    if sig:
+        has_content = any(
+            getattr(sig, f, None) is not None
+            for f in (
+                "classifiers",
+                "feature_extraction",
+                "frequency_bands",
+                "spatial_filters",
+            )
+        )
+        if has_content:
+            lines.append("Signal Processing")
+            lines.append("-" * 17)
+            if sig.classifiers:
+                _kv(lines, "Classifiers", ", ".join(sig.classifiers))
+            if sig.feature_extraction:
+                _kv(lines, "Feature extraction", ", ".join(sig.feature_extraction))
+            if sig.frequency_bands:
+                fb = sig.frequency_bands
+                band_parts = []
+                for name in ("delta", "theta", "alpha", "mu", "beta", "gamma"):
+                    val = getattr(fb, name, None)
+                    if val:
+                        band_parts.append(f"{name}={val} Hz")
+                if fb.analyzed_range:
+                    band_parts.append(f"analyzed={fb.analyzed_range} Hz")
+                if band_parts:
+                    _kv(lines, "Frequency bands", "; ".join(band_parts))
+            if sig.spatial_filters:
+                _kv(lines, "Spatial filters", ", ".join(sig.spatial_filters))
+            lines.append("")
+
+    # ── Cross-Validation ──
+    if cv:
+        has_content = any(
+            getattr(cv, f, None) is not None
+            for f in ("cv_method", "cv_folds", "evaluation_type")
+        )
+        if has_content:
+            lines.append("Cross-Validation")
+            lines.append("-" * 16)
+            _kv(lines, "Method", cv.cv_method)
+            _kv(lines, "Folds", cv.cv_folds)
+            if cv.evaluation_type:
+                _kv(lines, "Evaluation type", ", ".join(cv.evaluation_type))
+            lines.append("")
+
+    # ── Performance ──
+    if perf:
+        has_content = any(
+            getattr(perf, f, None) is not None
+            for f in (
+                "accuracy_percent",
+                "itr_bits_per_min",
+                "auc",
+                "kappa",
+                "other_metrics",
+            )
+        )
+        if has_content:
+            lines.append("Performance (Original Study)")
+            lines.append("-" * 28)
+            _kv(
+                lines,
+                "Accuracy",
+                f"{perf.accuracy_percent}%" if perf.accuracy_percent else None,
+            )
+            _kv(
+                lines,
+                "ITR",
+                f"{perf.itr_bits_per_min} bits/min" if perf.itr_bits_per_min else None,
+            )
+            _kv(lines, "AUC", perf.auc)
+            _kv(lines, "Kappa", perf.kappa)
+            if perf.other_metrics:
+                _kv(lines, "Other metrics", _format_dict(perf.other_metrics))
+            lines.append("")
+
+    # ── BCI Application ──
+    if bci:
+        has_content = any(
+            getattr(bci, f, None) is not None
+            for f in ("applications", "environment", "online_feedback")
+        )
+        if has_content:
+            lines.append("BCI Application")
+            lines.append("-" * 15)
+            if bci.applications:
+                _kv(lines, "Applications", ", ".join(bci.applications))
+            _kv(lines, "Environment", bci.environment)
+            _kv(lines, "Online feedback", bci.online_feedback)
+            lines.append("")
+
+    # ── Tags ──
+    if tags:
+        has_content = any(
+            getattr(tags, f, None) is not None for f in ("pathology", "modality", "type")
+        )
+        if has_content:
+            lines.append("Tags")
+            lines.append("-" * 4)
+            if tags.pathology:
+                _kv(lines, "Pathology", ", ".join(tags.pathology))
+            if tags.modality:
+                _kv(lines, "Modality", ", ".join(tags.modality))
+            if tags.type:
+                _kv(lines, "Type", ", ".join(tags.type))
+            lines.append("")
+
+    # ── Documentation ──
+    if doc:
+        has_content = any(
+            getattr(doc, f, None) is not None
+            for f in (
+                "doi",
+                "description",
+                "investigators",
+                "institution",
+                "country",
+                "repository",
+                "data_url",
+                "license",
+                "publication_year",
+                "funding",
+            )
+        )
+        if has_content:
+            lines.append("Documentation")
+            lines.append("-" * 13)
+            _kv(lines, "DOI", doc.doi)
+            _kv(lines, "License", doc.license)
+            if doc.investigators:
+                _kv(lines, "Investigators", ", ".join(doc.investigators))
+            _kv(lines, "Institution", doc.institution)
+            _kv(lines, "Department", doc.institution_department)
+            _kv(lines, "Address", doc.institution_address)
+            _kv(lines, "Country", doc.country)
+            _kv(lines, "Repository", doc.repository)
+            _kv(lines, "Data URL", doc.data_url)
+            _kv(lines, "Publication year", doc.publication_year)
+            if doc.funding:
+                _kv(lines, "Funding", "; ".join(doc.funding))
+            if doc.ethics_approval:
+                _kv(lines, "Ethics approval", "; ".join(doc.ethics_approval))
+            _kv(lines, "How to acknowledge", doc.how_to_acknowledge)
+            lines.append("")
+
+    # ── External Links ──
+    ext = metadata.external_links if metadata else None
+    if ext:
+        has_content = any(
+            getattr(ext, f, None) is not None
+            for f in ("source_url", "ftp_url", "alternative_urls")
+        )
+        if has_content:
+            lines.append("External Links")
+            lines.append("-" * 14)
+            _kv(lines, "Source URL", ext.source_url)
+            _kv(lines, "FTP URL", ext.ftp_url)
+            if ext.alternative_urls:
+                for name, url in ext.alternative_urls.items():
+                    _kv(lines, name, url)
+            lines.append("")
+
+    # ── Abstract ──
+    if metadata and metadata.abstract:
+        lines.append("Abstract")
+        lines.append("-" * 8)
+        lines.append(metadata.abstract)
+        lines.append("")
+
+    # ── References ──
+    # Extract references from the original class docstring (not the auto-generated one)
+    orig_doc = type(dataset).__doc__ or ""
+    refs = _extract_references_from_docstring(orig_doc)
+    lines.append("References")
+    lines.append("-" * 10)
+    if refs:
+        lines.append(refs)
+    lines.append(
+        "Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., "
+        "Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Hochenberger, R., "
+        "Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and "
+        "Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into "
+        "the BIDS format and facilitating their analysis. Journal of Open Source "
+        "Software 4: (1896). https://doi.org/10.21105/joss.01896"
+    )
+    lines.append("")
+    lines.append(
+        "Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., "
+        "Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an "
+        "extension to the brain imaging data structure for "
+        "electroencephalography. Scientific Data, 6, 103. "
+        "https://doi.org/10.1038/s41597-019-0104-8"
+    )
+    lines.append("")
+
+    # ── Footer ──
+    lines.append("---")
+    lines.append(
+        f"Generated by MOABB {moabb.__version__} " "(Mother of All BCI Benchmarks)"
+    )
+    lines.append("https://github.com/NeuroTechX/moabb")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def _kv(lines, key, value):
+    """Append a key-value line if the value is not None or 'n/a'."""
+    if value is None or value == "n/a":
+        return
+    lines.append(f"  {key}: {value}")
+
+
+def _format_dict(d):
+    """Format a dict as a compact key=value string."""
+    if not d:
+        return None
+    return ", ".join(f"{k}={v}" for k, v in d.items())
+
+
+def _extract_references_from_docstring(docstring):
+    """Extract reference citations from a dataset class docstring.
+
+    Looks for the ``references`` / ``References`` section and ``.. [N]``
+    citation directives, returning clean plain-text references.
+    """
+    if not docstring:
+        return ""
+    # Collect individual reference blocks: each starts with ``.. [N]``
+    references = []
+    current_ref = []
+    in_refs = False
+    for line in docstring.splitlines():
+        stripped = line.strip()
+        low = stripped.lower()
+        # Detect start of references section
+        if low in ("references", "references:") or low.startswith(".. ["):
+            in_refs = True
+        if low.startswith(".. admonition::") or low.startswith("+--"):
+            if in_refs:
+                break
+        if not in_refs:
+            continue
+        # Skip section headers and underlines
+        if low in ("references", "references:", "") or set(stripped) <= {"-", "="}:
+            if current_ref:
+                references.append(" ".join(current_ref))
+                current_ref = []
+            continue
+        # New citation directive starts a new reference
+        if re.match(r"^\.\.\s*\[\d+\]", stripped):
+            if current_ref:
+                references.append(" ".join(current_ref))
+                current_ref = []
+            cleaned = re.sub(r"^\.\.\s*\[\d+\]\s*", "", stripped)
+            if cleaned:
+                current_ref.append(cleaned)
+        else:
+            # Continuation line of current reference
+            current_ref.append(stripped)
+    if current_ref:
+        references.append(" ".join(current_ref))
+    return "\n\n".join(references)
+
+
 def get_bids_root(code, path=None):
     """Path to the root of the BIDS structure used for caching.
 
@@ -1198,6 +1813,12 @@ class BIDSInterfaceBase(abc.ABC):
 
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
+
+        # Write comprehensive README (after write_raw_bids to overwrite its
+        # boilerplate README with our enriched version)
+        readme_path = Path(self.root) / "README"
+        readme_path.write_text(_build_readme(self.dataset))
+
         log.debug("Writing", self.lock_file)
         self.lock_file.mkdir(exist_ok=True)
         with self.lock_file.fpath.open("w") as file:
