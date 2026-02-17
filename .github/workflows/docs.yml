@@ -54,9 +54,9 @@ jobs:
             echo "Removing incomplete extraction: BIDS.zip.unzip"
             rm -rf mne_data/BIDS.zip.unzip
           fi
-          if [ -d mne_data/BrainForm-BIDS-eeg-dataset ] && [ -f mne_data/BrainForm-BIDS-eeg-dataset/.cache-incomplete ]; then
+          if [ -d mne_data/MNE-RomaniBF2025ERP-data ] && [ -f mne_data/MNE-RomaniBF2025ERP-data/.cache-incomplete ]; then
             echo "Removing incomplete BrainForm dataset"
-            rm -rf mne_data/BrainForm-BIDS-eeg-dataset
+            rm -rf mne_data/MNE-RomaniBF2025ERP-data
           fi
 
       - name: Cache docs build
