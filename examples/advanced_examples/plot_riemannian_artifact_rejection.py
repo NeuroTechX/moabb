@@ -115,7 +115,7 @@ moabb.set_log_level("info")
 #
 # We use the BNCI2014-009 dataset, a 16-channel P300 speller recorded at
 # 256 Hz from 10 subjects [4]_. The channels are:
-# FC5, FC3, FC1, FCz, FC2, FC4, FC6, C3, C1, Cz, C2, C4, CP3, CPz, CP4, Pz.
+# Fz, Cz, Pz, Oz, P3, P4, PO7, PO8, F3, F4, FCz, C3, C4, CP3, CPz, CP4.
 #
 # We load epochs using ``return_epochs=True`` to demonstrate the
 # Riemannian artifact detection concepts visually before integrating them
@@ -427,8 +427,8 @@ plt.show()
 # - **General artifacts**: broader channel sets, wide frequency bands,
 #   Riemannian distance.
 #
-# For the BNCI2014-009 dataset (16 channels, no EOG, no frontal-polar
-# channels, bandpass 1-24 Hz applied by the P300 paradigm), we adapt
+# For the BNCI2014-009 dataset (16 channels, no EOG,
+# bandpass 1-24 Hz applied by the P300 paradigm), we adapt
 # the design principles from [3]_ (Tables 2-5):
 #
 # .. list-table:: Potato Field Configuration for BNCI2014-009
@@ -441,17 +441,17 @@ plt.show()
 #      - Freq (Hz)
 #      - Target Artifact
 #    * - 1
-#      - FC3, FCz, FC4
+#      - F3, Fz, F4
 #      - euclid
 #      - 1-7
 #      - Ocular (frontal, low-freq)
 #    * - 2
-#      - FC3, FCz, FC4
+#      - F3, Fz, F4
 #      - riemann
 #      - 1-7
 #      - Ocular (blinks, co-variation)
 #    * - 3
-#      - FC5, FC1, FC2, FC6
+#      - PO7, PO8, P3, P4
 #      - riemann
 #      - 16-24
 #      - Myogenic lateral
@@ -476,7 +476,7 @@ plt.show()
 # reusable across datasets with different channel sets.
 POTATO_FIELD_CONFIG = [
     {
-        "channels": ["FC3", "FCz", "FC4"],
+        "channels": ["F3", "Fz", "F4"],
         "low_freq": 1.0,
         "high_freq": 7.0,
         "metric": "euclid",
@@ -484,7 +484,7 @@ POTATO_FIELD_CONFIG = [
         "target": "Ocular (low-freq)",
     },
     {
-        "channels": ["FC3", "FCz", "FC4"],
+        "channels": ["F3", "Fz", "F4"],
         "low_freq": 1.0,
         "high_freq": 7.0,
         "metric": "riemann",
@@ -492,7 +492,7 @@ POTATO_FIELD_CONFIG = [
         "target": "Ocular (blinks)",
     },
     {
-        "channels": ["FC5", "FC1", "FC2", "FC6"],
+        "channels": ["PO7", "PO8", "P3", "P4"],
         "low_freq": 16.0,
         "high_freq": 24.0,
         "metric": "riemann",
