@@ -141,14 +141,14 @@ print(f"Channels: {epochs.ch_names}")
 # --------------------------------
 #
 # The **Riemannian Potato** (RP) [1]_ works as follows. For each EEG
-# epoch :math:`i`, we compute the covariance matrix :math:`\\Sigma_i` and
+# epoch :math:`i`, we compute the covariance matrix :math:`\Sigma_i` and
 # the Riemannian distance :math:`d_i` to the barycenter
-# :math:`\\bar{\\Sigma}`:
+# :math:`\bar{\Sigma}`:
 #
 # .. math::
 #
-#     \\bar{\\Sigma} = \\arg\\min_{\\Sigma \\in \\mathcal{M}_N}
-#     \\sum_{i=1}^{I} \\delta_R^2(\\Sigma_i, \\Sigma)
+#     \bar{\Sigma} = \arg\min_{\Sigma \in \mathcal{M}_N}
+#     \sum_{i=1}^{I} \delta_R^2(\Sigma_i, \Sigma)
 #
 # As noted in [3]_, Riemannian distances are empirically right-skewed
 # and positive-only, so the **geometric z-score** is more appropriate
@@ -156,14 +156,14 @@ print(f"Channels: {epochs.ch_names}")
 #
 # .. math::
 #
-#     \\mu = \\exp\\left( \\frac{1}{I} \\sum_{i=1}^{I}
-#     \\log d_i \\right), \\quad
-#     \\sigma = \\exp\\left( \\sqrt{\\frac{1}{I} \\sum_{i=1}^{I}
-#     \\left( \\log \\frac{d_i}{\\mu} \\right)^2} \\right)
+#     \mu = \exp\left( \frac{1}{I} \sum_{i=1}^{I}
+#     \log d_i \right), \quad
+#     \sigma = \exp\left( \sqrt{\frac{1}{I} \sum_{i=1}^{I}
+#     \left( \log \frac{d_i}{\mu} \right)^2} \right)
 #
-# The geometric z-score is then :math:`z_i = \\log(d_i / \\mu) /
-# \\log(\\sigma)`, and the p-value is :math:`p_i = 1 - \\Phi(z_i)` where
-# :math:`\\Phi` is the standard normal CDF. Epochs with z-scores above a
+# The geometric z-score is then :math:`z_i = \log(d_i / \mu) /
+# \log(\sigma)`, and the p-value is :math:`p_i = 1 - \Phi(z_i)` where
+# :math:`\Phi` is the standard normal CDF. Epochs with z-scores above a
 # threshold (e.g., 3) are flagged as artifacts.
 #
 # **Limitation:** As the number of channels increases, the distance
@@ -373,20 +373,20 @@ plt.show()
 #
 # .. math::
 #
-#     q = -2 \\sum_{j=1}^{J} \\log(p_j)
+#     q = -2 \sum_{j=1}^{J} \log(p_j)
 #
 # Under the null hypothesis (no artifact), :math:`q` follows a
-# :math:`\\chi^2` distribution with :math:`2J` degrees of freedom, yielding
-# a combined p-value: :math:`p = 1 - F_{\\chi^2(2J)}(q)`.
+# :math:`\chi^2` distribution with :math:`2J` degrees of freedom, yielding
+# a combined p-value: :math:`p = 1 - F_{\chi^2(2J)}(q)`.
 #
 # The iRPF method [3]_ further introduces **Liptak's combination**:
 #
 # .. math::
 #
-#     q = \\frac{1}{\\sqrt{J}} \\sum_{j=1}^{J} \\Phi^{-1}(p_j)
+#     q = \frac{1}{\sqrt{J}} \sum_{j=1}^{J} \Phi^{-1}(p_j)
 #
 # and a **Tippett meta-combination** of both Fisher and Liptak results:
-# :math:`q = \\min(p_{\\text{Fisher}}, p_{\\text{Liptak}})`, providing
+# :math:`q = \min(p_{\text{Fisher}}, p_{\text{Liptak}})`, providing
 # a more precise determination of the rejection region.
 #
 # .. [5] Fisher, R. A. (1934). Statistical methods for research workers.
@@ -401,11 +401,11 @@ plt.show()
 # - **Riemannian distance** (affine-invariant): captures the full
 #   structure of covariance matrices. Effective for artifacts with
 #   co-variation across electrodes (e.g., blinks).
-# - **Euclidean distance**: :math:`\\delta_E(\\Sigma_1, \\Sigma_2) =
-#   \\|\\Sigma_1 - \\Sigma_2\\|_F`. More effective for artifacts like
+# - **Euclidean distance**: :math:`\delta_E(\Sigma_1, \Sigma_2) =
+#   \|\Sigma_1 - \Sigma_2\|_F`. More effective for artifacts like
 #   vertical eye movements that produce large co-variation patterns.
-# - **Diagonal Euclidean distance**: :math:`\\delta_{\\text{diag}(E)} =
-#   \\|\\text{diag}(\\Sigma_1 - \\Sigma_2)\\|_F`. Focuses on the diagonal
+# - **Diagonal Euclidean distance**: :math:`\delta_{\text{diag}(E)} =
+#   \|\text{diag}(\Sigma_1 - \Sigma_2)\|_F`. Focuses on the diagonal
 #   elements (channel variances), effective for myogenic artifacts that
 #   primarily impact individual channels without cross-electrode
 #   co-variation.
