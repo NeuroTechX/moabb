@@ -76,12 +76,14 @@ Bugs
 - ``LearningCurveSplitter`` now skips training splits that collapse to a single class (e.g., with very small ``data_size``) and emits a ``RuntimeWarning`` instead of producing NaN results (:gh:`963` by `Bruno Aristimunha`_)
 - Fix double µV-to-V conversion in BNCI2003-004 and BNCI2015-006: data loaded in microvolts was labeled as volts without unit conversion, causing a second scaling during EDF export via ``mne_bids`` (by `Bruno Aristimunha`_)
 - Fix ``Beetl2021_A`` and ``Beetl2021_B`` 403 Forbidden errors by skipping Figshare API calls when data already exists locally, and fix double-nested zip extraction directory structure (:gh:`969` by `Bruno Aristimunha`_)
+- Fix wrong channel names in Riemannian Artifact Rejection tutorial that caused ``pick()`` to fail on BNCI2014-009 (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
 - Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
 - Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
 
+- Fix docs CI cache: set ``MNE_DATA`` env var and persist ``~/.mne`` config directory so dataset paths survive cache restore (by `Bruno Aristimunha`_)
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 - Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
 - Centralize CV resolution in BaseEvaluation with new ``_resolve_cv()`` method for consistent cross-validation handling across all evaluation types. Add ``_build_result()`` and ``_build_scored_result()`` helpers to centralize result dict construction across WithinSession, CrossSession, and CrossSubject evaluations, replacing manual dict assembly in each (:gh:`963` by `Bruno Aristimunha`_)
