@@ -90,18 +90,6 @@ jobs:
           import os
           import sys
           import time
-          import os
-          from moabb import set_download_dir
-
-          # Configure MOABB download directory from MNE_DATA env var
-          # This writes MNE_DATA to ~/.mne/mne-python.json so MNE can
-          # find cached datasets. Dataset-specific keys (e.g.
-          # MNE_DATASETS_BNCI_PATH) are auto-created by get_dataset_path().
-          mne_data = os.environ.get('MNE_DATA')
-          if mne_data:
-              print(f"Configuring MOABB download dir: {mne_data}")
-              set_download_dir(mne_data)
-
           from moabb.utils import set_download_dir
           set_download_dir(os.environ["MNE_DATA"])
 
