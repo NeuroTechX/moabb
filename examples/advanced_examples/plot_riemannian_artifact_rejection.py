@@ -39,8 +39,8 @@ into a MOABB pre-processing pipeline using **pipeline surgery**:
    targeting specific artifact types via channel subsets and frequency
    bands, combined using Fisher's method.
 3. **Improved RPF (iRPF)** [3]_ — enhanced RPF using both Fisher's and
-   Stouffer's (Liptak) combination functions with Tippett
-   meta-combination, providing a more precise rejection region.
+   Stouffer's (Liptak) combination functions, providing a more sensitive
+   rejection criterion that captures different artifact patterns.
 
 We apply these methods to the BNCI2014-009 P300 dataset and design a
 potato field following the principles described in [3]_.
@@ -84,12 +84,11 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pyriemann.classification import MDM
 from pyriemann.clustering import Potato
-from pyriemann.estimation import Covariances, XdawnCovariances
-from pyriemann.tangentspace import TangentSpace
+from pyriemann.estimation import Covariances, ERPCovariances
 from pyriemann.utils.covariance import normalize
 from scipy.stats import combine_pvalues, norm
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
@@ -796,15 +795,19 @@ def riemannian_potato_field_rejection(epochs):
 def improved_rpf_rejection(epochs):
     """Reject artifacts using an improved Riemannian Potato Field (iRPF).
 
-    This implements the combination strategy from [3]_ (Section 2.4.4,
-    Fig. 5): per-potato p-values are combined using both Fisher's and
-    Stouffer's (Liptak) methods, then the two results are merged via
-    Tippett's meta-combination (minimum p-value). This provides a more
-    precise determination of the rejection region than Fisher alone.
+    This implements the multiple combination functions from [3]_
+    (Section 2.4.4): per-potato p-values are combined using both Fisher's
+    and Stouffer's (Liptak) methods, then the minimum of the two combined
+    p-values is used as the final SQI. This provides a more sensitive
+    rejection criterion than Fisher alone, since Fisher is more sensitive
+    to one very small p-value (single extreme artifact) while Stouffer
+    is more sensitive to many moderately small p-values (widespread mild
+    artifacts). Taking the minimum captures the best of both.
 
-    Note: This is a simplified iRPF that focuses on the combination
-    strategy. The full iRPF in [3]_ also includes adaptive robust
-    barycenter estimation and Kneedle-based automatic thresholding.
+    Note: Each potato is fit and evaluated on the same data. In a rigorous
+    benchmark you would fit only on training folds to avoid information
+    leakage. Here the potatoes are unsupervised outlier detectors, so the
+    leakage is minimal and acceptable for tutorial purposes.
     """
     n_before = len(epochs)
     available_chs = set(epochs.ch_names)
@@ -819,7 +822,7 @@ def improved_rpf_rejection(epochs):
 
     cov_list = compute_potato_covariances(epochs, valid_config)
 
-    # Fit individual potatoes with per-potato metrics and collect p-values
+    # Fit individual potatoes and collect p-values
     p_values_list = []
     for cov, cfg in zip(cov_list, valid_config):
         p = Potato(metric=cfg["metric"], threshold=3)
@@ -830,15 +833,14 @@ def improved_rpf_rejection(epochs):
     # iRPF combination strategy (Section 2.4.4 of the paper):
     # 1. Fisher's combination across potatoes
     # 2. Stouffer's (Liptak) combination across potatoes
-    # 3. Tippett meta-combination of both results
+    # 3. Take the minimum of both combined p-values per epoch
     p_matrix = np.array(p_values_list)
     p_matrix = np.clip(p_matrix, 1e-10, 1.0)
 
     _, fisher_p = combine_pvalues(p_matrix, method="fisher", axis=0)
     _, stouffer_p = combine_pvalues(p_matrix, method="stouffer", axis=0)
 
-    meta_p = np.stack([fisher_p, stouffer_p])
-    _, combined_p = combine_pvalues(meta_p, method="tippett", axis=0)
+    combined_p = np.minimum(fisher_p, stouffer_p)
 
     is_clean = combined_p >= 0.01
 
@@ -879,23 +881,19 @@ irpf_pipeline.insert_step(
 # Evaluation — Compare With vs Without Artifact Rejection
 # ---------------------------------------------------------
 #
-# We define a P300 classification pipeline (Xdawn covariances +
-# Tangent Space + LDA) and run ``WithinSessionEvaluation`` four times:
-# once with the default pipeline, once with RP, once with RPF, and once
-# with iRPF. This comparison follows the evaluation methodology used in
-# [3]_, where different artifact rejection methods are compared on their
-# impact on downstream classification performance.
+# We define a P300 classification pipeline (ERPCovariances + MDM) and run
+# ``WithinSessionEvaluation`` four times: once with the default pipeline,
+# once with RP, once with RPF, and once with iRPF. ERPCovariances builds
+# augmented covariance matrices that incorporate the ERP prototypes,
+# which is the standard Riemannian approach for P300 classification.
+# This comparison follows the evaluation methodology used in [3]_, where
+# different artifact rejection methods are compared on their impact on
+# downstream classification performance.
 
 pipelines = {}
-pipelines["RG+LDA"] = make_pipeline(
-    XdawnCovariances(
-        nfilter=2,
-        classes=[1],
-        estimator="lwf",
-        xdawn_estimator="scm",
-    ),
-    TangentSpace(),
-    LDA(solver="lsqr", shrinkage="auto"),
+pipelines["ERP+MDM"] = make_pipeline(
+    ERPCovariances(estimator="lwf"),
+    MDM(metric=dict(mean="riemann", distance="riemann")),
 )
 
 evaluation = WithinSessionEvaluation(
@@ -1062,10 +1060,10 @@ plt.show()
 # RPF vs iRPF — Comparing combination strategies
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# We visualize how the iRPF's Fisher + Stouffer + Tippett meta-combination
-# compares to RPF's Fisher-only combination. By plotting the sorted SQI
-# values from both methods, we can see how the Tippett meta-combination
-# affects the rejection boundary. This is inspired by Figure 6 of [3]_.
+# We visualize how the iRPF's min(Fisher, Stouffer) combination compares
+# to RPF's Fisher-only combination. By plotting the sorted SQI values
+# from both methods, we can see how using both combination functions
+# captures more artifacts. This is inspired by Figure 6 of [3]_.
 
 # Recompute combined p-values for RPF and iRPF using the visualization data
 p_matrix_viz = np.array(potato_p_values)
@@ -1074,11 +1072,10 @@ p_matrix_viz = np.clip(p_matrix_viz, 1e-10, 1.0)
 # RPF: Fisher's combination only
 _, rpf_combined_p = combine_pvalues(p_matrix_viz, method="fisher", axis=0)
 
-# iRPF: Fisher + Stouffer + Tippett meta-combination
+# iRPF: min(Fisher, Stouffer) — captures both types of departures
 _, fisher_p_viz = combine_pvalues(p_matrix_viz, method="fisher", axis=0)
 _, stouffer_p_viz = combine_pvalues(p_matrix_viz, method="stouffer", axis=0)
-meta_p_viz = np.stack([fisher_p_viz, stouffer_p_viz])
-_, irpf_combined_p = combine_pvalues(meta_p_viz, method="tippett", axis=0)
+irpf_combined_p = np.minimum(fisher_p_viz, stouffer_p_viz)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
 
@@ -1086,13 +1083,13 @@ fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
 sorted_rpf = np.sort(rpf_combined_p)
 sorted_irpf = np.sort(irpf_combined_p)
 axes[0].plot(sorted_rpf, ".-", markersize=2, color="#55A868", label="RPF (Fisher)")
-axes[0].plot(sorted_irpf, ".-", markersize=2, color="#C44E52", label="iRPF (Tippett)")
+axes[0].plot(sorted_irpf, ".-", markersize=2, color="#C44E52", label="iRPF (min)")
 axes[0].set_xlabel("Epoch index (sorted by SQI)")
 axes[0].set_ylabel("Combined p-value (SQI)")
 axes[0].set_title("Sorted SQI: RPF vs iRPF")
 axes[0].set_yscale("log")
-axes[0].axhline(0.01, color="k", linestyle="--", linewidth=1, label="p = 0.01")
-axes[0].legend()
+axes[0].axhline(0.01, color="k", linestyle="--", linewidth=1, label="p = 0.01 threshold")
+axes[0].legend(fontsize=8)
 
 n_rpf_rejected = (rpf_combined_p < 0.01).sum()
 n_irpf_rejected = (irpf_combined_p < 0.01).sum()
@@ -1104,13 +1101,13 @@ axes[0].annotate(
     bbox=dict(boxstyle="round,pad=0.3", facecolor="wheat", alpha=0.5),
 )
 
-# Scatter plot: RPF vs iRPF p-values
+# Scatter plot: RPF (Fisher) vs iRPF (min) p-values
 axes[1].scatter(rpf_combined_p, irpf_combined_p, s=5, alpha=0.5, color="#4C72B0")
 axes[1].plot([1e-10, 1], [1e-10, 1], "k--", linewidth=0.5, alpha=0.5)
-axes[1].axhline(0.01, color="#C44E52", linestyle=":", linewidth=1, label="iRPF threshold")
-axes[1].axvline(0.01, color="#55A868", linestyle=":", linewidth=1, label="RPF threshold")
+axes[1].axhline(0.01, color="#C44E52", linestyle=":", linewidth=1, label="p = 0.01")
+axes[1].axvline(0.01, color="#55A868", linestyle=":", linewidth=1, label="p = 0.01")
 axes[1].set_xlabel("RPF p-value (Fisher)")
-axes[1].set_ylabel("iRPF p-value (Tippett)")
+axes[1].set_ylabel("iRPF p-value (min(Fisher, Stouffer))")
 axes[1].set_title("RPF vs iRPF: per-epoch combined p-values")
 axes[1].set_xscale("log")
 axes[1].set_yscale("log")
@@ -1120,28 +1117,31 @@ plt.tight_layout()
 plt.show()
 
 ##############################################################################
-# Notes on the full iRPF method
-# -------------------------------------------------------
+# Notes on the iRPF implementation
+# ----------------------------------
 #
-# The iRPF combination strategy demonstrated above (Fisher + Stouffer +
-# Tippett) is one of the key innovations of [3]_. The full iRPF method
-# includes additional improvements not implemented here:
+# This tutorial demonstrates the **multiple combination functions**
+# innovation from [3]_ (Section 2.4.4): per-potato p-values are
+# combined using both Fisher's and Stouffer's (Liptak) methods, and
+# the minimum is used as the final SQI. Fisher is more sensitive to
+# a single extreme outlier, while Stouffer is more sensitive to many
+# moderate departures. Taking the minimum captures both patterns.
 #
-# **Automatic outlier rejection before training.** iRPF computes the
-# field root mean square (FRMS) of each epoch and adaptively determines
-# a rejection threshold, removing severely corrupted data before the
-# barycenter estimation step.
+# Additional features from the full iRPF method [3]_ not implemented
+# here include:
 #
-# **Adaptive robust barycenter estimation.** Instead of using a fixed
-# z-score threshold for iterative outlier removal during barycenter
-# computation, iRPF applies the **Kneedle algorithm** (Satopaa et al.,
-# 2011) to the sorted p-values. This automatically finds the "knee"
-# point separating inliers from outliers at each iteration.
-#
-# **Automatic adaptive thresholding.** The Kneedle algorithm is applied
-# to the sorted SQI values to dynamically determine the rejection
-# threshold, eliminating the need for manual threshold tuning (the fixed
-# p = 0.01 threshold used in this tutorial).
+# - **Tippett meta-combination**: a principled statistical approach to
+#   combining the Fisher and Stouffer p-values, used together with
+#   robust barycenter estimation and adaptive thresholding.
+# - **Adaptive robust barycenter estimation** (Section 2.4.2): iterative
+#   Kneedle-based outlier removal during Potato fitting. This requires
+#   a train/test split to work properly and is the key enabler for the
+#   Tippett meta-combination and Kneedle thresholding.
+# - **Adaptive Kneedle thresholding** (Section 2.4.5): the Kneedle
+#   algorithm automatically determines the rejection threshold on the
+#   combined SQI, eliminating the need for a fixed threshold.
+# - **FRMS pre-rejection**: computing the field root mean square of each
+#   epoch to remove severely corrupted data before barycenter estimation.
 #
 # As reported in [3]_, iRPF achieves gains of up to 22% in recall,
 # 102% in specificity, 54% in precision, and 24% in F1-score compared
@@ -1150,6 +1150,6 @@ plt.show()
 #
 # The complete iRPF implementation is available in the
 # `RAR package <https://github.com/Davoud-Hajhassani/Riemannian-Artifact-Rejection>`_.
-# The RP, RPF, and iRPF combination methods demonstrated here can be
-# readily integrated into any MOABB analysis pipeline using the pipeline
+# The RP, RPF, and iRPF methods demonstrated here can be readily
+# integrated into any MOABB analysis pipeline using the pipeline
 # surgery approach shown in this tutorial.
