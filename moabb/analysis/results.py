@@ -92,7 +92,12 @@ class Results:
 
         if hdf5_path is None:
             if get_config("MOABB_RESULTS") is None:
-                set_config("MOABB_RESULTS", osp.join(osp.expanduser("~"), "mne_data"))
+                # Use MNE_DATA if configured (env var or config file),
+                # otherwise fall back to ~/mne_data
+                mne_data = get_config("MNE_DATA")
+                if mne_data is None:
+                    mne_data = osp.join(osp.expanduser("~"), "mne_data")
+                set_config("MOABB_RESULTS", mne_data)
             self.mod_dir = _get_path(None, "MOABB_RESULTS", "results")
             # was previously stored in the moabb source file folder:
             # self.mod_dir = osp.dirname(osp.abspath(inspect.getsourcefile(moabb)))

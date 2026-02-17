@@ -74,11 +74,14 @@ jobs:
         run: |
           python -c "
           import os
+          from mne import set_config
           from moabb import set_download_dir
           mne_data = os.environ.get('MNE_DATA')
           if mne_data:
               set_download_dir(mne_data)
+              set_config('MOABB_RESULTS', mne_data)
               print(f'MOABB download dir set to: {mne_data}')
+              print(f'MOABB_RESULTS set to: {mne_data}')
           "
 
       - name: Pre-download datasets (cold cache only)
