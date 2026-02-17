@@ -20,11 +20,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -277,11 +274,9 @@ class Stieger2021(BaseDataset):
             type=["Active"],
         ),
         preprocessing=PreprocessingMetadata(
-            filter_details=FilterDetails(
-                highpass_hz=0.1,
-                lowpass_hz=200.0,
-                notch_hz=[60],
-            ),
+            highpass_hz=0.1,
+            lowpass_hz=200.0,
+            notch_hz=[60],
             re_reference="CAR",
             data_state="raw",
             preprocessing_applied=False,
@@ -289,10 +284,10 @@ class Stieger2021(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CNN", "RNN", "Neural Network", "EEGNet"],
             feature_extraction=["ERD", "ERS", "autoregressive model", "power spectrum"],
-            frequency_bands=FrequencyBands(
-                alpha=[8, 13],
-                mu=[8, 12],
-            ),
+            frequency_bands={
+                "alpha": [8, 13],
+                "mu": [8, 12],
+            },
             spatial_filters=["Laplacian (C3/C4 with 4 surrounding electrodes)"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -325,13 +320,11 @@ class Stieger2021(BaseDataset):
         data_processed=False,
         abstract="Brain computer interfaces (BCIs) are valuable tools that expand the nature of communication through bypassing traditional neuromuscular pathways. The non-invasive, intuitive, and continuous nature of sensorimotor rhythm (SMR) based BCIs enables individuals to control computers, robotic arms, wheelchairs, and even drones by decoding motor imagination from electroencephalography (EEG). Large and uniform datasets are needed to design, evaluate, and improve the BCI algorithms. In this work, we release a large and longitudinal dataset collected during a study that examined how individuals learn to control SMR-BCIs. The dataset contains over 600 hours of EEG recordings collected during online and continuous BCI control from 62 healthy adults, (mostly) right hand dominant participants, across (up to) 11 training sessions per participant. The data record consists of 598 recording sessions, and over 250,000 trials of 4 different motor-imagery-based BCI tasks.",
         methodology="Participants completed 7-11 online BCI training sessions. Each session consisted of 450 trials across 3 tasks (LR, UD, 2D) with 6 runs total. Each trial: 2s inter-trial interval, 2s target presentation, up to 6s feedback control. Online control used spatial filtering (Laplacian around C3/C4), autoregressive model (order 16) for spectrum estimation, alpha power (12 Hz ± 1.5 Hz) for control signal. Horizontal motion controlled by lateralized alpha power (C4-C3), vertical motion by total alpha power (C4+C3). Control signals normalized to zero mean and unit variance. Cursor position updated every 40 ms.",
-        performance=PerformanceMetadata(
-            accuracy_percent=70.0,
-            other_metrics={
-                "PVC_1D_threshold": 70.0,
-                "PVC_2D_threshold": 40.0,
-            },
-        ),
+        performance={
+            "accuracy_percent": 70.0,
+            "PVC_1D_threshold": 70.0,
+            "PVC_2D_threshold": 40.0,
+        },
     )
 
     def __init__(self, interval=[0, 3], sessions=None, fix_bads=True):

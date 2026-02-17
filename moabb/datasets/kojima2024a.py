@@ -17,16 +17,11 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    ExternalLinks,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
-    Timestamps,
 )
 
 from .base import BaseDataset
@@ -184,7 +179,6 @@ class Kojima2024A(BaseDataset):
             cap_model=None,
             electrode_type="Ag-AgCl",
             electrode_material="Ag-AgCl",
-            device_serial=None,
         ),
         participants=ParticipantMetadata(
             n_subjects=11,
@@ -213,7 +207,6 @@ class Kojima2024A(BaseDataset):
             ],
             handedness_list=None,
             species="human",
-            head_circumference=None,
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
@@ -257,7 +250,6 @@ class Kojima2024A(BaseDataset):
             contact_info=["nb21106@shibaura-it.ac.jp"],
             associated_paper_doi="10.1371/journal.pone.0303565",
             funding=["JSPS KAKENHI Grant Number JP23K11811"],
-            readme=None,
             institution_address="Koto-ku, Tokyo, Japan",
             institution_department="Graduate School of Engineering and Science; College of Engineering",
             ethics_approval=[
@@ -282,31 +274,23 @@ class Kojima2024A(BaseDataset):
         n_contributing_labs=1,
         data_processed=False,
         file_format="mat",
-        external_links=ExternalLinks(
-            source_url="https://doi.org/10.7910/DVN/MQOVEY",
-            ftp_url=None,
-            alternative_urls={"paper": "https://doi.org/10.1371/journal.pone.0303565"},
-        ),
-        timestamps=Timestamps(
-            dataset_created_at=None, dataset_modified_at=None, ingested_at=None
-        ),
+        external_links={
+            "source": "https://doi.org/10.7910/DVN/MQOVEY",
+            "paper": "https://doi.org/10.1371/journal.pone.0303565",
+        },
         tags=Tags(
             pathology=["Healthy"], modality=["auditory"], type=["EEG", "P300", "BCI"]
         ),
-        nchans_counts=None,
-        sfreq_counts=None,
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
             preprocessing_steps=None,
-            filter_details=FilterDetails(
-                highpass_hz=0.1,
-                lowpass_hz=100.0,
-                bandpass=[0.1, 100.0],
-                notch_hz=None,
-                filter_type="zero-phase 2nd-order Butterworth IIR filter",
-                filter_order=2,
-            ),
+            highpass_hz=0.1,
+            lowpass_hz=100.0,
+            bandpass=[0.1, 100.0],
+            notch_hz=None,
+            filter_type="zero-phase 2nd-order Butterworth IIR filter",
+            filter_order=2,
             artifact_methods=None,
             re_reference=None,
             downsampled_to_hz=None,
@@ -319,15 +303,9 @@ class Kojima2024A(BaseDataset):
                 "xDAWN spatial filtering",
                 "Riemannian geometry covariance matrices",
             ],
-            frequency_bands=FrequencyBands(
-                delta=None,
-                theta=None,
-                alpha=None,
-                mu=None,
-                beta=None,
-                gamma=None,
-                analyzed_range=[1.0, 40.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [1.0, 40.0],
+            },
             spatial_filters=["xDAWN"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -335,16 +313,10 @@ class Kojima2024A(BaseDataset):
             cv_folds=10,
             evaluation_type=["within-subject"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=None,
-            itr_bits_per_min=None,
-            auc=None,
-            kappa=None,
-            other_metrics={
-                "description": "Classification accuracy over 80% for 5 subjects, over 75% for 9 subjects",
-                "metric": "MCC (Matthews correlation coefficient)",
-            },
-        ),
+        performance={
+            "description": "Classification accuracy over 80% for 5 subjects, over 75% for 9 subjects",
+            "metric": "MCC (Matthews correlation coefficient)",
+        },
         bci_application=BCIApplicationMetadata(
             applications=["communication", "control interface"],
             environment="laboratory",

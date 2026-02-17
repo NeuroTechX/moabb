@@ -14,8 +14,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -281,10 +279,8 @@ class GrosseWentrup2009(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
-            filter_details=FilterDetails(
-                filter_type="analog high-pass",
-                highpass_hz=0.016,
-            ),
+            filter_type="analog high-pass",
+            highpass_hz=0.016,
             artifact_methods=["none"],
             re_reference="car",
             notes="No trials were rejected and no artifact correction was performed. Data were re-referenced to common average reference offline.",
@@ -297,9 +293,9 @@ class GrosseWentrup2009(BaseDataset):
                 "Laplacian",
                 "Bandpower",
             ],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[8.0, 30.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [8.0, 30.0],
+            },
             spatial_filters=["CSP", "Beamforming", "Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(

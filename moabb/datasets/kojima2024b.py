@@ -18,11 +18,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -243,7 +240,6 @@ class Kojima2024B(BaseDataset):
             cap_model=None,
             electrode_type="passive Ag/AgCl",
             electrode_material="Ag/AgCl",
-            device_serial=None,
         ),
         participants=ParticipantMetadata(
             n_subjects=15,
@@ -260,7 +256,6 @@ class Kojima2024B(BaseDataset):
             sexes=None,
             handedness_list=None,
             species="human",
-            head_circumference=None,
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
@@ -315,7 +310,6 @@ class Kojima2024B(BaseDataset):
             contact_info=["simon.kojima@ieee.org"],
             associated_paper_doi="10.3389/fnhum.2024.1461960",
             funding=None,
-            readme=None,
             institution_address="Tokyo, Japan",
             institution_department="Graduate School of Engineering and Science (Simon Kojima); College of Engineering (Shin'ichiro Kanoh)",
             ethics_approval=[
@@ -341,10 +335,7 @@ class Kojima2024B(BaseDataset):
         data_processed=False,
         file_format="mat",
         external_links=None,
-        timestamps=None,
         tags=Tags(pathology=["Healthy"], modality=["auditory"], type=["ERP", "P300"]),
-        nchans_counts=None,
-        sfreq_counts=None,
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=True,
@@ -357,14 +348,12 @@ class Kojima2024B(BaseDataset):
                 "epoching -0.1 to 1.2s relative to stimulus onset",
                 "downsampling to 250 Hz",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=1.0,
-                lowpass_hz=40.0,
-                bandpass={"ERP_analysis": [1.0, 40.0], "classification": [0.1, 8.0]},
-                notch_hz=None,
-                filter_type="Butterworth",
-                filter_order=2,
-            ),
+            highpass_hz=1.0,
+            lowpass_hz=40.0,
+            bandpass={"ERP_analysis": [1.0, 40.0], "classification": [0.1, 8.0]},
+            notch_hz=None,
+            filter_type="Butterworth",
+            filter_order=2,
             artifact_methods=["ICA", "PCA"],
             re_reference=None,
             downsampled_to_hz=250.0,
@@ -376,15 +365,9 @@ class Kojima2024B(BaseDataset):
             feature_extraction=[
                 "mean amplitudes in 10 intervals (0.1s non-overlapping, 0-1.0s)"
             ],
-            frequency_bands=FrequencyBands(
-                delta=None,
-                theta=None,
-                alpha=None,
-                mu=None,
-                beta=None,
-                gamma=None,
-                analyzed_range=[0.1, 8.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [0.1, 8.0],
+            },
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
@@ -392,18 +375,10 @@ class Kojima2024B(BaseDataset):
             cv_folds=4,
             evaluation_type=["offline simulation"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=None,
-            itr_bits_per_min=None,
-            auc=None,
-            kappa=None,
-            other_metrics={
-                "ASME-4stream_accuracy": 0.83,
-                "ASME-2stream_accuracy": 0.86,
-                "ASME-4stream_binary_classification_AUC": None,
-                "ASME-2stream_binary_classification_AUC": None,
-            },
-        ),
+        performance={
+            "ASME-4stream_accuracy": 0.83,
+            "ASME-2stream_accuracy": 0.86,
+        },
         bci_application=BCIApplicationMetadata(
             applications=["communication", "control"],
             environment="soundproofing electromagnetically shielded room",

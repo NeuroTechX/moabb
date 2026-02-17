@@ -20,11 +20,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -214,13 +211,11 @@ class EPFLP300(BaseDataset):
                 "windsorizing",
                 "scaling",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=1.0,
-                lowpass_hz=12.0,
-                bandpass=[1.0, 12.0],
-                filter_type="Butterworth",
-                filter_order=6,
-            ),
+            highpass_hz=1.0,
+            lowpass_hz=12.0,
+            bandpass=[1.0, 12.0],
+            filter_type="Butterworth",
+            filter_order=6,
             artifact_methods=["windsorizing"],
             re_reference="mastoid",
             downsampled_to_hz=32.0,
@@ -230,24 +225,22 @@ class EPFLP300(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["BLDA", "FLDA"],
             feature_extraction=["temporal samples from selected electrodes"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[1.0, 12.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [1.0, 12.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="four-fold cross-validation",
             cv_folds=4,
             evaluation_type=["session-based"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=100.0,
-            itr_bits_per_min=28.8,
-            other_metrics={
-                "max_bitrate_disabled_avg": 19.0,
-                "max_bitrate_able_bodied_avg": 38.6,
-                "max_bitrate_overall_avg": 28.8,
-            },
-        ),
+        performance={
+            "accuracy_percent": 100.0,
+            "itr_bits_per_min": 28.8,
+            "max_bitrate_disabled_avg": 19.0,
+            "max_bitrate_able_bodied_avg": 38.6,
+            "max_bitrate_overall_avg": 28.8,
+        },
         bci_application=BCIApplicationMetadata(
             applications=[
                 "environment_control",

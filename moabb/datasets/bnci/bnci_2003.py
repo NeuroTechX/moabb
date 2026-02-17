@@ -11,8 +11,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -265,12 +263,10 @@ class BNCI2003_004(MNEBNCI):
                 "spatial Laplacian filtering",
                 "bandpass filtering",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=4.0,
-                lowpass_hz=2.5,
-                bandpass={"low_cutoff_hz": 0.05, "high_cutoff_hz": 200.0},
-                filter_type="causal elliptic IIR",
-            ),
+            highpass_hz=4.0,
+            lowpass_hz=2.5,
+            bandpass={"low_cutoff_hz": 0.05, "high_cutoff_hz": 200.0},
+            filter_type="causal elliptic IIR",
             artifact_methods=["ICA"],
             re_reference="car",
             downsampled_to_hz=100,
@@ -279,9 +275,9 @@ class BNCI2003_004(MNEBNCI):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA", "SVM", "Shrinkage LDA"],
             feature_extraction=["CSP", "ERD", "Covariance/Riemannian", "AR"],
-            frequency_bands=FrequencyBands(
-                alpha=[8, 13],
-            ),
+            frequency_bands={
+                "alpha": [8, 13],
+            },
             spatial_filters=["CSP", "spatial Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(

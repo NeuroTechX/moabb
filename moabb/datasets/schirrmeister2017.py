@@ -15,11 +15,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -188,9 +185,7 @@ class Schirrmeister2017(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed signals with minimal preprocessing for end-to-end comparison",
             preprocessing_applied=True,
-            filter_details=FilterDetails(
-                filter_type="Butterworth",
-            ),
+            filter_type="Butterworth",
             artifact_methods=["ICA"],
             re_reference="car",
             notes="Minimal preprocessing applied to conduct fair end-to-end comparison of ConvNets and FBCSP",
@@ -203,24 +198,22 @@ class Schirrmeister2017(BaseDataset):
                 "Bandpower",
                 "Spectral power modulations",
             ],
-            frequency_bands=FrequencyBands(
-                alpha=[7.0, 13.0],
-                beta=[13.0, 30.0],
-                gamma=[30.0, 100.0],
-            ),
+            frequency_bands={
+                "alpha": [7.0, 13.0],
+                "beta": [13.0, 30.0],
+                "gamma": [30.0, 100.0],
+            },
             spatial_filters=["CSP", "Common Spatial Patterns"],
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="holdout",
             evaluation_type=["within_subject"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=84.0,
-            other_metrics={
-                "FBCSP_accuracy": 82.1,
-                "Deep_ConvNet_accuracy": 84.0,
-            },
-        ),
+        performance={
+            "accuracy_percent": 84.0,
+            "FBCSP_accuracy": 82.1,
+            "Deep_ConvNet_accuracy": 84.0,
+        },
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation", "communication"],
             environment="laboratory",

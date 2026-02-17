@@ -17,11 +17,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -238,12 +235,10 @@ class Cho2017(BaseDataset):
                 "bad trial rejection (amplitude > ±100 μV)",
                 "EMG correlation detection",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=0.5,
-                bandpass="8-30 Hz (SMR analysis), 8-14 Hz (mu rhythm ERD/ERS), 50-250 Hz (EMG)",
-                filter_type="Butterworth",
-                filter_order=4,
-            ),
+            highpass_hz=0.5,
+            bandpass="8-30 Hz (SMR analysis), 8-14 Hz (mu rhythm ERD/ERS), 50-250 Hz (EMG)",
+            filter_type="Butterworth",
+            filter_order=4,
             artifact_methods=["EMG removal", "voltage threshold rejection"],
             re_reference="Car",
             epoch_window=[0.5, 2.5],
@@ -252,25 +247,23 @@ class Cho2017(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["FLDA"],
             feature_extraction=["CSP", "ERD", "ERS"],
-            frequency_bands=FrequencyBands(
-                alpha=[8.0, 14.0],
-                mu=[8, 12],
-                analyzed_range=[8.0, 30.0],
-            ),
+            frequency_bands={
+                "alpha": [8.0, 14.0],
+                "mu": [8, 12],
+                "analyzed_range": [8.0, 30.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="random subset selection",
             cv_folds=10,
             evaluation_type=["within_session"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=67.46,
-            other_metrics={
-                "accuracy_std": 13.17,
-                "discriminative_subjects": 38,
-                "total_subjects": 52,
-            },
-        ),
+        performance={
+            "accuracy_percent": 67.46,
+            "accuracy_std": 13.17,
+            "discriminative_subjects": 38,
+            "total_subjects": 52,
+        },
         bci_application=BCIApplicationMetadata(
             applications=[
                 "subject-to-subject transfer",

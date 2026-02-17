@@ -25,7 +25,6 @@ from moabb.datasets.metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -556,7 +555,6 @@ class BI2012(BaseDataset):
                 "Experiment",
             ],
             associated_paper_doi="10.5281/zenodo.2649006",
-            readme="https://github.com/plcrodrigues/py.BI.EEG.2012-GIPSA",
             acknowledgements="All subjects were volunteers recruited by means of flyers and of the mailing list of the University of Grenoble-Alpes. All participants provided written informed consent confirming the notification of the experimental process, the data management procedures and the right to withdraw from the experiment at any moment.",
         ),
         sessions_per_subject=2,
@@ -586,9 +584,7 @@ class BI2012(BaseDataset):
         cross_validation=CrossValidationMetadata(
             evaluation_type=["cross_session"],
         ),
-        performance=PerformanceMetadata(
-            other_metrics={"balanced_accuracy": None},
-        ),
+        performance={"balanced_accuracy": None},
         bci_application=BCIApplicationMetadata(
             applications=["gaming", "vr_ar"],
             online_feedback=True,
@@ -803,7 +799,6 @@ class BI2013a(BaseDataset):
                 "Adaptive",
                 "Calibration",
             ],
-            readme="Technical report dated 17 April 2019 describing experimental procedures",
         ),
         sessions_per_subject=1,
         runs_per_session=2,
@@ -854,11 +849,9 @@ class BI2013a(BaseDataset):
             },
             trials_context="per_phase",
         ),
-        performance=PerformanceMetadata(
-            other_metrics={
-                "Balanced_Accuracy": "used due to unbalanced classes (1:5 ratio Target to non-Target)"
-            },
-        ),
+        performance={
+            "Balanced_Accuracy": "used due to unbalanced classes (1:5 ratio Target to non-Target)",
+        },
         data_processed=False,
         file_format="mat, csv, gdf",
         abstract="This dataset contains electroencephalographic (EEG) recordings of 24 subjects doing a visual P300 Brain-Computer Interface experiment on PC. The visual P300 is an event-related potential elicited by visual stimulation, peaking 240-600 ms after stimulus onset. The experiment was designed to compare the use of a P300-based brain-computer interface with and without adaptive calibration using Riemannian geometry. EEG data were recorded using 16 electrodes during an experiment at GIPSA-lab, Grenoble, France, in 2013.",
@@ -1072,11 +1065,9 @@ class BI2014a(BaseDataset):
             block_duration_s=None,
             trials_context="9 levels per session, up to 8 attempts per level to destroy target",
         ),
-        performance=PerformanceMetadata(
-            other_metrics={
-                "note": "Real-time adaptive RMDM classifier used for assessing participants' command with calibration-free procedure"
-            },
-        ),
+        performance={
+            "note": "Real-time adaptive RMDM classifier used for assessing participants' command with calibration-free procedure",
+        },
         abstract="We describe the experimental procedures for the bi2014a dataset that contains electroencephalographic (EEG) recordings of 71 subjects playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed pseudo-randomly to elicit the P300 response. EEG data were recorded using 16 active dry electrodes with up to three game sessions. The experiment took place at GIPSA-lab, Grenoble, France, in 2014.",
         methodology="The experiment was designed to study the viability of a calibration-less P300-based BCI system with dry electrodes. Visual P300 is an event-related potential (ERP) elicited by an expected but unpredictable target visual stimulation (oddball paradigm), with peaking amplitude 240-600 ms after stimulus onset. Two event-related stimuli: Target (P300 expected) and Non-Target (no P300). The experiment used Brain Invaders, a P300-based BCI open-source software. A repetition is composed of 12 flashes (one for each group), of which two include the Target symbol (Target flashes) and 10 do not (non-Target flashes). The ratio of Target versus non-Target epochs in the whole datasets is one-to-five. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. Game session was compounded by nine levels, consisting in a unique and predefined configuration of the 36 symbols of the interface. Players had up to eight attempts to destroy the target symbol. If the player missed all eight attempts, the level was started once again from the beginning. Average duration of five minutes for the nine levels. Experimenter could end the experiment if no control over the BCI system was gained after 10 minutes.",
     )
@@ -1291,11 +1282,9 @@ class BI2014b(BaseDataset):
             block_duration_s="variable, average ~33 seconds per level (5 minutes total for 9 levels)",
             trials_context="9 levels per game session, each with unique predefined spatial configuration of 36 aliens. Up to 8 attempts to destroy target per level.",
         ),
-        performance=PerformanceMetadata(
-            other_metrics={
-                "classifier": "real-time adaptive RMDM classifier (calibration-free procedure)"
-            },
-        ),
+        performance={
+            "classifier": "real-time adaptive RMDM classifier (calibration-free procedure)",
+        },
         abstract="We describe the experimental procedures for a dataset containing electroencephalographic (EEG) recordings of 38 subjects playing in pairs to the multi-user version of a visual P300-based Brain-Computer Interface (BCI) named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed pseudo-randomly to elicit a P300 response. EEG data were recorded using 32 active wet electrodes per subject (total: 64 electrodes) during three randomised conditions (Solo1, Solo2, Collaboration). The experiment took place at GIPSA-lab, Grenoble, France, in 2014.",
         methodology="Multi-user hyperscanning P300 BCI experiment designed to study inter-brain synchrony. Participants played Brain Invaders 2 in three conditions: Solo1 (player1 plays, player2 watches cross), Solo2 (roles reversed), and Collaboration (4 game sessions with both players). Each game session consisted of 9 levels with predefined alien configurations. A repetition used 12 flashes of pseudo-random groups of 6 symbols, ensuring each symbol flashed twice per repetition (1:5 Target:Non-Target ratio). Real-time adaptive RMDM classifier provided online feedback. Control condition (non-playing participant) allowed correction for fake inter-brain synchrony.",
     )
@@ -1466,7 +1455,6 @@ class BI2015a(BaseDataset):
                 "Ethical Committee of the University of Grenoble Alpes (Comité d'Ethique pour la Recherche Non-Interventionnelle)"
             ],
             how_to_acknowledge="Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P.L.C., Gautheret, V., Congedo, M. (2019). Brain Invaders calibration-less P300-based BCI with modulation of flash duration Dataset (bi2015a). Technical Report, GIPSA-lab.",
-            readme="Python code for manipulating the data is available at https://github.com/plcrodrigues/py.BI.EEG.2015a-GIPSA",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1714,11 +1702,9 @@ class BI2015b(BaseDataset):
             n_blocks=9,
             trials_context="per session (9 levels per session, 3 sessions with different flash durations)",
         ),
-        performance=PerformanceMetadata(
-            other_metrics={
-                "note": "Real-time adaptive classifier used during experiment, performance variable per subject"
-            },
-        ),
+        performance={
+            "note": "Real-time adaptive classifier used during experiment, performance variable per subject",
+        },
         abstract="We describe the experimental procedures for an experiment dataset that we have made publicly available at https://doi.org/10.5281/zenodo.3266930 in mat and csv formats. This dataset contains electroencephalographic (EEG) recordings of 50 subjects playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed pseudo-randomly to elicit the P300 response. EEG data were recorded using 32 active wet electrodes with three conditions: flash duration 50ms, 80ms or 110ms. The experiment took place at GIPSA-lab, Grenoble, France, in 2015.",
         methodology="The experiment consisted of three game sessions of Brain Invaders of 9 levels each with different flash duration (110ms, 80ms, 50ms). Before and after the three game sessions, around one minute of resting state and eyes closed conditions were recorded. The interface is composed of 36 aliens. A repetition is composed of 12 flashes of pseudo-random groups of six symbols chosen in such a way that after each repetition each symbol has flashed exactly two times. The ratio of Target versus non-Target is one-to-five. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. This scheme allows a calibration-free classifier.",
     )

@@ -14,11 +14,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    ExternalLinks,
-    FilterDetails,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -213,13 +210,11 @@ class Thielen2021(BaseDataset):
             data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=["high-pass filter", "low-pass filter", "downsampling"],
-            filter_details=FilterDetails(
-                highpass_hz=2.0,
-                lowpass_hz=30.0,
-                bandpass=[2, 30],
-                filter_type="Butterworth",
-                filter_order="2nd order (highpass), 6th order (lowpass)",
-            ),
+            highpass_hz=2.0,
+            lowpass_hz=30.0,
+            bandpass=[2, 30],
+            filter_type="Butterworth",
+            filter_order="2nd order (highpass), 6th order (lowpass)",
             artifact_methods=None,
             re_reference="car",
             downsampled_to_hz=120,
@@ -235,13 +230,9 @@ class Thielen2021(BaseDataset):
             cv_folds=5,
             evaluation_type=["within_session", "transfer_learning", "zero_training"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=None,
-            itr_bits_per_min=None,
-            other_metrics={
-                "high_communication_rates": "achieved in online spelling task"
-            },
-        ),
+        performance={
+            "high_communication_rates": "achieved in online spelling task",
+        },
         bci_application=BCIApplicationMetadata(
             applications=["speller", "communication"],
             environment="indoor",
@@ -266,9 +257,7 @@ class Thielen2021(BaseDataset):
         n_contributing_labs=2,
         data_processed=True,
         file_format="mat",
-        external_links=ExternalLinks(
-            source_url="https://doi.org/10.34973/9txv-z787",
-        ),
+        external_links={"source": "https://doi.org/10.34973/9txv-z787"},
         abstract="Objective. Typically, a brain–computer interface (BCI) is calibrated using user- and session-specific data because of the individual idiosyncrasies and the non-stationary signal properties of the electroencephalogram (EEG). Therefore, it is normal for BCIs to undergo a time-consuming passive training stage that prevents users from directly operating them. In this study, we systematically reduce the training data set in a stepwise fashion, to ultimately arrive at a calibration-free method for a code-modulated visually evoked potential (cVEP)-based BCI to fully eliminate the tedious training stage. Approach. In an extensive offline analysis, we compare our sophisticated encoding model with a traditional event-related potential (ERP) technique. We calibrate the encoding model in a standard way, with data limited to a single class while generalizing to all others and without any data. In addition, we investigate the feasibility of the zero-training cVEP BCI in an online setting. Main results. By adopting the encoding model, the training data can be reduced substantially, while maintaining both the classification performance as well as the explained variance of the ERP method. Moreover, with data from only one class or even no data at all, it still shows excellent performance. In addition, the zero-training cVEP BCI achieved high communication rates in an online spelling task, proving its feasibility for practical use. Significance. To date, this is the fastest zero-training cVEP BCI in the field, allowing high communication speeds without calibration while using only a few non-invasive water-based EEG electrodes. This allows us to skip the training stage altogether and spend all the valuable time on direct operation. This minimizes the session time and opens up new exciting directions for practical plug-and-play BCI. Fundamentally, these results validate that the adopted neural encoding model compresses data into event responses without the loss of explanatory power compared to using full ERPs as a template.",
         methodology="The study compared four training regimes: (1) e-train: traditional ERP template-matching with data from all classes, (2) n-train: encoding model (reconvolution) with data from all n classes, (3) 1-train: encoding model with data from only one class while generating templates for all sequences, (4) 0-train: zero-training encoding model requiring no calibration data. Offline experiment: 30 participants completed 5 blocks of 20 trials each (100 trials total), with 31.5 s trials using a 4×5 calculator grid (n=20 symbols). Stimuli were luminance-modulated pseudo-random Gold codes (126-bit sequences, 2.1 s duration) presented on an iPad Pro at 60 Hz. Online experiment: 11 participants (9 analyzed) used a keyboard layout (n=29 symbols) with dynamic stopping rule for spelling tasks. EEG recorded at 512 Hz from 8 electrodes, preprocessed with 2-30 Hz Butterworth filtering and downsampled to 120 Hz. Classification used template-matching with reconvolution encoding model that decomposes responses to sequences into linear sums of individual event responses.",
     )

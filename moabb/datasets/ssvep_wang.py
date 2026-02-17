@@ -16,12 +16,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    ExternalLinks,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -324,10 +320,8 @@ class Wang2016(BaseDataset):
                 "Downsampling from 1000 Hz to 250 Hz",
                 "No digital filters applied in preprocessing",
             ],
-            filter_details=FilterDetails(
-                notch_hz=[50],
-                filter_type="notch filter applied during recording",
-            ),
+            notch_hz=[50],
+            filter_type="notch filter applied during recording",
             downsampled_to_hz=250.0,
             epoch_window=[-0.5, 5.5],
             notes="Data epochs include 0.5 s before stimulus onset, 5 s for stimulation, and 0.5 s after stimulus offset. Upper bound frequency of SSVEP harmonics is around 90 Hz.",
@@ -335,9 +329,9 @@ class Wang2016(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CCA", "FBCCA"],
             feature_extraction=["Canonical Correlation Analysis", "Filter Bank CCA"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[7.0, 90.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [7.0, 90.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="leave-one-out (on six blocks)",
@@ -404,28 +398,23 @@ class Wang2016(BaseDataset):
             n_blocks=6,
             trials_context="40 trials per block corresponding to all 40 characters in random order",
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=None,
-            itr_bits_per_min=117.75,
-            other_metrics={
-                "peak_itr_fbcca_0.55s_gaze": 117.75,
-                "peak_itr_fbcca_2s_gaze": 68.99,
-                "peak_itr_cca_0.55s_gaze": 89.89,
-                "peak_itr_cca_2s_gaze": 56.03,
-                "visual_latency_ms": 136.91,
-                "visual_latency_std_ms": 18.4,
-            },
-        ),
+        performance={
+            "itr_bits_per_min": 117.75,
+            "peak_itr_fbcca_0.55s_gaze": 117.75,
+            "peak_itr_fbcca_2s_gaze": 68.99,
+            "peak_itr_cca_0.55s_gaze": 89.89,
+            "peak_itr_cca_2s_gaze": 56.03,
+            "visual_latency_ms": 136.91,
+            "visual_latency_std_ms": 18.4,
+        },
         sessions_per_subject=1,
         runs_per_session=6,
         data_processed=True,
         file_format="MATLAB MAT",
-        external_links=ExternalLinks(
-            source_url="http://bci.med.tsinghua.edu.cn/download.html",
-            alternative_urls={
-                "bnci_horizon": "https://bnci-horizon-2020.eu/database/data-sets",
-            },
-        ),
+        external_links={
+            "source": "http://bci.med.tsinghua.edu.cn/download.html",
+            "bnci_horizon": "https://bnci-horizon-2020.eu/database/data-sets",
+        },
         abstract="This paper presents a benchmark steady-state visual evoked potential (SSVEP) dataset acquired with a 40-target brain–computer interface (BCI) speller. The dataset consists of 64-channel Electroencephalogram (EEG) data from 35 healthy subjects (8 experienced and 27 naïve) while they performed a cue-guided target selecting task. The virtual keyboard of the speller was composed of 40 visual flickers, which were coded using a joint frequency and phase modulation (JFPM) approach. The stimulation frequencies ranged from 8 Hz to 15.8 Hz with an interval of 0.2 Hz. The phase difference between two adjacent frequencies was 0.5π. For each subject, the data included six blocks of 40 trials corresponding to all 40 flickers indicated by a visual cue in a random order. The stimulation duration in each trial was five seconds.",
         methodology="The study used a cue-guided target selecting task with a 40-target BCI speller. Stimuli were presented on a 23.6-in LCD monitor at 60 Hz using sampled sinusoidal stimulation method. Each trial started with a 0.5-s target cue, followed by 5 s of concurrent flickering of all stimuli, and ended with 0.5 s blank screen. The experiment included six blocks per subject, with 40 trials per block in random order. EEG data were recorded using Synamps2 system at 1000 Hz with 64 electrodes, referenced to Cz. Data were preprocessed by extracting epochs according to stimulus onsets and downsampling to 250 Hz. The JFPM approach encoded 40 characters using frequencies from 8-15.8 Hz (0.2 Hz interval) and phases from 0 to 19.5π (0.5π interval). Performance was evaluated using CCA and FBCCA methods with leave-one-out cross-validation.",
     )

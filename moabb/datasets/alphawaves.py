@@ -16,7 +16,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -150,9 +149,9 @@ class Rodrigues2017(BaseDataset):
         ),
         signal_processing=SignalProcessingMetadata(
             feature_extraction=["ERS"],
-            frequency_bands=FrequencyBands(
-                alpha=[8, 13],
-            ),
+            frequency_bands={
+                "alpha": [8, 13],
+            },
         ),
         bci_application=BCIApplicationMetadata(
             applications=["vr_ar", "communication"],

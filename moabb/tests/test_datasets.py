@@ -33,7 +33,6 @@ from moabb.datasets.metadata import (
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
     ParticipantMetadata,
     PreprocessingMetadata,
     get_dataset_metadata,
@@ -306,7 +305,7 @@ class Test_Datasets:
                 ),
                 documentation=DocumentationMetadata(doi="10.1093/gigascience/giz002"),
                 preprocessing=PreprocessingMetadata(
-                    filter_details=FilterDetails(bandpass=[0.5, 40.0]),
+                    bandpass=[0.5, 40.0],
                     preprocessing_steps=["common average reference"],
                 ),
             )

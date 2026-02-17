@@ -22,11 +22,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -448,11 +445,9 @@ class Dreyer2023A(_Dreyer2023Base):
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
-            filter_details=FilterDetails(
-                filter_type="Butterworth",
-                filter_order=5,
-                bandpass=[5.0, 35.0],
-            ),
+            filter_type="Butterworth",
+            filter_order=5,
+            bandpass=[5.0, 35.0],
             artifact_methods=["visual inspection"],
             re_reference="Laplacian (C3, C4 for feature extraction)",
             notes="The raw signals were recorded without any hardware filters. For online processing, a fifth-order Butterworth filter was applied in a participant-specific discriminant frequency band in the range of 5 Hz to 35 Hz with 0.5 Hz large bins.",
@@ -461,27 +456,25 @@ class Dreyer2023A(_Dreyer2023Base):
             classifiers=["LDA"],
             feature_extraction=["CSP", "Bandpower"],
             spatial_filters=["CSP", "Laplacian"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[5.0, 35.0],
-                alpha=[8.0, 13.0],
-                mu=[8.0, 13.0],
-                beta=[13.0, 30.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [5.0, 35.0],
+                "alpha": [8.0, 13.0],
+                "mu": [8.0, 13.0],
+                "beta": [13.0, 30.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             evaluation_type=["within_session"],
             cv_method="calibration-feedback",
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=63.35,
-            other_metrics={
-                "mean_accuracy_std": 17.36,
-                "mean_accuracy_R3": 63.14,
-                "mean_accuracy_R4": 64.82,
-                "chance_level_individual": 58.7,
-                "chance_level_database": 51.0,
-            },
-        ),
+        performance={
+            "accuracy_percent": 63.35,
+            "mean_accuracy_std": 17.36,
+            "mean_accuracy_R3": 63.14,
+            "mean_accuracy_R4": 64.82,
+            "chance_level_individual": 58.7,
+            "chance_level_database": 51.0,
+        },
         bci_application=BCIApplicationMetadata(
             applications=[
                 "rehabilitation",
@@ -724,11 +717,9 @@ class Dreyer2023B(_Dreyer2023Base):
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
-            filter_details=FilterDetails(
-                filter_type="Butterworth",
-                filter_order=5,
-                bandpass=[5.0, 35.0],
-            ),
+            filter_type="Butterworth",
+            filter_order=5,
+            bandpass=[5.0, 35.0],
             artifact_methods=["visual inspection by experimenters"],
             re_reference="Laplacian (for C3/C4 during analysis)",
         ),
@@ -736,20 +727,18 @@ class Dreyer2023B(_Dreyer2023Base):
             classifiers=["LDA"],
             feature_extraction=["CSP", "Bandpower"],
             spatial_filters=["CSP (3 pairs)", "Laplacian"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[5.0, 35.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [5.0, 35.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             evaluation_type=["within_session"],
             cv_method="calibration_runs_then_online_feedback",
         ),
-        performance=PerformanceMetadata(
-            other_metrics={
-                "metric_used": "Trial-wise Accuracy (TAcc)",
-                "description": "Number of trials correctly classified based on LDA outputs summed over trial feedback period",
-            },
-        ),
+        performance={
+            "metric_used": "Trial-wise Accuracy (TAcc)",
+            "description": "Number of trials correctly classified based on LDA outputs summed over trial feedback period",
+        },
         bci_application=BCIApplicationMetadata(
             applications=[
                 "rehabilitation",
@@ -993,11 +982,9 @@ class Dreyer2023C(_Dreyer2023Base):
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
-            filter_details=FilterDetails(
-                filter_type="Butterworth",
-                filter_order=5,
-                bandpass=[5, 35],
-            ),
+            filter_type="Butterworth",
+            filter_order=5,
+            bandpass=[5, 35],
             artifact_methods=["visual inspection"],
             re_reference="Laplacian (for C3 and C4 in CSP algorithm)",
             notes="Impedance could not be measured with active electrodes. EEG signals were visually checked and regularly re-checked to ensure good signal quality throughout the experiment.",
@@ -1005,20 +992,18 @@ class Dreyer2023C(_Dreyer2023Base):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
             feature_extraction=["CSP", "Bandpower"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[5, 35],
-            ),
+            frequency_bands={
+                "analyzed_range": [5, 35],
+            },
             spatial_filters=["CSP (3 pairs)", "Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(
             evaluation_type=["within_session"],
         ),
-        performance=PerformanceMetadata(
-            other_metrics={
-                "metric_type": "Trial-wise Accuracy (TAcc)",
-                "description": "Number of trials accurately classified per run (40 trials per run)",
-            },
-        ),
+        performance={
+            "metric_type": "Trial-wise Accuracy (TAcc)",
+            "description": "Number of trials accurately classified per run (40 trials per run)",
+        },
         bci_application=BCIApplicationMetadata(
             applications=[
                 "rehabilitation",
@@ -1257,11 +1242,9 @@ class Dreyer2023(_Dreyer2023Base):
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
-            filter_details=FilterDetails(
-                filter_type="Butterworth",
-                filter_order=5,
-                bandpass={"min": 5.0, "max": 35.0},
-            ),
+            filter_type="Butterworth",
+            filter_order=5,
+            bandpass={"min": 5.0, "max": 35.0},
             artifact_methods=["ICA"],
             re_reference="Laplacian (C3, C4)",
         ),
@@ -1269,10 +1252,10 @@ class Dreyer2023(_Dreyer2023Base):
             classifiers=["LDA"],
             feature_extraction=["CSP", "Bandpower"],
             spatial_filters=["CSP", "Laplacian"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[5.0, 35.0],
-                mu=[16.4, 19.58],
-            ),
+            frequency_bands={
+                "analyzed_range": [5.0, 35.0],
+                "mu": [16.4, 19.58],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             evaluation_type=["within_subject"],

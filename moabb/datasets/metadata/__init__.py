@@ -18,35 +18,19 @@ DatasetMetadata
 
 Additional Classes
 ------------------
-Demographics
-    Extended subject demographics (subjects_count, ages, age_min, age_max)
-ExternalLinks
-    URLs and data source links
-Timestamps
-    Dataset creation and modification dates
 Tags
     Classification tags
-ChannelCount
-    Channel count distribution entry
-SamplingRateCount
-    Sampling rate distribution entry
 
 New Classes (from RALPH extraction)
 -----------------------------------
 AuxiliaryChannelsMetadata
     EOG, EMG, and other physiological channel information
-FilterDetails
-    Filter configuration details (highpass, lowpass, notch, etc.)
 PreprocessingMetadata
-    Preprocessing and artifact handling details
-FrequencyBands
-    Frequency band definitions for analysis
+    Preprocessing and artifact handling details (includes filter fields)
 SignalProcessingMetadata
     Feature extraction and classification methods
 CrossValidationMetadata
     Cross-validation methodology details
-PerformanceMetadata
-    Reported performance metrics
 BCIApplicationMetadata
     BCI application context and environment
 ParadigmSpecificMetadata
@@ -92,24 +76,16 @@ from .schema import (  # Core MOABB classes; Additional classes; New classes fro
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
-    ChannelCount,
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
-    Demographics,
     DocumentationMetadata,
     ExperimentMetadata,
-    ExternalLinks,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
-    SamplingRateCount,
     SignalProcessingMetadata,
     Tags,
-    Timestamps,
     get_dataset_description,
     validate_country_code,
     validate_metadata_against_dataset,
@@ -531,20 +507,12 @@ __all__ = [
     "ExperimentMetadata",
     "DatasetMetadata",
     # Additional classes
-    "Demographics",
-    "ExternalLinks",
-    "Timestamps",
     "Tags",
-    "ChannelCount",
-    "SamplingRateCount",
     # New classes from RALPH extraction
     "AuxiliaryChannelsMetadata",
-    "FilterDetails",
     "PreprocessingMetadata",
-    "FrequencyBands",
     "SignalProcessingMetadata",
     "CrossValidationMetadata",
-    "PerformanceMetadata",
     "BCIApplicationMetadata",
     "ParadigmSpecificMetadata",
     "DataStructureMetadata",

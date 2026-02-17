@@ -10,7 +10,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -145,11 +144,9 @@ class Kalunga2016(BaseDataset):
         preprocessing=PreprocessingMetadata(
             preprocessing_applied=True,
             preprocessing_steps=["band-pass filtering around each stimulus frequency"],
-            filter_details=FilterDetails(
-                bandpass="around stimulus frequencies (13 Hz, 17 Hz, 21 Hz)",
-                filter_type="Butterworth",
-                filter_order=8,
-            ),
+            bandpass="around stimulus frequencies (13 Hz, 17 Hz, 21 Hz)",
+            filter_type="Butterworth",
+            filter_order=8,
             artifact_methods=["ICA"],
             re_reference="car",
         ),

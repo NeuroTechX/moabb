@@ -16,11 +16,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    ExternalLinks,
-    FilterDetails,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -228,14 +225,12 @@ class Beetl2021_A(BaseDataset):
         n_contributing_labs=7,
         data_processed=True,
         file_format="NPY",
-        external_links=ExternalLinks(
-            source_url="https://beetl.ai/data",
-            alternative_urls={
-                "competition": "https://beetl.ai/challenge",
-                "moabb": "https://github.com/NeuroTechX/moabb",
-                "arxiv": "https://arxiv.org/abs/2202.12950",
-            },
-        ),
+        external_links={
+            "source": "https://beetl.ai/data",
+            "competition": "https://beetl.ai/challenge",
+            "moabb": "https://github.com/NeuroTechX/moabb",
+            "arxiv": "https://arxiv.org/abs/2202.12950",
+        },
         tags=Tags(
             pathology=["healthy"],
             modality=["motor"],
@@ -245,12 +240,10 @@ class Beetl2021_A(BaseDataset):
             data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=["bandpass filter", "notch filter"],
-            filter_details=FilterDetails(
-                highpass_hz=1.0,
-                lowpass_hz=100.0,
-                bandpass=[1.0, 100.0],
-                notch_hz=50.0,
-            ),
+            highpass_hz=1.0,
+            lowpass_hz=100.0,
+            bandpass=[1.0, 100.0],
+            notch_hz=50.0,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -276,16 +269,14 @@ class Beetl2021_A(BaseDataset):
             cv_folds=5,
             evaluation_type=["cross-subject", "cross-dataset", "transfer-learning"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=76.33,
-            other_metrics={
-                "balanced_accuracy_task2": 76.33,
-                "baseline_accuracy": 49.9,
-                "cogitat_team_accuracy": 76.33,
-                "wduong_team_accuracy": 71.33,
-                "ms01_team_accuracy": 59.87,
-            },
-        ),
+        performance={
+            "accuracy_percent": 76.33,
+            "balanced_accuracy_task2": 76.33,
+            "baseline_accuracy": 49.9,
+            "cogitat_team_accuracy": 76.33,
+            "wduong_team_accuracy": 71.33,
+            "ms01_team_accuracy": 59.87,
+        },
         bci_application=BCIApplicationMetadata(
             applications=["brain-computer interface", "transfer learning benchmark"],
             environment="lab",
@@ -722,14 +713,12 @@ class Beetl2021_B(BaseDataset):
         sessions=["0leaderboardtrain", "1leaderboardtest", "0finaltrain", "1finaltest"],
         data_processed=True,
         file_format="numpy",
-        external_links=ExternalLinks(
-            source_url="https://beetl.ai/challenge",
-            alternative_urls={
-                "competition_page": "https://beetl.ai/introduction",
-                "moabb": "http://moabb.neurotechx.com/docs/datasets.html",
-                "github": "https://github.com/NeuroTechX/moabb",
-            },
-        ),
+        external_links={
+            "source": "https://beetl.ai/challenge",
+            "competition_page": "https://beetl.ai/introduction",
+            "moabb": "http://moabb.neurotechx.com/docs/datasets.html",
+            "github": "https://github.com/NeuroTechX/moabb",
+        },
         tags=Tags(
             pathology=["Healthy"],
             modality=["EEG"],
@@ -744,12 +733,10 @@ class Beetl2021_B(BaseDataset):
                 "Channel selection (32 channels around motor cortex)",
                 "Segmentation into 4-second trials",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=1.0,
-                lowpass_hz=100.0,
-                notch_hz=50.0,
-                filter_type="frequency-domain",
-            ),
+            highpass_hz=1.0,
+            lowpass_hz=100.0,
+            notch_hz=50.0,
+            filter_type="frequency-domain",
             notes="Data was filtered in frequency domain and cut into 4 second trials for the competition",
         ),
         signal_processing=SignalProcessingMetadata(
@@ -780,15 +767,13 @@ class Beetl2021_B(BaseDataset):
             cv_folds=5,
             evaluation_type=["cross-subject", "cross-dataset"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=76.33,  # Best Task 2 performance by Team Cogitat
-            other_metrics={
-                "balanced_accuracy_cogitat": 76.33,
-                "balanced_accuracy_wduong": 71.33,
-                "balanced_accuracy_ms01": 59.87,
-                "balanced_accuracy_baseline": 49.9,
-            },
-        ),
+        performance={
+            "accuracy_percent": 76.33,
+            "balanced_accuracy_cogitat": 76.33,
+            "balanced_accuracy_wduong": 71.33,
+            "balanced_accuracy_ms01": 59.87,
+            "balanced_accuracy_baseline": 49.9,
+        },
         bci_application=BCIApplicationMetadata(
             applications=[
                 "motor imagery decoding",

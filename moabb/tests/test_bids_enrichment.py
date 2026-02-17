@@ -2,7 +2,6 @@
 
 import csv
 import json
-from datetime import datetime
 from unittest.mock import MagicMock
 
 import mne
@@ -34,16 +33,11 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    ExternalLinks,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
-    Timestamps,
 )
 
 
@@ -284,10 +278,8 @@ class TestBuildSidecarEnrichment:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
-                filter_details=FilterDetails(
-                    bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
-                    notch_hz=50,
-                )
+                bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
+                notch_hz=50,
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -306,7 +298,7 @@ class TestBuildSidecarEnrichment:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
-                filter_details=FilterDetails(bandpass=[0.5, 100.0])
+                bandpass=[0.5, 100.0],
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -322,7 +314,7 @@ class TestBuildSidecarEnrichment:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
-                filter_details=FilterDetails(highpass_hz=0.1, lowpass_hz=40.0)
+                highpass_hz=0.1, lowpass_hz=40.0,
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -387,20 +379,6 @@ class TestBuildSidecarEnrichment:
         entries = _build_sidecar_enrichment(metadata)
         assert entries["CapManufacturer"] == "EasyCap"
         assert entries["CapManufacturersModelName"] == "actiCAP snap"
-
-    def test_device_serial(self):
-        metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256,
-                n_channels=22,
-                channel_types={"eeg": 22},
-                device_serial="SN-12345",
-            ),
-            participants=ParticipantMetadata(n_subjects=9),
-            experiment=ExperimentMetadata(paradigm="imagery"),
-        )
-        entries = _build_sidecar_enrichment(metadata)
-        assert entries["DeviceSerialNumber"] == "SN-12345"
 
     def test_instructions(self):
         metadata = DatasetMetadata(
@@ -1979,7 +1957,6 @@ class TestReadmeAcquisitionFields:
             ("cap_model", "actiCAP", "actiCAP"),
             ("electrode_type", "ring", "ring"),
             ("electrode_material", "Tin", "Tin"),
-            ("device_serial", "SN12345", "SN12345"),
         ],
     )
     def test_field_present(self, field, value, expected):
@@ -2047,7 +2024,6 @@ class TestReadmeParticipantFields:
             ("handedness", "all right-handed", "all right-handed"),
             ("bci_experience", "experienced", "experienced"),
             ("species", "mus musculus", "mus musculus"),
-            ("head_circumference", 58.0, "58.0 cm"),
         ],
     )
     def test_field_present(self, field, value, expected):
@@ -2156,7 +2132,7 @@ class TestReadmePreprocessingFields:
 
 
 class TestReadmeFilterDetailsFields:
-    """Parametrize over every FilterDetails field."""
+    """Parametrize over filter detail fields (now flat on PreprocessingMetadata)."""
 
     @pytest.mark.parametrize(
         "field,value,expected",
@@ -2172,7 +2148,7 @@ class TestReadmeFilterDetailsFields:
     def test_field_present(self, field, value, expected):
         kwargs = {field: value}
         meta = _minimal_metadata(
-            preprocessing=PreprocessingMetadata(filter_details=FilterDetails(**kwargs))
+            preprocessing=PreprocessingMetadata(**kwargs)
         )
         readme = _build_readme(_mock_ds(meta))
         assert expected in readme
@@ -2197,7 +2173,7 @@ class TestReadmeSignalProcessingFields:
 
 
 class TestReadmeFrequencyBandsFields:
-    """Parametrize over every FrequencyBands field."""
+    """Parametrize over frequency_bands dict entries."""
 
     @pytest.mark.parametrize(
         "field,value,expected",
@@ -2215,7 +2191,7 @@ class TestReadmeFrequencyBandsFields:
         kwargs = {field: value}
         meta = _minimal_metadata(
             signal_processing=SignalProcessingMetadata(
-                frequency_bands=FrequencyBands(**kwargs)
+                frequency_bands=kwargs
             )
         )
         readme = _build_readme(_mock_ds(meta))
@@ -2241,7 +2217,7 @@ class TestReadmeCrossValidationFields:
 
 
 class TestReadmePerformanceFields:
-    """Parametrize over every PerformanceMetadata field."""
+    """Parametrize over performance dict entries."""
 
     @pytest.mark.parametrize(
         "field,value,expected",
@@ -2255,7 +2231,7 @@ class TestReadmePerformanceFields:
     )
     def test_field_present(self, field, value, expected):
         kwargs = {field: value}
-        meta = _minimal_metadata(performance=PerformanceMetadata(**kwargs))
+        meta = _minimal_metadata(performance=kwargs)
         readme = _build_readme(_mock_ds(meta))
         assert expected in readme
 
@@ -2344,7 +2320,7 @@ class TestReadmeTagsFields:
 
 
 class TestReadmeExternalLinksFields:
-    """Parametrize over every ExternalLinks field."""
+    """Parametrize over external_links dict entries."""
 
     @pytest.mark.parametrize(
         "field,value,expected",
@@ -2360,25 +2336,7 @@ class TestReadmeExternalLinksFields:
     )
     def test_field_present(self, field, value, expected):
         kwargs = {field: value}
-        meta = _minimal_metadata(external_links=ExternalLinks(**kwargs))
-        readme = _build_readme(_mock_ds(meta))
-        assert expected in readme
-
-
-class TestReadmeTimestampsFields:
-    """Parametrize over every Timestamps field."""
-
-    @pytest.mark.parametrize(
-        "field,value,expected",
-        [
-            ("dataset_created_at", datetime(2023, 1, 15), "2023-01-15"),
-            ("dataset_modified_at", datetime(2024, 6, 1), "2024-06-01"),
-            ("ingested_at", datetime(2024, 12, 25), "2024-12-25"),
-        ],
-    )
-    def test_field_present(self, field, value, expected):
-        kwargs = {field: value}
-        meta = _minimal_metadata(timestamps=Timestamps(**kwargs))
+        meta = _minimal_metadata(external_links=kwargs)
         readme = _build_readme(_mock_ds(meta))
         assert expected in readme
 

@@ -16,11 +16,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -217,13 +214,11 @@ class Sosulski2019(BaseDataset):
             data_state="epoched",
             preprocessing_applied=True,
             preprocessing_steps=["bandpass filtering", "epoching", "baseline correction"],
-            filter_details=FilterDetails(
-                highpass_hz=1.5,
-                lowpass_hz=40.0,
-                bandpass=[1.5, 40.0],
-                filter_type="Chebyshev",
-                filter_order=4,
-            ),
+            highpass_hz=1.5,
+            lowpass_hz=40.0,
+            bandpass=[1.5, 40.0],
+            filter_type="Chebyshev",
+            filter_order=4,
             re_reference="nose",
             epoch_window=[-0.2, 1.0],
             notes="Two-pass filtered. Baseline correction applied to interval -200 ms to 0 ms. First and last six epochs of each trial were omitted to avoid excessive outliers. No artifact removal was performed; subjects were instructed to refrain from blinking and movement.",
@@ -231,25 +226,23 @@ class Sosulski2019(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["rLDA", "Shrinkage LDA"],
             feature_extraction=["Mean amplitude in time intervals"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[1.5, 40.0],
-            ),
+            frequency_bands={
+                "analyzed_range": [1.5, 40.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="13-fold",
             cv_folds=13,
             evaluation_type=["within_session"],
         ),
-        performance=PerformanceMetadata(
-            auc=0.701,
-            other_metrics={
-                "mean_auc_ucb": 0.701,
-                "mean_auc_rand": 0.704,
-                "mean_auc_p300_ucb": 0.670,
-                "mean_auc_p300_rand": 0.681,
-                "mean_auc_fixed60": 0.517,
-            },
-        ),
+        performance={
+            "auc": 0.701,
+            "mean_auc_ucb": 0.701,
+            "mean_auc_rand": 0.704,
+            "mean_auc_p300_ucb": 0.670,
+            "mean_auc_p300_rand": 0.681,
+            "mean_auc_fixed60": 0.517,
+        },
         bci_application=BCIApplicationMetadata(
             applications=[
                 "speller",

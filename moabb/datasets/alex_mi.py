@@ -11,7 +11,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -167,10 +166,10 @@ class AlexMI(BaseDataset):
                 "AR",
                 "ICA",
             ],
-            frequency_bands=FrequencyBands(
-                alpha=[8.0, 12.0],
-                mu=[8.0, 12.0],
-            ),
+            frequency_bands={
+                "alpha": [8.0, 12.0],
+                "mu": [8.0, 12.0],
+            },
             spatial_filters=["CSP", "Geodesic filtering"],
         ),
         cross_validation=CrossValidationMetadata(

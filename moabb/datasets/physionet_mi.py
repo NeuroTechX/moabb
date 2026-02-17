@@ -14,10 +14,8 @@ from moabb.datasets.metadata.schema import (
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -200,10 +198,10 @@ class PhysionetMI(BaseDataset):
                 "independent components",
                 "common spatial patterns",
             ],
-            frequency_bands=FrequencyBands(
-                mu=[8.0, 12.0],
-                beta=[12.0, 30.0],
-            ),
+            frequency_bands={
+                "mu": [8.0, 12.0],
+                "beta": [12.0, 30.0],
+            },
         ),
         bci_application=BCIApplicationMetadata(
             applications=[
@@ -220,9 +218,9 @@ class PhysionetMI(BaseDataset):
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "feet", "rest"],
         ),
-        performance=PerformanceMetadata(
-            itr_bits_per_min=25.0,
-        ),
+        performance={
+            "itr_bits_per_min": 25.0,
+        },
         cross_validation=CrossValidationMetadata(
             evaluation_type=["online", "offline"],
         ),

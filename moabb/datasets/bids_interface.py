@@ -389,36 +389,34 @@ def _build_sidecar_enrichment(metadata):
         if acq.cap_model:
             entries["CapManufacturersModelName"] = acq.cap_model
 
-        # DeviceSerialNumber (RECOMMENDED)
-        if acq.device_serial:
-            entries["DeviceSerialNumber"] = acq.device_serial
-
     # HardwareFilters and SoftwareFilters
-    if prep and prep.filter_details:
-        fd = prep.filter_details
+    if prep and any(
+        v is not None
+        for v in [prep.bandpass, prep.highpass_hz, prep.lowpass_hz, prep.notch_hz]
+    ):
         hw_filters = {}
-        if fd.bandpass:
-            if isinstance(fd.bandpass, dict):
+        if prep.bandpass:
+            if isinstance(prep.bandpass, dict):
                 hw_filters["Bandpass"] = {
-                    k: v for k, v in fd.bandpass.items() if v is not None
+                    k: v for k, v in prep.bandpass.items() if v is not None
                 }
-            elif isinstance(fd.bandpass, list) and len(fd.bandpass) == 2:
+            elif isinstance(prep.bandpass, list) and len(prep.bandpass) == 2:
                 hw_filters["Bandpass"] = {
-                    "LowCutoffFrequency": fd.bandpass[0],
-                    "HighCutoffFrequency": fd.bandpass[1],
+                    "LowCutoffFrequency": prep.bandpass[0],
+                    "HighCutoffFrequency": prep.bandpass[1],
                 }
         else:
             # Build from individual highpass/lowpass
             bp = {}
-            if fd.highpass_hz is not None:
-                bp["LowCutoffFrequency"] = fd.highpass_hz
-            if fd.lowpass_hz is not None:
-                bp["HighCutoffFrequency"] = fd.lowpass_hz
+            if prep.highpass_hz is not None:
+                bp["LowCutoffFrequency"] = prep.highpass_hz
+            if prep.lowpass_hz is not None:
+                bp["HighCutoffFrequency"] = prep.lowpass_hz
             if bp:
                 hw_filters["Bandpass"] = bp
 
-        if fd.notch_hz is not None:
-            notch = fd.notch_hz
+        if prep.notch_hz is not None:
+            notch = prep.notch_hz
             if isinstance(notch, (int, float)):
                 notch = [notch]
             hw_filters["Notch"] = {"CutoffFrequency": notch}
@@ -453,11 +451,6 @@ def _build_sidecar_enrichment(metadata):
         if exp.cog_po_id:
             entries["CogPOID"] = exp.cog_po_id
 
-    # HeadCircumference (RECOMMENDED)
-    participants = metadata.participants
-    if participants and participants.head_circumference:
-        entries["HeadCircumference"] = participants.head_circumference
-
     # InstitutionName (RECOMMENDED)
     entries["InstitutionName"] = doc.institution if doc and doc.institution else "n/a"
 
@@ -479,9 +472,6 @@ def _build_sidecar_enrichment(metadata):
 
     # ManufacturersModelName (RECOMMENDED)
     entries.setdefault("ManufacturersModelName", "n/a")
-
-    # DeviceSerialNumber (RECOMMENDED)
-    entries.setdefault("DeviceSerialNumber", "n/a")
 
     # SubjectArtefactDescription (RECOMMENDED)
     entries.setdefault("SubjectArtefactDescription", "n/a")
@@ -1074,7 +1064,6 @@ def _build_readme(dataset):
         _kv(lines, "Cap model", acq.cap_model)
         _kv(lines, "Electrode type", acq.electrode_type)
         _kv(lines, "Electrode material", acq.electrode_material)
-        _kv(lines, "Device serial", acq.device_serial)
         if acq.auxiliary_channels:
             aux = acq.auxiliary_channels
             aux_parts = []
@@ -1115,11 +1104,6 @@ def _build_readme(dataset):
         _kv(lines, "Handedness", part.handedness)
         _kv(lines, "BCI experience", part.bci_experience)
         _kv(lines, "Species", part.species if part.species != "homo sapiens" else None)
-        _kv(
-            lines,
-            "Head circumference",
-            f"{part.head_circumference} cm" if part.head_circumference else None,
-        )
         lines.append("")
 
     # ── Experiment ──
@@ -1294,7 +1278,12 @@ def _build_readme(dataset):
                 "data_state",
                 "preprocessing_applied",
                 "preprocessing_steps",
-                "filter_details",
+                "highpass_hz",
+                "lowpass_hz",
+                "bandpass",
+                "notch_hz",
+                "filter_type",
+                "filter_order",
                 "artifact_methods",
                 "re_reference",
                 "downsampled_to_hz",
@@ -1309,22 +1298,12 @@ def _build_readme(dataset):
             _kv(lines, "Preprocessing applied", preproc.preprocessing_applied)
             if preproc.preprocessing_steps:
                 _kv(lines, "Steps", ", ".join(preproc.preprocessing_steps))
-            if preproc.filter_details:
-                fd = preproc.filter_details
-                _kv(
-                    lines,
-                    "Highpass filter",
-                    f"{fd.highpass_hz} Hz" if fd.highpass_hz else None,
-                )
-                _kv(
-                    lines,
-                    "Lowpass filter",
-                    f"{fd.lowpass_hz} Hz" if fd.lowpass_hz else None,
-                )
-                _kv(lines, "Bandpass filter", fd.bandpass)
-                _kv(lines, "Notch filter", f"{fd.notch_hz} Hz" if fd.notch_hz else None)
-                _kv(lines, "Filter type", fd.filter_type)
-                _kv(lines, "Filter order", fd.filter_order)
+            _kv(lines, "Highpass filter", f"{preproc.highpass_hz} Hz" if preproc.highpass_hz else None)
+            _kv(lines, "Lowpass filter", f"{preproc.lowpass_hz} Hz" if preproc.lowpass_hz else None)
+            _kv(lines, "Bandpass filter", preproc.bandpass)
+            _kv(lines, "Notch filter", f"{preproc.notch_hz} Hz" if preproc.notch_hz else None)
+            _kv(lines, "Filter type", preproc.filter_type)
+            _kv(lines, "Filter order", preproc.filter_order)
             if preproc.artifact_methods:
                 _kv(lines, "Artifact methods", ", ".join(preproc.artifact_methods))
             _kv(lines, "Re-reference", preproc.re_reference)
@@ -1356,14 +1335,12 @@ def _build_readme(dataset):
             if sig.feature_extraction:
                 _kv(lines, "Feature extraction", ", ".join(sig.feature_extraction))
             if sig.frequency_bands:
-                fb = sig.frequency_bands
                 band_parts = []
-                for name in ("delta", "theta", "alpha", "mu", "beta", "gamma"):
-                    val = getattr(fb, name, None)
+                _freq_band_display = {"analyzed_range": "analyzed"}
+                for name, val in sig.frequency_bands.items():
                     if val:
-                        band_parts.append(f"{name}={val} Hz")
-                if fb.analyzed_range:
-                    band_parts.append(f"analyzed={fb.analyzed_range} Hz")
+                        display_name = _freq_band_display.get(name, name)
+                        band_parts.append(f"{display_name}={val} Hz")
                 if band_parts:
                     _kv(lines, "Frequency bands", "; ".join(band_parts))
             if sig.spatial_filters:
@@ -1387,34 +1364,23 @@ def _build_readme(dataset):
 
     # ── Performance ──
     if perf:
-        has_content = any(
-            getattr(perf, f, None) is not None
-            for f in (
-                "accuracy_percent",
-                "itr_bits_per_min",
-                "auc",
-                "kappa",
-                "other_metrics",
-            )
-        )
-        if has_content:
-            lines.append("Performance (Original Study)")
-            lines.append("-" * 28)
-            _kv(
-                lines,
-                "Accuracy",
-                f"{perf.accuracy_percent}%" if perf.accuracy_percent else None,
-            )
-            _kv(
-                lines,
-                "ITR",
-                f"{perf.itr_bits_per_min} bits/min" if perf.itr_bits_per_min else None,
-            )
-            _kv(lines, "AUC", perf.auc)
-            _kv(lines, "Kappa", perf.kappa)
-            if perf.other_metrics:
-                _kv(lines, "Other metrics", _format_dict(perf.other_metrics))
-            lines.append("")
+        _perf_units = {
+            "accuracy_percent": "%",
+            "itr_bits_per_min": " bits/min",
+        }
+        lines.append("Performance (Original Study)")
+        lines.append("-" * 28)
+        for key, val in perf.items():
+            if val is not None:
+                if key == "other_metrics" and isinstance(val, dict):
+                    formatted = ", ".join(f"{k}={v}" for k, v in val.items())
+                    _kv(lines, "Other Metrics", formatted)
+                else:
+                    unit = _perf_units.get(key, "")
+                    label = key.replace("_percent", "").replace("_bits_per_min", "")
+                    label = label.replace("_", " ").title()
+                    _kv(lines, label, f"{val}{unit}")
+        lines.append("")
 
     # ── BCI Application ──
     if bci:
@@ -1505,19 +1471,11 @@ def _build_readme(dataset):
     # ── External Links ──
     ext = metadata.external_links if metadata else None
     if ext:
-        has_content = any(
-            getattr(ext, f, None) is not None
-            for f in ("source_url", "ftp_url", "alternative_urls")
-        )
-        if has_content:
-            lines.append("External Links")
-            lines.append("-" * 14)
-            _kv(lines, "Source URL", ext.source_url)
-            _kv(lines, "FTP URL", ext.ftp_url)
-            if ext.alternative_urls:
-                for name, url in ext.alternative_urls.items():
-                    _kv(lines, name, url)
-            lines.append("")
+        lines.append("External Links")
+        lines.append("-" * 14)
+        for name, url in ext.items():
+            _kv(lines, name.replace("_", " ").title(), url)
+        lines.append("")
 
     # ── Abstract / Methodology ──
     if metadata and metadata.abstract:
@@ -1530,21 +1488,6 @@ def _build_readme(dataset):
         lines.append("-" * 11)
         lines.append(metadata.methodology)
         lines.append("")
-
-    # ── Timestamps ──
-    ts = metadata.timestamps if metadata else None
-    if ts:
-        has_content = any(
-            getattr(ts, f, None) is not None
-            for f in ("dataset_created_at", "dataset_modified_at", "ingested_at")
-        )
-        if has_content:
-            lines.append("Timestamps")
-            lines.append("-" * 10)
-            _kv(lines, "Created", ts.dataset_created_at)
-            _kv(lines, "Modified", ts.dataset_modified_at)
-            _kv(lines, "Ingested", ts.ingested_at)
-            lines.append("")
 
     # ── References ──
     # Extract references from the original class docstring (not the auto-generated one)

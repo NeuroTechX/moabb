@@ -16,11 +16,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -175,10 +172,8 @@ class Hinss2021(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
-            filter_details=FilterDetails(
-                highpass_hz=1.0,
-                filter_type="FIR",
-            ),
+            highpass_hz=1.0,
+            filter_type="FIR",
             artifact_methods=["ICA"],
             re_reference="car",
             downsampled_to_hz=250,
@@ -186,19 +181,19 @@ class Hinss2021(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["MDM", "Riemannian"],
             feature_extraction=["Bandpower", "Covariance/Riemannian", "ICA"],
-            frequency_bands=FrequencyBands(
-                alpha=[8.0, 13.0],
-                theta=[4.0, 8.0],
-            ),
+            frequency_bands={
+                "alpha": [8.0, 13.0],
+                "theta": [4.0, 8.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="5-fold",
             cv_folds=5,
             evaluation_type=["cross_subject", "cross_session", "transfer_learning"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=70.67,
-        ),
+        performance={
+            "accuracy_percent": 70.67,
+        },
         bci_application=BCIApplicationMetadata(
             applications=["vr_ar", "communication"],
             environment="outdoor",
