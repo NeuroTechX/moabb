@@ -365,7 +365,7 @@ class RomaniBF2025ERP(BaseDataset):
                 f"to MOABB nomenclature '{path.name}'"
             )
             try:
-                os.rename(legacy_path, path)
+                shutil.move(str(legacy_path), str(path))
             except OSError as e:
                 logging.warning(
                     f"Could not migrate legacy folder: {e}. Using legacy path."
