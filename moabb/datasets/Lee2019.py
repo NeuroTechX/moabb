@@ -391,6 +391,7 @@ class Lee2019_MI(Lee2019):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 2, "right_hand": 1},
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
@@ -701,6 +702,7 @@ class Lee2019_ERP(Lee2019):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             n_classes=2,
             class_labels=["target", "non_target"],
@@ -968,6 +970,7 @@ class Lee2019_SSVEP(Lee2019):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"12.0": 1, "8.57": 2, "6.67": 3, "5.45": 4},
             paradigm="ssvep",
             n_classes=4,
             class_labels=["down", "right", "left", "up"],

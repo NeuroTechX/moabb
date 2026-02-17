@@ -324,6 +324,7 @@ class GrosseWentrup2009(BaseDataset):
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=False,
+        file_format="mat",
     )
 
     def __init__(self):

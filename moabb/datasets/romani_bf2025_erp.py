@@ -156,6 +156,7 @@ class RomaniBF2025ERP(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             n_classes=2,
             class_labels=["target", "non-target"],
@@ -255,7 +256,7 @@ class RomaniBF2025ERP(BaseDataset):
         contributing_labs=["University of Trento", "Fondazione Bruno Kessler"],
         n_contributing_labs=2,
         data_processed=False,
-        file_format=None,
+        file_format="csv",
         cross_validation=CrossValidationMetadata(
             cv_method="cross-validation for calibration accuracy",
             cv_folds=None,

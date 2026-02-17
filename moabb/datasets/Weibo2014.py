@@ -197,6 +197,15 @@ class Weibo2014(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={
+                "left_hand": 1,
+                "right_hand": 2,
+                "hands": 3,
+                "feet": 4,
+                "left_hand_right_foot": 5,
+                "right_hand_left_foot": 6,
+                "rest": 7,
+            },
             paradigm="imagery",
             n_classes=6,
             class_labels=[

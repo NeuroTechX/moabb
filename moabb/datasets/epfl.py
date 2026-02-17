@@ -146,6 +146,7 @@ class EPFLP300(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 2, "NonTarget": 1},
             paradigm="p300",
             n_classes=2,
             class_labels=["target", "non-target"],

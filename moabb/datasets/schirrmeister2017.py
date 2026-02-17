@@ -107,6 +107,7 @@ class Schirrmeister2017(BaseDataset):
             line_freq=50.0,
             software="BCI2000",
             montage="standard_1005",
+            sensor_type="EEG",
         ),
         participants=ParticipantMetadata(
             n_subjects=14,

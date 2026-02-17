@@ -193,6 +193,7 @@ class BNCI2003_004(MNEBNCI):
                 "Iz",
             ],
             line_freq=50.0,
+            sensor_type="EEG",
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
                 eog_type=["horizontal", "vertical"],
@@ -205,6 +206,7 @@ class BNCI2003_004(MNEBNCI):
             health_status="healthy",
         ),
         experiment=ExperimentMetadata(
+            events={"right_hand": 0, "feet": 1},
             paradigm="imagery",
             n_classes=3,
             class_labels=["right_hand", "left_hand", "feet"],
@@ -317,6 +319,7 @@ class BNCI2003_004(MNEBNCI):
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=True,
+        file_format="gdf",
     )
 
     def __init__(self):

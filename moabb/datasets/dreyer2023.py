@@ -387,6 +387,7 @@ class Dreyer2023A(_Dreyer2023Base):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["right_hand", "left_hand"],
@@ -664,6 +665,7 @@ class Dreyer2023B(_Dreyer2023Base):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["right_hand", "left_hand"],
@@ -924,6 +926,7 @@ class Dreyer2023C(_Dreyer2023Base):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["right_hand", "left_hand"],
@@ -1193,6 +1196,7 @@ class Dreyer2023(_Dreyer2023Base):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["right_hand", "left_hand"],

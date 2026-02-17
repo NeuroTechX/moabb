@@ -164,6 +164,7 @@ class Thielen2021(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"1.0": 101, "0.0": 100},
             paradigm="cvep",
             n_classes=20,
             class_labels=None,
@@ -264,7 +265,7 @@ class Thielen2021(BaseDataset):
         contributing_labs=["MindAffect", "Radboud University"],
         n_contributing_labs=2,
         data_processed=True,
-        file_format=None,
+        file_format="mat",
         external_links=ExternalLinks(
             source_url="https://doi.org/10.34973/9txv-z787",
         ),

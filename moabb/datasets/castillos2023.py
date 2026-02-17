@@ -509,7 +509,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
         contributing_labs=None,
         n_contributing_labs=1,
         data_processed=False,
-        file_format=None,
+        file_format="xdf",
         external_links=ExternalLinks(
             source_url="https://zenodo.org/record/8255618",
             ftp_url=None,
@@ -517,7 +517,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
         ),
         timestamps=None,
         tags=Tags(
-            pathology=None,
+            pathology=["Healthy"],
             modality=["EEG"],
             type=["reactive BCI", "c-VEP", "visual evoked potentials"],
         ),
@@ -807,7 +807,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
         ],
         n_contributing_labs=2,
         data_processed=False,
-        file_format=None,
+        file_format="xdf",
         external_links=ExternalLinks(
             source_url="https://zenodo.org/record/8255618",
             ftp_url=None,
@@ -815,7 +815,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
         ),
         timestamps=None,
         tags=Tags(
-            pathology=None,
+            pathology=["Healthy"],
             modality=["EEG"],
             type=["reactive BCI", "c-VEP"],
         ),
@@ -1102,7 +1102,7 @@ class CastillosCVEP100(BaseCastillos2023):
             },
         ),
         tags=Tags(
-            pathology=None,
+            pathology=["Healthy"],
             modality=["EEG"],
             type=["reactive BCI", "visual evoked potentials"],
         ),
@@ -1373,7 +1373,7 @@ class CastillosCVEP40(BaseCastillos2023):
         contributing_labs=["ISAE-SUPAERO", "Drexel University"],
         n_contributing_labs=2,
         data_processed=False,
-        file_format=None,
+        file_format="xdf",
         external_links=ExternalLinks(
             source_url="https://zenodo.org/record/8255618",
             ftp_url=None,
@@ -1381,7 +1381,7 @@ class CastillosCVEP40(BaseCastillos2023):
         ),
         timestamps=None,
         tags=Tags(
-            pathology=None,
+            pathology=["Healthy"],
             modality=["EEG"],
             type=["reactive", "code-VEP", "visual"],
         ),

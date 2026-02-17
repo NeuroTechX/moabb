@@ -80,6 +80,7 @@ class Kalunga2016(BaseDataset):
             n_channels=8,
             channel_types={"eeg": 8},
             montage="oz o1 o2 poz po3 po4 po7 po8",
+            sensor_type="EEG",
             hardware="g.tec",
             reference="Car",
             sensors=["Oz", "O1", "O2", "POz", "PO3", "PO4", "PO7", "PO8"],
@@ -91,6 +92,7 @@ class Kalunga2016(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"13": 2, "17": 4, "21": 3, "rest": 1},
             paradigm="ssvep",
             n_classes=4,
             class_labels=["13hz", "17hz", "21hz", "rest"],
@@ -184,6 +186,7 @@ class Kalunga2016(BaseDataset):
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=True,
+        file_format="gdf",
     )
 
     def __init__(self):

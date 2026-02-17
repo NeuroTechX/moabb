@@ -372,6 +372,7 @@ class Shin2017A(BaseShin2017):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],

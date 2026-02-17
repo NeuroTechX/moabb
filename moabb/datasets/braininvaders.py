@@ -1416,6 +1416,7 @@ class BI2015a(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 2, "NonTarget": 1},
             paradigm="p300",
             study_design="calibration-less P300-based BCI with modulation of flash duration; three game sessions (9 levels each) with different flash durations (110ms, 80ms, 50ms); resting state and eyes closed recorded before and after sessions; subjects instructed to limit eye blinks, head movements and face muscular contractions",
             feedback_type="visual (game interface with real-time adaptive Riemannian RMDM classifier)",

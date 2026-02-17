@@ -511,6 +511,12 @@ class BNCI2022_001(BNCIBaseDataset):
             handedness={"right": 12, "left": 1},
         ),
         experiment=ExperimentMetadata(
+            events={
+                "trajectory_start": 1,
+                "waypoint_miss": 16,
+                "waypoint_hit": 48,
+                "trajectory_end": 255,
+            },
             paradigm="imagery",
             n_classes=3,
             class_labels=["right_hand", "left_hand", "feet"],
@@ -561,6 +567,7 @@ class BNCI2022_001(BNCIBaseDataset):
         runs_per_session=1,
         sessions=["offline", "online_session_2", "online_session_3"],
         data_processed=True,
+        file_format="gdf",
         tags=Tags(
             pathology=["Healthy"],
             modality=["EEG"],

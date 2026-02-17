@@ -339,10 +339,10 @@ class Kojima2024B(BaseDataset):
         contributing_labs=None,
         n_contributing_labs=1,
         data_processed=False,
-        file_format=None,
+        file_format="mat",
         external_links=None,
         timestamps=None,
-        tags=Tags(pathology=None, modality=["auditory"], type=["ERP", "P300"]),
+        tags=Tags(pathology=["Healthy"], modality=["auditory"], type=["ERP", "P300"]),
         nchans_counts=None,
         sfreq_counts=None,
         preprocessing=PreprocessingMetadata(

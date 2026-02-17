@@ -153,6 +153,7 @@ class Hinss2021(BaseDataset):
             handedness={"left": 2, "right": 27},
         ),
         experiment=ExperimentMetadata(
+            events={"rs": 1, "easy": 2, "medium": 3, "diff": 4},
             paradigm="rstate",
             n_classes=1,
             class_labels=["rest"],
@@ -213,6 +214,7 @@ class Hinss2021(BaseDataset):
         sessions_per_subject=2,
         runs_per_session=1,
         data_processed=False,
+        file_format="fif",
     )
 
     def __init__(self):

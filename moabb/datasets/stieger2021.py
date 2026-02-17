@@ -229,6 +229,7 @@ class Stieger2021(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"right_hand": 1, "left_hand": 2, "both_hand": 3, "rest": 4},
             paradigm="imagery",
             n_classes=4,
             class_labels=["right_hand", "left_hand", "both_hands", "rest"],

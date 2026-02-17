@@ -125,6 +125,7 @@ class Rodrigues2017(BaseDataset):
             age_mean=25.8,
         ),
         experiment=ExperimentMetadata(
+            events={"closed": 1, "open": 2},
             paradigm="rstate",
             n_classes=1,
             class_labels=["rest"],

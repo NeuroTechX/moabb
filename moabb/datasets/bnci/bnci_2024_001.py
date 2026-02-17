@@ -398,9 +398,20 @@ class BNCI2024_001(BNCIBaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={
+                "letter_a": 1,
+                "letter_d": 2,
+                "letter_e": 3,
+                "letter_f": 4,
+                "letter_j": 5,
+                "letter_n": 6,
+                "letter_o": 7,
+                "letter_s": 8,
+                "letter_t": 9,
+                "letter_v": 10,
+            },
             paradigm="imagery",
             task_type="handwriting",
-            events={},
             n_classes=10,
             class_labels=[
                 "letter_a",

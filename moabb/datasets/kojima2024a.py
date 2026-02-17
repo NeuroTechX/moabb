@@ -281,7 +281,7 @@ class Kojima2024A(BaseDataset):
         contributing_labs=None,
         n_contributing_labs=1,
         data_processed=False,
-        file_format=None,
+        file_format="mat",
         external_links=ExternalLinks(
             source_url="https://doi.org/10.7910/DVN/MQOVEY",
             ftp_url=None,
@@ -290,7 +290,9 @@ class Kojima2024A(BaseDataset):
         timestamps=Timestamps(
             dataset_created_at=None, dataset_modified_at=None, ingested_at=None
         ),
-        tags=Tags(pathology=None, modality=["auditory"], type=["EEG", "P300", "BCI"]),
+        tags=Tags(
+            pathology=["Healthy"], modality=["auditory"], type=["EEG", "P300", "BCI"]
+        ),
         nchans_counts=None,
         sfreq_counts=None,
         preprocessing=PreprocessingMetadata(

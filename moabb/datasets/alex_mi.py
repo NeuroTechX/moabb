@@ -85,6 +85,7 @@ class AlexMI(BaseDataset):
                 "POz",
             ],
             line_freq=50.0,
+            sensor_type="EEG",
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 other_physiological=["gsr", "ppg"],
             ),
@@ -95,6 +96,7 @@ class AlexMI(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"right_hand": 2, "feet": 3, "rest": 4},
             paradigm="imagery",
             n_classes=3,
             class_labels=["right_hand", "feet", "rest"],

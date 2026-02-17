@@ -77,6 +77,7 @@ class Zhou2016(BaseBIDSDataset):
             n_channels=14,
             channel_types={"eeg": 14},
             montage="10-20",
+            sensor_type="EEG",
             hardware="BCI2000",
             reference="left mastoid",
             ground="right mastoid",
@@ -115,6 +116,7 @@ class Zhou2016(BaseBIDSDataset):
             bci_experience="prior experience in the experimental paradigm",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2, "feet": 3},
             paradigm="imagery",
             n_classes=3,
             class_labels=["right_hand", "left_hand", "feet"],

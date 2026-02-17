@@ -240,6 +240,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 10002, "NonTarget": 10001},
             paradigm="p300",
             n_classes=2,
             class_labels=["target", "non-target"],

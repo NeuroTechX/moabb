@@ -526,6 +526,7 @@ class BNCI2015_001(MNEBNCI):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"right_hand": 1, "feet": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["right_hand", "feet"],
@@ -611,6 +612,7 @@ class BNCI2015_001(MNEBNCI):
         sessions_per_subject=3,
         runs_per_session=5,
         data_processed=True,
+        file_format="gdf",
     )
 
     def __init__(self):
@@ -696,9 +698,9 @@ class BNCI2015_003(MNEBNCI):
             head_circumference=None,
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 2, "NonTarget": 1},
             paradigm="p300",
             task_type="auditory_oddball",
-            events={},
             n_classes=6,
             class_labels=[
                 "direction_1",
@@ -772,7 +774,7 @@ class BNCI2015_003(MNEBNCI):
         contributing_labs=None,
         n_contributing_labs=1,
         data_processed=True,
-        file_format=None,
+        file_format="gdf",
         external_links=ExternalLinks(
             source_url="http://www.frontiersin.org/neuroprosthetics/10.3389/fnins.2011.00112/abstract",
             ftp_url=None,
@@ -967,6 +969,7 @@ class BNCI2015_004(MNEBNCI):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"math": 1, "letter": 2, "rotation": 3, "count": 4, "baseline": 5},
             paradigm="imagery",
             n_classes=5,
             class_labels=[
@@ -1094,6 +1097,7 @@ class BNCI2015_004(MNEBNCI):
             n_blocks=8,
         ),
         data_processed=True,
+        file_format="gdf",
     )
 
     def __init__(self):
@@ -1317,7 +1321,7 @@ class BNCI2015_006(MNEBNCI):
         ],
         n_contributing_labs=4,
         data_processed=True,
-        file_format=None,
+        file_format="gdf",
         external_links=None,
         timestamps=None,
         tags=Tags(
@@ -1625,6 +1629,7 @@ class BNCI2015_007(MNEBNCI):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             task_type="visual_speller",
             n_classes=2,
@@ -1747,6 +1752,7 @@ class BNCI2015_007(MNEBNCI):
         runs_per_session=4,
         sessions=["practice", "calibration", "copy_spelling", "free_spelling"],
         data_processed=True,
+        file_format="gdf",
     )
 
     def __init__(self):
@@ -1927,6 +1933,7 @@ class BNCI2015_008(MNEBNCI):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             n_classes=30,
             class_labels=[
@@ -2045,6 +2052,7 @@ class BNCI2015_008(MNEBNCI):
         sessions_per_subject=1,
         runs_per_session=3,
         data_processed=True,
+        file_format="gdf",
     )
 
     def __init__(self):
@@ -2160,9 +2168,9 @@ class BNCI2015_009(MNEBNCI):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             task_type="oddball",
-            events={},
             n_classes=5,
             class_labels=[
                 "location_1",
@@ -2285,6 +2293,7 @@ class BNCI2015_009(MNEBNCI):
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=True,
+        file_format="gdf",
     )
 
     def __init__(self):
@@ -2647,9 +2656,9 @@ class BNCI2015_012(MNEBNCI):
             head_circumference=None,
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             task_type="auditory ERP speller",
-            events=None,
             n_classes=9,
             class_labels=["1", "2", "3", "4", "5", "6", "7", "8", "9"],
             trials_per_class=None,
@@ -2712,7 +2721,7 @@ class BNCI2015_012(MNEBNCI):
         contributing_labs=["Berlin Institute of Technology", "Fraunhofer FIRST"],
         n_contributing_labs=2,
         data_processed=True,
-        file_format=None,
+        file_format="gdf",
         external_links=None,
         timestamps=None,
         tags=Tags(

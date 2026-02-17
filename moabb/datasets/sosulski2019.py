@@ -150,6 +150,7 @@ class Sosulski2019(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 21, "NonTarget": 1},
             paradigm="p300",
             n_classes=2,
             class_labels=["target", "non-target"],
@@ -277,6 +278,7 @@ class Sosulski2019(BaseDataset):
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=True,
+        file_format="mat",
         abstract="The decoding of brain signals recorded via, e.g., an electroencephalogram, using machine learning is key to brain-computer interfaces (BCIs). Stimulation parameters or other experimental settings of the BCI protocol typically are chosen according to the literature. The decoding performance directly depends on the choice of parameters, as they influence the elicited brain signals and optimal parameters are subject-dependent. Thus a fast and automated selection procedure for experimental parameters could greatly improve the usability of BCIs. We evaluate a standalone random search and a combined Bayesian optimization with random search into a closed-loop auditory event-related potential protocol. We aimed at finding the individually best stimulation speed—also known as stimulus onset asynchrony (SOA)—that maximizes the classification performance of a regularized linear discriminant analysis.",
         methodology="The experiment was divided into two parts: (1) Optimization part: four strategies (AUC-ucb, AUC-rand, P300-ucb, P300-rand) each allocated 20 minutes to find optimal SOA. Strategies alternated to minimize non-stationarity effects. (2) Validation part: evaluated SOAs from each optimization strategy plus fixed 60ms SOA using 20 trials each (in blocks of 5 trials). Features were mean amplitudes in 5 time intervals ([100, 170], [171, 230], [231, 300], [301, 410], [411, 500] ms) across 31 channels (155 dimensions total). Classification used rLDA with automatic shrinkage regularization and 13-fold cross-validation on single trials.",
     )

@@ -602,6 +602,7 @@ class MAMEM2(BaseMAMEM):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             paradigm="ssvep",
             n_classes=5,
             class_labels=["6.66 Hz", "7.50 Hz", "8.57 Hz", "10.00 Hz", "12.00 Hz"],
@@ -881,6 +882,13 @@ class MAMEM3(BaseMAMEM):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={
+                "6.66": 33029,
+                "7.50": 33028,
+                "8.57": 33027,
+                "10.00": 33026,
+                "12.00": 33025,
+            },
             paradigm="ssvep",
             n_classes=5,
             class_labels=["6.66 Hz", "7.50 Hz", "8.57 Hz", "10.00 Hz", "12.00 Hz"],
@@ -1014,6 +1022,7 @@ class MAMEM3(BaseMAMEM):
         sessions_per_subject=5,
         runs_per_session=1,
         data_processed=True,
+        file_format="csv",
         abstract="Brain-computer interfaces (BCIs) have been gaining momentum in making human-computer interaction more natural, especially for people with neuro-muscular disabilities. This report focuses on EEG-based BCIs that rely on Steady-State-Visual-Evoked Potentials (SSVEPs) and performs a comparative evaluation of state-of-the-art algorithms for filtering, artifact removal, feature extraction, feature selection and classification. The dataset consists of 256-channel EEG signals from 11 subjects, along with a processing toolbox for reproducing results.",
         methodology="Comparative evaluation of SSVEP-based BCI algorithms using leave-one-subject-out cross-validation. The study examines filtering methods (IIR, FIR), artifact removal (AMUSE, ICA), feature extraction (Periodogram, Welch, Goertzel, Yule-AR, STFT, DWT), feature selection (Shannon entropy, PCA, ICA), and classification (LDA, SVM, kNN, Naive Bayes, Random Forest, CCA, ELM, Decision Trees). Each parameter is studied independently while keeping others fixed to identify optimal configurations.",
     )

@@ -157,6 +157,7 @@ class Beetl2021_A(BaseDataset):
                 "AF8",
             ],
             montage="standard_1005",
+            sensor_type="EEG",
             filters="1-100 Hz bandpass, 50 Hz notch",
             line_freq=50.0,
         ),
@@ -730,7 +731,7 @@ class Beetl2021_B(BaseDataset):
             },
         ),
         tags=Tags(
-            pathology=None,
+            pathology=["Healthy"],
             modality=["EEG"],
             type=["motor imagery", "BCI", "transfer learning"],
         ),

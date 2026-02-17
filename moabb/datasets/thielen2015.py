@@ -182,6 +182,7 @@ class Thielen2015(BaseDataset):
             bci_experience="university students",
         ),
         experiment=ExperimentMetadata(
+            events={"1.0": 101, "0.0": 100},
             paradigm="cvep",
             n_classes=36,
             class_labels=["target"],
@@ -287,6 +288,7 @@ class Thielen2015(BaseDataset):
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=True,
+        file_format="mat",
         abstract="Brain-Computer Interfaces (BCIs) allow users to control devices and communicate by using brain activity only. BCIs based on broad-band visual stimulation can outperform BCIs using other stimulation paradigms. Visual stimulation with pseudo-random bit-sequences evokes specific Broad-Band Visually Evoked Potentials (BBVEPs) that can be reliably used in BCI for high-speed communication in speller applications. In this study, we report a novel paradigm for a BBVEP-based BCI that utilizes a generative framework to predict responses to broad-band stimulation sequences. In this study we designed a BBVEP-based BCI using modulated Gold codes to mark cells in a visual speller BCI. We defined a linear generative model that decomposes full responses into overlapping single-flash responses. These single-flash responses are used to predict responses to novel stimulation sequences, which in turn serve as templates for classification. The linear generative model explains on average 50% and up to 66% of the variance of responses to both seen and unseen sequences. In an online experiment, 12 participants tested a 6 × 6 matrix speller BCI. On average, an online accuracy of 86% was reached with trial lengths of 3.21 seconds. This corresponds to an Information Transfer Rate of 48 bits per minute (approximately 9 symbols per minute). This study indicates the potential to model and predict responses to broad-band stimulation. These predicted responses are proven to be well-suited as templates for a BBVEP-based BCI, thereby enabling communication and control by brain activity only.",
         methodology="The study implements a novel BBVEP-based BCI using modulated Gold codes with a reconvolution approach for template generation. The reconvolution model decomposes responses into single-flash responses (short and long pulses) and predicts responses to unseen sequences. Two sets of Gold codes were used: set V for training (65 sequences) and set U for testing (65 sequences). Each sequence had 126 bits with duration of 1.05s. The classifier uses template matching with correlation, combined with Canonical Correlation Analysis for spatial filtering. Subset optimization (Platinum subset) selects the most distinguishable codes, and layout optimization arranges codes on the 6x6 grid to minimize cross-talk. An early stopping algorithm was implemented to reduce trial duration. Online experiments were conducted with 12 participants using a synchronous BCI paradigm.",
     )

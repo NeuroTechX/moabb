@@ -170,6 +170,15 @@ class Ofner2017(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            events={
+                "right_elbow_flexion": 1536,
+                "right_elbow_extension": 1537,
+                "right_supination": 1538,
+                "right_pronation": 1539,
+                "right_hand_close": 1540,
+                "right_hand_open": 1541,
+                "rest": 1542,
+            },
             paradigm="imagery",
             n_classes=7,
             class_labels=[
@@ -232,6 +241,7 @@ class Ofner2017(BaseDataset):
         runs_per_session=10,
         sessions=["movement_execution", "motor_imagery"],
         data_processed=False,
+        file_format="gdf",
         tags=Tags(
             pathology=["Healthy"],
             modality=["Motor"],

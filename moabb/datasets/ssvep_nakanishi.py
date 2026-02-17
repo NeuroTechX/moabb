@@ -64,6 +64,7 @@ class Nakanishi2015(BaseDataset):
             line_freq=60.0,
             electrode_type="Ag/AgCl",
             montage="standard_1020",
+            sensor_type="EEG",
         ),
         participants=ParticipantMetadata(
             n_subjects=10,
@@ -73,6 +74,20 @@ class Nakanishi2015(BaseDataset):
             bci_experience="not specified",
         ),
         experiment=ExperimentMetadata(
+            events={
+                "9.25": 1,
+                "11.25": 2,
+                "13.25": 3,
+                "9.75": 4,
+                "11.75": 5,
+                "13.75": 6,
+                "10.25": 7,
+                "12.25": 8,
+                "14.25": 9,
+                "10.75": 10,
+                "12.75": 11,
+                "14.75": 12,
+            },
             paradigm="ssvep",
             n_classes=12,
             class_labels=[
@@ -150,6 +165,7 @@ class Nakanishi2015(BaseDataset):
         sessions_per_subject=1,
         runs_per_session=15,
         data_processed=True,
+        file_format="mat",
         tags=Tags(
             pathology=["Healthy"],
             modality=["Visual"],
