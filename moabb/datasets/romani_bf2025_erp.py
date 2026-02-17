@@ -30,8 +30,8 @@ from moabb.datasets.metadata.schema import (
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
 BF_archive_name = "BIDS.zip"
-BF_folder_name = "BrainForm-BIDS-eeg-dataset"
 BF_dataset_name = "RomaniBF2025ERP"
+BF_folder_name = f"MNE-{BF_dataset_name}-data"
 
 BRAINFORM_dataset_params = {
     "dataset_name": BF_dataset_name,
