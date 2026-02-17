@@ -30,19 +30,17 @@ where :math:`\\lambda_n` are the eigenvalues of
 :math:`\\Sigma_1^{-1} \\Sigma_2`.
 
 This tutorial introduces three progressively more powerful Riemannian
-artifact rejection methods and demonstrates how to integrate the first
-two into a MOABB pre-processing pipeline using **pipeline surgery**:
+artifact rejection methods and demonstrates how to integrate them
+into a MOABB pre-processing pipeline using **pipeline surgery**:
 
 1. **Riemannian Potato (RP)** [1]_ — a single-potato detector based on
    Riemannian distance to the geometric mean (barycenter).
 2. **Riemannian Potato Field (RPF)** [2]_ — multiple potatoes, each
    targeting specific artifact types via channel subsets and frequency
    bands, combined using Fisher's method.
-3. **Improved RPF (iRPF)** [3]_ — discussed conceptually at the end of
-   this tutorial. Enhanced RPF with adaptive robust barycenter
-   estimation, additional distance metrics, multiple p-value combination
-   and meta-combination functions, and automatic adaptive thresholding
-   via the Kneedle algorithm.
+3. **Improved RPF (iRPF)** [3]_ — enhanced RPF using both Fisher's and
+   Stouffer's (Liptak) combination functions with Tippett
+   meta-combination, providing a more precise rejection region.
 
 We apply these methods to the BNCI2014-009 P300 dataset and design a
 potato field following the principles described in [3]_.
@@ -90,7 +88,7 @@ from pyriemann.clustering import Potato
 from pyriemann.estimation import Covariances, XdawnCovariances
 from pyriemann.tangentspace import TangentSpace
 from pyriemann.utils.covariance import normalize
-from scipy.stats import chi2, norm
+from scipy.stats import combine_pvalues, norm
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
@@ -652,11 +650,9 @@ plt.show()
 
 # Combine p-values using Fisher's method (as in pyriemann's PotatoField)
 p_matrix = np.array(potato_p_values)  # shape: (n_potatoes, n_epochs)
-p_matrix[p_matrix < 1e-10] = 1e-10
-q = -2 * np.sum(np.log(p_matrix), axis=0)
-
+p_matrix = np.clip(p_matrix, 1e-10, 1.0)
 n_potatoes = len(POTATO_FIELD_CONFIG)
-combined_p = 1 - chi2.cdf(q, df=2 * n_potatoes)
+_, combined_p = combine_pvalues(p_matrix, method="fisher", axis=0)
 
 sorted_p = np.sort(combined_p)
 
@@ -782,8 +778,7 @@ def riemannian_potato_field_rejection(epochs):
     # Combine p-values using Fisher's method
     p_matrix = np.array(p_values_list)
     p_matrix = np.clip(p_matrix, 1e-10, 1.0)
-    q = -2 * np.sum(np.log(p_matrix), axis=0)
-    combined_p = 1 - chi2.cdf(q, df=2 * len(valid_config))
+    _, combined_p = combine_pvalues(p_matrix, method="fisher", axis=0)
 
     is_clean = combined_p >= 0.01
 
@@ -793,6 +788,66 @@ def riemannian_potato_field_rejection(epochs):
     if is_clean.sum() == 0:
         raise ValueError(
             f"All {n_before} epochs rejected by Riemannian Potato Field — "
+            "consider raising the threshold or checking data quality."
+        )
+    return epochs[is_clean]
+
+
+def improved_rpf_rejection(epochs):
+    """Reject artifacts using an improved Riemannian Potato Field (iRPF).
+
+    This implements the combination strategy from [3]_ (Section 2.4.4,
+    Fig. 5): per-potato p-values are combined using both Fisher's and
+    Stouffer's (Liptak) methods, then the two results are merged via
+    Tippett's meta-combination (minimum p-value). This provides a more
+    precise determination of the rejection region than Fisher alone.
+
+    Note: This is a simplified iRPF that focuses on the combination
+    strategy. The full iRPF in [3]_ also includes adaptive robust
+    barycenter estimation and Kneedle-based automatic thresholding.
+    """
+    n_before = len(epochs)
+    available_chs = set(epochs.ch_names)
+
+    valid_config = [
+        cfg
+        for cfg in POTATO_FIELD_CONFIG
+        if cfg["channels"] is None or all(ch in available_chs for ch in cfg["channels"])
+    ]
+    if not valid_config:
+        return epochs
+
+    cov_list = compute_potato_covariances(epochs, valid_config)
+
+    # Fit individual potatoes with per-potato metrics and collect p-values
+    p_values_list = []
+    for cov, cfg in zip(cov_list, valid_config):
+        p = Potato(metric=cfg["metric"], threshold=3)
+        p.fit(cov)
+        z = p.transform(cov)
+        p_values_list.append(1 - norm.cdf(z))
+
+    # iRPF combination strategy (Section 2.4.4 of the paper):
+    # 1. Fisher's combination across potatoes
+    # 2. Stouffer's (Liptak) combination across potatoes
+    # 3. Tippett meta-combination of both results
+    p_matrix = np.array(p_values_list)
+    p_matrix = np.clip(p_matrix, 1e-10, 1.0)
+
+    _, fisher_p = combine_pvalues(p_matrix, method="fisher", axis=0)
+    _, stouffer_p = combine_pvalues(p_matrix, method="stouffer", axis=0)
+
+    meta_p = np.stack([fisher_p, stouffer_p])
+    _, combined_p = combine_pvalues(meta_p, method="tippett", axis=0)
+
+    is_clean = combined_p >= 0.01
+
+    n_rejected = n_before - is_clean.sum()
+    print(f"  iRPF: rejected {n_rejected}/{n_before} epochs")
+
+    if is_clean.sum() == 0:
+        raise ValueError(
+            f"All {n_before} epochs rejected by improved RPF — "
             "consider raising the threshold or checking data quality."
         )
     return epochs[is_clean]
@@ -813,15 +868,22 @@ rpf_pipeline.insert_step(
     after=StepType.EPOCHS,
 )
 
+irpf_pipeline = paradigm.make_process_pipelines(dataset)[0]
+irpf_pipeline.insert_step(
+    StepType.EPOCHS,
+    FunctionTransformer(improved_rpf_rejection),
+    after=StepType.EPOCHS,
+)
+
 ##############################################################################
 # Evaluation — Compare With vs Without Artifact Rejection
 # ---------------------------------------------------------
 #
 # We define a P300 classification pipeline (Xdawn covariances +
-# Tangent Space + LDA) and run ``WithinSessionEvaluation`` three times:
-# once with the default pipeline, once with RP, and once with RPF.
-# This comparison follows the evaluation methodology used in [3]_,
-# where different artifact rejection methods are compared on their
+# Tangent Space + LDA) and run ``WithinSessionEvaluation`` four times:
+# once with the default pipeline, once with RP, once with RPF, and once
+# with iRPF. This comparison follows the evaluation methodology used in
+# [3]_, where different artifact rejection methods are compared on their
 # impact on downstream classification performance.
 
 pipelines = {}
@@ -884,11 +946,23 @@ results_rpf = list(
 for r in results_rpf:
     r["preprocessing"] = "RPF"
 
+# 4. Improved Riemannian Potato Field
+results_irpf = list(
+    evaluation.evaluate(
+        dataset=dataset,
+        pipelines=pipelines,
+        param_grid=None,
+        process_pipeline=irpf_pipeline,
+    )
+)
+for r in results_irpf:
+    r["preprocessing"] = "iRPF"
+
 ##############################################################################
 # Results Visualization
 # ----------------------
 #
-# We compare both ROC AUC and F1-score across the three preprocessing
+# We compare both ROC AUC and F1-score across the four preprocessing
 # approaches. This comparison is inspired by Figure 7 of [3]_, which
 # compares evaluation metrics (Recall, Specificity, Precision, F1-Score)
 # across RP, RPF, iRPF, Isolation Forest, and Autoreject. Here we focus
@@ -902,11 +976,11 @@ for r in results_rpf:
 # iRPF achieved gains of up to 24% in F1-score on artifact-heavy
 # datasets.
 
-all_results = results_default + results_rp + results_rpf
+all_results = results_default + results_rp + results_rpf + results_irpf
 df = pd.DataFrame(all_results)
 
-order = ["No rejection", "RP", "RPF"]
-colors = ["#4C72B0", "#DD8452", "#55A868"]
+order = ["No rejection", "RP", "RPF", "iRPF"]
+colors = ["#4C72B0", "#DD8452", "#55A868", "#C44E52"]
 metrics = {"score_roc_auc": "ROC AUC", "score_f1": "F1-Score"}
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
@@ -952,7 +1026,7 @@ fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
 
 sessions = sorted(df["session"].unique())
 x = np.arange(len(sessions))
-width = 0.25
+width = 0.2
 
 for ax, (metric_col, metric_name) in zip(axes, metrics.items()):
     for i, (method, color) in enumerate(zip(order, colors)):
@@ -972,7 +1046,7 @@ for ax, (metric_col, metric_name) in zip(axes, metrics.items()):
     ax.set_xlabel("Session")
     ax.set_ylabel(metric_name)
     ax.set_title(f"Per-session {metric_name}")
-    ax.set_xticks(x + width)
+    ax.set_xticks(x + 1.5 * width)
     ax.set_xticklabels([f"Session {s}" for s in sessions])
     ax.legend()
 
@@ -985,12 +1059,73 @@ plt.tight_layout()
 plt.show()
 
 ##############################################################################
-# Notes on the Improved Riemannian Potato Field (iRPF)
+# RPF vs iRPF — Comparing combination strategies
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# We visualize how the iRPF's Fisher + Stouffer + Tippett meta-combination
+# compares to RPF's Fisher-only combination. By plotting the sorted SQI
+# values from both methods, we can see how the Tippett meta-combination
+# affects the rejection boundary. This is inspired by Figure 6 of [3]_.
+
+# Recompute combined p-values for RPF and iRPF using the visualization data
+p_matrix_viz = np.array(potato_p_values)
+p_matrix_viz = np.clip(p_matrix_viz, 1e-10, 1.0)
+
+# RPF: Fisher's combination only
+_, rpf_combined_p = combine_pvalues(p_matrix_viz, method="fisher", axis=0)
+
+# iRPF: Fisher + Stouffer + Tippett meta-combination
+_, fisher_p_viz = combine_pvalues(p_matrix_viz, method="fisher", axis=0)
+_, stouffer_p_viz = combine_pvalues(p_matrix_viz, method="stouffer", axis=0)
+meta_p_viz = np.stack([fisher_p_viz, stouffer_p_viz])
+_, irpf_combined_p = combine_pvalues(meta_p_viz, method="tippett", axis=0)
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
+
+# Sorted SQI comparison
+sorted_rpf = np.sort(rpf_combined_p)
+sorted_irpf = np.sort(irpf_combined_p)
+axes[0].plot(sorted_rpf, ".-", markersize=2, color="#55A868", label="RPF (Fisher)")
+axes[0].plot(sorted_irpf, ".-", markersize=2, color="#C44E52", label="iRPF (Tippett)")
+axes[0].set_xlabel("Epoch index (sorted by SQI)")
+axes[0].set_ylabel("Combined p-value (SQI)")
+axes[0].set_title("Sorted SQI: RPF vs iRPF")
+axes[0].set_yscale("log")
+axes[0].axhline(0.01, color="k", linestyle="--", linewidth=1, label="p = 0.01")
+axes[0].legend()
+
+n_rpf_rejected = (rpf_combined_p < 0.01).sum()
+n_irpf_rejected = (irpf_combined_p < 0.01).sum()
+axes[0].annotate(
+    f"RPF rejects {n_rpf_rejected}\niRPF rejects {n_irpf_rejected}",
+    xy=(0.02, 0.02),
+    xycoords="axes fraction",
+    fontsize=9,
+    bbox=dict(boxstyle="round,pad=0.3", facecolor="wheat", alpha=0.5),
+)
+
+# Scatter plot: RPF vs iRPF p-values
+axes[1].scatter(rpf_combined_p, irpf_combined_p, s=5, alpha=0.5, color="#4C72B0")
+axes[1].plot([1e-10, 1], [1e-10, 1], "k--", linewidth=0.5, alpha=0.5)
+axes[1].axhline(0.01, color="#C44E52", linestyle=":", linewidth=1, label="iRPF threshold")
+axes[1].axvline(0.01, color="#55A868", linestyle=":", linewidth=1, label="RPF threshold")
+axes[1].set_xlabel("RPF p-value (Fisher)")
+axes[1].set_ylabel("iRPF p-value (Tippett)")
+axes[1].set_title("RPF vs iRPF: per-epoch combined p-values")
+axes[1].set_xscale("log")
+axes[1].set_yscale("log")
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+
+##############################################################################
+# Notes on the full iRPF method
 # -------------------------------------------------------
 #
-# The methods shown above (RP and RPF) are the building blocks of the
-# improved Riemannian Potato Field (iRPF) introduced in [3]_. The key
-# innovations of iRPF over RPF are:
+# The iRPF combination strategy demonstrated above (Fisher + Stouffer +
+# Tippett) is one of the key innovations of [3]_. The full iRPF method
+# includes additional improvements not implemented here:
 #
 # **Automatic outlier rejection before training.** iRPF computes the
 # field root mean square (FRMS) of each epoch and adaptively determines
@@ -1003,32 +1138,18 @@ plt.show()
 # 2011) to the sorted p-values. This automatically finds the "knee"
 # point separating inliers from outliers at each iteration.
 #
-# **Additional distance metrics.** Beyond the affine-invariant
-# Riemannian distance used in RP and RPF, iRPF introduces:
-#
-# - **Euclidean distance**: more effective for artifacts with
-#   co-variation across electrodes (e.g., vertical eye movements)
-# - **Diagonal Euclidean distance**: focuses on channel variances,
-#   effective for myogenic artifacts that primarily impact individual
-#   channels without cross-electrode co-variation
-#
-# **Multiple combination and meta-combination functions.** iRPF combines
-# per-potato p-values using both Fisher's and Liptak's combination
-# functions, then applies a Tippett meta-combination (minimum p-value)
-# across both results. This provides a more precise rejection region.
-#
 # **Automatic adaptive thresholding.** The Kneedle algorithm is applied
 # to the sorted SQI values to dynamically determine the rejection
-# threshold, eliminating the need for manual threshold tuning.
+# threshold, eliminating the need for manual threshold tuning (the fixed
+# p = 0.01 threshold used in this tutorial).
 #
 # As reported in [3]_, iRPF achieves gains of up to 22% in recall,
 # 102% in specificity, 54% in precision, and 24% in F1-score compared
 # to Isolation Forest, Autoreject, RP, and RPF, while performing
 # artifact cleaning in under 8 ms per epoch.
 #
-# The iRPF implementation is available in the
+# The complete iRPF implementation is available in the
 # `RAR package <https://github.com/Davoud-Hajhassani/Riemannian-Artifact-Rejection>`_.
-# The RP and RPF methods demonstrated here are fully available in Python
-# via `pyriemann <https://pyriemann.readthedocs.io/>`_ and can be
+# The RP, RPF, and iRPF combination methods demonstrated here can be
 # readily integrated into any MOABB analysis pipeline using the pipeline
 # surgery approach shown in this tutorial.
