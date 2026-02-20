@@ -140,6 +140,15 @@ _MANUAL_METADATA_OVERRIDES = {
     "CastillosCVEP100": {},
     "MartinezCagigal2023Checker": {"sessions_per_subject": 8},
     "MartinezCagigal2023Pary": {"sessions_per_subject": 5},
+    # Beetl datasets
+    "Beetl2021_A": {"documentation": {"license": "CC BY 4.0"}},
+    "Beetl2021_B": {"documentation": {"license": "CC BY 4.0"}},
+    # Kojima datasets
+    "Kojima2024A": {"documentation": {"license": "CC0 1.0"}},
+    "Kojima2024B": {"documentation": {"license": "CC0 1.0"}},
+    # Dreyer2023 sub-datasets (B and C don't have class-level METADATA)
+    "Dreyer2023B": {"documentation": {"license": "CC BY 4.0"}},
+    "Dreyer2023C": {"documentation": {"license": "CC BY 4.0"}},
 }
 
 
@@ -350,7 +359,11 @@ def _apply_dataset_family_defaults(
     # ERP CORE defaults
     if name.startswith("ErpCore2021"):
         documentation = metadata.documentation or DocumentationMetadata()
-        documentation = replace(documentation, doi="10.1016/j.neuroimage.2020.117465")
+        documentation = replace(
+            documentation,
+            doi="10.1016/j.neuroimage.2020.117465",
+            license="CC BY-SA 4.0",
+        )
         acquisition = metadata.acquisition or AcquisitionMetadata(
             sampling_rate=256.0, n_channels=64, channel_types={"eeg": 64}
         )
@@ -370,7 +383,11 @@ def _apply_dataset_family_defaults(
     # Castillos cVEP defaults
     if name.startswith("Castillos"):
         documentation = metadata.documentation or DocumentationMetadata()
-        documentation = replace(documentation, doi="10.1016/j.neuroimage.2023.120446")
+        documentation = replace(
+            documentation,
+            doi="10.1016/j.neuroimage.2023.120446",
+            license="CC BY 4.0",
+        )
         participants = metadata.participants or ParticipantMetadata(n_subjects=12)
         participants = replace(participants, n_subjects=12)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
@@ -384,12 +401,15 @@ def _apply_dataset_family_defaults(
 
     # MartinezCagigal cVEP defaults
     if name.startswith("MartinezCagigal2023"):
+        documentation = metadata.documentation or DocumentationMetadata()
+        documentation = replace(documentation, license="CC BY-NC-SA 4.0")
         participants = metadata.participants or ParticipantMetadata(n_subjects=16)
         participants = replace(participants, n_subjects=16)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
         experiment = replace(experiment, paradigm="cvep")
         metadata = replace(
             metadata,
+            documentation=documentation,
             participants=participants,
             experiment=experiment,
         )
