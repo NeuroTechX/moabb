@@ -180,8 +180,12 @@ print(f"Channels: {epochs.ch_names}")
 data = epochs.get_data()
 covs = Covariances(estimator="lwf").transform(data)
 
-# Fit potato and get z-scores
-potato = Potato(metric="riemann", threshold=3)
+# Fit potato and get z-scores.
+# The metric parameter accepts a string or a dict with "mean" and "distance"
+# keys (see pyriemann.utils.mean.mean_covariance and
+# pyriemann.utils.distance.distance). Using the dict form makes explicit
+# which metric is used for barycenter estimation vs distance computation.
+potato = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
 potato.fit(covs)
 z_scores = potato.transform(covs)
 is_clean = potato.predict(covs).astype(bool)
@@ -236,7 +240,7 @@ ch_idx_fcz = epochs.ch_names.index("FCz")
 ch_idx_cz = epochs.ch_names.index("Cz")
 covs_2d = covs[:, [ch_idx_fcz, ch_idx_cz], :][:, :, [ch_idx_fcz, ch_idx_cz]]
 
-potato_2d = Potato(metric="riemann", threshold=3)
+potato_2d = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
 potato_2d.fit(covs_2d)
 z_2d = potato_2d.transform(covs_2d)
 is_clean_2d = potato_2d.predict(covs_2d).astype(bool)
@@ -592,9 +596,12 @@ def compute_potato_covariances(epochs, config):
 # Compute covariance matrices for each potato
 cov_list = compute_potato_covariances(epochs, POTATO_FIELD_CONFIG)
 
-# Fit a PotatoField (single metric, as in [2]) and collect z-scores
+# Fit a PotatoField (single metric for all potatoes, as in [2])
 rpf_vis = PotatoField(
-    n_potatoes=len(POTATO_FIELD_CONFIG), metric="riemann", z_threshold=3, p_threshold=0.01
+    n_potatoes=len(POTATO_FIELD_CONFIG),
+    metric=dict(mean="riemann", distance="riemann"),
+    z_threshold=3,
+    p_threshold=0.01,
 )
 rpf_vis.fit(cov_list)
 z_matrix = rpf_vis.transform(cov_list)  # (n_epochs, n_potatoes)
@@ -730,7 +737,7 @@ def riemannian_potato_rejection(epochs):
     n_before = len(data)
 
     covs = Covariances(estimator="lwf").transform(data)
-    potato = Potato(metric="riemann", threshold=3)
+    potato = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
     potato.fit(covs)
     is_clean = potato.predict(covs).astype(bool)
 
@@ -777,7 +784,10 @@ def riemannian_potato_field_rejection(epochs):
 
     # Use PotatoField with a single metric (standard RPF approach from [2])
     rpf = PotatoField(
-        n_potatoes=len(valid_config), metric="riemann", z_threshold=3, p_threshold=0.01
+        n_potatoes=len(valid_config),
+        metric=dict(mean="riemann", distance="riemann"),
+        z_threshold=3,
+        p_threshold=0.01,
     )
     rpf.fit(cov_list)
     is_clean = rpf.predict(cov_list).astype(bool)
@@ -1017,6 +1027,8 @@ def improved_rpf_rejection(epochs):
     # Potato field with per-potato metrics (on all data, in parallel)
     cov_list = compute_potato_covariances(epochs, valid_config)
 
+    # Each potato uses its own metric for both mean and distance
+    # (a string metric like "euclid" applies to both; see Potato docstring).
     p_values_list = []
     for cov, cfg in zip(cov_list, valid_config):
         p = Potato(metric=cfg["metric"], threshold=3)
@@ -1272,6 +1284,8 @@ rpf_combined_p = rpf_vis.predict_proba(cov_list)
 # iRPF: per-potato metrics with min(Fisher, Stouffer) combination
 # (This compares the Riemannian stages only. In the full iRPF pipeline,
 # GFRMS amplitude rejection provides additional complementary detection.)
+# Per-potato metrics: each potato uses its own metric (string applies to
+# both mean and distance; "euclid" for ocular, "riemann" for the rest).
 irpf_p_values = []
 for cov, cfg in zip(cov_list, POTATO_FIELD_CONFIG):
     p = Potato(metric=cfg["metric"], threshold=3)
