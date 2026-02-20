@@ -238,6 +238,7 @@ class Stieger2021(BaseDataset):
             repository="GitHub",
             data_url="https://github.com/bfinl/BCI_Data_Paper",
             funding=["NIH under"],
+            license="CC BY-NC 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
