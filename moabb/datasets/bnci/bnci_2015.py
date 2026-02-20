@@ -455,7 +455,7 @@ class BNCI2015_001(MNEBNCI):
     **Dataset Description**
 
     This dataset contains EEG data from 12 subjects performing two-class motor
-    imagery tasks (left vs right hand). Each subject participated in multiple
+    imagery tasks (right hand vs feet). Each subject participated in multiple
     sessions, with some subjects having three sessions.
 
     **Participants**
@@ -472,10 +472,11 @@ class BNCI2015_001(MNEBNCI):
 
     References
     ----------
-    .. [1] Faller, J., Scherer, R., Costa, U., Opisso, E., Medina, J., Muller-Putz,
-           G. R. (2014). A co-adaptive brain-computer interface for end users with
-           severe motor impairment. PLOS ONE, 9(7), e101168.
-           https://doi.org/10.1371/journal.pone.0101168
+    .. [1] Faller, J., Vidaurre, C., Solis-Escalante, T., Neuper, C., & Scherer, R.
+           (2012). Autocalibration and recurrent adaptation: Towards a plug and play
+           online ERD-BCI. IEEE Transactions on Neural Systems and Rehabilitation
+           Engineering, 20(3), 313-319.
+           https://doi.org/10.1109/tnsre.2012.2189584
 
     Notes
     -----
@@ -515,7 +516,7 @@ class BNCI2015_001(MNEBNCI):
         ),
         participants=ParticipantMetadata(
             n_subjects=12,
-            health_status="ALS",
+            health_status="healthy",
             gender={"male": 7, "female": 5},
             age_mean=24.8,
             handedness="all right-handed",
@@ -536,7 +537,6 @@ class BNCI2015_001(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/tnsre.2012.2189584",
-            associated_paper_doi="10.1371/journal.pone.0101168",
         ),
         tags=Tags(
             pathology=["Healthy"],
