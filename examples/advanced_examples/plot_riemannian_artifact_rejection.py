@@ -38,9 +38,10 @@ into a MOABB pre-processing pipeline using **pipeline surgery**:
 2. **Riemannian Potato Field (RPF)** [2]_ — multiple potatoes, each
    targeting specific artifact types via channel subsets and frequency
    bands, combined using Fisher's method.
-3. **Improved RPF (iRPF)** [3]_ — enhanced RPF using both Fisher's and
-   Stouffer's (Liptak) combination functions, providing a more sensitive
-   rejection criterion that captures different artifact patterns.
+3. **Improved RPF (iRPF)** [3]_ — enhanced RPF with GFRMS amplitude
+   pre-filtering to remove severely corrupted epochs, per-potato distance
+   metrics, and both Fisher's and Stouffer's (Liptak) combination functions
+   for a more sensitive rejection criterion.
 
 We apply these methods to the BNCI2014-009 P300 dataset and design a
 potato field following the principles described in [3]_.
@@ -63,7 +64,7 @@ References
        108505. https://doi.org/10.1016/j.bspc.2025.108505
 """
 
-# Authors: Davoud Hajhassani
+# Authors: Davoud Hajhassani <https://orcid.org/0009-0008-6674-5546>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
 #
 # License: BSD (3-clause)
@@ -85,7 +86,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pyriemann.classification import MDM
-from pyriemann.clustering import Potato
+from pyriemann.clustering import Potato, PotatoField
 from pyriemann.estimation import Covariances, ERPCovariances
 from pyriemann.utils.covariance import normalize
 from scipy.stats import combine_pvalues, norm
@@ -411,10 +412,12 @@ plt.show()
 # Potato Field Design
 # ---------------------
 #
-# As described in [3]_ (Section 2.5), the potato field must be customized
-# per EEG headset. Each potato targets a specific artifact type by
-# selecting appropriate channels, frequency band, and distance metric.
-# The general design principles from [3]_ are:
+# The RPF framework [2]_ provides the general multi-potato architecture:
+# multiple low-dimensional potatoes operating in parallel, each on a
+# specific channel subset and frequency band, with Fisher's combination
+# to merge their outputs. The iRPF [3]_ (Section 2.5) extends this with
+# specific sub-region and channel selection design principles for
+# different artifact types:
 #
 # - **Ocular artifacts**: frontal channels (Fp, AF, F), low frequency
 #   (0.1-7 Hz), Riemannian or Euclidean distance.
@@ -423,6 +426,12 @@ plt.show()
 #   distance — since EMG primarily impacts individual channel variances.
 # - **General artifacts**: broader channel sets, wide frequency bands,
 #   Riemannian distance.
+#
+# Note that pyriemann's ``PotatoField`` uses a **single metric** for all
+# potatoes, which is appropriate for the standard RPF [2]_. Per-potato
+# distance metrics (e.g., Euclidean for ocular, Riemannian for general)
+# are an iRPF [3]_ enhancement implemented with individual ``Potato``
+# instances.
 #
 # For the BNCI2014-009 dataset (16 channels, no EOG,
 # bandpass 1-24 Hz applied by the P300 paradigm), we adapt
@@ -583,16 +592,16 @@ def compute_potato_covariances(epochs, config):
 # Compute covariance matrices for each potato
 cov_list = compute_potato_covariances(epochs, POTATO_FIELD_CONFIG)
 
-# Fit individual potatoes and collect z-scores
-potato_z_scores = []
-potato_p_values = []
-for i, (cov, cfg) in enumerate(zip(cov_list, POTATO_FIELD_CONFIG)):
-    p = Potato(metric=cfg["metric"], threshold=3)
-    p.fit(cov)
-    z = p.transform(cov)
-    pv = 1 - norm.cdf(z)
-    potato_z_scores.append(z)
-    potato_p_values.append(pv)
+# Fit a PotatoField (single metric, as in [2]) and collect z-scores
+rpf_vis = PotatoField(
+    n_potatoes=len(POTATO_FIELD_CONFIG), metric="riemann", z_threshold=3, p_threshold=0.01
+)
+rpf_vis.fit(cov_list)
+z_matrix = rpf_vis.transform(cov_list)  # (n_epochs, n_potatoes)
+potato_z_scores = [z_matrix[:, i] for i in range(z_matrix.shape[1])]
+potato_p_values = [1 - norm.cdf(z) for z in potato_z_scores]
+
+for i, (z, cfg) in enumerate(zip(potato_z_scores, POTATO_FIELD_CONFIG)):
     n_outliers = (z > 3).sum()
     ch_list = cfg["channels"] if cfg["channels"] is not None else epochs.ch_names
     ch_display = f"ch={ch_list[:3]}{'...' if len(ch_list) > 3 else ''}"
@@ -647,11 +656,9 @@ plt.show()
 # inspired by Figure 6 of [3]_, which shows how the Kneedle algorithm
 # can automatically detect the optimal rejection threshold.
 
-# Combine p-values using Fisher's method (as in pyriemann's PotatoField)
-p_matrix = np.array(potato_p_values)  # shape: (n_potatoes, n_epochs)
-p_matrix = np.clip(p_matrix, 1e-10, 1.0)
+# Combine p-values using Fisher's method via PotatoField.predict_proba
 n_potatoes = len(POTATO_FIELD_CONFIG)
-_, combined_p = combine_pvalues(p_matrix, method="fisher", axis=0)
+combined_p = rpf_vis.predict_proba(cov_list)
 
 sorted_p = np.sort(combined_p)
 
@@ -677,7 +684,8 @@ axes[0].annotate(
 # Per-potato contribution heatmap
 # Show which potatoes flag which epochs (sorted by combined SQI)
 sorted_idx = np.argsort(combined_p)
-p_sorted = p_matrix[:, sorted_idx]
+p_matrix_viz = np.array(potato_p_values)  # (n_potatoes, n_epochs)
+p_sorted = p_matrix_viz[:, sorted_idx]
 im = axes[1].imshow(
     np.log10(p_sorted),
     aspect="auto",
@@ -740,16 +748,17 @@ def riemannian_potato_rejection(epochs):
 def riemannian_potato_field_rejection(epochs):
     """Reject artifacts using a Riemannian Potato Field.
 
-    For each potato configuration, computes covariance matrices on the
-    relevant channel subset and frequency band. Each potato uses its own
-    metric (e.g., Riemannian or Euclidean) as specified in the config.
-    Per-potato p-values are combined into a single SQI using Fisher's
-    method, and epochs below the significance threshold are rejected.
+    Uses pyriemann's ``PotatoField`` [2]_ with a single Riemannian metric
+    for all potatoes. Per-potato covariance matrices are computed on the
+    relevant channel subsets and frequency bands. The ``PotatoField``
+    internally combines per-potato p-values using Fisher's method and
+    rejects epochs below the significance threshold.
 
-    Note: Each potato is fit and evaluated on the same data. In a rigorous
-    benchmark you would fit only on training folds to avoid information
-    leakage. Here the potatoes are unsupervised outlier detectors, so the
-    leakage is minimal and acceptable for tutorial purposes.
+    Note: The PotatoField is fit and evaluated on the same data. In a
+    rigorous benchmark you would fit only on training folds to avoid
+    information leakage. Here the potatoes are unsupervised outlier
+    detectors, so the leakage is minimal and acceptable for tutorial
+    purposes.
     """
     n_before = len(epochs)
     available_chs = set(epochs.ch_names)
@@ -766,20 +775,12 @@ def riemannian_potato_field_rejection(epochs):
 
     cov_list = compute_potato_covariances(epochs, valid_config)
 
-    # Fit individual potatoes with per-potato metrics and collect p-values
-    p_values_list = []
-    for cov, cfg in zip(cov_list, valid_config):
-        p = Potato(metric=cfg["metric"], threshold=3)
-        p.fit(cov)
-        z = p.transform(cov)
-        p_values_list.append(1 - norm.cdf(z))
-
-    # Combine p-values using Fisher's method
-    p_matrix = np.array(p_values_list)
-    p_matrix = np.clip(p_matrix, 1e-10, 1.0)
-    _, combined_p = combine_pvalues(p_matrix, method="fisher", axis=0)
-
-    is_clean = combined_p >= 0.01
+    # Use PotatoField with a single metric (standard RPF approach from [2])
+    rpf = PotatoField(
+        n_potatoes=len(valid_config), metric="riemann", z_threshold=3, p_threshold=0.01
+    )
+    rpf.fit(cov_list)
+    is_clean = rpf.predict(cov_list).astype(bool)
 
     n_rejected = n_before - is_clean.sum()
     print(f"  RPF: rejected {n_rejected}/{n_before} epochs")
@@ -792,17 +793,206 @@ def riemannian_potato_field_rejection(epochs):
     return epochs[is_clean]
 
 
+def compute_gfrms(data):
+    """Compute log-GFRMS (Global Field Root Mean Square) per sample per epoch.
+
+    As described in [3]_, the GFRMS measures the instantaneous amplitude
+    across all channels at each time sample. The log transform compresses
+    the dynamic range and makes the distribution more symmetric.
+
+    Parameters
+    ----------
+    data : ndarray, shape (n_epochs, n_channels, n_samples)
+        The EEG data.
+
+    Returns
+    -------
+    gfrms : ndarray, shape (n_epochs, n_samples)
+        Log-GFRMS values per sample per epoch.
+    """
+    # GFRMS = sqrt(mean(channel_values^2)) per time sample
+    gfrms = np.sqrt(np.mean(data**2, axis=1))  # (n_epochs, n_samples)
+    # Log transform (as in the Julia RAR implementation)
+    gfrms = np.log(np.maximum(gfrms, 1e-30))
+    return gfrms
+
+
+def gfrms_amplitude_rejection(epochs, config, upper_limit=1.618):
+    """Pre-reject epochs using adaptive GFRMS amplitude thresholding.
+
+    Implements the amplitude pre-rejection from [3]_ (Section 2.4.1).
+    Severely corrupted epochs are removed before the Riemannian potato
+    field analysis, preventing them from distorting the barycenter.
+
+    The adaptive thresholds are derived from the GFRMS distribution:
+
+    - ``lower``: 10th smallest GFRMS value (robust floor)
+    - ``m``: mean of GFRMS values in a window around the median
+    - ``upper``: ``m + (m - lower) * upper_limit``
+
+    The default ``upper_limit`` is the golden ratio (1.618), following
+    the Julia RAR implementation.
+
+    Parameters
+    ----------
+    epochs : mne.Epochs
+        The input epochs.
+    config : list of dict
+        Potato field configuration (used to determine the union frequency
+        band for filtering).
+    upper_limit : float
+        Multiplier for the upper threshold. Default is the golden ratio.
+
+    Returns
+    -------
+    is_clean : ndarray of bool, shape (n_epochs,)
+        True for epochs that pass amplitude thresholding.
+    gfrms : ndarray, shape (n_epochs, n_samples)
+        Log-GFRMS values for visualization.
+    lower : float
+        Lower adaptive threshold.
+    upper : float
+        Upper adaptive threshold.
+    m : float
+        Mean of the median window.
+    """
+    # Band-pass filter using union of all potato field bands
+    all_lows = [cfg["low_freq"] for cfg in config]
+    all_highs = [cfg["high_freq"] for cfg in config]
+    union_low = min(all_lows)
+    union_high = max(all_highs)
+
+    ep = epochs.copy().filter(
+        l_freq=union_low, h_freq=union_high, method="iir", verbose=False
+    )
+    data = ep.get_data()  # (n_epochs, n_channels, n_samples)
+
+    # Compute log-GFRMS
+    gfrms = compute_gfrms(data)  # (n_epochs, n_samples)
+
+    # Adaptive thresholds (following Julia RAR reject() function)
+    all_values = gfrms.ravel()
+    sorted_values = np.sort(all_values)
+    ns = len(sorted_values)
+    n_samples = gfrms.shape[1]
+
+    # Window around the median: one epoch's worth of samples on each side
+    mid = ns // 2
+    half_w = min(n_samples, mid)
+    m = np.mean(sorted_values[mid - half_w : mid + half_w])
+
+    # Lower: 10th smallest value (robust floor)
+    lower = sorted_values[min(9, ns - 1)]
+
+    # Upper: m + (m - lower) * golden_ratio
+    upper = m + (m - lower) * upper_limit
+
+    # Reject epochs where min(GFRMS) < lower OR max(GFRMS) > upper
+    epoch_min = np.min(gfrms, axis=1)
+    epoch_max = np.max(gfrms, axis=1)
+    is_clean = (epoch_min >= lower) & (epoch_max <= upper)
+
+    return is_clean, gfrms, lower, upper, m
+
+
+##############################################################################
+# GFRMS Amplitude Pre-filtering — Visualization
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# The GFRMS (Global Field Root Mean Square) measures the instantaneous
+# amplitude across all channels. The iRPF [3]_ uses adaptive thresholds
+# on the log-GFRMS distribution to catch severely corrupted epochs that
+# Riemannian analysis alone might miss (e.g., near-zero amplitude
+# epochs where covariance matrices become degenerate).
+
+is_clean_gfrms, gfrms_values, gfrms_lower, gfrms_upper, gfrms_m = (
+    gfrms_amplitude_rejection(epochs, POTATO_FIELD_CONFIG)
+)
+n_gfrms_rejected = (~is_clean_gfrms).sum()
+print(f"GFRMS pre-rejection: {n_gfrms_rejected}/{len(epochs)} epochs rejected")
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
+
+# Left: Sorted log-GFRMS with adaptive threshold lines
+all_gfrms_sorted = np.sort(gfrms_values.ravel())
+axes[0].plot(all_gfrms_sorted, linewidth=0.5, color="#4C72B0")
+axes[0].axhline(
+    gfrms_lower,
+    color="#55A868",
+    linestyle="--",
+    linewidth=1.5,
+    label=f"Lower = {gfrms_lower:.2f}",
+)
+axes[0].axhline(
+    gfrms_upper,
+    color="#C44E52",
+    linestyle="--",
+    linewidth=1.5,
+    label=f"Upper = {gfrms_upper:.2f}",
+)
+axes[0].axhline(
+    gfrms_m,
+    color="#DD8452",
+    linestyle=":",
+    linewidth=1.5,
+    label=f"m (median window mean) = {gfrms_m:.2f}",
+)
+axes[0].set_xlabel("Sample index (sorted)")
+axes[0].set_ylabel("log-GFRMS")
+axes[0].set_title("Sorted log-GFRMS with adaptive thresholds\n(from iRPF [3])")
+axes[0].legend(fontsize=8)
+
+# Right: Per-epoch max GFRMS colored by clean/rejected
+epoch_max_gfrms = np.max(gfrms_values, axis=1)
+colors_gfrms = np.where(is_clean_gfrms, "#4C72B0", "#C44E52")
+axes[1].scatter(
+    range(len(epoch_max_gfrms)), epoch_max_gfrms, c=colors_gfrms, s=5, alpha=0.5
+)
+axes[1].axhline(
+    gfrms_upper, color="#C44E52", linestyle="--", linewidth=1.5, label="Upper threshold"
+)
+axes[1].axhline(
+    gfrms_lower, color="#55A868", linestyle="--", linewidth=1.5, label="Lower threshold"
+)
+axes[1].set_xlabel("Epoch index")
+axes[1].set_ylabel("Max log-GFRMS per epoch")
+axes[1].set_title(
+    f"GFRMS amplitude rejection: {n_gfrms_rejected}/{len(epochs)} epochs rejected"
+)
+axes[1].legend(fontsize=8)
+
+fig.suptitle(
+    "iRPF Stage 1: GFRMS Amplitude Pre-filtering",
+    fontsize=12,
+    fontweight="bold",
+)
+plt.tight_layout()
+plt.show()
+
+
 def improved_rpf_rejection(epochs):
     """Reject artifacts using an improved Riemannian Potato Field (iRPF).
 
-    This implements the multiple combination functions from [3]_
-    (Section 2.4.4): per-potato p-values are combined using both Fisher's
-    and Stouffer's (Liptak) methods, then the minimum of the two combined
-    p-values is used as the final SQI. This provides a more sensitive
-    rejection criterion than Fisher alone, since Fisher is more sensitive
-    to one very small p-value (single extreme artifact) while Stouffer
-    is more sensitive to many moderately small p-values (widespread mild
-    artifacts). Taking the minimum captures the best of both.
+    This implements two complementary rejection mechanisms from [3]_,
+    applied **in parallel** on the full data:
+
+    **GFRMS amplitude rejection** (Section 2.4.1):
+    Computes the Global Field Root Mean Square (GFRMS) across all channels
+    and uses adaptive amplitude thresholds to catch severely corrupted
+    epochs that may not be detected by Riemannian analysis alone.
+
+    **Potato field with per-potato metrics** (Section 2.4.4):
+    Fits individual ``Potato`` instances with per-potato distance metrics
+    (an iRPF enhancement over the single metric used by ``PotatoField``).
+    Per-potato p-values are combined using both Fisher's and Stouffer's
+    (Liptak) methods, and the minimum is used as the final SQI.
+
+    Both mechanisms operate on the original data independently, and their
+    rejections are combined via union. This parallel approach avoids the
+    overcorrection that can occur when running GFRMS sequentially before
+    RPF: without the adaptive robust barycenter estimation from [3]_
+    (Section 2.4.2), sequential GFRMS pre-rejection causes the barycenter
+    to become overly tight, leading to excessive false positives.
 
     Note: Each potato is fit and evaluated on the same data. In a rigorous
     benchmark you would fit only on training folds to avoid information
@@ -820,9 +1010,13 @@ def improved_rpf_rejection(epochs):
     if not valid_config:
         return epochs
 
+    # GFRMS amplitude rejection (on all data)
+    is_clean_amplitude, _, _, _, _ = gfrms_amplitude_rejection(epochs, valid_config)
+    n_amplitude_rejected = n_before - is_clean_amplitude.sum()
+
+    # Potato field with per-potato metrics (on all data, in parallel)
     cov_list = compute_potato_covariances(epochs, valid_config)
 
-    # Fit individual potatoes and collect p-values
     p_values_list = []
     for cov, cfg in zip(cov_list, valid_config):
         p = Potato(metric=cfg["metric"], threshold=3)
@@ -841,11 +1035,18 @@ def improved_rpf_rejection(epochs):
     _, stouffer_p = combine_pvalues(p_matrix, method="stouffer", axis=0)
 
     combined_p = np.minimum(fisher_p, stouffer_p)
+    is_clean_rpf = combined_p >= 0.01
 
-    is_clean = combined_p >= 0.01
+    # Union of both rejection mechanisms
+    is_clean = is_clean_amplitude & is_clean_rpf
 
-    n_rejected = n_before - is_clean.sum()
-    print(f"  iRPF: rejected {n_rejected}/{n_before} epochs")
+    n_rpf_rejected = (~is_clean_rpf).sum()
+    n_total_rejected = n_before - is_clean.sum()
+    print(
+        f"  iRPF: GFRMS={n_amplitude_rejected}, "
+        f"RPF={n_rpf_rejected}, "
+        f"union={n_total_rejected}/{n_before} epochs rejected"
+    )
 
     if is_clean.sum() == 0:
         raise ValueError(
@@ -1065,16 +1266,23 @@ plt.show()
 # from both methods, we can see how using both combination functions
 # captures more artifacts. This is inspired by Figure 6 of [3]_.
 
-# Recompute combined p-values for RPF and iRPF using the visualization data
-p_matrix_viz = np.array(potato_p_values)
-p_matrix_viz = np.clip(p_matrix_viz, 1e-10, 1.0)
+# RPF: use PotatoField's Fisher combination (single metric)
+rpf_combined_p = rpf_vis.predict_proba(cov_list)
 
-# RPF: Fisher's combination only
-_, rpf_combined_p = combine_pvalues(p_matrix_viz, method="fisher", axis=0)
+# iRPF: per-potato metrics with min(Fisher, Stouffer) combination
+# (This compares the Riemannian stages only. In the full iRPF pipeline,
+# GFRMS amplitude rejection provides additional complementary detection.)
+irpf_p_values = []
+for cov, cfg in zip(cov_list, POTATO_FIELD_CONFIG):
+    p = Potato(metric=cfg["metric"], threshold=3)
+    p.fit(cov)
+    z = p.transform(cov)
+    irpf_p_values.append(1 - norm.cdf(z))
 
-# iRPF: min(Fisher, Stouffer) — captures both types of departures
-_, fisher_p_viz = combine_pvalues(p_matrix_viz, method="fisher", axis=0)
-_, stouffer_p_viz = combine_pvalues(p_matrix_viz, method="stouffer", axis=0)
+irpf_p_matrix = np.array(irpf_p_values)
+irpf_p_matrix = np.clip(irpf_p_matrix, 1e-10, 1.0)
+_, fisher_p_viz = combine_pvalues(irpf_p_matrix, method="fisher", axis=0)
+_, stouffer_p_viz = combine_pvalues(irpf_p_matrix, method="stouffer", axis=0)
 irpf_combined_p = np.minimum(fisher_p_viz, stouffer_p_viz)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
@@ -1120,36 +1328,48 @@ plt.show()
 # Notes on the iRPF implementation
 # ----------------------------------
 #
-# This tutorial demonstrates the **multiple combination functions**
-# innovation from [3]_ (Section 2.4.4): per-potato p-values are
-# combined using both Fisher's and Stouffer's (Liptak) methods, and
-# the minimum is used as the final SQI. Fisher is more sensitive to
-# a single extreme outlier, while Stouffer is more sensitive to many
-# moderate departures. Taking the minimum captures both patterns.
+# This tutorial demonstrates three key innovations from [3]_:
+#
+# 1. **GFRMS amplitude rejection** (Section 2.4.1): the Global Field Root
+#    Mean Square with adaptive thresholds catches severely corrupted
+#    epochs that Riemannian analysis might miss. The adaptive thresholds
+#    use the golden ratio (1.618) following the Julia RAR implementation.
+#
+# 2. **Per-potato distance metrics**: the iRPF uses individual ``Potato``
+#    instances with metrics tailored to each artifact type (e.g.,
+#    Euclidean for ocular, Riemannian for general), unlike pyriemann's
+#    ``PotatoField`` which uses a single metric for all potatoes.
+#
+# 3. **Multiple combination functions** (Section 2.4.4): per-potato
+#    p-values are combined using both Fisher's and Stouffer's (Liptak)
+#    methods, and the minimum is used as the final SQI. Fisher is more
+#    sensitive to a single extreme outlier, while Stouffer is more
+#    sensitive to many moderate departures.
+#
+# **Parallel vs sequential rejection:** In this tutorial, the GFRMS and
+# Riemannian potato field stages are applied **in parallel** on the full
+# data, with their rejections combined via union. The original iRPF [3]_
+# applies GFRMS sequentially before the potato field, with the adaptive
+# robust barycenter estimation (Section 2.4.2) compensating for the
+# tighter barycenter that results from removing gross artifacts first.
+# Without the robust barycenter (which requires a train/test split and
+# Kneedle-based iterative outlier removal), the parallel approach avoids
+# overcorrection and produces better downstream classification.
 #
 # Additional features from the full iRPF method [3]_ not implemented
 # here include:
 #
-# - **Tippett meta-combination**: a principled statistical approach to
-#   combining the Fisher and Stouffer p-values, used together with
-#   robust barycenter estimation and adaptive thresholding.
 # - **Adaptive robust barycenter estimation** (Section 2.4.2): iterative
-#   Kneedle-based outlier removal during Potato fitting. This requires
-#   a train/test split to work properly and is the key enabler for the
-#   Tippett meta-combination and Kneedle thresholding.
+#   Kneedle-based outlier removal during Potato fitting, enabling the
+#   sequential GFRMS-then-RPF pipeline.
 # - **Adaptive Kneedle thresholding** (Section 2.4.5): the Kneedle
 #   algorithm automatically determines the rejection threshold on the
 #   combined SQI, eliminating the need for a fixed threshold.
-# - **FRMS pre-rejection**: computing the field root mean square of each
-#   epoch to remove severely corrupted data before barycenter estimation.
 #
 # As reported in [3]_, iRPF achieves gains of up to 22% in recall,
 # 102% in specificity, 54% in precision, and 24% in F1-score compared
 # to Isolation Forest, Autoreject, RP, and RPF, while performing
-# artifact cleaning in under 8 ms per epoch.
-#
-# The complete iRPF implementation is available in the
-# `RAR package <https://github.com/Davoud-Hajhassani/Riemannian-Artifact-Rejection>`_.
-# The RP, RPF, and iRPF methods demonstrated here can be readily
-# integrated into any MOABB analysis pipeline using the pipeline
-# surgery approach shown in this tutorial.
+# artifact cleaning in under 8 ms per epoch. The RP, RPF, and iRPF
+# methods demonstrated here can be readily integrated into any MOABB
+# analysis pipeline using the pipeline surgery approach shown in this
+# tutorial.
