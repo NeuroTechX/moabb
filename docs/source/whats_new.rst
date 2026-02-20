@@ -39,6 +39,8 @@ Enhancements
 - Add a "Report an Issue on GitHub" feedback section to all dataset docstrings so users can easily report dataset problems (:gh:`982` by `Bruno Aristimunha`_)
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
+- Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
+- Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
