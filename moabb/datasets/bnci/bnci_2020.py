@@ -370,6 +370,7 @@ class BNCI2020_001(BNCIBaseDataset):
             doi="10.3389/fnins.2020.00849",
             repository="BNCI Horizon 2020",
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -817,6 +818,7 @@ class BNCI2020_002(BNCIBaseDataset):
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2020.591777",
             funding=["grant number number"],
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

@@ -415,6 +415,7 @@ class BNCI2024_001(BNCIBaseDataset):
             doi="10.1016/j.compbiomed.2024.109132",
             repository="BNCI Horizon 2020",
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

@@ -103,6 +103,7 @@ class AlexMI(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.806022",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Other"],

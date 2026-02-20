@@ -214,6 +214,7 @@ class BNCI2003_004(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TBME.2004.827088",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

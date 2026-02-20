@@ -191,6 +191,7 @@ class BNCI2019_001(BaseDataset):
             doi="10.1038/s41598-019-43594-9",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2222268",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

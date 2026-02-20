@@ -537,6 +537,7 @@ class BNCI2015_001(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/tnsre.2012.2189584",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -721,6 +722,7 @@ class BNCI2015_003(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.1016/j.neulet.2009.06.045",
             associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -885,6 +887,7 @@ class BNCI2015_004(MNEBNCI):
             doi="10.1371/journal.pone.0123727",
             repository="BNCI Horizon 2020",
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1086,6 +1089,7 @@ class BNCI2015_006(MNEBNCI):
             repository="GitHub",
             data_url="https://github.com/bbci/bbci_public/blob/master/doc/index.markdown",
             funding=["Grant Nos s"],
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1353,6 +1357,7 @@ class BNCI2015_007(MNEBNCI):
             doi="10.1088/1741-2560/9/4/045006",
             associated_paper_doi="10.1088/1741-2560/11/2/026009",
             funding=["DFG grant", "grant nos s", "BMBF grant", "grant no MU MU"],
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1588,6 +1593,7 @@ class BNCI2015_008(MNEBNCI):
             doi="10.1088/1741-2560/8/6/066003",
             repository="GitHub",
             data_url="https://github.com/bbci/bbci_public/blob/master/doc/index.markdown",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1779,6 +1785,7 @@ class BNCI2015_009(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0009813",
             associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1975,6 +1982,7 @@ class BNCI2015_010(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.1016/j.clinph.2012.12.050",
             funding=["BMBF Grant", "Grant Nos s", "Grant No. MU MU", "DFG Grant"],
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -2172,6 +2180,7 @@ class BNCI2015_012(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2011.00099",
             associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -2363,6 +2372,7 @@ class BNCI2015_013(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2010.2053387",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
