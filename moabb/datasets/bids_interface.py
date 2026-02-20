@@ -15,6 +15,7 @@ import datetime
 import json
 import logging
 import re
+import shutil
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
@@ -149,9 +150,11 @@ class BIDSInterfaceBase(abc.ABC):
 
     def __repr__(self):
         """Return the representation of the BIDSInterface."""
+        desc = self.desc
+        desc_str = f"{desc:.7}" if desc is not None else "None"
         return (
             f"{self.dataset.code!r} sub-{self.subject} "
-            f"suffix-{self._suffix} desc-{self.desc:.7}"
+            f"suffix-{self._suffix} desc-{desc_str}"
         )
 
     @property
@@ -481,3 +484,102 @@ _interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
     StepType.EPOCHS: BIDSInterfaceEpochs,
     StepType.ARRAY: BIDSInterfaceNumpyArray,
 }
+
+
+@dataclass
+class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
+    """BIDSInterfaceRawEDF variant that saves without a description hash.
+
+    Used internally by :func:`convert_dataset_to_bids` to produce BIDS files
+    whose names do not contain a ``desc-<hash>`` entity.
+    """
+
+    @property
+    def desc(self):
+        return None
+
+    def erase(self):
+        """Remove the subject's BIDS directory entirely."""
+        subject_dir = self.root / f"sub-{subject_moabb_to_bids(self.subject)}"
+        if subject_dir.exists():
+            log.info("Starting erasing BIDS data of %s...", repr(self))
+            shutil.rmtree(subject_dir)
+            log.info("Finished erasing BIDS data of %s.", repr(self))
+
+
+def convert_dataset_to_bids(dataset, path=None, subjects=None, overwrite=False, verbose=None):
+    """Convert a MOABB dataset to BIDS format.
+
+    This public function converts any MOABB dataset to a BIDS-compliant
+    directory structure.  Unlike the caching mechanism (see
+    :class:`moabb.datasets.base.CacheConfig`), the files produced here do
+    **not** contain a processing-pipeline hash (``desc-<hash>``) in their
+    names, making the output a clean, shareable BIDS dataset.
+
+    Only raw EEG data (saved as EDF) is officially supported by the BIDS
+    specification.  For caching epochs or NumPy arrays (pseudo-BIDS), use
+    the ``cache_config`` parameter of
+    :meth:`moabb.datasets.base.BaseDataset.get_data` instead.
+
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The MOABB dataset to convert.
+    path : str | Path | None
+        Directory under which the BIDS dataset will be written.
+        If ``None`` the default MNE data directory is used (same default
+        as the rest of MOABB).
+    subjects : list of int | None
+        Subject numbers to convert.  If ``None``, all subjects in
+        ``dataset.subject_list`` are converted.
+    overwrite : bool
+        If ``True``, existing BIDS files for a subject are removed before
+        saving.  Default is ``False``.
+    verbose : str | None
+        Verbosity level forwarded to MNE/MNE-BIDS.
+
+    Returns
+    -------
+    bids_root : pathlib.Path
+        Path to the root of the written BIDS dataset.
+
+    Examples
+    --------
+    >>> from moabb.datasets import AlexMI
+    >>> from moabb.datasets.bids_interface import convert_dataset_to_bids
+    >>> dataset = AlexMI()
+    >>> bids_root = convert_dataset_to_bids(dataset, path='/tmp/bids', subjects=[1])
+
+    See Also
+    --------
+    moabb.datasets.base.CacheConfig : Cache configuration for ``get_data``.
+    get_bids_root : Return the BIDS root path for a dataset code.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.1.0
+    """
+    if subjects is None:
+        subjects = dataset.subject_list
+
+    for subject in subjects:
+        interface = _BIDSInterfaceRawEDFNoDesc(
+            dataset=dataset,
+            subject=subject,
+            path=path,
+            process_pipeline=None,
+            verbose=verbose,
+        )
+        if overwrite:
+            interface.erase()
+        elif interface.lock_file.fpath.exists():
+            log.info(
+                "BIDS data already exists for %s, skipping (use overwrite=True to overwrite).",
+                repr(interface),
+            )
+            continue
+        sessions_data = dataset.get_data(subjects=[subject])
+        interface.save(sessions_data[subject])
+
+    return get_bids_root(dataset.code, path)

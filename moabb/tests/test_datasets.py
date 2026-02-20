@@ -16,6 +16,7 @@ from moabb.datasets import (
     Kojima2024B,
     Shin2017A,
     Shin2017B,
+    convert_dataset_to_bids,
 )
 from moabb.datasets.base import (
     BaseDataset,
@@ -727,6 +728,42 @@ class TestBIDSDataset:
             for session_data in subject_data.values():
                 assert session_data.keys() == {"0"}
                 assert isinstance(session_data["0"], mne.io.BaseRaw)
+
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    def test_convert_dataset_to_bids(self, tmp_path):
+        """Test that convert_dataset_to_bids saves BIDS files without a desc hash."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
+        )
+        bids_root = convert_dataset_to_bids(
+            dataset, path=tmp_path, subjects=[1, 2], overwrite=False
+        )
+
+        # The returned path should exist
+        assert bids_root.exists()
+
+        # There should be no files with 'desc-' in their names
+        bids_files = list(bids_root.rglob("*"))
+        for f in bids_files:
+            assert "desc-" not in f.name, f"Unexpected desc entity in BIDS file: {f}"
+
+        # EEG EDF files should be present for both subjects
+        edf_files = list(bids_root.rglob("*.edf"))
+        assert len(edf_files) > 0, "No EDF files were written to BIDS root"
+        subjects_found = {f.parent.parent.parent.name for f in edf_files}
+        assert subjects_found == {"sub-1", "sub-2"}
+
+        # Calling again with overwrite=False should not raise (lock file already exists)
+        bids_root2 = convert_dataset_to_bids(
+            dataset, path=tmp_path, subjects=[1, 2], overwrite=False
+        )
+        assert bids_root2 == bids_root
+
+        # Calling again with overwrite=True should succeed
+        bids_root3 = convert_dataset_to_bids(
+            dataset, path=tmp_path, subjects=[1], overwrite=True
+        )
+        assert bids_root3 == bids_root
 
 
 class TestKojima2024A:
