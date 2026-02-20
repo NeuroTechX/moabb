@@ -77,6 +77,8 @@ Bugs
 - Fix double µV-to-V conversion in BNCI2003-004 and BNCI2015-006: data loaded in microvolts was labeled as volts without unit conversion, causing a second scaling during EDF export via ``mne_bids`` (by `Bruno Aristimunha`_)
 - Fix ``Beetl2021_A`` and ``Beetl2021_B`` 403 Forbidden errors by skipping Figshare API calls when data already exists locally, and fix double-nested zip extraction directory structure (:gh:`969` by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.RomaniBF2025ERP` to follow MOABB nomenclature pattern by using dynamic folder name ``MNE-{code}-data`` instead of hardcoded folder name. Automatically migrates legacy folder ``BrainForm-BIDS-eeg-dataset`` to new nomenclature for backward compatibility (by `Bruno Aristimunha`_)
+- Move BIDS cache lock file from the BIDS subject folder to the ``code/`` folder for BIDS validator compliance. Lock files are now written per-session as ``code/sub-{subject}_ses-{session}_desc-{hash}_lockfile.json``. Backward compatibility is preserved for caches created with the old location (:gh:`986` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Fixed ``erase()`` in :class:`moabb.datasets.bids_interface.BIDSInterfaceBase` to handle multi-session datasets correctly by using per-session ``rm()`` calls instead of a single subject-level call, which previously caused a ``RuntimeError`` when looking up ``scans.tsv`` across multiple sessions (:gh:`986` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 - Fix ``MOABB_RESULTS`` default path to respect ``MNE_DATA`` configuration instead of hardcoding ``~/mne_data``, and fix docs CI cache to use workspace-relative ``MNE_DATA`` path and cache ``~/.mne`` config directory (by `Bruno Aristimunha`_)
 
 Code health
