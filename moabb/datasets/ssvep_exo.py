@@ -104,6 +104,7 @@ class Kalunga2016(BaseDataset):
             doi="10.1016/j.neucom.2016.01.007",
             repository="Zenodo",
             data_url="https://zenodo.org/record/2392979",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

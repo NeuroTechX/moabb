@@ -195,6 +195,7 @@ class Thielen2015(BaseDataset):
             doi="10.1371/journal.pone.0133797",
             repository="GitHub",
             data_url="https://github.com/thijor/",
+            license="CC0 1.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

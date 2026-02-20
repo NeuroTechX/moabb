@@ -400,6 +400,7 @@ class Lee2019_MI(Lee2019):
         ),
         documentation=DocumentationMetadata(
             doi="10.1093/gigascience/giz002",
+            license="CC0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -655,6 +656,7 @@ class Lee2019_ERP(Lee2019):
         ),
         documentation=DocumentationMetadata(
             doi="10.1093/gigascience/giz002",
+            license="CC0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -895,6 +897,7 @@ class Lee2019_SSVEP(Lee2019):
         ),
         documentation=DocumentationMetadata(
             doi="10.1093/gigascience/giz002",
+            license="CC0",
         ),
         tags=Tags(
             pathology=["Healthy"],

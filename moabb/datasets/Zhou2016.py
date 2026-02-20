@@ -126,6 +126,7 @@ class Zhou2016(BaseBIDSDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0162657",
+            license="CC0",
         ),
         tags=Tags(
             pathology=["Healthy"],

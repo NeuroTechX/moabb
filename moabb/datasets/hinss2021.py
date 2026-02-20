@@ -171,6 +171,7 @@ class Hinss2021(BaseDataset):
             doi="10.1038/s41597-022-01898-y",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.6874128",
+            license="CC BY-SA 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

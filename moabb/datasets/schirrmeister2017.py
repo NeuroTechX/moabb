@@ -121,6 +121,7 @@ class Schirrmeister2017(BaseDataset):
             doi="10.1002/hbm.23730",
             repository="GitHub",
             data_url="https://github.com/robintibor/braindecode/",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

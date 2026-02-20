@@ -171,6 +171,7 @@ class Ofner2017(BaseDataset):
             repository="BNCI Horizon 2020",
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
             funding=["Grant ERC- ERC-"],
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

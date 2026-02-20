@@ -110,6 +110,7 @@ class Cattan2019_PHMD(BaseDataset):
             doi="10.5281/zenodo.2617084",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2617084",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

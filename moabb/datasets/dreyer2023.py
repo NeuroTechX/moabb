@@ -402,6 +402,7 @@ class Dreyer2023A(_Dreyer2023Base):
                 "grant ERC-2016- ERC-2016-",
                 "grant ANR-15-CE23-0013-01 ANR-15-CE23-0013-01",
             ],
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

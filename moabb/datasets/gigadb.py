@@ -175,6 +175,7 @@ class Cho2017(BaseDataset):
             doi="10.5524/100295",
             associated_paper_doi="10.1093/gigascience/gix034",
             funding=["grant funded funded", "grant\nfunded funded"],
+            license="CC0",
         ),
         tags=Tags(
             pathology=["Healthy"],

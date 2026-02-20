@@ -135,6 +135,7 @@ class Rodrigues2017(BaseDataset):
             doi="10.5281/zenodo.2348891",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2348891",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

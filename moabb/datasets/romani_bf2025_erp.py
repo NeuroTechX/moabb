@@ -165,6 +165,7 @@ class RomaniBF2025ERP(BaseDataset):
             doi="10.48550/arXiv.2510.10169",
             repository="GitHub",
             data_url="https://github.com/BRomans/BrainForm",
+            license="CC BY 4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
