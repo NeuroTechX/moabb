@@ -159,13 +159,27 @@ class BIDSInterfaceBase(abc.ABC):
         """Return the root path of the BIDS dataset."""
         return get_bids_root(self.dataset.code, self.path)
 
-    @property
-    def lock_file(self):
-        """Return the lock file path.
+    def _lock_file(self, session):
+        """Return the lock file path for a specific session.
 
-        This file is saved last to ensure that the subject's data was
-        completely saved. It is stored in the ``code/`` folder of the BIDS
-        dataset root, which is BIDS-validator exempt.
+        This file is saved after writing all runs for a session to ensure
+        the session's data was completely saved. It is stored in the
+        ``code/`` folder of the BIDS dataset root, which is
+        BIDS-validator exempt.
+        """
+        return (
+            self.root
+            / "code"
+            / f"sub-{subject_moabb_to_bids(self.subject)}_ses-{session}_desc-{self.desc}_lockfile.json"
+        )
+
+    @property
+    def _migration_lock_file(self):
+        """Per-subject lock file used for backward compatibility.
+
+        This was the lock file format used between the initial BIDS caching
+        implementation migration to the ``code/`` folder and the switch to
+        per-session lock files.
         """
         return (
             self.root
@@ -177,9 +191,9 @@ class BIDSInterfaceBase(abc.ABC):
     def _legacy_lock_file(self):
         """Return the legacy lock file path for backward compatibility.
 
-        In older versions, the lock file was stored inside the subject folder
-        of the BIDS structure. This property allows loading caches that were
-        created with the old path.
+        In the original implementation, the lock file was stored inside the
+        subject folder of the BIDS structure. This property allows loading
+        caches that were created with the old path.
         """
         return mne_bids.BIDSPath(
             root=self.root,
@@ -202,10 +216,16 @@ class BIDSInterfaceBase(abc.ABC):
         )
 
         path.rm(safe_remove=False)
-        # Remove lock file from new location (code/ folder)
-        if self.lock_file.exists():
-            self.lock_file.unlink()
-        # Remove legacy lock file if present
+        # Remove per-session lock files from code/ folder
+        code_dir = self.root / "code"
+        if code_dir.exists():
+            pattern = f"sub-{subject_moabb_to_bids(self.subject)}_ses-*_desc-{self.desc}_lockfile.json"
+            for lock_file in code_dir.glob(pattern):
+                lock_file.unlink()
+        # Remove migration-style per-subject lock file if present
+        if self._migration_lock_file.exists():
+            self._migration_lock_file.unlink()
+        # Remove original legacy lock file if present
         legacy = self._legacy_lock_file
         if legacy.fpath.exists():
             legacy.fpath.unlink()
@@ -222,14 +242,17 @@ class BIDSInterfaceBase(abc.ABC):
         If the cache is not present, returns None.
         """
         log.info("Attempting to retrieve cache of %s...", repr(self))
-        self.lock_file.parent.mkdir(parents=True, exist_ok=True)
-        if not self.lock_file.exists():
-            # Check legacy location for backward compatibility
-            legacy = self._legacy_lock_file
-            legacy.mkdir(exist_ok=True)
-            if not legacy.fpath.exists():
-                log.info("No cache found at %s.", str(self.lock_file.parent))
-                return None
+        code_dir = self.root / "code"
+        code_dir.mkdir(parents=True, exist_ok=True)
+
+        # Check for non-session-aware legacy lock files (backward compatibility)
+        legacy_lock_exists = (
+            self._migration_lock_file.exists()
+            or self._legacy_lock_file.fpath.exists()
+        )
+        # Ensure the legacy BIDSPath directory exists for mne_bids compatibility
+        self._legacy_lock_file.mkdir(exist_ok=True)
+
         paths = mne_bids.find_matching_paths(
             root=self.root,
             subjects=subject_moabb_to_bids(self.subject),
@@ -239,6 +262,20 @@ class BIDSInterfaceBase(abc.ABC):
             # datatypes="eeg", # commented for compatibility with cache saved in previous versions
             suffixes=self._suffix,
         )
+
+        if not paths:
+            log.info("No cache found at %s.", str(code_dir))
+            return None
+
+        # Check per-session lock files unless a legacy (non-session-aware) lock
+        # file exists, which indicates the whole subject was already cached.
+        if not legacy_lock_exists:
+            found_sessions = {path.session for path in paths}
+            missing = [s for s in found_sessions if not self._lock_file(s).exists()]
+            if missing:
+                log.info("No cache found at %s.", str(code_dir))
+                return None
+
         sessions_data = {}
         for path in paths:
             session_moabb = path.session
@@ -284,6 +321,7 @@ class BIDSInterfaceBase(abc.ABC):
             verbose=self.verbose,
         )
 
+        lock_data = dict(processing_params=str(self.processing_params))
         for session, runs in sessions_data.items():
             for run, obj in runs.items():
                 if obj is None:
@@ -311,11 +349,12 @@ class BIDSInterfaceBase(abc.ABC):
 
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
-        log.debug("Writing %s", self.lock_file)
-        self.lock_file.parent.mkdir(parents=True, exist_ok=True)
-        with self.lock_file.open("w") as file:
-            lock_data = dict(processing_params=str(self.processing_params))
-            json.dump(lock_data, file)
+
+            lock_file = self._lock_file(session)
+            log.debug("Writing %s", lock_file)
+            lock_file.parent.mkdir(parents=True, exist_ok=True)
+            with lock_file.open("w") as file:
+                json.dump(lock_data, file)
         log.info("Finished caching %s to disk.", repr(self))
 
     @abc.abstractmethod
