@@ -11,6 +11,7 @@ from moabb.datasets.metadata.schema import (
     AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     DatasetMetadata,
+    DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
@@ -126,6 +127,9 @@ class PhysionetMI(BaseDataset):
             stimulus_modalities=["visual", "auditory"],
             primary_modality="multisensory",
             mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1109/TBME.2004.827072",
         ),
         tags=Tags(
             pathology=["Healthy"],

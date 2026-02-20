@@ -473,7 +473,7 @@ class BNCI2014_002(MNEBNCI):
     .. [1] Scherer, R., Faller, J., Balderas, D., Friedrich, E. V., &
            Müller-Putz, G. (2015). Brain-computer interfacing: more than the
            sum of its parts. Soft Computing, 19(11), 3173-3186.
-           https://doi.org/10.1007/s00500-014-1547-8
+           https://doi.org/10.1007/s00500-012-0895-4
 
     Notes
     -----
@@ -555,6 +555,7 @@ class BNCI2014_002(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1515/bmt-2014-0117",
+            associated_paper_doi="10.1007/s00500-012-0895-4",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -618,7 +619,7 @@ class BNCI2014_002(MNEBNCI):
             code="BNCI2014-002",
             interval=[3, 8],
             paradigm="imagery",
-            doi="10.1007/s00500-014-1547-8",
+            doi="10.1007/s00500-012-0895-4",
         )
 
 
@@ -737,7 +738,9 @@ class BNCI2014_004(MNEBNCI):
             synchronicity="asynchronous",
             mode="both",
         ),
-        documentation=DocumentationMetadata(),
+        documentation=DocumentationMetadata(
+            doi="10.1109/TNSRE.2007.906956",
+        ),
         tags=Tags(
             pathology=["Healthy"],
             modality=["Motor"],
@@ -1032,6 +1035,7 @@ class BNCI2014_009(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1080/00140139.2012.661084",
+            associated_paper_doi="10.3389/fnhum.2013.00732",
             funding=["EU grant FP7-", "grant FP7- FP7-"],
         ),
         tags=Tags(

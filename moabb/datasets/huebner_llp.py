@@ -406,6 +406,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.192684",
+            associated_paper_doi="10.1109/MCI.2018.2807039",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.192684",
             funding=[

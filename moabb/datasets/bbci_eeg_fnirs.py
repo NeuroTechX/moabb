@@ -379,6 +379,7 @@ class Shin2017A(BaseShin2017):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            doi="10.1109/TNSRE.2016.2628057",
             repository="GitHub",
             data_url="https://github.com/bbci/bbci_public/",
         ),
@@ -622,6 +623,7 @@ class Shin2017B(BaseShin2017):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            doi="10.1109/TNSRE.2016.2628057",
             repository="GitHub",
             data_url="https://github.com/bbci/bbci_public/",
         ),

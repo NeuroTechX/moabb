@@ -12,6 +12,7 @@ from moabb.datasets.metadata.schema import (
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
+    DocumentationMetadata,
     ExperimentMetadata,
     FilterDetails,
     FrequencyBands,
@@ -240,6 +241,9 @@ class GrosseWentrup2009(BaseDataset):
             primary_modality="multisensory",
             synchronicity="synchronous",
             mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1109/TBME.2008.2009768",
         ),
         tags=Tags(
             pathology=["Healthy"],

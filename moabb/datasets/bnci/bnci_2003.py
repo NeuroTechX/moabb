@@ -9,6 +9,7 @@ from moabb.datasets.metadata.schema import (
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
+    DocumentationMetadata,
     ExperimentMetadata,
     FilterDetails,
     FrequencyBands,
@@ -210,6 +211,9 @@ class BNCI2003_004(MNEBNCI):
             trial_duration=4.5,
             stimulus_type="cursor_feedback",
             mode="both",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1109/TBME.2004.827088",
         ),
         tags=Tags(
             pathology=["Healthy"],

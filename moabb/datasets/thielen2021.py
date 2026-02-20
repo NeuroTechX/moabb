@@ -177,6 +177,7 @@ class Thielen2021(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1088/1741-2552/abecef",
+            associated_paper_doi="10.1088/1741-2552/ab4057",
             funding=["Grant Nos s", "Grant No. 14054 14054"],
         ),
         tags=Tags(

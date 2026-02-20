@@ -162,7 +162,7 @@ class RomaniBF2025ERP(BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
-            doi="10.1371/journal.pone.0111070",
+            doi="10.48550/arXiv.2510.10169",
             repository="GitHub",
             data_url="https://github.com/BRomans/BrainForm",
         ),

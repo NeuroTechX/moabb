@@ -63,6 +63,12 @@ class Hinss2021(BaseDataset):
             Open EEG Datasets for Passive Brain-Computer
             Interface Applications: Lacks and Perspectives.
             IEEE Neural Engineering Conference.
+
+    .. [Hinss2023] M. F. Hinss, et al. (2023)
+            An EEG dataset for cross-session mental workload estimation:
+            Passive BCI competition of the Neuroergonomics Conference 2021.
+            Scientific Data, 10, 85.
+            https://doi.org/10.1038/s41597-022-01898-y
     """
 
     METADATA = DatasetMetadata(
@@ -221,6 +227,7 @@ class Hinss2021(BaseDataset):
             code="Hinss2021",
             interval=[0, 2],  # Epochs are 2-second long
             paradigm="rstate",
+            doi="10.1038/s41597-022-01898-y",
         )
 
     def _get_stim_channel(self, rs_epochs, easy_epochs, med_epochs, n_epochs, n_samples):

@@ -63,7 +63,7 @@ class _Dreyer2023Base(BaseDataset):
             code="Dreyer2023" + self.sub_id,
             interval=[0, 5],
             paradigm="imagery",
-            doi="10.5281/zenodo.7554429",
+            doi="10.1038/s41597-023-02445-z",
         )
 
     def _get_single_subject_data(self, subject):
@@ -394,7 +394,7 @@ class Dreyer2023A(_Dreyer2023Base):
             mode="both",
         ),
         documentation=DocumentationMetadata(
-            doi="10.1016/j.ijhcs.2021.102603",
+            doi="10.1038/s41597-023-02445-z",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.8089820",
             funding=[

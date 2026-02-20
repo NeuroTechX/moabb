@@ -8,6 +8,7 @@ from moabb.datasets.metadata.schema import (
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
+    DocumentationMetadata,
     ExperimentMetadata,
     FrequencyBands,
     ParadigmSpecificMetadata,
@@ -100,6 +101,9 @@ class AlexMI(BaseDataset):
             stimulus_modalities=["visual"],
             primary_modality="visual",
         ),
+        documentation=DocumentationMetadata(
+            doi="10.5281/zenodo.806022",
+        ),
         tags=Tags(
             pathology=["Other"],
             modality=["Visual"],
@@ -156,6 +160,7 @@ class AlexMI(BaseDataset):
             code="AlexandreMotorImagery",
             interval=[0, 3],
             paradigm="imagery",
+            doi="10.5281/zenodo.806022",
         )
 
     def _get_single_subject_data(self, subject):

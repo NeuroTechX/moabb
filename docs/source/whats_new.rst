@@ -36,6 +36,7 @@ Enhancements
 - Add ``cv_class`` and ``cv_kwargs`` parameters to all evaluation classes (WithinSessionEvaluation, CrossSessionEvaluation, CrossSubjectEvaluation) for custom cross-validation strategies (:gh:`963` by `Bruno Aristimunha`_)
 - Implement :class:`moabb.evaluations.splitters.LearningCurveSplitter` as a dedicated sklearn-compatible cross-validator for learning curves, enabling learning curve analysis with any evaluation type (:gh:`963` by `Bruno Aristimunha`_)
 - Auto-generate dataset documentation admonitions (Participants, Equipment, Preprocessing, Data Access, Experimental Protocol) from class-level ``METADATA`` when missing, while preserving manually written sections (:gh:`960` by `Bruno Aristimunha`_)
+- Add a "Report an Issue on GitHub" feedback section to all dataset docstrings so users can easily report dataset problems (:gh:`982` by `Bruno Aristimunha`_)
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
 - Add advanced tutorial on Riemannian Artifact Rejection (Riemannian Potato and Potato Field) as a pre-processing step using pipeline surgery (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
@@ -61,6 +62,8 @@ Requirements
 
 Bugs
 ~~~~
+- Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
+- Added missing metadata DOIs for AlexMI, PhysionetMI, GrosseWentrup2009, Shin2017A, Shin2017B, BNCI2014_004, and BNCI2003_004 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
 - Fixed measurement date setting for BNCI datasets to use specific collection years from papers (by `Bruno Aristimunha`_)
 - Ensured proper subject ID assignment for BIDS compliance across all BNCI datasets (by `Bruno Aristimunha`_)
@@ -82,6 +85,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
+- Added systematic DOI validation test suite that checks format, docstring tracking, resolution, and author overlap across all datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
 - Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
 
