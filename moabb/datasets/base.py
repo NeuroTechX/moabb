@@ -12,6 +12,7 @@ from functools import cached_property
 from inspect import signature
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Union
+from urllib.parse import quote
 
 import mne_bids
 import numpy as np
@@ -484,6 +485,39 @@ def _metadata_doc_sections(metadata: Any, existing_doc: str) -> str:
     return "\n\n".join(blocks)
 
 
+def _format_feedback_section(dataset_id: str) -> str:
+    """Generate a feedback section with a button to report issues on GitHub."""
+    issue_title = quote(f"[Dataset] Issue with {dataset_id}")
+    issue_body = quote(
+        f"## Dataset\n\n"
+        f"- **Dataset ID:** {dataset_id}\n\n"
+        f"## Issue Description\n\n"
+        f"Please describe the issue you encountered with this dataset:\n\n"
+        f"## Steps to Reproduce\n\n"
+        f"1. \n2. \n3. \n\n"
+        f"## Expected Behavior\n\n\n"
+        f"## Additional Context\n\n"
+    )
+    github_url = (
+        f"https://github.com/NeuroTechX/moabb/issues/new"
+        f"?title={issue_title}&body={issue_body}&labels=dataset"
+    )
+
+    return (
+        f"    .. admonition:: Found an issue with this dataset?\n"
+        f"       :class: tip\n"
+        f"\n"
+        f"       If you encounter any problems with this dataset (missing files,\n"
+        f"       incorrect metadata, loading errors, etc.), please let us know!\n"
+        f"\n"
+        f"       .. button-link:: {github_url}\n"
+        f"          :color: primary\n"
+        f"          :outline:\n"
+        f"\n"
+        f"          Report an Issue on GitHub"
+    )
+
+
 class MetaclassDataset(abc.ABCMeta):
     def __new__(cls, name, bases, attrs):
         doc = attrs.get("__doc__", "") or ""
@@ -503,6 +537,14 @@ class MetaclassDataset(abc.ABCMeta):
         metadata_sections = _metadata_doc_sections(attrs.get("METADATA"), doc)
         if metadata_sections:
             insert_blocks.append(metadata_sections)
+
+        # Add the feedback section for real (non-base, non-fake) dataset classes
+        if (
+            "Found an issue with this dataset?" not in doc
+            and name not in ("BaseDataset", "BaseBIDSDataset", "LocalBIDSDataset")
+            and not name.startswith("Fake")
+        ):
+            insert_blocks.append(_format_feedback_section(name))
 
         if insert_blocks:
             if doc.strip():
