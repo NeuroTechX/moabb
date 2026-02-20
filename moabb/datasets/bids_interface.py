@@ -163,8 +163,23 @@ class BIDSInterfaceBase(abc.ABC):
     def lock_file(self):
         """Return the lock file path.
 
-        this file was saved last to ensure that the subject's data was
-        completely saved this is not an official bids file
+        This file is saved last to ensure that the subject's data was
+        completely saved. It is stored in the ``code/`` folder of the BIDS
+        dataset root, which is BIDS-validator exempt.
+        """
+        return (
+            self.root
+            / "code"
+            / f"sub-{subject_moabb_to_bids(self.subject)}_desc-{self.desc}_lockfile.json"
+        )
+
+    @property
+    def _legacy_lock_file(self):
+        """Return the legacy lock file path for backward compatibility.
+
+        In older versions, the lock file was stored inside the subject folder
+        of the BIDS structure. This property allows loading caches that were
+        created with the old path.
         """
         return mne_bids.BIDSPath(
             root=self.root,
@@ -187,6 +202,13 @@ class BIDSInterfaceBase(abc.ABC):
         )
 
         path.rm(safe_remove=False)
+        # Remove lock file from new location (code/ folder)
+        if self.lock_file.exists():
+            self.lock_file.unlink()
+        # Remove legacy lock file if present
+        legacy = self._legacy_lock_file
+        if legacy.fpath.exists():
+            legacy.fpath.unlink()
         log.info("Finished erasing cache of %s.", repr(self))
 
     def load(self, preload=False):
@@ -200,10 +222,14 @@ class BIDSInterfaceBase(abc.ABC):
         If the cache is not present, returns None.
         """
         log.info("Attempting to retrieve cache of %s...", repr(self))
-        self.lock_file.mkdir(exist_ok=True)
-        if not self.lock_file.fpath.exists():
-            log.info("No cache found at %s.", str(self.lock_file.directory))
-            return None
+        self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+        if not self.lock_file.exists():
+            # Check legacy location for backward compatibility
+            legacy = self._legacy_lock_file
+            legacy.mkdir(exist_ok=True)
+            if not legacy.fpath.exists():
+                log.info("No cache found at %s.", str(self.lock_file.parent))
+                return None
         paths = mne_bids.find_matching_paths(
             root=self.root,
             subjects=subject_moabb_to_bids(self.subject),
@@ -285,11 +311,11 @@ class BIDSInterfaceBase(abc.ABC):
 
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
-        log.debug("Writing", self.lock_file)
-        self.lock_file.mkdir(exist_ok=True)
-        with self.lock_file.fpath.open("w") as file:
-            dic = dict(processing_params=str(self.processing_params))
-            json.dump(dic, file)
+        log.debug("Writing %s", self.lock_file)
+        self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+        with self.lock_file.open("w") as file:
+            lock_data = dict(processing_params=str(self.processing_params))
+            json.dump(lock_data, file)
         log.info("Finished caching %s to disk.", repr(self))
 
     @abc.abstractmethod
