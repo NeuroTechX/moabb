@@ -208,14 +208,27 @@ class BIDSInterfaceBase(abc.ABC):
         """Erase the cache of the subject if it exists."""
         log.info("Starting erasing cache of %s...", repr(self))
 
-        path = mne_bids.BIDSPath(
+        # Find all matching paths to determine which sessions exist
+        paths = mne_bids.find_matching_paths(
             root=self.root,
-            subject=subject_moabb_to_bids(self.subject),
-            description=self.desc,
-            check=False,
+            subjects=subject_moabb_to_bids(self.subject),
+            descriptions=self.desc,
+            check=self._check,
+            suffixes=self._suffix,
+            extensions=self._extension,
         )
-
-        path.rm(safe_remove=False)
+        # Remove data files per session to avoid mne_bids failing when
+        # looking up scans.tsv across multiple sessions.
+        sessions = set(p.session for p in paths)
+        for session in sessions:
+            session_path = mne_bids.BIDSPath(
+                root=self.root,
+                subject=subject_moabb_to_bids(self.subject),
+                session=session,
+                description=self.desc,
+                check=False,
+            )
+            session_path.rm(safe_remove=False)
         # Remove per-session lock files from code/ folder
         code_dir = self.root / "code"
         if code_dir.exists():
