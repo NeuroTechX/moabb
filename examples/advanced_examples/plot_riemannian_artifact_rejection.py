@@ -125,12 +125,16 @@ moabb.set_log_level("info")
 #    https://doi.org/10.1016/j.jneumeth.2007.03.005
 
 dataset = BNCI2014_009()
-dataset.subject_list = dataset.subject_list[:1]
+# Use 2 subjects for evaluation (more stable results across sessions).
+# Subject 1 is used for all visualizations below.
+dataset.subject_list = dataset.subject_list[:2]
 
 paradigm = P300(resample=128, scorer={"roc_auc": "roc_auc", "f1": "f1"})
 
-# Load epochs for visualization
-epochs, labels, meta = paradigm.get_data(dataset, return_epochs=True)
+# Load epochs from subject 1 for visualization
+dataset_viz = BNCI2014_009()
+dataset_viz.subject_list = dataset.subject_list[:1]
+epochs, labels, meta = paradigm.get_data(dataset_viz, return_epochs=True)
 print(f"Loaded {len(epochs)} epochs, {len(epochs.ch_names)} channels")
 print(f"Channels: {epochs.ch_names}")
 
