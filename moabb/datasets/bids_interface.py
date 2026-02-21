@@ -217,19 +217,12 @@ class BIDSInterfaceBase(abc.ABC):
             suffixes=self._suffix,
             extensions=self._extension,
         )
-        # Remove data files per session to avoid mne_bids failing when
-        # looking up scans.tsv across multiple sessions.
         sessions = set(p.session for p in paths)
-        for session in sessions:
-            session_path = mne_bids.BIDSPath(
-                root=self.root,
-                subject=subject_moabb_to_bids(self.subject),
-                session=session,
-                description=self.desc,
-                check=False,
-            )
-            session_path.rm(safe_remove=False)
-        # Remove per-session lock files from code/ folder
+
+        # Remove lock files FIRST, before calling session_path.rm(). In some
+        # versions of mne_bids, rm() globs all files under root and finds our
+        # lock files (named with BIDS entity syntax). It then derives a wrong
+        # "canonical" BIDS path and tries to unlink a non-existent file.
         code_dir = self.root / "code"
         if code_dir.exists():
             pattern = f"sub-{subject_moabb_to_bids(self.subject)}_ses-*_desc-{self.desc}_lockfile.json"
@@ -242,6 +235,18 @@ class BIDSInterfaceBase(abc.ABC):
         legacy = self._legacy_lock_file
         if legacy.fpath.exists():
             legacy.fpath.unlink()
+
+        # Remove data files per session to avoid mne_bids failing when
+        # looking up scans.tsv across multiple sessions.
+        for session in sessions:
+            session_path = mne_bids.BIDSPath(
+                root=self.root,
+                subject=subject_moabb_to_bids(self.subject),
+                session=session,
+                description=self.desc,
+                check=False,
+            )
+            session_path.rm(safe_remove=False)
         log.info("Finished erasing cache of %s.", repr(self))
 
     def load(self, preload=False):
