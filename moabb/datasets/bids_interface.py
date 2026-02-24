@@ -510,16 +510,10 @@ class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
 def convert_dataset_to_bids(dataset, path=None, subjects=None, overwrite=False, verbose=None):
     """Convert a MOABB dataset to BIDS format.
 
-    This public function converts any MOABB dataset to a BIDS-compliant
-    directory structure.  Unlike the caching mechanism (see
-    :class:`moabb.datasets.base.CacheConfig`), the files produced here do
-    **not** contain a processing-pipeline hash (``desc-<hash>``) in their
-    names, making the output a clean, shareable BIDS dataset.
-
-    Only raw EEG data (saved as EDF) is officially supported by the BIDS
-    specification.  For caching epochs or NumPy arrays (pseudo-BIDS), use
-    the ``cache_config`` parameter of
-    :meth:`moabb.datasets.base.BaseDataset.get_data` instead.
+    .. deprecated:: 1.1.0
+        Use :meth:`moabb.datasets.base.BaseDataset.convert_to_bids` instead:
+        ``dataset.convert_to_bids(path=path, subjects=subjects,
+        overwrite=overwrite, verbose=verbose)``.
 
     Parameters
     ----------
@@ -543,15 +537,9 @@ def convert_dataset_to_bids(dataset, path=None, subjects=None, overwrite=False, 
     bids_root : pathlib.Path
         Path to the root of the written BIDS dataset.
 
-    Examples
-    --------
-    >>> from moabb.datasets import AlexMI
-    >>> from moabb.datasets.bids_interface import convert_dataset_to_bids
-    >>> dataset = AlexMI()
-    >>> bids_root = convert_dataset_to_bids(dataset, path='/tmp/bids', subjects=[1])
-
     See Also
     --------
+    moabb.datasets.base.BaseDataset.convert_to_bids : Equivalent dataset method.
     moabb.datasets.base.CacheConfig : Cache configuration for ``get_data``.
     get_bids_root : Return the BIDS root path for a dataset code.
 
@@ -560,26 +548,6 @@ def convert_dataset_to_bids(dataset, path=None, subjects=None, overwrite=False, 
 
     .. versionadded:: 1.1.0
     """
-    if subjects is None:
-        subjects = dataset.subject_list
-
-    for subject in subjects:
-        interface = _BIDSInterfaceRawEDFNoDesc(
-            dataset=dataset,
-            subject=subject,
-            path=path,
-            process_pipeline=None,
-            verbose=verbose,
-        )
-        if overwrite:
-            interface.erase()
-        elif interface.lock_file.fpath.exists():
-            log.info(
-                "BIDS data already exists for %s, skipping (use overwrite=True to overwrite).",
-                repr(interface),
-            )
-            continue
-        sessions_data = dataset.get_data(subjects=[subject])
-        interface.save(sessions_data[subject])
-
-    return get_bids_root(dataset.code, path)
+    return dataset.convert_to_bids(
+        path=path, subjects=subjects, overwrite=overwrite, verbose=verbose
+    )
