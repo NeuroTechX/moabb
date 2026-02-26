@@ -393,6 +393,78 @@ class Test_Datasets:
         doc = ManualParticipantsDataset.__doc__
         assert doc.count(".. admonition:: Participants") == 1
 
+    def test_feedback_section_auto_generated(self):
+        class FeedbackTestDataset(BaseDataset):
+            """A test dataset for feedback section."""
+
+            def __init__(self):
+                super().__init__(
+                    subjects=[1],
+                    sessions_per_subject=1,
+                    events={"left_hand": 1, "right_hand": 2},
+                    code="FeedbackTestDataset",
+                    interval=[0, 1],
+                    paradigm="imagery",
+                )
+
+            def _get_single_subject_data(self, subject):
+                return {}
+
+            def data_path(
+                self,
+                subject,
+                path=None,
+                force_update=False,
+                update_path=None,
+                verbose=None,
+            ):
+                return []
+
+        doc = FeedbackTestDataset.__doc__
+        assert "Found an issue with this dataset?" in doc
+        assert "https://github.com/NeuroTechX/moabb/issues/new" in doc
+        assert "FeedbackTestDataset" in doc
+        assert "Report an Issue on GitHub" in doc
+
+    def test_feedback_section_not_duplicated(self):
+        class FeedbackNoDupDataset(BaseDataset):
+            """A test dataset.
+
+            .. admonition:: Found an issue with this dataset?
+               :class: tip
+
+               Custom feedback section already present.
+            """
+
+            def __init__(self):
+                super().__init__(
+                    subjects=[1],
+                    sessions_per_subject=1,
+                    events={"left_hand": 1, "right_hand": 2},
+                    code="FeedbackNoDupDataset",
+                    interval=[0, 1],
+                    paradigm="imagery",
+                )
+
+            def _get_single_subject_data(self, subject):
+                return {}
+
+            def data_path(
+                self,
+                subject,
+                path=None,
+                force_update=False,
+                update_path=None,
+                verbose=None,
+            ):
+                return []
+
+        doc = FeedbackNoDupDataset.__doc__
+        assert doc.count("Found an issue with this dataset?") == 1
+
+    def test_feedback_section_not_added_to_fake_datasets(self):
+        assert "Found an issue with this dataset?" not in (FakeDataset.__doc__ or "")
+
     def test_completeness_summary_table(self):
         # The dataset summary table will be automatically added to the docstring of
         # all the datasets listed in the moabb/datasets/summary_*.csv files.
@@ -961,3 +1033,23 @@ class TestDatasetMetadata:
             metadata_from_property.experiment.paradigm
             == metadata_from_function.experiment.paradigm
         )
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_all_datasets_have_license(self, dataset_class):
+        """Ensure every dataset has a license in its documentation metadata."""
+        kwargs = {}
+        if inspect.signature(dataset_class).parameters.get("accept"):
+            kwargs["accept"] = True
+
+        dataset = dataset_class(**kwargs)
+        metadata = dataset.metadata
+
+        if metadata is None:
+            pytest.skip(f"{dataset_class.__name__} has no metadata catalog entry")
+
+        assert (
+            metadata.documentation is not None
+        ), f"{dataset_class.__name__} has no documentation metadata defined"
+        assert (
+            metadata.documentation.license is not None
+        ), f"{dataset_class.__name__} is missing a license in its documentation metadata"

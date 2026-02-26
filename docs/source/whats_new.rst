@@ -36,8 +36,12 @@ Enhancements
 - Add ``cv_class`` and ``cv_kwargs`` parameters to all evaluation classes (WithinSessionEvaluation, CrossSessionEvaluation, CrossSubjectEvaluation) for custom cross-validation strategies (:gh:`963` by `Bruno Aristimunha`_)
 - Implement :class:`moabb.evaluations.splitters.LearningCurveSplitter` as a dedicated sklearn-compatible cross-validator for learning curves, enabling learning curve analysis with any evaluation type (:gh:`963` by `Bruno Aristimunha`_)
 - Auto-generate dataset documentation admonitions (Participants, Equipment, Preprocessing, Data Access, Experimental Protocol) from class-level ``METADATA`` when missing, while preserving manually written sections (:gh:`960` by `Bruno Aristimunha`_)
+- Add a "Report an Issue on GitHub" feedback section to all dataset docstrings so users can easily report dataset problems (:gh:`982` by `Bruno Aristimunha`_)
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
+- Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
+- Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
+- Add and correct ``license`` and ``repository`` fields in ``DocumentationMetadata`` across all datasets against upstream sources; standardize all license strings to SPDX identifiers; correct DOIs for BNCI2014_002 and MAMEM1/2/3 datasets (by `Katelyn Begany`_)
 
 API changes
 ~~~~~~~~~~~
@@ -744,3 +748,4 @@ API changes
 .. _Victor Martinez-Cagigal: https://github.com/vicmarcag
 .. _Mateusz Naklicki: https://github.com/luluu9
 .. _Matthias Dold: https://github.com/matthiasdold
+.. _Katelyn Begany: https://github.com/kbegany

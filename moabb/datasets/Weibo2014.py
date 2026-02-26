@@ -172,6 +172,8 @@ class Weibo2014(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0114853",
+            license="CC0-1.0",
+            repository="Harvard Dataverse Database",
         ),
         tags=Tags(
             pathology=["Healthy"],
