@@ -507,31 +507,6 @@ class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
     def desc(self):
         return None
 
-    def _write_file(self, bids_path, raw):
-        super()._write_file(bids_path, raw)
-        self._write_electrodes_sidecars(bids_path)
-
-    @staticmethod
-    def _write_electrodes_sidecars(bids_path):
-        """Write *_electrodes.json with SpatialReference (required by BIDS).
-
-        mne-bids writes ``*_electrodes.tsv`` but does not always create
-        a corresponding JSON sidecar with the ``SpatialReference`` key
-        that the BIDS validator requires.
-        """
-        eeg_dir = bids_path.directory
-        for tsv in eeg_dir.glob("*_electrodes.tsv"):
-            json_path = tsv.with_suffix(".json")
-            if json_path.exists():
-                with open(json_path) as f:
-                    data = json.load(f)
-            else:
-                data = {}
-            if "SpatialReference" not in data:
-                data["SpatialReference"] = "n/a"
-                with open(json_path, "w") as f:
-                    json.dump(data, f, indent=4)
-
     def _write_lock_file(self):
         """Do not write a lock file for public BIDS conversion."""
 
