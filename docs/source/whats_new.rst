@@ -44,6 +44,7 @@ Enhancements
 - Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
 - Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
 - Add and correct ``license`` and ``repository`` fields in ``DocumentationMetadata`` across all datasets against upstream sources; standardize all license strings to SPDX identifiers; correct DOIs for BNCI2014_002 and MAMEM1/2/3 datasets (by `Katelyn Begany`_)
+- Add :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method for exporting raw EEG datasets to clean BIDS-compliant directory structures without processing-pipeline hash in filenames (by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -84,7 +85,10 @@ Bugs
 - Fix ``Beetl2021_A`` and ``Beetl2021_B`` 403 Forbidden errors by skipping Figshare API calls when data already exists locally, and fix double-nested zip extraction directory structure (:gh:`969` by `Bruno Aristimunha`_)
 - Fix wrong channel names in Riemannian Artifact Rejection tutorial that caused ``pick()`` to fail on BNCI2014-009 (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.RomaniBF2025ERP` to follow MOABB nomenclature pattern by using dynamic folder name ``MNE-{code}-data`` instead of hardcoded folder name. Automatically migrates legacy folder ``BrainForm-BIDS-eeg-dataset`` to new nomenclature for backward compatibility (by `Bruno Aristimunha`_)
+- Move BIDS cache lock file from the BIDS subject folder to the ``code/`` folder for BIDS validator compliance. Lock files are now written per-session as ``code/sub-{subject}_ses-{session}_desc-{hash}_lockfile.json``. Backward compatibility is preserved for caches created with the old location (:gh:`986` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Fixed ``erase()`` in :class:`moabb.datasets.bids_interface.BIDSInterfaceBase` to handle multi-session datasets correctly by using per-session ``rm()`` calls instead of a single subject-level call, which previously caused a ``RuntimeError`` when looking up ``scans.tsv`` across multiple sessions (:gh:`986` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 - Fix ``MOABB_RESULTS`` default path to respect ``MNE_DATA`` configuration instead of hardcoding ``~/mne_data``, and fix docs CI cache to use workspace-relative ``MNE_DATA`` path and cache ``~/.mne`` config directory (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.RomaniBF2025ERP` ``get_data()`` failing with description merge error when adding stim channel, causing sessions to be silently dropped (:gh:`991` by `Bruno Aristimunha`_)
 - Fix docs CI cache: set ``MNE_DATA`` env var and persist ``~/.mne`` config directory so dataset paths survive cache restore (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Liu2024` download failure by switching Figshare URLs from ``figshare.com/ndownloader`` to ``ndownloader.figshare.com`` and adding ``BadZipFile`` recovery for corrupted cached downloads (:gh:`992` by `Bruno Aristimunha`_)
 

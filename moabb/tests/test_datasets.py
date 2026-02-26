@@ -800,6 +800,75 @@ class TestBIDSDataset:
                 assert session_data.keys() == {"0"}
                 assert isinstance(session_data["0"], mne.io.BaseRaw)
 
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    def test_convert_to_bids(self, tmp_path):
+        """Test that convert_to_bids saves BIDS files without a desc hash."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
+        )
+        bids_root = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1, 2], overwrite=False
+        )
+
+        # The returned path should exist
+        assert bids_root.exists()
+
+        # There should be no files with 'desc-' in their names
+        bids_files = list(bids_root.rglob("*"))
+        for f in bids_files:
+            assert "desc-" not in f.name, f"Unexpected desc entity in BIDS file: {f}"
+
+        # No lock files should be written (lock files are part of the cache mechanism only)
+        assert not list(bids_root.rglob("*lockfile*")), "Lock files should not be written"
+
+        # EEG EDF files should be present for both subjects
+        edf_files = list(bids_root.rglob("*.edf"))
+        assert len(edf_files) > 0, "No EDF files were written to BIDS root"
+        subjects_found = {f.parent.parent.parent.name for f in edf_files}
+        assert subjects_found == {"sub-1", "sub-2"}
+
+        # Calling again with overwrite=False should skip (EDF files already exist)
+        bids_root2 = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1, 2], overwrite=False
+        )
+        assert bids_root2 == bids_root
+
+        # Calling again with overwrite=True should succeed
+        bids_root3 = dataset.convert_to_bids(path=tmp_path, subjects=[1], overwrite=True)
+        assert bids_root3 == bids_root
+
+    @pytest.mark.filterwarnings(
+        "ignore:Converting data files to BrainVision.*:RuntimeWarning"
+    )
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    @pytest.mark.parametrize(
+        "format, ext",
+        [("EDF", ".edf"), ("BrainVision", ".vhdr")],
+    )
+    def test_convert_to_bids_format(self, tmp_path, format, ext):
+        """Test that convert_to_bids respects the format parameter."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=1, n_subjects=1, n_runs=1
+        )
+        bids_root = dataset.convert_to_bids(path=tmp_path, subjects=[1], format=format)
+
+        data_files = list(bids_root.rglob(f"*{ext}"))
+        assert len(data_files) > 0, f"No {ext} files were written for format={format}"
+
+        # Calling again with overwrite=False should skip
+        bids_root2 = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1], format=format, overwrite=False
+        )
+        assert bids_root2 == bids_root
+
+    def test_convert_to_bids_invalid_format(self, tmp_path):
+        """Test that convert_to_bids raises on invalid format."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=1, n_subjects=1, n_runs=1
+        )
+        with pytest.raises(ValueError, match="Unsupported format"):
+            dataset.convert_to_bids(path=tmp_path, subjects=[1], format="INVALID")
+
 
 class TestKojima2024A:
     def test_convert_subject_to_subject_id(self):

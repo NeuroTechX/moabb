@@ -19,7 +19,13 @@ import numpy as np
 import pandas as pd
 from mne_bids import events_file_to_annotation_kwargs
 
-from moabb.datasets.bids_interface import StepType, _interface_map
+from moabb.datasets.bids_interface import (
+    _FORMAT_EXTENSION_MAP,
+    StepType,
+    _BIDSInterfaceRawEDFNoDesc,
+    _interface_map,
+    get_bids_root,
+)
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
@@ -865,6 +871,99 @@ class BaseDataset(metaclass=MetaclassDataset):
                     update_path=update_path,
                     verbose=verbose,
                 )
+
+    def convert_to_bids(
+        self, path=None, subjects=None, overwrite=False, format="EDF", verbose=None
+    ):
+        """Convert the dataset to BIDS format.
+
+        Saves the raw EEG data in a BIDS-compliant directory structure.
+        Unlike the caching mechanism (see :class:`CacheConfig`), the files
+        produced here do **not** contain a processing-pipeline hash
+        (``desc-<hash>``) in their names, making the output a clean,
+        shareable BIDS dataset.
+
+        Parameters
+        ----------
+        path : str | Path | None
+            Directory under which the BIDS dataset will be written.
+            If ``None`` the default MNE data directory is used (same default
+            as the rest of MOABB).
+        subjects : list of int | None
+            Subject numbers to convert.  If ``None``, all subjects in
+            :attr:`subject_list` are converted.
+        overwrite : bool
+            If ``True``, existing BIDS files for a subject are removed before
+            saving.  Default is ``False``.
+        format : str
+            The file format for the raw EEG data.  Supported values are
+            ``"EDF"`` (default), ``"BrainVision"``, ``"BDF"``, and
+            ``"EEGLAB"``.
+        verbose : str | None
+            Verbosity level forwarded to MNE/MNE-BIDS.
+
+        Returns
+        -------
+        bids_root : pathlib.Path
+            Path to the root of the written BIDS dataset.
+
+        Examples
+        --------
+        >>> from moabb.datasets import AlexMI
+        >>> dataset = AlexMI()
+        >>> bids_root = dataset.convert_to_bids(path='/tmp/bids', subjects=[1])
+
+        See Also
+        --------
+        CacheConfig : Cache configuration for :meth:`get_data`.
+        moabb.datasets.bids_interface.get_bids_root : Return the BIDS root path.
+
+        Notes
+        -----
+
+        .. versionadded:: 1.5
+        """
+        if format not in _FORMAT_EXTENSION_MAP:
+            raise ValueError(
+                f"Unsupported format {format!r}. "
+                f"Allowed formats are {tuple(_FORMAT_EXTENSION_MAP)}"
+            )
+        if subjects is None:
+            subjects = self.subject_list
+
+        invalid = [s for s in subjects if s not in self.subject_list]
+        if invalid:
+            raise ValueError(
+                f"Invalid subject(s) {invalid}. "
+                f"Valid subjects are {self.subject_list}"
+            )
+
+        ext = _FORMAT_EXTENSION_MAP[format]
+
+        for subject in subjects:
+            interface = _BIDSInterfaceRawEDFNoDesc(
+                dataset=self,
+                subject=subject,
+                path=path,
+                process_pipeline=None,
+                verbose=verbose,
+                _format=format,
+            )
+            if overwrite:
+                interface.erase()
+            else:
+                subject_dir = interface.root / f"sub-{subject}"
+                if any(subject_dir.rglob(f"*{ext}")):
+                    log.info(
+                        "BIDS data already exists for %s, skipping "
+                        "(use overwrite=True to overwrite).",
+                        repr(interface),
+                    )
+                    continue
+            sessions_data = self.get_data(subjects=[subject])
+            interface.save(sessions_data[subject])
+
+        return get_bids_root(self.code, path)
 
     def _get_single_subject_data_using_cache(
         self, subject, cache_config, process_pipeline

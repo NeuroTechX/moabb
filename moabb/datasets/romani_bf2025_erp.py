@@ -546,7 +546,12 @@ class RomaniBF2025ERP(BaseDataset):
                     sessions[ses_name]["2inference"] = raw_infer
 
             except Exception as e:
-                logging.error(f"Error reading {bids_path}: {e}")
+                logging.error(
+                    f"Error reading {bids_path}: {e}. "
+                    f"Session '{ses_name}' for subject '{subject_label}' "
+                    "will be skipped.",
+                    exc_info=True,
+                )
 
         return sessions
 
@@ -576,7 +581,7 @@ class RomaniBF2025ERP(BaseDataset):
         info = mne.create_info([stim_name], raw.info["sfreq"], ["stim"])
         stim_raw = mne.io.RawArray(stim_data, info)
         raw.drop_channels([stim_name])
-        raw.add_channels([stim_raw])
+        raw.add_channels([stim_raw], force_update_info=True)
 
         return raw
 
