@@ -6,6 +6,7 @@ import warnings
 import zipfile as z
 from pathlib import Path
 from typing import Any, Dict, Tuple
+from zipfile import BadZipFile
 
 import mne
 import numpy as np
@@ -36,11 +37,11 @@ from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
 # Link to the raw data
-LIU2024_URL = "https://figshare.com/ndownloader/files/38516654"
+LIU2024_URL = "https://ndownloader.figshare.com/files/38516654"
 
 # Links to the electrodes and events information files
-LIU2024_ELECTRODES = "https://figshare.com/ndownloader/files/38516078"
-LIU2024_EVENTS = "https://figshare.com/ndownloader/files/38516084"
+LIU2024_ELECTRODES = "https://ndownloader.figshare.com/files/38516078"
+LIU2024_EVENTS = "https://ndownloader.figshare.com/files/38516084"
 
 
 class Liu2024(BaseDataset):
@@ -284,8 +285,15 @@ class Liu2024(BaseDataset):
 
         # Extract the zip file if it hasn't been extracted yet
         if not (path_folder / "edffile").is_dir():
-            zip_ref = z.ZipFile(path_zip, "r")
-            zip_ref.extractall(path_folder)
+            try:
+                with z.ZipFile(path_zip, "r") as zip_ref:
+                    zip_ref.extractall(path_folder)
+            except BadZipFile:
+                warnings.warn("Corrupted zip file detected, re-downloading...")
+                path_zip.unlink(missing_ok=True)
+                path_zip = Path(dl.data_dl(LIU2024_URL, self.code, force_update=True))
+                with z.ZipFile(path_zip, "r") as zip_ref:
+                    zip_ref.extractall(path_folder)
 
         subject_paths = []
         sub = f"sub-{subject:02d}"
