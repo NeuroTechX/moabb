@@ -42,6 +42,7 @@ Enhancements
 - Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
 - Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
 - Add and correct ``license`` and ``repository`` fields in ``DocumentationMetadata`` across all datasets against upstream sources; standardize all license strings to SPDX identifiers; correct DOIs for BNCI2014_002 and MAMEM1/2/3 datasets (by `Katelyn Begany`_)
+- Add :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method for exporting raw EEG datasets to clean BIDS-compliant directory structures without processing-pipeline hash in filenames (by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~

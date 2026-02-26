@@ -918,7 +918,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         Notes
         -----
 
-        .. versionadded:: 1.1.0
+        .. versionadded:: 1.5
         """
         if subjects is None:
             subjects = self.subject_list
