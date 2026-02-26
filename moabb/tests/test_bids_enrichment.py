@@ -314,7 +314,8 @@ class TestBuildSidecarEnrichment:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
-                highpass_hz=0.1, lowpass_hz=40.0,
+                highpass_hz=0.1,
+                lowpass_hz=40.0,
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -2147,9 +2148,7 @@ class TestReadmeFilterDetailsFields:
     )
     def test_field_present(self, field, value, expected):
         kwargs = {field: value}
-        meta = _minimal_metadata(
-            preprocessing=PreprocessingMetadata(**kwargs)
-        )
+        meta = _minimal_metadata(preprocessing=PreprocessingMetadata(**kwargs))
         readme = _build_readme(_mock_ds(meta))
         assert expected in readme
 
@@ -2190,9 +2189,7 @@ class TestReadmeFrequencyBandsFields:
     def test_field_present(self, field, value, expected):
         kwargs = {field: value}
         meta = _minimal_metadata(
-            signal_processing=SignalProcessingMetadata(
-                frequency_bands=kwargs
-            )
+            signal_processing=SignalProcessingMetadata(frequency_bands=kwargs)
         )
         readme = _build_readme(_mock_ds(meta))
         assert expected in readme
