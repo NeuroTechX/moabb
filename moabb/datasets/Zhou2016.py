@@ -81,8 +81,8 @@ class Zhou2016(BaseBIDSDataset):
             software="BCI2000",
             filters="0.1-100 Hz bandpass, 50 Hz notch",
             sensors=[
-                "FP1",
-                "FP2",
+                "Fp1",
+                "Fp2",
                 "FC3",
                 "FCz",
                 "FC4",

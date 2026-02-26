@@ -482,7 +482,7 @@ class BNCI2015_001(MNEBNCI):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=256.0,
             n_channels=13,
             channel_types={"eeg": 13},
             montage="10-20",
@@ -493,18 +493,18 @@ class BNCI2015_001(MNEBNCI):
             filters="50 Hz notch",
             sensors=[
                 "FC3",
-                "C5",
-                "CP3",
-                "C1",
-                "C3",
                 "FCz",
-                "C2",
-                "CPz",
-                "Cz",
                 "FC4",
-                "CP4",
-                "C6",
+                "C5",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
                 "C4",
+                "C6",
+                "CP3",
+                "CPz",
+                "CP4",
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
@@ -649,8 +649,8 @@ class BNCI2015_003(MNEBNCI):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=1000.0,
-            n_channels=56,
+            sampling_rate=256.0,
+            n_channels=8,
             channel_types={"eeg": 56},
             montage="standard_1005",
             hardware="BrainAmp",
@@ -660,7 +660,16 @@ class BNCI2015_003(MNEBNCI):
             software="Matlab",
             filters="hardware analog band-pass filter between 0.1 and 250 Hz",
             line_freq=50.0,
-            sensors=[],
+            sensors=[
+                "Fz",
+                "Cz",
+                "P3",
+                "Pz",
+                "P4",
+                "PO7",
+                "Oz",
+                "PO8",
+            ],
             impedance_threshold_kohm=15.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,

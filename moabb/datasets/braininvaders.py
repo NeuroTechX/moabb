@@ -480,12 +480,12 @@ class BI2012(BaseDataset):
                 "F8",
                 "T7",
                 "C3",
-                "CZ",
+                "Cz",
                 "C4",
                 "T8",
                 "P7",
                 "P3",
-                "PZ",
+                "Pz",
                 "P4",
                 "P8",
                 "O1",
@@ -701,7 +701,7 @@ class BI2013a(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=256.0,
             n_channels=16,
             channel_types={"eeg": 16},
             montage="10-20",
@@ -711,21 +711,21 @@ class BI2013a(BaseDataset):
             ground="FZ",
             software="OpenVibe",
             sensors=[
-                "FP1",
-                "FP2",
+                "Fp1",
+                "Fp2",
                 "F5",
-                "AFZ",
+                "AFz",
                 "F6",
                 "T7",
-                "CZ",
+                "Cz",
                 "T8",
                 "P7",
                 "P3",
-                "PZ",
+                "Pz",
                 "P4",
                 "P8",
                 "O1",
-                "OZ",
+                "Oz",
                 "O2",
             ],
             line_freq=50.0,
@@ -919,7 +919,7 @@ class BI2014a(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=256.0,
             n_channels=16,
             channel_types={"eeg": 16},
             montage="10-10",
@@ -931,15 +931,15 @@ class BI2014a(BaseDataset):
             sensors=[
                 "Fp1",
                 "Fp2",
-                "F5",
-                "AFZ",
-                "F6",
+                "F3",
+                "AFz",
+                "F4",
                 "T7",
                 "Cz",
                 "T8",
                 "P7",
                 "P3",
-                "PZ",
+                "Pz",
                 "P4",
                 "P8",
                 "O1",
@@ -1130,7 +1130,7 @@ class BI2014b(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=256.0,
             n_channels=32,
             channel_types={"eeg": 32},
             montage="10-10",
@@ -1140,8 +1140,8 @@ class BI2014b(BaseDataset):
             ground="Fz",
             software="OpenVibe",
             sensors=[
-                "FP1",
-                "FP2",
+                "Fp1",
+                "Fp2",
                 "AFz",
                 "F7",
                 "F3",
@@ -1349,7 +1349,7 @@ class BI2015a(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=256.0,
             n_channels=32,
             channel_types={"eeg": 32},
             montage="10-10",
@@ -1359,8 +1359,8 @@ class BI2015a(BaseDataset):
             ground="Fz",
             software="OpenVibe",
             sensors=[
-                "FP1",
-                "FP2",
+                "Fp1",
+                "Fp2",
                 "AFz",
                 "F7",
                 "F3",
@@ -1780,7 +1780,7 @@ class Cattan2019_VR(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=256.0,
             n_channels=16,
             channel_types={"eeg": 16},
             montage="10-10",
@@ -1790,17 +1790,17 @@ class Cattan2019_VR(BaseDataset):
             ground="AFZ",
             software="OpenVibe",
             sensors=[
-                "FP1",
-                "FP2",
-                "FC5",
-                "FC6",
-                "FZ",
+                "Fp1",
+                "Fp2",
+                "Fc5",
+                "Fz",
+                "Fc6",
                 "T7",
-                "CZ",
+                "Cz",
                 "T8",
                 "P7",
                 "P3",
-                "PZ",
+                "Pz",
                 "P4",
                 "P8",
                 "O1",
