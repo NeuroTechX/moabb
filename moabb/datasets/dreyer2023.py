@@ -1198,7 +1198,7 @@ class Dreyer2023(_Dreyer2023Base):
             instructions="Participants were encouraged to perform kinesthetic imagination and to choose their own mental imagery strategies. Participants were instructed to find a strategy for each MI task so that the system would display the longest possible feedback bar.",
         ),
         documentation=DocumentationMetadata(
-            doi="10.1016/j.ijhcs.2021.102603",
+            doi="10.1038/s41597-023-02445-z",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.8089820",
             license="CC-BY-4.0",
@@ -1218,7 +1218,7 @@ class Dreyer2023(_Dreyer2023Base):
             ],
             institution="Inria, LaBRI (Univ. Bordeaux, CNRS, Bordeaux-INP)",
             institution_address="200 av. de la Vieille Tour, Talence 33400, France",
-            country="France",
+            country="FR",
             funding=[
                 "French National Research Agency (project REBEL, grant ANR-15-CE23-0013-01)",
                 "European Research Council (project Brain-Conquest, grant ERC-2016-STG-714567)",

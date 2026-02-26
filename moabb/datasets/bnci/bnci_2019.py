@@ -176,14 +176,14 @@ class BNCI2019_001(BaseDataset):
         ),
         participants=ParticipantMetadata(
             n_subjects=10,
-            health_status="spinal cord injury",
+            health_status="patients",
             gender={"male": 9, "female": 1},
             age_mean=49.8,
             age_min=20,
             age_max=78,
             ages=[35, 42, 62, 20, 57, 78, 27, 69, 53, 55],
             handedness="right-handed (all participants originally)",
-            clinical_population="cervical spinal cord injury (C1-C7, AIS A-D)",
+            clinical_population="spinal cord injury",
             species="human",
         ),
         experiment=ExperimentMetadata(

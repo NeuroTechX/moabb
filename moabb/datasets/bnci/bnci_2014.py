@@ -579,7 +579,7 @@ class BNCI2014_002(MNEBNCI):
             },
         ),
         documentation=DocumentationMetadata(
-            doi="10.3217/978-3-85125-378-8-61",
+            doi="10.1515/bmt-2014-0117",
             investigators=[
                 "David Steyrl",
                 "Reinhold Scherer",
@@ -602,7 +602,7 @@ class BNCI2014_002(MNEBNCI):
                 "oswin.foerstner@student.tugraz.at",
                 "gernot.mueller@tugraz.at",
             ],
-            associated_paper_doi="10.1515/bmt-2014-0117",
+            associated_paper_doi="10.3217/978-3-85125-378-8-61",
             keywords=[
                 "brain-computer interfaces",
                 "machine learning",

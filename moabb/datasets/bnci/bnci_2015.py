@@ -737,7 +737,7 @@ class BNCI2015_003(MNEBNCI):
             hed_tags=None,
         ),
         documentation=DocumentationMetadata(
-            doi="10.3389/fnins.2011.00112",
+            doi="10.1016/j.neulet.2009.06.045",
             description="Auditory BCI speller using spatial cues (AMUSE paradigm) allowing purely auditory communication interface",
             investigators=["Martijn Schreuder", "Thomas Rost", "Michael Tangermann"],
             institution="Berlin Institute of Technology",
@@ -747,7 +747,7 @@ class BNCI2015_003(MNEBNCI):
             publication_year=2011,
             senior_author="Michael Tangermann",
             contact_info=["schreuder@tu-berlin.de"],
-            associated_paper_doi="10.1016/j.neulet.2009.06.045",
+            associated_paper_doi="10.3389/fnins.2011.00112",
             funding=[
                 "European ICT Programme Project FP7-224631",
                 "European ICT Programme Project FP7-216886",

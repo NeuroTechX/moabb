@@ -291,7 +291,7 @@ class Lee2019_MI(Lee2019):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=200.0,
+            sampling_rate=1000.0,
             n_channels=62,
             channel_types={"eeg": 62},
             montage="10-20",
