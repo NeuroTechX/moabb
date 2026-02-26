@@ -923,6 +923,13 @@ class BaseDataset(metaclass=MetaclassDataset):
         if subjects is None:
             subjects = self.subject_list
 
+        invalid = [s for s in subjects if s not in self.subject_list]
+        if invalid:
+            raise ValueError(
+                f"Invalid subject(s) {invalid}. "
+                f"Valid subjects are {self.subject_list}"
+            )
+
         for subject in subjects:
             interface = _BIDSInterfaceRawEDFNoDesc(
                 dataset=self,
@@ -935,10 +942,21 @@ class BaseDataset(metaclass=MetaclassDataset):
                 interface.erase()
             elif interface.lock_file.fpath.exists():
                 log.info(
-                    "BIDS data already exists for %s, skipping (use overwrite=True to overwrite).",
+                    "BIDS data already exists for %s, skipping "
+                    "(use overwrite=True to overwrite).",
                     repr(interface),
                 )
                 continue
+            else:
+                # Check for preexisting subject data with a desc-<hash>
+                # from get_data(cache_config=...) to avoid duplicates.
+                subject_dir = interface.root / f"sub-{subject}"
+                if subject_dir.exists():
+                    raise FileExistsError(
+                        f"Subject directory {subject_dir} already contains "
+                        f"BIDS data (possibly from cache_config). Use "
+                        f"overwrite=True to replace it."
+                    )
             sessions_data = self.get_data(subjects=[subject])
             interface.save(sessions_data[subject])
 
