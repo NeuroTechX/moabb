@@ -321,9 +321,10 @@ class MAMEM1(BaseMAMEM):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
-            doi="10.6084/m9.figshare.2068677.v1",
+            doi="10.48550/arXiv.1602.00904",
             repository="GitHub",
             data_url="https://github.com/MAMEM/ssvep-eeg-processing-toolbox",
+            license="ODC-By-1.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -501,9 +502,10 @@ class MAMEM2(BaseMAMEM):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
-            doi="10.6084/m9.figshare.2068677.v1",
+            doi="10.48550/arXiv.1602.00904",
             repository="GitHub",
             data_url="https://github.com/MAMEM/ssvep-eeg-processing-toolbox",
+            license="ODC-By-1.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -689,9 +691,10 @@ class MAMEM3(BaseMAMEM):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
-            doi="10.6084/m9.figshare.2068677.v1",
+            doi="10.48550/arXiv.1602.00904",
             repository="GitHub",
             data_url="https://github.com/MAMEM/ssvep-eeg-processing-toolbox",
+            license="ODC-By-1.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

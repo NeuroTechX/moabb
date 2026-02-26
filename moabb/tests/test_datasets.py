@@ -1003,3 +1003,23 @@ class TestDatasetMetadata:
             metadata_from_property.experiment.paradigm
             == metadata_from_function.experiment.paradigm
         )
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_all_datasets_have_license(self, dataset_class):
+        """Ensure every dataset has a license in its documentation metadata."""
+        kwargs = {}
+        if inspect.signature(dataset_class).parameters.get("accept"):
+            kwargs["accept"] = True
+
+        dataset = dataset_class(**kwargs)
+        metadata = dataset.metadata
+
+        if metadata is None:
+            pytest.skip(f"{dataset_class.__name__} has no metadata catalog entry")
+
+        assert (
+            metadata.documentation is not None
+        ), f"{dataset_class.__name__} has no documentation metadata defined"
+        assert (
+            metadata.documentation.license is not None
+        ), f"{dataset_class.__name__} is missing a license in its documentation metadata"

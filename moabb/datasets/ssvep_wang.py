@@ -215,6 +215,7 @@ class Wang2016(BaseDataset):
             doi="10.1109/TNSRE.2016.2627556",
             repository="BNCI Horizon 2020",
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
