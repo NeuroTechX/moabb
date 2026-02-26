@@ -115,7 +115,7 @@ class AlexMI(BaseDataset):
             contact_info=["alexandre.barachant@gmail.com"],
             institution_department="Laboratoire Électronique et système pour la santé CEA-LETI",
             institution_address="CEA-LETI Grenoble, France",
-            associated_paper_doi="https://theses.hal.science/tel-01196752v1",
+            associated_paper_doi="tel-01196752v1",
             keywords=[
                 "brain-computer interface",
                 "motor imagery",
