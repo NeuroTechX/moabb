@@ -78,6 +78,9 @@ authors:
 - family-names: "Chevallier"
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
+- family-names: "Hajhassani"
+  given-names: "Davoud"
+  orcid: "https://orcid.org/0009-0008-6674-5546"
 title: "Mother of all BCI Benchmarks"
 version: 1.4.3
 doi: 10.5281/zenodo.10034223

@@ -38,6 +38,125 @@ class FixedPipeline(Pipeline):
         """Return True to indicate this pipeline is always considered fitted."""
         return True
 
+    def find_steps(self, step_type):
+        """Return ``(index, transformer)`` tuples for all steps matching *step_type*.
+
+        Parameters
+        ----------
+        step_type : StepType
+            The step type to search for.
+
+        Returns
+        -------
+        list of (int, transformer)
+            Matching steps. Empty list if none found.
+        """
+        return [
+            (i, transformer)
+            for i, (st, transformer) in enumerate(self.steps)
+            if st == step_type
+        ]
+
+    def insert_step(self, step_type, transformer, *, after=None, before=None, index=None):
+        """Insert a new step into the pipeline.
+
+        Exactly one of *after*, *before*, or *index* must be given.
+
+        Parameters
+        ----------
+        step_type : StepType
+            The type tag for the new step.
+        transformer : estimator
+            The transformer to insert.
+        after : StepType, optional
+            Insert after the **last** step of this type.
+        before : StepType, optional
+            Insert before the **first** step of this type.
+        index : int, optional
+            Insert at this position (same semantics as ``list.insert``).
+
+        Returns
+        -------
+        self
+            For chaining.
+
+        Raises
+        ------
+        ValueError
+            If zero or more than one positioning argument is given, or if
+            the referenced *after*/*before* StepType is not found.
+        """
+        n_pos = sum(x is not None for x in (after, before, index))
+        if n_pos != 1:
+            raise ValueError(
+                "Exactly one of 'after', 'before', or 'index' must be given."
+            )
+
+        if after is not None:
+            matches = self.find_steps(after)
+            if not matches:
+                raise ValueError(f"No steps of type {after!r} found in pipeline.")
+            pos = matches[-1][0] + 1
+        elif before is not None:
+            matches = self.find_steps(before)
+            if not matches:
+                raise ValueError(f"No steps of type {before!r} found in pipeline.")
+            pos = matches[0][0]
+        else:
+            pos = index
+
+        self.steps.insert(pos, (step_type, transformer))
+        return self
+
+    def remove_step(self, *, index=None, step_type=None):
+        """Remove one or more steps from the pipeline.
+
+        Exactly one of *index* or *step_type* must be given.
+
+        Parameters
+        ----------
+        index : int, optional
+            Remove the step at this position.
+        step_type : StepType, optional
+            Remove **all** steps of this type.
+
+        Returns
+        -------
+        self
+            For chaining.
+
+        Raises
+        ------
+        ValueError
+            If zero or more than one argument is given, if the referenced
+            *step_type* is not found, or if removal would empty the pipeline.
+        """
+        n_pos = sum(x is not None for x in (index, step_type))
+        if n_pos != 1:
+            raise ValueError("Exactly one of 'index' or 'step_type' must be given.")
+
+        if step_type is not None:
+            matches = self.find_steps(step_type)
+            if not matches:
+                raise ValueError(f"No steps of type {step_type!r} found in pipeline.")
+            if len(matches) == len(self.steps):
+                raise ValueError("Cannot remove all steps from the pipeline.")
+            for i, _ in reversed(matches):
+                del self.steps[i]
+        else:
+            if len(self.steps) == 1:
+                raise ValueError("Cannot remove all steps from the pipeline.")
+            if not isinstance(index, int):
+                raise ValueError(f"'index' must be an int, got {type(index).__name__}.")
+            n_steps = len(self.steps)
+            if not -n_steps <= index < n_steps:
+                raise ValueError(
+                    f"'index' {index} out of range for pipeline with {n_steps} steps."
+                )
+            del self.steps[index]
+
+        return self
+
 
 def make_fixed_pipeline(*steps, memory=None, verbose=False):
     """Create a FixedPipeline that is always considered fitted.

@@ -39,6 +39,8 @@ Enhancements
 - Add a "Report an Issue on GitHub" feedback section to all dataset docstrings so users can easily report dataset problems (:gh:`982` by `Bruno Aristimunha`_)
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
+- Add advanced tutorial on Riemannian Artifact Rejection (Riemannian Potato and Potato Field) as a pre-processing step using pipeline surgery (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
+- Add pipeline surgery methods (``find_steps``, ``insert_step``, ``remove_step``) to :class:`moabb.datasets.preprocessing.FixedPipeline` for easier pipeline manipulation (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
 - Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
 - Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
 - Add and correct ``license`` and ``repository`` fields in ``DocumentationMetadata`` across all datasets against upstream sources; standardize all license strings to SPDX identifiers; correct DOIs for BNCI2014_002 and MAMEM1/2/3 datasets (by `Katelyn Begany`_)
@@ -81,15 +83,16 @@ Bugs
 - ``LearningCurveSplitter`` now skips training splits that collapse to a single class (e.g., with very small ``data_size``) and emits a ``RuntimeWarning`` instead of producing NaN results (:gh:`963` by `Bruno Aristimunha`_)
 - Fix double µV-to-V conversion in BNCI2003-004 and BNCI2015-006: data loaded in microvolts was labeled as volts without unit conversion, causing a second scaling during EDF export via ``mne_bids`` (by `Bruno Aristimunha`_)
 - Fix ``Beetl2021_A`` and ``Beetl2021_B`` 403 Forbidden errors by skipping Figshare API calls when data already exists locally, and fix double-nested zip extraction directory structure (:gh:`969` by `Bruno Aristimunha`_)
+- Fix wrong channel names in Riemannian Artifact Rejection tutorial that caused ``pick()`` to fail on BNCI2014-009 (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.RomaniBF2025ERP` to follow MOABB nomenclature pattern by using dynamic folder name ``MNE-{code}-data`` instead of hardcoded folder name. Automatically migrates legacy folder ``BrainForm-BIDS-eeg-dataset`` to new nomenclature for backward compatibility (by `Bruno Aristimunha`_)
 - Fix ``MOABB_RESULTS`` default path to respect ``MNE_DATA`` configuration instead of hardcoding ``~/mne_data``, and fix docs CI cache to use workspace-relative ``MNE_DATA`` path and cache ``~/.mne`` config directory (by `Bruno Aristimunha`_)
+- Fix docs CI cache: set ``MNE_DATA`` env var and persist ``~/.mne`` config directory so dataset paths survive cache restore (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
 - Added systematic DOI validation test suite that checks format, docstring tracking, resolution, and author overlap across all datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
 - Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
-
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 - Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
 - Centralize CV resolution in BaseEvaluation with new ``_resolve_cv()`` method for consistent cross-validation handling across all evaluation types. Add ``_build_result()`` and ``_build_scored_result()`` helpers to centralize result dict construction across WithinSession, CrossSession, and CrossSubject evaluations, replacing manual dict assembly in each (:gh:`963` by `Bruno Aristimunha`_)
@@ -749,4 +752,5 @@ API changes
 .. _Victor Martinez-Cagigal: https://github.com/vicmarcag
 .. _Mateusz Naklicki: https://github.com/luluu9
 .. _Matthias Dold: https://github.com/matthiasdold
+.. _Davoud Hajhassani: https://github.com/Davoud-Hajhassani
 .. _Katelyn Begany: https://github.com/kbegany
