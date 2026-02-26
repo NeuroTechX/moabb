@@ -940,23 +940,15 @@ class BaseDataset(metaclass=MetaclassDataset):
             )
             if overwrite:
                 interface.erase()
-            elif interface.lock_file.fpath.exists():
-                log.info(
-                    "BIDS data already exists for %s, skipping "
-                    "(use overwrite=True to overwrite).",
-                    repr(interface),
-                )
-                continue
             else:
-                # Check for preexisting subject data with a desc-<hash>
-                # from get_data(cache_config=...) to avoid duplicates.
                 subject_dir = interface.root / f"sub-{subject}"
-                if subject_dir.exists():
-                    raise FileExistsError(
-                        f"Subject directory {subject_dir} already contains "
-                        f"BIDS data (possibly from cache_config). Use "
-                        f"overwrite=True to replace it."
+                if any(subject_dir.rglob("*.edf")):
+                    log.info(
+                        "BIDS data already exists for %s, skipping "
+                        "(use overwrite=True to overwrite).",
+                        repr(interface),
                     )
+                    continue
             sessions_data = self.get_data(subjects=[subject])
             interface.save(sessions_data[subject])
 

@@ -818,13 +818,16 @@ class TestBIDSDataset:
         for f in bids_files:
             assert "desc-" not in f.name, f"Unexpected desc entity in BIDS file: {f}"
 
+        # No lock files should be written (lock files are part of the cache mechanism only)
+        assert not list(bids_root.rglob("*lockfile*")), "Lock files should not be written"
+
         # EEG EDF files should be present for both subjects
         edf_files = list(bids_root.rglob("*.edf"))
         assert len(edf_files) > 0, "No EDF files were written to BIDS root"
         subjects_found = {f.parent.parent.parent.name for f in edf_files}
         assert subjects_found == {"sub-1", "sub-2"}
 
-        # Calling again with overwrite=False should not raise (lock file already exists)
+        # Calling again with overwrite=False should skip (EDF files already exist)
         bids_root2 = dataset.convert_to_bids(
             path=tmp_path, subjects=[1, 2], overwrite=False
         )

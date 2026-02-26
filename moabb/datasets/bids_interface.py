@@ -288,12 +288,16 @@ class BIDSInterfaceBase(abc.ABC):
 
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
+        self._write_lock_file()
+        log.info("Finished caching %s to disk.", repr(self))
+
+    def _write_lock_file(self):
+        """Write the lock file to signal that saving is complete."""
         log.debug("Writing", self.lock_file)
         self.lock_file.mkdir(exist_ok=True)
         with self.lock_file.fpath.open("w") as file:
             dic = dict(processing_params=str(self.processing_params))
             json.dump(dic, file)
-        log.info("Finished caching %s to disk.", repr(self))
 
     @abc.abstractmethod
     def _load_file(self, bids_path, preload):
@@ -497,6 +501,9 @@ class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
     @property
     def desc(self):
         return None
+
+    def _write_lock_file(self):
+        """Do not write a lock file for public BIDS conversion."""
 
     def erase(self):
         """Remove the subject's BIDS directory entirely."""
