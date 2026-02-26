@@ -243,9 +243,6 @@ class Stieger2021(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-021-00883-1",
-            repository="figshare",
-            data_url="https://doi.org/10.6084/m9.figshare.13123148",
-            funding=["NIH"],
             publication_year=2021,
             investigators=["James R. Stieger", "Stephen A. Engel", "Bin He"],
             senior_author="Bin He",
@@ -267,6 +264,10 @@ class Stieger2021(BaseDataset):
                 "longitudinal",
                 "learning",
             ],
+            repository="GitHub",
+            data_url="https://github.com/bfinl/BCI_Data_Paper",
+            funding=["NIH under"],
+            license="CC-BY-NC-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

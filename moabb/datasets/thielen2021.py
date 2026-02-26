@@ -182,13 +182,10 @@ class Thielen2021(BaseDataset):
             institution="Radboud University",
             institution_department="Donders Institute for Brain, Cognition and Behaviour",
             country="Netherlands",
-            repository="Donders Data Repository",
             data_url="https://doi.org/10.34973/9txv-z787",
-            license="Creative Commons Attribution 4.0",
             publication_year=2021,
             senior_author="P Desain",
             contact_info=["jordy.thielen@donders.ru.nl"],
-            funding=None,
             ethics_approval=[
                 "Approved by the local ethical committee of the Faculty of Social Sciences of Radboud University"
             ],
@@ -200,6 +197,10 @@ class Thielen2021(BaseDataset):
                 "zero training",
                 "spread spectrum communication",
             ],
+            associated_paper_doi="10.1088/1741-2552/ab4057",
+            funding=["Grant Nos s", "Grant No. 14054 14054"],
+            license="CC0-1.0",
+            repository="Radboud",
         ),
         tags=Tags(
             pathology=["Healthy"],

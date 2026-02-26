@@ -142,6 +142,7 @@ class Cattan2019_PHMD(BaseDataset):
                 "experiment",
             ],
             how_to_acknowledge="Python code for manipulating the data is available at https://github.com/plcrodrigues/py.PHMDML.EEG.2017-GIPSA",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

@@ -185,6 +185,7 @@ class EPFLP300(BaseDataset):
                 "Bayesian linear discriminant analysis",
             ],
             repository="http://bci.epfl.ch/p300",
+            license="Unknown",
         ),
         sessions_per_subject=4,
         runs_per_session=6,

@@ -177,7 +177,7 @@ class Cho2017(BaseDataset):
             events={"left_hand": 1, "right_hand": 1},
         ),
         documentation=DocumentationMetadata(
-            doi="10.1093/gigascience/gix034",
+            doi="10.5524/100295",
             description="EEG datasets for motor imagery brain-computer interface from 52 subjects with psychological and physiological questionnaire, EMG datasets, 3D EEG electrode locations, and non-task-related states",
             investigators=[
                 "Hohyun Cho",
@@ -193,7 +193,7 @@ class Cho2017(BaseDataset):
             country="Korea",
             repository="GigaDB",
             data_url="http://dx.doi.org/10.5524/100295",
-            license="Creative Commons Attribution License (http://creativecommons.org/licenses/by/4.0/)",
+            license="CC-BY-4.0",
             publication_year=2017,
             contact_info=[
                 "scjun@gist.ac.kr",
@@ -214,7 +214,7 @@ class Cho2017(BaseDataset):
                 "performance variation",
                 "subject-to-subject transfer",
             ],
-            associated_paper_doi="10.5524/100295",
+            associated_paper_doi="10.1093/gigascience/gix034",
         ),
         sessions_per_subject=1,
         runs_per_session=5,

@@ -142,9 +142,7 @@ class Nakanishi2015(BaseDataset):
             institution="University of California San Diego",
             institution_department="Swartz Center for Computational Neuroscience, Institute for Neural Computation; Center for Advanced Neurological Engineering, Institute of Engineering in Medicine",
             country="United States of America",
-            repository="ftp://sccn.ucsd.edu/pub/cca_ssvep",
             data_url="ftp://sccn.ucsd.edu/pub/cca_ssvep",
-            license="Creative Commons Attribution License",
             publication_year=2015,
             contact_info=["wangyj@semi.ac.cn"],
             ethics_approval=[
@@ -159,6 +157,8 @@ class Nakanishi2015(BaseDataset):
                 "brain-computer interface",
                 "steady-state visual evoked potentials",
             ],
+            license="Unknown",
+            repository="Github",
         ),
         sessions_per_subject=1,
         runs_per_session=15,

@@ -72,9 +72,15 @@ authors:
 - family-names: "Barachant"
   given-names: "Alexandre"
   orcid: "https://orcid.org/0000-0001-8202-6287"
+- family-names: "Begany"
+  given-names: "Katelyn"
+  orcid: "https://orcid.org/0000-0003-0454-0592"
 - family-names: "Chevallier"
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
+- family-names: "Hajhassani"
+  given-names: "Davoud"
+  orcid: "https://orcid.org/0009-0008-6674-5546"
 title: "Mother of all BCI Benchmarks"
 version: 1.4.3
 doi: 10.5281/zenodo.10034223

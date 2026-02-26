@@ -109,11 +109,12 @@ class AlexMI(BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
-            doi="tel-01196752",
+            doi="10.5281/zenodo.806022",
             investigators=["Alexandre Barachant"],
             institution="Université de Grenoble",
             country="France",
-            repository="HAL archives-ouvertes",
+            license="CC-BY-SA-4.0",
+            repository="Zenodo",
             data_url="https://zenodo.org/record/806023/files/",
             publication_year=2012,
             senior_author="Christian Jutten",
@@ -204,6 +205,7 @@ class AlexMI(BaseDataset):
             code="AlexandreMotorImagery",
             interval=[0, 3],
             paradigm="imagery",
+            doi="10.5281/zenodo.806022",
         )
 
     def _get_single_subject_data(self, subject):

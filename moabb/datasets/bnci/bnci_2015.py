@@ -452,7 +452,7 @@ class BNCI2015_001(MNEBNCI):
     **Dataset Description**
 
     This dataset contains EEG data from 12 subjects performing two-class motor
-    imagery tasks (left vs right hand). Each subject participated in multiple
+    imagery tasks (right hand vs feet). Each subject participated in multiple
     sessions, with some subjects having three sessions.
 
     **Participants**
@@ -469,10 +469,11 @@ class BNCI2015_001(MNEBNCI):
 
     References
     ----------
-    .. [1] Faller, J., Scherer, R., Costa, U., Opisso, E., Medina, J., Muller-Putz,
-           G. R. (2014). A co-adaptive brain-computer interface for end users with
-           severe motor impairment. PLOS ONE, 9(7), e101168.
-           https://doi.org/10.1371/journal.pone.0101168
+    .. [1] Faller, J., Vidaurre, C., Solis-Escalante, T., Neuper, C., & Scherer, R.
+           (2012). Autocalibration and recurrent adaptation: Towards a plug and play
+           online ERD-BCI. IEEE Transactions on Neural Systems and Rehabilitation
+           Engineering, 20(3), 313-319.
+           https://doi.org/10.1109/tnsre.2012.2189584
 
     Notes
     -----
@@ -514,7 +515,7 @@ class BNCI2015_001(MNEBNCI):
         ),
         participants=ParticipantMetadata(
             n_subjects=12,
-            health_status="Healthy",
+            health_status="healthy",
             gender={"male": 7, "female": 5},
             age_mean=24.8,
             handedness="all right-handed",
@@ -558,6 +559,8 @@ class BNCI2015_001(MNEBNCI):
             institution_address="8010 Graz, Austria",
             institution_department="Institute of Knowledge Discovery",
             associated_paper_doi=None,
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -730,13 +733,12 @@ class BNCI2015_003(MNEBNCI):
             investigators=["Martijn Schreuder", "Thomas Rost", "Michael Tangermann"],
             institution="Berlin Institute of Technology",
             country="Germany",
-            repository=None,
-            data_url=None,
-            license=None,
+            repository="BNCI Horizon",
+            license="CC-BY-NC-ND-4.0",
             publication_year=2011,
             senior_author="Michael Tangermann",
             contact_info=["schreuder@tu-berlin.de"],
-            associated_paper_doi=None,
+            associated_paper_doi="10.1016/j.neulet.2009.06.045",
             funding=[
                 "European ICT Programme Project FP7-224631",
                 "European ICT Programme Project FP7-216886",
@@ -748,7 +750,6 @@ class BNCI2015_003(MNEBNCI):
             institution_department="Machine Learning Laboratory",
             ethics_approval=["Ethics Committee of the Charité University Hospital"],
             acknowledgements="Thomas Denck, David List and Larissa Queda for help with experiments. Klaus-Robert Müller and Benjamin Blankertz for fruitful discussions.",
-            how_to_acknowledge=None,
             keywords=[
                 "brain-computer interface",
                 "directional hearing",
@@ -765,7 +766,9 @@ class BNCI2015_003(MNEBNCI):
         n_contributing_labs=1,
         data_processed=True,
         file_format="gdf",
-        external_links={"source": "http://www.frontiersin.org/neuroprosthetics/10.3389/fnins.2011.00112/abstract"},
+        external_links={
+            "source": "http://www.frontiersin.org/neuroprosthetics/10.3389/fnins.2011.00112/abstract"
+        },
         tags=Tags(
             pathology=["Healthy"],
             modality=["Auditory"],
@@ -1004,6 +1007,9 @@ class BNCI2015_004(MNEBNCI):
                 "spinal cord injury",
                 "binary classification",
             ],
+            repository="BNCI Horizon 2020",
+            data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC-BY-NC-ND-4.0",
         ),
         sessions_per_subject=2,
         runs_per_session=8,
@@ -1084,7 +1090,7 @@ class BNCI2015_004(MNEBNCI):
             code="BNCI2015-004",
             interval=[0, 4],
             paradigm="imagery",
-            doi="10.1109/TCDS.2017.2688350",
+            doi="10.1371/journal.pone.0123727",
         )
 
 
@@ -1252,9 +1258,6 @@ class BNCI2015_006(MNEBNCI):
             ],
             institution="Technische Universität Berlin",
             country="Germany",
-            repository=None,
-            data_url=None,
-            license=None,
             publication_year=2014,
             senior_author="B Blankertz",
             contact_info=["matthias.treder@tu-berlin.de"],
@@ -1276,6 +1279,9 @@ class BNCI2015_006(MNEBNCI):
                 "P300",
             ],
             associated_paper_doi="10.1088/1741-2560/11/2/026009",
+            repository="GitHub",
+            data_url="https://github.com/bbci/bbci_public/blob/master/doc/index.markdown",
+            license="CC-BY-NC-ND-4.0",
         ),
         sessions_per_subject=1,
         runs_per_session=10,
@@ -1626,6 +1632,10 @@ class BNCI2015_007(MNEBNCI):
                 "N200",
             ],
             ethics_approval=["Declaration of Helsinki"],
+            associated_paper_doi="10.1088/1741-2560/11/2/026009",
+            funding=["DFG grant", "grant nos s", "BMBF grant", "grant no MU MU"],
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1937,6 +1947,9 @@ class BNCI2015_008(MNEBNCI):
                 "feature attention",
                 "gaze-independent",
             ],
+            repository="GitHub",
+            data_url="https://github.com/bbci/bbci_public/blob/master/doc/index.markdown",
+            license="CC-BY-NC-ND-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -2140,7 +2153,6 @@ class BNCI2015_009(MNEBNCI):
             ],
             institution="Berlin Institute of Technology",
             country="Germany",
-            license="Creative Commons Attribution License",
             publication_year=2010,
             senior_author="Michael Tangermann",
             contact_info=["martijn@cs.tu-berlin.de"],
@@ -2164,6 +2176,9 @@ class BNCI2015_009(MNEBNCI):
                 "multi-class",
                 "oddball paradigm",
             ],
+            associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -2406,6 +2421,9 @@ class BNCI2015_010(MNEBNCI):
                 "N2",
                 "gaze-independent",
             ],
+            funding=["BMBF Grant", "Grant Nos s", "Grant No. MU MU", "DFG Grant"],
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -2617,13 +2635,10 @@ class BNCI2015_012(MNEBNCI):
             ],
             institution="Berlin Institute of Technology",
             country="Germany",
-            repository=None,
             data_url=None,
-            license=None,
             publication_year=2011,
             senior_author="Johannes Höhne",
             contact_info=["j.hoehne@tu-berlin.de"],
-            associated_paper_doi=None,
             funding=None,
             institution_address="Franklinstr. 28/19, 10587 Berlin, Germany",
             institution_department="Machine Learning Laboratory",
@@ -2640,6 +2655,9 @@ class BNCI2015_012(MNEBNCI):
                 "T9",
                 "user-centered design",
             ],
+            associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         sessions_per_subject=1,
         runs_per_session=5,
@@ -2728,7 +2746,7 @@ class BNCI2015_012(MNEBNCI):
             code="BNCI2015-012",
             interval=[0, 0.8],
             paradigm="p300",
-            doi="10.3389/fnins.2011.00112",
+            doi="10.3389/fnins.2011.00099",
         )
 
     def _get_single_subject_data(self, subject):
@@ -2751,9 +2769,10 @@ class BNCI2015_013(MNEBNCI):
 
     References
     ----------
-    .. [1] Ferrez, P. W., & Millan, J. D. R. (2008). Error-related EEG potentials
-           in brain-computer interfaces. Journal of Neural Engineering, 5(1), 62.
-           https://doi.org/10.1088/1741-2560/5/1/007
+    .. [1] Chavarriaga, R., & Millán, J. D. R. (2010). Learning from EEG
+           error-related potentials in noninvasive brain-computer interfaces.
+           IEEE Trans. Neural Syst. Rehabil. Eng., 18(4), 381-388.
+           https://doi.org/10.1109/TNSRE.2010.2053387
 
     Notes
     -----
@@ -2895,6 +2914,8 @@ class BNCI2015_013(MNEBNCI):
                 "monitoring",
                 "error detection",
             ],
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],

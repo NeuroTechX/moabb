@@ -165,6 +165,8 @@ class PhysionetMI(BaseDataset):
                 "psychophysiology",
                 "rehabilitation",
             ],
+            license="ODC-By-1.0",
+            repository="Physionet",
         ),
         tags=Tags(
             pathology=["Healthy"],

@@ -294,7 +294,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
                 "Ethics Committee of the University Medical Center Freiburg",
                 "Declaration of Helsinki",
             ],
-            license="Creative Commons Attribution License",
+            license="CC-BY-4.0",
             keywords=[
                 "brain-computer interface",
                 "BCI",
@@ -514,7 +514,8 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             },
         ),
         documentation=DocumentationMetadata(
-            doi="10.1109/MCI.2018.2807039",
+            doi="10.5281/zenodo.192684",
+            associated_paper_doi="10.1109/MCI.2018.2807039",
             repository="Zenodo",
             data_url="http://doi.org/10.5281/zenodo.192684",
             publication_year=2018,
@@ -553,6 +554,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
                 "MIX method",
                 "EEG",
             ],
+            license="CC-BY-4.0",
         ),
         sessions_per_subject=1,
         runs_per_session=3,

@@ -446,8 +446,6 @@ class BNCI2024_001(BNCIBaseDataset):
             institution="Graz University of Technology",
             country="Austria",
             repository="BNCI Horizon 2020",
-            data_url="http://bnci-horizon-2020.eu/database/data-sets",
-            license="CC BY",
             publication_year=2024,
             senior_author="Gernot R. Müller-Putz",
             contact_info=["gernot.mueller@tugraz.at"],
@@ -461,6 +459,8 @@ class BNCI2024_001(BNCIBaseDataset):
                 "Continuous movement decoding",
                 "Non-invasive",
             ],
+            data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

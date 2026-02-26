@@ -198,7 +198,6 @@ class Thielen2015(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0133797",
             repository="GitHub",
-            data_url="https://github.com/thijor/Reconvolution",
             investigators=[
                 "Jordy Thielen",
                 "Philip van den Broek",
@@ -211,7 +210,6 @@ class Thielen2015(BaseDataset):
             publication_year=2015,
             senior_author="Peter Desain",
             contact_info=["jordy.thielen@gmail.com", "info@donders.ru.nl"],
-            license="Creative Commons Attribution License",
             funding=[
                 "BrainGain Smart Mix Program of the Netherlands Ministry of Economic Affairs",
                 "Netherlands Ministry of Education, Culture and Science (SSM06011)",
@@ -229,6 +227,8 @@ class Thielen2015(BaseDataset):
                 "speller",
                 "visual stimulation",
             ],
+            data_url="https://github.com/thijor/",
+            license="CC0-1.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

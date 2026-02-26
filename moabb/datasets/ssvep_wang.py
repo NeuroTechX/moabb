@@ -279,8 +279,6 @@ class Wang2016(BaseDataset):
             ],
             institution="Tsinghua University",
             country="China",
-            repository="BNCI Horizon 2020",
-            data_url="http://bci.med.tsinghua.edu.cn/download.html",
             publication_year=2017,
             senior_author="Shangkai Gao",
             contact_info=[
@@ -306,6 +304,9 @@ class Wang2016(BaseDataset):
                 "public data set",
                 "steady-state visual evoked potential (SSVEP)",
             ],
+            repository="BNCI Horizon 2020",
+            data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

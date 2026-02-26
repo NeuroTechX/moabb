@@ -394,7 +394,6 @@ class BNCI2025_001(BNCIBaseDataset):
             institution_department="Institute of Neural Engineering",
             country="Austria",
             publication_year=2024,
-            license="Creative Commons Attribution 4.0",
             ethics_approval=[
                 "Ethical committee at the Graz University of Technology (EK-28/2024)",
                 "Declaration of Helsinki",
@@ -412,6 +411,7 @@ class BNCI2025_001(BNCIBaseDataset):
             ],
             description="EEG dataset investigating simultaneous encoding of speed, distance, and direction in discrete hand reaching movements using a four-direction center-out task",
             acknowledgements="Members of the Graz BCI team, especially Markus Crell for providing motion capture software",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1158,9 +1158,6 @@ class BNCI2025_002(BNCIBaseDataset):
             ],
             institution="Institute of Neural Engineering, Graz University of Technology",
             country="Austria",
-            repository="Not specified",
-            data_url="Available from corresponding author on reasonable request",
-            license="Creative Commons Attribution 4.0",
             publication_year=2022,
             senior_author="Gernot R Müller-Putz",
             contact_info=["gernot.mueller@tugraz.at"],
@@ -1179,6 +1176,9 @@ class BNCI2025_002(BNCIBaseDataset):
                 "neuroplasticity",
                 "brain-computer interface",
             ],
+            repository="GitHub",
+            data_url="https://github.com/sccn/labstreaminglayer",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy", "Spinal cord injury"],

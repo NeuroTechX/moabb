@@ -239,7 +239,7 @@ class BNCI2019_001(BaseDataset):
             country="Austria",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2222268",
-            license="Creative Commons Attribution 4.0 International",
+            license="CC-BY-4.0",
             publication_year=2019,
             senior_author="Gernot R. Müller-Putz",
             contact_info=["gernot.mueller@tugraz.at"],

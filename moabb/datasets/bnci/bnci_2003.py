@@ -248,6 +248,8 @@ class BNCI2003_004(MNEBNCI):
             institution_department="Fraunhofer FIRST (IDA); Department of Neurology, Campus Benjamin Franklin",
             senior_author="Klaus-Robert Müller",
             contact_info=["guido.dornhege@first.fraunhofer.de"],
+            license="CC-BY-4.0",
+            repository="BBCI",
         ),
         tags=Tags(
             pathology=["Healthy"],

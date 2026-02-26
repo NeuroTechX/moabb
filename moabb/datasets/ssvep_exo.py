@@ -135,6 +135,7 @@ class Kalunga2016(BaseDataset):
                 "Steady State Visually Evoked Potentials",
             ],
             description="Online SSVEP-based BCI using Riemannian geometry for assistive robotics with shared control scheme",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],

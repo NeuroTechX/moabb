@@ -30,8 +30,8 @@ from moabb.datasets.metadata.schema import (
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
 BF_archive_name = "BIDS.zip"
-BF_folder_name = "BrainForm-BIDS-eeg-dataset"
 BF_dataset_name = "RomaniBF2025ERP"
+BF_folder_name = f"MNE-{BF_dataset_name}-data"
 
 BRAINFORM_dataset_params = {
     "dataset_name": BF_dataset_name,
@@ -175,7 +175,6 @@ class RomaniBF2025ERP(BaseDataset):
             has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
-            doi="10.5281/zenodo.17225966",
             description="BrainForm: a Serious Game for BCI Training and Data Collection - gamified BCI training system designed for scalable data collection using consumer hardware",
             investigators=[
                 "Michele Romani",
@@ -185,9 +184,6 @@ class RomaniBF2025ERP(BaseDataset):
             ],
             institution="University of Trento",
             country="Italy",
-            repository="GitHub",
-            data_url="https://github.com/BRomans/BrainForm",
-            license=None,
             publication_year=2025,
             senior_author="Luca Turchet",
             institution_address="38122, Trento, Italy",
@@ -200,6 +196,10 @@ class RomaniBF2025ERP(BaseDataset):
                 "Serious Games",
                 "Human factors",
             ],
+            doi="10.48550/arXiv.2510.10169",
+            repository="GitHub",
+            data_url="https://github.com/BRomans/BrainForm",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -416,8 +416,25 @@ class RomaniBF2025ERP(BaseDataset):
             Corrected path to the actual BIDS root.
         """
 
-        # Rename unzipped folder after download if needed
+        # Handle backward compatibility: rename old folder to new nomenclature
         parent_folder = path.parent
+        legacy_folder_name = "BrainForm-BIDS-eeg-dataset"
+        legacy_path = parent_folder / legacy_folder_name
+        if legacy_path.exists() and not path.exists():
+            # Migrate from legacy folder name to new MOABB nomenclature
+            logging.info(
+                f"Migrating dataset from legacy folder '{legacy_folder_name}' "
+                f"to MOABB nomenclature '{path.name}'"
+            )
+            try:
+                shutil.move(str(legacy_path), str(path))
+            except OSError as e:
+                logging.warning(
+                    f"Could not migrate legacy folder: {e}. Using legacy path."
+                )
+                path = legacy_path
+
+        # Rename unzipped folder after download if needed
         unzipped_folder = BF_archive_name + ".unzip"
         unzipped_path = parent_folder / unzipped_folder
         if os.path.exists(unzipped_path):

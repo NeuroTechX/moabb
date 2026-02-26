@@ -200,7 +200,6 @@ class Ofner2017(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0182578",
             repository="BNCI Horizon 2020",
-            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             investigators=[
                 "Patrick Ofner",
                 "Andreas Schwarz",
@@ -220,7 +219,6 @@ class Ofner2017(BaseDataset):
             ethics_approval=[
                 "Medical University of Graz, approval number 28-108 ex 15/16"
             ],
-            license="Creative Commons Attribution License",
             associated_paper_doi="10.1371/journal.pone.0182578",
             keywords=[
                 "upper limb movements",
@@ -233,6 +231,8 @@ class Ofner2017(BaseDataset):
                 "neuroprosthesis",
             ],
             acknowledgements="Data are available from the BNCI Horizon 2020 database at http://bnci-horizon-2020.eu/database/data-sets (accession number 001-2017) and from Zenodo at DOI 10.5281/zenodo.834976",
+            data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC-BY-4.0",
         ),
         sessions_per_subject=2,
         runs_per_session=10,

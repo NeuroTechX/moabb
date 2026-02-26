@@ -187,7 +187,6 @@ class Liu2024(BaseDataset):
             institution_address="Beijing, 100053, China",
             institution_department="Department of Neurology",
             country="CN",
-            repository="Figshare",
             data_url="https://doi.org/10.6084/m9.figshare.21679035.v5",
             publication_year=2024,
             funding=[
@@ -196,7 +195,6 @@ class Liu2024(BaseDataset):
             ethics_approval=[
                 "Ethics Committee of Xuanwu Hospital of Capital Medical University (No. 2021-236)"
             ],
-            license="Creative Commons Attribution 4.0 International License",
             keywords=[
                 "motor imagery",
                 "BCI",
@@ -207,6 +205,8 @@ class Liu2024(BaseDataset):
                 "acute stroke",
                 "hand-grip imagery",
             ],
+            license="CC-BY-4.0",
+            repository="Figshare",
         ),
         sessions_per_subject=1,
         runs_per_session=1,

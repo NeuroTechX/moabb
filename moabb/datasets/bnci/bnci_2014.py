@@ -355,7 +355,8 @@ class BNCI2014_001(MNEBNCI):
             ],
             institution="Berlin Institute of Technology",
             country="Germany",
-            repository="http://www.bbci.de/competition/iv/",
+            license="CC-BY-ND-4.0",
+            repository="BNCI Horizon",
             data_url="http://www.bbci.de/competition/iv/",
             publication_year=2012,
             senior_author="Michael Tangermann",
@@ -482,7 +483,7 @@ class BNCI2014_002(MNEBNCI):
     .. [1] Scherer, R., Faller, J., Balderas, D., Friedrich, E. V., &
            Müller-Putz, G. (2015). Brain-computer interfacing: more than the
            sum of its parts. Soft Computing, 19(11), 3173-3186.
-           https://doi.org/10.1007/s00500-014-1547-8
+           https://doi.org/10.1007/s00500-012-0895-4
 
     Notes
     -----
@@ -553,6 +554,8 @@ class BNCI2014_002(MNEBNCI):
             institution="Graz University of Technology",
             institution_department="Institute for Knowledge Discovery, Laboratory of Brain-Computer Interfaces",
             country="Austria",
+            license="CC-BY-ND-4.0",
+            repository="BNCI Horizon",
             publication_year=2014,
             funding=[
                 "FP7 BackHome (No. 288566)",
@@ -646,7 +649,7 @@ class BNCI2014_002(MNEBNCI):
             code="BNCI2014-002",
             interval=[3, 8],
             paradigm="imagery",
-            doi="10.1007/s00500-014-1547-8",
+            doi="10.1007/s00500-012-0895-4",
         )
 
 
@@ -799,19 +802,12 @@ class BNCI2014_004(MNEBNCI):
             ],
             institution="Graz University of Technology",
             country="Austria",
-            repository=None,
+            repository="BNCI Horizon",
             data_url="http://biosig.sourceforge.net/",
-            license=None,
+            license="CC-BY-ND-4.0",
             publication_year=2007,
             senior_author="G. Pfurtscheller",
-            contact_info=None,
-            associated_paper_doi=None,
-            funding=None,
-            institution_address=None,
             institution_department="Institute for Knowledge Discovery, Institute for Human-Computer Interfaces",
-            ethics_approval=None,
-            acknowledgements=None,
-            how_to_acknowledge=None,
             keywords=[
                 "brain-computer interface",
                 "BCI",
@@ -827,8 +823,6 @@ class BNCI2014_004(MNEBNCI):
         sessions_per_subject=5,
         runs_per_session=6,
         sessions=["01T", "02T", "03T", "04E", "05E"],
-        contributing_labs=None,
-        n_contributing_labs=None,
         data_processed=False,
         file_format="GDF",
         external_links={"source": "http://biosig.sourceforge.net/"},
@@ -1016,6 +1010,8 @@ class BNCI2014_008(MNEBNCI):
             ],
             institution="Fondazione Santa Lucia",
             country="Italy",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
             publication_year=2013,
             senior_author="Febo Cincotti",
             contact_info=["a.riccio@hsantalucia.it"],
@@ -1229,6 +1225,8 @@ class BNCI2014_009(MNEBNCI):
             ],
             institution="Fondazione Santa Lucia IRCCS",
             country="Italy",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
             publication_year=2014,
             senior_author="F Cincotti",
             contact_info=["p.arico@hsantalucia.it"],

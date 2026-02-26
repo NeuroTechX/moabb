@@ -61,7 +61,7 @@ class _Dreyer2023Base(BaseDataset):
             code="Dreyer2023" + self.sub_id,
             interval=[0, 5],
             paradigm="imagery",
-            doi="10.5281/zenodo.7554429",
+            doi="10.1038/s41597-023-02445-z",
         )
 
     def _get_single_subject_data(self, subject):
@@ -436,6 +436,7 @@ class Dreyer2023A(_Dreyer2023Base):
                 "cognitive traits",
                 "user profile",
             ],
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1200,7 +1201,8 @@ class Dreyer2023(_Dreyer2023Base):
             doi="10.1016/j.ijhcs.2021.102603",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.8089820",
-            publication_year=2021,
+            license="CC-BY-4.0",
+            publication_year=2023,
             investigators=[
                 "Léa Pillette",
                 "Aline Roc",

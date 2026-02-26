@@ -136,8 +136,6 @@ class Schirrmeister2017(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1002/hbm.23730",
-            repository="GIN",
-            data_url="https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data",
             publication_year=2017,
             investigators=[
                 "Robin Tibor Schirrmeister",
@@ -163,7 +161,6 @@ class Schirrmeister2017(BaseDataset):
             ethics_approval=[
                 "Approved by the ethical committee of the University of Freiburg"
             ],
-            license="Creative Commons Attribution License",
             keywords=[
                 "electroencephalography",
                 "EEG analysis",
@@ -174,6 +171,9 @@ class Schirrmeister2017(BaseDataset):
                 "model interpretability",
                 "brain mapping",
             ],
+            repository="GitHub",
+            data_url="https://github.com/robintibor/braindecode/",
+            license="CC-BY-4.0",
         ),
         sessions_per_subject=1,
         runs_per_session=13,

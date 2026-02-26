@@ -177,7 +177,6 @@ class Sosulski2019(BaseDataset):
             ],
             institution="University of Freiburg",
             country="Germany",
-            repository="FreiDok",
             data_url="https://freidok.uni-freiburg.de/data/154576",
             publication_year=2021,
             senior_author="Michael Tangermann",
@@ -187,6 +186,7 @@ class Sosulski2019(BaseDataset):
                 "kleinaa@cs.uni-freiburg.de",
                 "michael.tangermann@donders.ru.nl",
             ],
+            license="CC-BY-SA-4.0",
             funding=[
                 "Cluster of Excellence BrainLinks-BrainTools funded by the German Research Foundation (DFG) [grant number EXC 1086]",
                 "DFG project SuitAble [grant number TA 1258/1-1]",
@@ -204,6 +204,7 @@ class Sosulski2019(BaseDataset):
                 "auditory event-related potentials",
                 "closed-loop parameter optimization",
             ],
+            repository="FreiDok",
         ),
         tags=Tags(
             pathology=["Healthy"],

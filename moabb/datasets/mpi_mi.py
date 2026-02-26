@@ -270,6 +270,8 @@ class GrosseWentrup2009(BaseDataset):
                 "motor imagery",
                 "spatial filtering",
             ],
+            license="CC-BY-4.0",
+            repository="Zenodo",
         ),
         tags=Tags(
             pathology=["Healthy"],

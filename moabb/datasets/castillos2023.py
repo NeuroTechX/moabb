@@ -30,6 +30,7 @@ TRIAL_PRESENTATION_TIME = 2.2
 
 
 class BaseCastillos2023(BaseDataset):
+
     def __init__(
         self,
         events,
@@ -1036,7 +1037,6 @@ class CastillosCVEP100(BaseCastillos2023):
             institution_department="Human Factors and Neuroergonomics",
             ethics_approval=[
                 "Ethics committee of the University of Toulouse (CER approval number 2020-334)",
-
                 "Declaration of Helsinki",
             ],
             keywords=[
