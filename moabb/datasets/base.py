@@ -20,6 +20,7 @@ import pandas as pd
 from mne_bids import events_file_to_annotation_kwargs
 
 from moabb.datasets.bids_interface import (
+    _FORMAT_EXTENSION_MAP,
     StepType,
     _BIDSInterfaceRawEDFNoDesc,
     _interface_map,
@@ -871,7 +872,9 @@ class BaseDataset(metaclass=MetaclassDataset):
                     verbose=verbose,
                 )
 
-    def convert_to_bids(self, path=None, subjects=None, overwrite=False, verbose=None):
+    def convert_to_bids(
+        self, path=None, subjects=None, overwrite=False, format="EDF", verbose=None
+    ):
         """Convert the dataset to BIDS format.
 
         Saves the raw EEG data in a BIDS-compliant directory structure.
@@ -879,10 +882,6 @@ class BaseDataset(metaclass=MetaclassDataset):
         produced here do **not** contain a processing-pipeline hash
         (``desc-<hash>``) in their names, making the output a clean,
         shareable BIDS dataset.
-
-        Only raw EEG data (saved as EDF) is officially supported by the BIDS
-        specification.  For caching epochs or NumPy arrays (pseudo-BIDS), use
-        the ``cache_config`` parameter of :meth:`get_data` instead.
 
         Parameters
         ----------
@@ -896,6 +895,10 @@ class BaseDataset(metaclass=MetaclassDataset):
         overwrite : bool
             If ``True``, existing BIDS files for a subject are removed before
             saving.  Default is ``False``.
+        format : str
+            The file format for the raw EEG data.  Supported values are
+            ``"EDF"`` (default), ``"BrainVision"``, ``"BDF"``, and
+            ``"EEGLAB"``.
         verbose : str | None
             Verbosity level forwarded to MNE/MNE-BIDS.
 
@@ -920,6 +923,11 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         .. versionadded:: 1.5
         """
+        if format not in _FORMAT_EXTENSION_MAP:
+            raise ValueError(
+                f"Unsupported format {format!r}. "
+                f"Allowed formats are {tuple(_FORMAT_EXTENSION_MAP)}"
+            )
         if subjects is None:
             subjects = self.subject_list
 
@@ -930,6 +938,8 @@ class BaseDataset(metaclass=MetaclassDataset):
                 f"Valid subjects are {self.subject_list}"
             )
 
+        ext = _FORMAT_EXTENSION_MAP[format]
+
         for subject in subjects:
             interface = _BIDSInterfaceRawEDFNoDesc(
                 dataset=self,
@@ -937,12 +947,13 @@ class BaseDataset(metaclass=MetaclassDataset):
                 path=path,
                 process_pipeline=None,
                 verbose=verbose,
+                _format=format,
             )
             if overwrite:
                 interface.erase()
             else:
                 subject_dir = interface.root / f"sub-{subject}"
-                if any(subject_dir.rglob("*.edf")):
+                if any(subject_dir.rglob(f"*{ext}")):
                     log.info(
                         "BIDS data already exists for %s, skipping "
                         "(use overwrite=True to overwrite).",

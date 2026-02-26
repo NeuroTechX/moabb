@@ -326,15 +326,25 @@ class BIDSInterfaceBase(abc.ABC):
         pass
 
 
+_FORMAT_EXTENSION_MAP = {
+    "EDF": ".edf",
+    "BrainVision": ".vhdr",
+    "BDF": ".bdf",
+    "EEGLAB": ".set",
+}
+
+
 class BIDSInterfaceRawEDF(BIDSInterfaceBase):
-    """BIDS Interface for Raw EDF files. Selected .edf type only.
+    """BIDS Interface for Raw EEG files.
 
     In this case, the ``run`` object (see the ``save()`` method)
     is expected to be an ``mne.io.BaseRaw`` instance."""
 
+    _format = "EDF"
+
     @property
     def _extension(self):
-        return ".edf"
+        return _FORMAT_EXTENSION_MAP[self._format]
 
     @property
     def _check(self):
@@ -387,7 +397,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         mne_bids.write_raw_bids(
             raw,
             bids_path,
-            format="EDF",
+            format=self._format,
             allow_preload=True,
             montage=raw.get_montage(),
             overwrite=False,
@@ -502,6 +512,7 @@ class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
     """
 
     _dataset_type: str = "raw"
+    _format: str = "EDF"
 
     @property
     def desc(self):

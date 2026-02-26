@@ -837,6 +837,38 @@ class TestBIDSDataset:
         bids_root3 = dataset.convert_to_bids(path=tmp_path, subjects=[1], overwrite=True)
         assert bids_root3 == bids_root
 
+    @pytest.mark.filterwarnings(
+        "ignore:Converting data files to BrainVision.*:RuntimeWarning"
+    )
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    @pytest.mark.parametrize(
+        "format, ext",
+        [("EDF", ".edf"), ("BrainVision", ".vhdr")],
+    )
+    def test_convert_to_bids_format(self, tmp_path, format, ext):
+        """Test that convert_to_bids respects the format parameter."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=1, n_subjects=1, n_runs=1
+        )
+        bids_root = dataset.convert_to_bids(path=tmp_path, subjects=[1], format=format)
+
+        data_files = list(bids_root.rglob(f"*{ext}"))
+        assert len(data_files) > 0, f"No {ext} files were written for format={format}"
+
+        # Calling again with overwrite=False should skip
+        bids_root2 = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1], format=format, overwrite=False
+        )
+        assert bids_root2 == bids_root
+
+    def test_convert_to_bids_invalid_format(self, tmp_path):
+        """Test that convert_to_bids raises on invalid format."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=1, n_subjects=1, n_runs=1
+        )
+        with pytest.raises(ValueError, match="Unsupported format"):
+            dataset.convert_to_bids(path=tmp_path, subjects=[1], format="INVALID")
+
 
 class TestKojima2024A:
     def test_convert_subject_to_subject_id(self):
