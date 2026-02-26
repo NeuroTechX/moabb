@@ -490,7 +490,7 @@ _interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
 class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
     """BIDSInterfaceRawEDF variant that saves without a description hash.
 
-    Used internally by :meth:`convert_dataset_to_bids` to produce BIDS files
+    Used internally by :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` to produce BIDS files
     whose names do not contain a ``desc-<hash>`` entity.
     """
 
