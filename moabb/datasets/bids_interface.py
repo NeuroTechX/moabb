@@ -136,6 +136,7 @@ class BIDSInterfaceBase(abc.ABC):
     path: str = None
     process_pipeline: "Pipeline" = None
     verbose: str = None
+    _dataset_type: str = "derivative"
 
     @property
     def processing_params(self):
@@ -240,26 +241,6 @@ class BIDSInterfaceBase(abc.ABC):
         """
         log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
-        mne_bids.make_dataset_description(
-            path=str(self.root),
-            name=self.dataset.code,
-            dataset_type="derivative",
-            generated_by=[
-                dict(
-                    CodeURL="https://github.com/NeuroTechX/moabb",
-                    Name="moabb",
-                    Description="Mother of All BCI Benchmarks",
-                    Version=moabb.__version__,
-                )
-            ],
-            source_datasets=[
-                dict(
-                    DOI=self.dataset.doi,
-                )
-            ],
-            overwrite=False,
-            verbose=self.verbose,
-        )
 
         for session, runs in sessions_data.items():
             for run, obj in runs.items():
@@ -288,6 +269,28 @@ class BIDSInterfaceBase(abc.ABC):
 
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
+
+        # Write dataset_description.json after all files so that it
+        # overwrites any version created internally by mne_bids.write_raw_bids.
+        source_datasets = []
+        if self.dataset.doi is not None:
+            source_datasets = [dict(DOI=self.dataset.doi)]
+        mne_bids.make_dataset_description(
+            path=str(self.root),
+            name=self.dataset.code,
+            dataset_type=self._dataset_type,
+            generated_by=[
+                dict(
+                    CodeURL="https://github.com/NeuroTechX/moabb",
+                    Name="moabb",
+                    Description="Mother of All BCI Benchmarks",
+                    Version=moabb.__version__,
+                )
+            ],
+            source_datasets=source_datasets,
+            overwrite=True,
+            verbose=self.verbose,
+        )
         self._write_lock_file()
         log.info("Finished caching %s to disk.", repr(self))
 
@@ -498,9 +501,36 @@ class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
     whose names do not contain a ``desc-<hash>`` entity.
     """
 
+    _dataset_type: str = "raw"
+
     @property
     def desc(self):
         return None
+
+    def _write_file(self, bids_path, raw):
+        super()._write_file(bids_path, raw)
+        self._write_electrodes_sidecars(bids_path)
+
+    @staticmethod
+    def _write_electrodes_sidecars(bids_path):
+        """Write *_electrodes.json with SpatialReference (required by BIDS).
+
+        mne-bids writes ``*_electrodes.tsv`` but does not always create
+        a corresponding JSON sidecar with the ``SpatialReference`` key
+        that the BIDS validator requires.
+        """
+        eeg_dir = bids_path.directory
+        for tsv in eeg_dir.glob("*_electrodes.tsv"):
+            json_path = tsv.with_suffix(".json")
+            if json_path.exists():
+                with open(json_path) as f:
+                    data = json.load(f)
+            else:
+                data = {}
+            if "SpatialReference" not in data:
+                data["SpatialReference"] = "n/a"
+                with open(json_path, "w") as f:
+                    json.dump(data, f, indent=4)
 
     def _write_lock_file(self):
         """Do not write a lock file for public BIDS conversion."""
