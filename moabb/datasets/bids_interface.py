@@ -212,6 +212,10 @@ class BIDSInterfaceBase(abc.ABC):
         """Erase the cache of the subject if it exists."""
         log.info("Starting erasing cache of %s...", repr(self))
 
+        if not self.root.exists():
+            log.info("No cache directory at %s, nothing to erase.", self.root)
+            return
+
         # Find all matching paths to determine which sessions exist
         paths = mne_bids.find_matching_paths(
             root=self.root,
@@ -241,7 +245,10 @@ class BIDSInterfaceBase(abc.ABC):
             legacy.fpath.unlink()
 
         # Remove data files per session to avoid mne_bids failing when
-        # looking up scans.tsv across multiple sessions.
+        # looking up scans.tsv across multiple sessions.  Note: mne_bids
+        # rm() automatically calls rmtree on the subject directory when
+        # the last session is removed (i.e. no remaining files under
+        # sub-{subject}/), so empty directories are cleaned up.
         for session in sessions:
             session_path = mne_bids.BIDSPath(
                 root=self.root,
