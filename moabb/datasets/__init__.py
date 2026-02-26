@@ -8,7 +8,6 @@ on datasets (electrodes, number of trials, sessions, etc.)
 """
 
 from . import compound_dataset
-from .bids_interface import convert_dataset_to_bids
 
 # flake8: noqa
 from .alex_mi import AlexMI
