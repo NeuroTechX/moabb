@@ -505,5 +505,3 @@ class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
             log.info("Starting erasing BIDS data of %s...", repr(self))
             shutil.rmtree(subject_dir)
             log.info("Finished erasing BIDS data of %s.", repr(self))
-
-

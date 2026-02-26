@@ -806,7 +806,9 @@ class TestBIDSDataset:
         dataset = FakeDataset(
             event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
         )
-        bids_root = dataset.convert_to_bids(path=tmp_path, subjects=[1, 2], overwrite=False)
+        bids_root = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1, 2], overwrite=False
+        )
 
         # The returned path should exist
         assert bids_root.exists()
@@ -823,7 +825,9 @@ class TestBIDSDataset:
         assert subjects_found == {"sub-1", "sub-2"}
 
         # Calling again with overwrite=False should not raise (lock file already exists)
-        bids_root2 = dataset.convert_to_bids(path=tmp_path, subjects=[1, 2], overwrite=False)
+        bids_root2 = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1, 2], overwrite=False
+        )
         assert bids_root2 == bids_root
 
         # Calling again with overwrite=True should succeed
