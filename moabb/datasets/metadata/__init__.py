@@ -126,20 +126,70 @@ _MANUAL_METADATA_OVERRIDES = {
         "experiment": {"task_type": "brain_invaders"},
     },
     # ERP CORE 2021 variants
-    "ErpCore2021_ERN": {},
-    "ErpCore2021_LRP": {},
-    "ErpCore2021_MMN": {},
-    "ErpCore2021_N170": {"participants": {"age_mean": 21.5}},
-    "ErpCore2021_N2pc": {},
-    "ErpCore2021_N400": {},
-    "ErpCore2021_P3": {},
+    "ErpCore2021_ERN": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "ErpCore2021_LRP": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "ErpCore2021_MMN": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "ErpCore2021_N170": {
+        "participants": {"age_mean": 21.5},
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "ErpCore2021_N2pc": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "ErpCore2021_N400": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "ErpCore2021_P3": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
     # cVEP datasets
-    "CastillosBurstVEP40": {},
-    "CastillosBurstVEP100": {},
-    "CastillosCVEP40": {},
-    "CastillosCVEP100": {},
-    "MartinezCagigal2023Checker": {"sessions_per_subject": 8},
-    "MartinezCagigal2023Pary": {"sessions_per_subject": 5},
+    "CastillosBurstVEP40": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+    },
+    "CastillosBurstVEP100": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+    },
+    "CastillosCVEP40": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+    },
+    "CastillosCVEP100": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+    },
+    "MartinezCagigal2023Checker": {
+        "sessions_per_subject": 8,
+        "documentation": {"license": "CC-BY-NC-SA-4.0", "repository": "U Valladoid"},
+    },
+    "MartinezCagigal2023Pary": {
+        "sessions_per_subject": 5,
+        "documentation": {"license": "CC-BY-NC-SA-4.0", "repository": "U Valladoid"},
+    },
+    # Beetl datasets
+    "Beetl2021_A": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"},
+    },
+    "Beetl2021_B": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"},
+    },
+    # Kojima datasets
+    "Kojima2024A": {
+        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"},
+    },
+    "Kojima2024B": {
+        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"},
+    },
+    # Dreyer2023 variants without METADATA blocks
+    "Dreyer2023B": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "Dreyer2023C": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
 }
 
 
@@ -350,7 +400,10 @@ def _apply_dataset_family_defaults(
     # ERP CORE defaults
     if name.startswith("ErpCore2021"):
         documentation = metadata.documentation or DocumentationMetadata()
-        documentation = replace(documentation, doi="10.1016/j.neuroimage.2020.117465")
+        doc_updates = {"doi": "10.1016/j.neuroimage.2020.117465"}
+        if not documentation.license:
+            doc_updates["license"] = "CC BY 4.0"
+        documentation = replace(documentation, **doc_updates)
         acquisition = metadata.acquisition or AcquisitionMetadata(
             sampling_rate=256.0, n_channels=64, channel_types={"eeg": 64}
         )
@@ -370,7 +423,10 @@ def _apply_dataset_family_defaults(
     # Castillos cVEP defaults
     if name.startswith("Castillos"):
         documentation = metadata.documentation or DocumentationMetadata()
-        documentation = replace(documentation, doi="10.1016/j.neuroimage.2023.120446")
+        doc_updates = {"doi": "10.1016/j.neuroimage.2023.120446"}
+        if not documentation.license:
+            doc_updates["license"] = "CC BY 4.0"
+        documentation = replace(documentation, **doc_updates)
         participants = metadata.participants or ParticipantMetadata(n_subjects=12)
         participants = replace(participants, n_subjects=12)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
@@ -384,12 +440,16 @@ def _apply_dataset_family_defaults(
 
     # MartinezCagigal cVEP defaults
     if name.startswith("MartinezCagigal2023"):
+        documentation = metadata.documentation or DocumentationMetadata()
+        if not documentation.license:
+            documentation = replace(documentation, license="CC-BY-NC-SA-4.0")
         participants = metadata.participants or ParticipantMetadata(n_subjects=16)
         participants = replace(participants, n_subjects=16)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
         experiment = replace(experiment, paradigm="cvep")
         metadata = replace(
             metadata,
+            documentation=documentation,
             participants=participants,
             experiment=experiment,
         )

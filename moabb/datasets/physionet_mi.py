@@ -130,6 +130,8 @@ class PhysionetMI(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TBME.2004.827072",
+            license="ODC-By-1.0",
+            repository="Physionet",
         ),
         tags=Tags(
             pathology=["Healthy"],

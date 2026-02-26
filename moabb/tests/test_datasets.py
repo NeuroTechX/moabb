@@ -393,6 +393,78 @@ class Test_Datasets:
         doc = ManualParticipantsDataset.__doc__
         assert doc.count(".. admonition:: Participants") == 1
 
+    def test_feedback_section_auto_generated(self):
+        class FeedbackTestDataset(BaseDataset):
+            """A test dataset for feedback section."""
+
+            def __init__(self):
+                super().__init__(
+                    subjects=[1],
+                    sessions_per_subject=1,
+                    events={"left_hand": 1, "right_hand": 2},
+                    code="FeedbackTestDataset",
+                    interval=[0, 1],
+                    paradigm="imagery",
+                )
+
+            def _get_single_subject_data(self, subject):
+                return {}
+
+            def data_path(
+                self,
+                subject,
+                path=None,
+                force_update=False,
+                update_path=None,
+                verbose=None,
+            ):
+                return []
+
+        doc = FeedbackTestDataset.__doc__
+        assert "Found an issue with this dataset?" in doc
+        assert "https://github.com/NeuroTechX/moabb/issues/new" in doc
+        assert "FeedbackTestDataset" in doc
+        assert "Report an Issue on GitHub" in doc
+
+    def test_feedback_section_not_duplicated(self):
+        class FeedbackNoDupDataset(BaseDataset):
+            """A test dataset.
+
+            .. admonition:: Found an issue with this dataset?
+               :class: tip
+
+               Custom feedback section already present.
+            """
+
+            def __init__(self):
+                super().__init__(
+                    subjects=[1],
+                    sessions_per_subject=1,
+                    events={"left_hand": 1, "right_hand": 2},
+                    code="FeedbackNoDupDataset",
+                    interval=[0, 1],
+                    paradigm="imagery",
+                )
+
+            def _get_single_subject_data(self, subject):
+                return {}
+
+            def data_path(
+                self,
+                subject,
+                path=None,
+                force_update=False,
+                update_path=None,
+                verbose=None,
+            ):
+                return []
+
+        doc = FeedbackNoDupDataset.__doc__
+        assert doc.count("Found an issue with this dataset?") == 1
+
+    def test_feedback_section_not_added_to_fake_datasets(self):
+        assert "Found an issue with this dataset?" not in (FakeDataset.__doc__ or "")
+
     def test_completeness_summary_table(self):
         # The dataset summary table will be automatically added to the docstring of
         # all the datasets listed in the moabb/datasets/summary_*.csv files.
@@ -728,6 +800,75 @@ class TestBIDSDataset:
                 assert session_data.keys() == {"0"}
                 assert isinstance(session_data["0"], mne.io.BaseRaw)
 
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    def test_convert_to_bids(self, tmp_path):
+        """Test that convert_to_bids saves BIDS files without a desc hash."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
+        )
+        bids_root = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1, 2], overwrite=False
+        )
+
+        # The returned path should exist
+        assert bids_root.exists()
+
+        # There should be no files with 'desc-' in their names
+        bids_files = list(bids_root.rglob("*"))
+        for f in bids_files:
+            assert "desc-" not in f.name, f"Unexpected desc entity in BIDS file: {f}"
+
+        # No lock files should be written (lock files are part of the cache mechanism only)
+        assert not list(bids_root.rglob("*lockfile*")), "Lock files should not be written"
+
+        # EEG EDF files should be present for both subjects
+        edf_files = list(bids_root.rglob("*.edf"))
+        assert len(edf_files) > 0, "No EDF files were written to BIDS root"
+        subjects_found = {f.parent.parent.parent.name for f in edf_files}
+        assert subjects_found == {"sub-1", "sub-2"}
+
+        # Calling again with overwrite=False should skip (EDF files already exist)
+        bids_root2 = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1, 2], overwrite=False
+        )
+        assert bids_root2 == bids_root
+
+        # Calling again with overwrite=True should succeed
+        bids_root3 = dataset.convert_to_bids(path=tmp_path, subjects=[1], overwrite=True)
+        assert bids_root3 == bids_root
+
+    @pytest.mark.filterwarnings(
+        "ignore:Converting data files to BrainVision.*:RuntimeWarning"
+    )
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    @pytest.mark.parametrize(
+        "format, ext",
+        [("EDF", ".edf"), ("BrainVision", ".vhdr")],
+    )
+    def test_convert_to_bids_format(self, tmp_path, format, ext):
+        """Test that convert_to_bids respects the format parameter."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=1, n_subjects=1, n_runs=1
+        )
+        bids_root = dataset.convert_to_bids(path=tmp_path, subjects=[1], format=format)
+
+        data_files = list(bids_root.rglob(f"*{ext}"))
+        assert len(data_files) > 0, f"No {ext} files were written for format={format}"
+
+        # Calling again with overwrite=False should skip
+        bids_root2 = dataset.convert_to_bids(
+            path=tmp_path, subjects=[1], format=format, overwrite=False
+        )
+        assert bids_root2 == bids_root
+
+    def test_convert_to_bids_invalid_format(self, tmp_path):
+        """Test that convert_to_bids raises on invalid format."""
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=1, n_subjects=1, n_runs=1
+        )
+        with pytest.raises(ValueError, match="Unsupported format"):
+            dataset.convert_to_bids(path=tmp_path, subjects=[1], format="INVALID")
+
 
 class TestKojima2024A:
     def test_convert_subject_to_subject_id(self):
@@ -931,3 +1072,23 @@ class TestDatasetMetadata:
             metadata_from_property.experiment.paradigm
             == metadata_from_function.experiment.paradigm
         )
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_all_datasets_have_license(self, dataset_class):
+        """Ensure every dataset has a license in its documentation metadata."""
+        kwargs = {}
+        if inspect.signature(dataset_class).parameters.get("accept"):
+            kwargs["accept"] = True
+
+        dataset = dataset_class(**kwargs)
+        metadata = dataset.metadata
+
+        if metadata is None:
+            pytest.skip(f"{dataset_class.__name__} has no metadata catalog entry")
+
+        assert (
+            metadata.documentation is not None
+        ), f"{dataset_class.__name__} has no documentation metadata defined"
+        assert (
+            metadata.documentation.license is not None
+        ), f"{dataset_class.__name__} is missing a license in its documentation metadata"

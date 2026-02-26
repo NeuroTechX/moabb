@@ -90,7 +90,6 @@ jobs:
           import os
           import sys
           import time
-
           from moabb.utils import set_download_dir
           set_download_dir(os.environ["MNE_DATA"])
 

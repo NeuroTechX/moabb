@@ -151,6 +151,7 @@ class EPFLP300(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.jneumeth.2007.03.005",
+            license="Unknown",
         ),
         tags=Tags(
             pathology=["Healthy"],

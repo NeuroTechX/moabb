@@ -455,7 +455,7 @@ class BNCI2015_001(MNEBNCI):
     **Dataset Description**
 
     This dataset contains EEG data from 12 subjects performing two-class motor
-    imagery tasks (left vs right hand). Each subject participated in multiple
+    imagery tasks (right hand vs feet). Each subject participated in multiple
     sessions, with some subjects having three sessions.
 
     **Participants**
@@ -472,10 +472,11 @@ class BNCI2015_001(MNEBNCI):
 
     References
     ----------
-    .. [1] Faller, J., Scherer, R., Costa, U., Opisso, E., Medina, J., Muller-Putz,
-           G. R. (2014). A co-adaptive brain-computer interface for end users with
-           severe motor impairment. PLOS ONE, 9(7), e101168.
-           https://doi.org/10.1371/journal.pone.0101168
+    .. [1] Faller, J., Vidaurre, C., Solis-Escalante, T., Neuper, C., & Scherer, R.
+           (2012). Autocalibration and recurrent adaptation: Towards a plug and play
+           online ERD-BCI. IEEE Transactions on Neural Systems and Rehabilitation
+           Engineering, 20(3), 313-319.
+           https://doi.org/10.1109/tnsre.2012.2189584
 
     Notes
     -----
@@ -515,7 +516,7 @@ class BNCI2015_001(MNEBNCI):
         ),
         participants=ParticipantMetadata(
             n_subjects=12,
-            health_status="ALS",
+            health_status="healthy",
             gender={"male": 7, "female": 5},
             age_mean=24.8,
             handedness="all right-handed",
@@ -536,7 +537,8 @@ class BNCI2015_001(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/tnsre.2012.2189584",
-            associated_paper_doi="10.1371/journal.pone.0101168",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -721,6 +723,8 @@ class BNCI2015_003(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.1016/j.neulet.2009.06.045",
             associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -885,6 +889,7 @@ class BNCI2015_004(MNEBNCI):
             doi="10.1371/journal.pone.0123727",
             repository="BNCI Horizon 2020",
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
+            license="CC-BY-NC-ND-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1086,6 +1091,7 @@ class BNCI2015_006(MNEBNCI):
             repository="GitHub",
             data_url="https://github.com/bbci/bbci_public/blob/master/doc/index.markdown",
             funding=["Grant Nos s"],
+            license="CC-BY-NC-ND-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1353,6 +1359,8 @@ class BNCI2015_007(MNEBNCI):
             doi="10.1088/1741-2560/9/4/045006",
             associated_paper_doi="10.1088/1741-2560/11/2/026009",
             funding=["DFG grant", "grant nos s", "BMBF grant", "grant no MU MU"],
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1588,6 +1596,7 @@ class BNCI2015_008(MNEBNCI):
             doi="10.1088/1741-2560/8/6/066003",
             repository="GitHub",
             data_url="https://github.com/bbci/bbci_public/blob/master/doc/index.markdown",
+            license="CC-BY-NC-ND-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1779,6 +1788,8 @@ class BNCI2015_009(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0009813",
             associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -1975,6 +1986,8 @@ class BNCI2015_010(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.1016/j.clinph.2012.12.050",
             funding=["BMBF Grant", "Grant Nos s", "Grant No. MU MU", "DFG Grant"],
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -2172,6 +2185,8 @@ class BNCI2015_012(MNEBNCI):
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2011.00099",
             associated_paper_doi="10.3389/fnins.2011.00112",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -2363,6 +2378,8 @@ class BNCI2015_013(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2010.2053387",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Healthy"],

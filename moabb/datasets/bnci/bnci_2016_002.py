@@ -436,6 +436,8 @@ class BNCI2016_002(BNCIBaseDataset):
         documentation=DocumentationMetadata(
             doi="10.1088/1741-2560/8/5/056001",
             funding=["DFG grant", "grant nos s", "BMBF grant", "grant no MU MU"],
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
         tags=Tags(
             pathology=["Other"],

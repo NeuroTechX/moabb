@@ -244,6 +244,8 @@ class GrosseWentrup2009(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TBME.2008.2009768",
+            license="CC-BY-4.0",
+            repository="Zenodo",
         ),
         tags=Tags(
             pathology=["Healthy"],

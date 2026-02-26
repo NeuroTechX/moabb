@@ -15,6 +15,7 @@ import datetime
 import json
 import logging
 import re
+import shutil
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
@@ -135,6 +136,7 @@ class BIDSInterfaceBase(abc.ABC):
     path: str = None
     process_pipeline: "Pipeline" = None
     verbose: str = None
+    _dataset_type: str = "derivative"
 
     @property
     def processing_params(self):
@@ -149,9 +151,11 @@ class BIDSInterfaceBase(abc.ABC):
 
     def __repr__(self):
         """Return the representation of the BIDSInterface."""
+        desc = self.desc
+        desc_str = f"{desc:.7}" if desc is not None else "None"
         return (
             f"{self.dataset.code!r} sub-{self.subject} "
-            f"suffix-{self._suffix} desc-{self.desc:.7}"
+            f"suffix-{self._suffix} desc-{desc_str}"
         )
 
     @property
@@ -265,8 +269,7 @@ class BIDSInterfaceBase(abc.ABC):
 
         # Check for non-session-aware legacy lock files (backward compatibility)
         legacy_lock_exists = (
-            self._migration_lock_file.exists()
-            or self._legacy_lock_file.fpath.exists()
+            self._migration_lock_file.exists() or self._legacy_lock_file.fpath.exists()
         )
         # Ensure the legacy BIDSPath directory exists for mne_bids compatibility
         self._legacy_lock_file.mkdir(exist_ok=True)
@@ -318,26 +321,6 @@ class BIDSInterfaceBase(abc.ABC):
         """
         log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
-        mne_bids.make_dataset_description(
-            path=str(self.root),
-            name=self.dataset.code,
-            dataset_type="derivative",
-            generated_by=[
-                dict(
-                    CodeURL="https://github.com/NeuroTechX/moabb",
-                    Name="moabb",
-                    Description="Mother of All BCI Benchmarks",
-                    Version=moabb.__version__,
-                )
-            ],
-            source_datasets=[
-                dict(
-                    DOI=self.dataset.doi,
-                )
-            ],
-            overwrite=False,
-            verbose=self.verbose,
-        )
 
         lock_data = dict(processing_params=str(self.processing_params))
         for session, runs in sessions_data.items():
@@ -368,12 +351,38 @@ class BIDSInterfaceBase(abc.ABC):
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
 
-            lock_file = self._lock_file(session)
-            log.debug("Writing %s", lock_file)
-            lock_file.parent.mkdir(parents=True, exist_ok=True)
-            with lock_file.open("w") as file:
-                json.dump(lock_data, file)
+            self._write_lock_file(session, lock_data)
+
+        # Write dataset_description.json after all files so that it
+        # overwrites any version created internally by mne_bids.write_raw_bids.
+        source_datasets = []
+        if self.dataset.doi is not None:
+            source_datasets = [dict(DOI=self.dataset.doi)]
+        mne_bids.make_dataset_description(
+            path=str(self.root),
+            name=self.dataset.code,
+            dataset_type=self._dataset_type,
+            generated_by=[
+                dict(
+                    CodeURL="https://github.com/NeuroTechX/moabb",
+                    Name="moabb",
+                    Description="Mother of All BCI Benchmarks",
+                    Version=moabb.__version__,
+                )
+            ],
+            source_datasets=source_datasets,
+            overwrite=True,
+            verbose=self.verbose,
+        )
         log.info("Finished caching %s to disk.", repr(self))
+
+    def _write_lock_file(self, session, lock_data):
+        """Write the lock file for a session to signal that saving is complete."""
+        lock_file = self._lock_file(session)
+        log.debug("Writing %s", lock_file)
+        lock_file.parent.mkdir(parents=True, exist_ok=True)
+        with lock_file.open("w") as file:
+            json.dump(lock_data, file)
 
     @abc.abstractmethod
     def _load_file(self, bids_path, preload):
@@ -399,15 +408,25 @@ class BIDSInterfaceBase(abc.ABC):
         pass
 
 
+_FORMAT_EXTENSION_MAP = {
+    "EDF": ".edf",
+    "BrainVision": ".vhdr",
+    "BDF": ".bdf",
+    "EEGLAB": ".set",
+}
+
+
 class BIDSInterfaceRawEDF(BIDSInterfaceBase):
-    """BIDS Interface for Raw EDF files. Selected .edf type only.
+    """BIDS Interface for Raw EEG files.
 
     In this case, the ``run`` object (see the ``save()`` method)
     is expected to be an ``mne.io.BaseRaw`` instance."""
 
+    _format = "EDF"
+
     @property
     def _extension(self):
-        return ".edf"
+        return _FORMAT_EXTENSION_MAP[self._format]
 
     @property
     def _check(self):
@@ -460,7 +479,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         mne_bids.write_raw_bids(
             raw,
             bids_path,
-            format="EDF",
+            format=self._format,
             allow_preload=True,
             montage=raw.get_montage(),
             overwrite=False,
@@ -564,3 +583,30 @@ _interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
     StepType.EPOCHS: BIDSInterfaceEpochs,
     StepType.ARRAY: BIDSInterfaceNumpyArray,
 }
+
+
+@dataclass
+class _BIDSInterfaceRawEDFNoDesc(BIDSInterfaceRawEDF):
+    """BIDSInterfaceRawEDF variant that saves without a description hash.
+
+    Used internally by :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` to produce BIDS files
+    whose names do not contain a ``desc-<hash>`` entity.
+    """
+
+    _dataset_type: str = "raw"
+    _format: str = "EDF"
+
+    @property
+    def desc(self):
+        return None
+
+    def _write_lock_file(self, session, lock_data):
+        """Do not write a lock file for public BIDS conversion."""
+
+    def erase(self):
+        """Remove the subject's BIDS directory entirely."""
+        subject_dir = self.root / f"sub-{subject_moabb_to_bids(self.subject)}"
+        if subject_dir.exists():
+            log.info("Starting erasing BIDS data of %s...", repr(self))
+            shutil.rmtree(subject_dir)
+            log.info("Finished erasing BIDS data of %s.", repr(self))
