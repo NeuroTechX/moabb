@@ -152,7 +152,7 @@ print(f"Channels: {epochs.ch_names}")
 #     \bar{\Sigma} = \arg\min_{\Sigma \in \mathcal{M}_N}
 #     \sum_{i=1}^{I} \delta_R^2(\Sigma_i, \Sigma)
 #
-# As noted in [3]_, Riemannian distances are empirically right-skewed
+# As noted in [2]_, Riemannian distances are empirically right-skewed
 # and positive-only, so the **geometric z-score** is more appropriate
 # than the arithmetic one:
 #
@@ -232,7 +232,8 @@ plt.show()
 # 2D Projection of the Riemannian Potato
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# This visualization is inspired by Figure 1 of [3]_. We project the
+# This visualization is inspired by Figure 1 of [2]_ (see also
+# `pyRiemann's example <https://pyriemann.readthedocs.io/en/latest/auto_examples/artifacts/plot_detect_riemannian_potato_EEG.html>`_). We project the
 # covariance matrices onto a 2D plane defined by two selected channels
 # (FCz and Cz) and display the z-score isocontours. The characteristic
 # "potato" shape arises from the non-linearity of the Riemannian
@@ -373,7 +374,7 @@ plt.show()
 # parallel, each tailored to detect specific types of artifacts that
 # influence particular spatial regions within certain frequency bands.
 #
-# As described in [3]_, the output z-scores from all :math:`J` potatoes
+# As described in [2]_, the output z-scores from all :math:`J` potatoes
 # are converted to p-values and merged into a single **Signal Quality
 # Index** (SQI) using **Fisher's combination function** [5]_:
 #
@@ -600,7 +601,7 @@ def compute_potato_covariances(epochs, config):
 # Compute covariance matrices for each potato
 cov_list = compute_potato_covariances(epochs, POTATO_FIELD_CONFIG)
 
-# Fit a PotatoField (single metric for all potatoes, as in [2])
+# Fit a PotatoField (single metric for all potatoes, as in [2]_)
 rpf_vis = PotatoField(
     n_potatoes=len(POTATO_FIELD_CONFIG),
     metric=dict(mean="riemann", distance="riemann"),
