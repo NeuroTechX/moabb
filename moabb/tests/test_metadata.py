@@ -413,7 +413,7 @@ class TestMetadataCatalog:
         """Test BNCI2014_001 metadata has expected fields."""
         metadata = get_dataset_metadata("BNCI2014_001")
         # Acquisition
-        assert metadata.acquisition.n_channels == 22
+        assert metadata.acquisition.n_channels == 25
         assert metadata.acquisition.reference == "left mastoid"
         assert "eeg" in metadata.acquisition.channel_types
         # Participants
