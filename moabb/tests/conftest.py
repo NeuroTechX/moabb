@@ -12,3 +12,11 @@ def pytest_addoption(parser):
 @pytest.fixture
 def dl_data(request):
     return request.config.getoption("--dl-data")
+
+
+def pytest_collection_modifyitems(config, items):
+    if not config.getoption("--dl-data"):
+        skip_download = pytest.mark.skip(reason="need --dl-data option to run")
+        for item in items:
+            if "download" in item.keywords:
+                item.add_marker(skip_download)
