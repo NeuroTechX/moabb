@@ -139,10 +139,12 @@ _MANUAL_METADATA_OVERRIDES = {
     },
     "MartinezCagigal2023Checker": {
         "sessions_per_subject": 8,
+        "runs_per_session": 3,
         "documentation": {"license": "CC-BY-NC-SA-4.0", "repository": "U Valladoid"},
     },
     "MartinezCagigal2023Pary": {
         "sessions_per_subject": 5,
+        "runs_per_session": 8,
         "documentation": {"license": "CC-BY-NC-SA-4.0", "repository": "U Valladoid"},
     },
     # Beetl datasets
@@ -380,10 +382,14 @@ def _apply_dataset_family_defaults(
         if not documentation.license:
             doc_updates["license"] = "CC BY 4.0"
         documentation = replace(documentation, **doc_updates)
-        acquisition = metadata.acquisition or AcquisitionMetadata(
-            sampling_rate=256.0, n_channels=64, channel_types={"eeg": 64}
+        acquisition = metadata.acquisition or AcquisitionMetadata()
+        acquisition = replace(
+            acquisition,
+            sampling_rate=1024.0,
+            n_channels=30,
+            channel_types={"eeg": 30, "eog": 3},
+            hardware="Biosemi ActiveTwo",
         )
-        acquisition = replace(acquisition, hardware="Biosemi ActiveTwo")
         participants = metadata.participants or ParticipantMetadata(n_subjects=40)
         participants = replace(participants, n_subjects=40)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="p300")
@@ -419,6 +425,13 @@ def _apply_dataset_family_defaults(
         documentation = metadata.documentation or DocumentationMetadata()
         if not documentation.license:
             documentation = replace(documentation, license="CC-BY-NC-SA-4.0")
+        acquisition = metadata.acquisition or AcquisitionMetadata()
+        acquisition = replace(
+            acquisition,
+            sampling_rate=256.0,
+            n_channels=16,
+            channel_types={"eeg": 16},
+        )
         participants = metadata.participants or ParticipantMetadata(n_subjects=16)
         participants = replace(participants, n_subjects=16)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
@@ -426,6 +439,7 @@ def _apply_dataset_family_defaults(
         metadata = replace(
             metadata,
             documentation=documentation,
+            acquisition=acquisition,
             participants=participants,
             experiment=experiment,
         )
@@ -489,9 +503,9 @@ def _build_dataset_metadata_catalog():
                 if name == "ErpCore2021":
                     metadata = DatasetMetadata(
                         acquisition=AcquisitionMetadata(
-                            sampling_rate=256.0,
-                            n_channels=64,
-                            channel_types={"eeg": 64},
+                            sampling_rate=1024.0,
+                            n_channels=30,
+                            channel_types={"eeg": 30, "eog": 3},
                             hardware="Biosemi ActiveTwo",
                         ),
                         participants=ParticipantMetadata(n_subjects=40),
