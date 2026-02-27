@@ -52,7 +52,7 @@ class Nakanishi2015(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=2048.0,
+            sampling_rate=256.0,
             n_channels=8,
             channel_types={"eeg": 8},
             hardware="Biosemi ActiveTwo",
@@ -161,7 +161,7 @@ class Nakanishi2015(BaseDataset):
             repository="Github",
         ),
         sessions_per_subject=1,
-        runs_per_session=15,
+        runs_per_session=1,
         data_processed=True,
         file_format="mat",
         tags=Tags(

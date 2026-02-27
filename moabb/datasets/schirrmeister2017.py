@@ -72,7 +72,7 @@ class Schirrmeister2017(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=250.0,
+            sampling_rate=500.0,
             n_channels=128,
             channel_types={"eeg": 128},
             hardware="128-electrode EEG system optimized for high-frequency detection",
@@ -282,7 +282,7 @@ class Schirrmeister2017(BaseDataset):
             license="CC-BY-4.0",
         ),
         sessions_per_subject=1,
-        runs_per_session=13,
+        runs_per_session=2,
         tags=Tags(
             pathology=["Healthy"],
             modality=["EEG"],

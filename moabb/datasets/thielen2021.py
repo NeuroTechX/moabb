@@ -145,7 +145,16 @@ class Thielen2021(BaseDataset):
             sensor_type="sintered Ag/AgCl active electrodes",
             reference="Car",
             software="FieldTrip",
-            sensors=["Fz", "T7", "T8", "POz", "O1", "Oz", "O2", "Iz"],
+            sensors=[
+                "Fpz",
+                "Iz",
+                "O1",
+                "O2",
+                "Oz",
+                "POz",
+                "T7",
+                "T8",
+            ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 other_physiological=["ppg"],

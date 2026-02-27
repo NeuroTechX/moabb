@@ -86,7 +86,7 @@ class PhysionetMI(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=160.0,
             n_channels=64,
-            channel_types={"eeg": 16},
+            channel_types={"eeg": 64},
             hardware="Brain Products",
             reference="mastoid",
             software="BCI2000",
@@ -275,7 +275,7 @@ class PhysionetMI(BaseDataset):
             evaluation_type=["online", "offline"],
         ),
         sessions_per_subject=1,
-        runs_per_session=1,
+        runs_per_session=6,
         data_processed=True,
         file_format="edf",
         abstract="BCI2000 is a documented general-purpose brain-computer interface (BCI) research and development platform that can incorporate alone or in combination any brain signals, signal processing methods, output devices, and operating protocols. The system is based on a modular design consisting of four modules (operator, source, signal processing, and application) that communicate through a documented network-capable protocol. BCI2000 has been used to create BCI systems for a variety of brain signals (slow cortical potentials, P300 evoked potentials, sensorimotor rhythms, cortical surface potentials, and neuronal action potentials), processing methods (spectral estimation, spatial filtering, linear classification), and applications (cursor control, word processing, wheelchair control, neuroprosthesis control). The system satisfies stringent real-time requirements and facilitates systematic research and development of BCI technology.",

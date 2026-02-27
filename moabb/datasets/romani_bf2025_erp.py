@@ -247,7 +247,7 @@ class RomaniBF2025ERP(BaseDataset):
             block_duration_s=None,
         ),
         sessions_per_subject=2,
-        runs_per_session=2,
+        runs_per_session=1,
         sessions=["session_1", "session_2"],
         contributing_labs=["University of Trento", "Fondazione Bruno Kessler"],
         n_contributing_labs=2,

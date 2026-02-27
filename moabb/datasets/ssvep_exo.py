@@ -182,7 +182,7 @@ class Kalunga2016(BaseDataset):
             trials_context="per session",
         ),
         sessions_per_subject=1,
-        runs_per_session=1,
+        runs_per_session=2,
         data_processed=True,
         file_format="gdf",
     )
