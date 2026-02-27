@@ -127,4 +127,5 @@ python_files = [
 ]
 markers = [
     "network: tests that require network access (CrossRef/DataCite APIs)",
+    "download: tests that require downloading dataset files",
 ]
