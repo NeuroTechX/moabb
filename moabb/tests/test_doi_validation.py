@@ -132,11 +132,7 @@ def _load_doi_cache():
 
 def _save_doi_cache():
     """Write _DOI_CACHE to disk as sorted JSON with metadata."""
-    resolved = sum(1 for v in _DOI_CACHE.values() if v is not None)
-    failed = sum(1 for v in _DOI_CACHE.values() if v is None)
-    data = {
-        "_metadata": {"total": len(_DOI_CACHE), "resolved": resolved, "failed": failed}
-    }
+    data = {"_metadata": {"total": len(_DOI_CACHE)}}
     data.update(dict(sorted(_DOI_CACHE.items())))
     _DOI_CACHE_PATH.write_text(
         json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -170,8 +166,9 @@ def _resolve_doi(doi: str) -> dict | None:
         }
     except Exception:
         result = None
-    _DOI_CACHE[doi] = result
-    _DOI_CACHE_DIRTY = True
+    if result is not None:
+        _DOI_CACHE[doi] = result
+        _DOI_CACHE_DIRTY = True
     return result
 
 

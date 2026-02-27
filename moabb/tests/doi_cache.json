@@ -1,8 +1,6 @@
 {
     "_metadata": {
-        "total": 89,
-        "resolved": 89,
-        "failed": 0
+        "total": 89
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
