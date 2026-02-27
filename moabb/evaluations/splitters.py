@@ -511,9 +511,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         """
 
         splitter = self.cv_class(**self._cv_kwargs)
-        n_splits = splitter.get_n_splits(
-            metadata.index, groups=metadata["subject"]
-        )
+        n_splits = splitter.get_n_splits(metadata.index, groups=metadata["subject"])
         return n_splits
 
     def split(self, y, metadata):

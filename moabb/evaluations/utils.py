@@ -304,9 +304,7 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
 
 try:
     with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore", "OptunaSearchCV is experimental"
-        )
+        warnings.filterwarnings("ignore", "OptunaSearchCV is experimental")
         # OptunaSearchCV emits an ExperimentalWarning (subclass of FutureWarning)
         # on import; suppress it since MOABB intentionally uses this API.
         from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
@@ -320,9 +318,7 @@ try:
     @functools.wraps(_orig_init)
     def _quiet_init(self, *args, **kwargs):
         with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore", "OptunaSearchCV is experimental"
-            )
+            warnings.filterwarnings("ignore", "OptunaSearchCV is experimental")
             _orig_init(self, *args, **kwargs)
 
     _BaseOptunaSearchCV.__init__ = _quiet_init
@@ -365,9 +361,7 @@ def check_search_available():
                 warnings.filterwarnings(
                     "ignore", "OptunaSearchCV is experimental", FutureWarning
                 )
-                return OptunaSearchCVClassifier(
-                    estimator, param_distributions, **kwargs
-                )
+                return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
 
         search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
         return search_methods, True
