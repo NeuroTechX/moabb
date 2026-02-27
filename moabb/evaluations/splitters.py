@@ -1,5 +1,6 @@
 import inspect
 import logging
+import warnings
 from typing import Optional, Union
 from warnings import warn
 
@@ -411,14 +412,28 @@ class CrossSessionSplitter(BaseCrossValidator):
             splitter = self.cv_class(**cv_kwargs)
             self._current_splitter = splitter
 
-            # Yield the splits for a given subject
-            for train_session_idx, test_session_idx in splitter.split(
-                X=subject_indices, y=y_subject, groups=subject_metadata["session"]
-            ):
-                # returning the index
-                yield subject_indices[train_session_idx], subject_indices[
-                    test_session_idx
-                ]
+            # Yield the splits for a given subject.
+            # Some cv_classes (e.g. TimeSeriesSplit) accept groups in their
+            # signature but ignore it, emitting a UserWarning. We always pass
+            # groups for cv_classes that need it and suppress the warning for
+            # those that don't.
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    "The groups parameter is ignored",
+                    UserWarning,
+                )
+                splits = splitter.split(
+                    X=subject_indices,
+                    y=y_subject,
+                    groups=subject_metadata["session"],
+                )
+
+                for train_session_idx, test_session_idx in splits:
+                    # returning the index
+                    yield subject_indices[train_session_idx], subject_indices[
+                        test_session_idx
+                    ]
 
 
 class CrossSubjectSplitter(BaseCrossValidator):
@@ -496,7 +511,9 @@ class CrossSubjectSplitter(BaseCrossValidator):
         """
 
         splitter = self.cv_class(**self._cv_kwargs)
-        n_splits = splitter.get_n_splits(metadata.index, groups=metadata["subject"])
+        n_splits = splitter.get_n_splits(
+            metadata.index, groups=metadata["subject"]
+        )
         return n_splits
 
     def split(self, y, metadata):
@@ -508,12 +525,21 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # Store reference to the current inner splitter for metadata access
         self._current_splitter = splitter
 
-        # Yield the splits for the entire dataset
-        for train_session_idx, test_session_idx in splitter.split(
-            X=all_index, y=y, groups=metadata["subject"]
-        ):
-            # returning the index
-            yield all_index[train_session_idx], all_index[test_session_idx]
+        # Yield the splits for the entire dataset.
+        # Some cv_classes (e.g. TimeSeriesSplit) accept groups but ignore
+        # them, emitting a UserWarning. We suppress it since we always pass
+        # groups for cv_classes that need it.
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                "The groups parameter is ignored",
+                UserWarning,
+            )
+            for train_session_idx, test_session_idx in splitter.split(
+                X=all_index, y=y, groups=metadata["subject"]
+            ):
+                # returning the index
+                yield all_index[train_session_idx], all_index[test_session_idx]
 
 
 class LearningCurveSplitter(BaseCrossValidator):

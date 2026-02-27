@@ -1,5 +1,6 @@
 import re
 import tempfile
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -89,7 +90,13 @@ class FakeDataset(BaseDataset):
         temp_dir = get_config(key)
         if temp_dir is None or not Path(temp_dir).is_dir():
             temp_dir = tempfile.mkdtemp()
-            set_config(key, temp_dir)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    "Setting non-standard config type",
+                    RuntimeWarning,
+                )
+                set_config(key, temp_dir)
 
     def _get_single_subject_data(self, subject):
         if self.seed is not None:

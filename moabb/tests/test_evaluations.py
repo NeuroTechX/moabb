@@ -16,6 +16,11 @@ from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 from moabb.analysis.results import get_digest, get_string_rep
 from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
+
+
+def _identity(x):
+    """Identity function (replaces lambda to avoid MOABB hash warnings)."""
+    return x
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import optuna_available
 from moabb.evaluations.splitters import LearningCurveSplitter
@@ -224,7 +229,7 @@ class TestWithinSess:
 
         results0 = self.eval.process(pipelines0)
         results1 = self.eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)
@@ -398,7 +403,7 @@ class TestWithinSessLearningCurve:
 
         results0 = learning_curve_eval.process(pipelines0)
         results1 = learning_curve_eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = learning_curve_eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)
