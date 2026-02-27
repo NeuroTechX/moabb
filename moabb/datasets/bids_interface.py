@@ -2043,7 +2043,7 @@ class BIDSInterfaceBase(abc.ABC):
         # Write comprehensive README (after write_raw_bids to overwrite its
         # boilerplate README with our enriched version)
         readme_path = Path(self.root) / "README"
-        readme_path.write_text(_build_readme(self.dataset))
+        readme_path.write_text(_build_readme(self.dataset), encoding="utf-8")
         log.info("Finished caching %s to disk.", repr(self))
 
     def _write_lock_file(self, session, lock_data):

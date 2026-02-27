@@ -1094,6 +1094,30 @@ class TestDatasetMetadata:
         ), f"{dataset_class.__name__} is missing a license in its documentation metadata"
 
     @pytest.mark.download
+    def test_n_channels_matches_raw_data(self):
+        """Ensure metadata n_channels matches actual raw data channel count."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+        assert metadata is not None
+
+        data = dataset.get_data(subjects=[dataset.subject_list[0]])
+        subject_data = data[dataset.subject_list[0]]
+
+        # Check first session, first run
+        first_session = next(iter(subject_data.values()))
+        first_run = next(iter(first_session.values()))
+
+        # Exclude stim channels (added by MOABB, not actually recorded)
+        n_channels = sum(
+            1 for ch_type in first_run.get_channel_types() if ch_type != "stim"
+        )
+        assert n_channels == metadata.acquisition.n_channels, (
+            f"Channel count mismatch for {dataset.code}: "
+            f"raw has {n_channels} non-stim channels, "
+            f"metadata says {metadata.acquisition.n_channels}"
+        )
+
+    @pytest.mark.download
     @pytest.mark.parametrize(
         "dataset_class",
         [ds for ds in dataset_list if ds.__name__ in DATASET_METADATA_CATALOG],
@@ -1128,10 +1152,11 @@ class TestDatasetMetadata:
         raw_counts = Counter(raw_types.values())
         raw_counts.pop("stim", None)
 
-        n_eeg = raw_counts.get("eeg", 0)
-        assert n_eeg == metadata.acquisition.n_channels, (
-            f"EEG channel count mismatch for {name}: "
-            f"data has {n_eeg}, metadata says {metadata.acquisition.n_channels}"
+        n_non_stim = sum(raw_counts.values())
+        assert n_non_stim == metadata.acquisition.n_channels, (
+            f"Channel count mismatch for {name}: "
+            f"data has {n_non_stim} non-stim channels, "
+            f"metadata says {metadata.acquisition.n_channels}"
         )
 
         for ch_type, meta_count in metadata.acquisition.channel_types.items():

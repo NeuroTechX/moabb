@@ -287,7 +287,7 @@ class BNCI2014_001(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=22,
+            n_channels=25,
             channel_types={"eeg": 22, "eog": 3},
             montage="custom",
             hardware="BrainAmp MR plus",
