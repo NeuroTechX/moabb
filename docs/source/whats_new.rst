@@ -111,6 +111,7 @@ Code health
 - Move ``_pipeline_requires_epochs()`` from ``evaluations.py`` to ``utils.py`` for shared access by ``BaseEvaluation._load_data()`` (:gh:`963` by `Bruno Aristimunha`_)
 - Move ``WithinSessionSplitter`` creation outside the per-session loop in ``WithinSessionEvaluation``, since splitter parameters do not change per session (:gh:`963` by `Bruno Aristimunha`_)
 - Add a compile smoke test (``moabb/tests/test_compilation.py``) that validates syntax for all Python files under ``moabb/`` using ``py_compile`` (:gh:`960` by `Bruno Aristimunha`_)
+- Add persistent DOI resolution cache (``moabb/tests/doi_cache.json``) for ``test_doi_validation.py`` to avoid network requests on every test run, reducing DOI test time from ~9 minutes to <1 second. Refresh with ``--update-doi-cache`` (:gh:`996` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
