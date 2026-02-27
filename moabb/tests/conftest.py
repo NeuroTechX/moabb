@@ -30,12 +30,29 @@ def _handle_update_doi_cache(request):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    """Auto-save DOI cache to disk when dirty."""
+    """Auto-save DOI cache to disk and print resolution summary."""
     try:
         import moabb.tests.test_doi_validation as mod
 
         if mod._DOI_CACHE_DIRTY:
             mod._save_doi_cache()
+
+        newly = mod._NEWLY_RESOLVED_DOIS
+        if newly:
+            lines = [
+                "",
+                "=" * 55,
+                "DOI cache updated",
+                "=" * 55,
+                f"Resolved and cached {len(newly)} new DOI(s):",
+            ]
+            for doi in newly:
+                entry = mod._DOI_CACHE.get(doi, {}) or {}
+                title = entry.get("title", "Unknown title")
+                lines.append(f"  + {doi}  ({title})")
+            lines.append(f"Cache file: {mod._DOI_CACHE_PATH}")
+            lines.append("=" * 55)
+            print("\n".join(lines))
     except (ImportError, AttributeError):
         pass
 

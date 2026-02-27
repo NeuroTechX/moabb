@@ -116,6 +116,7 @@ _DOI_CACHE: dict[str, dict | None] = {}
 _DOI_CACHE_PATH = pathlib.Path(__file__).parent / "doi_cache.json"
 _DOI_CACHE_DIRTY = False
 _UPDATE_DOI_CACHE = False
+_NEWLY_RESOLVED_DOIS: list[str] = []
 
 
 def _load_doi_cache():
@@ -167,6 +168,8 @@ def _resolve_doi(doi: str) -> dict | None:
     except Exception:
         result = None
     if result is not None:
+        if doi not in _DOI_CACHE:
+            _NEWLY_RESOLVED_DOIS.append(doi)
         _DOI_CACHE[doi] = result
         _DOI_CACHE_DIRTY = True
     return result
@@ -197,6 +200,16 @@ def _extract_surnames(authors: list[str]) -> set[str]:
             surname = parts[-1].strip(".").lower()
         out.add(_strip_accents(surname))
     return out
+
+
+def _all_codebase_dois() -> set[str]:
+    """Collect every unique resolvable DOI from all dataset classes (offline)."""
+    all_dois: set[str] = set()
+    for cls in _REAL_DATASETS:
+        for doi in _collect_dois(cls).values():
+            if doi and _is_doi(doi):
+                all_dois.add(doi)
+    return all_dois
 
 
 # -- offline tests -----------------------------------------------------------
@@ -252,6 +265,21 @@ def test_docstring_dois_tracked(dataset_class):
     assert not untracked, (
         f"{dataset_class.__name__}: docstring DOIs not tracked in metadata: "
         f"{untracked}\n  Known: {known}"
+    )
+
+
+def test_doi_cache_complete():
+    """Check that doi_cache.json contains every DOI found in the codebase."""
+    codebase_dois = _all_codebase_dois()
+    cached_dois = set(_DOI_CACHE.keys())
+    missing = sorted(codebase_dois - cached_dois)
+    assert not missing, (
+        f"{len(missing)} DOI(s) found in codebase but missing from "
+        f"{_DOI_CACHE_PATH.name}:\n"
+        + "\n".join(f"  - {d}" for d in missing)
+        + "\n\nTo fix, run:\n"
+        "  python -m pytest moabb/tests/test_doi_validation.py "
+        '-k "test_dois_resolve" --timeout=300 -v'
     )
 
 
