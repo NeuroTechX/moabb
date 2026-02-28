@@ -16,19 +16,17 @@ from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 from moabb.analysis.results import get_digest, get_string_rep
 from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
-
-
-def _identity(x):
-    """Identity function (replaces lambda to avoid MOABB hash warnings)."""
-    return x
-
-
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import optuna_available
 from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.evaluations.utils import _create_save_path as create_save_path
 from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
+
+
+def _identity(x):
+    """Identity function (replaces lambda to avoid MOABB hash warnings)."""
+    return x
 
 
 try:
