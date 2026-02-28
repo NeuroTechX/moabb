@@ -22,9 +22,9 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import _handle_deprecated_kwargs
 
 from .base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from .download import get_dataset_path
 
 

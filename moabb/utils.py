@@ -10,10 +10,10 @@ import os.path as osp
 import random
 import re
 import sys
+import warnings
 from typing import TYPE_CHECKING
 
 import filelock
-import warnings
 import h5py
 import numpy as np
 from docstring_inheritance import NumpyDocstringInheritanceInitMeta

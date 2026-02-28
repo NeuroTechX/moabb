@@ -7,7 +7,6 @@ import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -23,6 +22,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.utils import _handle_deprecated_kwargs
 
 
 Castillos2023_URL = "https://zenodo.org/records/8255618"
@@ -45,7 +45,9 @@ class BaseCastillos2023(BaseDataset):
         **kwargs,
     ):
         deprecated_renames = {"WindowSize": "window_size"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BaseCastillos2023")
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "BaseCastillos2023"
+        )
         window_size = resolved.get("window_size", window_size)
 
         super().__init__(
@@ -611,7 +613,9 @@ class CastillosBurstVEP100(BaseCastillos2023):
 
     def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"WindowSize": "window_size"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, self.__class__.__name__)
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
         window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},
@@ -901,7 +905,9 @@ class CastillosBurstVEP40(BaseCastillos2023):
 
     def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"WindowSize": "window_size"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, self.__class__.__name__)
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
         window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},
@@ -1167,7 +1173,9 @@ class CastillosCVEP100(BaseCastillos2023):
 
     def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"WindowSize": "window_size"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, self.__class__.__name__)
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
         window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},
@@ -1453,7 +1461,9 @@ class CastillosCVEP40(BaseCastillos2023):
 
     def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"WindowSize": "window_size"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, self.__class__.__name__)
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
         window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},

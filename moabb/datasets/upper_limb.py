@@ -3,7 +3,6 @@ from mne.channels import make_standard_montage
 from mne.io import read_raw_gdf
 
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -20,6 +19,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 from . import download as dl
 
@@ -359,7 +359,9 @@ class Ofner2017(BaseDataset):
         methodology="Subjects performed 6 sustained upper limb movements (elbow flexion/extension, forearm supination/pronation, hand open/close) plus rest in two separate sessions (movement execution and motor imagery). EEG was recorded from 61 channels, filtered to 0.3-3 Hz, and classified using shrinkage LDA with discriminative spatial patterns. Source localization was performed using sLORETA. Classification employed both single time-point and time-window approaches with 10x10-fold cross-validation.",
     )
 
-    def __init__(self, imagined=True, executed=True, subjects=None, sessions=None, **kwargs):
+    def __init__(
+        self, imagined=True, executed=True, subjects=None, sessions=None, **kwargs
+    ):
         deprecated_renames = {"Imagined": "imagined", "Executed": "executed"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Ofner2017")
         imagined = resolved.get("imagined", imagined)

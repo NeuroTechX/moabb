@@ -26,9 +26,9 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import _handle_deprecated_kwargs
 
 from .base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from .download import get_dataset_path
 
 
@@ -327,7 +327,9 @@ class Stieger2021(BaseDataset):
         },
     )
 
-    def __init__(self, interval=[0, 3], sessions=None, fix_bads=True, subjects=None, **kwargs):
+    def __init__(
+        self, interval=[0, 3], sessions=None, fix_bads=True, subjects=None, **kwargs
+    ):
         deprecated_renames = {
             "Interval": "interval",
             "Sessions": "sessions",

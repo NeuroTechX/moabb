@@ -8,8 +8,8 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.utils import block_rep
+from moabb.utils import _handle_deprecated_kwargs
 
 
 class FakeDataset(BaseDataset):
@@ -44,6 +44,7 @@ class FakeDataset(BaseDataset):
 
         .. versionadded:: 0.4.3
     """
+
     def __init__(
         self,
         event_list=("fake1", "fake2", "fake3"),
@@ -204,8 +205,14 @@ class FakeVirtualRealityDataset(FakeDataset):
     """
 
     def __init__(self, seed=None, subjects=None, sessions=None, **kwargs):
-        deprecated_renames = {"Seed": "seed", "Subjects": "subjects", "Sessions": "sessions"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "FakeVirtualRealityDataset")
+        deprecated_renames = {
+            "Seed": "seed",
+            "Subjects": "subjects",
+            "Sessions": "sessions",
+        }
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "FakeVirtualRealityDataset"
+        )
         seed = resolved.get("seed", seed)
         subjects = resolved.get("subjects", subjects)
         sessions = resolved.get("sessions", sessions)

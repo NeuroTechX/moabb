@@ -10,9 +10,9 @@ from dateutil import parser
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.bson_loader import load_bson
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.utils import _handle_deprecated_kwargs
 
 
 MARTINEZCAGIGAL2023_CHECKER_URL = "https://uvadoc.uva.es/handle/10324/70973"
@@ -130,7 +130,9 @@ class MartinezCagigal2023Checker(BaseDataset):
 
     def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"Conditions": "conditions"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "MartinezCagigal2023Checker")
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "MartinezCagigal2023Checker"
+        )
         conditions = resolved.get("conditions", conditions)
 
         # Validate conditions

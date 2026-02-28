@@ -11,7 +11,6 @@ from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,

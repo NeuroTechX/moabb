@@ -5,7 +5,6 @@ import numpy as np
 from mne.io import read_raw_edf
 
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.download import data_dl, get_dataset_path
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -22,6 +21,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 
 BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
@@ -283,9 +283,13 @@ class PhysionetMI(BaseDataset):
         methodology="The BCI2000 system implements a four-module architecture: 1) Source module digitizes and stores brain signals without preprocessing, 2) Signal processing module performs feature extraction (calibration, spatial filtering, temporal filtering) and feature translation (linear classification, normalization), 3) User application module receives control signals and drives applications with visual/auditory/haptic feedback, 4) Operator module defines system parameters and operation timing. Signal processing uses cascaded signal operators for flexible feature extraction including autoregressive spectral estimation, FIR filtering, slow wave filtering, peak detection, and evoked response averaging. Translation algorithms use linear classifiers and normalizers with optional real-time adaptive parameter updates. All system variables (parameters, event markers, signals) are stored in documented file format with ASCII header and binary data for comprehensive offline analysis.",
     )
 
-    def __init__(self, imagined=True, executed=False, subjects=None, sessions=None, **kwargs):
+    def __init__(
+        self, imagined=True, executed=False, subjects=None, sessions=None, **kwargs
+    ):
         deprecated_renames = {"Imagined": "imagined", "Executed": "executed"}
-        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "PhysionetMotorImagery")
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "PhysionetMotorImagery"
+        )
         imagined = resolved.get("imagined", imagined)
         executed = resolved.get("executed", executed)
 

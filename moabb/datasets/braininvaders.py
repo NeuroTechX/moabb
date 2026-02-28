@@ -2,7 +2,6 @@ import glob
 import os
 import os.path as osp
 import shutil
-import warnings
 import zipfile as z
 from warnings import warn
 

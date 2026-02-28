@@ -7,7 +7,6 @@ import mne
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -24,6 +23,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 
 # New freidok URL - the old fedora URLs no longer work

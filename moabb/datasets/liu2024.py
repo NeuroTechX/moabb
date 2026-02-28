@@ -15,7 +15,6 @@ from mne.channels import make_dig_montage
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -32,6 +31,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 
 # Link to the raw data
