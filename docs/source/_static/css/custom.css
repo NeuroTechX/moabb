@@ -830,6 +830,26 @@ html[data-theme="dark"] .admonition-experimental-protocol > .admonition-title {
   background: linear-gradient(90deg, var(--ds-accent) 0%, var(--ds-accent-strong) 100%);
 }
 
+.ds-card-source {
+  position: absolute;
+  top: 0.78rem;
+  right: 1.02rem;
+  font-size: 0.9rem;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-weight: 700;
+  padding: 0.08rem 0.28rem;
+  border-radius: 7px;
+  background: rgba(15, 93, 143, 0.08);
+  color: var(--ds-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  z-index: 2;
+}
+
+.ds-card-source:hover {
+  color: var(--ds-accent);
+}
+
 html[data-theme="dark"] .ds-card {
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
 }
@@ -1508,71 +1528,9 @@ dl.py.class .sd-tab-content .admonition-experimental-protocol > .admonition-titl
   display: none !important;
 }
 
-/* Pretty-print dataset class signatures as a multiline constructor block */
+/* Hide standalone class signature strip on dataset pages */
 section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 0.22rem;
-  font-size: 0;
-  position: relative;
-  padding-bottom: 1.35rem;
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > .property,
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > .sig-prename,
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > .sig-name,
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > .sig-paren,
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > a {
-  font-size: 1rem;
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > .sig-prename {
-  margin-left: 0.08rem;
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > .sig-paren:first-of-type {
-  margin-left: 0.04rem;
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > em.sig-param {
-  display: block;
-  flex-basis: 100%;
-  margin-left: 2.05rem;
-  font-size: 1rem;
-  line-height: 1.38;
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > em.sig-param::after {
-  content: ",";
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > em.sig-param:last-of-type::after {
-  content: "";
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > .sig-paren:last-of-type {
-  display: block;
-  flex-basis: 100%;
-  margin-left: 0;
-}
-
-section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > a.reference.external {
-  position: absolute;
-  right: 0.95rem;
-  bottom: 0.32rem;
-  font-size: 0.95rem;
-}
-
-@media (max-width: 768px) {
-  section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > em.sig-param {
-    margin-left: 1.4rem;
-  }
-
-  section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > a.reference.external {
-    right: 0.75rem;
-    bottom: 0.28rem;
-  }
+  display: none !important;
 }
 
 /* ================================================================
@@ -1589,6 +1547,12 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py > a.reference.
 
   .ds-card {
     padding: 0.9rem 0.85rem 0.85rem;
+  }
+
+  .ds-card-source {
+    top: 0.68rem;
+    right: 0.78rem;
+    font-size: 0.82rem;
   }
 
   .ds-card-title {

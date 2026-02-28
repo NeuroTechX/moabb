@@ -17,6 +17,7 @@ import os
 import re
 import csv
 import json
+import inspect
 import statistics
 from html import escape
 from urllib.parse import quote
@@ -71,6 +72,24 @@ def _is_concrete_dataset(obj):
 def _repo_root():
     """Return repository root path (relative to this extension file)."""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+
+
+def _get_dataset_source_url(obj):
+    """Build a GitHub source URL for a dataset class."""
+    try:
+        src_file = inspect.getsourcefile(obj) or inspect.getfile(obj)
+        if not src_file:
+            return None
+        repo_root = _repo_root()
+        rel_path = os.path.relpath(src_file, repo_root)
+        if rel_path.startswith(".."):
+            return None
+        src_lines, start = inspect.getsourcelines(obj)
+        end = start + len(src_lines) - 1
+        rel_path = rel_path.replace(os.sep, "/")
+        return f"https://github.com/NeuroTechX/moabb/blob/develop/{rel_path}#L{start}-L{end}"
+    except Exception:
+        return None
 
 
 def _normalize_doi(value):
@@ -548,8 +567,6 @@ def _make_benchmark_context_html(cls_name, info):
         "</div>"
         f'<p class="ds-benchmark-summary">Included in {ctx["n_tables"]} MOABB benchmark table(s). '
         "Scores are per-dataset medians across available pipelines.</p>"
-        '<p class="ds-benchmark-note"><strong>Evaluation scope:</strong> values shown here are '
-        "from WithinSession evaluation only.</p>"
         f'<p class="ds-benchmark-meta"><span><strong>Sample frame:</strong> {escape(sample_frame or "N/A")}</span></p>'
         f"<ul>{rows_html}</ul>"
         "</div>"
@@ -765,7 +782,7 @@ def _make_github_issue_url(cls_name):
     )
 
 
-def _make_header_html(cls_name, info):
+def _make_header_html(cls_name, info, source_url=None):
     """Build the enhanced dataset card HTML (Layer 1)."""
     paradigm = info.get("paradigm") or "unknown"
     label = _PARADIGM_LABELS.get(paradigm, paradigm.title())
@@ -783,6 +800,12 @@ def _make_header_html(cls_name, info):
     quickstart_id = (
         "ds-quickstart-" + re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
     )
+    source_html = ""
+    if source_url:
+        source_html = (
+            f'<a class="ds-card-source" href="{escape(source_url)}" '
+            f'target="_blank" rel="noopener">[source]</a>'
+        )
 
     # --- Subtitle: auto-generated from paradigm + classes ---
     # Use the actual count of class labels when available
@@ -917,6 +940,7 @@ def _make_header_html(cls_name, info):
 
     return f"""\
 <div class="ds-card" role="region" aria-label="{cls_name} dataset overview">
+  {source_html}
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">{cls_name}</p>
@@ -1443,11 +1467,12 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
 
     cls_name = obj.__name__
     info = _get_dataset_info(obj)
+    source_url = _get_dataset_source_url(obj)
 
     # --- Layer 1: Enhanced card (inserted at top) ---
     top_block = []
     if info:
-        header_html = _make_header_html(cls_name, info)
+        header_html = _make_header_html(cls_name, info, source_url=source_url)
         top_block.append(".. raw:: html")
         top_block.append("")
         for h_line in header_html.split("\n"):
