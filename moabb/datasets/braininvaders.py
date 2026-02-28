@@ -31,7 +31,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import block_rep
-from moabb.utils import depreciated_alias
+from moabb.utils import _handle_deprecated_kwargs, depreciated_alias
 
 
 BI2012a_URL = "https://zenodo.org/record/2649069/files/"
@@ -41,41 +41,6 @@ BI2014b_URL = "https://zenodo.org/record/3267302/files/"
 BI2015a_URL = "https://zenodo.org/record/3266930/files/"
 BI2015b_URL = "https://zenodo.org/record/3268762/files/"
 VIRTUALREALITY_URL = "https://zenodo.org/record/2605205/files/"
-
-
-def _handle_deprecated_kwargs(kwargs, renames, class_name):
-    """Handle deprecated PascalCase kwargs, returning resolved values.
-
-    Parameters
-    ----------
-    kwargs : dict
-        The **kwargs from the constructor.
-    renames : dict
-        Mapping of old PascalCase names to new snake_case names.
-    class_name : str
-        The class name for the warning message.
-
-    Returns
-    -------
-    resolved : dict
-        Mapping of new snake_case names to values from deprecated kwargs.
-    """
-    resolved = {}
-    for old_name, new_name in renames.items():
-        if old_name in kwargs:
-            warnings.warn(
-                f"Parameter '{old_name}' is deprecated and will be removed in "
-                f"version 2.0. Use '{new_name}' instead.",
-                DeprecationWarning,
-                stacklevel=3,
-            )
-            resolved[new_name] = kwargs.pop(old_name)
-    if kwargs:
-        raise TypeError(
-            f"{class_name}.__init__() got unexpected keyword arguments: "
-            f"{list(kwargs.keys())}"
-        )
-    return resolved
 
 
 def _bi_get_subject_data(ds, subject):  # noqa: C901
@@ -2000,8 +1965,21 @@ class Cattan2019_VR(BaseDataset):
     )
 
     def __init__(
-        self, virtual_reality=True, screen_display=True, subjects=None, sessions=None
+        self,
+        virtual_reality=True,
+        screen_display=True,
+        subjects=None,
+        sessions=None,
+        **kwargs,
     ):
+        deprecated_renames = {
+            "VirtualReality": "virtual_reality",
+            "ScreenDisplay": "screen_display",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Cattan2019-VR")
+        virtual_reality = resolved.get("virtual_reality", virtual_reality)
+        screen_display = resolved.get("screen_display", screen_display)
+
         self.n_repetitions = 5
         super().__init__(
             subjects=list(range(1, 21 + 1)),

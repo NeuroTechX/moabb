@@ -28,6 +28,7 @@ from moabb.datasets.metadata.schema import (
 )
 
 from .base import BaseDataset
+from moabb.utils import _handle_deprecated_kwargs
 from .download import get_dataset_path
 
 
@@ -326,7 +327,19 @@ class Stieger2021(BaseDataset):
         },
     )
 
-    def __init__(self, interval=[0, 3], sessions=None, fix_bads=True, subjects=None):
+    def __init__(self, interval=[0, 3], sessions=None, fix_bads=True, subjects=None, **kwargs):
+        deprecated_renames = {
+            "Interval": "interval",
+            "Sessions": "sessions",
+            "FixBads": "fix_bads",
+            "Subjects": "subjects",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Stieger2021")
+        interval = resolved.get("interval", interval)
+        sessions = resolved.get("sessions", sessions)
+        fix_bads = resolved.get("fix_bads", fix_bads)
+        subjects = resolved.get("subjects", subjects)
+
         super().__init__(
             subjects=list(range(1, 63)),
             sessions_per_subject=11,
@@ -336,6 +349,7 @@ class Stieger2021(BaseDataset):
             paradigm="imagery",
             doi="10.1038/s41597-021-00883-1",
             selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.fix_bads = fix_bads
         self.sessions = sessions

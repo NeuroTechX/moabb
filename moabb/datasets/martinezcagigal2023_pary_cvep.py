@@ -10,6 +10,7 @@ from dateutil import parser
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.bson_loader import load_bson
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
@@ -157,7 +158,11 @@ class MartinezCagigal2023Pary(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
-    def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None):
+    def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"Conditions": "conditions"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "MartinezCagigal2023Pary")
+        conditions = resolved.get("conditions", conditions)
+
         # Validate conditions
         for cond in conditions:
             if cond not in ALL_CONDITIONS:

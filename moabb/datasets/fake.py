@@ -8,6 +8,7 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
+from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.utils import block_rep
 
 
@@ -43,7 +44,6 @@ class FakeDataset(BaseDataset):
 
         .. versionadded:: 0.4.3
     """
-
     def __init__(
         self,
         event_list=("fake1", "fake2", "fake3"),
@@ -56,12 +56,49 @@ class FakeDataset(BaseDataset):
         seed=None,
         sfreq=128,
         duration=120,
-        n_events=60,
+        n_events=20,
         stim=True,
         annotations=False,
         subjects=None,
         sessions=None,
+        **kwargs,
     ):
+        deprecated_renames = {
+            "EventList": "event_list",
+            "NSessions": "n_sessions",
+            "NRuns": "n_runs",
+            "NSubjects": "n_subjects",
+            "Code": "code",
+            "Paradigm": "paradigm",
+            "Channels": "channels",
+            "Seed": "seed",
+            "Sfreq": "sfreq",
+            "Duration": "duration",
+            "NEvents": "n_events",
+            "Stim": "stim",
+            "Annotations": "annotations",
+            "Subjects": "subjects",
+            "Sessions": "sessions",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "FakeDataset")
+        event_list = resolved.get("event_list", event_list)
+        n_sessions = resolved.get("n_sessions", n_sessions)
+        n_runs = resolved.get("n_runs", n_runs)
+        n_subjects = resolved.get("n_subjects", n_subjects)
+        code = resolved.get("code", code)
+        paradigm = resolved.get("paradigm", paradigm)
+        channels = resolved.get("channels", channels)
+        seed = resolved.get("seed", seed)
+        sfreq = resolved.get("sfreq", sfreq)
+        duration = resolved.get("duration", duration)
+        n_events = resolved.get("n_events", n_events)
+        stim = resolved.get("stim", stim)
+        annotations = resolved.get("annotations", annotations)
+        subjects = resolved.get("subjects", subjects)
+        sessions = resolved.get("sessions", sessions)
+
+        self.n_sessions = n_sessions
+        self.n_runs = n_runs
         self.n_events = n_events if isinstance(n_events, list) else [n_events] * n_runs
         self.duration = duration if isinstance(duration, list) else [duration] * n_runs
         assert len(self.n_events) == n_runs
@@ -74,7 +111,7 @@ class FakeDataset(BaseDataset):
         self.seed = seed
         code = (
             f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}--"
-            f"{'-'.join([str(n) for n in self.n_events])}--"
+            f"{'-'.join([str(n * 3) for n in self.n_events])}--"
             f"{'-'.join([str(int(n)) for n in self.duration])}--"
             f"{'-'.join([re.sub('[^A-Za-z0-9]', '', e).lower() for e in event_list])}--"
             f"{'-'.join([c.lower() for c in channels])}"
@@ -166,7 +203,13 @@ class FakeVirtualRealityDataset(FakeDataset):
     .. versionadded:: 0.5.0
     """
 
-    def __init__(self, seed=None, subjects=None, sessions=None):
+    def __init__(self, seed=None, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"Seed": "seed", "Subjects": "subjects", "Sessions": "sessions"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "FakeVirtualRealityDataset")
+        seed = resolved.get("seed", seed)
+        subjects = resolved.get("subjects", subjects)
+        sessions = resolved.get("sessions", sessions)
+
         self.n_blocks = 5
         self.n_repetitions = 12
         self.n_events_rep = [60] * self.n_repetitions

@@ -15,6 +15,7 @@ from mne.channels import make_dig_montage
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.utils import _handle_deprecated_kwargs
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -304,8 +305,25 @@ class Liu2024(BaseDataset):
     )
 
     def __init__(
-        self, break_events=False, instr_events=False, subjects=None, sessions=None
+        self,
+        break_events=False,
+        instr_events=False,
+        subjects=None,
+        sessions=None,
+        **kwargs,
     ):
+        deprecated_renames = {
+            "BreakEvents": "break_events",
+            "InstrEvents": "instr_events",
+            "Subjects": "subjects",
+            "Sessions": "sessions",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Liu2024")
+        break_events = resolved.get("break_events", break_events)
+        instr_events = resolved.get("instr_events", instr_events)
+        subjects = resolved.get("subjects", subjects)
+        sessions = resolved.get("sessions", sessions)
+
         self.break_events = break_events
         self.instr_events = instr_events
         self.events = {"left_hand": 1, "right_hand": 2}
