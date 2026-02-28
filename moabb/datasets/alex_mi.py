@@ -4,7 +4,6 @@ from mne.io import Raw
 
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
-    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -57,8 +56,9 @@ class AlexMI(BaseDataset):
             sampling_rate=512.0,
             n_channels=16,
             channel_types={"eeg": 16},
-            reference="Car",
-            software="OpenViBE",
+            reference="earlobe",
+            software="Matlab/Simulink",
+            hardware="g.tec g.USBamp",
             sensors=[
                 "Fpz",
                 "F7",
@@ -79,9 +79,6 @@ class AlexMI(BaseDataset):
             ],
             line_freq=50.0,
             sensor_type="EEG",
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                other_physiological=["gsr", "ppg"],
-            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=8,
@@ -94,13 +91,14 @@ class AlexMI(BaseDataset):
             n_classes=3,
             class_labels=["right_hand", "feet", "rest"],
             trial_duration=3.0,
-            study_design="Brain-switch based on motor imagery for asynchronous BCI control of an effector",
-            feedback_type="visual (primarily), auditory, haptic (rare cases)",
-            stimulus_type="avatar",
-            stimulus_modalities=["visual"],
+            study_design="Cue-based motor imagery paradigm (Step B of Brain Switch campaign) for familiarization and algorithm development",
+            feedback_type="none",
+            stimulus_type="visual cue",
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
-            synchronicity="asynchronous",
-            mode="online",
+            synchronicity="synchronous",
+            mode="offline",
+            instructions="Cue-based paradigm without feedback. Subjects perform 20 imagined movements per class (right hand, feet, rest) following a visual cue, lasting 3 seconds each. Total duration approximately 10 minutes.",
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.806022",
@@ -109,9 +107,9 @@ class AlexMI(BaseDataset):
             country="France",
             license="CC-BY-SA-4.0",
             repository="Zenodo",
-            data_url="https://zenodo.org/record/806023/files/",
+            data_url="https://zenodo.org/record/806023",
             publication_year=2012,
-            senior_author="Christian Jutten",
+            senior_author="Alexandre Barachant",
             contact_info=["alexandre.barachant@gmail.com"],
             institution_department="Laboratoire Électronique et système pour la santé CEA-LETI",
             institution_address="CEA-LETI Grenoble, France",
@@ -134,12 +132,11 @@ class AlexMI(BaseDataset):
         file_format="fif",
         tags=Tags(
             pathology=["Healthy"],
-            modality=["Visual"],
+            modality=["Motor"],
             type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
-            artifact_methods=["ICA"],
-            re_reference="car",
+            re_reference="earlobe",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -172,9 +169,9 @@ class AlexMI(BaseDataset):
             evaluation_type=["within_session"],
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["vr_ar", "communication", "motor_control"],
+            applications=["motor_control"],
             environment="laboratory",
-            online_feedback=True,
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -187,8 +184,8 @@ class AlexMI(BaseDataset):
             n_trials_per_class={"right_hand": 20, "feet": 20, "rest": 20},
             trials_context="20 trials per class, 3 second duration each",
         ),
-        abstract="This thesis addresses the robust control of an effector through an asynchronous EEG-based brain-machine interface. The work focuses on motor imagery paradigms and introduces novel signal processing approaches based on Riemannian geometry for covariance matrices. The dataset contains recordings from 8 subjects performing motor imagery tasks (right hand, feet, rest) with the goal of controlling an avatar in a virtual environment.",
-        methodology="Subjects performed motor imagery tasks in an asynchronous brain-switch paradigm. EEG was recorded at 250 Hz with 22 electrodes. Signal processing employed Riemannian geometry approaches including Minimum Distance to Mean (MDM) classification, geodesic filtering, and tangent space mapping. The research validated adaptive learning and effector coupling through two experimental campaigns.",
+        abstract="Motor imagery dataset from the PhD thesis on robust control of an effector via asynchronous EEG brain-machine interface (Barachant, 2012). This shared dataset corresponds to Step B (cue-based imagery without feedback) of the Brain Switch campaign. Contains recordings from 8 subjects performing 3 motor imagery tasks (right hand, feet, rest) with 20 trials per class.",
+        methodology="Cue-based paradigm without feedback (Step B of Brain Switch campaign). EEG recorded at 512 Hz with 16 active electrodes using a g.tec g.USBamp amplifier. Reference electrode placed on the ear. Subjects performed imagined movements following visual cues: right hand, feet, and rest, 20 trials per class, 3 seconds each. Recorded in standard office conditions (not shielded laboratory). Software: Matlab/Simulink with g.tec drivers.",
     )
 
     def __init__(self):

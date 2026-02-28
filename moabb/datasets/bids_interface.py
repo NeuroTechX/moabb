@@ -380,15 +380,20 @@ def _build_sidecar_enrichment(metadata):
                 acq.montage, acq.montage
             )
 
-        # CapManufacturer (RECOMMENDED) — prefer cap_manufacturer, fall back to sensor_type
+        # CapManufacturer (RECOMMENDED)
         if acq.cap_manufacturer:
             entries["CapManufacturer"] = acq.cap_manufacturer
-        elif acq.sensor_type:
-            entries["CapManufacturer"] = acq.sensor_type
 
         # CapManufacturersModelName (RECOMMENDED)
         if acq.cap_model:
             entries["CapManufacturersModelName"] = acq.cap_model
+
+    # EEGReference fallback: use prep.re_reference when acq.reference is absent
+    if "EEGReference" not in entries and prep and prep.re_reference:
+        entries["EEGReference"] = prep.re_reference
+
+    # EEGReference is REQUIRED by BIDS — ensure always present
+    entries.setdefault("EEGReference", "n/a")
 
     # HardwareFilters and SoftwareFilters
     if prep and any(
@@ -422,18 +427,65 @@ def _build_sidecar_enrichment(metadata):
                 notch = [notch]
             hw_filters["Notch"] = {"CutoffFrequency": notch}
 
+        # Enrich Bandpass with filter type and order if available
+        if "Bandpass" in hw_filters:
+            if prep.filter_type is not None:
+                hw_filters["Bandpass"]["Type"] = prep.filter_type
+            if prep.filter_order is not None:
+                hw_filters["Bandpass"]["Order"] = prep.filter_order
+
         if hw_filters:
             entries["HardwareFilters"] = hw_filters
 
+    # HardwareFilters fallback: use acq.filters when prep filters are absent
+    if "HardwareFilters" not in entries and acq and acq.filters:
+        if isinstance(acq.filters, dict):
+            entries["HardwareFilters"] = acq.filters
+        else:
+            entries["HardwareFilters"] = str(acq.filters)
+
     # HardwareFilters (RECOMMENDED) — set to "n/a" when not described
     entries.setdefault("HardwareFilters", "n/a")
+
+    # SoftwareFilters — build from preprocessing_steps if available
+    if prep and prep.preprocessing_steps:
+        entries.setdefault(
+            "SoftwareFilters",
+            {"preprocessing_steps": {"Description": ", ".join(prep.preprocessing_steps)}},
+        )
 
     # SoftwareFilters is REQUIRED — set to "n/a" when not described
     entries.setdefault("SoftwareFilters", "n/a")
 
     # TaskDescription (RECOMMENDED)
     if exp and exp.study_design:
-        entries["TaskDescription"] = exp.study_design
+        task_desc = exp.study_design
+
+        # Prepend task_type if available
+        if exp.task_type:
+            task_desc = f"[{exp.task_type}] {task_desc}"
+
+        # Append timing details from experiment and paradigm_specific
+        timing_parts = []
+        if exp.trial_duration is not None:
+            timing_parts.append(f"Trial duration: {exp.trial_duration}s")
+        ps = metadata.paradigm_specific
+        if ps:
+            if ps.cue_duration_s is not None:
+                timing_parts.append(f"cue: {ps.cue_duration_s}s")
+            if ps.imagery_duration_s is not None:
+                timing_parts.append(f"imagery: {ps.imagery_duration_s}s")
+            if ps.isi_ms is not None:
+                timing_parts.append(f"ISI: {ps.isi_ms}ms")
+            if ps.soa_ms is not None:
+                timing_parts.append(f"SOA: {ps.soa_ms}ms")
+            if ps.stimulus_frequencies_hz is not None:
+                freqs = ", ".join(str(f) for f in ps.stimulus_frequencies_hz)
+                timing_parts.append(f"stimulus frequencies: [{freqs}] Hz")
+        if timing_parts:
+            task_desc += " " + ", ".join(timing_parts) + "."
+
+        entries["TaskDescription"] = task_desc
 
     # Instructions (RECOMMENDED)
     if exp and exp.instructions:
@@ -455,10 +507,13 @@ def _build_sidecar_enrichment(metadata):
     # InstitutionName (RECOMMENDED)
     entries["InstitutionName"] = doc.institution if doc and doc.institution else "n/a"
 
-    # InstitutionAddress (RECOMMENDED)
-    entries["InstitutionAddress"] = (
-        doc.institution_address if doc and doc.institution_address else "n/a"
-    )
+    # InstitutionAddress (RECOMMENDED) — fall back to country
+    if doc and doc.institution_address:
+        entries["InstitutionAddress"] = doc.institution_address
+    elif doc and doc.country:
+        entries["InstitutionAddress"] = doc.country
+    else:
+        entries["InstitutionAddress"] = "n/a"
 
     # InstitutionalDepartmentName (RECOMMENDED)
     entries["InstitutionalDepartmentName"] = (
@@ -474,11 +529,29 @@ def _build_sidecar_enrichment(metadata):
     # ManufacturersModelName (RECOMMENDED)
     entries.setdefault("ManufacturersModelName", "n/a")
 
-    # SubjectArtefactDescription (RECOMMENDED)
+    # SubjectArtefactDescription (RECOMMENDED) — from impedance threshold
+    if acq and acq.impedance_threshold_kohm is not None:
+        imp = acq.impedance_threshold_kohm
+        if isinstance(imp, dict):
+            parts = [f"{ch}: {v} kOhm" for ch, v in imp.items()]
+            entries["SubjectArtefactDescription"] = "Impedance kept below " + ", ".join(
+                parts
+            )
+        else:
+            entries["SubjectArtefactDescription"] = f"Impedance kept below {imp} kOhm"
     entries.setdefault("SubjectArtefactDescription", "n/a")
+
+    # DeviceSerialNumber (RECOMMENDED)
+    entries.setdefault("DeviceSerialNumber", "n/a")
 
     # RecordingType (RECOMMENDED) — MOABB stores raw continuous data
     entries["RecordingType"] = "continuous"
+
+    # Description (RECOMMENDED by BIDS for all sidecars)
+    if doc and doc.description:
+        entries.setdefault("Description", doc.description)
+    else:
+        entries.setdefault("Description", "EEG recording.")
 
     return entries
 
@@ -522,9 +595,12 @@ def _build_dataset_description_kwargs(dataset):
     doc = metadata.documentation
 
     if doc:
-        # Enrich source_datasets with URL
+        # Enrich source_datasets with URL.
+        sd = dict(DOI=dataset.doi or "n/a")
         if doc.data_url:
-            kwargs["source_datasets"] = [dict(DOI=dataset.doi or "n/a", URL=doc.data_url)]
+            sd["URL"] = doc.data_url
+        if len(sd) > 1:  # more than just DOI
+            kwargs["source_datasets"] = [sd]
 
         # data_license
         if doc.license:
@@ -600,9 +676,11 @@ def _update_participants_tsv(root, subject, metadata):
     elif participants.age_mean is not None:
         age = participants.age_mean
 
-    # Determine group
+    # Determine group (clinical_population takes priority over health_status)
     group = "n/a"
-    if participants.health_status:
+    if participants.clinical_population:
+        group = participants.clinical_population
+    elif participants.health_status:
         group = participants.health_status
 
     # Determine per-subject sex
@@ -615,6 +693,11 @@ def _update_participants_tsv(root, subject, metadata):
     if participants.handedness_list and subject_idx < len(participants.handedness_list):
         hand = participants.handedness_list[subject_idx]
 
+    # BCI experience
+    bci_experience = "n/a"
+    if participants.bci_experience:
+        bci_experience = participants.bci_experience
+
     # Species (BIDS RECOMMENDED, default "homo sapiens")
     species = participants.species if participants.species else "n/a"
 
@@ -626,7 +709,7 @@ def _update_participants_tsv(root, subject, metadata):
         rows = list(reader)
 
     # Add columns if missing
-    for col in ("age", "group", "sex", "hand", "species"):
+    for col in ("age", "group", "sex", "hand", "species", "bci_experience"):
         if col not in fieldnames:
             fieldnames.append(col)
             for row in rows:
@@ -646,6 +729,8 @@ def _update_participants_tsv(root, subject, metadata):
                 row["hand"] = hand
             if species != "n/a" and row.get("species", "n/a") == "n/a":
                 row["species"] = species
+            if bci_experience != "n/a" and row.get("bci_experience", "n/a") == "n/a":
+                row["bci_experience"] = bci_experience
 
     # Write back
     with open(tsv_path, "w", newline="") as f:
@@ -661,9 +746,24 @@ def _update_participants_tsv(root, subject, metadata):
             sidecar = json.load(f)
 
     updated = False
+    # Top-level Description (RECOMMENDED by BIDS for all sidecars)
+    if "Description" not in sidecar:
+        if participants.health_status:
+            sidecar["Description"] = (
+                f"Participant demographics ({participants.health_status})."
+            )
+        else:
+            sidecar["Description"] = "Participant demographic and metadata information."
+        updated = True
     if "age" not in sidecar:
+        age_desc = "Age of the participant"
+        if participants.age_min is not None and participants.age_max is not None:
+            age_desc = (
+                f"Age of the participant "
+                f"(range: {participants.age_min}-{participants.age_max} years)"
+            )
         sidecar["age"] = {
-            "Description": "Age of the participant",
+            "Description": age_desc,
             "Units": "years",
         }
         updated = True
@@ -692,6 +792,11 @@ def _update_participants_tsv(root, subject, metadata):
     if "species" not in sidecar:
         sidecar["species"] = {
             "Description": "Species of the participant (binomial name)",
+        }
+        updated = True
+    if "bci_experience" not in sidecar:
+        sidecar["bci_experience"] = {
+            "Description": "BCI experience level of the participant",
         }
         updated = True
     # Ensure mne_bids-generated columns have Description (RECOMMENDED)
@@ -866,6 +971,20 @@ def _update_events_json_sidecar(bids_path, hed_tags, metadata):
 
     changed = False
 
+    # Top-level Description (RECOMMENDED by BIDS for all sidecars)
+    if "Description" not in sidecar:
+        # Build a descriptive string from task and event classes
+        task = bids_path.task
+        event_classes = sorted(hed_tags.keys()) if hed_tags else []
+        if task and event_classes:
+            classes_str = ", ".join(event_classes)
+            sidecar["Description"] = f"Event annotations for {task} task ({classes_str})."
+        elif task:
+            sidecar["Description"] = f"Event annotations for {task} task."
+        else:
+            sidecar["Description"] = "Event annotations for the recording."
+        changed = True
+
     # HED annotations
     if hed_tags:
         if "trial_type" not in sidecar:
@@ -886,6 +1005,28 @@ def _update_events_json_sidecar(bids_path, hed_tags, metadata):
     ):
         sidecar["StimulusPresentation"] = metadata.experiment.stimulus_presentation
         changed = True
+
+    # StimulusPresentation fallback: build from individual metadata fields.
+    # SoftwareName is standard BIDS; StimulusType, StimulusModalities,
+    # PrimaryModality, and Environment are MOABB extension fields.
+    elif metadata and metadata.experiment and "StimulusPresentation" not in sidecar:
+        exp = metadata.experiment
+        acq = metadata.acquisition if metadata.acquisition else None
+        bci = metadata.bci_application if metadata.bci_application else None
+        sp = {}
+        if acq and acq.software:
+            sp["SoftwareName"] = acq.software
+        if exp.stimulus_type:
+            sp["StimulusType"] = exp.stimulus_type
+        if exp.stimulus_modalities:
+            sp["StimulusModalities"] = exp.stimulus_modalities
+        if exp.primary_modality:
+            sp["PrimaryModality"] = exp.primary_modality
+        if bci and bci.environment:
+            sp["Environment"] = bci.environment
+        if sp:
+            sidecar["StimulusPresentation"] = sp
+            changed = True
 
     if changed:
         with open(events_json_path, "w") as f:
@@ -927,23 +1068,95 @@ def _update_dataset_description_extra(root, metadata):
             kw.extend(metadata.tags.type)
         if metadata.experiment:
             kw.append(metadata.experiment.paradigm)
+        bci = metadata.bci_application
+        if bci and bci.applications:
+            kw.extend(bci.applications)
         if kw:
-            keywords = kw
-
-    if not keywords:
-        return
+            keywords = list(dict.fromkeys(kw))  # deduplicate, preserve order
 
     with open(desc_path) as f:
         desc = json.load(f)
 
     changed = False
-    if "Keywords" not in desc and keywords:
+    if keywords and "Keywords" not in desc:
         desc["Keywords"] = keywords
+        changed = True
+
+    # PublicationYear is a MOABB extension (not standard BIDS); we write it
+    # directly because mne_bids.make_dataset_description() rejects unknown keys.
+    if doc and doc.publication_year and "PublicationYear" not in desc:
+        desc["PublicationYear"] = doc.publication_year
         changed = True
 
     if changed:
         with open(desc_path, "w") as f:
             json.dump(desc, f, indent="\t")
+
+
+def _write_metadata_yaml(root, dataset):
+    """Write a ``<ClassName>.metadata.yaml`` sidecar into the BIDS root.
+
+    Serialises the full ``DatasetMetadata`` dataclass to YAML so that every
+    metadata field is available alongside the converted BIDS data.
+
+    Parameters
+    ----------
+    root : Path
+        Root of the BIDS dataset.
+    dataset : BaseDataset
+        The MOABB dataset instance.
+    """
+    metadata = getattr(dataset, "metadata", None)
+    if metadata is None:
+        return
+
+    try:
+        from dataclasses import asdict
+
+        import yaml
+    except ImportError:
+        log.debug("PyYAML not installed — skipping metadata YAML export.")
+        return
+
+    def _clean(d):
+        """Remove None, empty dict/list, and False values recursively."""
+        if not isinstance(d, dict):
+            return d
+        out = {}
+        for k, v in d.items():
+            if v is None or v is False:
+                continue
+            if isinstance(v, dict):
+                v = _clean(v)
+                if not v:
+                    continue
+            if isinstance(v, list) and len(v) == 0:
+                continue
+            out[k] = v
+        return out
+
+    data = _clean(asdict(metadata))
+    data["_dataset"] = {
+        "class": type(dataset).__name__,
+        "code": dataset.code,
+        "doi": dataset.doi,
+        "paradigm": dataset.paradigm,
+        "n_subjects": len(dataset.subject_list),
+        "interval": dataset.interval,
+    }
+
+    code_dir = Path(root) / "code"
+    code_dir.mkdir(exist_ok=True)
+    yaml_path = code_dir / f"{type(dataset).__name__}.metadata.yaml"
+    with open(yaml_path, "w") as f:
+        yaml.dump(
+            data,
+            f,
+            default_flow_style=False,
+            sort_keys=True,
+            allow_unicode=True,
+            width=120,
+        )
 
 
 def _build_readme(dataset):
@@ -2044,6 +2257,10 @@ class BIDSInterfaceBase(abc.ABC):
         # boilerplate README with our enriched version)
         readme_path = Path(self.root) / "README"
         readme_path.write_text(_build_readme(self.dataset), encoding="utf-8")
+
+        # Write full metadata as YAML sidecar
+        _write_metadata_yaml(self.root, self.dataset)
+
         log.info("Finished caching %s to disk.", repr(self))
 
     def _write_lock_file(self, session, lock_data):
@@ -2118,7 +2335,6 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 "Raw object must have annotations to be saved in BIDS format."
                 "Use the SetRawAnnotations pipeline for this."
             )
-        datetime_now = datetime.datetime.now(tz=datetime.timezone.utc)
         if raw.info.get("line_freq", None) is None:
             # specify line frequency if not present as required by BIDS
             raw.info["line_freq"] = 50
@@ -2135,7 +2351,21 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("device_info", None) is None:
             # specify device info as required by BIDS
             raw.info["device_info"] = {"type": "eeg"}
-        raw.set_meas_date(datetime_now)
+
+        # Recover a meaningful meas_date when the original file lacks one.
+        # Many EEG files ship with epoch-zero (1970-01-01) or None.  Use the
+        # dataset's publication_year as a best-effort approximation so that
+        # the BIDS acq_time field is not obviously wrong.
+        _epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        meas_date = raw.info.get("meas_date", None)
+        if meas_date is None or meas_date == _epoch:
+            pub_year = None
+            if metadata and metadata.documentation:
+                pub_year = metadata.documentation.publication_year
+            if pub_year:
+                raw.set_meas_date(
+                    datetime.datetime(pub_year, 1, 1, tzinfo=datetime.timezone.utc)
+                )
 
         # Otherwise, the montage would still have the stim channel
         # which is dropped by mne_bids.write_raw_bids:
@@ -2197,6 +2427,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             scans_json_path = scans_tsv_files[0].with_suffix(".json")
             if not scans_json_path.exists():
                 scans_sidecar = {
+                    "Description": "Scans file listing data acquisitions.",
                     "filename": {
                         "Description": "Relative path to the data file.",
                     },
@@ -2206,6 +2437,45 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 }
                 with open(scans_json_path, "w") as f:
                     json.dump(scans_sidecar, f, indent="\t")
+
+        # Create channels.json sidecar (Description RECOMMENDED)
+        channels_tsv = bids_path.copy().update(suffix="channels", extension=".tsv")
+        if channels_tsv.fpath.exists():
+            channels_json_path = channels_tsv.fpath.with_suffix(".json")
+            if not channels_json_path.exists():
+                # Build descriptive string from channel info and metadata
+                n_ch = len(raw.ch_names)
+                ch_types = set(mne.channel_type(raw.info, i) for i in range(n_ch))
+                types_str = ", ".join(sorted(t.upper() for t in ch_types))
+                channels_desc = f"Channel information ({n_ch} {types_str} channels)."
+                # Add auxiliary channel info from metadata
+                if metadata is not None:
+                    acq = metadata.acquisition
+                    if acq and acq.channel_types:
+                        aux_parts = []
+                        non_eeg = {
+                            k: v for k, v in acq.channel_types.items() if k != "eeg"
+                        }
+                        for ch_type, count in sorted(non_eeg.items()):
+                            aux_parts.append(f"{count} {ch_type.upper()}")
+                        if acq.auxiliary_channels:
+                            aux = acq.auxiliary_channels
+                            if aux.other_physiological:
+                                existing = [a.split()[-1] for a in aux_parts]
+                                for p in aux.other_physiological:
+                                    if p.upper() not in existing:
+                                        aux_parts.append(p)
+                        if aux_parts:
+                            channels_desc += (
+                                " Original recording also included "
+                                + ", ".join(aux_parts)
+                                + "."
+                            )
+                channels_sidecar = {
+                    "Description": channels_desc,
+                }
+                with open(channels_json_path, "w") as f:
+                    json.dump(channels_sidecar, f, indent="\t")
 
 
 class BIDSInterfaceEpochs(BIDSInterfaceBase):

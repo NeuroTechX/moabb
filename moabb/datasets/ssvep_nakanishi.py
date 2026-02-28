@@ -56,11 +56,11 @@ class Nakanishi2015(BaseDataset):
             n_channels=8,
             channel_types={"eeg": 8},
             hardware="Biosemi ActiveTwo",
-            reference="CMS",
-            software="MATLAB",
+            reference="CMS/DRL",
+            software=None,
             sensors=["PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2"],
             line_freq=60.0,
-            electrode_type="Ag/AgCl",
+            electrode_type=None,
             montage="standard_1020",
             sensor_type="EEG",
         ),
@@ -108,10 +108,11 @@ class Nakanishi2015(BaseDataset):
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="simulated_online",
-            has_training_test_split=True,
+            mode="offline",
+            has_training_test_split=False,
             instructions="Subjects were asked to gaze at one of the visual stimuli indicated by the stimulus program in a random order for 4s. At the beginning of each trial, a red square appeared for 1s at the position of the target stimulus. Subjects were asked to shift their gaze to the target within the same 1s duration. After that, all stimuli started to flicker simultaneously for 4s.",
             stimulus_presentation={
+                "SoftwareName": "MATLAB with Psychophysics Toolbox",
                 "monitor": "ASUS VG278 27-inch LCD",
                 "refresh_rate": "60Hz",
                 "resolution": "1280x800 pixels",
@@ -141,8 +142,8 @@ class Nakanishi2015(BaseDataset):
             ],
             institution="University of California San Diego",
             institution_department="Swartz Center for Computational Neuroscience, Institute for Neural Computation; Center for Advanced Neurological Engineering, Institute of Engineering in Medicine",
-            country="United States of America",
-            data_url="ftp://sccn.ucsd.edu/pub/cca_ssvep",
+            country="US",
+            data_url="https://github.com/mnakanishi/12JFPM_SSVEP/raw/master/data/",
             publication_year=2015,
             contact_info=["wangyj@semi.ac.cn"],
             ethics_approval=[
@@ -167,7 +168,7 @@ class Nakanishi2015(BaseDataset):
         tags=Tags(
             pathology=["Healthy"],
             modality=["Visual"],
-            type=["Perception"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
             bandpass={"low_cutoff_hz": 6.0, "high_cutoff_hz": 80.0},
@@ -176,7 +177,7 @@ class Nakanishi2015(BaseDataset):
             preprocessing_applied=True,
             preprocessing_steps=["downsampling", "bandpass filtering"],
             notes="Zero-phase forward and reverse IIR filtering was implemented using the filtfilt() function in MATLAB. Data epochs were extracted with a 135-ms latency delay considering the visual system delay.",
-            epoch_window=[0.135, None],
+            epoch_window=[0.135, 4.135],
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -206,7 +207,7 @@ class Nakanishi2015(BaseDataset):
             "standard_cca_itr_2s": 50.40,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "phone_dialing", "speller"],
+            applications=["communication"],
             environment="laboratory",
             online_feedback=False,
         ),
