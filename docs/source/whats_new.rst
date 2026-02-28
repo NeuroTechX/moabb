@@ -91,9 +91,11 @@ Bugs
 - Fix :class:`moabb.datasets.RomaniBF2025ERP` ``get_data()`` failing with description merge error when adding stim channel, causing sessions to be silently dropped (:gh:`991` by `Bruno Aristimunha`_)
 - Fix docs CI cache: set ``MNE_DATA`` env var and persist ``~/.mne`` config directory so dataset paths survive cache restore (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Liu2024` download failure by switching Figshare URLs from ``figshare.com/ndownloader`` to ``ndownloader.figshare.com`` and adding ``BadZipFile`` recovery for corrupted cached downloads (:gh:`992` by `Bruno Aristimunha`_)
+- Fix TRCA Riemannian mean convergence failure by regularizing ill-conditioned cross-covariance matrices in :class:`moabb.pipelines.classification.SSVEP_TRCA`. Eigenvalue clamping bounds the condition number, eliminating ``Convergence not reached`` and ``invalid value encountered in log`` warnings (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
+- Resolve all 216 pytest warnings across the test suite by addressing root causes: clear Epochs annotations before concatenation, replace lambda with named function in test pipelines, re-apply montage after ``add_reference_channels``, conditionally pass ``groups`` parameter in splitters using ``GroupsConsumerMixin``, use ``os.environ`` in ``FakeDataset`` to avoid non-standard config warnings, and suppress intentional ``OptunaSearchCV`` experimental warnings at init (by `Bruno Aristimunha`_)
 - Added systematic DOI validation test suite that checks format, docstring tracking, resolution, and author overlap across all datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
 - Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
