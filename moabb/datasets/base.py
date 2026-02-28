@@ -6,6 +6,7 @@ import abc
 import logging
 import re
 import traceback
+import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import cached_property
@@ -640,17 +641,80 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         self._all_subjects = list(subjects)
         if selected_subjects is not None:
+            selected_subjects = list(selected_subjects)
+            # Warn on duplicate subjects and deduplicate preserving order
+            if len(selected_subjects) != len(set(selected_subjects)):
+                seen = set()
+                dupes = []
+                for s in selected_subjects:
+                    if s in seen:
+                        dupes.append(s)
+                    seen.add(s)
+                warnings.warn(
+                    f"Duplicate subjects detected: {dupes}. "
+                    "Duplicates will be removed, preserving order.",
+                    stacklevel=2,
+                )
+                selected_subjects = list(dict.fromkeys(selected_subjects))
             invalid = [s for s in selected_subjects if s not in self._all_subjects]
             if invalid:
                 raise ValueError(
                     f"Invalid subjects: {invalid}. "
                     f"Valid subjects are: {self._all_subjects}"
                 )
-            self.subject_list = list(selected_subjects)
+            self.subject_list = selected_subjects
         else:
             self.subject_list = list(subjects)
         self.n_sessions = sessions_per_subject
+
+        # Validate selected_sessions
+        if selected_sessions is not None:
+            try:
+                selected_sessions = list(selected_sessions)
+            except TypeError:
+                raise TypeError(
+                    f"selected_sessions must be an iterable (e.g. list), "
+                    f"got {type(selected_sessions).__name__}"
+                ) from None
+            for s in selected_sessions:
+                if not isinstance(s, (int, str)):
+                    raise TypeError(
+                        f"Each element of selected_sessions must be int or str, "
+                        f"got {type(s).__name__}: {s!r}"
+                    )
         self._selected_sessions = selected_sessions
+
+        # Validate events dict integrity
+        if not isinstance(events, dict):
+            raise TypeError(
+                f"events must be a dict, got {type(events).__name__}"
+            )
+        for key, value in events.items():
+            if not isinstance(key, str):
+                raise TypeError(
+                    f"All event dict keys must be strings, but got "
+                    f"{type(key).__name__}: {key!r}. "
+                    "Check that keyword arguments were not accidentally "
+                    "included inside the events dict."
+                )
+            # Values can be int or list-of-int (MNE multi-code events)
+            if isinstance(value, (list, tuple)):
+                for i, v in enumerate(value):
+                    if isinstance(v, bool) or not isinstance(v, (int, np.integer)):
+                        raise TypeError(
+                            f"Event {key!r} has a list value, but element {i} "
+                            f"is {v!r} (type {type(v).__name__}), expected int. "
+                            "Check that keyword arguments were not accidentally "
+                            "included inside the events dict."
+                        )
+            elif isinstance(value, bool) or not isinstance(value, (int, np.integer)):
+                raise TypeError(
+                    f"All event dict values must be int or list of int, but "
+                    f"event {key!r} has value {value!r} "
+                    f"(type {type(value).__name__}). "
+                    "Check that keyword arguments were not accidentally "
+                    "included inside the events dict."
+                )
         self.event_id = events
         self.code = code
         self.interval = interval

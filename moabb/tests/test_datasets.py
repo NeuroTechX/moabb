@@ -1381,3 +1381,131 @@ class TestDatasetMetadata:
             f"Number of subjects mismatch for {name}: "
             f"data has {n_subjects_data}, metadata says {metadata.participants.n_subjects}"
         )
+
+
+def _instantiate_dataset(dataset_cls, **extra_kwargs):
+    """Helper to instantiate a dataset, handling special constructor args."""
+    kwargs = dict(extra_kwargs)
+    if inspect.signature(dataset_cls).parameters.get("accept"):
+        kwargs["accept"] = True
+    return dataset_cls(**kwargs)
+
+
+class TestDatasetConstructorValidation:
+    """Parametric tests validating constructor wiring for all datasets."""
+
+    @pytest.mark.parametrize("dataset_cls", dataset_list)
+    def test_default_instantiation_all_subjects(self, dataset_cls):
+        """Default instantiation should expose all subjects."""
+        ds = _instantiate_dataset(dataset_cls)
+        assert ds.subject_list == ds.all_subjects
+        assert len(ds.subject_list) > 0, f"{dataset_cls.__name__} has no subjects"
+
+    # Datasets that use subjects= to rebuild the subject pool rather than filter
+    _CUSTOM_SUBJECT_HANDLING = {"RomaniBF2025ERP"}
+
+    @pytest.mark.parametrize("dataset_cls", dataset_list)
+    def test_subject_filtering_works(self, dataset_cls):
+        """Passing subjects= should filter subject_list without mutating all_subjects."""
+        sig = inspect.signature(dataset_cls)
+        if "subjects" not in sig.parameters:
+            pytest.skip(f"{dataset_cls.__name__} has no 'subjects' parameter")
+        if dataset_cls.__name__ in self._CUSTOM_SUBJECT_HANDLING:
+            pytest.skip(
+                f"{dataset_cls.__name__} uses custom subject handling"
+            )
+
+        ds_full = _instantiate_dataset(dataset_cls)
+        if len(ds_full.all_subjects) < 2:
+            pytest.skip(f"{dataset_cls.__name__} has fewer than 2 subjects")
+
+        first_two = ds_full.all_subjects[:2]
+        ds_filtered = _instantiate_dataset(dataset_cls, subjects=first_two)
+        assert ds_filtered.subject_list == first_two, (
+            f"{dataset_cls.__name__}: subject_list should be {first_two}, "
+            f"got {ds_filtered.subject_list}"
+        )
+        assert ds_filtered.all_subjects == ds_full.all_subjects, (
+            f"{dataset_cls.__name__}: all_subjects should remain unchanged after filtering"
+        )
+
+    @pytest.mark.parametrize("dataset_cls", dataset_list)
+    def test_events_dict_integrity(self, dataset_cls):
+        """event_id must be a dict with str keys and int (or list-of-int) values."""
+        ds = _instantiate_dataset(dataset_cls)
+        assert isinstance(ds.event_id, dict), (
+            f"{dataset_cls.__name__}: event_id is {type(ds.event_id).__name__}, expected dict"
+        )
+        for key, value in ds.event_id.items():
+            assert isinstance(key, str), (
+                f"{dataset_cls.__name__}: event key {key!r} is {type(key).__name__}, "
+                "expected str. Possible keyword argument accidentally inside events dict."
+            )
+            if isinstance(value, (list, tuple)):
+                for v in value:
+                    assert isinstance(v, (int, np.integer)) and not isinstance(v, bool), (
+                        f"{dataset_cls.__name__}: event {key!r} list contains {v!r} "
+                        f"({type(v).__name__}), expected int."
+                    )
+            else:
+                assert isinstance(value, (int, np.integer)) and not isinstance(value, bool), (
+                    f"{dataset_cls.__name__}: event {key!r} has value {value!r} "
+                    f"({type(value).__name__}), expected int."
+                )
+
+    @pytest.mark.parametrize("dataset_cls", dataset_list)
+    def test_basic_properties(self, dataset_cls):
+        """Basic dataset properties should be sane."""
+        ds = _instantiate_dataset(dataset_cls)
+        assert len(ds.all_subjects) > 0, f"{dataset_cls.__name__} has no subjects"
+        assert ds.n_sessions > 0, f"{dataset_cls.__name__} has n_sessions <= 0"
+
+    @pytest.mark.parametrize("dataset_cls", dataset_list)
+    def test_summary_table_cross_reference(self, dataset_cls):
+        """Cross-check subject count and session count against summary CSV."""
+        name = dataset_cls.__name__
+        # Skip datasets without summary table entries
+        if not hasattr(dataset_cls, "_summary_table"):
+            pytest.skip(f"{name} has no _summary_table entry")
+
+        # Skip FakeDataset variants
+        if "Fake" in name:
+            pytest.skip(f"{name} is a test fixture")
+
+        # Skip deprecated aliases
+        alias_names = {old for old, new, _ in aliases_list}
+        if name in alias_names:
+            pytest.skip(f"{name} is a deprecated alias")
+
+        ds = _instantiate_dataset(dataset_cls)
+        table = dataset_cls._summary_table
+        mismatches = []
+
+        # Cross-check #Subj
+        if "#Subj" in table:
+            try:
+                expected_subj = int(table["#Subj"])
+                actual_subj = len(ds.all_subjects)
+                if actual_subj != expected_subj:
+                    mismatches.append(
+                        f"#Subj: code has {actual_subj}, CSV says {expected_subj}"
+                    )
+            except (ValueError, TypeError):
+                pass  # non-numeric entry in CSV
+
+        # Cross-check #Sessions
+        if "#Sessions" in table:
+            try:
+                expected_sessions = int(table["#Sessions"])
+                if ds.n_sessions != expected_sessions:
+                    mismatches.append(
+                        f"#Sessions: code has {ds.n_sessions}, CSV says {expected_sessions}"
+                    )
+            except (ValueError, TypeError):
+                pass  # non-numeric entry in CSV
+
+        if mismatches:
+            warnings.warn(
+                f"{name} summary CSV mismatch: {'; '.join(mismatches)}",
+                stacklevel=1,
+            )

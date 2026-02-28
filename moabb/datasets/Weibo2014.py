@@ -357,14 +357,14 @@ class Weibo2014(BaseDataset):
                 left_hand_right_foot=5,
                 right_hand_left_foot=6,
                 rest=7,
-                selected_subjects=subjects,
-            selected_sessions=sessions,
-        ),
+            ),
             code="Weibo2014",
             # Full trial w/ rest is 0-8
             interval=[3, 7],
             paradigm="imagery",
             doi="10.1371/journal.pone.0114853",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
