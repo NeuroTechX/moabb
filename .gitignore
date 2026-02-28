@@ -112,9 +112,6 @@ ENV/
 *.hd5
 *.hdf5
 analysis/*
-/moabb/tests/barplot.pdf
-/moabb/tests/orderplot.pdf
-/moabb/tests/orderplot_full.pdf
 /test_context.yml
 res_test/
 
@@ -139,4 +136,9 @@ examples/tutorials/*.mat
 .vscode/
 
 results/results*
-/moabb/tests/test_pipelines/*.lock
+
+# Binary and generated files
+*.lock
+*.zip
+*.html
+*.pdf

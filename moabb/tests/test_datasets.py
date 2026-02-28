@@ -29,11 +29,11 @@ from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.kojima2024b import EVENTS
 from moabb.datasets.metadata import (
+    DATASET_METADATA_CATALOG,
     AcquisitionMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
     ParticipantMetadata,
     PreprocessingMetadata,
     get_dataset_metadata,
@@ -306,7 +306,7 @@ class Test_Datasets:
                 ),
                 documentation=DocumentationMetadata(doi="10.1093/gigascience/giz002"),
                 preprocessing=PreprocessingMetadata(
-                    filter_details=FilterDetails(bandpass=[0.5, 40.0]),
+                    bandpass=[0.5, 40.0],
                     preprocessing_steps=["common average reference"],
                 ),
             )
@@ -1092,3 +1092,110 @@ class TestDatasetMetadata:
         assert (
             metadata.documentation.license is not None
         ), f"{dataset_class.__name__} is missing a license in its documentation metadata"
+
+    @pytest.mark.download
+    def test_n_channels_matches_raw_data(self):
+        """Ensure metadata n_channels matches actual raw data channel count."""
+        dataset = BNCI2014_001()
+        metadata = dataset.metadata
+        assert metadata is not None
+
+        data = dataset.get_data(subjects=[dataset.subject_list[0]])
+        subject_data = data[dataset.subject_list[0]]
+
+        # Check first session, first run
+        first_session = next(iter(subject_data.values()))
+        first_run = next(iter(first_session.values()))
+
+        # Exclude stim channels (added by MOABB, not actually recorded)
+        n_channels = sum(
+            1 for ch_type in first_run.get_channel_types() if ch_type != "stim"
+        )
+        assert n_channels == metadata.acquisition.n_channels, (
+            f"Channel count mismatch for {dataset.code}: "
+            f"raw has {n_channels} non-stim channels, "
+            f"metadata says {metadata.acquisition.n_channels}"
+        )
+
+    @pytest.mark.download
+    @pytest.mark.parametrize(
+        "dataset_class",
+        [ds for ds in dataset_list if ds.__name__ in DATASET_METADATA_CATALOG],
+    )
+    def test_metadata_matches_raw_data(self, dataset_class):
+        """Ensure metadata matches actual raw data (data is ground truth)."""
+        from collections import Counter
+
+        kwargs = {}
+        if inspect.signature(dataset_class).parameters.get("accept"):
+            kwargs["accept"] = True
+
+        dataset = dataset_class(**kwargs)
+        metadata = dataset.metadata
+        name = dataset_class.__name__
+
+        data = dataset.get_data(subjects=[dataset.subject_list[0]])
+        subject_data = data[dataset.subject_list[0]]
+
+        first_session = next(iter(subject_data.values()))
+        first_run = next(iter(first_session.values()))
+
+        # --- Sampling rate ---
+        assert first_run.info["sfreq"] == metadata.acquisition.sampling_rate, (
+            f"Sampling rate mismatch for {name}: "
+            f"data has {first_run.info['sfreq']} Hz, "
+            f"metadata says {metadata.acquisition.sampling_rate} Hz"
+        )
+
+        # --- Channel counts by type (exclude stim, added by MOABB) ---
+        raw_types = dict(zip(first_run.ch_names, first_run.get_channel_types()))
+        raw_counts = Counter(raw_types.values())
+        raw_counts.pop("stim", None)
+
+        n_non_stim = sum(raw_counts.values())
+        assert n_non_stim == metadata.acquisition.n_channels, (
+            f"Channel count mismatch for {name}: "
+            f"data has {n_non_stim} non-stim channels, "
+            f"metadata says {metadata.acquisition.n_channels}"
+        )
+
+        for ch_type, meta_count in metadata.acquisition.channel_types.items():
+            raw_count = raw_counts.get(ch_type, 0)
+            assert raw_count == meta_count, (
+                f"Channel type '{ch_type}' count mismatch for {name}: "
+                f"data has {raw_count}, metadata says {meta_count}"
+            )
+
+        # --- Channel names (exclude stim, added by MOABB) ---
+        raw_non_stim_names = sorted(
+            n for n, ch_type in raw_types.items() if ch_type != "stim"
+        )
+        if metadata.acquisition.sensors:
+            assert sorted(metadata.acquisition.sensors) == raw_non_stim_names, (
+                f"Channel name mismatch for {name}: "
+                f"only in metadata: "
+                f"{set(metadata.acquisition.sensors) - set(raw_non_stim_names)}, "
+                f"only in data: "
+                f"{set(raw_non_stim_names) - set(metadata.acquisition.sensors)}"
+            )
+
+        # --- Number of sessions ---
+        n_sessions_data = len(subject_data)
+        assert n_sessions_data == metadata.sessions_per_subject, (
+            f"Sessions per subject mismatch for {name}: "
+            f"data has {n_sessions_data}, metadata says {metadata.sessions_per_subject}"
+        )
+
+        # --- Number of runs per session ---
+        n_runs_data = len(first_session)
+        assert n_runs_data == metadata.runs_per_session, (
+            f"Runs per session mismatch for {name}: "
+            f"data has {n_runs_data}, metadata says {metadata.runs_per_session}"
+        )
+
+        # --- Number of subjects ---
+        n_subjects_data = len(dataset.subject_list)
+        assert n_subjects_data == metadata.participants.n_subjects, (
+            f"Number of subjects mismatch for {name}: "
+            f"data has {n_subjects_data}, metadata says {metadata.participants.n_subjects}"
+        )

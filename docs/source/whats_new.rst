@@ -39,6 +39,7 @@ Enhancements
 - Add a "Report an Issue on GitHub" feedback section to all dataset docstrings so users can easily report dataset problems (:gh:`982` by `Bruno Aristimunha`_)
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
+- Add automatic HED 8.4.0 (Hierarchical Event Descriptors) annotations to BIDS export with 83 validated paradigm-specific tags covering all MOABB datasets, ``HEDVersion`` in ``dataset_description.json``, events.json sidecar patching, per-dataset override via ``ExperimentMetadata.hed_tags``, and ``Label/`` fallback for unmapped events (:gh:`974` by `Bruno Aristimunha`_)
 - Add advanced tutorial on Riemannian Artifact Rejection (Riemannian Potato and Potato Field) as a pre-processing step using pipeline surgery (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
 - Add pipeline surgery methods (``find_steps``, ``insert_step``, ``remove_step``) to :class:`moabb.datasets.preprocessing.FixedPipeline` for easier pipeline manipulation (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
 - Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
@@ -112,6 +113,7 @@ Code health
 - Move ``_pipeline_requires_epochs()`` from ``evaluations.py`` to ``utils.py`` for shared access by ``BaseEvaluation._load_data()`` (:gh:`963` by `Bruno Aristimunha`_)
 - Move ``WithinSessionSplitter`` creation outside the per-session loop in ``WithinSessionEvaluation``, since splitter parameters do not change per session (:gh:`963` by `Bruno Aristimunha`_)
 - Add a compile smoke test (``moabb/tests/test_compilation.py``) that validates syntax for all Python files under ``moabb/`` using ``py_compile`` (:gh:`960` by `Bruno Aristimunha`_)
+- Add persistent DOI resolution cache (``moabb/tests/doi_cache.json``) for ``test_doi_validation.py`` to avoid network requests on every test run, reducing DOI test time from ~9 minutes to <1 second. Refresh with ``--update-doi-cache`` (:gh:`996` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------

@@ -11,23 +11,18 @@ The schema is organized into logical sections:
 - PreprocessingMetadata: Filter and artifact handling details
 - SignalProcessingMetadata: Feature extraction and classification
 - CrossValidationMetadata: Evaluation methodology
-- PerformanceMetadata: Accuracy and performance metrics
 - BCIApplicationMetadata: Application context
 - ParadigmSpecificMetadata: Paradigm-specific parameters (SSVEP, c-VEP, P300)
 - DataStructureMetadata: Trial and block organization
 - DatasetMetadata: Top-level container combining all sections
 
 Additional classes:
-- Demographics: Extended subject demographics
-- ExternalLinks: URLs and data sources
-- Timestamps: Dataset creation/modification dates
 - Tags: Classification tags
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
 import pycountry
@@ -66,78 +61,6 @@ def validate_country_code(code: str) -> bool:
 
 
 @dataclass
-class Demographics:
-    """Subject demographics information following EEGDash schema.
-
-    This extends ParticipantMetadata with additional EEGDash fields.
-
-    Parameters
-    ----------
-    subjects_count : int
-        Number of subjects in the dataset.
-    age_min : float, optional
-        Minimum age of participants in years.
-    age_max : float, optional
-        Maximum age of participants in years.
-    ages : List[int], optional
-        List of ages for each subject.
-    gender : Dict[str, int], optional
-        Gender distribution, e.g., {"male": 12, "female": 8}.
-    handedness : dict or str, optional
-        Handedness distribution, e.g., ``{"right": 18, "left": 2}`` or a
-        free-text description like ``"right-handed (Edinburgh Handedness Inventory)"``.
-    clinical_population : str, optional
-        Clinical diagnosis if patient population.
-    """
-
-    subjects_count: int
-    age_min: Optional[float] = None
-    age_max: Optional[float] = None
-    ages: Optional[List[int]] = None
-    gender: Optional[Dict[str, int]] = None
-    handedness: Optional[Union[Dict[str, int], str]] = None
-    clinical_population: Optional[str] = None
-
-
-@dataclass
-class ExternalLinks:
-    """External URLs and data source links following EEGDash schema.
-
-    Parameters
-    ----------
-    source_url : str, optional
-        Primary URL to the dataset source (e.g., OpenNeuro page).
-    ftp_url : str, optional
-        FTP server URL if available.
-    alternative_urls : Dict[str, str], optional
-        Additional URLs mapped by name.
-    """
-
-    source_url: Optional[str] = None
-    ftp_url: Optional[str] = None
-    alternative_urls: Optional[Dict[str, str]] = None
-
-
-@dataclass
-class Timestamps:
-    """Dataset timestamp information following EEGDash schema.
-
-    Parameters
-    ----------
-    dataset_created_at : datetime, optional
-        When the dataset was first created/published.
-    dataset_modified_at : datetime, optional
-        When the dataset was last modified.
-    ingested_at : datetime, optional
-        When the dataset was ingested into the system.
-    """
-
-    dataset_created_at: Optional[datetime] = None
-    dataset_modified_at: Optional[datetime] = None
-    ingested_at: Optional[datetime] = None
-
-
-@dataclass
 class Tags:
     """Classification tags for the dataset following EEGDash schema.
 
@@ -154,38 +77,6 @@ class Tags:
     pathology: Optional[List[str]] = None
     modality: Optional[List[str]] = None
     type: Optional[List[str]] = None
-
-
-@dataclass
-class ChannelCount:
-    """Channel count entry for frequency distribution.
-
-    Parameters
-    ----------
-    val : int
-        Number of channels.
-    count : int
-        Number of recordings with this channel count.
-    """
-
-    val: int
-    count: int
-
-
-@dataclass
-class SamplingRateCount:
-    """Sampling rate count entry for frequency distribution.
-
-    Parameters
-    ----------
-    val : float
-        Sampling rate in Hz.
-    count : int
-        Number of recordings with this sampling rate.
-    """
-
-    val: float
-    count: int
 
 
 @dataclass
@@ -217,11 +108,17 @@ class AuxiliaryChannelsMetadata:
 
 
 @dataclass
-class FilterDetails:
-    """Filter configuration details.
+class PreprocessingMetadata:
+    """Preprocessing and artifact handling details.
 
     Parameters
     ----------
+    data_state : str, optional
+        State of the data, e.g., "raw", "preprocessed", "epoched".
+    preprocessing_applied : bool, optional
+        Whether preprocessing was applied to the shared data.
+    preprocessing_steps : List[str], optional
+        List of preprocessing steps applied.
     highpass_hz : float, optional
         High-pass filter cutoff frequency in Hz.
     lowpass_hz : float, optional
@@ -234,30 +131,6 @@ class FilterDetails:
         Filter type, e.g., "butterworth", "FIR", "IIR".
     filter_order : int | str, optional
         Filter order.
-    """
-
-    highpass_hz: Optional[float] = None
-    lowpass_hz: Optional[float] = None
-    bandpass: Optional[List[float] | Dict[str, float]] = None
-    notch_hz: Optional[List[float] | float | int] = None
-    filter_type: Optional[str] = None
-    filter_order: Optional[int | str] = None
-
-
-@dataclass
-class PreprocessingMetadata:
-    """Preprocessing and artifact handling details.
-
-    Parameters
-    ----------
-    data_state : str, optional
-        State of the data, e.g., "raw", "preprocessed", "epoched".
-    preprocessing_applied : bool, optional
-        Whether preprocessing was applied to the shared data.
-    preprocessing_steps : List[str], optional
-        List of preprocessing steps applied.
-    filter_details : FilterDetails, optional
-        Detailed filter configuration.
     artifact_methods : List[str], optional
         Artifact rejection/correction methods, e.g., ["ICA", "threshold", "ASR"].
     re_reference : str, optional
@@ -273,43 +146,17 @@ class PreprocessingMetadata:
     data_state: Optional[str] = None
     preprocessing_applied: Optional[bool] = None
     preprocessing_steps: Optional[List[str]] = None
-    filter_details: Optional[FilterDetails] = None
+    highpass_hz: Optional[float] = None
+    lowpass_hz: Optional[float] = None
+    bandpass: Optional[List[float] | Dict[str, float]] = None
+    notch_hz: Optional[List[float] | float | int] = None
+    filter_type: Optional[str] = None
+    filter_order: Optional[int | str] = None
     artifact_methods: Optional[List[str]] = None
     re_reference: Optional[str] = None
     downsampled_to_hz: Optional[float] = None
     epoch_window: Optional[List[float]] = None
     notes: Optional[str] = None
-
-
-@dataclass
-class FrequencyBands:
-    """Frequency band definitions used in analysis.
-
-    Parameters
-    ----------
-    delta : List[float], optional
-        Delta band range [low, high] in Hz.
-    theta : List[float], optional
-        Theta band range [low, high] in Hz.
-    alpha : List[float], optional
-        Alpha band range [low, high] in Hz.
-    mu : List[float], optional
-        Mu/sensorimotor rhythm range [low, high] in Hz.
-    beta : List[float], optional
-        Beta band range [low, high] in Hz.
-    gamma : List[float], optional
-        Gamma band range [low, high] in Hz.
-    analyzed_range : List[float], optional
-        Overall frequency range analyzed [low, high] in Hz.
-    """
-
-    delta: Optional[List[float]] = None
-    theta: Optional[List[float]] = None
-    alpha: Optional[List[float]] = None
-    mu: Optional[List[float]] = None
-    beta: Optional[List[float]] = None
-    gamma: Optional[List[float]] = None
-    analyzed_range: Optional[List[float]] = None
 
 
 @dataclass
@@ -322,15 +169,16 @@ class SignalProcessingMetadata:
         Classifiers used, e.g., ["LDA", "SVM", "CSP+LDA", "Deep Learning"].
     feature_extraction : List[str], optional
         Feature extraction methods, e.g., ["CSP", "PSD", "time-domain"].
-    frequency_bands : FrequencyBands, optional
-        Frequency band definitions used in analysis.
+    frequency_bands : Dict[str, List[float]], optional
+        Frequency band definitions used in analysis, e.g.,
+        ``{"mu": [8, 12], "beta": [12, 30]}``.
     spatial_filters : List[str], optional
         Spatial filtering methods, e.g., ["CSP", "CCA", "Laplacian"].
     """
 
     classifiers: Optional[List[str]] = None
     feature_extraction: Optional[List[str]] = None
-    frequency_bands: Optional[FrequencyBands] = None
+    frequency_bands: Optional[Dict[str, List[float]]] = None
     spatial_filters: Optional[List[str]] = None
 
 
@@ -351,31 +199,6 @@ class CrossValidationMetadata:
     cv_method: Optional[str] = None
     cv_folds: Optional[int] = None
     evaluation_type: Optional[List[str]] = None
-
-
-@dataclass
-class PerformanceMetadata:
-    """Performance metrics reported in the original study.
-
-    Parameters
-    ----------
-    accuracy_percent : float, optional
-        Classification accuracy percentage.
-    itr_bits_per_min : float, optional
-        Information transfer rate in bits per minute.
-    auc : float, optional
-        Area under the ROC curve.
-    kappa : float, optional
-        Cohen's kappa coefficient.
-    other_metrics : Dict[str, float], optional
-        Additional performance metrics.
-    """
-
-    accuracy_percent: Optional[float] = None
-    itr_bits_per_min: Optional[float] = None
-    auc: Optional[float] = None
-    kappa: Optional[float] = None
-    other_metrics: Optional[Dict[str, float]] = None
 
 
 @dataclass
@@ -525,6 +348,14 @@ class AcquisitionMetadata:
         or a per-channel-type dict like ``{"eeg": 20, "emg": 50}``.
     auxiliary_channels : AuxiliaryChannelsMetadata, optional
         Information about EOG, EMG, and other auxiliary channels.
+    cap_manufacturer : str, optional
+        Cap manufacturer company name (BIDS RECOMMENDED).
+    cap_model : str, optional
+        Cap model designation (BIDS RECOMMENDED).
+    electrode_type : str, optional
+        Electrode type: "cup", "ring", "clip-on", "wire", "needle".
+    electrode_material : str, optional
+        Electrode material: "Ag/AgCl", "Tin", "Gold".
     """
 
     sampling_rate: float
@@ -541,6 +372,11 @@ class AcquisitionMetadata:
     montage: str = "standard_1005"
     impedance_threshold_kohm: Optional[Union[float, Dict[str, float]]] = None
     auxiliary_channels: Optional[AuxiliaryChannelsMetadata] = None
+    # BIDS fields
+    cap_manufacturer: Optional[str] = None
+    cap_model: Optional[str] = None
+    electrode_type: Optional[str] = None
+    electrode_material: Optional[str] = None
 
 
 @dataclass
@@ -577,8 +413,18 @@ class DocumentationMetadata:
         DOI for associated publication (EEGDash field).
     funding : List[str], optional
         Funding sources (EEGDash field).
-    readme : str, optional
-        Dataset README content (EEGDash field).
+    institution_address : str, optional
+        Full address of institution (BIDS RECOMMENDED).
+    institution_department : str, optional
+        Department within institution (BIDS RECOMMENDED).
+    ethics_approval : List[str], optional
+        Ethics committee approvals (BIDS RECOMMENDED).
+    acknowledgements : str, optional
+        Acknowledgement text (BIDS OPTIONAL).
+    how_to_acknowledge : str, optional
+        Citation/acknowledgement instructions (BIDS OPTIONAL).
+    keywords : List[str], optional
+        Dataset keywords for discoverability (BIDS OPTIONAL).
     """
 
     doi: Optional[str] = None
@@ -595,7 +441,13 @@ class DocumentationMetadata:
     contact_info: Optional[List[str]] = None
     associated_paper_doi: Optional[str] = None
     funding: Optional[List[str]] = None
-    readme: Optional[str] = None
+    # BIDS fields
+    institution_address: Optional[str] = None
+    institution_department: Optional[str] = None
+    ethics_approval: Optional[List[str]] = None
+    acknowledgements: Optional[str] = None
+    how_to_acknowledge: Optional[str] = None
+    keywords: Optional[List[str]] = None
 
 
 @dataclass
@@ -632,6 +484,14 @@ class ParticipantMetadata:
         e.g., "stroke", "ALS", "spinal cord injury".
     bci_experience : str, optional
         BCI experience level, e.g., "naive", "experienced", "mixed".
+    sexes : List[str], optional
+        Per-subject sex list, e.g., ["male", "female", "male", ...].
+        Used for per-subject ``sex`` column in BIDS ``participants.tsv``.
+    handedness_list : List[str], optional
+        Per-subject handedness list, e.g., ["right", "left", "right", ...].
+        Used for per-subject ``hand`` column in BIDS ``participants.tsv``.
+    species : str
+        Species of participants (BIDS RECOMMENDED). Default is "homo sapiens".
     """
 
     n_subjects: int
@@ -647,6 +507,10 @@ class ParticipantMetadata:
     clinical_population: Optional[str] = None
     # RALPH additional fields
     bci_experience: Optional[str] = None
+    # BIDS per-subject fields
+    sexes: Optional[List[str]] = None
+    handedness_list: Optional[List[str]] = None
+    species: str = "homo sapiens"
 
 
 @dataclass
@@ -693,6 +557,20 @@ class ExperimentMetadata:
         BCI mode, e.g., "online", "offline", "simulated".
     has_training_test_split : bool, optional
         Whether data includes explicit training/test split.
+    instructions : str, optional
+        Text instructions given to participants before recording (BIDS RECOMMENDED).
+    cog_atlas_id : str, optional
+        Cognitive Atlas task URI (BIDS RECOMMENDED).
+    cog_po_id : str, optional
+        Cognitive Paradigm Ontology URI (BIDS RECOMMENDED).
+    stimulus_presentation : Dict[str, str], optional
+        Stimulus presentation software details (BIDS RECOMMENDED). Keys:
+        ``SoftwareName``, ``SoftwareVersion``, ``SoftwareRRID``, ``Code``,
+        ``OperatingSystem``.
+    hed_tags : Dict[str, str], optional
+        Per-dataset HED tag overrides mapping event name to HED tag string.
+        When set, these take priority over paradigm-level defaults during
+        BIDS export.
     """
 
     paradigm: str
@@ -714,6 +592,13 @@ class ExperimentMetadata:
     synchronicity: Optional[str] = None
     mode: Optional[str] = None
     has_training_test_split: Optional[bool] = None
+    # BIDS fields
+    instructions: Optional[str] = None
+    cog_atlas_id: Optional[str] = None
+    cog_po_id: Optional[str] = None
+    stimulus_presentation: Optional[Dict[str, str]] = None
+    # HED fields
+    hed_tags: Optional[Dict[str, str]] = None
 
 
 @dataclass
@@ -745,24 +630,20 @@ class DatasetMetadata:
         Number of contributing labs.
     data_processed : bool
         Whether data has been preprocessed. Default is False.
-    external_links : ExternalLinks, optional
-        External URLs and data sources.
-    timestamps : Timestamps, optional
-        Dataset creation and modification dates.
+    external_links : Dict[str, str], optional
+        External URLs and data sources, e.g., ``{"source": "https://...", "paper": "https://..."}``.
+
     tags : Tags, optional
         Classification tags.
-    nchans_counts : List[ChannelCount], optional
-        Distribution of channel counts across recordings.
-    sfreq_counts : List[SamplingRateCount], optional
-        Distribution of sampling rates across recordings.
     preprocessing : PreprocessingMetadata, optional
         Preprocessing and artifact handling details.
     signal_processing : SignalProcessingMetadata, optional
         Signal processing and classification methods.
     cross_validation : CrossValidationMetadata, optional
         Cross-validation methodology.
-    performance : PerformanceMetadata, optional
-        Performance metrics from original study.
+    performance : Dict[str, Any], optional
+        Performance metrics from original study, e.g.,
+        ``{"accuracy_percent": 85.0, "itr_bits_per_min": 25.0}``.
     bci_application : BCIApplicationMetadata, optional
         BCI application context.
     paradigm_specific : ParadigmSpecificMetadata, optional
@@ -818,19 +699,14 @@ class DatasetMetadata:
     file_format: Optional[str] = None
 
     # Nested objects
-    external_links: Optional[ExternalLinks] = None
-    timestamps: Optional[Timestamps] = None
+    external_links: Optional[Dict[str, str]] = None
     tags: Optional[Tags] = None
-
-    # Distributions
-    nchans_counts: Optional[List[ChannelCount]] = None
-    sfreq_counts: Optional[List[SamplingRateCount]] = None
 
     # RALPH extraction fields
     preprocessing: Optional[PreprocessingMetadata] = None
     signal_processing: Optional[SignalProcessingMetadata] = None
     cross_validation: Optional[CrossValidationMetadata] = None
-    performance: Optional[PerformanceMetadata] = None
+    performance: Optional[Dict[str, Any]] = None
     bci_application: Optional[BCIApplicationMetadata] = None
     paradigm_specific: Optional[ParadigmSpecificMetadata] = None
     data_structure: Optional[DataStructureMetadata] = None

@@ -11,6 +11,7 @@ We can convert at the Raw, Epochs or Array level.
 # License: BSD (3-clause)
 
 import abc
+import csv
 import datetime
 import json
 import logging
@@ -39,6 +40,1664 @@ if TYPE_CHECKING:
     from moabb.datasets.base import BaseDataset
 
 log = logging.getLogger(__name__)
+
+# Known amplifier manufacturer lookup for splitting hardware into
+# Manufacturer + ManufacturersModelName
+_MANUFACTURER_LOOKUP = {
+    "BrainAmp": "Brain Products",
+    "BrainAmp DC": "Brain Products",
+    "BrainAmp MR": "Brain Products",
+    "BrainAmp MR plus": "Brain Products",
+    "actiCHamp": "Brain Products",
+    "actiCHamp Plus": "Brain Products",
+    "LiveAmp": "Brain Products",
+    "g.USBamp": "g.tec",
+    "g.HIamp": "g.tec",
+    "g.Nautilus": "g.tec",
+    "Biosemi ActiveTwo": "BioSemi",
+    "ActiveTwo": "BioSemi",
+    "NeurOne": "Mega Electronics",
+    "NeuScan": "Compumedics",
+    "Neuroscan SynAmps2": "Compumedics Neuroscan",
+    "SynAmps2": "Compumedics Neuroscan",
+    "SynAmps": "Compumedics Neuroscan",
+    "ANT Neuro eego": "ANT Neuro",
+    "eego sports": "ANT Neuro",
+    "EGI": "Electrical Geodesics",
+}
+
+
+def _split_manufacturer(hardware):
+    """Split a hardware string into (Manufacturer, ModelName).
+
+    Uses a lookup table for known amplifiers. Falls back to using the
+    full string for both fields.
+    """
+    if not hardware:
+        return None, None
+    for model, manufacturer in _MANUFACTURER_LOOKUP.items():
+        if model.lower() in hardware.lower():
+            return manufacturer, hardware
+    return hardware, hardware
+
+
+def _enrich_raw_info_from_metadata(raw, metadata, subject):
+    """Set ``raw.info`` fields from dataset metadata before ``write_raw_bids``.
+
+    Enriches ``subject_info`` (sex, hand) and ``line_freq`` so that
+    ``mne_bids.write_raw_bids`` auto-generates richer sidecars and
+    ``participants.tsv`` entries.
+
+    Parameters
+    ----------
+    raw : mne.io.BaseRaw
+        The raw object whose info will be modified in-place.
+    metadata : DatasetMetadata
+        The dataset metadata.
+    subject : int
+        The MOABB subject number (1-based).
+    """
+    if metadata is None:
+        return
+
+    # Use metadata line_freq if raw doesn't have one
+    if raw.info.get("line_freq", None) is None and metadata.acquisition:
+        raw.info["line_freq"] = metadata.acquisition.line_freq
+
+    participants = metadata.participants
+    if participants is None:
+        return
+
+    subject_info = raw.info.get("subject_info") or {}
+    subject_idx = subject - 1  # MOABB subjects are 1-based
+
+    # Sex: BIDS uses FHIR codes (0=unknown, 1=male, 2=female)
+    # Per-subject list takes priority over aggregate gender dict
+    _SEX_MAP = {"male": 1, "female": 2}
+    if (
+        participants.sexes
+        and subject_idx < len(participants.sexes)
+        and participants.sexes[subject_idx] is not None
+    ):
+        subject_info["sex"] = _SEX_MAP.get(participants.sexes[subject_idx].lower(), 0)
+    elif participants.gender:
+        # Fallback: only set if the population is homogeneous (all one gender)
+        total = sum(participants.gender.values())
+        if participants.gender.get("male", 0) == total:
+            subject_info["sex"] = 1
+        elif participants.gender.get("female", 0) == total:
+            subject_info["sex"] = 2
+
+    if (participants.gender or participants.sexes) and "his_id" not in subject_info:
+        subject_info.setdefault("his_id", str(subject))
+
+    # Handedness: BIDS uses 1=right, 2=left, 3=ambidextrous
+    # Per-subject list takes priority over aggregate handedness
+    _HAND_MAP = {"right": 1, "left": 2, "ambidextrous": 3}
+    if (
+        participants.handedness_list
+        and subject_idx < len(participants.handedness_list)
+        and participants.handedness_list[subject_idx] is not None
+    ):
+        subject_info["hand"] = _HAND_MAP.get(
+            participants.handedness_list[subject_idx].lower(), 0
+        )
+    elif isinstance(participants.handedness, dict):
+        total = sum(participants.handedness.values())
+        if participants.handedness.get("right", 0) == total:
+            subject_info["hand"] = 1
+        elif participants.handedness.get("left", 0) == total:
+            subject_info["hand"] = 2
+    elif isinstance(participants.handedness, str):
+        h = participants.handedness.lower()
+        if "right" in h and "left" not in h:
+            subject_info["hand"] = 1
+        elif "left" in h and "right" not in h:
+            subject_info["hand"] = 2
+
+    if subject_info:
+        raw.info["subject_info"] = subject_info
+
+
+_PARADIGM_COG_ATLAS = {
+    "imagery": "https://www.cognitiveatlas.org/task/id/trm_4c8a834779883/",
+    "p300": "https://www.cognitiveatlas.org/task/id/tsk_GxjZBNiJorj1K/",
+}
+
+# Paradigm-level HED tag mappings for events.json sidecar enrichment.
+# Maps (paradigm, event_name) → HED tag string using HED schema 8.4.0.
+_PARADIGM_HED_TAGS = {
+    # ── Motor Imagery ──
+    "imagery": {
+        # Common MI events
+        "left_hand": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, (Left, Hand)))",
+        "right_hand": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, (Right, Hand)))",
+        "feet": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Foot))",
+        "tongue": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Tongue))",
+        "both_hand": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Hand))",
+        "hands": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Hand))",
+        "rest": "Sensory-event, Experimental-stimulus, Cue, Rest",
+        "right_hand_right_foot": (
+            "Sensory-event, Experimental-stimulus, Cue, "
+            "(Imagine, (Move, (Right, Hand)), (Move, (Right, Foot)))"
+        ),
+        "palmar_grasp": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Grasp, Hand))",
+        "lateral_grasp": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Grasp, Hand, (Label/lateral)))",
+        # Weibo2014 — compound limb motor imagery
+        "left_hand_right_foot": (
+            "Sensory-event, Experimental-stimulus, Cue, "
+            "(Imagine, (Move, (Left, Hand)), (Move, (Right, Foot)))"
+        ),
+        "right_hand_left_foot": (
+            "Sensory-event, Experimental-stimulus, Cue, "
+            "(Imagine, (Move, (Right, Hand)), (Move, (Left, Foot)))"
+        ),
+        # Ofner2017 — upper limb motor imagery
+        "right_elbow_flexion": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Flex, (Right, Elbow)))",
+        "right_elbow_extension": (
+            "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Stretch, (Right, Elbow)))"
+        ),
+        "right_supination": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, (Right, Forearm), (Label/supination)))",
+        "right_pronation": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, (Right, Forearm), (Label/pronation)))",
+        "right_hand_close": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Close, (Right, Hand)))",
+        "right_hand_open": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Open, (Right, Hand)))",
+        # BNCI2019_001 — motor imagery without laterality prefix
+        "hand_open": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Open, Hand))",
+        "pronation": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, Forearm, (Label/pronation)))",
+        "supination": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, Forearm, (Label/supination)))",
+        # BNCI2015_004 — mental/cognitive tasks
+        "math": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/math))",
+        "letter": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/letter))",
+        "rotation": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/rotation))",
+        "count": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Count)",
+        "baseline": "Sensory-event, Experimental-stimulus, Cue, Rest",
+        # Shin2017B — mental arithmetic
+        "subtraction": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/subtraction))",
+        # BNCI2024_001 — handwritten character writing
+        "letter_a": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/a))",
+        "letter_d": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/d))",
+        "letter_e": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/e))",
+        "letter_f": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/f))",
+        "letter_j": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/j))",
+        "letter_n": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/n))",
+        "letter_o": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/o))",
+        "letter_s": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/s))",
+        "letter_t": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/t))",
+        "letter_v": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/v))",
+        # BNCI2022_001 — drone piloting / waypoint events
+        "trajectory_start": "Experiment-structure, (Label/trajectory_start)",
+        "waypoint_hit": "Experiment-structure, (Label/waypoint_hit)",
+        "waypoint_miss": "Experiment-structure, (Label/waypoint_miss)",
+        "trajectory_end": "Experiment-structure, (Label/trajectory_end)",
+        # BNCI2025_001 — discrete reaching (direction × speed × distance)
+        "up_slow_near": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/slow), (Label/near))",
+        "up_slow_far": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/slow), (Label/far))",
+        "up_fast_near": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/fast), (Label/near))",
+        "up_fast_far": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/fast), (Label/far))",
+        "down_slow_near": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/slow), (Label/near))"
+        ),
+        "down_slow_far": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/slow), (Label/far))"
+        ),
+        "down_fast_near": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/fast), (Label/near))"
+        ),
+        "down_fast_far": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/fast), (Label/far))"
+        ),
+        "left_slow_near": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/slow), (Label/near))"
+        ),
+        "left_slow_far": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/slow), (Label/far))"
+        ),
+        "left_fast_near": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/fast), (Label/near))"
+        ),
+        "left_fast_far": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/fast), (Label/far))"
+        ),
+        "right_slow_near": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/slow), (Label/near))"
+        ),
+        "right_slow_far": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/slow), (Label/far))"
+        ),
+        "right_fast_near": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/fast), (Label/near))"
+        ),
+        "right_fast_far": (
+            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/fast), (Label/far))"
+        ),
+        # BNCI2025_002 — continuous 2D trajectory tracking
+        "snakerun": "Experiment-structure, (Label/snakerun)",
+        "freerun": "Experiment-structure, (Label/freerun)",
+        "eyerun": "Experiment-structure, (Label/eyerun)",
+    },
+    # ── P300 / Oddball ──
+    "p300": {
+        "Target": "Sensory-event, Experimental-stimulus, Visual-presentation, Target",
+        "NonTarget": (
+            "Sensory-event, Experimental-stimulus, Visual-presentation, Non-target"
+        ),
+    },
+    # ── Resting State ──
+    "rstate": {
+        "closed": "Experiment-structure, (Rest, (Close, Eye))",
+        "open": "Experiment-structure, (Rest, (Open, Eye))",
+        "on": "Experiment-structure, Rest",
+        "off": "Experiment-structure, Rest",
+        # Hinss2021 — resting state + cognitive workload levels
+        "rs": "Experiment-structure, Rest",
+        "easy": "Experiment-structure, (Label/easy)",
+        "medium": "Experiment-structure, (Label/medium)",
+        "diff": "Experiment-structure, (Label/difficult)",
+    },
+    # ── c-VEP ──
+    "cvep": {
+        "0.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_0_0)",
+        "1.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_1_0)",
+        "0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_0)",
+        "1": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_1)",
+        # MartinezCagigal2023Pary — p-ary intensity levels
+        "2.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_2_0)",
+        "3.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_3_0)",
+        "4.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_4_0)",
+        "5.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_5_0)",
+        "6.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_6_0)",
+        "7.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_7_0)",
+        "8.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_8_0)",
+        "9.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_9_0)",
+        "10.0": "Sensory-event, Experimental-stimulus, Visual-presentation, (Label/intensity_10_0)",
+    },
+}
+
+
+def _build_sidecar_enrichment(metadata):
+    """Build a dict of BIDS EEG sidecar fields from dataset metadata.
+
+    The returned dict can be passed to ``mne_bids.update_sidecar_json``
+    to enrich ``*_eeg.json`` after ``write_raw_bids()``.
+
+    Parameters
+    ----------
+    metadata : DatasetMetadata
+        The dataset metadata.
+
+    Returns
+    -------
+    dict
+        BIDS EEG sidecar key-value pairs. Empty if metadata is None.
+    """
+    if metadata is None:
+        return {}
+
+    entries = {}
+    acq = metadata.acquisition
+    doc = metadata.documentation
+    exp = metadata.experiment
+    prep = metadata.preprocessing
+
+    if acq:
+        # EEGReference (REQUIRED)
+        if acq.reference:
+            entries["EEGReference"] = acq.reference
+
+        # EEGGround (RECOMMENDED)
+        if acq.ground:
+            entries["EEGGround"] = acq.ground
+
+        # Manufacturer and ManufacturersModelName (RECOMMENDED)
+        if acq.hardware:
+            manufacturer, model = _split_manufacturer(acq.hardware)
+            if manufacturer:
+                entries["Manufacturer"] = manufacturer
+            if model:
+                entries["ManufacturersModelName"] = model
+
+        # SoftwareVersions (RECOMMENDED)
+        if acq.software:
+            entries["SoftwareVersions"] = acq.software
+
+        # EEGPlacementScheme (RECOMMENDED)
+        if acq.montage:
+            montage_descriptions = {
+                "standard_1005": "10-05 system",
+                "standard_1020": "10-20 system",
+                "10-20": "10-20 system",
+                "10-05": "10-05 system",
+                "10-10": "10-10 system",
+                "biosemi128": "BioSemi 128-channel cap",
+                "biosemi256": "BioSemi 256-channel cap",
+                "biosemi64": "BioSemi 64-channel cap",
+                "biosemi32": "BioSemi 32-channel cap",
+                "biosemi16": "BioSemi 16-channel cap",
+                "GSN-HydroCel-128": "Geodesic Sensor Net 128",
+                "GSN-HydroCel-256": "Geodesic Sensor Net 256",
+                "GSN-HydroCel-64_1.0": "Geodesic Sensor Net 64",
+            }
+            entries["EEGPlacementScheme"] = montage_descriptions.get(
+                acq.montage, acq.montage
+            )
+
+        # CapManufacturer (RECOMMENDED) — prefer cap_manufacturer, fall back to sensor_type
+        if acq.cap_manufacturer:
+            entries["CapManufacturer"] = acq.cap_manufacturer
+        elif acq.sensor_type:
+            entries["CapManufacturer"] = acq.sensor_type
+
+        # CapManufacturersModelName (RECOMMENDED)
+        if acq.cap_model:
+            entries["CapManufacturersModelName"] = acq.cap_model
+
+    # HardwareFilters and SoftwareFilters
+    if prep and any(
+        v is not None
+        for v in [prep.bandpass, prep.highpass_hz, prep.lowpass_hz, prep.notch_hz]
+    ):
+        hw_filters = {}
+        if prep.bandpass:
+            if isinstance(prep.bandpass, dict):
+                hw_filters["Bandpass"] = {
+                    k: v for k, v in prep.bandpass.items() if v is not None
+                }
+            elif isinstance(prep.bandpass, list) and len(prep.bandpass) == 2:
+                hw_filters["Bandpass"] = {
+                    "LowCutoffFrequency": prep.bandpass[0],
+                    "HighCutoffFrequency": prep.bandpass[1],
+                }
+        else:
+            # Build from individual highpass/lowpass
+            bp = {}
+            if prep.highpass_hz is not None:
+                bp["LowCutoffFrequency"] = prep.highpass_hz
+            if prep.lowpass_hz is not None:
+                bp["HighCutoffFrequency"] = prep.lowpass_hz
+            if bp:
+                hw_filters["Bandpass"] = bp
+
+        if prep.notch_hz is not None:
+            notch = prep.notch_hz
+            if isinstance(notch, (int, float)):
+                notch = [notch]
+            hw_filters["Notch"] = {"CutoffFrequency": notch}
+
+        if hw_filters:
+            entries["HardwareFilters"] = hw_filters
+
+    # HardwareFilters (RECOMMENDED) — set to "n/a" when not described
+    entries.setdefault("HardwareFilters", "n/a")
+
+    # SoftwareFilters is REQUIRED — set to "n/a" when not described
+    entries.setdefault("SoftwareFilters", "n/a")
+
+    # TaskDescription (RECOMMENDED)
+    if exp and exp.study_design:
+        entries["TaskDescription"] = exp.study_design
+
+    # Instructions (RECOMMENDED)
+    if exp and exp.instructions:
+        entries["Instructions"] = exp.instructions
+    else:
+        entries.setdefault("Instructions", "n/a")
+
+    # CogAtlasID (RECOMMENDED) — explicit value or paradigm-based fallback
+    if exp:
+        if exp.cog_atlas_id:
+            entries["CogAtlasID"] = exp.cog_atlas_id
+        elif exp.paradigm in _PARADIGM_COG_ATLAS:
+            entries["CogAtlasID"] = _PARADIGM_COG_ATLAS[exp.paradigm]
+
+        # CogPOID (RECOMMENDED)
+        if exp.cog_po_id:
+            entries["CogPOID"] = exp.cog_po_id
+
+    # InstitutionName (RECOMMENDED)
+    entries["InstitutionName"] = doc.institution if doc and doc.institution else "n/a"
+
+    # InstitutionAddress (RECOMMENDED)
+    entries["InstitutionAddress"] = (
+        doc.institution_address if doc and doc.institution_address else "n/a"
+    )
+
+    # InstitutionalDepartmentName (RECOMMENDED)
+    entries["InstitutionalDepartmentName"] = (
+        doc.institution_department if doc and doc.institution_department else "n/a"
+    )
+
+    # CapManufacturer (RECOMMENDED) — ensure always present
+    entries.setdefault("CapManufacturer", "n/a")
+
+    # CapManufacturersModelName (RECOMMENDED)
+    entries.setdefault("CapManufacturersModelName", "n/a")
+
+    # ManufacturersModelName (RECOMMENDED)
+    entries.setdefault("ManufacturersModelName", "n/a")
+
+    # SubjectArtefactDescription (RECOMMENDED)
+    entries.setdefault("SubjectArtefactDescription", "n/a")
+
+    # RecordingType (RECOMMENDED) — MOABB stores raw continuous data
+    entries["RecordingType"] = "continuous"
+
+    return entries
+
+
+def _build_dataset_description_kwargs(dataset):
+    """Build enriched kwargs for ``mne_bids.make_dataset_description``.
+
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The MOABB dataset instance.
+
+    Returns
+    -------
+    dict
+        Keyword arguments for ``make_dataset_description()``.
+    """
+    kwargs = dict(
+        name=dataset.code,
+        hed_version="8.4.0",
+        dataset_type="derivative",
+        generated_by=[
+            dict(
+                CodeURL="https://github.com/NeuroTechX/moabb",
+                Name="moabb",
+                Description="Mother of All BCI Benchmarks",
+                Version=moabb.__version__,
+            )
+        ],
+        source_datasets=[
+            dict(
+                DOI=dataset.doi or "n/a",
+            )
+        ],
+    )
+
+    metadata = getattr(dataset, "metadata", None)
+    if metadata is None:
+        return kwargs
+
+    doc = metadata.documentation
+
+    if doc:
+        # Enrich source_datasets with URL
+        if doc.data_url:
+            kwargs["source_datasets"] = [dict(DOI=dataset.doi or "n/a", URL=doc.data_url)]
+
+        # data_license
+        if doc.license:
+            kwargs["data_license"] = doc.license
+
+        # authors
+        if doc.investigators:
+            kwargs["authors"] = doc.investigators
+
+        # funding
+        if doc.funding:
+            kwargs["funding"] = doc.funding
+
+        # references_and_links
+        refs = []
+        if doc.data_url:
+            refs.append(doc.data_url)
+        if doc.associated_paper_doi:
+            refs.append(doc.associated_paper_doi)
+        if refs:
+            kwargs["references_and_links"] = refs
+
+        # doi
+        if doc.doi:
+            kwargs["doi"] = doc.doi
+
+        # acknowledgements
+        if doc.acknowledgements:
+            kwargs["acknowledgements"] = doc.acknowledgements
+
+        # how_to_acknowledge
+        if doc.how_to_acknowledge:
+            kwargs["how_to_acknowledge"] = doc.how_to_acknowledge
+
+        # ethics_approvals
+        if doc.ethics_approval:
+            kwargs["ethics_approvals"] = doc.ethics_approval
+
+    return kwargs
+
+
+def _update_participants_tsv(root, subject, metadata):
+    """Patch ``participants.tsv`` with demographic data from metadata.
+
+    Adds ``age`` and ``group`` columns. Updates the ``participants.json``
+    sidecar with column descriptions for newly added columns.
+
+    Parameters
+    ----------
+    root : Path
+        Root of the BIDS dataset.
+    subject : int
+        MOABB subject number (1-based).
+    metadata : DatasetMetadata
+        The dataset metadata.
+    """
+    if metadata is None:
+        return
+
+    participants = metadata.participants
+    if participants is None:
+        return
+
+    tsv_path = Path(root) / "participants.tsv"
+    if not tsv_path.exists():
+        return
+
+    # Determine age for this subject
+    age = "n/a"
+    subject_idx = subject - 1  # MOABB subjects are 1-based
+    if participants.ages and subject_idx < len(participants.ages):
+        age = participants.ages[subject_idx]
+    elif participants.age_mean is not None:
+        age = participants.age_mean
+
+    # Determine group
+    group = "n/a"
+    if participants.health_status:
+        group = participants.health_status
+
+    # Determine per-subject sex
+    sex = "n/a"
+    if participants.sexes and subject_idx < len(participants.sexes):
+        sex = participants.sexes[subject_idx]
+
+    # Determine per-subject handedness
+    hand = "n/a"
+    if participants.handedness_list and subject_idx < len(participants.handedness_list):
+        hand = participants.handedness_list[subject_idx]
+
+    # Species (BIDS RECOMMENDED, default "homo sapiens")
+    species = participants.species if participants.species else "n/a"
+
+    # Read existing TSV (utf-8-sig strips BOM written by mne_bids)
+    rows = []
+    with open(tsv_path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        fieldnames = list(reader.fieldnames) if reader.fieldnames else []
+        rows = list(reader)
+
+    # Add columns if missing
+    for col in ("age", "group", "sex", "hand", "species"):
+        if col not in fieldnames:
+            fieldnames.append(col)
+            for row in rows:
+                row[col] = "n/a"
+
+    # Update the row for this subject
+    sub_id = f"sub-{subject}"
+    for row in rows:
+        if row.get("participant_id") == sub_id:
+            if age != "n/a" and row.get("age", "n/a") == "n/a":
+                row["age"] = age
+            if group != "n/a" and row.get("group", "n/a") == "n/a":
+                row["group"] = group
+            if sex != "n/a" and row.get("sex", "n/a") == "n/a":
+                row["sex"] = sex
+            if hand != "n/a" and row.get("hand", "n/a") == "n/a":
+                row["hand"] = hand
+            if species != "n/a" and row.get("species", "n/a") == "n/a":
+                row["species"] = species
+
+    # Write back
+    with open(tsv_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter="\t")
+        writer.writeheader()
+        writer.writerows(rows)
+
+    # Update participants.json sidecar with column descriptions
+    json_path = Path(root) / "participants.json"
+    sidecar = {}
+    if json_path.exists():
+        with open(json_path) as f:
+            sidecar = json.load(f)
+
+    updated = False
+    if "age" not in sidecar:
+        sidecar["age"] = {
+            "Description": "Age of the participant",
+            "Units": "years",
+        }
+        updated = True
+    if "group" not in sidecar:
+        sidecar["group"] = {
+            "Description": "Group the participant belonged to "
+            "(e.g., healthy, patients)",
+        }
+        updated = True
+    if "sex" not in sidecar:
+        sidecar["sex"] = {
+            "Description": "Sex of the participant",
+            "Levels": {"male": "Male", "female": "Female", "other": "Other"},
+        }
+        updated = True
+    if "hand" not in sidecar:
+        sidecar["hand"] = {
+            "Description": "Handedness of the participant",
+            "Levels": {
+                "right": "Right-handed",
+                "left": "Left-handed",
+                "ambidextrous": "Ambidextrous",
+            },
+        }
+        updated = True
+    if "species" not in sidecar:
+        sidecar["species"] = {
+            "Description": "Species of the participant (binomial name)",
+        }
+        updated = True
+    # Ensure mne_bids-generated columns have Description (RECOMMENDED)
+    if "participant_id" not in sidecar:
+        sidecar["participant_id"] = {
+            "Description": "Unique participant identifier",
+        }
+        updated = True
+    if "weight" not in sidecar:
+        sidecar["weight"] = {
+            "Description": "Body weight of the participant",
+            "Units": "kg",
+        }
+        updated = True
+    if "height" not in sidecar:
+        sidecar["height"] = {
+            "Description": "Body height of the participant",
+            "Units": "m",
+        }
+        updated = True
+
+    if updated:
+        with open(json_path, "w") as f:
+            json.dump(sidecar, f, indent="\t")
+
+
+def _update_electrodes_tsv(bids_path, metadata):
+    """Patch ``*_electrodes.tsv`` with material and type columns from metadata.
+
+    Adds BIDS RECOMMENDED ``type`` and ``material`` columns to the electrodes
+    TSV file created by ``mne_bids.write_raw_bids()``.
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        The BIDS path for the current recording.
+    metadata : DatasetMetadata
+        The dataset metadata.
+    """
+    if metadata is None:
+        return
+
+    acq = metadata.acquisition
+    if acq is None:
+        return
+
+    electrode_type = acq.electrode_type
+    # Prefer electrode_material; fall back to sensor_type for backward compat
+    electrode_material = acq.electrode_material or acq.sensor_type
+    if not electrode_type and not electrode_material:
+        return
+
+    root = Path(bids_path.root)
+    subject = bids_path.subject
+    # Find electrodes TSV files for this subject
+    import glob as glob_mod
+
+    pattern = str(root / f"sub-{subject}" / "**" / "*_electrodes.tsv")
+    tsv_files = glob_mod.glob(pattern, recursive=True)
+    if not tsv_files:
+        return
+
+    for tsv_file in tsv_files:
+        tsv_path = Path(tsv_file)
+        rows = []
+        with open(tsv_path, newline="", encoding="utf-8-sig") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            fieldnames = list(reader.fieldnames) if reader.fieldnames else []
+            rows = list(reader)
+
+        changed = False
+        if electrode_type and "type" not in fieldnames:
+            fieldnames.append("type")
+            for row in rows:
+                row["type"] = electrode_type
+            changed = True
+        if electrode_material and "material" not in fieldnames:
+            fieldnames.append("material")
+            for row in rows:
+                row["material"] = electrode_material
+            changed = True
+
+        if changed:
+            with open(tsv_path, "w", newline="") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter="\t")
+                writer.writeheader()
+                writer.writerows(rows)
+
+
+def _build_hed_sidecar_annotations(dataset):
+    """Build HED tag mapping for events.json sidecar trial_type column.
+
+    Resolution order:
+
+    1. Per-dataset override via ``metadata.experiment.hed_tags``
+    2. Static paradigm-level lookup from ``_PARADIGM_HED_TAGS``
+    3. Dynamic SSVEP frequency-based tags
+    4. Generic ``Label/<event_name>`` fallback for any remaining events
+
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The MOABB dataset instance.
+
+    Returns
+    -------
+    dict
+        Mapping of event names to HED tag strings.
+    """
+    metadata = getattr(dataset, "metadata", None)
+    paradigm = dataset.paradigm
+    event_names = list(dataset.event_id.keys())
+    hed = {}
+
+    # 1. Per-dataset override from metadata.experiment.hed_tags
+    # Applied as highest-priority layer, remaining events still get defaults
+    if metadata and metadata.experiment and metadata.experiment.hed_tags:
+        for name in event_names:
+            if name in metadata.experiment.hed_tags:
+                hed[name] = metadata.experiment.hed_tags[name]
+
+    # 2. Paradigm-level static defaults (don't overwrite custom overrides)
+    if paradigm in _PARADIGM_HED_TAGS:
+        mapping = _PARADIGM_HED_TAGS[paradigm]
+        for name in event_names:
+            if name not in hed and name in mapping:
+                hed[name] = mapping[name]
+
+    # 3. SSVEP: dynamic frequency-based tags
+    if paradigm == "ssvep":
+        for name in event_names:
+            if name not in hed:
+                if name == "rest":
+                    hed[name] = "Sensory-event, Cue, Rest"
+                else:
+                    safe_freq = name.replace(".", "_")
+                    hed[name] = (
+                        f"Sensory-event, Experimental-stimulus, Visual-presentation, (Label/{safe_freq})"
+                    )
+
+    # 4. Label fallback — every event gets a valid HED tag
+    for name in event_names:
+        if name not in hed:
+            # Sanitize name for HED nameClass (alphanumeric, hyphens, underscores)
+            safe_name = name.replace(".", "_").replace(" ", "_")
+            hed[name] = f"Sensory-event, (Label/{safe_name})"
+
+    return hed
+
+
+def _update_events_json_sidecar(bids_path, hed_tags, metadata):
+    """Enrich the events.json sidecar with HED and stimulus presentation.
+
+    Adds ``"HED"`` tags to the ``"trial_type"`` column and
+    ``"StimulusPresentation"`` when available from metadata.
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        BIDS path for the current recording.
+    hed_tags : dict
+        Mapping of event names to HED tag strings.
+    metadata : DatasetMetadata or None
+        The dataset metadata.
+    """
+    events_json_path = bids_path.copy().update(suffix="events", extension=".json").fpath
+    if not events_json_path.exists():
+        return
+
+    with open(events_json_path) as f:
+        sidecar = json.load(f)
+
+    changed = False
+
+    # HED annotations
+    if hed_tags:
+        if "trial_type" not in sidecar:
+            sidecar["trial_type"] = {
+                "Description": "The type, category, or name of the event."
+            }
+        existing_hed = sidecar["trial_type"].get("HED", {})
+        merged = {**hed_tags, **existing_hed}
+        sidecar["trial_type"]["HED"] = merged
+        changed = True
+
+    # StimulusPresentation (RECOMMENDED)
+    if (
+        metadata
+        and metadata.experiment
+        and metadata.experiment.stimulus_presentation
+        and "StimulusPresentation" not in sidecar
+    ):
+        sidecar["StimulusPresentation"] = metadata.experiment.stimulus_presentation
+        changed = True
+
+    if changed:
+        with open(events_json_path, "w") as f:
+            json.dump(sidecar, f, indent="\t")
+
+
+def _update_dataset_description_extra(root, metadata):
+    """Merge extra fields into ``dataset_description.json``.
+
+    Adds BIDS fields (like ``Keywords``) that ``mne_bids.make_dataset_description()``
+    does not support as kwargs.
+
+    Parameters
+    ----------
+    root : Path
+        Root of the BIDS dataset.
+    metadata : DatasetMetadata
+        The dataset metadata.
+    """
+    if metadata is None:
+        return
+
+    desc_path = Path(root) / "dataset_description.json"
+    if not desc_path.exists():
+        return
+
+    # Determine keywords: explicit > derived from tags
+    keywords = None
+    doc = metadata.documentation
+    if doc and doc.keywords:
+        keywords = doc.keywords
+    elif metadata.tags:
+        kw = []
+        if metadata.tags.pathology:
+            kw.extend(metadata.tags.pathology)
+        if metadata.tags.modality:
+            kw.extend(metadata.tags.modality)
+        if metadata.tags.type:
+            kw.extend(metadata.tags.type)
+        if metadata.experiment:
+            kw.append(metadata.experiment.paradigm)
+        if kw:
+            keywords = kw
+
+    if not keywords:
+        return
+
+    with open(desc_path) as f:
+        desc = json.load(f)
+
+    changed = False
+    if "Keywords" not in desc and keywords:
+        desc["Keywords"] = keywords
+        changed = True
+
+    if changed:
+        with open(desc_path, "w") as f:
+            json.dump(desc, f, indent="\t")
+
+
+def _build_readme(dataset):
+    """Build a comprehensive BIDS README from dataset docstring and metadata.
+
+    Generates a plain-text README for the BIDS dataset root, incorporating
+    the class docstring, core dataset attributes, and all available structured
+    metadata sections.
+
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The MOABB dataset instance.
+
+    Returns
+    -------
+    str
+        The README content.
+    """
+    lines = []
+    metadata = getattr(dataset, "metadata", None)
+    doc = metadata.documentation if metadata else None
+    acq = metadata.acquisition if metadata else None
+    part = metadata.participants if metadata else None
+    exp = metadata.experiment if metadata else None
+    preproc = metadata.preprocessing if metadata else None
+    sig = metadata.signal_processing if metadata else None
+    cv = metadata.cross_validation if metadata else None
+    perf = metadata.performance if metadata else None
+    bci = metadata.bci_application if metadata else None
+    ps = metadata.paradigm_specific if metadata else None
+    ds = metadata.data_structure if metadata else None
+    tags = metadata.tags if metadata else None
+
+    # ── Title ──
+    lines.append(dataset.code)
+    lines.append("=" * len(dataset.code))
+    lines.append("")
+
+    # ── Description from docstring ──
+    raw_doc = getattr(type(dataset), "__doc__", "") or ""
+    if raw_doc:
+        # Extract the original (hand-written) docstring portion.
+        # MetaclassDataset prepends auto-generated blocks *after* the first
+        # paragraph.  The original docstring starts at the first paragraph and
+        # ends before the ".. admonition::" blocks or the auto-generated table.
+        paragraphs = raw_doc.split("\n\n")
+        desc_paragraphs = []
+        for para in paragraphs:
+            stripped = para.strip()
+            # Stop at auto-generated admonition blocks or rst table markers
+            if stripped.startswith(".. admonition::") or stripped.startswith("+--"):
+                break
+            desc_paragraphs.append(stripped)
+        if desc_paragraphs:
+            # Clean indentation from each line
+            for para in desc_paragraphs:
+                clean = " ".join(line.strip() for line in para.splitlines())
+                if clean:
+                    lines.append(clean)
+                    lines.append("")
+
+    # ── Dataset Overview ──
+    lines.append("Dataset Overview")
+    lines.append("-" * 16)
+    _kv(lines, "Code", dataset.code)
+    _kv(lines, "Paradigm", dataset.paradigm)
+    _kv(lines, "DOI", dataset.doi)
+    _kv(lines, "Subjects", len(dataset.subject_list))
+    _kv(lines, "Sessions per subject", dataset.n_sessions)
+    _kv(lines, "Events", _format_dict(dataset.event_id))
+    _kv(lines, "Trial interval", f"{dataset.interval} s" if dataset.interval else None)
+    if metadata:
+        _kv(
+            lines,
+            "Runs per session",
+            metadata.runs_per_session if metadata.runs_per_session > 1 else None,
+        )
+        if metadata.sessions:
+            _kv(lines, "Session IDs", ", ".join(str(s) for s in metadata.sessions))
+        _kv(lines, "File format", metadata.file_format)
+        _kv(
+            lines,
+            "Data preprocessed",
+            metadata.data_processed if metadata.data_processed else None,
+        )
+        if metadata.contributing_labs:
+            _kv(lines, "Contributing labs", ", ".join(metadata.contributing_labs))
+        elif metadata.n_contributing_labs:
+            _kv(lines, "Number of contributing labs", metadata.n_contributing_labs)
+    lines.append("")
+
+    # ── Acquisition ──
+    if acq:
+        lines.append("Acquisition")
+        lines.append("-" * 11)
+        _kv(lines, "Sampling rate", f"{acq.sampling_rate} Hz")
+        _kv(lines, "Number of channels", acq.n_channels)
+        _kv(lines, "Channel types", _format_dict(acq.channel_types))
+        _kv(lines, "Channel names", ", ".join(acq.sensors) if acq.sensors else None)
+        _kv(lines, "Montage", acq.montage)
+        _kv(lines, "Hardware", acq.hardware)
+        _kv(lines, "Software", acq.software)
+        _kv(lines, "Reference", acq.reference)
+        _kv(lines, "Ground", acq.ground)
+        _kv(lines, "Sensor type", acq.sensor_type)
+        _kv(lines, "Line frequency", f"{acq.line_freq} Hz")
+        _kv(lines, "Online filters", acq.filters)
+        _kv(
+            lines,
+            "Impedance threshold",
+            (
+                f"{acq.impedance_threshold_kohm} kOhm"
+                if acq.impedance_threshold_kohm
+                else None
+            ),
+        )
+        _kv(lines, "Cap manufacturer", acq.cap_manufacturer)
+        _kv(lines, "Cap model", acq.cap_model)
+        _kv(lines, "Electrode type", acq.electrode_type)
+        _kv(lines, "Electrode material", acq.electrode_material)
+        if acq.auxiliary_channels:
+            aux = acq.auxiliary_channels
+            aux_parts = []
+            if aux.has_eog and aux.eog_channels:
+                eog_str = f"EOG ({aux.eog_channels} ch"
+                if aux.eog_type:
+                    eog_str += f", {', '.join(aux.eog_type)}"
+                eog_str += ")"
+                aux_parts.append(eog_str)
+            if aux.has_emg and aux.emg_channels:
+                aux_parts.append(f"EMG ({aux.emg_channels} ch)")
+            if aux.other_physiological:
+                aux_parts.extend(aux.other_physiological)
+            if aux_parts:
+                _kv(lines, "Auxiliary channels", ", ".join(aux_parts))
+        lines.append("")
+
+    # ── Participants ──
+    if part:
+        lines.append("Participants")
+        lines.append("-" * 12)
+        _kv(lines, "Number of subjects", part.n_subjects)
+        _kv(lines, "Health status", part.health_status)
+        _kv(lines, "Clinical population", part.clinical_population)
+        # Age
+        age_parts = []
+        if part.age_mean is not None:
+            age_parts.append(f"mean={part.age_mean}")
+        if part.age_std is not None:
+            age_parts.append(f"std={part.age_std}")
+        if part.age_min is not None:
+            age_parts.append(f"min={part.age_min}")
+        if part.age_max is not None:
+            age_parts.append(f"max={part.age_max}")
+        if age_parts:
+            _kv(lines, "Age", ", ".join(age_parts))
+        _kv(lines, "Gender distribution", _format_dict(part.gender))
+        _kv(lines, "Handedness", part.handedness)
+        _kv(lines, "BCI experience", part.bci_experience)
+        _kv(lines, "Species", part.species if part.species != "homo sapiens" else None)
+        lines.append("")
+
+    # ── Experiment ──
+    if exp:
+        lines.append("Experimental Protocol")
+        lines.append("-" * 21)
+        _kv(lines, "Paradigm", exp.paradigm)
+        _kv(lines, "Task type", exp.task_type)
+        _kv(lines, "Number of classes", exp.n_classes)
+        _kv(
+            lines,
+            "Class labels",
+            ", ".join(exp.class_labels) if exp.class_labels else None,
+        )
+        _kv(
+            lines,
+            "Trial duration",
+            f"{exp.trial_duration} s" if exp.trial_duration else None,
+        )
+        _kv(lines, "Trials per class", _format_dict(exp.trials_per_class))
+        if exp.tasks:
+            _kv(lines, "Tasks", ", ".join(exp.tasks))
+        _kv(lines, "Study design", exp.study_design)
+        _kv(lines, "Study domain", exp.study_domain)
+        _kv(lines, "Feedback type", exp.feedback_type)
+        _kv(lines, "Stimulus type", exp.stimulus_type)
+        _kv(
+            lines,
+            "Stimulus modalities",
+            ", ".join(exp.stimulus_modalities) if exp.stimulus_modalities else None,
+        )
+        _kv(lines, "Primary modality", exp.primary_modality)
+        _kv(lines, "Synchronicity", exp.synchronicity)
+        _kv(lines, "Mode", exp.mode)
+        _kv(lines, "Training/test split", exp.has_training_test_split)
+        _kv(lines, "Instructions", exp.instructions)
+        _kv(lines, "Cognitive Atlas ID", exp.cog_atlas_id)
+        _kv(lines, "Cognitive Paradigm Ontology ID", exp.cog_po_id)
+        if exp.stimulus_presentation:
+            _kv(lines, "Stimulus presentation", _format_dict(exp.stimulus_presentation))
+        lines.append("")
+
+    # ── HED Event Annotations ──
+    hed_tags = _build_hed_sidecar_annotations(dataset)
+    if hed_tags:
+        lines.append("HED Event Annotations")
+        lines.append("-" * 21)
+        lines.append(
+            "  Schema: HED 8.4.0 | " "Browse: https://www.hedtags.org/hed-schema-browser"
+        )
+        lines.append("")
+        for event_name, tag_str in hed_tags.items():
+            elements = _split_hed_top_level(tag_str)
+            nodes = [_hed_element_to_tree(e) for e in elements]
+            lines.append(f"  {event_name}")
+            lines.extend(_render_hed_tree(nodes))
+            lines.append("")
+
+    # ── Paradigm-Specific ──
+    if ps:
+        has_content = any(
+            getattr(ps, f, None) is not None
+            for f in (
+                "detected_paradigm",
+                "stimulus_frequencies_hz",
+                "frequency_resolution_hz",
+                "code_type",
+                "code_length",
+                "n_targets",
+                "n_repetitions",
+                "isi_ms",
+                "soa_ms",
+                "imagery_tasks",
+                "cue_duration_s",
+                "imagery_duration_s",
+            )
+        )
+        if has_content:
+            lines.append("Paradigm-Specific Parameters")
+            lines.append("-" * 28)
+            _kv(lines, "Detected paradigm", ps.detected_paradigm)
+            # SSVEP
+            _kv(
+                lines,
+                "Stimulus frequencies",
+                (
+                    f"{ps.stimulus_frequencies_hz} Hz"
+                    if ps.stimulus_frequencies_hz
+                    else None
+                ),
+            )
+            _kv(
+                lines,
+                "Frequency resolution",
+                (
+                    f"{ps.frequency_resolution_hz} Hz"
+                    if ps.frequency_resolution_hz
+                    else None
+                ),
+            )
+            # c-VEP
+            _kv(lines, "Code type", ps.code_type)
+            _kv(lines, "Code length", ps.code_length)
+            # P300
+            _kv(lines, "Number of targets", ps.n_targets)
+            _kv(lines, "Number of repetitions", ps.n_repetitions)
+            _kv(
+                lines, "Inter-stimulus interval", f"{ps.isi_ms} ms" if ps.isi_ms else None
+            )
+            _kv(
+                lines,
+                "Stimulus onset asynchrony",
+                f"{ps.soa_ms} ms" if ps.soa_ms else None,
+            )
+            # Motor Imagery
+            _kv(
+                lines,
+                "Imagery tasks",
+                ", ".join(ps.imagery_tasks) if ps.imagery_tasks else None,
+            )
+            _kv(
+                lines,
+                "Cue duration",
+                f"{ps.cue_duration_s} s" if ps.cue_duration_s else None,
+            )
+            _kv(
+                lines,
+                "Imagery duration",
+                f"{ps.imagery_duration_s} s" if ps.imagery_duration_s else None,
+            )
+            lines.append("")
+
+    # ── Data Structure ──
+    if ds:
+        has_content = any(
+            getattr(ds, f, None) is not None
+            for f in (
+                "n_trials",
+                "n_trials_per_class",
+                "n_blocks",
+                "block_duration_s",
+                "trials_context",
+            )
+        )
+        if has_content:
+            lines.append("Data Structure")
+            lines.append("-" * 14)
+            _kv(lines, "Trials", ds.n_trials)
+            _kv(
+                lines,
+                "Trials per class",
+                (
+                    _format_dict(ds.n_trials_per_class)
+                    if isinstance(ds.n_trials_per_class, dict)
+                    else ds.n_trials_per_class
+                ),
+            )
+            _kv(lines, "Blocks per session", ds.n_blocks)
+            _kv(
+                lines,
+                "Block duration",
+                f"{ds.block_duration_s} s" if ds.block_duration_s else None,
+            )
+            _kv(lines, "Trials context", ds.trials_context)
+            lines.append("")
+
+    # ── Preprocessing ──
+    if preproc:
+        has_content = any(
+            getattr(preproc, f, None) is not None
+            for f in (
+                "data_state",
+                "preprocessing_applied",
+                "preprocessing_steps",
+                "highpass_hz",
+                "lowpass_hz",
+                "bandpass",
+                "notch_hz",
+                "filter_type",
+                "filter_order",
+                "artifact_methods",
+                "re_reference",
+                "downsampled_to_hz",
+                "epoch_window",
+                "notes",
+            )
+        )
+        if has_content:
+            lines.append("Preprocessing")
+            lines.append("-" * 13)
+            _kv(lines, "Data state", preproc.data_state)
+            _kv(lines, "Preprocessing applied", preproc.preprocessing_applied)
+            if preproc.preprocessing_steps:
+                _kv(lines, "Steps", ", ".join(preproc.preprocessing_steps))
+            _kv(
+                lines,
+                "Highpass filter",
+                f"{preproc.highpass_hz} Hz" if preproc.highpass_hz else None,
+            )
+            _kv(
+                lines,
+                "Lowpass filter",
+                f"{preproc.lowpass_hz} Hz" if preproc.lowpass_hz else None,
+            )
+            _kv(lines, "Bandpass filter", preproc.bandpass)
+            _kv(
+                lines,
+                "Notch filter",
+                f"{preproc.notch_hz} Hz" if preproc.notch_hz else None,
+            )
+            _kv(lines, "Filter type", preproc.filter_type)
+            _kv(lines, "Filter order", preproc.filter_order)
+            if preproc.artifact_methods:
+                _kv(lines, "Artifact methods", ", ".join(preproc.artifact_methods))
+            _kv(lines, "Re-reference", preproc.re_reference)
+            _kv(
+                lines,
+                "Downsampled to",
+                f"{preproc.downsampled_to_hz} Hz" if preproc.downsampled_to_hz else None,
+            )
+            _kv(lines, "Epoch window", preproc.epoch_window)
+            _kv(lines, "Notes", preproc.notes)
+            lines.append("")
+
+    # ── Signal Processing ──
+    if sig:
+        has_content = any(
+            getattr(sig, f, None) is not None
+            for f in (
+                "classifiers",
+                "feature_extraction",
+                "frequency_bands",
+                "spatial_filters",
+            )
+        )
+        if has_content:
+            lines.append("Signal Processing")
+            lines.append("-" * 17)
+            if sig.classifiers:
+                _kv(lines, "Classifiers", ", ".join(sig.classifiers))
+            if sig.feature_extraction:
+                _kv(lines, "Feature extraction", ", ".join(sig.feature_extraction))
+            if sig.frequency_bands:
+                band_parts = []
+                _freq_band_display = {"analyzed_range": "analyzed"}
+                for name, val in sig.frequency_bands.items():
+                    if val:
+                        display_name = _freq_band_display.get(name, name)
+                        band_parts.append(f"{display_name}={val} Hz")
+                if band_parts:
+                    _kv(lines, "Frequency bands", "; ".join(band_parts))
+            if sig.spatial_filters:
+                _kv(lines, "Spatial filters", ", ".join(sig.spatial_filters))
+            lines.append("")
+
+    # ── Cross-Validation ──
+    if cv:
+        has_content = any(
+            getattr(cv, f, None) is not None
+            for f in ("cv_method", "cv_folds", "evaluation_type")
+        )
+        if has_content:
+            lines.append("Cross-Validation")
+            lines.append("-" * 16)
+            _kv(lines, "Method", cv.cv_method)
+            _kv(lines, "Folds", cv.cv_folds)
+            if cv.evaluation_type:
+                _kv(lines, "Evaluation type", ", ".join(cv.evaluation_type))
+            lines.append("")
+
+    # ── Performance ──
+    if perf:
+        _perf_units = {
+            "accuracy_percent": "%",
+            "itr_bits_per_min": " bits/min",
+        }
+        lines.append("Performance (Original Study)")
+        lines.append("-" * 28)
+        for key, val in perf.items():
+            if val is not None:
+                if key == "other_metrics" and isinstance(val, dict):
+                    formatted = ", ".join(f"{k}={v}" for k, v in val.items())
+                    _kv(lines, "Other Metrics", formatted)
+                else:
+                    unit = _perf_units.get(key, "")
+                    label = key.replace("_percent", "").replace("_bits_per_min", "")
+                    label = label.replace("_", " ").title()
+                    _kv(lines, label, f"{val}{unit}")
+        lines.append("")
+
+    # ── BCI Application ──
+    if bci:
+        has_content = any(
+            getattr(bci, f, None) is not None
+            for f in ("applications", "environment", "online_feedback")
+        )
+        if has_content:
+            lines.append("BCI Application")
+            lines.append("-" * 15)
+            if bci.applications:
+                _kv(lines, "Applications", ", ".join(bci.applications))
+            _kv(lines, "Environment", bci.environment)
+            _kv(lines, "Online feedback", bci.online_feedback)
+            lines.append("")
+
+    # ── Tags ──
+    if tags:
+        has_content = any(
+            getattr(tags, f, None) is not None for f in ("pathology", "modality", "type")
+        )
+        if has_content:
+            lines.append("Tags")
+            lines.append("-" * 4)
+            if tags.pathology:
+                _kv(lines, "Pathology", ", ".join(tags.pathology))
+            if tags.modality:
+                _kv(lines, "Modality", ", ".join(tags.modality))
+            if tags.type:
+                _kv(lines, "Type", ", ".join(tags.type))
+            lines.append("")
+
+    # ── Documentation ──
+    if doc:
+        has_content = any(
+            getattr(doc, f, None) is not None
+            for f in (
+                "doi",
+                "description",
+                "investigators",
+                "institution",
+                "country",
+                "repository",
+                "data_url",
+                "license",
+                "publication_year",
+                "funding",
+                "senior_author",
+                "contact_info",
+                "associated_paper_doi",
+                "institution_address",
+                "institution_department",
+                "ethics_approval",
+                "acknowledgements",
+                "how_to_acknowledge",
+                "keywords",
+            )
+        )
+        if has_content:
+            lines.append("Documentation")
+            lines.append("-" * 13)
+            _kv(lines, "Description", doc.description)
+            _kv(lines, "DOI", doc.doi)
+            _kv(lines, "Associated paper DOI", doc.associated_paper_doi)
+            _kv(lines, "License", doc.license)
+            if doc.investigators:
+                _kv(lines, "Investigators", ", ".join(doc.investigators))
+            _kv(lines, "Senior author", doc.senior_author)
+            if doc.contact_info:
+                _kv(lines, "Contact", "; ".join(doc.contact_info))
+            _kv(lines, "Institution", doc.institution)
+            _kv(lines, "Department", doc.institution_department)
+            _kv(lines, "Address", doc.institution_address)
+            _kv(lines, "Country", doc.country)
+            _kv(lines, "Repository", doc.repository)
+            _kv(lines, "Data URL", doc.data_url)
+            _kv(lines, "Publication year", doc.publication_year)
+            if doc.funding:
+                _kv(lines, "Funding", "; ".join(doc.funding))
+            if doc.ethics_approval:
+                _kv(lines, "Ethics approval", "; ".join(doc.ethics_approval))
+            _kv(lines, "Acknowledgements", doc.acknowledgements)
+            _kv(lines, "How to acknowledge", doc.how_to_acknowledge)
+            if doc.keywords:
+                _kv(lines, "Keywords", ", ".join(doc.keywords))
+            lines.append("")
+
+    # ── External Links ──
+    ext = metadata.external_links if metadata else None
+    if ext:
+        lines.append("External Links")
+        lines.append("-" * 14)
+        for name, url in ext.items():
+            _kv(lines, name.replace("_", " ").title(), url)
+        lines.append("")
+
+    # ── Abstract / Methodology ──
+    if metadata and metadata.abstract:
+        lines.append("Abstract")
+        lines.append("-" * 8)
+        lines.append(metadata.abstract)
+        lines.append("")
+    if metadata and metadata.methodology:
+        lines.append("Methodology")
+        lines.append("-" * 11)
+        lines.append(metadata.methodology)
+        lines.append("")
+
+    # ── References ──
+    # Extract references from the original class docstring (not the auto-generated one)
+    orig_doc = type(dataset).__doc__ or ""
+    refs = _extract_references_from_docstring(orig_doc)
+    lines.append("References")
+    lines.append("-" * 10)
+    if refs:
+        lines.append(refs)
+    lines.append(
+        "Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., "
+        "Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Hochenberger, R., "
+        "Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and "
+        "Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into "
+        "the BIDS format and facilitating their analysis. Journal of Open Source "
+        "Software 4: (1896). https://doi.org/10.21105/joss.01896"
+    )
+    lines.append("")
+    lines.append(
+        "Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., "
+        "Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an "
+        "extension to the brain imaging data structure for "
+        "electroencephalography. Scientific Data, 6, 103. "
+        "https://doi.org/10.1038/s41597-019-0104-8"
+    )
+    lines.append("")
+
+    # ── Footer ──
+    lines.append("---")
+    lines.append(
+        f"Generated by MOABB {moabb.__version__} " "(Mother of All BCI Benchmarks)"
+    )
+    lines.append("https://github.com/NeuroTechX/moabb")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def _kv(lines, key, value):
+    """Append a key-value line if the value is not None or 'n/a'."""
+    if value is None or value == "n/a":
+        return
+    lines.append(f"  {key}: {value}")
+
+
+def _format_dict(d):
+    """Format a dict as a compact key=value string."""
+    if not d:
+        return None
+    return ", ".join(f"{k}={v}" for k, v in d.items())
+
+
+def _extract_references_from_docstring(docstring):
+    """Extract reference citations from a dataset class docstring.
+
+    Looks for the ``references`` / ``References`` section and ``.. [N]``
+    citation directives, returning clean plain-text references.
+    """
+    if not docstring:
+        return ""
+    # Collect individual reference blocks: each starts with ``.. [N]``
+    references = []
+    current_ref = []
+    in_refs = False
+    for line in docstring.splitlines():
+        stripped = line.strip()
+        low = stripped.lower()
+        # Detect start of references section
+        if low in ("references", "references:") or low.startswith(".. ["):
+            in_refs = True
+        if low.startswith(".. admonition::") or low.startswith("+--"):
+            if in_refs:
+                break
+        if not in_refs:
+            continue
+        # Skip section headers and underlines
+        if low in ("references", "references:", "") or set(stripped) <= {"-", "="}:
+            if current_ref:
+                references.append(" ".join(current_ref))
+                current_ref = []
+            continue
+        # New citation directive starts a new reference
+        if re.match(r"^\.\.\s*\[\d+\]", stripped):
+            if current_ref:
+                references.append(" ".join(current_ref))
+                current_ref = []
+            cleaned = re.sub(r"^\.\.\s*\[\d+\]\s*", "", stripped)
+            if cleaned:
+                current_ref.append(cleaned)
+        else:
+            # Continuation line of current reference
+            current_ref.append(stripped)
+    if current_ref:
+        references.append(" ".join(current_ref))
+    return "\n\n".join(references)
+
+
+def _split_hed_top_level(hed_str):
+    """Split a HED tag string by commas at the top level.
+
+    Respects parenthetical grouping so that commas inside groups
+    are not treated as separators.
+
+    Parameters
+    ----------
+    hed_str : str
+        A HED tag string, e.g. ``"Sensory-event, (Imagine, (Move, Hand))"``.
+
+    Returns
+    -------
+    list of str
+        Top-level elements (tags and groups with outer parentheses preserved).
+    """
+    elements = []
+    depth = 0
+    current = []
+    for char in hed_str:
+        if char == "(":
+            depth += 1
+            current.append(char)
+        elif char == ")":
+            depth -= 1
+            current.append(char)
+        elif char == "," and depth == 0:
+            s = "".join(current).strip()
+            if s:
+                elements.append(s)
+            current = []
+        else:
+            current.append(char)
+    s = "".join(current).strip()
+    if s:
+        elements.append(s)
+    return elements
+
+
+def _hed_element_to_tree(element):
+    """Convert a single HED element (tag or group) to a tree node.
+
+    Returns ``(label, children)`` where *children* is a list of similar
+    tuples.  Leaf-only groups (no nested sub-groups) are rendered as a
+    single comma-separated label to keep the tree compact.
+
+    Parameters
+    ----------
+    element : str
+        A HED tag (``"Sensory-event"``) or group
+        (``"(Imagine, (Move, Hand))"``).
+
+    Returns
+    -------
+    tuple
+        ``(label, children)`` tree node.
+    """
+    element = element.strip()
+    if element.startswith("(") and element.endswith(")"):
+        inner = element[1:-1]
+        parts = _split_hed_top_level(inner)
+        if not parts:
+            return (element, [])
+        # Leaf-only group (no nested sub-groups) → inline label
+        has_subgroups = any(p.strip().startswith("(") for p in parts)
+        if not has_subgroups:
+            return (", ".join(p.strip() for p in parts), [])
+        # Mixed: first element is the head, rest become children
+        head = parts[0].strip()
+        rest = parts[1:]
+        return (head, [_hed_element_to_tree(r) for r in rest])
+    return (element, [])
+
+
+def _render_hed_tree(nodes, prefix="    "):
+    """Render tree nodes as ASCII art using box-drawing characters.
+
+    Parameters
+    ----------
+    nodes : list of tuple
+        Each node is ``(label, children)`` as returned by
+        :func:`_hed_element_to_tree`.
+    prefix : str
+        Current indentation prefix.
+
+    Returns
+    -------
+    list of str
+        Lines of the rendered tree.
+    """
+    lines = []
+    for i, (label, children) in enumerate(nodes):
+        is_last = i == len(nodes) - 1
+        connector = "\u2514\u2500 " if is_last else "\u251c\u2500 "
+        lines.append(f"{prefix}{connector}{label}")
+        if children:
+            extension = "   " if is_last else "\u2502  "
+            lines.extend(_render_hed_tree(children, prefix + extension))
+    return lines
 
 
 def get_bids_root(code, path=None):
@@ -331,6 +1990,12 @@ class BIDSInterfaceBase(abc.ABC):
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
 
         lock_data = dict(processing_params=str(self.processing_params))
+
+        # Write .bidsignore so the BIDS validator skips MOABB lockfiles
+        bidsignore = Path(self.root) / ".bidsignore"
+        if not bidsignore.exists():
+            bidsignore.write_text("*_lockfile.json\n")
+
         for session, runs in sessions_data.items():
             for run, obj in runs.items():
                 if obj is None:
@@ -363,25 +2028,23 @@ class BIDSInterfaceBase(abc.ABC):
 
         # Write dataset_description.json after all files so that it
         # overwrites any version created internally by mne_bids.write_raw_bids.
-        source_datasets = []
-        if self.dataset.doi is not None:
-            source_datasets = [dict(DOI=self.dataset.doi)]
+        desc_kwargs = _build_dataset_description_kwargs(self.dataset)
         mne_bids.make_dataset_description(
             path=str(self.root),
-            name=self.dataset.code,
-            dataset_type=self._dataset_type,
-            generated_by=[
-                dict(
-                    CodeURL="https://github.com/NeuroTechX/moabb",
-                    Name="moabb",
-                    Description="Mother of All BCI Benchmarks",
-                    Version=moabb.__version__,
-                )
-            ],
-            source_datasets=source_datasets,
             overwrite=True,
             verbose=self.verbose,
+            **desc_kwargs,
         )
+
+        # Merge extra fields (Keywords, etc.) that make_dataset_description
+        # doesn't support as kwargs
+        metadata = getattr(self.dataset, "metadata", None)
+        _update_dataset_description_extra(self.root, metadata)
+
+        # Write comprehensive README (after write_raw_bids to overwrite its
+        # boilerplate README with our enriched version)
+        readme_path = Path(self.root) / "README"
+        readme_path.write_text(_build_readme(self.dataset), encoding="utf-8")
         log.info("Finished caching %s to disk.", repr(self))
 
     def _write_lock_file(self, session, lock_data):
@@ -460,6 +2123,11 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("line_freq", None) is None:
             # specify line frequency if not present as required by BIDS
             raw.info["line_freq"] = 50
+
+        # Enrich raw.info from dataset metadata (sex, hand, line_freq)
+        metadata = getattr(self.dataset, "metadata", None)
+        _enrich_raw_info_from_metadata(raw, metadata, self.subject)
+
         if raw.info.get("subject_info", None) is None:
             # specify subject info as required by BIDS
             raw.info["subject_info"] = {
@@ -509,6 +2177,52 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 overwrite=False,
                 verbose=self.verbose,
             )
+
+        # Post-write enrichment: update EEG sidecar with metadata fields
+        if metadata is not None:
+            sidecar_entries = _build_sidecar_enrichment(metadata)
+            if sidecar_entries:
+                sidecar_path = bids_path.copy().update(extension=".json")
+                mne_bids.update_sidecar_json(sidecar_path, sidecar_entries)
+
+            # Fix mne_bids key casing: MiscChannelCount → MISCChannelCount
+            sidecar_fpath = bids_path.copy().update(extension=".json").fpath
+            if sidecar_fpath.exists():
+                with open(sidecar_fpath) as f:
+                    sc = json.load(f)
+                if "MiscChannelCount" in sc and "MISCChannelCount" not in sc:
+                    sc["MISCChannelCount"] = sc.pop("MiscChannelCount")
+                    with open(sidecar_fpath, "w") as f:
+                        json.dump(sc, f, indent="\t")
+
+            # Patch participants.tsv with demographic data
+            _update_participants_tsv(bids_path.root, self.subject, metadata)
+
+            # Patch electrodes.tsv with material and type
+            _update_electrodes_tsv(bids_path, metadata)
+
+        # Enrich events.json sidecar with HED annotations and stimulus info
+        hed_tags = _build_hed_sidecar_annotations(self.dataset)
+        _update_events_json_sidecar(bids_path, hed_tags, metadata)
+
+        # Create scans.json sidecar at session level (next to scans.tsv)
+        ses_dir = bids_path.root / f"sub-{bids_path.subject}"
+        if bids_path.session is not None:
+            ses_dir = ses_dir / f"ses-{bids_path.session}"
+        scans_tsv_files = list(ses_dir.glob("*_scans.tsv"))
+        if scans_tsv_files:
+            scans_json_path = scans_tsv_files[0].with_suffix(".json")
+            if not scans_json_path.exists():
+                scans_sidecar = {
+                    "filename": {
+                        "Description": "Relative path to the data file.",
+                    },
+                    "acq_time": {
+                        "Description": "Acquisition date and time.",
+                    },
+                }
+                with open(scans_json_path, "w") as f:
+                    json.dump(scans_sidecar, f, indent="\t")
 
 
 class BIDSInterfaceEpochs(BIDSInterfaceBase):

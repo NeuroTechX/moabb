@@ -17,6 +17,8 @@ Run only offline checks::
     python -m pytest moabb/tests/test_doi_validation.py -k "not network" -v
 """
 
+import json
+import pathlib
 import re
 import time
 import unicodedata
@@ -111,10 +113,36 @@ def _collect_dois(cls) -> dict[str, str | None]:
 
 
 _DOI_CACHE: dict[str, dict | None] = {}
+_DOI_CACHE_PATH = pathlib.Path(__file__).parent / "doi_cache.json"
+_DOI_CACHE_DIRTY = False
+_UPDATE_DOI_CACHE = False
+_NEWLY_RESOLVED_DOIS: list[str] = []
+
+
+def _load_doi_cache():
+    """Load persistent DOI cache from disk into _DOI_CACHE."""
+    global _DOI_CACHE
+    if _DOI_CACHE_PATH.exists():
+        try:
+            data = json.loads(_DOI_CACHE_PATH.read_text(encoding="utf-8"))
+            # Skip the _metadata key
+            _DOI_CACHE = {k: v for k, v in data.items() if k != "_metadata"}
+        except (json.JSONDecodeError, OSError):
+            _DOI_CACHE = {}
+
+
+def _save_doi_cache():
+    """Write _DOI_CACHE to disk as sorted JSON with metadata."""
+    data = {"_metadata": {"total": len(_DOI_CACHE)}}
+    data.update(dict(sorted(_DOI_CACHE.items())))
+    _DOI_CACHE_PATH.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
 
 def _resolve_doi(doi: str) -> dict | None:
-    if doi in _DOI_CACHE:
+    global _DOI_CACHE_DIRTY
+    if not _UPDATE_DOI_CACHE and doi in _DOI_CACHE:
         return _DOI_CACHE[doi]
     try:
         time.sleep(_REQUEST_DELAY)
@@ -139,8 +167,16 @@ def _resolve_doi(doi: str) -> dict | None:
         }
     except Exception:
         result = None
-    _DOI_CACHE[doi] = result
+    if result is not None:
+        if doi not in _DOI_CACHE:
+            _NEWLY_RESOLVED_DOIS.append(doi)
+        _DOI_CACHE[doi] = result
+        _DOI_CACHE_DIRTY = True
     return result
+
+
+# Load persistent cache at import time
+_load_doi_cache()
 
 
 def _strip_accents(s: str) -> str:
@@ -164,6 +200,16 @@ def _extract_surnames(authors: list[str]) -> set[str]:
             surname = parts[-1].strip(".").lower()
         out.add(_strip_accents(surname))
     return out
+
+
+def _all_codebase_dois() -> set[str]:
+    """Collect every unique resolvable DOI from all dataset classes (offline)."""
+    all_dois: set[str] = set()
+    for cls in _REAL_DATASETS:
+        for doi in _collect_dois(cls).values():
+            if doi and _is_doi(doi):
+                all_dois.add(doi)
+    return all_dois
 
 
 # -- offline tests -----------------------------------------------------------
@@ -219,6 +265,21 @@ def test_docstring_dois_tracked(dataset_class):
     assert not untracked, (
         f"{dataset_class.__name__}: docstring DOIs not tracked in metadata: "
         f"{untracked}\n  Known: {known}"
+    )
+
+
+def test_doi_cache_complete():
+    """Check that doi_cache.json contains every DOI found in the codebase."""
+    codebase_dois = _all_codebase_dois()
+    cached_dois = set(_DOI_CACHE.keys())
+    missing = sorted(codebase_dois - cached_dois)
+    assert not missing, (
+        f"{len(missing)} DOI(s) found in codebase but missing from "
+        f"{_DOI_CACHE_PATH.name}:\n"
+        + "\n".join(f"  - {d}" for d in missing)
+        + "\n\nTo fix, run:\n"
+        "  python -m pytest moabb/tests/test_doi_validation.py "
+        '-k "test_dois_resolve" --timeout=300 -v'
     )
 
 

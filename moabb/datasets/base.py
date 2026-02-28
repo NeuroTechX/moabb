@@ -348,11 +348,7 @@ def _format_age(participants) -> str | None:
 
 
 def _format_bandpass(preprocessing) -> str | None:
-    filter_details = getattr(preprocessing, "filter_details", None)
-    if filter_details is None:
-        return None
-
-    bandpass = getattr(filter_details, "bandpass", None)
+    bandpass = getattr(preprocessing, "bandpass", None)
     if isinstance(bandpass, dict):
         low = bandpass.get(
             "low",
@@ -374,8 +370,8 @@ def _format_bandpass(preprocessing) -> str | None:
             f"-{_format_metadata_value(bandpass[1])} Hz"
         )
 
-    highpass = getattr(filter_details, "highpass_hz", None)
-    lowpass = getattr(filter_details, "lowpass_hz", None)
+    highpass = getattr(preprocessing, "highpass_hz", None)
+    lowpass = getattr(preprocessing, "lowpass_hz", None)
     if highpass is not None and lowpass is not None:
         return f"{_format_metadata_value(highpass)}-{_format_metadata_value(lowpass)} Hz"
     return None
@@ -447,7 +443,9 @@ def _metadata_doc_sections(metadata: Any, existing_doc: str) -> str:
     if documentation is not None:
         data_url = getattr(documentation, "data_url", None)
     if data_url is None and external_links is not None:
-        data_url = getattr(external_links, "source_url", None)
+        data_url = (
+            external_links.get("source") if isinstance(external_links, dict) else None
+        )
 
     if documentation is not None or _has_nonempty(data_url):
         blocks.append(
