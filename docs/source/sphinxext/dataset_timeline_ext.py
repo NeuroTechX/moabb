@@ -1,8 +1,8 @@
 """Sphinx extension: enhance dataset documentation pages.
 
 1. Injects an enhanced dataset card (paradigm chips, stats, action buttons)
-2. Injects a 2x2 visual summary grid (timeline, classes, sessions, channels)
-3. Restructures the docstring into a tabbed layout (Overview, Metadata, Code, Notes)
+2. Injects a 2x2 visual summary grid (timeline, HED tags, sessions, channels)
+3. Restructures the docstring into a tabbed layout (Overview, Quickstart, Metadata, Notes)
 4. Shows inherited methods below tabs
 
 Pre-generated SVG images live in ``_static/timelines/<ClassName>.svg`` and
@@ -15,7 +15,12 @@ To regenerate *all* SVGs (timelines + viz), run (from the repo root)::
 
 import os
 import re
+import csv
+import json
+import statistics
+from html import escape
 from urllib.parse import quote
+from urllib.request import Request, urlopen
 
 
 _PARADIGM_LABELS = {
@@ -36,6 +41,18 @@ _PARADIGM_COLORS = {
     "rstate": "#546E7A",
 }
 
+_BENCHMARK_FILES = [
+    ("within_session_mi_left_vs_right_hand.csv", "MI left vs right"),
+    ("within_session_mi_all_classes.csv", "MI all classes"),
+    ("within_session_mi_right_hand_vs_feet.csv", "MI right hand vs feet"),
+    ("within_session_ssvep_all_classes.csv", "SSVEP all classes"),
+    ("within_session_erp_p300_all_classes.csv", "ERP/P300 all classes"),
+]
+_BENCHMARK_CONTEXT_CACHE = {}
+_DOI_METADATA_CACHE = {}
+_DOI_CACHE_LOADED = False
+_DOI_RE = re.compile(r"^10\.\d{4,}/", re.IGNORECASE)
+
 
 def _is_concrete_dataset(obj):
     """Check if *obj* is a concrete (instantiable) MOABB dataset class."""
@@ -49,6 +66,124 @@ def _is_concrete_dataset(obj):
         and obj is not BaseDataset
         and not getattr(obj, "__abstractmethods__", set())
     )
+
+
+def _repo_root():
+    """Return repository root path (relative to this extension file)."""
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+
+
+def _normalize_doi(value):
+    """Normalize DOI values that may include URL prefixes."""
+    if not value:
+        return None
+    text = str(value).strip()
+    for prefix in (
+        "https://doi.org/",
+        "http://doi.org/",
+        "https://dx.doi.org/",
+        "http://dx.doi.org/",
+    ):
+        if text.lower().startswith(prefix):
+            return text[len(prefix) :]
+    return text
+
+
+def _is_likely_doi(value):
+    """Return True if the value matches a DOI-like pattern."""
+    norm = _normalize_doi(value)
+    return bool(norm and _DOI_RE.match(norm))
+
+
+def _load_doi_cache_once():
+    """Load local DOI cache used by tests (if present)."""
+    global _DOI_CACHE_LOADED
+    if _DOI_CACHE_LOADED:
+        return
+    _DOI_CACHE_LOADED = True
+    cache_path = os.path.join(_repo_root(), "moabb", "tests", "doi_cache.json")
+    if not os.path.exists(cache_path):
+        return
+    try:
+        with open(cache_path, encoding="utf-8") as f:
+            payload = json.load(f)
+    except Exception:
+        return
+
+    for key, value in payload.items():
+        if key == "_metadata":
+            continue
+        norm = _normalize_doi(key)
+        if not norm:
+            continue
+        _DOI_METADATA_CACHE[norm.lower()] = value
+
+
+def _resolve_doi_metadata(doi):
+    """Resolve DOI metadata from local cache, then public DOI API as fallback."""
+    norm = _normalize_doi(doi)
+    if not norm or not _is_likely_doi(norm):
+        return None
+    key = norm.lower()
+
+    _load_doi_cache_once()
+    if key in _DOI_METADATA_CACHE:
+        return _DOI_METADATA_CACHE[key]
+
+    # Public API fallback via DOI content negotiation (citeproc JSON)
+    try:
+        req = Request(
+            f"https://doi.org/{quote(norm)}",
+            headers={"Accept": "application/citeproc+json"},
+        )
+        with urlopen(req, timeout=4) as resp:
+            data = json.loads(resp.read().decode("utf-8", errors="replace"))
+        authors = [
+            f"{a.get('given', '')} {a.get('family', '')}".strip()
+            for a in data.get("author", [])
+            if isinstance(a, dict)
+        ]
+        issued = data.get("issued", {}).get("date-parts", [[None]])
+        year = issued[0][0] if issued and issued[0] and issued[0][0] else None
+        resolved = {
+            "title": data.get("title"),
+            "authors": authors,
+            "year": year,
+            "doi": norm,
+        }
+        _DOI_METADATA_CACHE[key] = resolved
+        return resolved
+    except Exception:
+        _DOI_METADATA_CACHE[key] = None
+        return None
+
+
+def _format_resolved_citation(meta):
+    """Build a compact one-line citation string from resolved metadata."""
+    if not meta:
+        return ""
+    title = str(meta.get("title") or "").strip().rstrip(".")
+    if len(title) > 170:
+        title = title[:167].rstrip() + "..."
+    authors = [a for a in (meta.get("authors") or []) if a]
+    year = meta.get("year")
+
+    author_text = ""
+    if authors:
+        surnames = [a.split()[-1] for a in authors if a.split()]
+        if len(surnames) == 1:
+            author_text = surnames[0]
+        elif len(surnames) == 2:
+            author_text = f"{surnames[0]} & {surnames[1]}"
+        elif len(surnames) > 2:
+            author_text = f"{surnames[0]} et al."
+
+    lead = author_text or "Citation"
+    if year:
+        lead += f" ({year})"
+    if title:
+        return f"{lead}. {title}."
+    return lead
 
 
 # ---------------------------------------------------------------------------
@@ -76,12 +211,19 @@ def _get_dataset_info(obj):
         n_channels = None
         channel_types = None
         montage = None
+        reference = None
+        filter_range = None
+        line_freq = None
+        sensor_type = None
+        filters = None
         n_classes = None
         class_labels = None
         trial_duration = None
         n_trials_per_class = None
         runs_per_session = None
         sessions_per_subject = None
+        hed_tags = None
+        exp = None
 
         if metadata is not None:
             acq = getattr(metadata, "acquisition", None)
@@ -90,12 +232,25 @@ def _get_dataset_info(obj):
                 n_channels = getattr(acq, "n_channels", None)
                 channel_types = getattr(acq, "channel_types", None)
                 montage = getattr(acq, "montage", None)
+                reference = getattr(acq, "reference", None)
+                low_cut = getattr(acq, "low_cut_hz", None)
+                high_cut = getattr(acq, "high_cut_hz", None)
+                line_freq = getattr(acq, "line_freq", None)
+                sensor_type = getattr(acq, "sensor_type", None)
+                filters = getattr(acq, "filters", None)
+                if low_cut is not None or high_cut is not None:
+                    low_label = "?" if low_cut is None else f"{low_cut:g}"
+                    high_label = "?" if high_cut is None else f"{high_cut:g}"
+                    filter_range = f"{low_label}–{high_label} Hz"
+                elif filters:
+                    filter_range = str(filters)
 
             exp = getattr(metadata, "experiment", None)
             if exp is not None:
                 n_classes = getattr(exp, "n_classes", None)
                 class_labels = getattr(exp, "class_labels", None)
                 trial_duration = getattr(exp, "trial_duration", None)
+                hed_tags = getattr(exp, "hed_tags", None)
 
             data_struct = getattr(metadata, "data_structure", None)
             if data_struct is not None:
@@ -111,6 +266,13 @@ def _get_dataset_info(obj):
             class_labels = list(event_id.keys())
         if trial_duration is None and interval is not None:
             trial_duration = float(interval[1] - interval[0])
+        if not hed_tags:
+            try:
+                from moabb.datasets.bids_interface import _build_hed_sidecar_annotations
+
+                hed_tags = _build_hed_sidecar_annotations(ds)
+            except Exception:
+                hed_tags = hed_tags or None
 
         return {
             "paradigm": paradigm,
@@ -122,6 +284,11 @@ def _get_dataset_info(obj):
             "n_channels": n_channels,
             "channel_types": channel_types,
             "montage": montage,
+            "reference": reference,
+            "filter_range": filter_range,
+            "line_freq": line_freq,
+            "sensor_type": sensor_type,
+            "filters": filters,
             "n_classes": n_classes,
             "class_labels": class_labels,
             "trial_duration": trial_duration,
@@ -129,9 +296,449 @@ def _get_dataset_info(obj):
             "event_id": event_id,
             "runs_per_session": runs_per_session,
             "sessions_per_subject": sessions_per_subject,
+            "hed_tags": hed_tags,
         }
     except Exception:
         return None
+
+
+# ---------------------------------------------------------------------------
+# Context helpers
+# ---------------------------------------------------------------------------
+
+
+def _format_duration_seconds(seconds):
+    """Return a short human-readable duration string."""
+    if seconds is None:
+        return None
+    if seconds >= 60:
+        return f"{seconds / 60:.1f} min"
+    return f"{seconds:g} s"
+
+
+def _split_hed_top_level(hed_str):
+    """Split a HED string by top-level commas (ignoring nested groups)."""
+    if not hed_str:
+        return []
+    parts, buf = [], []
+    depth = 0
+    for ch in str(hed_str):
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        if ch == "," and depth == 0:
+            piece = "".join(buf).strip()
+            if piece:
+                parts.append(piece)
+            buf = []
+        else:
+            buf.append(ch)
+    piece = "".join(buf).strip()
+    if piece:
+        parts.append(piece)
+    return parts
+
+
+def _hed_token_label(element):
+    """Extract a compact display token from a HED element."""
+    token = str(element).strip().strip("()").strip()
+    if not token:
+        return ""
+    token = token.split(",")[0].strip()
+    if "/" in token:
+        token = token.split("/", 1)[0].strip()
+    return token
+
+
+def _hed_element_to_tree(element):
+    """Convert a HED element into a simple tree node dict."""
+    text = str(element).strip()
+    if not text:
+        return None
+    if text.startswith("(") and text.endswith(")"):
+        inner = text[1:-1].strip()
+        parts = _split_hed_top_level(inner)
+        if not parts:
+            return None
+        head = {"label": _hed_token_label(parts[0]), "children": []}
+        for child in parts[1:]:
+            node = _hed_element_to_tree(child)
+            if node:
+                head["children"].append(node)
+        return head
+    return {"label": _hed_token_label(text), "children": []}
+
+
+def _render_hed_tree_lines(nodes, prefix=""):
+    """Render tree nodes as ASCII hierarchy lines."""
+    lines = []
+    valid_nodes = [n for n in nodes if n]
+    for i, node in enumerate(valid_nodes):
+        last = i == len(valid_nodes) - 1
+        branch = "└─ " if last else "├─ "
+        lines.append(f"{prefix}{branch}{node['label']}")
+        if node.get("children"):
+            child_prefix = prefix + ("   " if last else "│  ")
+            lines.extend(_render_hed_tree_lines(node["children"], child_prefix))
+    return lines
+
+
+def _extract_score_mean(cell):
+    """Parse a benchmark score string like '77.82±12.23' and return 77.82."""
+    if cell is None:
+        return None
+    text = str(cell).strip()
+    if not text:
+        return None
+    match = re.search(r"[-+]?\d+(?:\.\d+)?", text)
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except Exception:
+        return None
+
+
+def _get_benchmark_context(cls_name):
+    """Return summary of benchmark tables containing this dataset."""
+    if cls_name in _BENCHMARK_CONTEXT_CACHE:
+        return _BENCHMARK_CONTEXT_CACHE[cls_name]
+
+    root_dir = _repo_root()
+    results_dir = os.path.join(root_dir, "results")
+    col_name = f":class:`{cls_name}`"
+
+    entries = []
+    for fname, label in _BENCHMARK_FILES:
+        path = os.path.join(results_dir, fname)
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, newline="", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                if not reader.fieldnames or col_name not in reader.fieldnames:
+                    continue
+                scores = []
+                for row in reader:
+                    score = _extract_score_mean(row.get(col_name))
+                    if score is not None:
+                        scores.append(score)
+                if scores:
+                    entries.append(
+                        {
+                            "label": label,
+                            "median": statistics.median(scores),
+                            "best": max(scores),
+                            "n_pipelines": len(scores),
+                        }
+                    )
+        except Exception:
+            continue
+
+    context = {"n_tables": len(entries), "entries": entries}
+    _BENCHMARK_CONTEXT_CACHE[cls_name] = context
+    return context
+
+
+def _make_known_caveats_html(info):
+    """Build a compact known-caveats list from available metadata."""
+    caveats = []
+    n_subj = info.get("n_subjects")
+    n_sessions = info.get("n_sessions")
+    n_classes = info.get("n_classes")
+    montage = info.get("montage")
+    n_channels = info.get("n_channels")
+    code = str(info.get("code") or "")
+
+    if n_subj is not None and n_subj < 12:
+        caveats.append(f"Small cohort: {n_subj} subjects")
+    if n_sessions == 1:
+        caveats.append("Single-session recordings")
+    if montage and montage != "standard_1005":
+        caveats.append("Custom montage (non-10-05)")
+    if n_channels is not None and n_channels < 16:
+        caveats.append("Low channel density for spatial decoding")
+    if n_classes is not None and n_classes >= 4:
+        caveats.append(f"{n_classes}-class paradigm increases task complexity")
+    if "bnci" in code.lower():
+        caveats.append("Competition dataset in controlled lab conditions")
+
+    if not caveats:
+        return ""
+
+    items = "\n      ".join(f"<li>{escape(c)}</li>" for c in caveats[:4])
+    return (
+        '<div class="ds-caveats">'
+        '<p class="ds-caveats-title">Known Caveats</p>'
+        f"<ul>{items}</ul>"
+        "</div>"
+    )
+
+
+def _estimate_relative_difficulty(info, benchmark_ctx):
+    """Estimate a coarse relative difficulty score/label."""
+    n_classes = info.get("n_classes")
+    class_labels = info.get("class_labels") or []
+    display_classes = len(class_labels) if class_labels else n_classes
+    n_subjects = info.get("n_subjects")
+    n_sessions = info.get("n_sessions")
+    n_channels = info.get("n_channels")
+
+    score = 0.0
+    if display_classes is not None:
+        if display_classes >= 4:
+            score += 1.2
+        elif display_classes >= 3:
+            score += 0.7
+    if n_subjects is not None and n_subjects < 12:
+        score += 0.8
+    if n_sessions == 1:
+        score += 0.6
+    if n_channels is not None and n_channels < 16:
+        score += 0.5
+
+    medians = [e["median"] for e in benchmark_ctx.get("entries", []) if "median" in e]
+    if medians:
+        global_median = statistics.median(medians)
+        if global_median < 70:
+            score += 0.8
+        elif global_median < 80:
+            score += 0.4
+        elif global_median >= 88:
+            score -= 0.4
+
+    if score <= 0.6:
+        return "Low", "●○○○○"
+    if score <= 1.4:
+        return "Medium", "●●○○○"
+    if score <= 2.2:
+        return "Moderate", "●●●○○"
+    if score <= 3.0:
+        return "High", "●●●●○"
+    return "Very high", "●●●●●"
+
+
+def _make_benchmark_context_html(cls_name, info):
+    """Build benchmark-context card HTML for the dataset."""
+    ctx = _get_benchmark_context(cls_name)
+    if not ctx["entries"]:
+        return ""
+    n_subjects = info.get("n_subjects")
+    n_sessions = info.get("n_sessions")
+    sample_frame = ""
+    if n_subjects is not None and n_sessions is not None:
+        sample_frame = f"{n_subjects} subjects × {n_sessions} sessions"
+
+    rows = []
+    for entry in ctx["entries"][:4]:
+        rows.append(
+            "<li>"
+            f'<span>{escape(entry["label"])} '
+            f'<em>{entry["n_pipelines"]} pipelines</em></span>'
+            f"<strong>{entry['median']:.1f} WS</strong>"
+            "</li>"
+        )
+    rows_html = "\n      ".join(rows)
+    return (
+        '<div class="ds-benchmark-context">'
+        '<div class="ds-benchmark-head">'
+        '<p class="ds-benchmark-title">Benchmark Context</p>'
+        '<span class="ds-eval-pill">WithinSession</span>'
+        "</div>"
+        f'<p class="ds-benchmark-summary">Included in {ctx["n_tables"]} MOABB benchmark table(s). '
+        "Scores are per-dataset medians across available pipelines.</p>"
+        '<p class="ds-benchmark-note"><strong>Evaluation scope:</strong> values shown here are '
+        "from WithinSession evaluation only.</p>"
+        f'<p class="ds-benchmark-meta"><span><strong>Sample frame:</strong> {escape(sample_frame or "N/A")}</span></p>'
+        f"<ul>{rows_html}</ul>"
+        "</div>"
+    )
+
+
+def _make_citation_impact_html(info, benchmark_ctx):
+    """Build a compact citation and impact block."""
+    code = str(info.get("code") or "")
+    doi = _normalize_doi(info.get("doi"))
+    if not code and not doi:
+        return ""
+
+    pwc_slug = code.lower().replace("_", "-") if code else ""
+    pwc_url = f"https://paperswithcode.com/dataset/{quote(pwc_slug)}-moabb-1" if pwc_slug else ""
+
+    items = []
+    script_html = ""
+    if doi:
+        items.append(
+            f'<li><span>DOI</span><a href="https://doi.org/{escape(doi)}" '
+            f'target="_blank" rel="noopener">{escape(doi)}</a></li>'
+        )
+        if _is_likely_doi(doi):
+            items.append(
+                f'<li><span>Citations</span><strong class="ds-citation-count" data-doi="{escape(doi)}">Loading…</strong></li>'
+            )
+
+            openalex_id = quote(f"https://doi.org/{doi}", safe="")
+            openalex_url = f"https://api.openalex.org/works/{openalex_id}"
+            crossref_url = f"https://api.crossref.org/works/{quote(doi)}"
+            items.append(
+                '<li><span>Public API</span>'
+                f'<span class="ds-citation-links"><a href="{crossref_url}" target="_blank" rel="noopener">Crossref</a>'
+                '&nbsp;|&nbsp;'
+                f'<a href="{openalex_url}" target="_blank" rel="noopener">OpenAlex</a></span>'
+                "</li>"
+            )
+            script_html = """
+<script>
+(function () {
+  if (window.__moabbCitationCountsInit) return;
+  window.__moabbCitationCountsInit = true;
+
+  function fmt(value) {
+    return (typeof value === "number" && Number.isFinite(value))
+      ? value.toLocaleString()
+      : "N/A";
+  }
+
+  function setBoth(el, openalexCount, crossrefCount) {
+    el.textContent = "OpenAlex: " + fmt(openalexCount) + " | Crossref: " + fmt(crossrefCount);
+  }
+
+  async function fetchOpenAlex(doi) {
+    const id = encodeURIComponent("https://doi.org/" + doi);
+    const resp = await fetch("https://api.openalex.org/works/" + id);
+    if (!resp.ok) throw new Error("OpenAlex request failed");
+    const data = await resp.json();
+    return data && typeof data.cited_by_count === "number"
+      ? data.cited_by_count
+      : null;
+  }
+
+  async function fetchCrossref(doi) {
+    const resp = await fetch("https://api.crossref.org/works/" + encodeURIComponent(doi));
+    if (!resp.ok) throw new Error("Crossref request failed");
+    const data = await resp.json();
+    const count = data && data.message ? data.message["is-referenced-by-count"] : null;
+    return typeof count === "number" ? count : null;
+  }
+
+  document.querySelectorAll(".ds-citation-count[data-doi]").forEach(async function (el) {
+    const doi = (el.getAttribute("data-doi") || "").trim();
+    if (!doi) {
+      setBoth(el, null, null);
+      return;
+    }
+    const [oaRes, crRes] = await Promise.allSettled([
+      fetchOpenAlex(doi),
+      fetchCrossref(doi),
+    ]);
+    const oa = oaRes.status === "fulfilled" ? oaRes.value : null;
+    const cr = crRes.status === "fulfilled" ? crRes.value : null;
+    setBoth(el, oa, cr);
+  });
+})();
+</script>
+"""
+    if pwc_url:
+        items.append(
+            f'<li><span>PapersWithCode</span><a href="{pwc_url}" target="_blank" '
+            f'rel="noopener">Dataset page</a></li>'
+        )
+    if benchmark_ctx and benchmark_ctx.get("n_tables"):
+        items.append(
+            f'<li><span>MOABB tables</span><strong>{benchmark_ctx["n_tables"]} (WithinSession)</strong></li>'
+        )
+    if not items:
+        return ""
+
+    list_html = "\n      ".join(items)
+    return (
+        '<div class="ds-citation-impact">'
+        '<p class="ds-citation-title">Citation & Impact</p>'
+        f"<ul>{list_html}</ul>"
+        f"{script_html}"
+        "</div>"
+    )
+
+
+def _make_hed_summary_html(info):
+    """Build HTML summary for embedded HED tags."""
+    hed_map = info.get("hed_tags") if info else None
+    event_id = info.get("event_id") if info else None
+    event_total = len(event_id) if isinstance(event_id, dict) and event_id else None
+
+    if not hed_map:
+        return (
+            '<div class="ds-hed-card ds-hed-empty">'
+            "<p><strong>HED tags unavailable.</strong> This dataset does not currently expose "
+            "embedded HED event annotations in metadata.</p>"
+            "</div>"
+        )
+
+    items = list(hed_map.items())
+    tagged = len(items)
+    denom = event_total if event_total else tagged
+    coverage = f"{tagged}/{denom}"
+
+    family_counts = {}
+    event_rows = []
+    tree_items = []
+    for event_name, hed_str in items:
+        elements = _split_hed_top_level(hed_str)
+        tokens = []
+        for elem in elements:
+            t = _hed_token_label(elem)
+            if t and t not in tokens:
+                tokens.append(t)
+        for t in tokens:
+            family_counts[t] = family_counts.get(t, 0) + 1
+        chip_html = "".join(
+            f'<span class="ds-hed-chip">{escape(tok)}</span>' for tok in tokens[:5]
+        )
+        event_rows.append(
+            '<div class="ds-hed-event-row">'
+            f'<span class="ds-hed-event-name">{escape(str(event_name))}</span>'
+            f'<div class="ds-hed-chip-wrap" title="{escape(str(hed_str))}">{chip_html}</div>'
+            "</div>"
+        )
+        tree_nodes = [_hed_element_to_tree(e) for e in elements]
+        tree_lines = _render_hed_tree_lines(tree_nodes)
+        tree_text = "\n".join(tree_lines) if tree_lines else "(no tree)"
+        tree_items.append(
+            '<details class="ds-hed-tree-item">'
+            f'<summary class="ds-hed-tree-summary">Tree · {escape(str(event_name))}</summary>'
+            f'<pre class="ds-hed-tree-pre">{escape(tree_text)}</pre>'
+            "</details>"
+        )
+
+    top_families = sorted(family_counts.items(), key=lambda x: (-x[1], x[0]))[:6]
+    max_count = max([c for _, c in top_families], default=1)
+    bar_rows = []
+    for fam, count in top_families:
+        width = int((count / max_count) * 100)
+        bar_rows.append(
+            '<div class="ds-hed-bar-row">'
+            f'<span class="ds-hed-bar-label">{escape(fam)}</span>'
+            f'<div class="ds-hed-bar"><i style="width:{width}%"></i></div>'
+            f'<strong>{count}</strong>'
+            "</div>"
+        )
+
+    return (
+        '<div class="ds-hed-card">'
+        '<div class="ds-hed-head">'
+        '<span class="ds-hed-pill">HED tags</span>'
+        f'<span class="ds-hed-meta">{coverage} events annotated</span>'
+        "</div>"
+        '<p class="ds-hed-source">Source: MOABB BIDS HED annotation mapping.</p>'
+        f'<div class="ds-hed-bars">{"".join(bar_rows)}</div>'
+        f'<div class="ds-hed-events">{"".join(event_rows)}</div>'
+        '<div class="ds-hed-tree-block">'
+        '<p class="ds-hed-tree-title">HED tree view</p>'
+        f'{"".join(tree_items)}'
+        "</div>"
+        "</div>"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -172,6 +779,10 @@ def _make_header_html(cls_name, info):
     n_classes = info.get("n_classes")
     class_labels = info.get("class_labels")
     trial_duration = info.get("trial_duration")
+    code = info.get("code")
+    quickstart_id = (
+        "ds-quickstart-" + re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
+    )
 
     # --- Subtitle: auto-generated from paradigm + classes ---
     # Use the actual count of class labels when available
@@ -190,6 +801,8 @@ def _make_header_html(cls_name, info):
     # --- Stat chips ---
     chips = []
     chips.append(f'<span class="ds-chip" style="--chip-color: {color}">{label}</span>')
+    if code:
+        chips.append(f'<span class="ds-chip ds-chip-muted">Code: {code}</span>')
     if n_subj is not None:
         chips.append(f'<span class="ds-chip ds-chip-muted">{n_subj} subjects</span>')
     if n_sess is not None:
@@ -232,21 +845,56 @@ def _make_header_html(cls_name, info):
         chips.append(f'<span class="ds-chip ds-chip-muted">{dur_display} s trials</span>')
 
     chips_html = "\n      ".join(chips)
+    caveats_html = _make_known_caveats_html(info)
+    benchmark_html = _make_benchmark_context_html(cls_name, info)
+    benchmark_ctx = _get_benchmark_context(cls_name)
+    citation_html = _make_citation_impact_html(info, benchmark_ctx)
+    compare_anchor_map = {
+        "imagery": "motor-imagery",
+        "p300": "p300-erp",
+        "erp": "p300-erp",
+        "ssvep": "ssvep",
+        "cvep": "c-vep",
+        "rstate": "resting-states",
+    }
+    compare_anchor = compare_anchor_map.get(paradigm)
+    compare_href = "../dataset_summary.html"
+    if compare_anchor:
+        compare_href += f"#{compare_anchor}"
+
+    # --- Optional class-label line ---
+    class_line = ""
+    if class_labels:
+        preview = ", ".join(class_labels[:8])
+        if len(class_labels) > 8:
+            preview += ", ..."
+        class_line = (
+            f'<p class="ds-class-line"><span class="ds-class-line-label">'
+            f"Class Labels:</span> {preview}</p>"
+        )
 
     # --- Action buttons ---
     actions = []
-    # Quickstart Code button (toggles details element via CSS)
+    # Quickstart button toggles details panel
     actions.append(
-        '<a class="ds-btn ds-btn-primary" href="#ds-quickstart" '
-        "onclick=\"var el=document.getElementById('ds-quickstart');"
-        "if(el){el.open=!el.open;}"
-        'return false;">Quickstart Code</a>'
+        (
+            f'<button class="ds-btn ds-btn-primary ds-btn-toggle" type="button" '
+            f'aria-controls="{quickstart_id}" aria-expanded="false" '
+            f"onclick=\"var el=document.getElementById('{quickstart_id}');"
+            "if(el){el.open=!el.open;"
+            "this.setAttribute('aria-expanded',el.open?'true':'false');}\">"
+            "Quickstart"
+            "</button>"
+        )
     )
     if doi:
         actions.append(
             f'<a class="ds-btn" href="https://doi.org/{doi}" '
-            f'target="_blank" rel="noopener">Paper</a>'
+            f'target="_blank" rel="noopener">Read Paper</a>'
         )
+    actions.append(
+        f'<a class="ds-btn" href="{compare_href}">Compare Similar</a>'
+    )
     github_url = _make_github_issue_url(cls_name)
     actions.append(
         f'<a class="ds-btn" href="{github_url}" '
@@ -256,26 +904,35 @@ def _make_header_html(cls_name, info):
 
     # --- Quickstart code block ---
     quickstart = (
-        f'<details id="ds-quickstart" class="ds-quickstart">\n'
-        f'  <summary class="ds-quickstart-summary">Quickstart Code</summary>\n'
+        f'<details id="{quickstart_id}" class="ds-quickstart">\n'
+        f'  <summary class="ds-quickstart-summary">Toggle quickstart code</summary>\n'
         f'  <pre class="ds-quickstart-code"><code>'
         f"from moabb.datasets import {cls_name}\n\n"
         f"dataset = {cls_name}()\n"
-        f"data = dataset.get_data(subjects=[1])"
+        f"data = dataset.get_data(subjects=[1])\n"
+        f"print(data[1])"
         f"</code></pre>\n"
         f"</details>"
     )
 
     return f"""\
-<div class="ds-card">
-  <p class="ds-subtitle">{subtitle}</p>
+<div class="ds-card" role="region" aria-label="{cls_name} dataset overview">
+  <div class="ds-card-head">
+    <p class="ds-card-kicker">Dataset Snapshot</p>
+    <p class="ds-card-title">{cls_name}</p>
+    <p class="ds-subtitle">{subtitle}</p>
+  </div>
   <div class="ds-stats">
       {chips_html}
   </div>
+  {class_line}
   <div class="ds-actions">
       {actions_html}
   </div>
   {quickstart}
+  {benchmark_html}
+  {citation_html}
+  {caveats_html}
 </div>"""
 
 
@@ -287,21 +944,30 @@ def _make_header_html(cls_name, info):
 def _make_visual_grid_lines(cls_name, info, srcdir):
     """Build RST lines for the 2x2 visual summary grid."""
     lines = []
+    paradigm = info.get("paradigm") or "unknown"
+    paradigm_label = _PARADIGM_LABELS.get(paradigm, paradigm.title())
+    n_classes = info.get("n_classes")
+    class_labels = info.get("class_labels") or []
+    display_n_classes = len(class_labels) if class_labels else n_classes
+    n_trials_per_class = info.get("n_trials_per_class")
+    runs_per_session = info.get("runs_per_session")
+    n_sessions = info.get("n_sessions")
+    trial_duration = info.get("trial_duration")
+    hed_html = _make_hed_summary_html(info)
 
     # Check which SVGs exist
     timeline_svg = os.path.join(srcdir, "_static", "timelines", f"{cls_name}.svg")
-    classes_svg = os.path.join(srcdir, "_static", "viz", f"{cls_name}_classes.svg")
     sessions_svg = os.path.join(srcdir, "_static", "viz", f"{cls_name}_sessions.svg")
 
     has_timeline = os.path.exists(timeline_svg)
-    has_classes = os.path.exists(classes_svg)
     has_sessions = os.path.exists(sessions_svg)
+    has_hed = bool(hed_html)
 
     # Build channel summary HTML
     channel_html = _make_channel_summary_html(info)
 
     # Count how many grid items we have
-    n_items = sum([has_timeline, has_classes, has_sessions, bool(channel_html)])
+    n_items = sum([has_timeline, has_hed, has_sessions, bool(channel_html)])
     if n_items == 0:
         # At minimum show the timeline if it exists, else skip grid
         if not has_timeline:
@@ -319,6 +985,39 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
         ]
     )
 
+    # Panel footnotes
+    protocol_bits = []
+    if trial_duration is not None:
+        protocol_bits.append(f"{trial_duration:g}s task window per trial")
+    if display_n_classes is not None:
+        protocol_bits.append(f"{display_n_classes}-class {paradigm_label.lower()} paradigm")
+    if runs_per_session is not None and n_sessions is not None:
+        protocol_bits.append(f"{runs_per_session} runs/session across {n_sessions} sessions")
+    protocol_note = " \u00b7 ".join(protocol_bits)
+
+    sessions_bits = []
+    if n_sessions is not None:
+        sessions_bits.append(f"{n_sessions} sessions/subject")
+    if runs_per_session is not None:
+        sessions_bits.append(f"{runs_per_session} runs/session")
+    if (
+        isinstance(n_trials_per_class, (int, float))
+        and display_n_classes is not None
+        and n_sessions
+        and runs_per_session
+        and trial_duration
+    ):
+        try:
+            trials_per_session = (n_trials_per_class * display_n_classes) / n_sessions
+            trials_per_run = trials_per_session / runs_per_session
+            run_active_seconds = trials_per_run * trial_duration
+            sessions_bits.append(
+                f"~{_format_duration_seconds(run_active_seconds)} active time/run (no inter-trial gaps)"
+            )
+        except Exception:
+            pass
+    sessions_note = " \u00b7 ".join(sessions_bits)
+
     if has_timeline:
         lines.extend(
             [
@@ -331,19 +1030,29 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
                 "",
             ]
         )
+        if protocol_note:
+            lines.extend(
+                [
+                    "      .. raw:: html",
+                    "",
+                    f"         <p class=\"ds-viz-note\">{escape(protocol_note)}</p>",
+                    "",
+                ]
+            )
 
-    if has_classes:
+    if has_hed:
         lines.extend(
             [
-                "   .. grid-item-card:: Classes & Trials",
+                "   .. grid-item-card:: HED Event Tags",
                 "      :class-card: ds-viz-card",
                 "",
-                f"      .. image:: /_static/viz/{cls_name}_classes.svg",
-                "         :width: 100%",
-                "         :class: viz-diagram",
+                "      .. raw:: html",
                 "",
             ]
         )
+        for hed_line in hed_html.split("\n"):
+            lines.append(f"         {hed_line}")
+        lines.append("")
 
     if has_sessions:
         lines.extend(
@@ -357,6 +1066,15 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
                 "",
             ]
         )
+        if sessions_note:
+            lines.extend(
+                [
+                    "      .. raw:: html",
+                    "",
+                    f"         <p class=\"ds-viz-note\">{escape(sessions_note)}</p>",
+                    "",
+                ]
+            )
 
     if channel_html:
         lines.extend(
@@ -391,49 +1109,66 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
 
 def _make_channel_summary_html(info):
     """Build a small HTML card summarising channel configuration."""
-    parts = []
-
     n_channels = info.get("n_channels") if info else None
     channel_types = info.get("channel_types") if info else None
     montage = info.get("montage") if info else None
     sampling_rate = info.get("sampling_rate") if info else None
+    reference = info.get("reference") if info else None
+    filter_range = info.get("filter_range") if info else None
+    line_freq = info.get("line_freq") if info else None
+    sensor_type = info.get("sensor_type") if info else None
 
-    if n_channels is None and montage is None and sampling_rate is None:
+    if (
+        n_channels is None
+        and montage is None
+        and sampling_rate is None
+        and reference is None
+        and filter_range is None
+        and line_freq is None
+        and sensor_type is None
+    ):
         return ""
 
-    # Line 1: N-channel + montage
-    line1_parts = []
+    rows = []
     if n_channels is not None:
-        line1_parts.append(f"{n_channels}-channel")
-    if montage is not None and montage != "standard_1005":
-        line1_parts.append(f"{montage} montage")
-    elif montage is not None:
-        line1_parts.append("10-05 montage")
-    if line1_parts:
-        parts.append(" &middot; ".join(line1_parts))
+        rows.append(("Total channels", f"{n_channels:g}"))
 
-    # Line 2: Channel type breakdown
     if channel_types and isinstance(channel_types, dict):
-        type_strs = []
-        for ctype, count in sorted(channel_types.items(), key=lambda x: -x[1]):
-            type_strs.append(f"{count} {ctype.upper()}")
-        if type_strs:
-            parts.append(" &middot; ".join(type_strs))
+        sorted_types = sorted(channel_types.items(), key=lambda x: (-x[1], x[0]))
+        for ctype, count in sorted_types[:4]:
+            if str(ctype).lower() == "eeg" and sensor_type:
+                rows.append((ctype.upper(), f"{count:g} ({sensor_type})"))
+            else:
+                rows.append((ctype.upper(), f"{count:g}"))
 
-    # Line 3: Sampling rate
+    if montage is not None:
+        rows.append(("Montage", "10-05" if montage == "standard_1005" else str(montage)))
+
     if sampling_rate is not None:
         sr_display = (
             f"{int(sampling_rate)} Hz"
             if sampling_rate == int(sampling_rate)
             else f"{sampling_rate:g} Hz"
         )
-        parts.append(sr_display)
+        rows.append(("Sampling", sr_display))
 
-    if not parts:
+    if reference:
+        rows.append(("Reference", str(reference)))
+
+    if filter_range:
+        rows.append(("Filter", str(filter_range)))
+    if line_freq is not None:
+        line_display = f"{line_freq:g} Hz" if isinstance(line_freq, (int, float)) else str(line_freq)
+        rows.append(("Notch / line", line_display))
+
+    if not rows:
         return ""
 
-    inner = "<br>".join(parts)
-    return f'<div class="ds-channel-card">{inner}</div>'
+    row_html = "\n".join(
+        f'<div class="ds-channel-row"><span>{escape(str(key))}</span><strong>{escape(str(val))}</strong></div>'
+        for key, val in rows
+    )
+    return f'<div class="ds-channel-card">{row_html}</div>'
 
 
 # ---------------------------------------------------------------------------
@@ -446,8 +1181,8 @@ def _restructure_docstring_lines(lines, cls_name):
 
     Scans lines for section markers and groups content into:
     - Overview (description + references)
+    - Quickstart (code snippet)
     - Metadata (admonition cards)
-    - Code Examples (quickstart snippet)
     - Notes (notes, version directives)
 
     Returns modified lines wrapped in sphinx-design tab-set.
@@ -637,21 +1372,22 @@ def _restructure_docstring_lines(lines, cls_name):
         new_lines.append(" " * TAB_INDENT + "*No description available.*")
         new_lines.append("")
 
-    # --- Tab: Metadata ---
-    if has_metadata:
-        new_lines.append("   .. tab-item:: Metadata")
-        new_lines.append("")
-        new_lines.extend(_reindent(metadata_lines, TAB_INDENT))
-        new_lines.append("")
-
-    # --- Tab: Code Examples ---
-    new_lines.append("   .. tab-item:: Code Examples")
+    # --- Tab: Quickstart ---
+    new_lines.append("   .. tab-item:: Quickstart")
     new_lines.append("")
     new_lines.append(" " * TAB_INDENT + ".. code-block:: python")
     new_lines.append("")
     new_lines.append(" " * (TAB_INDENT + 3) + f"from moabb.datasets import {cls_name}")
     new_lines.append(" " * (TAB_INDENT + 3) + f"dataset = {cls_name}()")
     new_lines.append(" " * (TAB_INDENT + 3) + "data = dataset.get_data(subjects=[1])")
+    new_lines.append(" " * (TAB_INDENT + 3) + "print(data[1])")
+    new_lines.append("")
+
+    # --- Tab: Metadata ---
+    if has_metadata:
+        new_lines.append("   .. tab-item:: Metadata")
+        new_lines.append("")
+        new_lines.extend(_reindent(metadata_lines, TAB_INDENT))
     new_lines.append("")
 
     # --- Tab: Notes ---
@@ -748,8 +1484,12 @@ def source_read_add_inherited(app, docname, source):
     if not re.search(r"\.\. autoclass::", source[0]):
         return
 
-    # Remove the right-sidebar "On this page" ToC on dataset pages
-    source[0] = ".. meta::\n   :html_theme.sidebar_secondary.remove:\n\n" + source[0]
+    # Remove sidebars on dataset pages for a focused, wide layout.
+    # PyData theme reads this from document metadata field lists.
+    source[0] = (
+        ":html_theme.sidebar_primary.remove:\n"
+        ":html_theme.sidebar_secondary.remove:\n\n" + source[0]
+    )
 
     # Add :inherited-members: after :members:
     source[0] = source[0].replace(
