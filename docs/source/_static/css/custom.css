@@ -397,3 +397,595 @@ div.frontpage-gallery .card-img-overlay {
         justify-content: flex-start;
     }
 }
+
+/* ================================================================
+   DATASET DOCUMENTATION PAGES
+   Refined cards, structured metadata, branded accents
+   ================================================================ */
+
+/*
+ * These styles target the admonition blocks that MOABB auto-generates
+ * inside dataset docstrings (Dataset summary, Participants, Equipment,
+ * Preprocessing, Experimental Protocol, Data Access).
+ *
+ * Detection: pages containing .admonition-dataset-summary are dataset pages.
+ */
+
+/* ---- Metadata card grid ---- */
+.admonition-dataset-summary,
+.admonition-participants,
+.admonition-equipment,
+.admonition-preprocessing,
+.admonition-data-access,
+.admonition-experimental-protocol {
+  border: 1px solid var(--pst-color-border);
+  border-radius: 10px;
+  background: var(--pst-color-surface);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  padding: 0;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.admonition-dataset-summary:hover,
+.admonition-participants:hover,
+.admonition-equipment:hover,
+.admonition-preprocessing:hover,
+.admonition-data-access:hover,
+.admonition-experimental-protocol:hover {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 124, 186, 0.3);
+}
+
+/* Card titles */
+.admonition-dataset-summary > .admonition-title,
+.admonition-participants > .admonition-title,
+.admonition-equipment > .admonition-title,
+.admonition-preprocessing > .admonition-title,
+.admonition-data-access > .admonition-title,
+.admonition-experimental-protocol > .admonition-title {
+  background: linear-gradient(135deg, #007CBA 0%, #005a8c 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.55rem 1rem;
+  margin: 0;
+  border: none;
+}
+
+.admonition-dataset-summary > .admonition-title::before,
+.admonition-participants > .admonition-title::before,
+.admonition-equipment > .admonition-title::before,
+.admonition-preprocessing > .admonition-title::before,
+.admonition-data-access > .admonition-title::before,
+.admonition-experimental-protocol > .admonition-title::before {
+  display: none;
+}
+
+/* Card body content */
+.admonition-dataset-summary > :not(.admonition-title),
+.admonition-participants > :not(.admonition-title),
+.admonition-equipment > :not(.admonition-title),
+.admonition-preprocessing > :not(.admonition-title),
+.admonition-data-access > :not(.admonition-title),
+.admonition-experimental-protocol > :not(.admonition-title) {
+  padding: 0.5rem 1rem;
+}
+
+.admonition-dataset-summary > ul,
+.admonition-participants > ul,
+.admonition-equipment > ul,
+.admonition-preprocessing > ul,
+.admonition-data-access > ul,
+.admonition-experimental-protocol > ul {
+  margin: 0;
+  padding: 0.6rem 1rem 0.6rem 1.5rem;
+  list-style: none;
+}
+
+.admonition-dataset-summary > ul > li,
+.admonition-participants > ul > li,
+.admonition-equipment > ul > li,
+.admonition-preprocessing > ul > li,
+.admonition-data-access > ul > li,
+.admonition-experimental-protocol > ul > li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--pst-color-border);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.admonition-dataset-summary > ul > li:last-child,
+.admonition-participants > ul > li:last-child,
+.admonition-equipment > ul > li:last-child,
+.admonition-preprocessing > ul > li:last-child,
+.admonition-data-access > ul > li:last-child,
+.admonition-experimental-protocol > ul > li:last-child {
+  border-bottom: none;
+}
+
+/* ---- Dataset summary table ---- */
+.admonition-dataset-summary table {
+  margin: 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admonition-dataset-summary table td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--pst-color-border);
+  font-size: 0.92rem;
+}
+
+.admonition-dataset-summary table tr:last-child td {
+  border-bottom: none;
+}
+
+.admonition-dataset-summary table td:first-child {
+  font-weight: 600;
+  color: var(--pst-color-text-muted);
+  white-space: nowrap;
+  width: 40%;
+}
+
+/* ---- "Found an issue?" tip box ---- */
+.tip.admonition {
+  border: 1px solid var(--pst-color-border);
+  border-radius: 10px;
+  border-left: 4px solid #007CBA;
+  background: var(--pst-color-surface);
+  margin: 1.5rem 0;
+}
+
+.tip.admonition > .admonition-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+/* ---- Timeline section ---- */
+.timeline-diagram {
+  border: 1px solid var(--pst-color-border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  margin-top: 0.5rem;
+}
+
+html[data-theme="dark"] .timeline-diagram {
+  background: var(--pst-color-surface);
+  border-color: var(--pst-color-border);
+}
+
+.timeline-disclaimer {
+  font-size: 0.78rem;
+  color: var(--pst-color-text-muted);
+  font-style: italic;
+  margin-top: 0.35rem;
+  margin-bottom: 1rem;
+  padding-left: 0.25rem;
+  line-height: 1.4;
+}
+
+/* ---- Dataset branded header ---- */
+.ds-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.06) 0%,
+    rgba(0, 90, 140, 0.03) 100%
+  );
+  border: 1px solid rgba(0, 124, 186, 0.15);
+  border-radius: 10px;
+}
+
+html[data-theme="dark"] .ds-header {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.12) 0%,
+    rgba(0, 90, 140, 0.06) 100%
+  );
+  border-color: rgba(0, 124, 186, 0.25);
+}
+
+.ds-header-logo {
+  height: 36px;
+  width: auto;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.ds-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ds-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  color: #ffffff;
+  background: var(--chip-color, #546E7A);
+}
+
+.ds-chip-muted {
+  background: transparent;
+  color: var(--pst-color-text-muted);
+  border: 1px solid var(--pst-color-border);
+  font-weight: 550;
+}
+
+.ds-chip-doi {
+  background: transparent !important;
+  color: #007CBA !important;
+  border: 1px solid #007CBA;
+  text-decoration: none;
+}
+
+.ds-chip-doi:hover {
+  background: #007CBA !important;
+  color: #ffffff !important;
+}
+
+@media (max-width: 768px) {
+  .ds-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+}
+
+/* ---- Class signature ---- */
+dl.py.class > dt.sig-object {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.06) 0%,
+    rgba(0, 124, 186, 0.02) 100%
+  );
+  border: 1px solid rgba(0, 124, 186, 0.15);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+}
+
+/* Break each parameter onto its own line */
+dl.py.class > dt.sig-object > .sig-paren:first-of-type {
+  /* opening paren */
+}
+
+dl.py.class > dt.sig-object > .sig-paren:first-of-type ~ em.sig-param {
+  display: block;
+  padding-left: 2rem;
+}
+
+dl.py.class > dt.sig-object > .sig-paren:last-of-type {
+  display: block;
+}
+
+html[data-theme="dark"] dl.py.class > dt.sig-object {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.12) 0%,
+    rgba(0, 124, 186, 0.04) 100%
+  );
+  border-color: rgba(0, 124, 186, 0.25);
+}
+
+/* ---- Section rubrics ---- */
+dl.py.class .rubric {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pst-color-text-base);
+  border-bottom: 2px solid #007CBA;
+  padding-bottom: 0.35rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ---- References section ---- */
+dl.py.class .citation-list {
+  background: var(--pst-color-surface);
+  border: 1px solid var(--pst-color-border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+dl.py.class .citation-list .citation {
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* ---- Version badges ---- */
+dl.py.class .versionadded,
+dl.py.class .versionchanged,
+dl.py.class .deprecated {
+  font-size: 0.85rem;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  margin: 0.5rem 0;
+}
+
+/* ---- Dark mode overrides ---- */
+html[data-theme="dark"] .admonition-dataset-summary,
+html[data-theme="dark"] .admonition-participants,
+html[data-theme="dark"] .admonition-equipment,
+html[data-theme="dark"] .admonition-preprocessing,
+html[data-theme="dark"] .admonition-data-access,
+html[data-theme="dark"] .admonition-experimental-protocol {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="dark"] .admonition-dataset-summary:hover,
+html[data-theme="dark"] .admonition-participants:hover,
+html[data-theme="dark"] .admonition-equipment:hover,
+html[data-theme="dark"] .admonition-preprocessing:hover,
+html[data-theme="dark"] .admonition-data-access:hover,
+html[data-theme="dark"] .admonition-experimental-protocol:hover {
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .admonition-dataset-summary > .admonition-title,
+html[data-theme="dark"] .admonition-participants > .admonition-title,
+html[data-theme="dark"] .admonition-equipment > .admonition-title,
+html[data-theme="dark"] .admonition-preprocessing > .admonition-title,
+html[data-theme="dark"] .admonition-data-access > .admonition-title,
+html[data-theme="dark"] .admonition-experimental-protocol > .admonition-title {
+  background: linear-gradient(135deg, #005a8c 0%, #003d5c 100%);
+}
+
+/* ---- Responsive stacking ---- */
+@media (max-width: 768px) {
+  .admonition-dataset-summary table td:first-child {
+    width: auto;
+  }
+
+  .timeline-diagram {
+    padding: 0.4rem;
+  }
+}
+
+/* ================================================================
+   ENHANCED DATASET CARD (Layer 1)
+   ================================================================ */
+
+.ds-card {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.06) 0%,
+    rgba(0, 90, 140, 0.02) 100%
+  );
+  border: 1px solid rgba(0, 124, 186, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="dark"] .ds-card {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.12) 0%,
+    rgba(0, 90, 140, 0.05) 100%
+  );
+  border-color: rgba(0, 124, 186, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ds-subtitle {
+  margin: 0 0 0.65rem 0;
+  font-size: 0.95rem;
+  color: var(--pst-color-text-muted);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ds-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.ds-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0;
+}
+
+/* Buttons */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: 1px solid var(--pst-color-border);
+  background: transparent;
+  color: var(--pst-color-text-base) !important;
+  transition: background-color 200ms ease, border-color 200ms ease,
+              transform 150ms ease;
+}
+
+.ds-btn:hover {
+  background: var(--pst-color-surface);
+  border-color: var(--pst-color-primary);
+  transform: translateY(-1px);
+}
+
+.ds-btn-primary {
+  background: #007CBA !important;
+  color: #ffffff !important;
+  border-color: #007CBA;
+}
+
+.ds-btn-primary:hover {
+  background: #005a8c !important;
+  border-color: #005a8c;
+}
+
+/* Quickstart code collapsible */
+.ds-quickstart {
+  margin-top: 0.75rem;
+  border: 1px solid var(--pst-color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ds-quickstart[open] {
+  border-color: rgba(0, 124, 186, 0.3);
+}
+
+.ds-quickstart-summary {
+  display: none; /* Hidden — toggled by button */
+}
+
+.ds-quickstart-code {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  background: var(--pst-color-surface);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  border-radius: 0;
+}
+
+html[data-theme="dark"] .ds-quickstart-code {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ================================================================
+   VISUAL SUMMARY GRID (Layer 2)
+   ================================================================ */
+
+.ds-viz-card {
+  border: 1px solid var(--pst-color-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden;
+}
+
+.ds-viz-card .sd-card-header {
+  background: var(--pst-color-surface);
+  border-bottom: 1px solid var(--pst-color-border);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pst-color-text-muted);
+  padding: 0.45rem 0.85rem;
+}
+
+.ds-viz-card .sd-card-body {
+  padding: 0.5rem;
+}
+
+.viz-diagram {
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+html[data-theme="dark"] .viz-diagram {
+  background: var(--pst-color-surface);
+}
+
+html[data-theme="dark"] .ds-viz-card {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Channel summary card */
+.ds-channel-card {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--pst-color-text-base);
+  padding: 0.5rem 0.25rem;
+}
+
+/* ================================================================
+   TABBED LAYOUT (Layer 3) — sphinx-design tab-set overrides
+   ================================================================ */
+
+/* Active tab style: MOABB blue */
+dl.py.class .sd-tab-set > input:checked + label {
+  border-bottom-color: #007CBA;
+  color: #007CBA;
+}
+
+html[data-theme="dark"] dl.py.class .sd-tab-set > input:checked + label {
+  border-bottom-color: #42A5F5;
+  color: #42A5F5;
+}
+
+dl.py.class .sd-tab-set > label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+}
+
+dl.py.class .sd-tab-set > label:hover {
+  color: #007CBA;
+}
+
+/* Reduce metadata card visual weight inside tabs */
+dl.py.class .sd-tab-content .admonition-dataset-summary,
+dl.py.class .sd-tab-content .admonition-participants,
+dl.py.class .sd-tab-content .admonition-equipment,
+dl.py.class .sd-tab-content .admonition-preprocessing,
+dl.py.class .sd-tab-content .admonition-data-access,
+dl.py.class .sd-tab-content .admonition-experimental-protocol {
+  box-shadow: none;
+  border-color: var(--pst-color-border);
+}
+
+dl.py.class .sd-tab-content .admonition-dataset-summary > .admonition-title,
+dl.py.class .sd-tab-content .admonition-participants > .admonition-title,
+dl.py.class .sd-tab-content .admonition-equipment > .admonition-title,
+dl.py.class .sd-tab-content .admonition-preprocessing > .admonition-title,
+dl.py.class .sd-tab-content .admonition-data-access > .admonition-title,
+dl.py.class .sd-tab-content .admonition-experimental-protocol > .admonition-title {
+  background: linear-gradient(135deg, #007CBA 0%, #1E88E5 100%);
+  font-size: 0.78rem;
+  padding: 0.4rem 0.85rem;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 768px) {
+  .ds-card {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .ds-stats {
+    gap: 0.3rem;
+  }
+
+  .ds-actions {
+    gap: 0.35rem;
+  }
+
+  .ds-btn {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.78rem;
+  }
+}

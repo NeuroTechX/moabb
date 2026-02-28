@@ -65,6 +65,7 @@ extensions = [
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
+    "dataset_timeline_ext",
     "myst_parser",
     "numpydoc",
     "sphinx_favicon",
