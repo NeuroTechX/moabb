@@ -13,11 +13,11 @@ To regenerate *all* SVGs (timelines + viz), run (from the repo root)::
     PYTHONPATH=. python scripts/generate_dataset_viz.py
 """
 
+import csv
+import inspect
+import json
 import os
 import re
-import csv
-import json
-import inspect
 import statistics
 from html import escape
 from urllib.parse import quote
@@ -87,7 +87,9 @@ def _get_dataset_source_url(obj):
         src_lines, start = inspect.getsourcelines(obj)
         end = start + len(src_lines) - 1
         rel_path = rel_path.replace(os.sep, "/")
-        return f"https://github.com/NeuroTechX/moabb/blob/develop/{rel_path}#L{start}-L{end}"
+        return (
+            f"https://github.com/NeuroTechX/moabb/blob/develop/{rel_path}#L{start}-L{end}"
+        )
     except Exception:
         return None
 
@@ -581,7 +583,11 @@ def _make_citation_impact_html(info, benchmark_ctx):
         return ""
 
     pwc_slug = code.lower().replace("_", "-") if code else ""
-    pwc_url = f"https://paperswithcode.com/dataset/{quote(pwc_slug)}-moabb-1" if pwc_slug else ""
+    pwc_url = (
+        f"https://paperswithcode.com/dataset/{quote(pwc_slug)}-moabb-1"
+        if pwc_slug
+        else ""
+    )
 
     items = []
     script_html = ""
@@ -599,9 +605,9 @@ def _make_citation_impact_html(info, benchmark_ctx):
             openalex_url = f"https://api.openalex.org/works/{openalex_id}"
             crossref_url = f"https://api.crossref.org/works/{quote(doi)}"
             items.append(
-                '<li><span>Public API</span>'
+                "<li><span>Public API</span>"
                 f'<span class="ds-citation-links"><a href="{crossref_url}" target="_blank" rel="noopener">Crossref</a>'
-                '&nbsp;|&nbsp;'
+                "&nbsp;|&nbsp;"
                 f'<a href="{openalex_url}" target="_blank" rel="noopener">OpenAlex</a></span>'
                 "</li>"
             )
@@ -737,7 +743,7 @@ def _make_hed_summary_html(info):
             '<div class="ds-hed-bar-row">'
             f'<span class="ds-hed-bar-label">{escape(fam)}</span>'
             f'<div class="ds-hed-bar"><i style="width:{width}%"></i></div>'
-            f'<strong>{count}</strong>'
+            f"<strong>{count}</strong>"
             "</div>"
         )
 
@@ -915,9 +921,7 @@ def _make_header_html(cls_name, info, source_url=None):
             f'<a class="ds-btn" href="https://doi.org/{doi}" '
             f'target="_blank" rel="noopener">Read Paper</a>'
         )
-    actions.append(
-        f'<a class="ds-btn" href="{compare_href}">Compare Similar</a>'
-    )
+    actions.append(f'<a class="ds-btn" href="{compare_href}">Compare Similar</a>')
     github_url = _make_github_issue_url(cls_name)
     actions.append(
         f'<a class="ds-btn" href="{github_url}" '
@@ -1014,9 +1018,13 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
     if trial_duration is not None:
         protocol_bits.append(f"{trial_duration:g}s task window per trial")
     if display_n_classes is not None:
-        protocol_bits.append(f"{display_n_classes}-class {paradigm_label.lower()} paradigm")
+        protocol_bits.append(
+            f"{display_n_classes}-class {paradigm_label.lower()} paradigm"
+        )
     if runs_per_session is not None and n_sessions is not None:
-        protocol_bits.append(f"{runs_per_session} runs/session across {n_sessions} sessions")
+        protocol_bits.append(
+            f"{runs_per_session} runs/session across {n_sessions} sessions"
+        )
     protocol_note = " \u00b7 ".join(protocol_bits)
 
     sessions_bits = []
@@ -1059,7 +1067,7 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
                 [
                     "      .. raw:: html",
                     "",
-                    f"         <p class=\"ds-viz-note\">{escape(protocol_note)}</p>",
+                    f'         <p class="ds-viz-note">{escape(protocol_note)}</p>',
                     "",
                 ]
             )
@@ -1095,7 +1103,7 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
                 [
                     "      .. raw:: html",
                     "",
-                    f"         <p class=\"ds-viz-note\">{escape(sessions_note)}</p>",
+                    f'         <p class="ds-viz-note">{escape(sessions_note)}</p>',
                     "",
                 ]
             )
@@ -1182,7 +1190,9 @@ def _make_channel_summary_html(info):
     if filter_range:
         rows.append(("Filter", str(filter_range)))
     if line_freq is not None:
-        line_display = f"{line_freq:g} Hz" if isinstance(line_freq, (int, float)) else str(line_freq)
+        line_display = (
+            f"{line_freq:g} Hz" if isinstance(line_freq, (int, float)) else str(line_freq)
+        )
         rows.append(("Notch / line", line_display))
 
     if not rows:
