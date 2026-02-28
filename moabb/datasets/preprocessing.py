@@ -756,23 +756,14 @@ class RawToEpochs(FixedTransformer):
             if self.interpolate_missing_channels:
                 missing_channels = list(set(self.channels).difference(available_channels))
 
-                # Save montage before adding channels so we can re-apply it
-                # after add_reference_channels (which warns about unknown locations).
+                # Remove montage before adding channels to avoid
+                # "Location for this channel is unknown" warning,
+                # then re-apply it after.
                 existing_montage = raw.get_montage()
-
-                # add missing channels (contains only zeros by default)
-                # Suppress "Location for this channel is unknown" warning since
-                # we re-apply the montage immediately after.
-                import warnings as _warnings
+                raw.set_montage(None)
 
                 try:
-                    with _warnings.catch_warnings():
-                        _warnings.filterwarnings(
-                            "ignore",
-                            "Location for this channel is unknown",
-                            RuntimeWarning,
-                        )
-                        raw.add_reference_channels(missing_channels)
+                    raw.add_reference_channels(missing_channels)
                 except IndexError:
                     # Index error can occurs if the channels we add are not part of this epoch montage
                     # Then log a warning
