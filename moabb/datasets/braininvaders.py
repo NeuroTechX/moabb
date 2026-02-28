@@ -644,7 +644,7 @@ class BI2012(BaseDataset):
     )
 
     def __init__(
-        self, training=True, online=True, subjects=None, sessions=None, **kwargs
+        self, training=True, online=False, subjects=None, sessions=None, **kwargs
     ):
         deprecated_renames = {"Training": "training", "Online": "online"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BI2012")
@@ -908,9 +908,9 @@ class BI2013a(BaseDataset):
     def __init__(
         self,
         non_adaptive=True,
-        adaptive=True,
+        adaptive=False,
         training=True,
-        online=True,
+        online=False,
         subjects=None,
         sessions=None,
         **kwargs,

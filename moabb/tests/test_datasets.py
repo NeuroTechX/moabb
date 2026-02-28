@@ -567,12 +567,6 @@ class TestSubjectSessionFiltering:
         for sess_data in data.values():
             assert list(sess_data.keys()) == ["0"]
 
-    def test_session_filtering_at_get_data(self):
-        ds = FakeDataset(n_subjects=2, n_sessions=3)
-        data = ds.get_data(sessions=[1])
-        for sess_data in data.values():
-            assert list(sess_data.keys()) == ["1"]
-
     def test_combined_subject_and_session_filtering(self):
         ds = FakeDataset(n_subjects=5, n_sessions=3, subjects=[1, 2], sessions=[0, 1])
         assert ds.subject_list == [1, 2]
@@ -580,12 +574,6 @@ class TestSubjectSessionFiltering:
         assert set(data.keys()) == {1, 2}
         for sess_data in data.values():
             assert set(sess_data.keys()) == {"0", "1"}
-
-    def test_get_data_sessions_override_constructor(self):
-        ds = FakeDataset(n_subjects=2, n_sessions=3, sessions=[0])
-        data = ds.get_data(sessions=[1, 2])
-        for sess_data in data.values():
-            assert set(sess_data.keys()) == {"1", "2"}
 
     def test_all_subjects_is_immutable_copy(self):
         ds = PhysionetMI(subjects=[1, 2])
@@ -650,7 +638,7 @@ class TestDeprecatedParams:
     def test_bi2012_new_defaults(self):
         ds = BI2012()
         assert ds.training is True
-        assert ds.online is True
+        assert ds.online is False
 
     def test_bi2012_snake_case_params(self):
         ds = BI2012(training=False, online=True)
@@ -671,9 +659,9 @@ class TestDeprecatedParams:
     def test_bi2013a_new_defaults(self):
         ds = BI2013a()
         assert ds.non_adaptive is True
-        assert ds.adaptive is True
+        assert ds.adaptive is False
         assert ds.training is True
-        assert ds.online is True
+        assert ds.online is False
 
     def test_bi2013a_snake_case_params(self):
         ds = BI2013a(non_adaptive=False, adaptive=True, training=False, online=True)
@@ -693,9 +681,9 @@ class TestDeprecatedParams:
     def test_physionet_new_defaults(self):
         ds = PhysionetMI()
         assert ds.imagined is True
-        assert ds.executed is True
-        assert len(ds.hand_runs) == 6
-        assert len(ds.feet_runs) == 6
+        assert ds.executed is False
+        assert len(ds.hand_runs) == 3
+        assert len(ds.feet_runs) == 3
 
     def test_physionet_explicit_old_values(self):
         ds = PhysionetMI(imagined=True, executed=False)

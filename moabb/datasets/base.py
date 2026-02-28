@@ -815,7 +815,6 @@ class BaseDataset(metaclass=MetaclassDataset):
     def get_data(
         self,
         subjects=None,
-        sessions=None,
         cache_config=None,
         process_pipeline=None,
     ):
@@ -847,10 +846,6 @@ class BaseDataset(metaclass=MetaclassDataset):
         ----------
         subjects: List of int
             List of subject number
-        sessions: List of int or str | None
-            List of sessions to return. If None, all sessions are returned.
-            Sessions can be filtered either here or at construction time
-            via the ``sessions`` parameter.
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See ``CacheConfig``
             for details.
@@ -876,7 +871,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         if not isinstance(subjects, list):
             raise ValueError("subjects must be a list")
 
-        effective_sessions = sessions if sessions is not None else self._selected_sessions
+        effective_sessions = self._selected_sessions
 
         cache_config = CacheConfig.make(cache_config)
 

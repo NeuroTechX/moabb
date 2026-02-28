@@ -64,7 +64,7 @@ class PhysionetMI(BaseDataset):
     imagined: bool (default True)
         if True, return runs corresponding to motor imagination.
 
-    executed: bool (default True)
+    executed: bool (default False)
         if True, return runs corresponding to motor execution.
 
     references
@@ -282,7 +282,7 @@ class PhysionetMI(BaseDataset):
         methodology="The BCI2000 system implements a four-module architecture: 1) Source module digitizes and stores brain signals without preprocessing, 2) Signal processing module performs feature extraction (calibration, spatial filtering, temporal filtering) and feature translation (linear classification, normalization), 3) User application module receives control signals and drives applications with visual/auditory/haptic feedback, 4) Operator module defines system parameters and operation timing. Signal processing uses cascaded signal operators for flexible feature extraction including autoregressive spectral estimation, FIR filtering, slow wave filtering, peak detection, and evoked response averaging. Translation algorithms use linear classifiers and normalizers with optional real-time adaptive parameter updates. All system variables (parameters, event markers, signals) are stored in documented file format with ASCII header and binary data for comprehensive offline analysis.",
     )
 
-    def __init__(self, imagined=True, executed=True, subjects=None, sessions=None):
+    def __init__(self, imagined=True, executed=False, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 110)),
             sessions_per_subject=1,
