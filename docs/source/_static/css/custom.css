@@ -1000,11 +1000,5 @@ dl.py.class .sd-tab-content .admonition-experimental-protocol > .admonition-titl
   }
 }
 
-/* Hide right-sidebar "On this page" ToC on dataset pages */
-.bd-article-container:has(dl.py.class) .bd-sidebar-secondary {
-  display: none;
-}
-
-.bd-article-container:has(dl.py.class) article {
-  flex: 1;
-}
+/* Note: right sidebar is removed per-page via .. meta:: directive
+   injected by dataset_timeline_ext.py */

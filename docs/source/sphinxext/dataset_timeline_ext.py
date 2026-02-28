@@ -748,6 +748,9 @@ def source_read_add_inherited(app, docname, source):
     if not re.search(r"\.\. autoclass::", source[0]):
         return
 
+    # Remove the right-sidebar "On this page" ToC on dataset pages
+    source[0] = ".. meta::\n   :html_theme.sidebar_secondary.remove:\n\n" + source[0]
+
     # Add :inherited-members: after :members:
     source[0] = source[0].replace(
         "   :members:\n",
