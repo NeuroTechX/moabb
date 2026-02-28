@@ -1394,7 +1394,9 @@ def _make_dataset(dataset_cls, **extra_kwargs):
 def _is_valid_event_value(v):
     """Check that v is int (not bool) or a list/tuple of such."""
     if isinstance(v, (list, tuple)):
-        return all(isinstance(x, (int, np.integer)) and not isinstance(x, bool) for x in v)
+        return all(
+            isinstance(x, (int, np.integer)) and not isinstance(x, bool) for x in v
+        )
     return isinstance(v, (int, np.integer)) and not isinstance(v, bool)
 
 
@@ -1463,4 +1465,6 @@ def test_constructor_summary_table_cross_ref(dataset_cls):
         except (ValueError, TypeError):
             pass
     if mismatches:
-        warnings.warn(f"{name} summary CSV mismatch: {'; '.join(mismatches)}", stacklevel=1)
+        warnings.warn(
+            f"{name} summary CSV mismatch: {'; '.join(mismatches)}", stacklevel=1
+        )
