@@ -967,6 +967,16 @@ dl.py.class .sd-tab-content .admonition-experimental-protocol > .admonition-titl
   padding: 0.4rem 0.85rem;
 }
 
+.admonition-dataset-summary.admonition > .admonition-title::before,
+.admonition-participants.admonition > .admonition-title::before,
+.admonition-equipment.admonition > .admonition-title::before,
+.admonition-preprocessing.admonition > .admonition-title::before,
+.admonition-data-access.admonition > .admonition-title::before,
+.admonition-experimental-protocol.admonition > .admonition-title::before {
+  content: none !important;
+  display: none !important;
+}
+
 /* ================================================================
    RESPONSIVE
    ================================================================ */
@@ -988,4 +998,13 @@ dl.py.class .sd-tab-content .admonition-experimental-protocol > .admonition-titl
     padding: 0.3rem 0.65rem;
     font-size: 0.78rem;
   }
+}
+
+/* Hide right-sidebar "On this page" ToC on dataset pages */
+.bd-article-container:has(dl.py.class) .bd-sidebar-secondary {
+  display: none;
+}
+
+.bd-article-container:has(dl.py.class) article {
+  flex: 1;
 }
