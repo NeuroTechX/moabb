@@ -423,9 +423,7 @@ class CrossSessionSplitter(BaseCrossValidator):
             if self._cv_uses_groups:
                 split_kwargs["groups"] = subject_metadata["session"]
 
-            for train_session_idx, test_session_idx in splitter.split(
-                **split_kwargs
-            ):
+            for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
                 yield subject_indices[train_session_idx], subject_indices[
                     test_session_idx
                 ]
@@ -531,9 +529,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         if self._cv_uses_groups:
             split_kwargs["groups"] = metadata["subject"]
 
-        for train_session_idx, test_session_idx in splitter.split(
-            **split_kwargs
-        ):
+        for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
             yield all_index[train_session_idx], all_index[test_session_idx]
 
 
