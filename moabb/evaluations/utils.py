@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import logging
 import warnings
 from pathlib import Path
@@ -311,7 +312,6 @@ try:
 
     # Monkey-patch _BaseOptunaSearchCV.__init__ to suppress the
     # ExperimentalWarning on every instantiation (including sklearn clone).
-    import functools
 
     _orig_init = _BaseOptunaSearchCV.__init__
 

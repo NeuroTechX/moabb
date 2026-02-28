@@ -13,6 +13,7 @@ We can convert at the Raw, Epochs or Array level.
 import abc
 import datetime
 import json
+import warnings
 import logging
 import re
 import shutil
@@ -490,8 +491,6 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         # "Encountered data in double format" — mne_bids internally handles
         # the float64->float32 downcast for EDF; we cannot pre-convert because
         # MNE Epochs.save() requires float64 data.
-        import warnings
-
         with warnings.catch_warnings():
             warnings.filterwarnings(
                 "ignore", "Converting data files to EDF", RuntimeWarning
