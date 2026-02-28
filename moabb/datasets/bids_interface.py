@@ -13,10 +13,10 @@ We can convert at the Raw, Epochs or Array level.
 import abc
 import datetime
 import json
-import warnings
 import logging
 import re
 import shutil
+import warnings
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
