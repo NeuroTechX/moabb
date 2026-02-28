@@ -186,6 +186,17 @@ def is_abbrev(abbrev_name: str, full_name: str):
     return re.fullmatch(pattern, full_name) is not None
 
 
+def _is_event_int(v):
+    """Return True if v is int or np.integer but not bool."""
+    return not isinstance(v, bool) and isinstance(v, (int, np.integer))
+
+
+_KWARG_HINT = (
+    "Check that keyword arguments were not accidentally "
+    "included inside the events dict."
+)
+
+
 def check_subject_names(data):
     for subject in data.keys():
         if not isinstance(subject, (int, str)):
@@ -644,18 +655,14 @@ class BaseDataset(metaclass=MetaclassDataset):
             selected_subjects = list(selected_subjects)
             # Warn on duplicate subjects and deduplicate preserving order
             if len(selected_subjects) != len(set(selected_subjects)):
-                seen = set()
-                dupes = []
-                for s in selected_subjects:
-                    if s in seen:
-                        dupes.append(s)
-                    seen.add(s)
+                unique = dict.fromkeys(selected_subjects)
+                dupes = [s for s in unique if selected_subjects.count(s) > 1]
                 warnings.warn(
                     f"Duplicate subjects detected: {dupes}. "
                     "Duplicates will be removed, preserving order.",
                     stacklevel=2,
                 )
-                selected_subjects = list(dict.fromkeys(selected_subjects))
+                selected_subjects = list(unique)
             invalid = [s for s in selected_subjects if s not in self._all_subjects]
             if invalid:
                 raise ValueError(
@@ -673,15 +680,15 @@ class BaseDataset(metaclass=MetaclassDataset):
                 selected_sessions = list(selected_sessions)
             except TypeError:
                 raise TypeError(
-                    f"selected_sessions must be an iterable (e.g. list), "
+                    f"selected_sessions must be an iterable, "
                     f"got {type(selected_sessions).__name__}"
                 ) from None
-            for s in selected_sessions:
-                if not isinstance(s, (int, str)):
-                    raise TypeError(
-                        f"Each element of selected_sessions must be int or str, "
-                        f"got {type(s).__name__}: {s!r}"
-                    )
+            bad = [s for s in selected_sessions if not isinstance(s, (int, str))]
+            if bad:
+                raise TypeError(
+                    f"selected_sessions elements must be int or str, "
+                    f"got: {[(type(s).__name__, s) for s in bad]}"
+                )
         self._selected_sessions = selected_sessions
 
         # Validate events dict integrity
@@ -691,27 +698,19 @@ class BaseDataset(metaclass=MetaclassDataset):
             if not isinstance(key, str):
                 raise TypeError(
                     f"All event dict keys must be strings, but got "
-                    f"{type(key).__name__}: {key!r}. "
-                    "Check that keyword arguments were not accidentally "
-                    "included inside the events dict."
+                    f"{type(key).__name__}: {key!r}. {_KWARG_HINT}"
                 )
-            # Values can be int or list-of-int (MNE multi-code events)
             if isinstance(value, (list, tuple)):
                 for i, v in enumerate(value):
-                    if isinstance(v, bool) or not isinstance(v, (int, np.integer)):
+                    if not _is_event_int(v):
                         raise TypeError(
-                            f"Event {key!r} has a list value, but element {i} "
-                            f"is {v!r} (type {type(v).__name__}), expected int. "
-                            "Check that keyword arguments were not accidentally "
-                            "included inside the events dict."
+                            f"Event {key!r} list element {i} is {v!r} "
+                            f"({type(v).__name__}), expected int. {_KWARG_HINT}"
                         )
-            elif isinstance(value, bool) or not isinstance(value, (int, np.integer)):
+            elif not _is_event_int(value):
                 raise TypeError(
-                    f"All event dict values must be int or list of int, but "
-                    f"event {key!r} has value {value!r} "
-                    f"(type {type(value).__name__}). "
-                    "Check that keyword arguments were not accidentally "
-                    "included inside the events dict."
+                    f"Event {key!r} has value {value!r} ({type(value).__name__}), "
+                    f"expected int or list of int. {_KWARG_HINT}"
                 )
         self.event_id = events
         self.code = code
