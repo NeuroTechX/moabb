@@ -21,6 +21,8 @@ from moabb.datasets.fake import FakeDataset
 def _identity(x):
     """Identity function (replaces lambda to avoid MOABB hash warnings)."""
     return x
+
+
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import optuna_available
 from moabb.evaluations.splitters import LearningCurveSplitter
