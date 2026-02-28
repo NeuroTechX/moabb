@@ -1197,8 +1197,14 @@ def stimulus_timeline_svg(dataset: BaseDataset, **kwargs) -> str:
 
 # Sequential blue palette for bars
 _BAR_COLORS = [
-    "#1565C0", "#1976D2", "#1E88E5", "#2196F3",
-    "#42A5F5", "#64B5F6", "#90CAF9", "#BBDEFB",
+    "#1565C0",
+    "#1976D2",
+    "#1E88E5",
+    "#2196F3",
+    "#42A5F5",
+    "#64B5F6",
+    "#90CAF9",
+    "#BBDEFB",
 ]
 
 
@@ -1253,24 +1259,42 @@ def plot_class_balance(
 
         colors = [_BAR_COLORS[i % len(_BAR_COLORS)] for i in range(n_classes)]
         y_pos = range(n_classes)
-        bars = ax.barh(y_pos, counts, color=colors, edgecolor="#1565C0",
-                       linewidth=0.6, height=0.6)
+        bars = ax.barh(
+            y_pos, counts, color=colors, edgecolor="#1565C0", linewidth=0.6, height=0.6
+        )
         ax.set_yticks(list(y_pos))
         ax.set_yticklabels(class_names, fontsize=10, fontweight="500")
         ax.invert_yaxis()
 
         # Count labels on bars
         for bar, count in zip(bars, counts):
-            ax.text(bar.get_width() + max(counts) * 0.02, bar.get_y() + bar.get_height() / 2,
-                    str(count), va="center", ha="left", fontsize=9, color="#555555")
+            ax.text(
+                bar.get_width() + max(counts) * 0.02,
+                bar.get_y() + bar.get_height() / 2,
+                str(count),
+                va="center",
+                ha="left",
+                fontsize=9,
+                color="#555555",
+            )
 
         # Balance annotation
         if len(set(counts)) == 1:
-            ax.set_title(f"Balanced: {counts[0]} trials/class",
-                         fontsize=10, fontweight="bold", color="#2E7D32", pad=8)
+            ax.set_title(
+                f"Balanced: {counts[0]} trials/class",
+                fontsize=10,
+                fontweight="bold",
+                color="#2E7D32",
+                pad=8,
+            )
         else:
-            ax.set_title("Trial counts per class",
-                         fontsize=10, fontweight="bold", color="#555555", pad=8)
+            ax.set_title(
+                "Trial counts per class",
+                fontsize=10,
+                fontweight="bold",
+                color="#555555",
+                pad=8,
+            )
 
         ax.set_xlabel("Trials", fontsize=9, color="#7F7F7F")
         ax.spines["top"].set_visible(False)
@@ -1283,14 +1307,26 @@ def plot_class_balance(
         # No counts — show class names only
         y_pos = range(n_classes)
         colors = [_BAR_COLORS[i % len(_BAR_COLORS)] for i in range(n_classes)]
-        ax.barh(y_pos, [1] * n_classes, color=colors, edgecolor="#1565C0",
-                linewidth=0.6, height=0.6, alpha=0.4)
+        ax.barh(
+            y_pos,
+            [1] * n_classes,
+            color=colors,
+            edgecolor="#1565C0",
+            linewidth=0.6,
+            height=0.6,
+            alpha=0.4,
+        )
         ax.set_yticks(list(y_pos))
         ax.set_yticklabels(class_names, fontsize=10, fontweight="500")
         ax.invert_yaxis()
         ax.set_xticks([])
-        ax.set_title("Classes (counts vary by subject)",
-                     fontsize=10, fontweight="bold", color="#999999", pad=8)
+        ax.set_title(
+            "Classes (counts vary by subject)",
+            fontsize=10,
+            fontweight="bold",
+            color="#999999",
+            pad=8,
+        )
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         ax.spines["bottom"].set_visible(False)
@@ -1373,15 +1409,26 @@ def plot_session_structure(
     for s in range(n_sessions):
         y = -s * session_gap
         # Session label
-        ax.text(-0.3, y, f"S{s + 1}", ha="right", va="center",
-                fontsize=10, fontweight="bold", color="#1565C0")
+        ax.text(
+            -0.3,
+            y,
+            f"S{s + 1}",
+            ha="right",
+            va="center",
+            fontsize=10,
+            fontweight="bold",
+            color="#1565C0",
+        )
 
         for r in range(runs_per_session):
             x = r * (block_w + gap)
             rect = mpatches.FancyBboxPatch(
-                (x, y - block_h / 2), block_w, block_h,
+                (x, y - block_h / 2),
+                block_w,
+                block_h,
                 boxstyle="round,pad=0.04",
-                facecolor="#90CAF9", edgecolor="#1565C0",
+                facecolor="#90CAF9",
+                edgecolor="#1565C0",
                 linewidth=1.0,
             )
             ax.add_patch(rect)
@@ -1389,15 +1436,25 @@ def plot_session_structure(
         # Run count annotation
         run_label = "run" if runs_per_session == 1 else "runs"
         total_w = runs_per_session * (block_w + gap) - gap
-        ax.text(total_w + 0.2, y, f"({runs_per_session} {run_label})",
-                ha="left", va="center", fontsize=8.5, color="#7F7F7F",
-                fontstyle="italic")
+        ax.text(
+            total_w + 0.2,
+            y,
+            f"({runs_per_session} {run_label})",
+            ha="left",
+            va="center",
+            fontsize=8.5,
+            color="#7F7F7F",
+            fontstyle="italic",
+        )
 
     # Title
     ax.set_title(
         f"{n_sessions} sessions \u00d7 {runs_per_session} "
         f"{'run' if runs_per_session == 1 else 'runs'}",
-        fontsize=10, fontweight="bold", color="#555555", pad=10,
+        fontsize=10,
+        fontweight="bold",
+        color="#555555",
+        pad=10,
     )
 
     # Limits

@@ -189,18 +189,12 @@ def _make_header_html(cls_name, info):
 
     # --- Stat chips ---
     chips = []
-    chips.append(
-        f'<span class="ds-chip" style="--chip-color: {color}">{label}</span>'
-    )
+    chips.append(f'<span class="ds-chip" style="--chip-color: {color}">{label}</span>')
     if n_subj is not None:
-        chips.append(
-            f'<span class="ds-chip ds-chip-muted">{n_subj} subjects</span>'
-        )
+        chips.append(f'<span class="ds-chip ds-chip-muted">{n_subj} subjects</span>')
     if n_sess is not None:
         sess_label = "session" if n_sess == 1 else "sessions"
-        chips.append(
-            f'<span class="ds-chip ds-chip-muted">{n_sess} {sess_label}</span>'
-        )
+        chips.append(f'<span class="ds-chip ds-chip-muted">{n_sess} {sess_label}</span>')
 
     # Channel chip
     if n_channels is not None:
@@ -216,12 +210,11 @@ def _make_header_html(cls_name, info):
     # Sampling rate chip
     if sampling_rate is not None:
         sr_display = (
-            f"{int(sampling_rate)}" if sampling_rate == int(sampling_rate)
+            f"{int(sampling_rate)}"
+            if sampling_rate == int(sampling_rate)
             else f"{sampling_rate:g}"
         )
-        chips.append(
-            f'<span class="ds-chip ds-chip-muted">{sr_display} Hz</span>'
-        )
+        chips.append(f'<span class="ds-chip ds-chip-muted">{sr_display} Hz</span>')
 
     # Classes chip
     if display_n_classes is not None:
@@ -232,12 +225,11 @@ def _make_header_html(cls_name, info):
     # Trial duration chip
     if trial_duration is not None:
         dur_display = (
-            f"{trial_duration:g}" if trial_duration != int(trial_duration)
+            f"{trial_duration:g}"
+            if trial_duration != int(trial_duration)
             else f"{int(trial_duration)}.0"
         )
-        chips.append(
-            f'<span class="ds-chip ds-chip-muted">{dur_display} s trials</span>'
-        )
+        chips.append(f'<span class="ds-chip ds-chip-muted">{dur_display} s trials</span>')
 
     chips_html = "\n      ".join(chips)
 
@@ -246,7 +238,7 @@ def _make_header_html(cls_name, info):
     # Quickstart Code button (toggles details element via CSS)
     actions.append(
         '<a class="ds-btn ds-btn-primary" href="#ds-quickstart" '
-        'onclick="var el=document.getElementById(\'ds-quickstart\');'
+        "onclick=\"var el=document.getElementById('ds-quickstart');"
         "if(el){el.open=!el.open;}"
         'return false;">Quickstart Code</a>'
     )
@@ -318,69 +310,81 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
     # Determine grid columns — use 2 if 2+ items, else 1
     n_cols = 2 if n_items >= 2 else 1
 
-    lines.extend([
-        "",
-        f".. grid:: {n_cols}",
-        "   :gutter: 3",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            f".. grid:: {n_cols}",
+            "   :gutter: 3",
+            "",
+        ]
+    )
 
     if has_timeline:
-        lines.extend([
-            "   .. grid-item-card:: Stimulus Protocol",
-            "      :class-card: ds-viz-card",
-            "",
-            f"      .. image:: /_static/timelines/{cls_name}.svg",
-            "         :width: 100%",
-            "         :class: timeline-diagram",
-            "",
-        ])
+        lines.extend(
+            [
+                "   .. grid-item-card:: Stimulus Protocol",
+                "      :class-card: ds-viz-card",
+                "",
+                f"      .. image:: /_static/timelines/{cls_name}.svg",
+                "         :width: 100%",
+                "         :class: timeline-diagram",
+                "",
+            ]
+        )
 
     if has_classes:
-        lines.extend([
-            "   .. grid-item-card:: Classes & Trials",
-            "      :class-card: ds-viz-card",
-            "",
-            f"      .. image:: /_static/viz/{cls_name}_classes.svg",
-            "         :width: 100%",
-            "         :class: viz-diagram",
-            "",
-        ])
+        lines.extend(
+            [
+                "   .. grid-item-card:: Classes & Trials",
+                "      :class-card: ds-viz-card",
+                "",
+                f"      .. image:: /_static/viz/{cls_name}_classes.svg",
+                "         :width: 100%",
+                "         :class: viz-diagram",
+                "",
+            ]
+        )
 
     if has_sessions:
-        lines.extend([
-            "   .. grid-item-card:: Sessions & Blocks",
-            "      :class-card: ds-viz-card",
-            "",
-            f"      .. image:: /_static/viz/{cls_name}_sessions.svg",
-            "         :width: 100%",
-            "         :class: viz-diagram",
-            "",
-        ])
+        lines.extend(
+            [
+                "   .. grid-item-card:: Sessions & Blocks",
+                "      :class-card: ds-viz-card",
+                "",
+                f"      .. image:: /_static/viz/{cls_name}_sessions.svg",
+                "         :width: 100%",
+                "         :class: viz-diagram",
+                "",
+            ]
+        )
 
     if channel_html:
-        lines.extend([
-            "   .. grid-item-card:: Channel Summary",
-            "      :class-card: ds-viz-card",
-            "",
-            "      .. raw:: html",
-            "",
-        ])
+        lines.extend(
+            [
+                "   .. grid-item-card:: Channel Summary",
+                "      :class-card: ds-viz-card",
+                "",
+                "      .. raw:: html",
+                "",
+            ]
+        )
         for ch_line in channel_html.split("\n"):
             lines.append(f"         {ch_line}")
         lines.append("")
 
     # Timeline disclaimer
     if has_timeline:
-        lines.extend([
-            ".. raw:: html",
-            "",
-            '   <p class="timeline-disclaimer">'
-            "This diagram is automatically generated from MOABB metadata. "
-            "Please consult the original publication to confirm "
-            "the experimental protocol details.</p>",
-            "",
-        ])
+        lines.extend(
+            [
+                ".. raw:: html",
+                "",
+                '   <p class="timeline-disclaimer">'
+                "This diagram is automatically generated from MOABB metadata. "
+                "Please consult the original publication to confirm "
+                "the experimental protocol details.</p>",
+                "",
+            ]
+        )
 
     return lines
 
@@ -472,10 +476,14 @@ def _restructure_docstring_lines(lines, cls_name):
 
         # Detect admonition starts (metadata cards + feedback)
         if stripped.startswith(".. admonition::"):
-            title = stripped[len(".. admonition::"):].strip()
+            title = stripped[len(".. admonition::") :].strip()
             metadata_titles = {
-                "Dataset summary", "Participants", "Equipment",
-                "Preprocessing", "Data Access", "Experimental Protocol",
+                "Dataset summary",
+                "Participants",
+                "Equipment",
+                "Preprocessing",
+                "Data Access",
+                "Experimental Protocol",
             }
             if title in metadata_titles:
                 current_bucket = "metadata"
@@ -495,7 +503,7 @@ def _restructure_docstring_lines(lines, cls_name):
 
         # Detect rubric sections
         if stripped.startswith(".. rubric::"):
-            rubric_title = stripped[len(".. rubric::"):].strip()
+            rubric_title = stripped[len(".. rubric::") :].strip()
             if rubric_title == "References":
                 current_bucket = "references"
 
@@ -512,9 +520,11 @@ def _restructure_docstring_lines(lines, cls_name):
                 continue
 
         # Detect version directives → notes
-        if stripped.startswith(".. versionadded::") or \
-           stripped.startswith(".. versionchanged::") or \
-           stripped.startswith(".. deprecated::"):
+        if (
+            stripped.startswith(".. versionadded::")
+            or stripped.startswith(".. versionchanged::")
+            or stripped.startswith(".. deprecated::")
+        ):
             current_bucket = "notes"
             notes_lines.append(line)
             i += 1
@@ -641,7 +651,7 @@ def _restructure_docstring_lines(lines, cls_name):
     new_lines.append("")
     new_lines.append(" " * (TAB_INDENT + 3) + f"from moabb.datasets import {cls_name}")
     new_lines.append(" " * (TAB_INDENT + 3) + f"dataset = {cls_name}()")
-    new_lines.append(" " * (TAB_INDENT + 3) + f"data = dataset.get_data(subjects=[1])")
+    new_lines.append(" " * (TAB_INDENT + 3) + "data = dataset.get_data(subjects=[1])")
     new_lines.append("")
 
     # --- Tab: Notes ---

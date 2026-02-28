@@ -14,6 +14,7 @@ import os
 import sys
 import traceback
 
+
 # Ensure repo root is on path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -23,6 +24,7 @@ from moabb.analysis.timeline import (
     stimulus_timeline_svg,
 )
 from moabb.datasets.utils import dataset_list
+
 
 TIMELINE_DIR = os.path.join("docs", "source", "_static", "timelines")
 VIZ_DIR = os.path.join("docs", "source", "_static", "viz")
