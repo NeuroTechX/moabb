@@ -4,8 +4,8 @@ import numpy as np
 import scipy.linalg as linalg
 from joblib import Parallel, delayed
 from mne import BaseEpochs
-from pyriemann.estimation import Covariances
-from pyriemann.utils.covariance import covariances
+from pyriemann.estimation import Covariances, Shrinkage
+from pyriemann.utils.covariance import covariances, normalize
 from pyriemann.utils.mean import mean_covariance
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
@@ -465,17 +465,11 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         cov = Covariances(estimator=self.estimator).fit_transform(X)
         S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
 
-        # The cross-covariance blocks are not guaranteed to be symmetric
-        # positive definite (SPD), and can have extreme condition numbers
-        # that prevent convergence of the Riemannian mean.  We symmetrize
-        # and regularize each matrix by clamping small eigenvalues to bound
-        # the condition number, ensuring well-conditioned SPD inputs for
-        # mean_covariance.
-        for i in range(S.shape[0]):
-            S[i] = (S[i] + S[i].T) / 2
-            eigvals, eigvecs = np.linalg.eigh(S[i])
-            eigvals = np.maximum(eigvals, np.max(np.abs(eigvals)) * 1e-4)
-            S[i] = eigvecs @ np.diag(eigvals) @ eigvecs.T
+        # Symmetrize, shrink, and trace-normalize so that the Riemannian /
+        # log-Euclidean mean operates on well-conditioned SPD matrices.
+        S = (S + S.transpose(0, 2, 1)) / 2
+        S = Shrinkage(shrinkage=0.01).fit_transform(S)
+        S = normalize(S, "trace")
 
         S_mean = mean_covariance(S, metric=self.method)
 
