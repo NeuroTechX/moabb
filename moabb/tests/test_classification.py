@@ -56,8 +56,6 @@ class TestSSVEP_CCA(unittest.TestCase):
         )
 
 
-@pytest.mark.filterwarnings("ignore:invalid value encountered in log:RuntimeWarning")
-@pytest.mark.filterwarnings("ignore:Convergence not reached:UserWarning")
 class TestSSVEP_TRCA(unittest.TestCase):
     def setUp(self):
         # Use moabb generated dataset for test with SSVEP frequencies as event names

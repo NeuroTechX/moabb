@@ -465,9 +465,21 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         cov = Covariances(estimator=self.estimator).fit_transform(X)
         S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
 
-        S = mean_covariance(S, metric=self.method)
+        # The cross-covariance blocks are not guaranteed to be symmetric
+        # positive definite (SPD), and can have extreme condition numbers
+        # that prevent convergence of the Riemannian mean.  We symmetrize
+        # and regularize each matrix by clamping small eigenvalues to bound
+        # the condition number, ensuring well-conditioned SPD inputs for
+        # mean_covariance.
+        for i in range(S.shape[0]):
+            S[i] = (S[i] + S[i].T) / 2
+            eigvals, eigvecs = np.linalg.eigh(S[i])
+            eigvals = np.maximum(eigvals, np.max(np.abs(eigvals)) * 1e-4)
+            S[i] = eigvecs @ np.diag(eigvals) @ eigvecs.T
 
-        return S, Q
+        S_mean = mean_covariance(S, metric=self.method)
+
+        return S_mean, Q
 
     def _compute_trca(self, X):
         """Computation of TRCA spatial filters.
