@@ -765,7 +765,69 @@ def source_read_add_inherited(app, docname, source):
     )
 
 
+def _generate_all_svgs(app):
+    """Generate timeline, class-balance, and session-structure SVGs.
+
+    Runs once at the start of the Sphinx build (builder-inited event).
+    SVGs are written to ``_static/timelines/`` and ``_static/viz/``.
+    """
+    import traceback
+
+    srcdir = app.srcdir
+    timeline_dir = os.path.join(srcdir, "_static", "timelines")
+    viz_dir = os.path.join(srcdir, "_static", "viz")
+    os.makedirs(timeline_dir, exist_ok=True)
+    os.makedirs(viz_dir, exist_ok=True)
+
+    try:
+        from moabb.analysis.timeline import (
+            class_balance_svg,
+            session_structure_svg,
+            stimulus_timeline_svg,
+        )
+        from moabb.datasets.utils import dataset_list
+    except ImportError:
+        traceback.print_exc()
+        print("[dataset_timeline_ext] Could not import timeline functions. "
+              "Make sure moabb is installed from the current repo.")
+        return
+
+    for ds_cls in dataset_list:
+        name = ds_cls.__name__
+        try:
+            ds = ds_cls()
+        except Exception:
+            continue
+
+        # Timeline
+        try:
+            svg = stimulus_timeline_svg(ds)
+            with open(os.path.join(timeline_dir, f"{name}.svg"), "w") as f:
+                f.write(svg)
+        except Exception:
+            pass
+
+        # Class balance
+        try:
+            svg = class_balance_svg(ds)
+            if svg:
+                with open(os.path.join(viz_dir, f"{name}_classes.svg"), "w") as f:
+                    f.write(svg)
+        except Exception:
+            pass
+
+        # Session structure
+        try:
+            svg = session_structure_svg(ds)
+            if svg:
+                with open(os.path.join(viz_dir, f"{name}_sessions.svg"), "w") as f:
+                    f.write(svg)
+        except Exception:
+            pass
+
+
 def setup(app):
+    app.connect("builder-inited", _generate_all_svgs)
     app.connect("autodoc-process-docstring", autodoc_process_docstring)
     app.connect("source-read", source_read_add_inherited)
     return {"version": "1.0", "parallel_read_safe": True}
