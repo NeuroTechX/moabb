@@ -1208,6 +1208,11 @@ _BAR_COLORS = [
 ]
 
 
+def _normalize_class_label(label: str) -> str:
+    """Return a normalized class label for robust metadata matching."""
+    return re.sub(r"[^a-z0-9]+", "", str(label).strip().lower())
+
+
 def plot_class_balance(
     dataset: BaseDataset,
     *,
@@ -1252,10 +1257,20 @@ def plot_class_balance(
     fig, ax = plt.subplots(1, 1, figsize=figsize)
 
     if has_counts:
+        # Normalize metadata keys to handle variants like
+        # "NonTarget" vs "non-target".
+        normalized_counts = {
+            _normalize_class_label(key): value
+            for key, value in trials_per_class.items()
+        }
+
         # Map class names to counts
         counts = []
         for cn in class_names:
-            counts.append(trials_per_class.get(cn, 0))
+            count = trials_per_class.get(cn)
+            if count is None:
+                count = normalized_counts.get(_normalize_class_label(cn), 0)
+            counts.append(count)
 
         colors = [_BAR_COLORS[i % len(_BAR_COLORS)] for i in range(n_classes)]
         y_pos = range(n_classes)

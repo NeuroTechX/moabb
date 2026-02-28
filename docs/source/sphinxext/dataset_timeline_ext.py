@@ -219,6 +219,7 @@ def _get_dataset_info(obj):
         paradigm = getattr(ds, "paradigm", None)
         subject_list = getattr(ds, "subject_list", None)
         n_subjects = len(subject_list) if subject_list else None
+        default_subject = subject_list[0] if subject_list else 1
         n_sessions = getattr(ds, "n_sessions", None)
         code = getattr(ds, "code", None)
         doi = getattr(ds, "doi", None)
@@ -298,6 +299,7 @@ def _get_dataset_info(obj):
         return {
             "paradigm": paradigm,
             "n_subjects": n_subjects,
+            "default_subject": default_subject,
             "n_sessions": n_sessions,
             "code": code,
             "doi": doi,
@@ -802,6 +804,8 @@ def _make_header_html(cls_name, info, source_url=None):
     n_classes = info.get("n_classes")
     class_labels = info.get("class_labels")
     trial_duration = info.get("trial_duration")
+    default_subject = info.get("default_subject", 1)
+    subject_literal = repr(default_subject)
     code = info.get("code")
     quickstart_id = (
         "ds-quickstart-" + re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
@@ -936,8 +940,8 @@ def _make_header_html(cls_name, info, source_url=None):
         f'  <pre class="ds-quickstart-code"><code>'
         f"from moabb.datasets import {cls_name}\n\n"
         f"dataset = {cls_name}()\n"
-        f"data = dataset.get_data(subjects=[1])\n"
-        f"print(data[1])"
+        f"data = dataset.get_data(subjects=[{subject_literal}])\n"
+        f"print(data[{subject_literal}])"
         f"</code></pre>\n"
         f"</details>"
     )
@@ -1210,7 +1214,7 @@ def _make_channel_summary_html(info):
 # ---------------------------------------------------------------------------
 
 
-def _restructure_docstring_lines(lines, cls_name):
+def _restructure_docstring_lines(lines, cls_name, default_subject=1):
     """Reorganize docstring lines into a tabbed layout.
 
     Scans lines for section markers and groups content into:
@@ -1413,8 +1417,12 @@ def _restructure_docstring_lines(lines, cls_name):
     new_lines.append("")
     new_lines.append(" " * (TAB_INDENT + 3) + f"from moabb.datasets import {cls_name}")
     new_lines.append(" " * (TAB_INDENT + 3) + f"dataset = {cls_name}()")
-    new_lines.append(" " * (TAB_INDENT + 3) + "data = dataset.get_data(subjects=[1])")
-    new_lines.append(" " * (TAB_INDENT + 3) + "print(data[1])")
+    subject_literal = repr(default_subject)
+    new_lines.append(
+        " " * (TAB_INDENT + 3)
+        + f"data = dataset.get_data(subjects=[{subject_literal}])"
+    )
+    new_lines.append(" " * (TAB_INDENT + 3) + f"print(data[{subject_literal}])")
     new_lines.append("")
 
     # --- Tab: Metadata ---
@@ -1495,7 +1503,10 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
         top_block.extend(grid_lines)
 
     # --- Layer 3: Restructure remaining docstring into tabs ---
-    restructured = _restructure_docstring_lines(lines, cls_name)
+    default_subject = info.get("default_subject", 1) if info else 1
+    restructured = _restructure_docstring_lines(
+        lines, cls_name, default_subject=default_subject
+    )
     if restructured is not None:
         # Replace all existing lines with restructured content
         lines.clear()

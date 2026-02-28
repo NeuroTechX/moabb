@@ -19,6 +19,7 @@ Version 1.5  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Redesign dataset API pages with a structured snapshot card, visual summary blocks, HED-tag visualization, benchmark highlights, citation/public API cards, and responsive mobile improvements (:gh:`1000` by `Bruno Aristimunha`_)
 - Implementation of Pseudo-Online framework (:gh:`641` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
@@ -67,6 +68,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix class-balance visualization counts by normalizing metadata/event class labels (e.g., ``NonTarget`` vs ``non-target``) and use the first valid dataset subject in generated quickstart snippets instead of hardcoded ``subjects=[1]`` (:gh:`1000` by `Bruno Aristimunha`_)
 - Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Added missing metadata DOIs for AlexMI, PhysionetMI, GrosseWentrup2009, Shin2017A, Shin2017B, BNCI2014_004, and BNCI2003_004 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
