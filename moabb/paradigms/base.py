@@ -536,11 +536,12 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                         assert all(len(proc[0]) == len(p) for p in proc[1:])
                         n = len(proc[0])
                         lbs = labels_pipeline.transform(proc[0])
-                        x = (
-                            proc[0]
-                            if len(self.filters) == 1
-                            else mne.concatenate_epochs(proc)
-                        )
+                        if len(self.filters) == 1:
+                            x = proc[0]
+                        else:
+                            for p in proc:
+                                p.set_annotations(None)
+                            x = mne.concatenate_epochs(proc)
 
                     elif return_raws:
                         assert all(len(proc[0]) == len(p) for p in proc[1:])
@@ -601,6 +602,8 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         metadata = pd.concat(metadata, ignore_index=True)
         labels = np.concatenate(labels)
         if return_epochs:
+            for ep in X:
+                ep.set_annotations(None)
             X = mne.concatenate_epochs(X)
         elif return_raws:
             pass

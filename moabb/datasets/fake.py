@@ -1,9 +1,10 @@
+import os
 import re
 import tempfile
 from pathlib import Path
 
 import numpy as np
-from mne import Annotations, annotations_from_events, create_info, get_config, set_config
+from mne import Annotations, annotations_from_events, create_info, get_config
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
@@ -131,7 +132,10 @@ class FakeDataset(BaseDataset):
         temp_dir = get_config(key)
         if temp_dir is None or not Path(temp_dir).is_dir():
             temp_dir = tempfile.mkdtemp()
-            set_config(key, temp_dir)
+            # Use os.environ instead of mne.set_config to avoid
+            # "Setting non-standard config type" warnings.
+            # MNE's get_config() checks environment variables first.
+            os.environ[key] = temp_dir
 
     def _get_single_subject_data(self, subject):
         if self.seed is not None:

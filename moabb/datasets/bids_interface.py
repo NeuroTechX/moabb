@@ -17,6 +17,7 @@ import json
 import logging
 import re
 import shutil
+import warnings
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
@@ -2151,15 +2152,31 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         # Note that we do not need to pass any events, as the dataset
         # is already equipped with annotations, which will be converted to
         # BIDS events automatically.
-        mne_bids.write_raw_bids(
-            raw,
-            bids_path,
-            format=self._format,
-            allow_preload=True,
-            montage=raw.get_montage(),
-            overwrite=False,
-            verbose=self.verbose,
-        )
+
+        # Suppress mne_bids informational warnings about format conversion.
+        # "Converting data files to EDF format" — we explicitly request the
+        # format via self._format, so this is expected.
+        # "Encountered data in double format" — mne_bids internally handles
+        # the float64->float32 downcast for EDF; we cannot pre-convert because
+        # MNE Epochs.save() requires float64 data.
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore", "Converting data files to EDF", RuntimeWarning
+            )
+            warnings.filterwarnings(
+                "ignore",
+                'Encountered data in "double" format',
+                RuntimeWarning,
+            )
+            mne_bids.write_raw_bids(
+                raw,
+                bids_path,
+                format=self._format,
+                allow_preload=True,
+                montage=raw.get_montage(),
+                overwrite=False,
+                verbose=self.verbose,
+            )
 
         # Post-write enrichment: update EEG sidecar with metadata fields
         if metadata is not None:
