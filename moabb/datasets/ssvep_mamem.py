@@ -101,8 +101,14 @@ class BaseMAMEM(BaseDataset):
     """Base class for MAMEM datasets."""
 
     def __init__(
-        self, events, sessions_per_subject, code, doi, figshare_id,
-        subjects=None, sessions=None,
+        self,
+        events,
+        sessions_per_subject,
+        code,
+        doi,
+        figshare_id,
+        subjects=None,
+        sessions=None,
     ):
         super().__init__(
             subjects=list(range(1, 12)),

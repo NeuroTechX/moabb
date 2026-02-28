@@ -303,7 +303,9 @@ class Liu2024(BaseDataset):
         methodology="50 acute stroke patients (1-30 days post-stroke) performed 40 trials of hand-grip motor imagery (20 left, 20 right). Each 8s trial included instruction, 4s video-guided imagery, and rest phases. EEG recorded with 30-channel ZhenTec NT1 wireless system at 500 Hz. Data organized in BIDS format with raw (.mat) and preprocessed (.edf) versions. Clinical assessments: NIHSS (mean=4.16±2.85), MBI (mean=70.94±18.22), mRS (mean=2.66±1.44). 23 patients right hemiplegia, 27 left hemiplegia.",
     )
 
-    def __init__(self, break_events=False, instr_events=False, subjects=None, sessions=None):
+    def __init__(
+        self, break_events=False, instr_events=False, subjects=None, sessions=None
+    ):
         self.break_events = break_events
         self.instr_events = instr_events
         self.events = {"left_hand": 1, "right_hand": 2}

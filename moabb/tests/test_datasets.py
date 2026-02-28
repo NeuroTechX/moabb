@@ -18,9 +18,6 @@ from moabb.datasets import (
     Shin2017A,
     Shin2017B,
 )
-from moabb.datasets.braininvaders import BI2012, BI2013a
-from moabb.datasets.physionet_mi import PhysionetMI
-from moabb.datasets.upper_limb import Ofner2017
 from moabb.datasets.base import (
     BaseDataset,
     LocalBIDSDataset,
@@ -28,6 +25,7 @@ from moabb.datasets.base import (
     is_abbrev,
     is_camel_kebab_case,
 )
+from moabb.datasets.braininvaders import BI2012, BI2013a
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
@@ -42,6 +40,8 @@ from moabb.datasets.metadata import (
     PreprocessingMetadata,
     get_dataset_metadata,
 )
+from moabb.datasets.physionet_mi import PhysionetMI
+from moabb.datasets.upper_limb import Ofner2017
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
@@ -602,9 +602,9 @@ class TestSubjectSessionFiltering:
             if parent.__name__ not in ("object", "ABC"):
                 psig = inspect.signature(parent.__init__)
                 params |= set(psig.parameters.keys())
-            assert "subjects" in params or "sessions" in params, (
-                f"{cls.__name__} missing subjects/sessions param"
-            )
+            assert (
+                "subjects" in params or "sessions" in params
+            ), f"{cls.__name__} missing subjects/sessions param"
 
 
 class TestVirtualRealityDataset:
@@ -1411,9 +1411,7 @@ class TestDatasetConstructorValidation:
         if "subjects" not in sig.parameters:
             pytest.skip(f"{dataset_cls.__name__} has no 'subjects' parameter")
         if dataset_cls.__name__ in self._CUSTOM_SUBJECT_HANDLING:
-            pytest.skip(
-                f"{dataset_cls.__name__} uses custom subject handling"
-            )
+            pytest.skip(f"{dataset_cls.__name__} uses custom subject handling")
 
         ds_full = _instantiate_dataset(dataset_cls)
         if len(ds_full.all_subjects) < 2:
@@ -1425,17 +1423,17 @@ class TestDatasetConstructorValidation:
             f"{dataset_cls.__name__}: subject_list should be {first_two}, "
             f"got {ds_filtered.subject_list}"
         )
-        assert ds_filtered.all_subjects == ds_full.all_subjects, (
-            f"{dataset_cls.__name__}: all_subjects should remain unchanged after filtering"
-        )
+        assert (
+            ds_filtered.all_subjects == ds_full.all_subjects
+        ), f"{dataset_cls.__name__}: all_subjects should remain unchanged after filtering"
 
     @pytest.mark.parametrize("dataset_cls", dataset_list)
     def test_events_dict_integrity(self, dataset_cls):
         """event_id must be a dict with str keys and int (or list-of-int) values."""
         ds = _instantiate_dataset(dataset_cls)
-        assert isinstance(ds.event_id, dict), (
-            f"{dataset_cls.__name__}: event_id is {type(ds.event_id).__name__}, expected dict"
-        )
+        assert isinstance(
+            ds.event_id, dict
+        ), f"{dataset_cls.__name__}: event_id is {type(ds.event_id).__name__}, expected dict"
         for key, value in ds.event_id.items():
             assert isinstance(key, str), (
                 f"{dataset_cls.__name__}: event key {key!r} is {type(key).__name__}, "
@@ -1448,7 +1446,9 @@ class TestDatasetConstructorValidation:
                         f"({type(v).__name__}), expected int."
                     )
             else:
-                assert isinstance(value, (int, np.integer)) and not isinstance(value, bool), (
+                assert isinstance(value, (int, np.integer)) and not isinstance(
+                    value, bool
+                ), (
                     f"{dataset_cls.__name__}: event {key!r} has value {value!r} "
                     f"({type(value).__name__}), expected int."
                 )

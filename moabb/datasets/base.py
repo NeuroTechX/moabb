@@ -686,9 +686,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         # Validate events dict integrity
         if not isinstance(events, dict):
-            raise TypeError(
-                f"events must be a dict, got {type(events).__name__}"
-            )
+            raise TypeError(f"events must be a dict, got {type(events).__name__}")
         for key, value in events.items():
             if not isinstance(key, str):
                 raise TypeError(

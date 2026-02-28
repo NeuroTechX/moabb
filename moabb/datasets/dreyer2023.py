@@ -517,8 +517,10 @@ class Dreyer2023A(_Dreyer2023Base):
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
-            all_subjects=list(range(1, 61)), sub_id="A",
-            subjects=subjects, sessions=sessions,
+            all_subjects=list(range(1, 61)),
+            sub_id="A",
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -786,8 +788,10 @@ class Dreyer2023B(_Dreyer2023Base):
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
-            all_subjects=list(range(61, 82)), sub_id="B",
-            subjects=subjects, sessions=sessions,
+            all_subjects=list(range(61, 82)),
+            sub_id="B",
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1057,8 +1061,10 @@ class Dreyer2023C(_Dreyer2023Base):
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
-            all_subjects=list(range(82, 88)), sub_id="C",
-            subjects=subjects, sessions=sessions,
+            all_subjects=list(range(82, 88)),
+            sub_id="C",
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1318,5 +1324,6 @@ class Dreyer2023(_Dreyer2023Base):
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             all_subjects=list(range(1, 88)),
-            subjects=subjects, sessions=sessions,
+            subjects=subjects,
+            sessions=sessions,
         )

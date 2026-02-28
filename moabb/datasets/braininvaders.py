@@ -643,7 +643,9 @@ class BI2012(BaseDataset):
         methodology="The visual P300 is an event-related potential (ERP) elicited by a visual stimulation, peaking 240-600 ms after stimulus onset. The experiment features a training-test mode of operation and both a longitudinal and transversal design. Training session: Target alien chosen randomly at each repetition, 8 Targets total, 8 repetitions each, resulting in 128 Target trials and 640 non-Target flashes. Online session: consisted of three levels with different distractor configurations, minimum 3.5 minutes per level, counter-balanced order across subjects. Interface: 36 aliens flashing in 12 groups of 6, each repetition has 12 flashes (2 Target, 10 non-Target). P300 peak latency: 240-600 ms post-stimulus.",
     )
 
-    def __init__(self, training=True, online=True, subjects=None, sessions=None, **kwargs):
+    def __init__(
+        self, training=True, online=True, subjects=None, sessions=None, **kwargs
+    ):
         deprecated_renames = {"Training": "training", "Online": "online"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BI2012")
         training = resolved.get("training", training)
@@ -904,8 +906,14 @@ class BI2013a(BaseDataset):
     )
 
     def __init__(
-        self, non_adaptive=True, adaptive=True, training=True, online=True,
-        subjects=None, sessions=None, **kwargs,
+        self,
+        non_adaptive=True,
+        adaptive=True,
+        training=True,
+        online=True,
+        subjects=None,
+        sessions=None,
+        **kwargs,
     ):
         deprecated_renames = {
             "NonAdaptive": "non_adaptive",
@@ -1991,7 +1999,9 @@ class Cattan2019_VR(BaseDataset):
         methodology="Two randomized sessions (PC and VR). Each session: 12 blocks of 5 repetitions. Each repetition: 12 flashes of groups of 6 symbols, ensuring each symbol flashes exactly 2 times. Target flashes twice per repetition (2 target flashes), non-target flashes 10 times. Random feedback given after each repetition (70% expected accuracy). P300 interface: 6x6 matrix of white flashing crosses with red-squared target. VR used passive HMD (VRElegiant) with Huawei Mate 7 smartphone. IMU deactivated to prevent drift. Unity engine used for identical visual stimulation across PC and VR.",
     )
 
-    def __init__(self, virtual_reality=True, screen_display=True, subjects=None, sessions=None):
+    def __init__(
+        self, virtual_reality=True, screen_display=True, subjects=None, sessions=None
+    ):
         self.n_repetitions = 5
         super().__init__(
             subjects=list(range(1, 21 + 1)),
