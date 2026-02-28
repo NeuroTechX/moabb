@@ -788,8 +788,10 @@ def _generate_all_svgs(app):
         from moabb.datasets.utils import dataset_list
     except ImportError:
         traceback.print_exc()
-        print("[dataset_timeline_ext] Could not import timeline functions. "
-              "Make sure moabb is installed from the current repo.")
+        print(
+            "[dataset_timeline_ext] Could not import timeline functions. "
+            "Make sure moabb is installed from the current repo."
+        )
         return
 
     for ds_cls in dataset_list:
