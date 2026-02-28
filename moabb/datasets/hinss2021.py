@@ -218,7 +218,7 @@ class Hinss2021(BaseDataset):
         file_format="fif",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 16)),  # 15 participants
             sessions_per_subject=2,  # 2 sessions per subject
@@ -227,6 +227,8 @@ class Hinss2021(BaseDataset):
             interval=[0, 2],  # Epochs are 2-second long
             paradigm="rstate",
             doi="10.1038/s41597-022-01898-y",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_stim_channel(self, rs_epochs, easy_epochs, med_epochs, n_epochs, n_samples):

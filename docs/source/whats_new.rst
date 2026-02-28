@@ -46,6 +46,7 @@ Enhancements
 - Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
 - Add and correct ``license`` and ``repository`` fields in ``DocumentationMetadata`` across all datasets against upstream sources; standardize all license strings to SPDX identifiers; correct DOIs for BNCI2014_002 and MAMEM1/2/3 datasets (by `Katelyn Begany`_)
 - Add :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method for exporting raw EEG datasets to clean BIDS-compliant directory structures without processing-pipeline hash in filenames (by `Bruno Aristimunha`_)
+- Expose ``subjects`` and ``sessions`` parameters on all dataset constructors to allow filtering at instantiation time (e.g., ``PhysionetMI(subjects=[1, 2, 3])``). Add ``all_subjects`` property and ``sessions`` parameter to ``get_data()`` (by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~

@@ -291,7 +291,7 @@ class Thielen2015(BaseDataset):
         methodology="The study implements a novel BBVEP-based BCI using modulated Gold codes with a reconvolution approach for template generation. The reconvolution model decomposes responses into single-flash responses (short and long pulses) and predicts responses to unseen sequences. Two sets of Gold codes were used: set V for training (65 sequences) and set U for testing (65 sequences). Each sequence had 126 bits with duration of 1.05s. The classifier uses template matching with correlation, combined with Canonical Correlation Analysis for spatial filtering. Subset optimization (Platinum subset) selects the most distinguishable codes, and layout optimization arranges codes on the 6x6 grid to minimize cross-talk. An early stopping algorithm was implemented to reduce trial duration. Online experiments were conducted with 12 participants using a synchronous BCI paradigm.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=1,
@@ -300,6 +300,8 @@ class Thielen2015(BaseDataset):
             interval=(0, 0.3),
             paradigm="cvep",
             doi="10.34973/1ecz-1232",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

@@ -294,7 +294,7 @@ class Cho2017(BaseDataset):
         methodology="Subjects performed motor imagery of left and right hand finger movements (kinesthetic imagery). Each trial consisted of: 2 seconds fixation cross, 3 seconds instruction (left/right hand), followed by random 4.1-4.8 second break. Five or six runs performed with feedback after each run. Additional data collected: 6 types of non-task-related data (eye blinking, eyeball movements, head movement, jaw clenching, resting state) and 20 trials of real hand movement per class. 3D electrode coordinates measured with Polhemus Fastrak digitizer. Experiments conducted August-September 2011 in four time slots (9:30-12:00, 12:30-15:00, 15:30-18:00, 19:00-21:30) with background noise 37-39 dB.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 53)),
             sessions_per_subject=1,
@@ -303,6 +303,8 @@ class Cho2017(BaseDataset):
             interval=[0, 3],  # full trial is 0-3s, but edge effects
             paradigm="imagery",
             doi="10.5524/100295",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

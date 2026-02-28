@@ -187,7 +187,7 @@ class Kalunga2016(BaseDataset):
         file_format="gdf",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
@@ -196,6 +196,8 @@ class Kalunga2016(BaseDataset):
             interval=[2, 4],
             paradigm="ssvep",
             doi="10.1016/j.neucom.2016.01.007",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

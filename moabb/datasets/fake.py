@@ -59,6 +59,8 @@ class FakeDataset(BaseDataset):
         n_events=60,
         stim=True,
         annotations=False,
+        subjects=None,
+        sessions=None,
     ):
         self.n_events = n_events if isinstance(n_events, list) else [n_events] * n_runs
         self.duration = duration if isinstance(duration, list) else [duration] * n_runs
@@ -84,6 +86,8 @@ class FakeDataset(BaseDataset):
             code=code,
             interval=[0, 3],
             paradigm=paradigm,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         key = "MNE_DATASETS_{:s}_PATH".format(self.code.upper())
         temp_dir = get_config(key)
@@ -162,7 +166,7 @@ class FakeVirtualRealityDataset(FakeDataset):
     .. versionadded:: 0.5.0
     """
 
-    def __init__(self, seed=None):
+    def __init__(self, seed=None, subjects=None, sessions=None):
         self.n_blocks = 5
         self.n_repetitions = 12
         self.n_events_rep = [60] * self.n_repetitions
@@ -179,6 +183,8 @@ class FakeVirtualRealityDataset(FakeDataset):
             n_events=self.n_events_rep * self.n_blocks,
             stim=True,
             annotations=False,
+            subjects=subjects,
+            sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

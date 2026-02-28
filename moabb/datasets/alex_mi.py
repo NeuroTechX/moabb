@@ -191,7 +191,7 @@ class AlexMI(BaseDataset):
         methodology="Subjects performed motor imagery tasks in an asynchronous brain-switch paradigm. EEG was recorded at 250 Hz with 22 electrodes. Signal processing employed Riemannian geometry approaches including Minimum Distance to Mean (MDM) classification, geodesic filtering, and tangent space mapping. The research validated adaptive learning and effector coupling through two experimental campaigns.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
@@ -200,6 +200,8 @@ class AlexMI(BaseDataset):
             interval=[0, 3],
             paradigm="imagery",
             doi="10.5281/zenodo.806022",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

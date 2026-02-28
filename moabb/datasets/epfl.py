@@ -270,7 +270,7 @@ class EPFLP300(BaseDataset):
         file_format="MATLAB",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=[1, 2, 3, 4, 6, 7, 8, 9],
             sessions_per_subject=4,
@@ -279,6 +279,8 @@ class EPFLP300(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="10.1016/j.jneumeth.2007.03.005",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_run_data(self, file_path):

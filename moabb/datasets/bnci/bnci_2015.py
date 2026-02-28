@@ -611,7 +611,7 @@ class BNCI2015_001(MNEBNCI):
         file_format="gdf",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=2,
@@ -620,6 +620,8 @@ class BNCI2015_001(MNEBNCI):
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1109/tnsre.2012.2189584",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -852,7 +854,7 @@ class BNCI2015_003(MNEBNCI):
         methodology="Participants surrounded by six speakers at ear height in circle (60° spacing, 65 cm radius). Each direction associated with unique combination of tone (base frequency + harmonics) and band-pass filtered noise. Two-step hex-o-spell interface for character selection. Session 1: calibration (48 trials, 8 per direction, 15 iterations each) followed by online spelling with 15 fixed iterations. Session 2: calibration followed by online spelling with dynamic stopping method (4-15 iterations). Spatio-temporal feature extraction using r2 coefficient and interval selection (2-4 intervals for early and late components, 112-224 features total). Linear binary classifier with shrinkage regularization (Ledoit-Wolf). Decision making based on median classifier scores across iterations.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
@@ -861,6 +863,8 @@ class BNCI2015_003(MNEBNCI):
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1016/j.neulet.2009.06.045",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -1085,7 +1089,7 @@ class BNCI2015_004(MNEBNCI):
         file_format="gdf",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -1100,6 +1104,8 @@ class BNCI2015_004(MNEBNCI):
             interval=[0, 4],
             paradigm="imagery",
             doi="10.1371/journal.pone.0123727",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -1382,7 +1388,7 @@ class BNCI2015_006(MNEBNCI):
         methodology="Participants listened to 40-second polyphonic music clips with three concurrent instruments (Synth-Pop: bass, drums, keyboard; Jazz: double-bass, piano, flute). Each instrument had standard patterns and infrequent deviants (3-7 per clip). Participants were cued to attend to one instrument and count deviants. EEG recorded at 1000 Hz with 64 electrodes, downsampled to 250 Hz, lowpass filtered (Chebyshev, 42 Hz passband), epoched (-200 to 1200 ms), baseline corrected, and artifact rejected. Two classification approaches: (1) general binary classifier and (2) instrument-specific classifiers with posterior probabilities. Features: spatio-temporal (3 time intervals × 63 electrodes = 189 dimensions). LDA with shrinkage covariance. Leave-one-clip-out cross-validation. Main experiment: 10 blocks of 21 clips (7 clips per instrument as target). Total: 3 Synth-Pop mixed blocks, 3 Jazz mixed blocks, 2 Synth-Pop solo blocks, 2 Jazz solo blocks.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 12)),
             sessions_per_subject=1,
@@ -1391,6 +1397,8 @@ class BNCI2015_006(MNEBNCI):
             interval=[0, 1.0],
             paradigm="p300",
             doi="10.1088/1741-2560/11/2/026009",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1717,7 +1725,7 @@ class BNCI2015_007(MNEBNCI):
         file_format="gdf",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 17)),
             sessions_per_subject=1,
@@ -1726,6 +1734,8 @@ class BNCI2015_007(MNEBNCI):
             interval=[0, 0.7],
             paradigm="p300",  # Oddball-like paradigm with Target/NonTarget
             doi="10.1088/1741-2560/9/4/045006",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -2016,7 +2026,7 @@ class BNCI2015_008(MNEBNCI):
         file_format="gdf",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 14)),
             sessions_per_subject=1,
@@ -2025,6 +2035,8 @@ class BNCI2015_008(MNEBNCI):
             interval=[0, 1.0],
             paradigm="p300",
             doi="10.1088/1741-2560/8/6/066003",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -2255,7 +2267,7 @@ class BNCI2015_009(MNEBNCI):
         file_format="gdf",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 22)),
             sessions_per_subject=1,
@@ -2264,6 +2276,8 @@ class BNCI2015_009(MNEBNCI):
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.3389/fnins.2011.00112",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -2509,7 +2523,7 @@ class BNCI2015_010(MNEBNCI):
         methodology="Three experimental conditions tested (NoColor 116ms, Color 116ms, Color 83ms SOA). Each condition included calibration, copy-spelling, and free-spelling phases. Vocabulary of 30 symbols presented one-by-one at screen center in pseudo-random order. EEG recorded at 1000 Hz with 63 channels, downsampled to 200 Hz for ERP analysis. Classification using LDA with shrinkage on spatio-temporal features from 5 individually selected time windows. Symbol selection based on averaged classifier output across 10 sequences.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
@@ -2518,6 +2532,8 @@ class BNCI2015_010(MNEBNCI):
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1016/j.clinph.2012.12.050",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -2798,7 +2814,7 @@ class BNCI2015_012(MNEBNCI):
         methodology="Participants performed a single session lasting 3-4 hours consisting of calibration phase and online spelling task. Calibration: 3 runs (plus 1 practice run), each with 9 trials covering all 9 stimuli as targets. Each trial had 13-14 pseudo-random sequences of all 9 auditory stimuli (108 subtrials total, 12 target + 96 non-target). Online spelling: 2 runs spelling German sentences using T9-style predictive text system with 9-class decisions. Each trial consisted of 135 subtrials (15 iterations of 9 stimuli). Binary classification using linear FDA with shrinkage regularization on 2-4 amplitude values per channel from discriminative intervals (N200 at 230-300ms and P300 at 350+ ms). Multiclass decision based on one-sided t-test with unequal variances across 15 classifier outputs per key.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
@@ -2807,6 +2823,8 @@ class BNCI2015_012(MNEBNCI):
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.3389/fnins.2011.00099",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -3031,7 +3049,7 @@ class BNCI2015_013(MNEBNCI):
         file_format="matlab",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 7)),
             sessions_per_subject=20,
@@ -3040,6 +3058,8 @@ class BNCI2015_013(MNEBNCI):
             interval=[0, 0.6],
             paradigm="p300",
             doi="10.1109/TNSRE.2010.2053387",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

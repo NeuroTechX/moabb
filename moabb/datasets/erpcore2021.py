@@ -114,7 +114,7 @@ class ErpCore2021(BaseDataset):
     {_docstring_tail}
     """
 
-    def __init__(self, task):
+    def __init__(self, task, subjects=None, sessions=None):
         if task == "N170":
             interval = (-0.2, 0.8)
             events = {"Target": 1, "NonTarget": 2}
@@ -149,6 +149,8 @@ class ErpCore2021(BaseDataset):
             interval=interval,
             paradigm="p300",
             doi="10.1016/j.neuroimage.2020.117465",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

@@ -239,7 +239,7 @@ class Nakanishi2015(BaseDataset):
         methodology="A simulated online BCI experiment was conducted with 10 subjects. Each subject completed 15 blocks, with each block containing 12 trials (one for each of the 12 targets). Visual stimuli were presented as a 4x3 matrix on a 27-inch LCD monitor at 60Hz refresh rate. The 12 targets used joint frequency and phase coding (frequencies: 9.25-14.75Hz with 0.5Hz intervals; phases: 0 to 5.5π with 0.5π intervals). Each trial began with a 1s cue (red square) followed by 4s of flickering stimulation. EEG was recorded from 8 occipital electrodes at 2048Hz and downsampled to 256Hz for analysis. Seven CCA-based methods were compared using leave-one-block-out cross-validation (14 blocks for training, 1 for testing). Performance was evaluated using classification accuracy and ITR.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=1,
@@ -261,6 +261,8 @@ class Nakanishi2015(BaseDataset):
             interval=[0.15, 4.3],
             paradigm="ssvep",
             doi="10.1371/journal.pone.0140703",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

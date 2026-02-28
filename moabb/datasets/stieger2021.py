@@ -326,7 +326,7 @@ class Stieger2021(BaseDataset):
         },
     )
 
-    def __init__(self, interval=[0, 3], sessions=None, fix_bads=True):
+    def __init__(self, interval=[0, 3], sessions=None, fix_bads=True, subjects=None):
         super().__init__(
             subjects=list(range(1, 63)),
             sessions_per_subject=11,
@@ -335,6 +335,7 @@ class Stieger2021(BaseDataset):
             interval=interval,
             paradigm="imagery",
             doi="10.1038/s41597-021-00883-1",
+            selected_subjects=subjects,
         )
         self.fix_bads = fix_bads
         self.sessions = sessions

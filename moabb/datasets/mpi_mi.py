@@ -321,7 +321,7 @@ class GrosseWentrup2009(BaseDataset):
         file_format="mat",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         self.events_id = dict(right_hand=2, left_hand=1)
         super().__init__(
             subjects=list(range(1, 11)),
@@ -331,6 +331,8 @@ class GrosseWentrup2009(BaseDataset):
             interval=[0, 7],
             paradigm="imagery",
             doi="10.1109/TBME.2008.2009768",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

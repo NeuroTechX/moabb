@@ -442,7 +442,7 @@ class Wang2016(BaseDataset):
 
     # fmt: on
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 35)),
             sessions_per_subject=1,
@@ -451,6 +451,8 @@ class Wang2016(BaseDataset):
             interval=[0.5, 5.5],
             paradigm="ssvep",
             doi="10.1109/TNSRE.2016.2627556",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

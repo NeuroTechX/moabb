@@ -37,9 +37,10 @@ class Lee2019(BaseDataset):
         self,
         paradigm,
         train_run=True,
-        test_run=None,
+        test_run=True,
         resting_state=False,
         sessions=(1, 2),
+        subjects=None,
     ):
         if paradigm.lower() in ["imagery", "mi"]:
             paradigm = "imagery"
@@ -84,10 +85,11 @@ class Lee2019(BaseDataset):
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",
+            selected_subjects=subjects,
         )
         self.code_suffix = code_suffix
         self.train_run = train_run
-        self.test_run = paradigm == "p300" if test_run is None else test_run
+        self.test_run = test_run
         self.resting_state = resting_state
 
     def _translate_class(self, c):

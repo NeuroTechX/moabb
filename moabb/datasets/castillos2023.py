@@ -39,6 +39,8 @@ class BaseCastillos2023(BaseDataset):
         paradigm,
         paradigm_type,
         window_size=0.25,
+        subjects=None,
+        sessions=None,
     ):
         super().__init__(
             subjects=list(range(1, 12 + 1)),
@@ -48,6 +50,8 @@ class BaseCastillos2023(BaseDataset):
             interval=(0, window_size),
             paradigm=paradigm,
             doi="https://doi.org/10.1016/j.neuroimage.2023.120446",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.paradigm_type = paradigm_type
         self.sfreq = 500
@@ -599,7 +603,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
         methodology="Twelve healthy participants completed an offline 4-class c-VEP protocol using a factorial design. EEG was recorded at 500 Hz using BrainProducts LiveAmp 32-channel system. Participants focused on cued targets with factorial manipulation of pattern type (burst vs m-sequence) and amplitude depth (100% vs 40%). Visual stimuli were presented on a 60 Hz Dell monitor. Burst codes consisted of brief flashes (~50ms) with minimum 200ms inter-burst interval, while m-sequences used Fibonacci-type LFSR with segmented 132-frame subsequences. A CNN architecture with spatial (8x1, 16 filters), temporal (1x32, 8 filters), and 2D convolution (5x5, 4 filters) layers decoded EEG using 250ms sliding windows with 2ms stride. Calibration data ranged from 1-6 blocks (8.8-52.8s). Classification used sequential train/test splits with Pearson correlation for target selection. VEP analysis examined amplitude, latency, and inter-trial coherence. Statistical analyses used 2×2 repeated measures ANOVA.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -607,6 +611,8 @@ class CastillosBurstVEP100(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="burst100",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -884,7 +890,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
         methodology="Factorial experimental design with 12 participants. Four conditions: burst or m-sequence codes × 100% or 40% amplitude depth. Participants attended to cued targets presented as aperiodic visual flashes. Burst codes: 50ms flashes at 2-4 Hz with 200ms minimum inter-burst interval. M-sequences: pseudo-random binary sequences at ~10 Hz. EEG recorded at 500 Hz using 32-channel BrainProduct LiveAmp. Analysis on occipital/parietal electrodes. CNN-based bitwise decoding (improved EEG2Code architecture). Each participant completed 15 blocks of 4 trials per condition (60 trials per class, 240 total trials). Trial structure: 700ms ITI, 500ms cue, 2200ms stimulation. Display: Dell P2419HC 60Hz LCD. Luminance: medium grey background (124 lux), 100% condition (168 lux), 40% condition (142 lux). Preprocessing: average re-reference, 50Hz notch filter (IIR order 16), epoching 0-2.2s, baseline removal. Subjective assessments of visual comfort, tiredness, and intrusiveness collected.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -892,6 +898,8 @@ class CastillosBurstVEP40(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="burst40",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1145,7 +1153,7 @@ class CastillosCVEP100(BaseCastillos2023):
         methodology="Factorial experimental design with 12 healthy participants. EEG recorded with BrainProducts LiveAmp 32-channel system at 500 Hz. Four conditions tested: burst c-VEP and m-sequence c-VEP, each at 100% and 40% amplitude depth. Participants focused on cued targets (4 classes) in 15 blocks of 4 trials per condition. CNN-based decoding with 250ms sliding windows. Subjective ratings collected for visual comfort, mental tiredness, and intrusiveness. VEP analysis included amplitude, latency, and inter-trial coherence metrics.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -1153,6 +1161,8 @@ class CastillosCVEP100(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="mseq100",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1426,7 +1436,7 @@ class CastillosCVEP40(BaseCastillos2023):
         methodology="Factorial experimental design with 12 participants. Four conditions: burst vs m-sequence × 100% vs 40% amplitude depth. Participants seated comfortably, presented with 15 blocks of 4 trials for each condition. Each trial: 0.5s cue (red-bordered square), 2.2s stimulation, 0.7s inter-trial interval. Four disc targets (150 pixels) on Dell monitor (60 Hz). Background: medium grey (50% max luminance, 124 lux). 100% condition: modulation to brightest white (168 lux). 40% condition: 40% of grey-to-white range (142 lux). EEG recorded with BrainProducts LiveAmp (32 channels, 500 Hz), impedance <25kΩ. Analysis on subset: O1, O2, Oz, Pz, P3, P4, P8, P9. Preprocessing: average re-reference, IIR notch filter (49.9-50.1 Hz, order 16), epoching (0-2.2s), baseline removal. Classification: CNN architecture with sliding windows for bitwise decoding.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -1434,4 +1444,6 @@ class CastillosCVEP40(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="mseq40",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )

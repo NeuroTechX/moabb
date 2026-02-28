@@ -284,6 +284,7 @@ class RomaniBF2025ERP(BaseDataset):
         include_inference: bool = False,
         load_failed: bool = False,
         montage: str = "standard_1020",
+        sessions=None,
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -362,6 +363,7 @@ class RomaniBF2025ERP(BaseDataset):
             interval=interval,
             paradigm="p300",
             doi="10.48550/arXiv.2510.10169",
+            selected_sessions=sessions,
         )
 
     def _ensure_data_downloaded(self) -> None:

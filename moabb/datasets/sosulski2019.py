@@ -289,6 +289,8 @@ class Sosulski2019(BaseDataset):
         load_soa_60=False,
         reject_non_iid=False,
         interval=None,
+        subjects=None,
+        sessions=None,
     ):
         """
         :param use_soa_as_sessions: 1800 epochs were recorded at different SOAs each. Depending on
@@ -316,6 +318,8 @@ class Sosulski2019(BaseDataset):
             interval=interval,
             paradigm="p300",
             doi="10.6094/UNIFR/154576",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     @staticmethod

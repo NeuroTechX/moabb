@@ -157,7 +157,7 @@ class MartinezCagigal2023Pary(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
-    def __init__(self, conditions=ALL_CONDITIONS):
+    def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None):
         # Validate conditions
         for cond in conditions:
             if cond not in ALL_CONDITIONS:
@@ -175,6 +175,8 @@ class MartinezCagigal2023Pary(BaseDataset):
             interval=(0, 1),  # Don't use this, it depends on the condition
             paradigm="cvep",
             doi="https://doi.org/10.71569/025s-eq10",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

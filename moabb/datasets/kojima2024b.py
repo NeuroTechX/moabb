@@ -422,8 +422,9 @@ class Kojima2024B(BaseDataset):
         self,
         events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]},
         task="all",
+        subjects=None,
+        sessions=None,
     ):
-        self.subject_list = list(range(1, 16))
         self.n_channels = 64
 
         if task == "all":
@@ -439,13 +440,15 @@ class Kojima2024B(BaseDataset):
             )
 
         super().__init__(
-            self.subject_list,
+            list(range(1, 16)),
             sessions_per_subject=1,
             events=events,
             code="Kojima2024B",
             interval=[-0.5, 1.2],
             paradigm="p300",
             doi="10.7910/DVN/1UJDV6",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _block_rep(self, task, run):

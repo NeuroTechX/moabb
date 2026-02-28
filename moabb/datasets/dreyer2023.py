@@ -45,23 +45,23 @@ class _Dreyer2023Base(BaseDataset):
     Should not be instantiated.
     """
 
-    def __init__(self, subjects, sub_id=""):
+    def __init__(self, all_subjects, sub_id="", subjects=None, sessions=None):
 
         self.sub_id = sub_id
 
         if sub_id is None:
             self.sub_id = ""
 
-        self.subject_list = subjects
-
         super().__init__(
-            self.subject_list,
+            all_subjects,
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
             code="Dreyer2023" + self.sub_id,
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1038/s41597-023-02445-z",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -515,8 +515,11 @@ class Dreyer2023A(_Dreyer2023Base):
         methodology="Participants performed a Graz protocol MI-BCI task with 6 runs (2 calibration runs with sham feedback, 4 online training runs with real feedback). Each run consisted of 40 trials (20 per MI-task) with 8s trial duration. Trial structure: green cross (t=0s), acoustic signal (t=2s), red arrow cue (t=3s, 1.25s duration), continuous visual feedback (t=4.25s, 3.75s duration), inter-trial interval (1.5-3.5s). Signal processing used participant-specific Most Discriminant Frequency Band (MDFB) selection (5-35 Hz range), fifth-order Butterworth filtering, Common Spatial Pattern (CSP) with 3 pairs of spatial filters, and Linear Discriminant Analysis (LDA) classifier trained on calibration data. Participants completed 6 questionnaires assessing demographics, personality (16PF5), cognitive traits, spatial abilities (Mental Rotation test), learning style (ILS), and pre/post-experiment states (NeXT questionnaire).",
     )
 
-    def __init__(self):
-        super().__init__(subjects=list(range(1, 61)), sub_id="A")
+    def __init__(self, subjects=None, sessions=None):
+        super().__init__(
+            all_subjects=list(range(1, 61)), sub_id="A",
+            subjects=subjects, sessions=sessions,
+        )
 
 
 class Dreyer2023B(_Dreyer2023Base):
@@ -781,8 +784,11 @@ class Dreyer2023B(_Dreyer2023Base):
         methodology="Participants completed one single session lasting around 2 hours. The session included: (1) questionnaires on demographics, personality (16PF5), learning style (ILS), mental rotation test, and user states (NeXT); (2) EEG cap installation; (3) resting state baselines (eyes open and closed, 3 min each); (4) MI-BCI session with 6 runs using the Graz protocol - 2 calibration runs with sham feedback (80 trials total) followed by 4 online runs with real feedback (160 trials). Each trial lasted 8s: green cross (t=0s), acoustic signal (t=2s), red arrow cue (t=3s for 1.25s), then continuous visual feedback (blue bar, t=4.25-8s, updated at 16Hz). Signal processing used participant-specific discriminant frequency band selection (5-35 Hz range), 5th-order Butterworth filtering, CSP spatial filters (3 pairs), and LDA classifier trained on calibration data.",
     )
 
-    def __init__(self):
-        super().__init__(subjects=list(range(61, 82)), sub_id="B")
+    def __init__(self, subjects=None, sessions=None):
+        super().__init__(
+            all_subjects=list(range(61, 82)), sub_id="B",
+            subjects=subjects, sessions=sessions,
+        )
 
 
 class Dreyer2023C(_Dreyer2023Base):
@@ -1049,8 +1055,11 @@ class Dreyer2023C(_Dreyer2023Base):
         runs_per_session=6,
     )
 
-    def __init__(self):
-        super().__init__(subjects=list(range(82, 88)), sub_id="C")
+    def __init__(self, subjects=None, sessions=None):
+        super().__init__(
+            all_subjects=list(range(82, 88)), sub_id="C",
+            subjects=subjects, sessions=sessions,
+        )
 
 
 class Dreyer2023(_Dreyer2023Base):
@@ -1306,5 +1315,8 @@ class Dreyer2023(_Dreyer2023Base):
         data_processed=False,
     )
 
-    def __init__(self):
-        super().__init__(subjects=list(range(1, 88)))
+    def __init__(self, subjects=None, sessions=None):
+        super().__init__(
+            all_subjects=list(range(1, 88)),
+            subjects=subjects, sessions=sessions,
+        )

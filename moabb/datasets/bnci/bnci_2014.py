@@ -459,7 +459,7 @@ class BNCI2014_001(MNEBNCI):
         runs_per_session=6,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -468,6 +468,8 @@ class BNCI2014_001(MNEBNCI):
             interval=[2, 6],
             paradigm="imagery",
             doi="10.3389/fnins.2012.00055",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -679,7 +681,7 @@ class BNCI2014_002(MNEBNCI):
         data_processed=True,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
@@ -688,6 +690,8 @@ class BNCI2014_002(MNEBNCI):
             interval=[3, 8],
             paradigm="imagery",
             doi="10.1007/s00500-012-0895-4",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -938,7 +942,7 @@ class BNCI2014_004(MNEBNCI):
         methodology="Subjects performed kinesthetic motor imagery of left or right hand movements. Two screening sessions (01T, 02T) without feedback (6 runs with 10 trials each = 120 trials per session). Three feedback sessions (03T, 04E, 05E) with smiley feedback (4 runs with 20 trials each = 80 trials per session). Trials started with fixation cross and beep, followed by arrow cue (1.25s), then imagery period (4s for screening, 4.5s for feedback). Three bipolar EEG channels (C3, Cz, C4) were recorded at 250 Hz with 0.5-100 Hz bandpass and 50 Hz notch filter. EOG correction using linear regression. Features: Bandpower in specific frequency bands. Classifier: LDA with 10x10 cross-validation.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
@@ -947,6 +951,8 @@ class BNCI2014_004(MNEBNCI):
             interval=[3, 7.5],
             paradigm="imagery",
             doi="10.1109/TNSRE.2007.906956",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -1137,7 +1143,7 @@ class BNCI2014_008(MNEBNCI):
         runs_per_session=1,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
@@ -1146,6 +1152,8 @@ class BNCI2014_008(MNEBNCI):
             interval=[0, 1.0],
             paradigm="p300",
             doi="10.3389/fnhum.2013.00732",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -1345,7 +1353,7 @@ class BNCI2014_009(MNEBNCI):
         methodology="Ten healthy subjects (10 female, mean age = 26.8 ± 5.6) with previous experience with P300-based BCIs attended 4 recording sessions. Scalp EEG potentials were measured using 16 Ag/AgCl electrodes arranged on an elastic cap per the 10-10 standard. Each electrode was referenced to the linked earlobes and grounded to the right mastoid. The EEG was acquired using a g.USBamp amplifier (g.Tec, Austria), digitized at 256 Hz, high pass- and low pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively. The electrode impedance did not exceed 10 kΩ. Visual stimulation, acquisition and online classification were performed with BCI2000. Each subject attended 4 recording sessions. During each session, the subject performed three runs with each of the stimulation interfaces. Each trial consisted of eight stimulation sequences, and thus, 16 intensifications of the target character. Each stimulus was intensified for 125 ms, with an inter stimulus interval (ISI) of 125 ms, yielding a 250 ms lag between the appearance of two stimuli (SOA). Pseudorandom stimulation sequences were assembled so that each target intensification would not occur within 500 ms after the previous one to avoid the attentional blink phenomenon.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=3,
@@ -1354,4 +1362,6 @@ class BNCI2014_009(MNEBNCI):
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1088/1741-2560/11/3/035008",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )

@@ -225,7 +225,7 @@ class Zhou2016(BaseBIDSDataset):
         data_processed=True,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         """Initialize the BIDS dataset."""
         super().__init__(
             subjects=list(range(1, 5)),
@@ -237,6 +237,8 @@ class Zhou2016(BaseBIDSDataset):
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1371/journal.pone.0162657",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.zenodo_record_id = ZENODO_RECORD_ID
 

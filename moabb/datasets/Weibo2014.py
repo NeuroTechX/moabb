@@ -345,7 +345,7 @@ class Weibo2014(BaseDataset):
         file_format="EEG",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
@@ -357,7 +357,9 @@ class Weibo2014(BaseDataset):
                 left_hand_right_foot=5,
                 right_hand_left_foot=6,
                 rest=7,
-            ),
+                selected_subjects=subjects,
+            selected_sessions=sessions,
+        ),
             code="Weibo2014",
             # Full trial w/ rest is 0-8
             interval=[3, 7],

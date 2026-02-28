@@ -614,6 +614,9 @@ class BaseDataset(metaclass=MetaclassDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        *,
+        selected_subjects=None,
+        selected_sessions=None,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -635,14 +638,30 @@ class BaseDataset(metaclass=MetaclassDataset):
                 "See moabb.datasets.base.is_abbrev for more information."
             )
 
-        self.subject_list = subjects
+        self._all_subjects = list(subjects)
+        if selected_subjects is not None:
+            invalid = [s for s in selected_subjects if s not in self._all_subjects]
+            if invalid:
+                raise ValueError(
+                    f"Invalid subjects: {invalid}. "
+                    f"Valid subjects are: {self._all_subjects}"
+                )
+            self.subject_list = list(selected_subjects)
+        else:
+            self.subject_list = list(subjects)
         self.n_sessions = sessions_per_subject
+        self._selected_sessions = selected_sessions
         self.event_id = events
         self.code = code
         self.interval = interval
         self.paradigm = paradigm
         self.doi = doi
         self.unit_factor = unit_factor
+
+    @property
+    def all_subjects(self):
+        """Full list of subjects available in this dataset (unfiltered)."""
+        return list(self._all_subjects)
 
     @cached_property
     def metadata(self) -> "DatasetMetadata | None":
@@ -734,6 +753,7 @@ class BaseDataset(metaclass=MetaclassDataset):
     def get_data(
         self,
         subjects=None,
+        sessions=None,
         cache_config=None,
         process_pipeline=None,
     ):
@@ -765,6 +785,10 @@ class BaseDataset(metaclass=MetaclassDataset):
         ----------
         subjects: List of int
             List of subject number
+        sessions: List of int or str | None
+            List of sessions to return. If None, all sessions are returned.
+            Sessions can be filtered either here or at construction time
+            via the ``sessions`` parameter.
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See ``CacheConfig``
             for details.
@@ -790,6 +814,8 @@ class BaseDataset(metaclass=MetaclassDataset):
         if not isinstance(subjects, list):
             raise ValueError("subjects must be a list")
 
+        effective_sessions = sessions if sessions is not None else self._selected_sessions
+
         cache_config = CacheConfig.make(cache_config)
 
         if process_pipeline is None:
@@ -799,11 +825,17 @@ class BaseDataset(metaclass=MetaclassDataset):
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
-            data[subject] = self._get_single_subject_data_using_cache(
+            subject_data = self._get_single_subject_data_using_cache(
                 subject,
                 cache_config,
                 process_pipeline,
             )
+            if effective_sessions is not None:
+                str_sessions = {str(s) for s in effective_sessions}
+                subject_data = {
+                    k: v for k, v in subject_data.items() if k in str_sessions
+                }
+            data[subject] = subject_data
         check_subject_names(data)
         check_session_names(data)
         check_run_names(data)

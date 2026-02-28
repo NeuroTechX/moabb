@@ -41,6 +41,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         n_subjects,
         raw_slice_offset,
         use_blocks_as_sessions=True,
+        subjects=None,
+        sessions=None,
         **kwargs,
     ):
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
@@ -52,6 +54,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             events=dict(Target=10002, NonTarget=10001),
             paradigm="p300",
             subjects=(np.arange(n_subjects) + 1).tolist(),
+            selected_subjects=subjects,
+            selected_sessions=sessions,
             **kwargs,
         )
 
@@ -391,7 +395,14 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
         methodology="The experiment used a modified visual ERP speller with a 6×7 grid. Two distinct stimulus sequences with different target/non-target ratios were used: sequence 1 had 3 targets in 8 stimuli, sequence 2 had 2 targets in 18 stimuli. Each trial consisted of 4 sequences of length 8 and 2 sequences of length 18, totaling 68 highlighting events per character. The LLP algorithm exploited these known proportions to reconstruct mean target and non-target ERP responses without requiring labeled data. The classifier was reset at the start of each sentence and retrained after each character. Subjects spelled a German pangram sentence three times. One subject (S2) had prior EEG experience; others were naive. Sessions lasted about 3 hours including setup. Participants were compensated 8 Euros per hour.",
     )
 
-    def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
+    def __init__(
+        self,
+        interval=None,
+        raw_slice_offset=None,
+        use_blocks_as_sessions=True,
+        subjects=None,
+        sessions=None,
+    ):
         llp_speller_paper_doi = "10.1371/journal.pone.0175856"
         super().__init__(
             src_url=VISUAL_SPELLER_LLP_URL,
@@ -402,6 +413,8 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             interval=interval,
             doi=llp_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -649,7 +662,14 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         methodology="Online study comparing three unsupervised learning methods (EM, LLP, MIX) for P300 speller. Twelve healthy volunteers (8 female, 4 male, mean age 26, range 19-31 years) participated in a single session each. Subjects spelled the German sentence 'Franzy jagt im Taxi quer durch das' (35 characters) in three blocks, each using a different unsupervised algorithm in pseudo-randomized order. Each trial (spelling one character) consisted of 68 highlighting events with 250 ms SOA and 100 ms stimulus duration (ISI=150 ms). The speller used a modified 6x6 grid with 36 normal characters extended with 10 # symbols as visual blanks (total 46 symbols). Two interleaved highlighting sequences were used: S1 highlighted only normal characters, S2 highlighted both normal characters and # symbols, creating different known target-to-non-target ratios to enable learning from label proportions. Highlighting consisted of brightness enhancement, rotation, enlargement and trichromatic grid overlay. Classifiers were randomly initialized at block start and updated after each trial. No labeled data was provided during online session. Participants sat 80 cm from a 24-inch screen. EEG was recorded from 31 passive Ag/AgCl electrodes (EasyCap) placed according to extended 10-20 system, with impedances kept below 20 kOhm. Signals were recorded and amplified by BrainAmp DC at 1 kHz sampling rate using BBCI toolbox in Matlab. Data was bandpass filtered (0.5-8 Hz, 3rd order Chebyshev Type II), downsampled to 100 Hz, epoched to [-200, 700] ms relative to stimulus onset, and baseline corrected using [-200, 0] ms interval. Features were mean amplitudes of six time intervals ([50-120], [121-200], [201-280], [281-380], [381-530], [531-700] ms post-stimulus) per channel. No artifact rejection was applied; participants were instructed to avoid artifacts. Performance metrics: spelling accuracy and AUC for target vs. non-target discrimination. Results showed MIX method achieved ~80% accuracy after ~7 characters (168 seconds, 476 epochs) and performed comparably to supervised regularized LDA trained on same amount of labeled data after 10+ characters. Ethics approval was obtained from University Medical Center Freiburg. Participants were compensated 8 Euros per hour for the ~3 hour session (including EEG setup).",
     )
 
-    def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
+    def __init__(
+        self,
+        interval=None,
+        raw_slice_offset=None,
+        use_blocks_as_sessions=True,
+        subjects=None,
+        sessions=None,
+    ):
         mix_speller_paper_doi = "10.1109/MCI.2018.2807039"
         super().__init__(
             src_url=VISUAL_SPELLER_MIX_URL,
@@ -660,6 +680,8 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             interval=interval,
             doi=mix_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 

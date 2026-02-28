@@ -347,7 +347,7 @@ class Schirrmeister2017(BaseDataset):
         methodology="End-to-end deep learning approach comparing shallow ConvNets, deep ConvNets, and ResNets against FBCSP baseline. Evaluated design choices including batch normalization, exponential linear units, dropout, and cropped training strategies. Novel visualization techniques developed to understand learned features and verify that ConvNets use spectral power modulations in task-relevant frequency bands.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
@@ -356,6 +356,8 @@ class Schirrmeister2017(BaseDataset):
             interval=[0, 4],
             paradigm="imagery",
             doi="10.1002/hbm.23730",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def data_path(
