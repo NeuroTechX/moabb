@@ -1260,8 +1260,7 @@ def plot_class_balance(
         # Normalize metadata keys to handle variants like
         # "NonTarget" vs "non-target".
         normalized_counts = {
-            _normalize_class_label(key): value
-            for key, value in trials_per_class.items()
+            _normalize_class_label(key): value for key, value in trials_per_class.items()
         }
 
         # Map class names to counts

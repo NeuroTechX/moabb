@@ -1419,8 +1419,7 @@ def _restructure_docstring_lines(lines, cls_name, default_subject=1):
     new_lines.append(" " * (TAB_INDENT + 3) + f"dataset = {cls_name}()")
     subject_literal = repr(default_subject)
     new_lines.append(
-        " " * (TAB_INDENT + 3)
-        + f"data = dataset.get_data(subjects=[{subject_literal}])"
+        " " * (TAB_INDENT + 3) + f"data = dataset.get_data(subjects=[{subject_literal}])"
     )
     new_lines.append(" " * (TAB_INDENT + 3) + f"print(data[{subject_literal}])")
     new_lines.append("")
