@@ -59,6 +59,13 @@ class PhysionetMI(BaseDataset):
        (if the target is on top) or both feet (if the target is on the bottom)
        until the target disappears. Then the subject relaxes.
 
+    .. note::
+        Subject 88 was recorded at 128 Hz instead of 160 Hz like all other
+        subjects. Loading subject 88 together with other subjects will cause
+        errors in any paradigm due to incompatible sampling rates. To avoid
+        this, exclude subject 88 when loading the full dataset, e.g.
+        ``PhysionetMI(subjects=[s for s in range(1, 110) if s != 88])``.
+
     Parameters
     ----------
 
