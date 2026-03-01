@@ -841,7 +841,8 @@ class BaseEvaluation(ABC):
             processing_params, parallel_results
         ):
             for res in results:
-                self.push_result(res, pipelines, process_pipeline)
+                self._log_result(res)
+            self._push_results_batch(results, pipelines, process_pipeline)
 
             res_per_db.append(
                 self.results.to_dataframe(
@@ -960,6 +961,20 @@ class BaseEvaluation(ABC):
         self.results.add(
             {res["pipeline"]: res}, pipelines=pipelines, process_pipeline=process_pipeline
         )
+
+    def _log_result(self, res):
+        message = "{} | ".format(res["pipeline"])
+        message += "{} | {} | {}".format(
+            res["dataset"].code, res["subject"], res["session"]
+        )
+        message += ": Score %.3f" % res["score"]
+        log.info(message)
+
+    def _push_results_batch(self, results, pipelines, process_pipeline):
+        grouped = {}
+        for res in results:
+            grouped.setdefault(res["pipeline"], []).append(res)
+        self.results.add(grouped, pipelines=pipelines, process_pipeline=process_pipeline)
 
     def get_results(self):
         return self.results.to_dataframe()

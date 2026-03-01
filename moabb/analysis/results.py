@@ -190,12 +190,19 @@ class Results:
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
-                for d in dlist:
-                    # add id and scores to group
-                    length = len(dset["id"]) + 1
-                    dset["id"].resize(length, 0)
-                    dset["data"].resize(length, 0)
-                    dset["id"][-1, :] = np.asarray([str(d["subject"]), str(d["session"])])
+                n_new = len(dlist)
+                old_len = len(dset["id"])
+                new_len = old_len + n_new
+                dset["id"].resize(new_len, 0)
+                dset["data"].resize(new_len, 0)
+                if _carbonfootprint and "codecarbon_task_name" in dset:
+                    dset["codecarbon_task_name"].resize(new_len, 0)
+
+                for i, d in enumerate(dlist):
+                    row = old_len + i
+                    dset["id"][row, :] = np.asarray(
+                        [str(d["subject"]), str(d["session"])]
+                    )
                     try:
                         add_cols = [d[ac] for ac in self.additional_columns]
                     except KeyError:
@@ -218,12 +225,11 @@ class Results:
 
                         # Save unique CodeCarbon task name (only if dataset exists)
                         if "codecarbon_task_name" in dset:
-                            dset["codecarbon_task_name"].resize(length, 0)
-                            dset["codecarbon_task_name"][-1] = str(
+                            dset["codecarbon_task_name"][row] = str(
                                 d.get("codecarbon_task_name", "")
                             )
 
-                    dset["data"][-1, :] = np.asarray(
+                    dset["data"][row, :] = np.asarray(
                         [
                             *cols,
                             *add_cols,

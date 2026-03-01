@@ -290,6 +290,14 @@ class TestResults:
         df = self.obj.to_dataframe()
         assert df.shape[0] == 2
 
+    def test_add_batch_list_values(self):
+        """Test adding a batch of results as a list for a single pipeline."""
+        _in = {"a": [d1, d2, d4]}
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
+        df = self.obj.to_dataframe()
+        assert df.shape[0] == 3, f"Expected 3 rows, got {df.shape[0]}"
+        assert set(df["pipeline"]) == {"a"}
+
     def test_dataframe_with_missing_codecarbon_dataset(self):
         """Test that to_dataframe works even if codecarbon_task_name dataset doesn't exist."""
         # Add a result without carbon_emission
