@@ -433,7 +433,7 @@ class TestMetadataCatalog:
     def test_physionetmi_metadata(self):
         """Test PhysionetMI metadata."""
         metadata = get_dataset_metadata("PhysionetMI")
-        assert metadata.participants.n_subjects == 108
+        assert metadata.participants.n_subjects == 109
         assert metadata.acquisition.sampling_rate == 160.0
         assert metadata.experiment.paradigm == "imagery"
         # Note: events are now extracted dynamically from dataset.event_id

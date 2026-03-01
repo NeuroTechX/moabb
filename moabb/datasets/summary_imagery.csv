@@ -11,7 +11,7 @@ Lee2019_MI,54,62,2,100,4,1000,2,1,11000,https://paperswithcode.com/dataset/lee20
 GrosseWentrup2009,10,128,2,150,7,500,1,1,3000,https://paperswithcode.com/dataset/grossewentrup2009-moabb
 Schirrmeister2017,14,128,4,120,4,500,1,2,13440,https://paperswithcode.com/dataset/schirrmeister2017-moabb
 Ofner2017,15,61,7,60,3,512,1,10,63000,
-PhysionetMI,108,64,4,23,3,160,1,1,69760,https://paperswithcode.com/dataset/physionetmotorimagery-moabb
+PhysionetMI,109,64,4,23,3,160,1,1,69760,https://paperswithcode.com/dataset/physionetmotorimagery-moabb
 Shin2017A,29,30,2,30,10,200,3,1,5220,https://paperswithcode.com/dataset/shin2017a-moabb
 Shin2017B,29,30,2,30,10,200,3,1,5220,
 Weibo2014,10,60,7,80,4,200,1,1,5600,https://paperswithcode.com/dataset/weibo2014-moabb

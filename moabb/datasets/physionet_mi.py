@@ -61,10 +61,10 @@ class PhysionetMI(BaseDataset):
 
     .. note::
         Subject 88 was recorded at 128 Hz instead of 160 Hz like all other
-        subjects. Loading subject 88 together with other subjects will fail in
-        any paradigm because the sampling rates are incompatible. Subject 88 is
-        therefore excluded from the default subject list. You can still load it
-        individually by passing ``subjects=[88]``.
+        subjects. Loading subject 88 together with other subjects will cause
+        errors in any paradigm due to incompatible sampling rates. To avoid
+        this, exclude subject 88 when loading the full dataset, e.g.
+        ``PhysionetMI(subjects=[s for s in range(1, 110) if s != 88])``.
 
     Parameters
     ----------
@@ -173,7 +173,7 @@ class PhysionetMI(BaseDataset):
             montage="standard_1020",
         ),
         participants=ParticipantMetadata(
-            n_subjects=108,
+            n_subjects=109,
             health_status="healthy",
             species="human",
         ),
@@ -300,11 +300,8 @@ class PhysionetMI(BaseDataset):
         imagined = resolved.get("imagined", imagined)
         executed = resolved.get("executed", executed)
 
-        # Subject 88 is recorded at 128 Hz instead of 160 Hz and is excluded
-        # by default to avoid incompatibility errors in paradigms.
-        all_subjects = [s for s in range(1, 110) if s != 88]
         super().__init__(
-            subjects=all_subjects,
+            subjects=list(range(1, 110)),
             sessions_per_subject=1,
             events=dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1),
             code="PhysionetMotorImagery",
