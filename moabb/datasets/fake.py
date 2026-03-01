@@ -58,7 +58,7 @@ class FakeDataset(BaseDataset):
         seed=None,
         sfreq=128,
         duration=120,
-        n_events=20,
+        n_events=60,
         stim=True,
         annotations=False,
         subjects=None,
@@ -113,7 +113,7 @@ class FakeDataset(BaseDataset):
         self.seed = seed
         code = (
             f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}--"
-            f"{'-'.join([str(n * 3) for n in self.n_events])}--"
+            f"{'-'.join([str(n) for n in self.n_events])}--"
             f"{'-'.join([str(int(n)) for n in self.duration])}--"
             f"{'-'.join([re.sub('[^A-Za-z0-9]', '', e).lower() for e in event_list])}--"
             f"{'-'.join([c.lower() for c in channels])}"
