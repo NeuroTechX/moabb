@@ -135,8 +135,8 @@ class MartinezCagigal2023Pary(BaseDataset):
     .. [2] Martínez-Cagigal, V., Thielen, J., Santamaría-Vázquez, E.,
        Pérez-Velasco, S., Desain, P., & Hornero, R. (2021).
        Brain-computer interfaces based on code-modulated visual evoked
-       potentials (c-VEP): A literature review. *Journal of Neural Engineering,
-       18*(6), 061002. https://doi.org/10.1088/1741-2552/ac38cf
+       potentials (c-VEP): A literature review. *Journal of Neural Engineering*,
+       18(6), 061002. https://doi.org/10.1088/1741-2552/ac38cf
 
     .. [3] Martínez-Cagigal, V. (2025). Dataset: Non-binary m-sequences for
        more comfortable brain-computer interfaces based on c-VEPs.

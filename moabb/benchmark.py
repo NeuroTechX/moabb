@@ -110,7 +110,7 @@ def benchmark(  # noqa: C901
     paradigms : list of str
         To restrict the paradigms on which evaluations should be run.
         Can be a list of these elements ['LeftRightImagery', 'MotorImagery', 'FilterBankSSVEP', 'SSVEP',
-        'FilterBankMotorImagery'].
+        'FilterBankMotorImagery', 'P300'].
 
     results : str
         Folder to store the results.

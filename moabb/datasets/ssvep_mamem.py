@@ -734,7 +734,7 @@ class MAMEM1(BaseMAMEM):
 class MAMEM2(BaseMAMEM):
     """SSVEP MAMEM 2 dataset.
 
-    Dataset from [1]_.
+    Dataset from [1]_. Data acquisition details are documented in [3]_.
 
     EEG signals with 256 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
@@ -1239,7 +1239,7 @@ class MAMEM2(BaseMAMEM):
 class MAMEM3(BaseMAMEM):
     """SSVEP MAMEM 3 dataset.
 
-    Dataset from [1]_.
+    Dataset from [1]_. Data acquisition details are documented in [3]_.
 
     EEG signals with 14 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies

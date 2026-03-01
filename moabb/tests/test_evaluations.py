@@ -458,7 +458,7 @@ class Test_CrossSess(TestWithinSess):
         assert "requires at least 2 sessions" in error_msg
 
 
-class UtilEvaluation:
+class TestUtilEvaluation:
     def test_save_model_cv(self):
         model = Dummy()
         save_path = "test_save_path"
@@ -504,7 +504,7 @@ class UtilEvaluation:
             import torch
             from skorch import NeuralNetClassifier
         except ImportError:
-            self.skipTest("skorch library not available")
+            pytest.skip("skorch library not available")
 
         step = NeuralNetClassifier(module=torch.nn.Linear(10, 2))
         step.initialize()

@@ -46,7 +46,7 @@ class Hinss2021(BaseDataset):
 
     Subsequently, participants undertook 3 tasks of varying difficulty levels
     (i.e., easy, medium, and difficult). The task assignments
-    were randomized. For more details, please check [Hinss2021]_.
+    were randomized. For more details, please check [Hinss2021]_ and [Hinss2023]_.
 
     Notes
     -----

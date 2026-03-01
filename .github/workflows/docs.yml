@@ -41,12 +41,13 @@ jobs:
           path: |
             mne_data
             ~/.mne
-          key: doc-${{ runner.os }}-mne-data-v3-${{ github.run_id }}
+          key: doc-${{ runner.os }}-mne-data-v3
           restore-keys: |
             doc-${{ runner.os }}-mne-data-v3-
 
       - name: Clean up corrupted cache
         run: |
+          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
           echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
           mkdir -p mne_data
           # Remove any incomplete extractions (e.g., BIDS.zip.unzip alongside final folder)
@@ -161,6 +162,7 @@ jobs:
           SPHINX_GALLERY_PARALLEL: ${{ steps.cache-mne_data.outputs.cache-matched-key != '' }}
           SPHINX_JOBS: ${{ steps.cache-mne_data.outputs.cache-matched-key != '' && 'auto' || '1' }}
         run: |
+          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
           echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
           echo "Parallel gallery builds: $SPHINX_GALLERY_PARALLEL"
           echo "Sphinx jobs: $SPHINX_JOBS"
@@ -184,13 +186,13 @@ jobs:
           done
 
       - name: Save MNE Data Cache
-        if: success()
+        if: success() && steps.cache-mne_data.outputs.cache-hit != 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
         uses: actions/cache/save@v4
         with:
           path: |
             mne_data
             ~/.mne
-          key: doc-${{ runner.os }}-mne-data-v3-${{ github.run_id }}
+          key: doc-${{ runner.os }}-mne-data-v3
 
       # Create an artifact of the html output.
       - uses: actions/upload-artifact@v4

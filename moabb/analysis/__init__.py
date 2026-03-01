@@ -15,6 +15,14 @@ from moabb.analysis.plotting import (  # noqa: F401
     emissions_summary,
 )
 from moabb.analysis.results import Results  # noqa: F401
+from moabb.analysis.timeline import (  # noqa: F401
+    class_balance_svg,
+    plot_class_balance,
+    plot_session_structure,
+    plot_stimulus_timeline,
+    session_structure_svg,
+    stimulus_timeline_svg,
+)
 
 
 log = logging.getLogger(__name__)
