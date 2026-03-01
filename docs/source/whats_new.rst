@@ -69,6 +69,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix missing ``P300`` from the list of valid paradigms in the :func:`moabb.benchmark` docstring (by `Bruno Aristimunha`_)
 - Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Added missing metadata DOIs for AlexMI, PhysionetMI, GrosseWentrup2009, Shin2017A, Shin2017B, BNCI2014_004, and BNCI2003_004 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
