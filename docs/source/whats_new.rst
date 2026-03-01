@@ -116,6 +116,7 @@ Code health
 - Move ``WithinSessionSplitter`` creation outside the per-session loop in ``WithinSessionEvaluation``, since splitter parameters do not change per session (:gh:`963` by `Bruno Aristimunha`_)
 - Add a compile smoke test (``moabb/tests/test_compilation.py``) that validates syntax for all Python files under ``moabb/`` using ``py_compile`` (:gh:`960` by `Bruno Aristimunha`_)
 - Add persistent DOI resolution cache (``moabb/tests/doi_cache.json``) for ``test_doi_validation.py`` to avoid network requests on every test run, reducing DOI test time from ~9 minutes to <1 second. Refresh with ``--update-doi-cache`` (:gh:`996` by `Bruno Aristimunha`_)
+- Fix ``UtilEvaluation`` test class not discovered by pytest: renamed to ``TestUtilEvaluation`` and replaced ``self.skipTest`` (unittest-only) with ``pytest.skip`` (:gh:`1005` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
