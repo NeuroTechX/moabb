@@ -4,12 +4,13 @@ import unittest
 from unittest.mock import patch
 
 import matplotlib
-import matplotlib.pyplot as plt
-
-from moabb.datasets.fake import FakeDataset
 
 
 matplotlib.use("Agg")
+
+import matplotlib.pyplot as plt  # noqa: E402
+
+from moabb.datasets.fake import FakeDataset  # noqa: E402
 
 
 class TestNormalizeClassLabel(unittest.TestCase):

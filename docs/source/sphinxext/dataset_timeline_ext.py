@@ -226,8 +226,10 @@ def _get_dataset_info(obj):
         event_id = getattr(ds, "event_id", None) or {}
         interval = getattr(ds, "interval", None)
 
-        # Extract richer stats from METADATA
+        # Extract richer stats from METADATA, falling back to catalog .metadata
         metadata = getattr(ds, "METADATA", None) or getattr(type(ds), "METADATA", None)
+        if metadata is None:
+            metadata = getattr(ds, "metadata", None)
 
         sampling_rate = None
         n_channels = None
@@ -594,8 +596,9 @@ def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
     items = []
     script_html = ""
     if doi:
+        doi_link_href = escape(f"https://doi.org/{quote(doi, safe='')}", quote=True)
         items.append(
-            f'<li><span>DOI</span><a href="https://doi.org/{escape(doi)}" '
+            f'<li><span>DOI</span><a href="{doi_link_href}" '
             f'target="_blank" rel="noopener">{escape(doi)}</a></li>'
         )
         if _is_likely_doi(doi):
@@ -832,7 +835,8 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
     if display_n_classes is not None:
         subtitle_parts.append(f"{display_n_classes} classes")
     if class_labels and len(class_labels) <= 6:
-        subtitle_parts.append("(" + " vs ".join(class_labels[:6]) + ")")
+        safe_labels = [escape(str(lbl)) for lbl in class_labels[:6]]
+        subtitle_parts.append("(" + " vs ".join(safe_labels) + ")")
     subtitle = ", ".join(subtitle_parts[:2])
     if len(subtitle_parts) > 2:
         subtitle += " " + subtitle_parts[2]
@@ -906,7 +910,7 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
     # --- Optional class-label line ---
     class_line = ""
     if class_labels:
-        preview = ", ".join(class_labels[:8])
+        preview = ", ".join(escape(str(lbl)) for lbl in class_labels[:8])
         if len(class_labels) > 8:
             preview += ", ..."
         class_line = (
@@ -929,8 +933,9 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
         )
     )
     if doi:
+        doi_href = escape(f"https://doi.org/{quote(doi, safe='')}", quote=True)
         actions.append(
-            f'<a class="ds-btn" href="https://doi.org/{quote(escape(doi))}" '
+            f'<a class="ds-btn" href="{doi_href}" '
             f'target="_blank" rel="noopener">Read Paper</a>'
         )
     actions.append(f'<a class="ds-btn" href="{compare_href}">Compare Similar</a>')
@@ -1639,7 +1644,7 @@ def _generate_all_svgs(app):
         if not os.path.exists(timeline_path):
             try:
                 svg = stimulus_timeline_svg(ds)
-                with open(timeline_path, "w") as f:
+                with open(timeline_path, "w", encoding="utf-8") as f:
                     f.write(svg)
             except Exception:
                 pass
@@ -1650,7 +1655,7 @@ def _generate_all_svgs(app):
             try:
                 svg = class_balance_svg(ds)
                 if svg:
-                    with open(classes_path, "w") as f:
+                    with open(classes_path, "w", encoding="utf-8") as f:
                         f.write(svg)
             except Exception:
                 pass
@@ -1661,7 +1666,7 @@ def _generate_all_svgs(app):
             try:
                 svg = session_structure_svg(ds)
                 if svg:
-                    with open(sessions_path, "w") as f:
+                    with open(sessions_path, "w", encoding="utf-8") as f:
                         f.write(svg)
             except Exception:
                 pass

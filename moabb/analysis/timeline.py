@@ -331,8 +331,16 @@ def _format_time(seconds: float) -> str:
 
 
 def _get_metadata(dataset: BaseDataset):
-    """Return dataset METADATA or None."""
-    return getattr(dataset, "METADATA", None) or getattr(type(dataset), "METADATA", None)
+    """Return dataset METADATA or None.
+
+    Checks the class-level ``METADATA`` attribute first, then falls back
+    to the catalog-backed ``dataset.metadata`` property.
+    """
+    meta = getattr(dataset, "METADATA", None) or getattr(type(dataset), "METADATA", None)
+    if meta is not None:
+        return meta
+    # Fallback: catalog-backed .metadata property (e.g. ErpCore2021_*, etc.)
+    return getattr(dataset, "metadata", None)
 
 
 def _get_stim_pres(metadata) -> dict[str, str]:

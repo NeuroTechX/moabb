@@ -53,7 +53,7 @@ def main():
         try:
             svg = stimulus_timeline_svg(ds)
             path = os.path.join(TIMELINE_DIR, f"{name}.svg")
-            with open(path, "w") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 f.write(svg)
             generated.append("timeline")
         except Exception:
@@ -64,7 +64,7 @@ def main():
             svg = class_balance_svg(ds)
             if svg:
                 path = os.path.join(VIZ_DIR, f"{name}_classes.svg")
-                with open(path, "w") as f:
+                with open(path, "w", encoding="utf-8") as f:
                     f.write(svg)
                 generated.append("classes")
         except Exception:
@@ -75,7 +75,7 @@ def main():
             svg = session_structure_svg(ds)
             if svg:
                 path = os.path.join(VIZ_DIR, f"{name}_sessions.svg")
-                with open(path, "w") as f:
+                with open(path, "w", encoding="utf-8") as f:
                     f.write(svg)
                 generated.append("sessions")
         except Exception:
