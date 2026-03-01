@@ -65,6 +65,7 @@ extensions = [
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
+    "dataset_timeline_ext",
     "myst_parser",
     "numpydoc",
     "sphinx_favicon",
@@ -75,6 +76,13 @@ extensions = [
 _build_sitemap = os.environ.get("MOABB_BUILD_SITEMAP", "1").strip().lower()
 if _build_sitemap in {"0", "false", "no"}:
     extensions = [ext for ext in extensions if ext != "sphinx_sitemap"]
+
+# Dataset card extension settings.
+# Keep SVG auto-generation off by default to avoid expensive full-dataset
+# rendering in every docs build; enable explicitly via env var when needed.
+dataset_card_generate_svgs = os.environ.get(
+    "MOABB_DATASET_CARD_GENERATE_SVGS", "0"
+).strip().lower() in {"1", "true", "yes"}
 
 
 def linkcode_resolve(domain, info):  # noqa: C901

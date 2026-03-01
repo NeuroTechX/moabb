@@ -2,16 +2,33 @@
 API and Main Concepts
 =====================
 
-.. figure:: images/architecture.png
-   :alt: architecture
+.. raw:: html
 
+   <div class="api-hero">
 
-There are 4 main concepts in the MOABB: **the datasets**, **the paradigm**, **the
-evaluation**, and **the pipelines**. In addition, we offer **statistical**,
-**visualization**, **utilities** to simplify the workflow.
+.. figure:: images/architecture.svg
+   :alt: Concept flow in MOABB
+   :class: api-architecture-diagram
 
-And if you want to just run the benchmark, you can use our **benchmark** module that wraps
-all the steps in a single function.
+   Datasets and Paradigms define the problem; Evaluations and Pipelines
+   define the measurement.
+
+.. raw:: html
+
+   <p class="api-intro">
+   There are 4 main concepts in the MOABB:
+   <strong class="concept-dataset">the datasets</strong>,
+   <strong class="concept-paradigm">the paradigms</strong>,
+   <strong class="concept-evaluation">the evaluations</strong>, and
+   <strong class="concept-pipeline">the pipelines</strong>.
+   In addition, we offer <strong>statistical</strong>,
+   <strong>visualization</strong>, <strong>utilities</strong> to simplify the workflow.
+   </p>
+   <p class="api-intro">
+   And if you want to just run the benchmark, you can use our
+   <strong>benchmark</strong> module that wraps all the steps in a single function.
+   </p>
+   </div>
 
 
 Datasets
@@ -168,9 +185,9 @@ Compound Datasets
     Cattan2019_VR_Il
     BI_Il
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 .. currentmodule:: moabb.datasets
 
 .. autosummary::
@@ -200,8 +217,8 @@ Base & Utils
     utils.plot_datasets_grid
     utils.plot_datasets_cluster
 
-Paradigm
---------
+Paradigms
+---------
 .. currentmodule:: moabb.paradigms
 
 A paradigm defines how the raw data will be converted to trials ready to
@@ -257,7 +274,7 @@ c-VEP Paradigms
     FilterBankCVEP
 
 -----------------------
-Resting state Paradigms
+Resting State Paradigms
 -----------------------
 
 .. autosummary::
@@ -277,9 +294,9 @@ Fixed Interval Windows Processings
     FixedIntervalWindowsProcessing
     FilterBankFixedIntervalWindowsProcessing
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
@@ -318,9 +335,9 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     CrossSessionSplitter
     CrossSubjectSplitter
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
@@ -410,22 +427,24 @@ The benchmark module wraps all the steps in a single function. It
 downloads the data, runs the benchmark, and returns the results. It is
 the easiest way to run a benchmark.
 
-.. code:: python
+.. admonition:: Minimal benchmark example
 
-    from moabb import benchmark
+   .. code-block:: python
 
-    results = benchmark(
-        pipelines="./pipelines",
-        evaluations=["WithinSession"],
-        paradigms=["LeftRightImagery"],
-        include_datasets=[BNCI2014_001(), PhysionetMI()],
-        exclude_datasets=None,
-        results="./results/",
-        overwrite=True,
-        plot=True,
-        output="./benchmark/",
-        n_jobs=-1,
-    )
+      from moabb import benchmark
+
+      results = benchmark(
+          pipelines="./pipelines",
+          evaluations=["WithinSession"],
+          paradigms=["LeftRightImagery"],
+          include_datasets=[BNCI2014_001(), PhysionetMI()],
+          exclude_datasets=None,
+          results="./results/",
+          overwrite=True,
+          plot=True,
+          output="./benchmark/",
+          n_jobs=-1,
+      )
 
 .. autosummary::
     :toctree: generated/
