@@ -7,13 +7,13 @@ from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import SSVEP
 from moabb.pipelines import (
     SSVEP_CCA,
-    SSVEP_eCCA,
-    SSVEP_itCCA,
-    SSVEP_MsetCCA,
     SSVEP_SSCOR,
     SSVEP_TDCA,
     SSVEP_TRCA,
     SSVEP_TRCA_R,
+    SSVEP_eCCA,
+    SSVEP_itCCA,
+    SSVEP_MsetCCA,
 )
 
 
@@ -276,7 +276,15 @@ class TestSSVEP_eCCA:
         self.clf.fit(self.X, self.y)
         check_is_fitted(
             self.clf,
-            attributes=["classes_", "one_hot_", "slen_", "freqs_", "le_", "templates_", "Yf"],
+            attributes=[
+                "classes_",
+                "one_hot_",
+                "slen_",
+                "freqs_",
+                "le_",
+                "templates_",
+                "Yf",
+            ],
         )
 
 

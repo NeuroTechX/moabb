@@ -1383,17 +1383,17 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
 
                 # r3: spatial filter from CCA(template, Y_n) applied to X and template
                 w_xn = self.w_template_[f]
-                r3 = np.corrcoef(
-                    (x.T @ w_xn).flatten(), (template.T @ w_xn).flatten()
-                )[0, 1]
+                r3 = np.corrcoef((x.T @ w_xn).flatten(), (template.T @ w_xn).flatten())[
+                    0, 1
+                ]
 
                 # r4: spatial filter from CCA(X, template) applied to X and template
                 cca_tmp = CCA(n_components=1)
                 cca_tmp.fit(x.T, template.T)
                 w_xn2 = cca_tmp.x_weights_
-                r4 = np.corrcoef(
-                    (x.T @ w_xn2).flatten(), (template.T @ w_xn2).flatten()
-                )[0, 1]
+                r4 = np.corrcoef((x.T @ w_xn2).flatten(), (template.T @ w_xn2).flatten())[
+                    0, 1
+                ]
 
                 # Fuse: sign(r) * r^2
                 rho[f] = sum(np.sign(r) * r**2 for r in [r1, r2, r3, r4])
@@ -1432,16 +1432,16 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
                 r2 = np.corrcoef(S_x2.T, S_y2.T)[0, 1]
 
                 w_xn = self.w_template_[f]
-                r3 = np.corrcoef(
-                    (x.T @ w_xn).flatten(), (template.T @ w_xn).flatten()
-                )[0, 1]
+                r3 = np.corrcoef((x.T @ w_xn).flatten(), (template.T @ w_xn).flatten())[
+                    0, 1
+                ]
 
                 cca_tmp = CCA(n_components=1)
                 cca_tmp.fit(x.T, template.T)
                 w_xn2 = cca_tmp.x_weights_
-                r4 = np.corrcoef(
-                    (x.T @ w_xn2).flatten(), (template.T @ w_xn2).flatten()
-                )[0, 1]
+                r4 = np.corrcoef((x.T @ w_xn2).flatten(), (template.T @ w_xn2).flatten())[
+                    0, 1
+                ]
 
                 P[i, j] = sum(np.sign(r) * r**2 for r in [r1, r2, r3, r4])
 
@@ -1569,9 +1569,7 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
                 x2 = x2 - np.mean(x2, axis=1, keepdims=True)
                 S = S + x1 @ x2.T + x2 @ x1.T
 
-        UX = np.concatenate(
-            [data[t, :, :] for t in range(n_trials)], axis=1
-        )
+        UX = np.concatenate([data[t, :, :] for t in range(n_trials)], axis=1)
         UX = UX - np.mean(UX, axis=1, keepdims=True)
         Q = UX @ UX.T
 
@@ -1648,8 +1646,16 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["classes_", "n_classes", "peaks_", "one_hot_", "one_inv_",
-             "freqs_", "le_", "sfreq_"],
+            [
+                "classes_",
+                "n_classes",
+                "peaks_",
+                "one_hot_",
+                "one_inv_",
+                "freqs_",
+                "le_",
+                "sfreq_",
+            ],
         )
         if self.n_classes is None:
             raise NotFittedError(
@@ -1693,8 +1699,16 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["classes_", "n_classes", "peaks_", "one_hot_", "one_inv_",
-             "freqs_", "le_", "sfreq_"],
+            [
+                "classes_",
+                "n_classes",
+                "peaks_",
+                "one_hot_",
+                "one_inv_",
+                "freqs_",
+                "le_",
+                "sfreq_",
+            ],
         )
         if self.n_classes is None:
             raise NotFittedError(
@@ -1901,8 +1915,16 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["classes_", "n_classes", "peaks_", "one_hot_", "one_inv_",
-             "freqs_", "le_", "sfreq_"],
+            [
+                "classes_",
+                "n_classes",
+                "peaks_",
+                "one_hot_",
+                "one_inv_",
+                "freqs_",
+                "le_",
+                "sfreq_",
+            ],
         )
         if self.n_classes is None:
             raise NotFittedError(
@@ -1946,8 +1968,16 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["classes_", "n_classes", "peaks_", "one_hot_", "one_inv_",
-             "freqs_", "le_", "sfreq_"],
+            [
+                "classes_",
+                "n_classes",
+                "peaks_",
+                "one_hot_",
+                "one_inv_",
+                "freqs_",
+                "le_",
+                "sfreq_",
+            ],
         )
         if self.n_classes is None:
             raise NotFittedError(
@@ -2128,9 +2158,7 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
         self.templates_ = np.zeros(
             (self.n_classes, self.n_fbands, n_aug_channels, n_samples_aug)
         )
-        self.weights_ = np.zeros(
-            (self.n_fbands, self.n_components, n_aug_channels)
-        )
+        self.weights_ = np.zeros((self.n_fbands, self.n_components, n_aug_channels))
 
         for band_n in range(self.n_fbands):
             # Collect augmented data per class
@@ -2200,8 +2228,16 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["classes_", "n_classes", "peaks_", "one_hot_", "one_inv_",
-             "freqs_", "le_", "sfreq_"],
+            [
+                "classes_",
+                "n_classes",
+                "peaks_",
+                "one_hot_",
+                "one_inv_",
+                "freqs_",
+                "le_",
+                "sfreq_",
+            ],
         )
         if self.n_classes is None:
             raise NotFittedError(
@@ -2246,8 +2282,16 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["classes_", "n_classes", "peaks_", "one_hot_", "one_inv_",
-             "freqs_", "le_", "sfreq_"],
+            [
+                "classes_",
+                "n_classes",
+                "peaks_",
+                "one_hot_",
+                "one_inv_",
+                "freqs_",
+                "le_",
+                "sfreq_",
+            ],
         )
         if self.n_classes is None:
             raise NotFittedError(
