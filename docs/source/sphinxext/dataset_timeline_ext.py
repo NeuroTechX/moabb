@@ -577,7 +577,7 @@ def _make_benchmark_context_html(cls_name, info):
     )
 
 
-def _make_citation_impact_html(info, benchmark_ctx):
+def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
     """Build a compact citation and impact block."""
     code = str(info.get("code") or "")
     doi = _normalize_doi(info.get("doi"))
@@ -599,21 +599,22 @@ def _make_citation_impact_html(info, benchmark_ctx):
             f'target="_blank" rel="noopener">{escape(doi)}</a></li>'
         )
         if _is_likely_doi(doi):
-            items.append(
-                f'<li><span>Citations</span><strong class="ds-citation-count" data-doi="{escape(doi)}">Loading…</strong></li>'
-            )
+            if live_citations:
+                items.append(
+                    f'<li><span>Citations</span><strong class="ds-citation-count" data-doi="{escape(doi)}">Loading…</strong></li>'
+                )
 
-            openalex_id = quote(f"https://doi.org/{doi}", safe="")
-            openalex_url = f"https://api.openalex.org/works/{openalex_id}"
-            crossref_url = f"https://api.crossref.org/works/{quote(doi)}"
-            items.append(
-                "<li><span>Public API</span>"
-                f'<span class="ds-citation-links"><a href="{crossref_url}" target="_blank" rel="noopener">Crossref</a>'
-                "&nbsp;|&nbsp;"
-                f'<a href="{openalex_url}" target="_blank" rel="noopener">OpenAlex</a></span>'
-                "</li>"
-            )
-            script_html = """
+                openalex_id = quote(f"https://doi.org/{doi}", safe="")
+                openalex_url = f"https://api.openalex.org/works/{openalex_id}"
+                crossref_url = f"https://api.crossref.org/works/{quote(doi)}"
+                items.append(
+                    "<li><span>Public API</span>"
+                    f'<span class="ds-citation-links"><a href="{crossref_url}" target="_blank" rel="noopener">Crossref</a>'
+                    "&nbsp;|&nbsp;"
+                    f'<a href="{openalex_url}" target="_blank" rel="noopener">OpenAlex</a></span>'
+                    "</li>"
+                )
+                script_html = """
 <script>
 (function () {
   if (window.__moabbCitationCountsInit) return;
@@ -664,6 +665,11 @@ def _make_citation_impact_html(info, benchmark_ctx):
 })();
 </script>
 """
+            else:
+                items.append(
+                    f'<li><span>Citations</span><a href="https://doi.org/{escape(doi)}" '
+                    f'target="_blank" rel="noopener">See DOI</a></li>'
+                )
     if pwc_url:
         items.append(
             f'<li><span>PapersWithCode</span><a href="{pwc_url}" target="_blank" '
@@ -790,14 +796,14 @@ def _make_github_issue_url(cls_name):
     )
 
 
-def _make_header_html(cls_name, info, source_url=None):
+def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
     """Build the enhanced dataset card HTML (Layer 1)."""
     paradigm = info.get("paradigm") or "unknown"
     label = _PARADIGM_LABELS.get(paradigm, paradigm.title())
     color = _PARADIGM_COLORS.get(paradigm, "#546E7A")
     n_subj = info.get("n_subjects")
     n_sess = info.get("n_sessions")
-    doi = info.get("doi")
+    doi = _normalize_doi(info.get("doi"))
     sampling_rate = info.get("sampling_rate")
     n_channels = info.get("n_channels")
     channel_types = info.get("channel_types")
@@ -881,7 +887,9 @@ def _make_header_html(cls_name, info, source_url=None):
     caveats_html = _make_known_caveats_html(info)
     benchmark_html = _make_benchmark_context_html(cls_name, info)
     benchmark_ctx = _get_benchmark_context(cls_name)
-    citation_html = _make_citation_impact_html(info, benchmark_ctx)
+    citation_html = _make_citation_impact_html(
+        info, benchmark_ctx, live_citations=live_citations
+    )
     compare_anchor_map = {
         "imagery": "motor-imagery",
         "p300": "p300-erp",
@@ -922,7 +930,7 @@ def _make_header_html(cls_name, info, source_url=None):
     )
     if doi:
         actions.append(
-            f'<a class="ds-btn" href="https://doi.org/{doi}" '
+            f'<a class="ds-btn" href="https://doi.org/{quote(escape(doi))}" '
             f'target="_blank" rel="noopener">Read Paper</a>'
         )
     actions.append(f'<a class="ds-btn" href="{compare_href}">Compare Similar</a>')
@@ -990,16 +998,18 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
     # Check which SVGs exist
     timeline_svg = os.path.join(srcdir, "_static", "timelines", f"{cls_name}.svg")
     sessions_svg = os.path.join(srcdir, "_static", "viz", f"{cls_name}_sessions.svg")
+    classes_svg = os.path.join(srcdir, "_static", "viz", f"{cls_name}_classes.svg")
 
     has_timeline = os.path.exists(timeline_svg)
     has_sessions = os.path.exists(sessions_svg)
+    has_classes = os.path.exists(classes_svg)
     has_hed = bool(hed_html)
 
     # Build channel summary HTML
     channel_html = _make_channel_summary_html(info)
 
     # Count how many grid items we have
-    n_items = sum([has_timeline, has_hed, has_sessions, bool(channel_html)])
+    n_items = sum([has_timeline, has_hed, has_classes, has_sessions, bool(channel_html)])
     if n_items == 0:
         # At minimum show the timeline if it exists, else skip grid
         if not has_timeline:
@@ -1089,6 +1099,19 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
         for hed_line in hed_html.split("\n"):
             lines.append(f"         {hed_line}")
         lines.append("")
+
+    if has_classes:
+        lines.extend(
+            [
+                "   .. grid-item-card:: Class Balance",
+                "      :class-card: ds-viz-card",
+                "",
+                f"      .. image:: /_static/viz/{cls_name}_classes.svg",
+                "         :width: 100%",
+                "         :class: viz-diagram",
+                "",
+            ]
+        )
 
     if has_sessions:
         lines.extend(
@@ -1504,7 +1527,10 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
     # --- Layer 1: Enhanced card (inserted at top) ---
     top_block = []
     if info:
-        header_html = _make_header_html(cls_name, info, source_url=source_url)
+        live_citations = getattr(app.config, "dataset_card_live_citations", True)
+        header_html = _make_header_html(
+            cls_name, info, source_url=source_url, live_citations=live_citations
+        )
         top_block.append(".. raw:: html")
         top_block.append("")
         for h_line in header_html.split("\n"):
@@ -1570,7 +1596,14 @@ def _generate_all_svgs(app):
 
     Runs once at the start of the Sphinx build (builder-inited event).
     SVGs are written to ``_static/timelines/`` and ``_static/viz/``.
+
+    Controlled by the ``dataset_card_generate_svgs`` config value
+    (default ``True``).  When ``False``, SVG generation is skipped entirely.
+    Existing SVG files are never overwritten.
     """
+    if not getattr(app.config, "dataset_card_generate_svgs", True):
+        return
+
     import traceback
 
     srcdir = app.srcdir
@@ -1602,33 +1635,41 @@ def _generate_all_svgs(app):
             continue
 
         # Timeline
-        try:
-            svg = stimulus_timeline_svg(ds)
-            with open(os.path.join(timeline_dir, f"{name}.svg"), "w") as f:
-                f.write(svg)
-        except Exception:
-            pass
+        timeline_path = os.path.join(timeline_dir, f"{name}.svg")
+        if not os.path.exists(timeline_path):
+            try:
+                svg = stimulus_timeline_svg(ds)
+                with open(timeline_path, "w") as f:
+                    f.write(svg)
+            except Exception:
+                pass
 
         # Class balance
-        try:
-            svg = class_balance_svg(ds)
-            if svg:
-                with open(os.path.join(viz_dir, f"{name}_classes.svg"), "w") as f:
-                    f.write(svg)
-        except Exception:
-            pass
+        classes_path = os.path.join(viz_dir, f"{name}_classes.svg")
+        if not os.path.exists(classes_path):
+            try:
+                svg = class_balance_svg(ds)
+                if svg:
+                    with open(classes_path, "w") as f:
+                        f.write(svg)
+            except Exception:
+                pass
 
         # Session structure
-        try:
-            svg = session_structure_svg(ds)
-            if svg:
-                with open(os.path.join(viz_dir, f"{name}_sessions.svg"), "w") as f:
-                    f.write(svg)
-        except Exception:
-            pass
+        sessions_path = os.path.join(viz_dir, f"{name}_sessions.svg")
+        if not os.path.exists(sessions_path):
+            try:
+                svg = session_structure_svg(ds)
+                if svg:
+                    with open(sessions_path, "w") as f:
+                        f.write(svg)
+            except Exception:
+                pass
 
 
 def setup(app):
+    app.add_config_value("dataset_card_live_citations", True, "html")
+    app.add_config_value("dataset_card_generate_svgs", True, "html")
     app.connect("builder-inited", _generate_all_svgs)
     app.connect("autodoc-process-docstring", autodoc_process_docstring)
     app.connect("source-read", source_read_add_inherited)

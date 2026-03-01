@@ -984,15 +984,18 @@ html[data-theme="dark"] .ds-card {
 }
 
 .ds-quickstart-summary {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
+  display: block;
+  padding: 0.4rem 0.8rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ds-accent-soft, #7aafcf);
+  cursor: pointer;
   border: 0;
+}
+
+.ds-quickstart-summary:focus-visible {
+  outline: 2px solid var(--ds-accent, #0f5d8f);
+  outline-offset: -2px;
 }
 
 .ds-quickstart-code {

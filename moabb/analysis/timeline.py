@@ -1271,6 +1271,13 @@ def plot_class_balance(
                 count = normalized_counts.get(_normalize_class_label(cn), 0)
             counts.append(count)
 
+        # If all lookups resulted in zeros despite trials_per_class being
+        # non-empty, the class labels didn't match — fall back to the
+        # "no counts" display instead of showing a misleading chart.
+        if trials_per_class and all(c == 0 for c in counts):
+            has_counts = False
+
+    if has_counts:
         colors = [_BAR_COLORS[i % len(_BAR_COLORS)] for i in range(n_classes)]
         y_pos = range(n_classes)
         bars = ax.barh(
