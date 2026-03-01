@@ -157,6 +157,72 @@ def _infer_label_frequencies(X, y, classes, freq_map=None):
     return inferred
 
 
+def _build_sinusoidal_references(class_freqs, n_harmonics, signal_length, n_times):
+    """Build harmonic sine/cosine reference matrices for each class label."""
+    times = np.linspace(0, signal_length, n_times)
+    references = {}
+    for class_label, freq in class_freqs.items():
+        harmonics = []
+        for harmonic_idx in range(1, n_harmonics + 1):
+            phase = 2 * np.pi * freq * harmonic_idx * times
+            harmonics.extend([np.sin(phase), np.cos(phase)])
+        references[class_label] = np.array(harmonics)
+    return references
+
+
+def _score_matrix_from_trials(X, classes, score_trial_fn):
+    """Compute class-score matrix for all trials in ``X``."""
+    scores = np.zeros((len(X), len(classes)))
+    for trial_idx, trial in enumerate(X):
+        scores[trial_idx, :] = score_trial_fn(trial)
+    return scores
+
+
+def _predict_labels_from_scores(scores, classes):
+    """Return class labels of maximal score for each trial."""
+    winners = np.argmax(scores, axis=1)
+    return [classes[int(class_idx)] for class_idx in winners]
+
+
+def _cca_trial_scores(cca, trial, references, classes):
+    """Compute per-class CCA correlation scores for one trial."""
+    scores = np.zeros(len(classes))
+    for class_idx, class_label in enumerate(classes):
+        S_x, S_y = cca.fit_transform(trial.T, references[class_label].T)
+        scores[class_idx] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+    return scores
+
+
+def _signed_squared_fusion(correlations):
+    """Fuse correlations with sign-preserving quadratic weighting."""
+    return sum(np.sign(corr) * (corr**2) for corr in correlations)
+
+
+def _ecca_trial_scores(trial, classes, templates, references, template_weights):
+    """Compute eCCA fused scores for one trial across all classes."""
+    scores = np.zeros(len(classes))
+    for class_idx, class_label in enumerate(classes):
+        template = templates[class_label]
+        reference = references[class_label]
+
+        cca_xy = CCA(n_components=1)
+        S_x, S_y = cca_xy.fit_transform(trial.T, reference.T)
+        r1 = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+        w_xy = cca_xy.x_weights_
+
+        cca_xt = CCA(n_components=1)
+        S_x2, S_y2 = cca_xt.fit_transform(trial.T, template.T)
+        r2 = _safe_corrcoef(S_x2.ravel(), S_y2.ravel())
+
+        r3 = _safe_corrcoef((trial.T @ w_xy).ravel(), (template.T @ w_xy).ravel())
+        w_template = template_weights[class_label]
+        r4 = _safe_corrcoef(
+            (trial.T @ w_template).ravel(), (template.T @ w_template).ravel()
+        )
+        scores[class_idx] = _signed_squared_fusion([r1, r2, r3, r4])
+    return scores
+
+
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
     """Classifier based on Canonical Correlation Analysis for SSVEP.
 
@@ -294,19 +360,9 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         self.le_ = LabelEncoder().fit(self.freqs_)
         self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
         self.class_freqs_ = _infer_label_frequencies(X, y, self.classes_, self.freq_map)
-        self.Yf = {}
-
-        for label in self.classes_:
-            freq = self.class_freqs_[label]
-            yf = []
-            for h in range(1, self.n_harmonics + 1):
-                yf.append(
-                    np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                )
-                yf.append(
-                    np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                )
-            self.Yf[label] = np.array(yf)
+        self.Yf = _build_sinusoidal_references(
+            self.class_freqs_, self.n_harmonics, self.slen_, n_times
+        )
         return self
 
     def predict(self, X):
@@ -326,14 +382,12 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
             self,
             ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"],
         )
-        y_pred = []
-        for x in X:
-            scores = np.zeros(len(self.classes_))
-            for j, label in enumerate(self.classes_):
-                S_x, S_y = self.cca.fit_transform(x.T, self.Yf[label].T)
-                scores[j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-            y_pred.append(self.classes_[int(np.argmax(scores))])
-        return y_pred
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _cca_trial_scores(self.cca, trial, self.Yf, self.classes_),
+        )
+        return _predict_labels_from_scores(scores, self.classes_)
 
     def predict_proba(self, X):
         """Probability could be computed from the correlation coefficient.
@@ -352,12 +406,12 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
             self,
             ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"],
         )
-        P = np.zeros(shape=(len(X), len(self.classes_)))
-        for i, x in enumerate(X):
-            for j, label in enumerate(self.classes_):
-                S_x, S_y = self.cca.fit_transform(x.T, self.Yf[label].T)
-                P[i, j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-        return _normalize_score_matrix(P)
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _cca_trial_scores(self.cca, trial, self.Yf, self.classes_),
+        )
+        return _normalize_score_matrix(scores)
 
 
 class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
@@ -1174,16 +1228,15 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
                 "Call 'fit' with appropriate arguments before using this method."
             )
 
-        y = []
-        for x in X:
-            scores = np.zeros(len(self.classes_))
-            # Whiten test data to match training preprocessing
-            x_white = _whitening(x)
-            for class_idx in range(len(self.classes_)):
-                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[class_idx].T)
-                scores[class_idx] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-            y.append(self.classes_[int(np.argmax(scores))])
-        return y
+        class_indices = np.arange(len(self.classes_))
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _cca_trial_scores(
+                self.cca, _whitening(trial), self.Ym, class_indices
+            ),
+        )
+        return _predict_labels_from_scores(scores, self.classes_)
 
     def predict_proba(self, X):
         """Probability could be computed from the correlation coefficient.
@@ -1207,14 +1260,15 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
                 "Call 'fit' with appropriate arguments before using this method."
             )
 
-        P = np.zeros(shape=(len(X), len(self.classes_)))
-        for i, x in enumerate(X):
-            # Whiten test data to match training preprocessing
-            x_white = _whitening(x)
-            for class_idx in range(len(self.classes_)):
-                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[class_idx].T)
-                P[i, class_idx] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-        return _normalize_score_matrix(P)
+        class_indices = np.arange(len(self.classes_))
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _cca_trial_scores(
+                self.cca, _whitening(trial), self.Ym, class_indices
+            ),
+        )
+        return _normalize_score_matrix(scores)
 
 
 class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
@@ -1332,14 +1386,14 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
             Predicted labels.
         """
         check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "le_", "templates_"])
-        y = []
-        for x in X:
-            scores = np.zeros(len(self.classes_))
-            for j, class_label in enumerate(self.classes_):
-                S_x, S_y = self.cca.fit_transform(x.T, self.templates_[class_label].T)
-                scores[j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-            y.append(self.classes_[int(np.argmax(scores))])
-        return y
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _cca_trial_scores(
+                self.cca, trial, self.templates_, self.classes_
+            ),
+        )
+        return _predict_labels_from_scores(scores, self.classes_)
 
     def predict_proba(self, X):
         """Predict class probabilities from correlation coefficients.
@@ -1355,12 +1409,14 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
             Probability of each class for each trial.
         """
         check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "le_", "templates_"])
-        P = np.zeros(shape=(len(X), len(self.classes_)))
-        for i, x in enumerate(X):
-            for j, class_label in enumerate(self.classes_):
-                S_x, S_y = self.cca.fit_transform(x.T, self.templates_[class_label].T)
-                P[i, j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-        return _normalize_score_matrix(P)
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _cca_trial_scores(
+                self.cca, trial, self.templates_, self.classes_
+            ),
+        )
+        return _normalize_score_matrix(scores)
 
 
 class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
@@ -1492,18 +1548,10 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
             mask = y == class_label
             X_f = X[mask].get_data(copy=False)
             self.templates_[class_label] = np.mean(X_f, axis=0)
-
-            # Sinusoidal reference
-            freq = self.class_freqs_[class_label]
-            yf = []
-            for h in range(1, self.n_harmonics + 1):
-                yf.append(
-                    np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                )
-                yf.append(
-                    np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                )
-            self.Yf[class_label] = np.array(yf)
+        self.Yf = _build_sinusoidal_references(
+            self.class_freqs_, self.n_harmonics, self.slen_, n_times
+        )
+        for class_label in self.classes_:
 
             # Spatial filter from CCA(template, sinusoidal reference)
             cca_tmp = CCA(n_components=1)
@@ -1539,38 +1587,14 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
                 "class_freqs_",
             ],
         )
-        y = []
-        for x in X:
-            scores = np.zeros(len(self.classes_))
-            for j, class_label in enumerate(self.classes_):
-                template = self.templates_[class_label]
-                ref = self.Yf[class_label]
-
-                # r1 and Wx(X,Y): standard CCA between test data and sinusoidal reference.
-                cca_xy = CCA(n_components=1)
-                S_x, S_y = cca_xy.fit_transform(x.T, ref.T)
-                r1 = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-                w_xy = cca_xy.x_weights_
-
-                # r2: CCA between test data and individual template.
-                cca_xt = CCA(n_components=1)
-                S_x2, S_y2 = cca_xt.fit_transform(x.T, template.T)
-                r2 = _safe_corrcoef(S_x2.ravel(), S_y2.ravel())
-
-                # r3: use spatial filter from CCA(X, Y_n) on both X and template.
-                r3 = _safe_corrcoef((x.T @ w_xy).ravel(), (template.T @ w_xy).ravel())
-
-                # r4: use spatial filter from CCA(template, Y_n) on both X and template.
-                w_template = self.w_template_[class_label]
-                r4 = _safe_corrcoef(
-                    (x.T @ w_template).ravel(), (template.T @ w_template).ravel()
-                )
-
-                # Fuse using signed squared correlations.
-                scores[j] = sum(np.sign(r) * (r**2) for r in [r1, r2, r3, r4])
-
-            y.append(self.classes_[int(np.argmax(scores))])
-        return y
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _ecca_trial_scores(
+                trial, self.classes_, self.templates_, self.Yf, self.w_template_
+            ),
+        )
+        return _predict_labels_from_scores(scores, self.classes_)
 
     def predict_proba(self, X):
         """Predict class probabilities from fused correlation features.
@@ -1599,29 +1623,14 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
                 "class_freqs_",
             ],
         )
-        P = np.zeros(shape=(len(X), len(self.classes_)))
-        for i, x in enumerate(X):
-            for j, class_label in enumerate(self.classes_):
-                template = self.templates_[class_label]
-                ref = self.Yf[class_label]
-
-                cca_xy = CCA(n_components=1)
-                S_x, S_y = cca_xy.fit_transform(x.T, ref.T)
-                r1 = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-                w_xy = cca_xy.x_weights_
-
-                cca_xt = CCA(n_components=1)
-                S_x2, S_y2 = cca_xt.fit_transform(x.T, template.T)
-                r2 = _safe_corrcoef(S_x2.ravel(), S_y2.ravel())
-
-                r3 = _safe_corrcoef((x.T @ w_xy).ravel(), (template.T @ w_xy).ravel())
-                w_template = self.w_template_[class_label]
-                r4 = _safe_corrcoef(
-                    (x.T @ w_template).ravel(), (template.T @ w_template).ravel()
-                )
-                P[i, j] = sum(np.sign(r) * (r**2) for r in [r1, r2, r3, r4])
-
-        return _normalize_score_matrix(P)
+        scores = _score_matrix_from_trials(
+            X,
+            self.classes_,
+            lambda trial: _ecca_trial_scores(
+                trial, self.classes_, self.templates_, self.Yf, self.w_template_
+            ),
+        )
+        return _normalize_score_matrix(scores)
 
 
 class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
