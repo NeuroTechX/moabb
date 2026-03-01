@@ -669,8 +669,11 @@ def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
 </script>
 """
             else:
+                doi_static_href = escape(
+                    f"https://doi.org/{quote(doi, safe='')}", quote=True
+                )
                 items.append(
-                    f'<li><span>Citations</span><a href="https://doi.org/{escape(doi)}" '
+                    f'<li><span>Citations</span><a href="{doi_static_href}" '
                     f'target="_blank" rel="noopener">See DOI</a></li>'
                 )
     if pwc_url:
