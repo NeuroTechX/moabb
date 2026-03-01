@@ -263,7 +263,7 @@ class Stieger2021(BaseDataset):
                 "learning",
             ],
             repository="GitHub",
-            data_url="https://doi.org/10.6084/m9.figshare.13123148",
+            data_url="https://doi.org/10.6084/m9.figshare.13123148.v1",
             funding=[
                 "NIH AT009263",
                 "NIH EB021027",

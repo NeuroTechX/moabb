@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 90
+        "total": 91
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -1011,6 +1011,14 @@
         ],
         "year": 2021,
         "doi": "10.6084/m9.figshare.13123148"
+    },
+    "10.6084/m9.figshare.13123148.v1": {
+        "title": "Human EEG Dataset for Brain-Computer Interface and Meditation",
+        "authors": [
+            "James Stieger"
+        ],
+        "year": 2021,
+        "doi": "10.6084/m9.figshare.13123148.v1"
     },
     "10.6084/m9.figshare.2061654": {
         "title": "three-class motor imagery EEG data.zip",
