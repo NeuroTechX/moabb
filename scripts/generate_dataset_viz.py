@@ -81,10 +81,13 @@ def main():
         except Exception:
             traceback.print_exc()
 
-        print(", ".join(generated) if generated else "no output")
-        n_ok += 1
+        if generated:
+            print(", ".join(generated))
+            n_ok += 1
+        else:
+            print("no output")
 
-    print(f"\nDone: {n_ok} datasets processed, {n_fail} skipped")
+    print(f"\nDone: {n_ok} datasets with SVGs, {n_fail} skipped")
 
 
 if __name__ == "__main__":

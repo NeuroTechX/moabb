@@ -796,10 +796,11 @@ def _make_github_issue_url(cls_name):
         f"## Expected Behavior\n\n\n"
         f"## Additional Context\n\n"
     )
-    return (
+    url = (
         f"https://github.com/NeuroTechX/moabb/issues/new"
         f"?title={issue_title}&body={issue_body}&labels=dataset"
     )
+    return escape(url, quote=True)
 
 
 def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
@@ -1198,15 +1199,15 @@ def _make_channel_summary_html(info):
 
     rows = []
     if n_channels is not None:
-        rows.append(("Total channels", f"{n_channels:g}"))
+        rows.append(("Total channels", f"{float(n_channels):g}"))
 
     if channel_types and isinstance(channel_types, dict):
         sorted_types = sorted(channel_types.items(), key=lambda x: (-x[1], x[0]))
         for ctype, count in sorted_types[:4]:
             if str(ctype).lower() == "eeg" and sensor_type:
-                rows.append((ctype.upper(), f"{count:g} ({sensor_type})"))
+                rows.append((ctype.upper(), f"{float(count):g} ({sensor_type})"))
             else:
-                rows.append((ctype.upper(), f"{count:g}"))
+                rows.append((ctype.upper(), f"{float(count):g}"))
 
     if montage is not None:
         rows.append(("Montage", "10-05" if montage == "standard_1005" else str(montage)))
@@ -1226,7 +1227,9 @@ def _make_channel_summary_html(info):
         rows.append(("Filter", str(filter_range)))
     if line_freq is not None:
         line_display = (
-            f"{line_freq:g} Hz" if isinstance(line_freq, (int, float)) else str(line_freq)
+            f"{float(line_freq):g} Hz"
+            if isinstance(line_freq, (int, float))
+            else str(line_freq)
         )
         rows.append(("Notch / line", line_display))
 

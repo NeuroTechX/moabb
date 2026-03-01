@@ -545,8 +545,12 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
     phases: list[TimelinePhase] = []
     annotations: list[TimelineAnnotation] = []
 
-    # Fixation cross
-    fix_end = beep_s if beep_s is not None else (cue_onset_s or 2.0)
+    # Fixation cross — use explicit None check so 0.0 is honoured as a valid onset
+    fix_end = (
+        beep_s
+        if beep_s is not None
+        else (cue_onset_s if cue_onset_s is not None else 2.0)
+    )
     phases.append(
         TimelinePhase(
             "Fixation +", cross_onset_s, fix_end - cross_onset_s, "fixation", "cross"
@@ -1150,10 +1154,10 @@ def plot_stimulus_timeline(
             fontstyle="italic",
         )
 
-    # Legend for P300 abbreviations
+    # Legend for P300 abbreviations (only when annotations are visible)
     has_soa = any("SOA" in a.label for a in timeline.annotations)
     has_isi = any("ISI" in a.label for a in timeline.annotations)
-    if has_soa or has_isi:
+    if show_annotations and (has_soa or has_isi):
         legend_lines = []
         if has_soa:
             legend_lines.append("SOA: Stimulus Onset Asynchrony")
@@ -1279,10 +1283,11 @@ def plot_class_balance(
                 count = normalized_counts.get(_normalize_class_label(cn), 0)
             counts.append(count)
 
-        # If all lookups resulted in zeros despite trials_per_class being
-        # non-empty, the class labels didn't match — fall back to the
-        # "no counts" display instead of showing a misleading chart.
-        if trials_per_class and all(c == 0 for c in counts):
+        # If most lookups resulted in zeros despite trials_per_class being
+        # non-empty, the class labels didn't match well enough — fall back
+        # to the "no counts" display instead of showing a misleading chart.
+        n_matched = sum(1 for c in counts if c > 0)
+        if trials_per_class and n_matched < len(counts) / 2:
             has_counts = False
 
     if has_counts:
