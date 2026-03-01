@@ -166,7 +166,7 @@ class Rodrigues2017(BaseDataset):
         data_processed=False,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         subject_list = list(range(1, 6 + 1)) + list(range(8, 20 + 1))
         super().__init__(
             subjects=subject_list,
@@ -176,6 +176,8 @@ class Rodrigues2017(BaseDataset):
             interval=[0, 10],
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2348892",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

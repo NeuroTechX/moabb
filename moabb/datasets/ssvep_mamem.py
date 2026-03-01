@@ -100,7 +100,16 @@ def mamem_event(eeg, dins, labels=None):
 class BaseMAMEM(BaseDataset):
     """Base class for MAMEM datasets."""
 
-    def __init__(self, events, sessions_per_subject, code, doi, figshare_id):
+    def __init__(
+        self,
+        events,
+        sessions_per_subject,
+        code,
+        doi,
+        figshare_id,
+        subjects=None,
+        sessions=None,
+    ):
         super().__init__(
             subjects=list(range(1, 12)),
             events=events,
@@ -109,6 +118,8 @@ class BaseMAMEM(BaseDataset):
             sessions_per_subject=sessions_per_subject,
             code=code,
             doi=doi,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.figshare_id = figshare_id
 
@@ -707,7 +718,7 @@ class MAMEM1(BaseMAMEM):
         methodology="Empirical approach where each signal processing parameter (filtering, artifact removal, feature extraction, feature selection, classification) is studied independently by keeping all other parameters fixed. Leave-one-subject-out cross-validation used to evaluate system without subject-specific training. Multiple algorithms compared for each processing stage to obtain state-of-the-art baseline.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
@@ -715,6 +726,8 @@ class MAMEM1(BaseMAMEM):
             code="MAMEM1",
             doi="10.48550/arXiv.1602.00904",
             figshare_id=2068677,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1211,13 +1224,15 @@ class MAMEM2(BaseMAMEM):
         file_format="MAT",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
             code="MAMEM2",
             doi="10.48550/arXiv.1602.00904",
             figshare_id=3153409,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1500,7 +1515,7 @@ class MAMEM3(BaseMAMEM):
         methodology="Comparative evaluation of SSVEP-based BCI algorithms using leave-one-subject-out cross-validation. The study examines filtering methods (IIR, FIR), artifact removal (AMUSE, ICA), feature extraction (Periodogram, Welch, Goertzel, Yule-AR, STFT, DWT), feature selection (Shannon entropy, PCA, ICA), and classification (LDA, SVM, kNN, Naive Bayes, Random Forest, CCA, ELM, Decision Trees). Each parameter is studied independently while keeping others fixed to identify optimal configurations.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             events={
                 "6.66": 33029,
@@ -1513,4 +1528,6 @@ class MAMEM3(BaseMAMEM):
             code="MAMEM3",
             doi="10.48550/arXiv.1602.00904",
             figshare_id=3413851,
+            subjects=subjects,
+            sessions=sessions,
         )

@@ -30,7 +30,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import block_rep
-from moabb.utils import depreciated_alias
+from moabb.utils import _handle_deprecated_kwargs, depreciated_alias
 
 
 BI2012a_URL = "https://zenodo.org/record/2649069/files/"
@@ -309,7 +309,7 @@ def _bi_data_path(  # noqa: C901
         conditions = []
         if ds.adaptive:
             conditions = conditions + ["adaptive"]
-        if ds.nonadaptive:
+        if ds.non_adaptive:
             conditions = conditions + ["nonadaptive"]
         types = []
         if ds.training:
@@ -607,7 +607,14 @@ class BI2012(BaseDataset):
         methodology="The visual P300 is an event-related potential (ERP) elicited by a visual stimulation, peaking 240-600 ms after stimulus onset. The experiment features a training-test mode of operation and both a longitudinal and transversal design. Training session: Target alien chosen randomly at each repetition, 8 Targets total, 8 repetitions each, resulting in 128 Target trials and 640 non-Target flashes. Online session: consisted of three levels with different distractor configurations, minimum 3.5 minutes per level, counter-balanced order across subjects. Interface: 36 aliens flashing in 12 groups of 6, each repetition has 12 flashes (2 Target, 10 non-Target). P300 peak latency: 240-600 ms post-stimulus.",
     )
 
-    def __init__(self, Training=True, Online=False):
+    def __init__(
+        self, training=True, online=False, subjects=None, sessions=None, **kwargs
+    ):
+        deprecated_renames = {"Training": "training", "Online": "online"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BI2012")
+        training = resolved.get("training", training)
+        online = resolved.get("online", online)
+
         super().__init__(
             subjects=list(range(1, 26)),
             sessions_per_subject=1,
@@ -616,10 +623,12 @@ class BI2012(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2649006",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
-        self.training = Training
-        self.online = Online
+        self.training = training
+        self.online = online
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -858,7 +867,28 @@ class BI2013a(BaseDataset):
         methodology="Subjects participated in sessions with two runs (Non-Adaptive and Adaptive, randomised order). Each run had Training (calibration) and Online phases. In Non-Adaptive mode, Training data calibrated the MDM classifier for Online phase. In Adaptive mode, classifier initialized with generic class geometric means from previous experiment and continuously adapted using Riemannian method. Brain Invaders interface: 36 symbols in 12 groups, one repetition = 12 flashes (2 Target, 10 non-Target). Training phase: 80 Target and 400 non-Target flashes (fixed). Online phase: variable repetitions based on performance to destroy targets. Subjects blind to mode of operation.",
     )
 
-    def __init__(self, NonAdaptive=True, Adaptive=False, Training=True, Online=False):
+    def __init__(
+        self,
+        non_adaptive=True,
+        adaptive=False,
+        training=True,
+        online=False,
+        subjects=None,
+        sessions=None,
+        **kwargs,
+    ):
+        deprecated_renames = {
+            "NonAdaptive": "non_adaptive",
+            "Adaptive": "adaptive",
+            "Training": "training",
+            "Online": "online",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BI2013a")
+        non_adaptive = resolved.get("non_adaptive", non_adaptive)
+        adaptive = resolved.get("adaptive", adaptive)
+        training = resolved.get("training", training)
+        online = resolved.get("online", online)
+
         super().__init__(
             subjects=list(range(1, 25)),
             sessions_per_subject=8,
@@ -867,12 +897,14 @@ class BI2013a(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2669187",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
-        self.adaptive = Adaptive
-        self.nonadaptive = NonAdaptive
-        self.training = Training
-        self.online = Online
+        self.adaptive = adaptive
+        self.non_adaptive = non_adaptive
+        self.training = training
+        self.online = online
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -1073,7 +1105,7 @@ class BI2014a(BaseDataset):
         methodology="The experiment was designed to study the viability of a calibration-less P300-based BCI system with dry electrodes. Visual P300 is an event-related potential (ERP) elicited by an expected but unpredictable target visual stimulation (oddball paradigm), with peaking amplitude 240-600 ms after stimulus onset. Two event-related stimuli: Target (P300 expected) and Non-Target (no P300). The experiment used Brain Invaders, a P300-based BCI open-source software. A repetition is composed of 12 flashes (one for each group), of which two include the Target symbol (Target flashes) and 10 do not (non-Target flashes). The ratio of Target versus non-Target epochs in the whole datasets is one-to-five. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. Game session was compounded by nine levels, consisting in a unique and predefined configuration of the 36 symbols of the interface. Players had up to eight attempts to destroy the target symbol. If the player missed all eight attempts, the level was started once again from the beginning. Average duration of five minutes for the nine levels. Experimenter could end the experiment if no control over the BCI system was gained after 10 minutes.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 65)),
             sessions_per_subject=1,
@@ -1082,6 +1114,8 @@ class BI2014a(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266222",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1291,7 +1325,7 @@ class BI2014b(BaseDataset):
         methodology="Multi-user hyperscanning P300 BCI experiment designed to study inter-brain synchrony. Participants played Brain Invaders 2 in three conditions: Solo1 (player1 plays, player2 watches cross), Solo2 (roles reversed), and Collaboration (4 game sessions with both players). Each game session consisted of 9 levels with predefined alien configurations. A repetition used 12 flashes of pseudo-random groups of 6 symbols, ensuring each symbol flashed twice per repetition (1:5 Target:Non-Target ratio). Real-time adaptive RMDM classifier provided online feedback. Control condition (non-playing participant) allowed correction for fake inter-brain synchrony.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 39)),
             sessions_per_subject=1,
@@ -1300,6 +1334,8 @@ class BI2014b(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267301",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1497,7 +1533,7 @@ class BI2015a(BaseDataset):
         methodology="The experiment was designed to study the influence of the flash duration on a calibration-less P300-based BCI system with wet electrodes and as a screening session for potential candidates for a broader multi-user BCI study. The visual P300 is an event-related potential (ERP) elicited by an expected but unpredictable target visual stimulation (oddball paradigm), with peaking amplitude 240-600 ms after stimulus onset. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. This scheme allows a calibration-free classifier. Before and after the three game sessions, around one minute of resting state and eyes closed conditions were recorded. The interface of Brain Invaders is composed of 36 aliens. In the Brain Invaders P300 paradigm, a repetition is composed of 12 flashes of pseudo-random groups of six symbols chosen in such a way that after each repetition each symbol has flashed exactly two times. A game session was compounded by nine levels, consisting in a unique and predefined configuration of the 36 symbols of the interface. Aliens slowly and regularly moved according to a predefined path keeping constant the inter-distance between adjacent aliens to maintain high player's attention during the whole experiment.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 44)),
             sessions_per_subject=3,
@@ -1506,6 +1542,8 @@ class BI2015a(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266929",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1710,7 +1748,7 @@ class BI2015b(BaseDataset):
         methodology="The experiment consisted of three game sessions of Brain Invaders of 9 levels each with different flash duration (110ms, 80ms, 50ms). Before and after the three game sessions, around one minute of resting state and eyes closed conditions were recorded. The interface is composed of 36 aliens. A repetition is composed of 12 flashes of pseudo-random groups of six symbols chosen in such a way that after each repetition each symbol has flashed exactly two times. The ratio of Target versus non-Target is one-to-five. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. This scheme allows a calibration-free classifier.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 45)),
             sessions_per_subject=1,
@@ -1719,6 +1757,8 @@ class BI2015b(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267307",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1918,7 +1958,22 @@ class Cattan2019_VR(BaseDataset):
         methodology="Two randomized sessions (PC and VR). Each session: 12 blocks of 5 repetitions. Each repetition: 12 flashes of groups of 6 symbols, ensuring each symbol flashes exactly 2 times. Target flashes twice per repetition (2 target flashes), non-target flashes 10 times. Random feedback given after each repetition (70% expected accuracy). P300 interface: 6x6 matrix of white flashing crosses with red-squared target. VR used passive HMD (VRElegiant) with Huawei Mate 7 smartphone. IMU deactivated to prevent drift. Unity engine used for identical visual stimulation across PC and VR.",
     )
 
-    def __init__(self, virtual_reality=False, screen_display=True):
+    def __init__(
+        self,
+        virtual_reality=True,
+        screen_display=True,
+        subjects=None,
+        sessions=None,
+        **kwargs,
+    ):
+        deprecated_renames = {
+            "VirtualReality": "virtual_reality",
+            "ScreenDisplay": "screen_display",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Cattan2019-VR")
+        virtual_reality = resolved.get("virtual_reality", virtual_reality)
+        screen_display = resolved.get("screen_display", screen_display)
+
         self.n_repetitions = 5
         super().__init__(
             subjects=list(range(1, 21 + 1)),
@@ -1928,6 +1983,8 @@ class Cattan2019_VR(BaseDataset):
             interval=[0, 1.0],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2605204",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
         self.virtual_reality = virtual_reality

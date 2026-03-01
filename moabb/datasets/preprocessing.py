@@ -756,7 +756,12 @@ class RawToEpochs(FixedTransformer):
             if self.interpolate_missing_channels:
                 missing_channels = list(set(self.channels).difference(available_channels))
 
-                # add missing channels (contains only zeros by default)
+                # Remove montage before adding channels to avoid
+                # "Location for this channel is unknown" warning,
+                # then re-apply it after.
+                existing_montage = raw.get_montage()
+                raw.set_montage(None)
+
                 try:
                     raw.add_reference_channels(missing_channels)
                 except IndexError:
@@ -768,8 +773,13 @@ class RawToEpochs(FixedTransformer):
                     )
                     # and disable the montage
                     raw.info.pop("dig")
+                    existing_montage = None
                     # run again with montage disabled
                     raw.add_reference_channels(missing_channels)
+
+                # Re-apply montage so channels that exist in it get positions
+                if existing_montage is not None:
+                    raw.set_montage(existing_montage, on_missing="ignore")
 
                 # Trick: mark these channels as bad
                 raw.info["bads"].extend(missing_channels)

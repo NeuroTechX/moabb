@@ -22,6 +22,7 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import _handle_deprecated_kwargs
 
 from .base import BaseDataset
 from .download import get_dataset_path
@@ -295,7 +296,7 @@ class Beetl2021_A(BaseDataset):
         methodology="Dataset A is part of the BEETL Competition Task 2 (Motor Imagery). The data was collected in an online racing game format called Cybathlon2020IC. Dataset A contains data from subjects 1-3 (final phase) with 500 Hz sampling rate and 63 EEG channels. The data underwent frequency-domain preprocessing using a bandpass filter (1-100 Hz) and a 50 Hz notch filter to attenuate power line interference. The competition had two phases: leaderboard (subjects 1-2) and final (subjects 1-3). For the final phase, training data from 5 races and testing data from 10 races were provided for each subject. The data is segmented into 4-second trials. Motor imagery tasks include: Rest (label 0), Left hand (label 1), Right hand (label 2), and Feet (label 3). The challenge focused on transfer learning from multiple source datasets (Cho2017, BNCI2014, PhysionetMI) to target datasets (Weibo2014 and Cybathlon2020IC) with different EEG setups, electrode configurations, and task definitions. Winning solutions employed deep learning architectures (EEGInception, EEGNet), latent subject alignment methods (Deep Sets, statistical alignment), domain adaptation techniques (Euclidean Alignment, Label Alignment, Maximum Classifier Discrepancy), and Riemannian geometry approaches (SPDNet, MDRM).",
     )
 
-    def __init__(self, phase="final"):
+    def __init__(self, phase="final", subjects=None, sessions=None, **kwargs):
         """Initialize BEETL Dataset A.
 
         Parameters
@@ -303,11 +304,15 @@ class Beetl2021_A(BaseDataset):
         phase : str
             Either "leaderboard" (subjects 1-2) or "final" (subjects 1-3)
         """
+        deprecated_renames = {"Phase": "phase"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Beetl2021_A")
+        phase = resolved.get("phase", phase)
+
         if phase not in ["leaderboard", "final"]:
             raise ValueError("Phase must be either 'leaderboard' or 'final'")
 
         self.phase = phase
-        subjects = list(range(1, 3)) if phase == "leaderboard" else list(range(1, 4))
+        all_subjects = list(range(1, 3)) if phase == "leaderboard" else list(range(1, 4))
 
         # Channel setup
         self.ch_names = [
@@ -380,12 +385,14 @@ class Beetl2021_A(BaseDataset):
         self.phase = phase
 
         super().__init__(
-            subjects=subjects,
+            subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(rest=0, left_hand=1, right_hand=2, feet=3),
             code="Beetl2021-A",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -791,7 +798,7 @@ class Beetl2021_B(BaseDataset):
         methodology="Task 2 is centred on transfer learning for BCI, addressing motor imagery decoding. The challenge lies in transferring from multiple data sets, which use different EEG setups comprising hundreds of users, to a set of new users that need to be up and running with only minutes worth of calibration data (transfer across subjects and data sets). Three source data sets (Cho2017, BNCI2014, PhysionetMI) are provided as training data. The algorithms are evaluated on new data sets with different setups, including differences in electrode channels, task definitions, and subjects. Dataset B is from Weibo2014 with 32 channels selected around motor cortex. For the leaderboard phase (subjects 3-5), only training data is provided. For the final phase (subjects 4-5), both training and testing data are included.",
     )
 
-    def __init__(self, phase="final"):
+    def __init__(self, phase="final", subjects=None, sessions=None, **kwargs):
         """Initialize BEETL Dataset B.
 
         Parameters
@@ -799,19 +806,25 @@ class Beetl2021_B(BaseDataset):
         phase : str
             Either "leaderboard" (subjects 3-5) or "final" (subjects 4-5)
         """
+        deprecated_renames = {"Phase": "phase"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Beetl2021_B")
+        phase = resolved.get("phase", phase)
+
         if phase not in ["leaderboard", "final"]:
             raise ValueError("Phase must be either 'leaderboard' or 'final'")
 
         self.phase = phase
-        subjects = list(range(3, 6)) if phase == "leaderboard" else list(range(4, 6))
+        all_subjects = list(range(3, 6)) if phase == "leaderboard" else list(range(4, 6))
 
         super().__init__(
-            subjects=subjects,
+            subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(left_hand=0, right_hand=1, feet=2, rest=3),
             code="Beetl2021-B",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
         self.ch_names = [

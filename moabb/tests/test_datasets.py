@@ -1,6 +1,7 @@
 import inspect
 import logging
 import re
+import warnings
 
 import mne
 import numpy as np
@@ -24,6 +25,7 @@ from moabb.datasets.base import (
     is_abbrev,
     is_camel_kebab_case,
 )
+from moabb.datasets.braininvaders import BI2012, BI2013a
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
@@ -38,6 +40,8 @@ from moabb.datasets.metadata import (
     PreprocessingMetadata,
     get_dataset_metadata,
 )
+from moabb.datasets.physionet_mi import PhysionetMI
+from moabb.datasets.upper_limb import Ofner2017
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
@@ -522,6 +526,75 @@ class Test_Datasets:
             ds.get_data()
 
 
+class TestSubjectSessionFiltering:
+    """Test subject and session filtering at construction time."""
+
+    @pytest.mark.parametrize(
+        "dataset_cls, kwargs, expected_len, all_len",
+        [
+            (PhysionetMI, dict(subjects=[1, 2, 3]), 3, 109),
+            (BNCI2014_001, dict(subjects=[1, 5, 9]), 3, 9),
+            (Ofner2017, dict(subjects=[1, 2]), 2, 15),
+            (FakeDataset, dict(subjects=[1, 2, 3]), 3, 10),
+        ],
+        ids=["PhysionetMI", "BNCI2014_001", "Ofner2017", "FakeDataset"],
+    )
+    def test_subject_filtering(self, dataset_cls, kwargs, expected_len, all_len):
+        ds = dataset_cls(**kwargs)
+        assert ds.subject_list == kwargs["subjects"]
+        assert len(ds.subject_list) == expected_len
+        assert len(ds.all_subjects) == all_len
+
+    @pytest.mark.parametrize(
+        "dataset_cls, kwargs",
+        [
+            (PhysionetMI, dict(subjects=[999])),
+            (BNCI2014_001, dict(subjects=[0, 100])),
+            (FakeDataset, dict(subjects=[50])),
+        ],
+    )
+    def test_invalid_subjects_raises(self, dataset_cls, kwargs):
+        with pytest.raises(ValueError, match="Invalid subjects"):
+            dataset_cls(**kwargs)
+
+    def test_default_backward_compat(self):
+        assert PhysionetMI().subject_list == list(range(1, 110))
+        assert BNCI2014_001().subject_list == list(range(1, 10))
+
+    def test_session_filtering_at_construction(self):
+        ds = FakeDataset(n_subjects=2, n_sessions=3, sessions=[0])
+        data = ds.get_data()
+        for sess_data in data.values():
+            assert list(sess_data.keys()) == ["0"]
+
+    def test_combined_subject_and_session_filtering(self):
+        ds = FakeDataset(n_subjects=5, n_sessions=3, subjects=[1, 2], sessions=[0, 1])
+        assert ds.subject_list == [1, 2]
+        data = ds.get_data()
+        assert set(data.keys()) == {1, 2}
+        for sess_data in data.values():
+            assert set(sess_data.keys()) == {"0", "1"}
+
+    def test_all_subjects_is_immutable_copy(self):
+        ds = PhysionetMI(subjects=[1, 2])
+        ds.all_subjects.append(999)
+        assert 999 not in ds.all_subjects
+
+    def test_all_datasets_accept_subjects_param(self):
+        """Every dataset class in dataset_list accepts subjects or sessions."""
+        for cls in dataset_list:
+            sig = inspect.signature(cls.__init__)
+            params = set(sig.parameters.keys())
+            # Check own params or inherited from parent
+            parent = cls.__mro__[1]
+            if parent.__name__ not in ("object", "ABC"):
+                psig = inspect.signature(parent.__init__)
+                params |= set(psig.parameters.keys())
+            assert (
+                "subjects" in params or "sessions" in params
+            ), f"{cls.__name__} missing subjects/sessions param"
+
+
 class TestVirtualRealityDataset:
     def test_canary(self):
         assert Cattan2019_VR() is not None
@@ -538,6 +611,103 @@ class TestVirtualRealityDataset:
         _, _, ret = ds.get_block_repetition(P300(), [subject], [block], [repetition])
         assert ret.subject.unique()[0] == subject
         assert ret.run.unique()[0] == block_rep(block, repetition, ds.n_repetitions)
+
+
+class TestDeprecatedParams:
+    """Test deprecated PascalCase parameter names and new defaults."""
+
+    def test_bi2012_deprecated_training(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            ds = BI2012(Training=True)
+            dep_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]
+            assert len(dep_warnings) == 1
+            assert "Training" in str(dep_warnings[0].message)
+            assert "training" in str(dep_warnings[0].message)
+            assert ds.training is True
+
+    def test_bi2012_deprecated_online(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            ds = BI2012(Online=False)
+            dep_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]
+            assert len(dep_warnings) == 1
+            assert "Online" in str(dep_warnings[0].message)
+            assert ds.online is False
+
+    def test_bi2012_new_defaults(self):
+        ds = BI2012()
+        assert ds.training is True
+        assert ds.online is False
+
+    def test_bi2012_snake_case_params(self):
+        ds = BI2012(training=False, online=True)
+        assert ds.training is False
+        assert ds.online is True
+
+    def test_bi2013a_deprecated_params(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            ds = BI2013a(NonAdaptive=True, Adaptive=False, Training=True, Online=False)
+            dep_warnings = [x for x in w if issubclass(x.category, DeprecationWarning)]
+            assert len(dep_warnings) == 4
+            assert ds.non_adaptive is True
+            assert ds.adaptive is False
+            assert ds.training is True
+            assert ds.online is False
+
+    def test_bi2013a_new_defaults(self):
+        ds = BI2013a()
+        assert ds.non_adaptive is True
+        assert ds.adaptive is False
+        assert ds.training is True
+        assert ds.online is False
+
+    def test_bi2013a_snake_case_params(self):
+        ds = BI2013a(non_adaptive=False, adaptive=True, training=False, online=True)
+        assert ds.non_adaptive is False
+        assert ds.adaptive is True
+        assert ds.training is False
+        assert ds.online is True
+
+    def test_bi2012_unexpected_kwarg_raises(self):
+        with pytest.raises(TypeError, match="unexpected keyword arguments"):
+            BI2012(Foo=True)
+
+    def test_bi2013a_unexpected_kwarg_raises(self):
+        with pytest.raises(TypeError, match="unexpected keyword arguments"):
+            BI2013a(Foo=True)
+
+    def test_physionet_new_defaults(self):
+        ds = PhysionetMI()
+        assert ds.imagined is True
+        assert ds.executed is False
+        assert len(ds.hand_runs) == 3
+        assert len(ds.feet_runs) == 3
+
+    def test_physionet_explicit_old_values(self):
+        ds = PhysionetMI(imagined=True, executed=False)
+        assert ds.imagined is True
+        assert ds.executed is False
+        assert len(ds.hand_runs) == 3
+        assert len(ds.feet_runs) == 3
+
+    def test_ofner2017_new_defaults(self):
+        ds = Ofner2017()
+        assert ds.imagined is True
+        assert ds.executed is True
+        assert ds.n_sessions == 2
+
+    def test_ofner2017_explicit_old_values(self):
+        ds = Ofner2017(imagined=True, executed=False)
+        assert ds.imagined is True
+        assert ds.executed is False
+        assert ds.n_sessions == 1
+
+    def test_cattan2019_vr_new_defaults(self):
+        ds = Cattan2019_VR()
+        assert ds.virtual_reality is True
+        assert ds.personal_computer is True
 
 
 class TestCompoundDataset:
@@ -1198,4 +1368,91 @@ class TestDatasetMetadata:
         assert n_subjects_data == metadata.participants.n_subjects, (
             f"Number of subjects mismatch for {name}: "
             f"data has {n_subjects_data}, metadata says {metadata.participants.n_subjects}"
+        )
+
+
+def _make_dataset(dataset_cls, **extra_kwargs):
+    """Instantiate a dataset, handling special constructor args like accept."""
+    kwargs = dict(extra_kwargs)
+    if inspect.signature(dataset_cls).parameters.get("accept"):
+        kwargs["accept"] = True
+    return dataset_cls(**kwargs)
+
+
+def _is_valid_event_value(v):
+    """Check that v is int (not bool) or a list/tuple of such."""
+    if isinstance(v, (list, tuple)):
+        return all(
+            isinstance(x, (int, np.integer)) and not isinstance(x, bool) for x in v
+        )
+    return isinstance(v, (int, np.integer)) and not isinstance(v, bool)
+
+
+# Datasets that use subjects= to rebuild the subject pool rather than filter
+_CUSTOM_SUBJECT_HANDLING = {"RomaniBF2025ERP"}
+_ALIAS_NAMES = {old for old, _, _ in aliases_list}
+
+
+@pytest.mark.parametrize("dataset_cls", dataset_list)
+def test_constructor_defaults_and_properties(dataset_cls):
+    """Default instantiation: all subjects exposed, n_sessions > 0."""
+    ds = _make_dataset(dataset_cls)
+    name = dataset_cls.__name__
+    assert ds.subject_list == ds.all_subjects
+    assert len(ds.all_subjects) > 0, f"{name} has no subjects"
+    assert ds.n_sessions > 0, f"{name} has n_sessions <= 0"
+
+
+@pytest.mark.parametrize("dataset_cls", dataset_list)
+def test_constructor_events_integrity(dataset_cls):
+    """event_id keys must be str, values must be int or list[int]."""
+    ds = _make_dataset(dataset_cls)
+    name = dataset_cls.__name__
+    assert isinstance(ds.event_id, dict), f"{name}: event_id not a dict"
+    for k, v in ds.event_id.items():
+        assert isinstance(k, str), f"{name}: event key {k!r} is not str"
+        assert _is_valid_event_value(v), f"{name}: event {k!r}={v!r} is not int/list[int]"
+
+
+@pytest.mark.parametrize("dataset_cls", dataset_list)
+def test_constructor_subject_filtering(dataset_cls):
+    """subjects= should filter subject_list without mutating all_subjects."""
+    name = dataset_cls.__name__
+    if "subjects" not in inspect.signature(dataset_cls).parameters:
+        pytest.skip(f"{name} has no 'subjects' parameter")
+    if name in _CUSTOM_SUBJECT_HANDLING:
+        pytest.skip(f"{name} uses custom subject handling")
+
+    ds_full = _make_dataset(dataset_cls)
+    if len(ds_full.all_subjects) < 2:
+        pytest.skip(f"{name} has fewer than 2 subjects")
+
+    first_two = ds_full.all_subjects[:2]
+    ds_filtered = _make_dataset(dataset_cls, subjects=first_two)
+    assert ds_filtered.subject_list == first_two
+    assert ds_filtered.all_subjects == ds_full.all_subjects
+
+
+@pytest.mark.parametrize("dataset_cls", dataset_list)
+def test_constructor_summary_table_cross_ref(dataset_cls):
+    """Cross-check subject/session counts against summary CSV."""
+    name = dataset_cls.__name__
+    if not hasattr(dataset_cls, "_summary_table"):
+        pytest.skip(f"{name} not in summary CSV")
+    if "Fake" in name or name in _ALIAS_NAMES:
+        pytest.skip(f"{name} is fixture or alias")
+
+    ds = _make_dataset(dataset_cls)
+    table = dataset_cls._summary_table
+    mismatches = []
+    for col, actual in [("#Subj", len(ds.all_subjects)), ("#Sessions", ds.n_sessions)]:
+        try:
+            expected = int(table.get(col, ""))
+            if actual != expected:
+                mismatches.append(f"{col}: code={actual}, CSV={expected}")
+        except (ValueError, TypeError):
+            pass
+    if mismatches:
+        warnings.warn(
+            f"{name} summary CSV mismatch: {'; '.join(mismatches)}", stacklevel=1
         )

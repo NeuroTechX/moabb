@@ -355,7 +355,7 @@ class BNCI2003_004(MNEBNCI):
         file_format="mat",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 6)),
             sessions_per_subject=1,
@@ -364,4 +364,6 @@ class BNCI2003_004(MNEBNCI):
             interval=[0, 3.5],
             paradigm="imagery",
             doi="10.1109/TBME.2004.827088",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )

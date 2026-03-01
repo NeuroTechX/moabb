@@ -6,6 +6,7 @@ import abc
 import logging
 import re
 import traceback
+import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import cached_property
@@ -183,6 +184,17 @@ def is_abbrev(abbrev_name: str, full_name: str):
     and in the same order. They must share the same capital letters."""
     pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
+
+
+def _is_event_int(v):
+    """Return True if v is int or np.integer but not bool."""
+    return not isinstance(v, bool) and isinstance(v, (int, np.integer))
+
+
+_KWARG_HINT = (
+    "Check that keyword arguments were not accidentally "
+    "included inside the events dict."
+)
 
 
 def check_subject_names(data):
@@ -614,6 +626,9 @@ class BaseDataset(metaclass=MetaclassDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        *,
+        selected_subjects=None,
+        selected_sessions=None,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -635,14 +650,79 @@ class BaseDataset(metaclass=MetaclassDataset):
                 "See moabb.datasets.base.is_abbrev for more information."
             )
 
-        self.subject_list = subjects
+        self._all_subjects = list(subjects)
+        if selected_subjects is not None:
+            selected_subjects = list(selected_subjects)
+            # Warn on duplicate subjects and deduplicate preserving order
+            if len(selected_subjects) != len(set(selected_subjects)):
+                unique = dict.fromkeys(selected_subjects)
+                dupes = [s for s in unique if selected_subjects.count(s) > 1]
+                warnings.warn(
+                    f"Duplicate subjects detected: {dupes}. "
+                    "Duplicates will be removed, preserving order.",
+                    stacklevel=2,
+                )
+                selected_subjects = list(unique)
+            invalid = [s for s in selected_subjects if s not in self._all_subjects]
+            if invalid:
+                raise ValueError(
+                    f"Invalid subjects: {invalid}. "
+                    f"Valid subjects are: {self._all_subjects}"
+                )
+            self.subject_list = selected_subjects
+        else:
+            self.subject_list = list(subjects)
         self.n_sessions = sessions_per_subject
+
+        # Validate selected_sessions
+        if selected_sessions is not None:
+            try:
+                selected_sessions = list(selected_sessions)
+            except TypeError:
+                raise TypeError(
+                    f"selected_sessions must be an iterable, "
+                    f"got {type(selected_sessions).__name__}"
+                ) from None
+            bad = [s for s in selected_sessions if not isinstance(s, (int, str))]
+            if bad:
+                raise TypeError(
+                    f"selected_sessions elements must be int or str, "
+                    f"got: {[(type(s).__name__, s) for s in bad]}"
+                )
+        self._selected_sessions = selected_sessions
+
+        # Validate events dict integrity
+        if not isinstance(events, dict):
+            raise TypeError(f"events must be a dict, got {type(events).__name__}")
+        for key, value in events.items():
+            if not isinstance(key, str):
+                raise TypeError(
+                    f"All event dict keys must be strings, but got "
+                    f"{type(key).__name__}: {key!r}. {_KWARG_HINT}"
+                )
+            if isinstance(value, (list, tuple)):
+                for i, v in enumerate(value):
+                    if not _is_event_int(v):
+                        raise TypeError(
+                            f"Event {key!r} list element {i} is {v!r} "
+                            f"({type(v).__name__}), expected int. {_KWARG_HINT}"
+                        )
+            elif not _is_event_int(value):
+                raise TypeError(
+                    f"Event {key!r} has value {value!r} ({type(value).__name__}), "
+                    f"expected int or list of int. {_KWARG_HINT}"
+                )
         self.event_id = events
         self.code = code
         self.interval = interval
         self.paradigm = paradigm
         self.doi = doi
         self.unit_factor = unit_factor
+
+    @property
+    def all_subjects(self):
+        """Full list of subjects available in this dataset (unfiltered)."""
+        return list(self._all_subjects)
 
     @cached_property
     def metadata(self) -> "DatasetMetadata | None":
@@ -790,6 +870,8 @@ class BaseDataset(metaclass=MetaclassDataset):
         if not isinstance(subjects, list):
             raise ValueError("subjects must be a list")
 
+        effective_sessions = self._selected_sessions
+
         cache_config = CacheConfig.make(cache_config)
 
         if process_pipeline is None:
@@ -799,11 +881,17 @@ class BaseDataset(metaclass=MetaclassDataset):
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
-            data[subject] = self._get_single_subject_data_using_cache(
+            subject_data = self._get_single_subject_data_using_cache(
                 subject,
                 cache_config,
                 process_pipeline,
             )
+            if effective_sessions is not None:
+                str_sessions = {str(s) for s in effective_sessions}
+                subject_data = {
+                    k: v for k, v in subject_data.items() if k in str_sessions
+                }
+            data[subject] = subject_data
         check_subject_names(data)
         check_session_names(data)
         check_run_names(data)

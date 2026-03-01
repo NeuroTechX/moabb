@@ -23,6 +23,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 
 # New freidok URL - the old fedora URLs no longer work
@@ -272,7 +273,26 @@ class Sosulski2019(BaseDataset):
         load_soa_60=False,
         reject_non_iid=False,
         interval=None,
+        subjects=None,
+        sessions=None,
+        **kwargs,
     ):
+        deprecated_renames = {
+            "UseSoasAsSessions": "use_soas_as_sessions",
+            "LoadSoa60": "load_soa_60",
+            "RejectNonIid": "reject_non_iid",
+            "Interval": "interval",
+            "Subjects": "subjects",
+            "Sessions": "sessions",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Sosulski2019")
+        use_soas_as_sessions = resolved.get("use_soas_as_sessions", use_soas_as_sessions)
+        load_soa_60 = resolved.get("load_soa_60", load_soa_60)
+        reject_non_iid = resolved.get("reject_non_iid", reject_non_iid)
+        interval = resolved.get("interval", interval)
+        subjects = resolved.get("subjects", subjects)
+        sessions = resolved.get("sessions", sessions)
+
         """
         :param use_soa_as_sessions: 1800 epochs were recorded at different SOAs each. Depending on
         the subject between 3 and 4 (4-5 if 60 is loaded). Training classifiers on mixtures of SOAs
@@ -299,6 +319,8 @@ class Sosulski2019(BaseDataset):
             interval=interval,
             paradigm="p300",
             doi="10.6094/UNIFR/154576",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     @staticmethod

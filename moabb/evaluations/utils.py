@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import functools
 import logging
+import warnings
 from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
@@ -302,7 +304,24 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
 # with locally scoped classes.
 
 try:
-    from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", "OptunaSearchCV is experimental")
+        # OptunaSearchCV emits an ExperimentalWarning (subclass of FutureWarning)
+        # on import; suppress it since MOABB intentionally uses this API.
+        from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
+
+    # Monkey-patch _BaseOptunaSearchCV.__init__ to suppress the
+    # ExperimentalWarning on every instantiation (including sklearn clone).
+
+    _orig_init = _BaseOptunaSearchCV.__init__
+
+    @functools.wraps(_orig_init)
+    def _quiet_init(self, *args, **kwargs):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "OptunaSearchCV is experimental")
+            _orig_init(self, *args, **kwargs)
+
+    _BaseOptunaSearchCV.__init__ = _quiet_init
 
     class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
         _estimator_type = "classifier"
@@ -338,7 +357,11 @@ def check_search_available():
     if _classifier_wrapper_available and OptunaSearchCVClassifier is not None:
 
         def OptunaSearchCV(estimator, param_distributions, **kwargs):
-            return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore", "OptunaSearchCV is experimental", FutureWarning
+                )
+                return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
 
         search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
         return search_methods, True

@@ -25,6 +25,7 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import _handle_deprecated_kwargs
 
 
 Lee2019_URL = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100542/"
@@ -39,8 +40,27 @@ class Lee2019(BaseDataset):
         train_run=True,
         test_run=None,
         resting_state=False,
-        sessions=(1, 2),
+        sessions=None,
+        subjects=None,
+        **kwargs,
     ):
+        deprecated_renames = {
+            "TrainRun": "train_run",
+            "TestRun": "test_run",
+            "RestingState": "resting_state",
+            "Sessions": "sessions",
+            "Subjects": "subjects",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Lee2019")
+        train_run = resolved.get("train_run", train_run)
+        test_run = resolved.get("test_run", test_run)
+        resting_state = resolved.get("resting_state", resting_state)
+        sessions = resolved.get("sessions", sessions)
+        subjects = resolved.get("subjects", subjects)
+
+        if sessions is None:
+            sessions = (1, 2)
+
         if paradigm.lower() in ["imagery", "mi"]:
             paradigm = "imagery"
             code_suffix = "MI"
@@ -84,6 +104,8 @@ class Lee2019(BaseDataset):
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.code_suffix = code_suffix
         self.train_run = train_run

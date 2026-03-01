@@ -173,7 +173,7 @@ class Cattan2019_PHMD(BaseDataset):
         methodology="Subjects sat in front of screen at ~50 cm distance without instrumental noise-reduction devices. EEG cap and Samsung Gear were placed on subject. Smartphones were continuously swapped between switched-on and switched-off conditions. Each block consisted of 1 minute of EEG recording with eyes opened. The sequence of 10 blocks was randomized prior to experiment using random number generator with no autocorrelation. Triggers marked beginning of each block (1=switched-off, 2=switched-on).",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=1,
@@ -182,6 +182,8 @@ class Cattan2019_PHMD(BaseDataset):
             interval=[0, 1],
             paradigm="rstate",
             doi="10.5281/zenodo.2617084",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self._chnames = [
             "Fp1",

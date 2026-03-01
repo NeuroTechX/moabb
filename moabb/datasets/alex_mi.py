@@ -188,7 +188,7 @@ class AlexMI(BaseDataset):
         methodology="Cue-based paradigm without feedback (Step B of Brain Switch campaign). EEG recorded at 512 Hz with 16 active electrodes using a g.tec g.USBamp amplifier. Reference electrode placed on the ear. Subjects performed imagined movements following visual cues: right hand, feet, and rest, 20 trials per class, 3 seconds each. Recorded in standard office conditions (not shielded laboratory). Software: Matlab/Simulink with g.tec drivers.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
@@ -197,6 +197,8 @@ class AlexMI(BaseDataset):
             interval=[0, 3],
             paradigm="imagery",
             doi="10.5281/zenodo.806022",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

@@ -19,6 +19,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 from . import download as dl
 
@@ -336,7 +337,14 @@ class Ofner2017(BaseDataset):
         methodology="Subjects performed 6 sustained upper limb movements (elbow flexion/extension, forearm supination/pronation, hand open/close) plus rest in two separate sessions (movement execution and motor imagery). EEG was recorded from 61 channels, filtered to 0.3-3 Hz, and classified using shrinkage LDA with discriminative spatial patterns. Source localization was performed using sLORETA. Classification employed both single time-point and time-window approaches with 10x10-fold cross-validation.",
     )
 
-    def __init__(self, imagined=True, executed=False):
+    def __init__(
+        self, imagined=True, executed=True, subjects=None, sessions=None, **kwargs
+    ):
+        deprecated_renames = {"Imagined": "imagined", "Executed": "executed"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Ofner2017")
+        imagined = resolved.get("imagined", imagined)
+        executed = resolved.get("executed", executed)
+
         self.imagined = imagined
         self.executed = executed
         self.event_id = {
@@ -358,6 +366,8 @@ class Ofner2017(BaseDataset):
             interval=[0, 3],  # according to paper 2-5
             paradigm="imagery",
             doi="10.1371/journal.pone.0182578",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
