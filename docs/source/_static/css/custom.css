@@ -1702,3 +1702,88 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
 
 /* Note: right sidebar is removed per-page via metadata directive
    injected by dataset_timeline_ext.py */
+
+
+/* ===================================================================
+   API Page Styling
+   =================================================================== */
+
+/* --- 1. Prose line-length constraint (keep tables full-width) --- */
+.bd-article-container section > p,
+.bd-article-container section > .admonition {
+  max-width: 52rem;
+}
+
+/* --- 2. Architecture diagram --- */
+.api-architecture-diagram {
+  max-width: 44rem;
+  margin: 1.5rem auto 1rem;
+}
+.api-architecture-diagram img {
+  width: 100%;
+  height: auto;
+}
+.api-architecture-diagram .caption-text {
+  font-size: 0.88rem;
+  color: var(--pst-color-text-muted);
+  text-align: center;
+  margin-top: 0.35rem;
+}
+
+/* --- 3. Heading vertical rhythm --- */
+.bd-article-container section > section {
+  margin-top: 2.25rem;
+}
+.bd-article-container section > section > h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+.bd-article-container section > section > section > h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--pst-color-border);
+}
+
+/* --- 4. Autosummary table styling --- */
+table.autosummary {
+  margin-top: 0.5rem;
+  table-layout: fixed;
+  width: 100%;
+}
+table.autosummary col:first-child {
+  width: 36%;
+}
+table.autosummary td:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Soften dataset link color for less visual dominance */
+table.autosummary td:first-child a code {
+  font-weight: 500;
+  color: var(--pst-color-link);
+  opacity: 0.88;
+}
+table.autosummary td:first-child a:hover code {
+  opacity: 1;
+}
+/* Description column: slightly increase contrast */
+table.autosummary td:nth-child(2) {
+  color: var(--pst-color-text-base);
+}
+
+/* --- 5. Benchmark admonition code block --- */
+.bd-article-container .admonition .highlight {
+  max-width: 52rem;
+}
+
+/* --- 6. Right-sidebar TOC enhancements --- */
+.bd-toc nav ul li a.active {
+  font-weight: 600;
+  color: var(--pst-color-primary);
+}
+.bd-toc nav > ul > li > a {
+  font-size: 0.82rem;
+}

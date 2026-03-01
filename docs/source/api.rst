@@ -2,12 +2,16 @@
 API and Main Concepts
 =====================
 
-.. figure:: images/architecture.png
-   :alt: architecture
+.. figure:: images/architecture.svg
+   :alt: Concept flow in MOABB
+   :align: center
+   :class: api-architecture-diagram
 
+   Datasets and Paradigms define the problem; Evaluations and Pipelines
+   define the measurement.
 
-There are 4 main concepts in the MOABB: **the datasets**, **the paradigm**, **the
-evaluation**, and **the pipelines**. In addition, we offer **statistical**,
+There are 4 main concepts in the MOABB: **the datasets**, **the paradigms**, **the
+evaluations**, and **the pipelines**. In addition, we offer **statistical**,
 **visualization**, **utilities** to simplify the workflow.
 
 And if you want to just run the benchmark, you can use our **benchmark** module that wraps
@@ -168,9 +172,9 @@ Compound Datasets
     Cattan2019_VR_Il
     BI_Il
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 .. currentmodule:: moabb.datasets
 
 .. autosummary::
@@ -200,8 +204,8 @@ Base & Utils
     utils.plot_datasets_grid
     utils.plot_datasets_cluster
 
-Paradigm
---------
+Paradigms
+---------
 .. currentmodule:: moabb.paradigms
 
 A paradigm defines how the raw data will be converted to trials ready to
@@ -257,7 +261,7 @@ c-VEP Paradigms
     FilterBankCVEP
 
 -----------------------
-Resting state Paradigms
+Resting State Paradigms
 -----------------------
 
 .. autosummary::
@@ -277,9 +281,9 @@ Fixed Interval Windows Processings
     FixedIntervalWindowsProcessing
     FilterBankFixedIntervalWindowsProcessing
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
@@ -318,9 +322,9 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     CrossSessionSplitter
     CrossSubjectSplitter
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
@@ -410,22 +414,24 @@ The benchmark module wraps all the steps in a single function. It
 downloads the data, runs the benchmark, and returns the results. It is
 the easiest way to run a benchmark.
 
-.. code:: python
+.. admonition:: Minimal benchmark example
 
-    from moabb import benchmark
+   .. code-block:: python
 
-    results = benchmark(
-        pipelines="./pipelines",
-        evaluations=["WithinSession"],
-        paradigms=["LeftRightImagery"],
-        include_datasets=[BNCI2014_001(), PhysionetMI()],
-        exclude_datasets=None,
-        results="./results/",
-        overwrite=True,
-        plot=True,
-        output="./benchmark/",
-        n_jobs=-1,
-    )
+      from moabb import benchmark
+
+      results = benchmark(
+          pipelines="./pipelines",
+          evaluations=["WithinSession"],
+          paradigms=["LeftRightImagery"],
+          include_datasets=[BNCI2014_001(), PhysionetMI()],
+          exclude_datasets=None,
+          results="./results/",
+          overwrite=True,
+          plot=True,
+          output="./benchmark/",
+          n_jobs=-1,
+      )
 
 .. autosummary::
     :toctree: generated/
