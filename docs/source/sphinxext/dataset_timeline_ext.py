@@ -1475,11 +1475,26 @@ def _make_timeline_lines(cls_name, srcdir):
 # ---------------------------------------------------------------------------
 
 
+def _is_autosummary_context():
+    """Return True if we are called from autosummary's summary extraction."""
+    import traceback
+
+    for frame_info in traceback.extract_stack():
+        if "autosummary" in frame_info.filename and frame_info.name == "get_items":
+            return True
+    return False
+
+
 def autodoc_process_docstring(app, what, name, obj, options, lines):
     """Enhance dataset class docstrings with card, grid, and tabs."""
     if what != "class":
         return
     if not _is_concrete_dataset(obj):
+        return
+
+    # Skip heavy restructuring when autosummary is extracting one-line
+    # summaries for the API table — it only needs the first paragraph.
+    if _is_autosummary_context():
         return
 
     cls_name = obj.__name__
