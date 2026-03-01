@@ -14,6 +14,9 @@
    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
 
    <style>
     table.dataTable {
@@ -146,6 +149,11 @@ We use all the classes available in the dataset.
            scrollCollapse: true,
            info: false,
            searching: false,
+           layout: {
+             topStart: {
+               buttons: ['copy', 'csv'],
+             },
+           },
          });
        });
      });
