@@ -75,7 +75,9 @@ def _infer_label_frequencies(X, y, classes, freq_map=None):
     if len(y) != len(X):
         raise ValueError("X and y must have the same number of trials.")
 
-    inv_event_id = {event_code: event_label for event_label, event_code in X.event_id.items()}
+    inv_event_id = {
+        event_code: event_label for event_label, event_code in X.event_id.items()
+    }
     label_to_codes = {}
     for label, event_code in zip(y, X.events[:, -1]):
         label_to_codes.setdefault(label, set()).add(int(event_code))
@@ -92,9 +94,9 @@ def _infer_label_frequencies(X, y, classes, freq_map=None):
     if len(class_vals) == len(classes):
         class_vals = sorted(class_vals)
         n_classes = len(classes)
-        class_labels_look_ordinal = class_vals == list(range(n_classes)) or class_vals == list(
-            range(1, n_classes + 1)
-        )
+        class_labels_look_ordinal = class_vals == list(
+            range(n_classes)
+        ) or class_vals == list(range(1, n_classes + 1))
 
     inferred = {}
     label_event_code = {}
@@ -142,7 +144,9 @@ def _infer_label_frequencies(X, y, classes, freq_map=None):
     looks_consecutive = inferred_vals == list(range(n_classes)) or inferred_vals == list(
         range(1, n_classes + 1)
     )
-    matches_event_codes = all(np.isclose(inferred[cls], label_event_code[cls]) for cls in classes)
+    matches_event_codes = all(
+        np.isclose(inferred[cls], label_event_code[cls]) for cls in classes
+    )
     if class_labels_look_ordinal and looks_consecutive and matches_event_codes:
         raise ValueError(
             "Could not infer physical stimulus frequencies from class labels/events. "
@@ -284,7 +288,9 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         n_times = len(X.times)
 
         self.freqs_ = list(np.unique(y))
-        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
+        self.classes_ = np.array(
+            self.freqs_, dtype=y.dtype if y.dtype != object else object
+        )
         self.le_ = LabelEncoder().fit(self.freqs_)
         self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
         self.class_freqs_ = _infer_label_frequencies(X, y, self.classes_, self.freq_map)
@@ -294,8 +300,12 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
             freq = self.class_freqs_[label]
             yf = []
             for h in range(1, self.n_harmonics + 1):
-                yf.append(np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
-                yf.append(np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
+                yf.append(
+                    np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
+                )
+                yf.append(
+                    np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
+                )
             self.Yf[label] = np.array(yf)
         return self
 
@@ -1063,7 +1073,9 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         # passed by the paradigm, not the Epochs event_id keys
         y = np.asarray(y)
         self.freqs_ = list(np.unique(y))
-        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
+        self.classes_ = np.array(
+            self.freqs_, dtype=y.dtype if y.dtype != object else object
+        )
         self.le_ = LabelEncoder().fit(self.freqs_)
         self.one_hot_, self.one_inv_, self.Ym = {}, {}, {}
         for class_idx, class_label in enumerate(self.classes_):
@@ -1292,7 +1304,9 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
 
         y = np.array(y)
         self.freqs_ = list(np.unique(y))
-        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
+        self.classes_ = np.array(
+            self.freqs_, dtype=y.dtype if y.dtype != object else object
+        )
         self.le_ = LabelEncoder().fit(self.freqs_)
         self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
         self.templates_ = {}
@@ -1465,7 +1479,9 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
         self.slen_ = X.times[-1] - X.times[0]
         n_times = len(X.times)
         self.freqs_ = list(np.unique(y))
-        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
+        self.classes_ = np.array(
+            self.freqs_, dtype=y.dtype if y.dtype != object else object
+        )
         self.le_ = LabelEncoder().fit(self.freqs_)
         self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
         self.class_freqs_ = _infer_label_frequencies(X, y, self.classes_, self.freq_map)
@@ -1481,8 +1497,12 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
             freq = self.class_freqs_[class_label]
             yf = []
             for h in range(1, self.n_harmonics + 1):
-                yf.append(np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
-                yf.append(np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
+                yf.append(
+                    np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
+                )
+                yf.append(
+                    np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
+                )
             self.Yf[class_label] = np.array(yf)
 
             # Spatial filter from CCA(template, sinusoidal reference)
