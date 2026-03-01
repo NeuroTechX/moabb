@@ -532,7 +532,7 @@ class TestSubjectSessionFiltering:
     @pytest.mark.parametrize(
         "dataset_cls, kwargs, expected_len, all_len",
         [
-            (PhysionetMI, dict(subjects=[1, 2, 3]), 3, 109),
+            (PhysionetMI, dict(subjects=[1, 2, 3]), 3, 108),
             (BNCI2014_001, dict(subjects=[1, 5, 9]), 3, 9),
             (Ofner2017, dict(subjects=[1, 2]), 2, 15),
             (FakeDataset, dict(subjects=[1, 2, 3]), 3, 10),
@@ -558,7 +558,8 @@ class TestSubjectSessionFiltering:
             dataset_cls(**kwargs)
 
     def test_default_backward_compat(self):
-        assert PhysionetMI().subject_list == list(range(1, 110))
+        expected_subjects = [s for s in range(1, 110) if s != 88]
+        assert PhysionetMI().subject_list == expected_subjects
         assert BNCI2014_001().subject_list == list(range(1, 10))
 
     def test_session_filtering_at_construction(self):
