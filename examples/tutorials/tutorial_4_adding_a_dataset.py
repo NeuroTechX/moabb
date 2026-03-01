@@ -1,27 +1,52 @@
 """
 ====================================
-Tutorial 4: Creating a dataset class
+Tutorial 4: Creating custom datasets
 ====================================
+
+MOABB provides several ways to integrate a custom dataset, depending on the
+format of your data:
+
+1. :class:`~moabb.datasets.base.BaseDataset` — for datasets with arbitrary
+   file formats. Requires implementing data downloading and file reading.
+2. :class:`~moabb.datasets.base.BaseBIDSDataset` /
+   :class:`~moabb.datasets.base.LocalBIDSDataset` — for datasets already
+   provided in `BIDS format <https://bids.neuroimaging.io/>`_.
+   ``BaseBIDSDataset`` is used for online datasets (only the download step
+   needs to be implemented); ``LocalBIDSDataset`` is used for local or private
+   datasets with no subclassing required at all.
+3. :class:`~moabb.datasets.compound_dataset.CompoundDataset` — for building a
+   new dataset by selecting subjects/sessions/runs from existing MOABB datasets
+   or by merging several datasets together.
+
+This tutorial illustrates all three approaches.
 """
 
-# Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
+# Authors: Pedro L. C. Rodrigues, Sylvain Chevallier, Gregoire Cattan
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
 
 import mne
 import numpy as np
 from pyriemann.classification import MDM
-from pyriemann.estimation import Covariances
+from pyriemann.estimation import Covariances, ERPCovariances
 from scipy.io import loadmat, savemat
 from sklearn.pipeline import make_pipeline
 
+from moabb.datasets import Cattan2019_VR
 from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
+from moabb.datasets.base import BaseBIDSDataset, BaseDataset
+from moabb.datasets.braininvaders import BI2014a
+from moabb.datasets.compound_dataset import CompoundDataset
+from moabb.datasets.utils import blocks_reps
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
+from moabb.paradigms.p300 import P300
 
 
 ##############################################################################
+# 1. Creating a dataset class from scratch (BaseDataset)
+# ======================================================
+#
 # Creating some Data
 # ------------------
 #
@@ -30,7 +55,7 @@ from moabb.paradigms import LeftRightImagery
 # 8 channels lasting for 150 seconds (sampling frequency 256 Hz). We have
 # included the script that creates this dataset and have uploaded it online.
 # The fake dataset is available on the
-# `Zenodo website <https://sandbox.zenodo.org/record/369543>`_
+# `Zenodo website <https://zenodo.org/records/14973598>`_
 
 
 def create_example_dataset():
@@ -172,3 +197,176 @@ print(scores)
 # your data on public server (like Zenodo or Figshare) and signal that you
 # want to add your dataset to MOABB in the  `dedicated issue <https://github.com/NeuroTechX/moabb/issues/1>`_.  # noqa: E501
 # You could then follow the instructions on `how to contribute <https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md>`_  # noqa: E501
+
+##############################################################################
+# 2. Creating a BIDS dataset class (BaseBIDSDataset)
+# ==================================================
+#
+# If your dataset is already provided in the
+# `BIDS format <https://bids.neuroimaging.io/>`_, you can subclass
+# :class:`~moabb.datasets.base.BaseBIDSDataset` instead of
+# :class:`~moabb.datasets.base.BaseDataset`.
+# The ``BaseBIDSDataset`` base class handles reading the BIDS files
+# automatically via ``mne-bids``; you only need to implement the
+# ``_download_subject`` method that downloads the data for a single subject
+# and returns the local path to the **root** of the BIDS dataset.
+#
+# Several MOABB datasets already use this approach — for example
+# :class:`moabb.datasets.Zhou2016`.
+#
+# The skeleton below shows the minimal implementation required.
+# **Note:** ``ExampleBIDSDataset`` is intentionally non-functional — its
+# ``_download_subject`` raises ``NotImplementedError``. Replace it with your
+# own download logic before instantiating the class.
+
+
+class ExampleBIDSDataset(BaseBIDSDataset):
+    """Skeleton showing how to wrap an online BIDS dataset.
+
+    Replace ``_download_subject`` with the actual download logic for your
+    dataset (e.g. fetching a zip archive from Zenodo and extracting it).
+    """
+
+    def __init__(self):
+        super().__init__(
+            subjects=[1, 2, 3],
+            sessions_per_subject=1,
+            events={"left_hand": 1, "right_hand": 2},
+            code="ExampleBIDSDataset",
+            interval=[0, 0.75],
+            paradigm="imagery",
+            doi="",
+        )
+
+    def _download_subject(self, subject, path, force_update, update_path, verbose):
+        """Download the BIDS dataset for *subject* and return the BIDS root."""
+        # Example (not executed here — replace with your actual download URL):
+        #
+        #   url = f"https://zenodo.org/records/XXXXX/files/bids_dataset.zip"
+        #   bids_root = dl.data_dl(url, "ExampleBIDSDataset")
+        #   return bids_root
+        raise NotImplementedError("Replace this with your actual download logic.")
+
+
+##############################################################################
+# Using LocalBIDSDataset for local/private BIDS datasets
+# -------------------------------------------------------
+#
+# If you already have a BIDS dataset on your local machine and you do **not**
+# want to write a dedicated class, you can use
+# :class:`~moabb.datasets.base.LocalBIDSDataset` directly.
+# It auto-discovers subjects and sessions from the BIDS directory structure:
+#
+# .. code-block:: python
+#
+#    from moabb.datasets.base import LocalBIDSDataset
+#
+#    dataset = LocalBIDSDataset(
+#        bids_root="/path/to/bids/dataset",
+#        events={"left_hand": 1, "right_hand": 2},
+#        interval=[0, 0.75],
+#        paradigm="imagery",
+#    )
+#
+#    paradigm = LeftRightImagery()
+#    X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
+
+##############################################################################
+# 3. Building a dataset from existing MOABB datasets (CompoundDataset)
+# ====================================================================
+#
+# The :class:`~moabb.datasets.compound_dataset.CompoundDataset` class lets you
+# build a new dataset by **selecting** a subset of subjects, sessions, or runs
+# from one or more existing MOABB datasets, or by **merging** several datasets
+# together.
+#
+# This is useful when you want to:
+#
+# * restrict an existing dataset to a specific set of subjects or sessions,
+# * combine subjects from different datasets into a single object for
+#   evaluation, or
+# * prototype a new dataset before it is officially added to MOABB.
+#
+# Creation of subject selections
+# --------------------------------
+#
+# A ``CompoundDataset`` accepts a ``subjects_list`` where every element is a
+# tuple of four values:
+#
+# - the original MOABB dataset object
+# - the subject number to select
+# - the sessions — a session name (``'0'``), a list of sessions
+#   (``['0', '1']``), or ``None`` to keep all sessions
+# - the runs — a run name, a list of run names, or ``None`` to keep all runs
+
+
+class CustomDataset1(CompoundDataset):
+    def __init__(self):
+        biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
+        runs = blocks_reps([0, 2], [0, 1, 2, 3, 4], biVR.n_repetitions)
+        subjects_list = [
+            (biVR, 1, "0VR", runs),
+            (biVR, 2, "0VR", runs),
+        ]
+        CompoundDataset.__init__(
+            self,
+            subjects_list=subjects_list,
+            code="CustomDataset1",
+            interval=[0, 1.0],
+        )
+
+
+class CustomDataset2(CompoundDataset):
+    def __init__(self):
+        bi2014 = BI2014a()
+        subjects_list = [
+            (bi2014, 4, None, None),
+            (bi2014, 7, None, None),
+        ]
+        CompoundDataset.__init__(
+            self,
+            subjects_list=subjects_list,
+            code="CustomDataset2",
+            interval=[0, 1.0],
+        )
+
+
+##############################################################################
+# Merging the datasets
+# --------------------
+#
+# Two ``CompoundDataset`` objects can be merged into a new one by providing
+# them directly as the ``subjects_list``:
+
+
+class CustomDataset3(CompoundDataset):
+    def __init__(self):
+        subjects_list = [CustomDataset1(), CustomDataset2()]
+        CompoundDataset.__init__(
+            self,
+            subjects_list=subjects_list,
+            code="CustomDataset3",
+            interval=[0, 1.0],
+        )
+
+
+##############################################################################
+# Evaluate and display
+# --------------------
+#
+# A ``CompoundDataset`` can be used as a regular MOABB dataset in any
+# evaluation — nothing changes in the evaluation pipeline:
+
+paradigm_p300 = P300()
+pipelines_p300 = {}
+pipelines_p300["MDM"] = make_pipeline(
+    ERPCovariances(estimator="lwf"), MDM(metric="riemann")
+)
+
+datasets = [CustomDataset3()]
+evaluation2 = WithinSessionEvaluation(
+    paradigm=paradigm_p300, datasets=datasets, overwrite=False, suffix="newdataset"
+)
+scores2 = evaluation2.process(pipelines_p300)
+
+print(scores2)
