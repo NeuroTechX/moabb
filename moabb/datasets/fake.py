@@ -28,7 +28,7 @@ class FakeDataset(BaseDataset):
         Number of runs to generate
     n_subjects: int, default 10
         Number of subject to generate
-    paradigm: ['p300','imagery', 'ssvep']
+    paradigm : ``['p300','imagery', 'ssvep']``
         Defines what sort of dataset this is
     channels: list or tuple of str
         List of channels to generate, default ("C3", "Cz", "C4")
