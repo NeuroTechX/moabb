@@ -1,13 +1,13 @@
-name: SSVEP CCA
+name: eCCA-SSVEP
 
 paradigms:
   - SSVEP
 
 citations:
-  - https://doi.org/10.1088/1741-2560/6/4/046002
+  - https://doi.org/10.1371/journal.pone.0140703
 
 pipeline:
-  - name: SSVEP_CCA
+  - name: SSVEP_eCCA
     from: moabb.pipelines.classification
     parameters:
       n_harmonics: 3

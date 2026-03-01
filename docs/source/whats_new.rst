@@ -104,6 +104,11 @@ Bugs
 - Fix CI dataset cache reuse across commits/PR updates by using stable cache keys and default-branch cache saves for docs/tests workflows, avoiding repeated dataset downloads (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Liu2024` download failure by switching Figshare URLs from ``figshare.com/ndownloader`` to ``ndownloader.figshare.com`` and adding ``BadZipFile`` recovery for corrupted cached downloads (:gh:`992` by `Bruno Aristimunha`_)
 - Fix TRCA Riemannian mean convergence failure by regularizing ill-conditioned cross-covariance matrices in :class:`moabb.pipelines.classification.SSVEP_TRCA`. Eigenvalue clamping bounds the condition number, eliminating ``Convergence not reached`` and ``invalid value encountered in log`` warnings (by `Bruno Aristimunha`_)
+- Fix SSVEP CCA-family estimator consistency and eCCA formulation:
+  :class:`moabb.pipelines.classification.SSVEP_CCA`,
+  :class:`moabb.pipelines.classification.SSVEP_MsetCCA`,
+  :class:`moabb.pipelines.classification.SSVEP_itCCA`, and
+  :class:`moabb.pipelines.classification.SSVEP_eCCA` now return predictions in the same label space as ``classes_`` and align ``predict_proba`` columns with ``classes_`` order. :class:`moabb.pipelines.classification.SSVEP_CCA` and :class:`moabb.pipelines.classification.SSVEP_eCCA` now infer frequencies robustly from epochs metadata (with ``freq_map`` override), and :class:`moabb.pipelines.classification.SSVEP_eCCA` now uses the corrected 4-feature filter assignments with updated reference/citation alignment (by `Bruno Aristimunha`_)
 - Add documentation note to :class:`moabb.datasets.PhysionetMI` that subject 88 was recorded at 128 Hz instead of 160 Hz, which causes errors when loaded alongside other subjects (:gh:`538` by `Bruno Aristimunha`_)
 
 Code health

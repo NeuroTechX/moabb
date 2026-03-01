@@ -36,7 +36,16 @@ log = logging.getLogger(__name__)
 
 def _ppl_needs_epochs(pn):
     """Check if the pipeline needs MNE epochs as input."""
-    ppl_with_epochs = ["SSVEP CCA", "TRCA-SSVEP", "MsetCCA-SSVEP"]
+    ppl_with_epochs = [
+        "SSVEP CCA",
+        "TRCA-SSVEP",
+        "MsetCCA-SSVEP",
+        "itCCA-SSVEP",
+        "eCCA-SSVEP",
+        "TRCA-R-SSVEP",
+        "SSCOR-SSVEP",
+        "TDCA-SSVEP",
+    ]
     if any(s in pn for s in ppl_with_epochs):
         return True
     else:
@@ -273,6 +282,7 @@ def benchmark(  # noqa: C901
                     overwrite=overwrite,
                     suffix=suffix,
                     return_epochs=True,
+                    mne_labels=True,
                     n_splits=n_splits,
                     cache_config=cache_config,
                     optuna=optuna,

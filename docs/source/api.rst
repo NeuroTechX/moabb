@@ -368,6 +368,11 @@ for more info.
     classification.SSVEP_CCA
     classification.SSVEP_TRCA
     classification.SSVEP_MsetCCA
+    classification.SSVEP_itCCA
+    classification.SSVEP_eCCA
+    classification.SSVEP_TRCA_R
+    classification.SSVEP_SSCOR
+    classification.SSVEP_TDCA
 
 Statistics, visualization and utilities
 ---------------------------------------
