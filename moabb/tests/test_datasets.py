@@ -397,7 +397,7 @@ class Test_Datasets:
         doc = ManualParticipantsDataset.__doc__
         assert doc.count(".. admonition:: Participants") == 1
 
-    def test_feedback_section_auto_generated(self):
+    def test_feedback_section_not_auto_generated(self):
         class FeedbackTestDataset(BaseDataset):
             """A test dataset for feedback section."""
 
@@ -425,10 +425,9 @@ class Test_Datasets:
                 return []
 
         doc = FeedbackTestDataset.__doc__
-        assert "Found an issue with this dataset?" in doc
-        assert "https://github.com/NeuroTechX/moabb/issues/new" in doc
-        assert "FeedbackTestDataset" in doc
-        assert "Report an Issue on GitHub" in doc
+        assert "Found an issue with this dataset?" not in doc
+        assert "https://github.com/NeuroTechX/moabb/issues/new" not in doc
+        assert "Report an Issue on GitHub" not in doc
 
     def test_feedback_section_not_duplicated(self):
         class FeedbackNoDupDataset(BaseDataset):

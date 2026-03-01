@@ -554,13 +554,9 @@ class MetaclassDataset(abc.ABCMeta):
         if metadata_sections:
             insert_blocks.append(metadata_sections)
 
-        # Add the feedback section for real (non-base, non-fake) dataset classes
-        if (
-            "Found an issue with this dataset?" not in doc
-            and name not in ("BaseDataset", "BaseBIDSDataset", "LocalBIDSDataset")
-            and not name.startswith("Fake")
-        ):
-            insert_blocks.append(_format_feedback_section(name))
+        # Note: feedback "Report Issue" button is now part of the enhanced
+        # dataset card header injected by dataset_timeline_ext.py, so the
+        # standalone feedback admonition is no longer injected here.
 
         if insert_blocks:
             if doc.strip():

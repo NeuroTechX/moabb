@@ -41,7 +41,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}
+          key: ${{ runner.os }}-mne-data-v2
           restore-keys: |
             ${{ runner.os }}-mne-data-v2-
 
@@ -121,8 +121,8 @@ jobs:
           env_vars: OS,PYTHON
 
       - name: Save MNE Data Cache
-        if: success()
+        if: success() && steps.cache-mne_data.outputs.cache-hit != 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
         uses: actions/cache/save@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}
+          key: ${{ runner.os }}-mne-data-v2
