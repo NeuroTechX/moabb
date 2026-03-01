@@ -411,6 +411,17 @@ class TestWithinSessLearningCurve:
         np.testing.assert_allclose(results0.score, results2.score)
 
 
+class TestWithinSubj(TestWithinSess):
+    def setup_method(self):
+        self.eval = ev.WithinSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
+            save_model=True,
+            optuna=False,
+        )
+
+
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
         self.eval = ev.CrossSubjectEvaluation(
@@ -730,6 +741,19 @@ class TestParallelProcess:
         # 2 subjects × 2 sessions (leave-one-out) = 4 results
         assert len(results) == 4
 
+    def test_within_subject_process_structure(self, tmp_path):
+        """WithinSubject process() returns correct number of results."""
+        evaluation = ev.WithinSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+            hdf5_path=str(tmp_path / "parallel_test"),
+        )
+        results = evaluation.process(pipelines)
+        # 2 subjects × 2 sessions = 4 results
+        assert len(results) == 4
+        assert "score" in results.columns
+
     def test_cross_subject_process_structure(self, tmp_path):
         """CrossSubject process() returns correct number of results."""
         evaluation = ev.CrossSubjectEvaluation(
@@ -901,6 +925,10 @@ class TestParallelLegacyEquivalence:
     def test_cross_subject_equivalence(self, tmp_path):
         """CrossSubject parallel matches legacy scores."""
         self._compare_parallel_vs_legacy(ev.CrossSubjectEvaluation, tmp_path)
+
+    def test_within_subject_equivalence(self, tmp_path):
+        """WithinSubject parallel matches legacy scores."""
+        self._compare_parallel_vs_legacy(ev.WithinSubjectEvaluation, tmp_path)
 
 
 class TestAggregateFoldResults:

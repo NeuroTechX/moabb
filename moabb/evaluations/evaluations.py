@@ -15,6 +15,7 @@ from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     WithinSessionSplitter,
+    WithinSubjectSplitter,
 )
 from moabb.evaluations.utils import (
     _average_scores,
@@ -580,3 +581,172 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 f"but {self.__class__.__name__} requires at least 2 subjects"
             )
         return "requirements not met"
+
+
+class WithinSubjectEvaluation(BaseEvaluation):
+    """Within-subject k-fold cross-validation pooling all sessions.
+
+    Pools all sessions of each subject and performs k-fold cross-validation
+    on the combined data. Scores are reported per session within each subject,
+    averaged across folds.
+
+    This differs from WithinSessionEvaluation (k-fold within each session
+    separately) and CrossSessionEvaluation (leave-one-session-out).
+
+    Parameters
+    ----------
+    paradigm : Paradigm instance
+        The paradigm to use.
+    datasets : List of Dataset instance
+        The list of dataset to run the evaluation. If none, the list of
+        compatible dataset will be retrieved from the paradigm instance.
+    random_state: int, RandomState instance, default=None
+        If not None, can guarantee same seed for shuffling examples.
+    n_jobs: int, default=1
+        Number of jobs for fitting of pipeline.
+    overwrite: bool, default=False
+        If true, overwrite the results.
+    error_score: "raise" or numeric, default="raise"
+        Value to assign to the score if an error occurs in estimator fitting. If set to
+        'raise', the error is raised.
+    suffix: str
+        Suffix for the results file.
+    hdf5_path: str
+        Specific path for storing the results and models.
+    additional_columns: None
+        Adding information to results.
+    return_epochs: bool, default=False
+        use MNE epoch to train pipelines.
+    return_raws: bool, default=False
+        use MNE raw to train pipelines.
+    mne_labels: bool, default=False
+        if returning MNE epoch, use original dataset label if True
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig`
+        for details.
+    """
+
+    _eval_type = "WithinSubject"
+    _aggregate_folds = True
+    _score_per_session = True
+
+    def _create_splitter(self):
+        """Create the WithinSubjectSplitter for parallel evaluation."""
+        cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
+        return WithinSubjectSplitter(
+            n_folds=5,
+            shuffle=True,
+            random_state=self.random_state,
+            cv_class=cv_class,
+            **cv_kwargs,
+        )
+
+    # flake8: noqa: C901
+    def evaluate(
+        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+    ):
+        # Collect all pipelines that need computing across subjects
+        run_pipes = {}
+        for subject in dataset.subject_list:
+            run_pipes.update(
+                self.results.not_yet_computed(
+                    pipelines, dataset, subject, process_pipeline
+                )
+            )
+        if len(run_pipes) == 0:
+            return
+
+        X, y, metadata = self._load_data(
+            dataset,
+            run_pipes,
+            process_pipeline,
+            postprocess_pipeline,
+        )
+        le = LabelEncoder()
+        y = y if self.mne_labels else le.fit_transform(y)
+
+        groups = metadata.subject.values
+        sessions = metadata.session.values
+        nchan = self._get_nchan(X)
+
+        self.cv = self._create_splitter()
+        inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
+
+        if _carbonfootprint:
+            tracker = self.emissions.create_tracker()
+            tracker.start()
+
+        # Accumulate per-fold results, then aggregate
+        all_fold_results = []
+
+        for cv_ind, (train, test) in enumerate(
+            tqdm(
+                self.cv.split(y, metadata),
+                total=self.cv.get_n_splits(metadata),
+                desc=f"{dataset.code}-WithinSubject",
+            )
+        ):
+            subject = groups[test[0]]
+            run_pipes = self.results.not_yet_computed(
+                pipelines, dataset, subject, process_pipeline
+            )
+
+            for name, clf in run_pipes.items():
+                clf = self._grid_search(
+                    param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
+                )
+                cvclf = clone(clf)
+
+                duration, emissions, task_name = self._fit_cv(
+                    cvclf,
+                    X[train],
+                    y[train],
+                    tracker if _carbonfootprint else None,
+                )
+                self._maybe_save_model_cv(
+                    cvclf,
+                    dataset,
+                    subject,
+                    "",
+                    name,
+                    cv_ind,
+                    eval_type="WithinSubject",
+                )
+
+                scorer = _create_scorer(cvclf, self.paradigm.scoring)
+
+                for sess in np.unique(sessions[test]):
+                    ix = sessions[test] == sess
+
+                    res = self._build_scored_result(
+                        dataset,
+                        subject,
+                        sess,
+                        name,
+                        len(train),
+                        nchan,
+                        duration,
+                        scorer,
+                        cvclf,
+                        X[test[ix]],
+                        y[test[ix]],
+                    )
+
+                    if _carbonfootprint:
+                        self._attach_emissions(res, emissions, task_name)
+
+                    all_fold_results.append(res)
+
+        if _carbonfootprint:
+            tracker.stop()
+
+        # Aggregate fold results by (subject, session, pipeline)
+        for agg_res in self._aggregate_fold_results(all_fold_results):
+            agg_res.pop("n_samples_total", None)
+            agg_res.pop("is_error", None)
+            yield agg_res
+
+    def is_valid(self, dataset):
+        return True

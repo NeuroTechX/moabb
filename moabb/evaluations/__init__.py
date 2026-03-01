@@ -8,6 +8,7 @@ from .evaluations import (
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
+    WithinSubjectEvaluation,
 )
 from .splitters import (
     CrossSessionSplitter,
