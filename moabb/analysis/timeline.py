@@ -933,14 +933,8 @@ def _render_scaled_phases(
     if not phases or total <= 0:
         return
 
-    # Compute natural scale, then check for minimum-width violations
+    # Compute scale mapping total duration to a fixed visual width.
     scale = 6.0 / total
-    widths_natural = [p.duration_s * scale for p in phases]
-    # Extra width needed by phases that are too narrow
-    extra = sum(max(0, min_block_w - w) for w in widths_natural)
-    # Shrink the total visual span to accommodate extra width
-    visual_total = 6.0 + extra
-    scale = (visual_total - extra) / total if total > 0 else 1.0
 
     # Place phases with enforced minimum width
     x = 0.0
@@ -1260,7 +1254,7 @@ def plot_class_balance(
         if ds is not None:
             trials_per_class = getattr(ds, "n_trials_per_class", None)
 
-    has_counts = trials_per_class is not None and isinstance(trials_per_class, dict)
+    has_counts = isinstance(trials_per_class, dict) and bool(trials_per_class)
 
     if figsize is None:
         h = max(1.8, 0.45 * n_classes + 0.8)

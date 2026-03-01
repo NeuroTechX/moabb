@@ -1,8 +1,10 @@
 """Sphinx extension: enhance dataset documentation pages.
 
 1. Injects an enhanced dataset card (paradigm chips, stats, action buttons)
-2. Injects a 2x2 visual summary grid (timeline, HED tags, sessions, channels)
-3. Restructures the docstring into a tabbed layout (Overview, Quickstart, Metadata, Notes)
+2. Injects an adaptive visual summary grid with panels for timeline, class
+   balance, sessions, channels, and HED tags (when available)
+3. Restructures the docstring into a tabbed layout (Overview, Code Examples,
+   Metadata, Notes)
 4. Shows inherited methods below tabs
 
 Pre-generated SVG images live in ``_static/timelines/<ClassName>.svg`` and
@@ -705,12 +707,7 @@ def _make_hed_summary_html(info):
     event_total = len(event_id) if isinstance(event_id, dict) and event_id else None
 
     if not hed_map:
-        return (
-            '<div class="ds-hed-card ds-hed-empty">'
-            "<p><strong>HED tags unavailable.</strong> This dataset does not currently expose "
-            "embedded HED event annotations in metadata.</p>"
-            "</div>"
-        )
+        return ""
 
     items = list(hed_map.items())
     tagged = len(items)
@@ -991,7 +988,7 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
 
 
 def _make_visual_grid_lines(cls_name, info, srcdir):
-    """Build RST lines for the 2x2 visual summary grid."""
+    """Build RST lines for the adaptive visual summary grid."""
     lines = []
     paradigm = info.get("paradigm") or "unknown"
     paradigm_label = _PARADIGM_LABELS.get(paradigm, paradigm.title())
@@ -1002,7 +999,8 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
     runs_per_session = info.get("runs_per_session")
     n_sessions = info.get("n_sessions")
     trial_duration = info.get("trial_duration")
-    hed_html = _make_hed_summary_html(info)
+    has_hed = bool(info.get("hed_tags")) if info else False
+    hed_html = _make_hed_summary_html(info) if has_hed else ""
 
     # Check which SVGs exist
     timeline_svg = os.path.join(srcdir, "_static", "timelines", f"{cls_name}.svg")
@@ -1012,8 +1010,6 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
     has_timeline = os.path.exists(timeline_svg)
     has_sessions = os.path.exists(sessions_svg)
     has_classes = os.path.exists(classes_svg)
-    has_hed = bool(hed_html)
-
     # Build channel summary HTML
     channel_html = _make_channel_summary_html(info)
 
@@ -1253,7 +1249,7 @@ def _restructure_docstring_lines(lines, cls_name, default_subject=1):
 
     Scans lines for section markers and groups content into:
     - Overview (description + references)
-    - Quickstart (code snippet)
+    - Code Examples (code snippet)
     - Metadata (admonition cards)
     - Notes (notes, version directives)
 
@@ -1444,8 +1440,8 @@ def _restructure_docstring_lines(lines, cls_name, default_subject=1):
         new_lines.append(" " * TAB_INDENT + "*No description available.*")
         new_lines.append("")
 
-    # --- Tab: Quickstart ---
-    new_lines.append("   .. tab-item:: Quickstart")
+    # --- Tab: Code Examples ---
+    new_lines.append("   .. tab-item:: Code Examples")
     new_lines.append("")
     new_lines.append(" " * TAB_INDENT + ".. code-block:: python")
     new_lines.append("")
