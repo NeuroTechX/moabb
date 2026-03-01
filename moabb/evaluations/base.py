@@ -1,7 +1,9 @@
 import logging
 import math
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from copy import deepcopy
+from itertools import chain
 from time import perf_counter
 from uuid import uuid4
 from warnings import warn
@@ -17,7 +19,6 @@ from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import (
     Emissions,
-    _average_scores,
     _carbonfootprint,
     _convert_sklearn_params_to_optuna,
     _create_save_path,
@@ -715,51 +716,29 @@ class BaseEvaluation(ABC):
         if not fold_results:
             return []
 
-        # Group by (subject, session, pipeline)
-        groups = {}
-        for res in fold_results:
-            key = (res["subject"], res["session"], res["pipeline"])
-            if key not in groups:
-                groups[key] = []
-            groups[key].append(res)
+        df = pd.DataFrame(fold_results)
+        group_keys = ["subject", "session", "pipeline"]
+        score_cols = [c for c in df.columns if c == "score" or c.startswith("score_")]
+        agg_cols = score_cols + ["time"]
 
-        aggregated = []
-        for key, group in groups.items():
-            if not group:
-                continue
+        # Error folds may lack score_* columns; fill with their "score" fallback
+        for col in score_cols:
+            if col != "score":
+                df[col] = df[col].fillna(df["score"])
 
-            # Collect score keys from successful folds (they have all metric keys)
-            ok_folds = [r for r in group if not r.get("is_error", False)]
-            score_keys = {"score"}
-            if ok_folds:
-                score_keys |= {k for r in ok_folds for k in r if k.startswith("score_")}
+        grouped = df.groupby(group_keys, sort=False)
+        agg_df = grouped[agg_cols].mean()
 
-            # Include error folds in averaging: use their "score" value
-            # (the configured error_score fallback) for any missing metric keys
-            scores = []
-            for r in group:
-                fallback = r.get("score", math.nan)
-                scores.append({k: r.get(k, fallback) for k in score_keys})
-
-            avg_scores = _average_scores(scores)
-            avg_duration = float(np.mean([r["time"] for r in group]))
-            # Use total samples (train + test) from any fold, matching old
-            # behavior where n_samples = len(y_cv) (total session samples)
-            template = ok_folds[0] if ok_folds else group[0]
-            n_samples = template.get("n_samples_total", template["n_samples"])
-
-            # Use first non-error result as template (has all score columns)
-            res = dict(template)
-            res["time"] = avg_duration
-            res["n_samples"] = n_samples
-            # Clean up internal fields not needed in final results
-            res.pop("n_samples_total", None)
-            res.pop("is_error", None)
-            # Update directly — score keys are already correctly named
-            res.update(avg_scores)
-            aggregated.append(res)
-
-        return aggregated
+        results = []
+        for key, sub_df in grouped:
+            template = sub_df.iloc[0].to_dict()
+            template["n_samples"] = template.get("n_samples_total", template["n_samples"])
+            for col in agg_cols:
+                template[col] = agg_df.loc[key, col]
+            template.pop("n_samples_total", None)
+            template.pop("is_error", None)
+            results.append(template)
+        return results
 
     def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
         """Runs all pipelines on all datasets.
@@ -930,7 +909,7 @@ class BaseEvaluation(ABC):
                 delayed(_evaluate_fold)(X, y, metadata, **task) for task in tasks
             )
 
-            all_results = [r for batch in fold_results for r in batch]
+            all_results = list(chain.from_iterable(fold_results))
 
             # WithinSession aggregates folds unless using LearningCurve
             if self._aggregate_folds and not hasattr(
@@ -941,7 +920,8 @@ class BaseEvaluation(ABC):
             for res in all_results:
                 res.pop("n_samples_total", None)
                 res.pop("is_error", None)
-                self.push_result(res, pipelines, process_pipeline)
+                self._log_result(res)
+            self._push_results_batch(all_results, pipelines, process_pipeline)
 
             res_per_db.append(
                 self.results.to_dataframe(
@@ -971,9 +951,9 @@ class BaseEvaluation(ABC):
         log.info(message)
 
     def _push_results_batch(self, results, pipelines, process_pipeline):
-        grouped = {}
+        grouped = defaultdict(list)
         for res in results:
-            grouped.setdefault(res["pipeline"], []).append(res)
+            grouped[res["pipeline"]].append(res)
         self.results.add(grouped, pipelines=pipelines, process_pipeline=process_pipeline)
 
     def get_results(self):
