@@ -1,0 +1,15 @@
+name: TRCA-R-SSVEP
+
+paradigms:
+  - SSVEP
+
+citations:
+  - https://doi.org/10.1109/TBME.2020.2975552
+
+pipeline:
+  - name: SSVEP_TRCA_R
+    from: moabb.pipelines.classification
+    parameters:
+      n_fbands: 5
+      n_harmonics: 3
+      is_ensemble: True

@@ -1,0 +1,8 @@
+name: itCCA-SSVEP
+
+paradigms:
+  - SSVEP
+
+pipeline:
+  - name: SSVEP_itCCA
+    from: moabb.pipelines.classification

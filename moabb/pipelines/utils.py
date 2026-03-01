@@ -400,34 +400,23 @@ def filterbank(X, sfreq, idx_fb, peaks):
         Wp = Wp_relaxed
         Ws = Ws_relaxed
 
-    B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
+    # Cap filter order to avoid numerical instability
+    N = min(N, 10)
+
+    # Use SOS (second-order sections) form for numerical stability
+    # Transfer function (B, A) form is numerically unstable for high-order filters
+    sos = scp.cheby1(N, 0.5, Wn, btype="bandpass", output="sos")
 
     y = np.zeros(X.shape)
     if num_trials == 1:  # For testdata
         for ch_i in range(num_chans):
             try:
-                # The arguments 'axis=0, padtype='odd', padlen=3*(max(len(B),len(A))-1)' correspond
-                # to Matlab filtfilt (https://dsp.stackexchange.com/a/47945)
-                y[ch_i, :] = scp.filtfilt(
-                    B,
-                    A,
-                    X[ch_i, :],
-                    axis=0,
-                    padtype="odd",
-                    padlen=3 * (max(len(B), len(A)) - 1),
-                )
+                y[ch_i, :] = scp.sosfiltfilt(sos, X[ch_i, :])
             except Exception as e:
                 log.error(e)
                 log.info(num_chans)
     else:
         for trial_i in range(num_trials):  # Filter each trial sequentially
             for ch_i in range(num_chans):  # Filter each channel sequentially
-                y[trial_i, ch_i, :] = scp.filtfilt(
-                    B,
-                    A,
-                    X[trial_i, ch_i, :],
-                    axis=0,
-                    padtype="odd",
-                    padlen=3 * (max(len(B), len(A)) - 1),
-                )
+                y[trial_i, ch_i, :] = scp.sosfiltfilt(sos, X[trial_i, ch_i, :])
     return y
