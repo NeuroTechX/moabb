@@ -1708,16 +1708,21 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
    API Page Styling
    =================================================================== */
 
-/* --- 1. Prose line-length constraint (keep tables full-width) --- */
-.bd-article-container section > p,
+/* --- 1A. Prose line-length constraint (keep tables full-width) --- */
+/* Target all paragraphs inside sections, including nested ones */
+.bd-article-container section p,
 .bd-article-container section > .admonition {
   max-width: 52rem;
 }
+/* Undo the constraint inside table cells so descriptions aren't clipped */
+.bd-article-container table p {
+  max-width: none;
+}
 
-/* --- 2. Architecture diagram --- */
+/* --- 1B. Architecture diagram: left-aligned, same content edge --- */
 .api-architecture-diagram {
   max-width: 44rem;
-  margin: 1.5rem auto 1rem;
+  margin: 1.5rem 0 1rem;
 }
 .api-architecture-diagram img {
   width: 100%;
@@ -1726,26 +1731,24 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
 .api-architecture-diagram .caption-text {
   font-size: 0.88rem;
   color: var(--pst-color-text-muted);
-  text-align: center;
   margin-top: 0.35rem;
 }
 
-/* --- 3. Heading vertical rhythm --- */
-.bd-article-container section > section {
-  margin-top: 2.25rem;
-}
+/* --- 2. Heading vertical rhythm --- */
+/* H2: major sections (Datasets, Paradigms, Evaluations, ...) */
 .bd-article-container section > section > h2 {
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
 }
+/* H3: subsections (Motor Imagery Datasets, ERP/P300 Datasets, ...) */
 .bd-article-container section > section > section > h3 {
-  margin-top: 1.75rem;
+  margin-top: 2rem;
   margin-bottom: 0.6rem;
-  padding-bottom: 0.3rem;
+  padding-bottom: 0.35rem;
   border-bottom: 1px solid var(--pst-color-border);
 }
 
-/* --- 4. Autosummary table styling --- */
+/* --- 3. Autosummary table styling --- */
 table.autosummary {
   margin-top: 0.5rem;
   table-layout: fixed;
@@ -1754,36 +1757,37 @@ table.autosummary {
 table.autosummary col:first-child {
   width: 36%;
 }
+/* Allow long class names to wrap instead of truncating */
 table.autosummary td:first-child {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
-/* Soften dataset link color for less visual dominance */
+/* Soften dataset link styling: less weight, slightly muted */
 table.autosummary td:first-child a code {
   font-weight: 500;
-  color: var(--pst-color-link);
-  opacity: 0.88;
+  color: color-mix(in srgb, var(--pst-color-link) 82%, var(--pst-color-text-base));
 }
 table.autosummary td:first-child a:hover code {
-  opacity: 1;
+  color: var(--pst-color-link);
 }
-/* Description column: slightly increase contrast */
+/* Description column: ensure readable contrast */
 table.autosummary td:nth-child(2) {
   color: var(--pst-color-text-base);
 }
 
-/* --- 5. Benchmark admonition code block --- */
+/* --- 4. Benchmark admonition code block --- */
 .bd-article-container .admonition .highlight {
   max-width: 52rem;
 }
 
-/* --- 6. Right-sidebar TOC enhancements --- */
+/* --- 5. Right-sidebar TOC enhancements --- */
+.bd-toc nav > ul > li > a {
+  font-size: 0.84rem;
+}
 .bd-toc nav ul li a.active {
   font-weight: 600;
   color: var(--pst-color-primary);
-}
-.bd-toc nav > ul > li > a {
-  font-size: 0.82rem;
+  border-left: 2px solid var(--pst-color-primary);
+  padding-left: 0.4rem;
+  margin-left: -0.5rem;
 }

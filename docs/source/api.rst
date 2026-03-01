@@ -4,7 +4,6 @@ API and Main Concepts
 
 .. figure:: images/architecture.svg
    :alt: Concept flow in MOABB
-   :align: center
    :class: api-architecture-diagram
 
    Datasets and Paradigms define the problem; Evaluations and Pipelines
