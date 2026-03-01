@@ -1705,23 +1705,17 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
 
 
 /* ===================================================================
-   API Page Styling
+   API Page Styling – scoped to the API page via #api-and-main-concepts
    =================================================================== */
 
-/* --- 1A. Prose line-length constraint (keep tables full-width) --- */
-/* Target all paragraphs inside sections, including nested ones */
-.bd-article-container section p,
-.bd-article-container section > .admonition {
-  max-width: 52rem;
-}
-/* Undo the constraint inside table cells so descriptions aren't clipped */
-.bd-article-container table p {
-  max-width: none;
+/* --- 1A. Prose line-length constraint (API page only) --- */
+#api-and-main-concepts > section > p {
+  max-width: 68rem;
 }
 
 /* --- 1B. Architecture diagram: left-aligned, same content edge --- */
 .api-architecture-diagram {
-  max-width: 44rem;
+  max-width: 52rem;
   margin: 1.5rem 0 1rem;
 }
 .api-architecture-diagram img {
@@ -1729,19 +1723,17 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
   height: auto;
 }
 .api-architecture-diagram .caption-text {
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   color: var(--pst-color-text-muted);
   margin-top: 0.35rem;
 }
 
-/* --- 2. Heading vertical rhythm --- */
-/* H2: major sections (Datasets, Paradigms, Evaluations, ...) */
-.bd-article-container section > section > h2 {
+/* --- 2. Heading vertical rhythm (API page only) --- */
+#api-and-main-concepts > section > h2 {
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
 }
-/* H3: subsections (Motor Imagery Datasets, ERP/P300 Datasets, ...) */
-.bd-article-container section > section > section > h3 {
+#api-and-main-concepts > section > section > h3 {
   margin-top: 2rem;
   margin-bottom: 0.6rem;
   padding-bottom: 0.35rem;
@@ -1757,7 +1749,6 @@ table.autosummary {
 table.autosummary col:first-child {
   width: 36%;
 }
-/* Allow long class names to wrap instead of truncating */
 table.autosummary td:first-child {
   word-break: break-word;
 }
@@ -1770,19 +1761,18 @@ table.autosummary td:first-child a code {
 table.autosummary td:first-child a:hover code {
   color: var(--pst-color-link);
 }
-/* Description column: ensure readable contrast */
 table.autosummary td:nth-child(2) {
   color: var(--pst-color-text-base);
 }
 
-/* --- 4. Benchmark admonition code block --- */
-.bd-article-container .admonition .highlight {
-  max-width: 52rem;
+/* --- 4. Benchmark admonition code block (API page only) --- */
+#api-and-main-concepts .admonition .highlight {
+  max-width: 68rem;
 }
 
 /* --- 5. Right-sidebar TOC enhancements --- */
 .bd-toc nav > ul > li > a {
-  font-size: 0.84rem;
+  font-size: 0.88rem;
 }
 .bd-toc nav ul li a.active {
   font-weight: 600;
