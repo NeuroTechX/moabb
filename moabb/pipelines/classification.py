@@ -18,6 +18,141 @@ from .utils import filterbank
 log = logging.getLogger(__name__)
 
 
+def _safe_corrcoef(a, b):
+    """Return a finite correlation coefficient for 1D inputs."""
+    corr = np.corrcoef(a, b)[0, 1]
+    return corr if np.isfinite(corr) else -1.0
+
+
+def _normalize_score_matrix(scores):
+    """Convert per-class scores to robust row-wise probabilities."""
+    scores = np.asarray(scores, dtype=float)
+    n_trials, n_classes = scores.shape
+    probas = np.zeros((n_trials, n_classes), dtype=float)
+    eps = 1e-12
+
+    scores = np.nan_to_num(scores, nan=-np.inf, posinf=-np.inf, neginf=-np.inf)
+    for i, row in enumerate(scores):
+        finite_mask = np.isfinite(row)
+        if not finite_mask.any():
+            probas[i, :] = 1.0 / n_classes
+            continue
+
+        row = row.copy()
+        min_finite = np.min(row[finite_mask])
+        row[~finite_mask] = min_finite
+        row = row - np.min(row) + eps
+        denom = row.sum()
+
+        if not np.isfinite(denom) or denom <= 0:
+            probas[i, :] = 1.0 / n_classes
+        else:
+            probas[i, :] = row / denom
+
+    return probas
+
+
+def _infer_label_frequencies(X, y, classes, freq_map=None):
+    """Infer numeric stimulus frequencies for each class label."""
+    if freq_map is not None:
+        missing = [cls for cls in classes if cls not in freq_map]
+        if missing:
+            raise ValueError(
+                "freq_map is missing entries for class labels: "
+                f"{missing}. Provide one frequency per class label."
+            )
+        inferred = {}
+        for cls in classes:
+            try:
+                inferred[cls] = float(freq_map[cls])
+            except (TypeError, ValueError) as exc:
+                raise ValueError(
+                    f"Frequency for class label {cls!r} is not numeric: "
+                    f"{freq_map[cls]!r}"
+                ) from exc
+        return inferred
+
+    if len(y) != len(X):
+        raise ValueError("X and y must have the same number of trials.")
+
+    inv_event_id = {event_code: event_label for event_label, event_code in X.event_id.items()}
+    label_to_codes = {}
+    for label, event_code in zip(y, X.events[:, -1]):
+        label_to_codes.setdefault(label, set()).add(int(event_code))
+
+    def _to_float_or_none(value):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    class_numeric = {cls: _to_float_or_none(cls) for cls in classes}
+    class_vals = [v for v in class_numeric.values() if v is not None]
+    class_labels_look_ordinal = False
+    if len(class_vals) == len(classes):
+        class_vals = sorted(class_vals)
+        n_classes = len(classes)
+        class_labels_look_ordinal = class_vals == list(range(n_classes)) or class_vals == list(
+            range(1, n_classes + 1)
+        )
+
+    inferred = {}
+    label_event_code = {}
+    for cls in classes:
+        event_codes = label_to_codes.get(cls, set())
+        if len(event_codes) != 1:
+            raise ValueError(
+                "Could not infer a unique event code for class label "
+                f"{cls!r}. Got codes: {sorted(event_codes)}. "
+                "Provide freq_map to disambiguate."
+            )
+        event_code = next(iter(event_codes))
+        label_event_code[cls] = event_code
+        event_label = inv_event_id.get(event_code)
+        if event_label is None:
+            raise ValueError(
+                f"Event code {event_code} is missing from X.event_id. "
+                "Cannot infer stimulus frequency."
+            )
+
+        cls_float = class_numeric[cls]
+        event_float = _to_float_or_none(event_label)
+
+        # Prefer numeric class labels when they are not ordinal class IDs.
+        if cls_float is not None and not class_labels_look_ordinal:
+            inferred[cls] = cls_float
+            continue
+        if event_float is not None:
+            inferred[cls] = event_float
+            continue
+        if cls_float is not None:
+            inferred[cls] = cls_float
+            continue
+
+        raise ValueError(
+            "Could not infer numeric stimulus frequency for class label "
+            f"{cls!r} from event label {event_label!r}. "
+            "Use freq_map={class_label: frequency_hz}."
+        )
+
+    # Ordinal event labels such as 1,2,3 (or 0,1,2) are often event codes,
+    # not physical stimulation frequencies. In this ambiguous case, fail fast.
+    inferred_vals = sorted(inferred.values())
+    n_classes = len(classes)
+    looks_consecutive = inferred_vals == list(range(n_classes)) or inferred_vals == list(
+        range(1, n_classes + 1)
+    )
+    matches_event_codes = all(np.isclose(inferred[cls], label_event_code[cls]) for cls in classes)
+    if class_labels_look_ordinal and looks_consecutive and matches_event_codes:
+        raise ValueError(
+            "Could not infer physical stimulus frequencies from class labels/events. "
+            "Detected ordinal event labels matching event codes. "
+            "Pass freq_map={class_label: frequency_hz} or fit with non-encoded labels."
+        )
+
+    return inferred
+
+
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
     """Classifier based on Canonical Correlation Analysis for SSVEP.
 
@@ -78,21 +213,24 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
     n_harmonics : int, default=3
         Number of harmonics :math:`N_h` to include in the reference signal.
         Higher values capture more harmonic components of the SSVEP response.
+    freq_map : dict | None, default=None
+        Optional explicit mapping ``{class_label: stimulus_frequency_hz}``.
+        If None, frequencies are inferred from ``X.event_id`` and event codes.
 
     Attributes
     ----------
     classes_ : ndarray of shape (n_classes,)
-        Encoded class labels (0 to n_classes-1).
+        Class labels in the same label space as ``y``.
     freqs_ : list of str
         List of stimulus frequencies extracted from training data.
     one_hot_ : dict
-        Mapping from frequency strings to encoded class labels.
+        Mapping from class labels to class indices.
     slen_ : float
         Signal length in seconds.
     le_ : LabelEncoder
         Fitted label encoder for frequency strings.
     Yf : dict
-        Dictionary mapping frequency strings to reference signals
+        Dictionary mapping class labels to reference signals
         :math:`\\mathbf{Y}_f` of shape ``(2 * n_harmonics, n_times)``.
 
     References
@@ -109,12 +247,14 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
        Use MNE Epochs object as input data instead of numpy array, fix label encoding.
     """
 
-    def __init__(self, n_harmonics=3):
+    def __init__(self, n_harmonics=3, freq_map=None):
         self.Yf = dict()
         self.cca = CCA(n_components=1)
         self.n_harmonics = n_harmonics
+        self.freq_map = freq_map
         self.classes_ = []
         self.one_hot_ = {}
+        self.class_freqs_ = {}
         self._le, self._slen, self._freqs = None, None, []
 
     def fit(self, X, y, sample_weight=None):
@@ -139,26 +279,24 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         if not isinstance(X, BaseEpochs):
             raise ValueError("X should be an MNE Epochs object.")
 
+        y = np.asarray(y)
         self.slen_ = X.times[-1] - X.times[0]
         n_times = len(X.times)
-        self.freqs_ = list(np.unique(y))
-        self.le_ = LabelEncoder().fit(self.freqs_)
-        self.classes_ = self.le_.transform(self.freqs_)
-        for i, k in zip(self.freqs_, self.le_.transform(self.freqs_)):
-            self.one_hot_[i] = k
 
-        for f in self.freqs_:
-            if str(f).replace(".", "", 1).isnumeric():
-                freq = float(f)
-                yf = []
-                for h in range(1, self.n_harmonics + 1):
-                    yf.append(
-                        np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                    )
-                    yf.append(
-                        np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                    )
-                self.Yf[f] = np.array(yf)
+        self.freqs_ = list(np.unique(y))
+        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
+        self.le_ = LabelEncoder().fit(self.freqs_)
+        self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
+        self.class_freqs_ = _infer_label_frequencies(X, y, self.classes_, self.freq_map)
+        self.Yf = {}
+
+        for label in self.classes_:
+            freq = self.class_freqs_[label]
+            yf = []
+            for h in range(1, self.n_harmonics + 1):
+                yf.append(np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
+                yf.append(np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
+            self.Yf[label] = np.array(yf)
         return self
 
     def predict(self, X):
@@ -174,16 +312,18 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         y : list of int
             Predicted labels.
         """
-        check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "slen_", "le_"])
-        y = []
+        check_is_fitted(
+            self,
+            ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"],
+        )
+        y_pred = []
         for x in X:
-            corr_f = {}
-            for f in self.freqs_:
-                if str(f).replace(".", "", 1).isnumeric():
-                    S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
-                    corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-            y.append(max(corr_f, key=corr_f.get))
-        return y
+            scores = np.zeros(len(self.classes_))
+            for j, label in enumerate(self.classes_):
+                S_x, S_y = self.cca.fit_transform(x.T, self.Yf[label].T)
+                scores[j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+            y_pred.append(self.classes_[int(np.argmax(scores))])
+        return y_pred
 
     def predict_proba(self, X):
         """Probability could be computed from the correlation coefficient.
@@ -198,14 +338,16 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         proba : ndarray of shape (n_trials, n_classes)
             probability of each class for each trial.
         """
-        check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "slen_", "le_"])
-        P = np.zeros(shape=(len(X), len(self.freqs_)))
+        check_is_fitted(
+            self,
+            ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"],
+        )
+        P = np.zeros(shape=(len(X), len(self.classes_)))
         for i, x in enumerate(X):
-            for j, f in enumerate(self.freqs_):
-                if str(f).replace(".", "", 1).isnumeric():
-                    S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
-                    P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-        return P / np.resize(P.sum(axis=1), P.T.shape).T
+            for j, label in enumerate(self.classes_):
+                S_x, S_y = self.cca.fit_transform(x.T, self.Yf[label].T)
+                P[i, j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+        return _normalize_score_matrix(P)
 
 
 class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
@@ -858,11 +1000,11 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
     Attributes
     ----------
     classes_ : ndarray of shape (n_classes,)
-        Encoded class labels (0 to n_classes-1).
+        Class labels in the same label space as ``y``.
     freqs_ : list of str
         List of stimulus frequency labels from training data.
     one_hot_ : dict
-        Mapping from frequency strings to encoded class labels.
+        Mapping from class labels to class indices.
     le_ : LabelEncoder
         Fitted label encoder for frequency strings.
     Ym : dict
@@ -919,28 +1061,29 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
         # Use unique labels from y for LabelEncoder to match the labels
         # passed by the paradigm, not the Epochs event_id keys
+        y = np.asarray(y)
         self.freqs_ = list(np.unique(y))
+        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
         self.le_ = LabelEncoder().fit(self.freqs_)
-        self.classes_ = self.le_.transform(self.freqs_)
-        for i, k in zip(self.freqs_, self.le_.transform(self.freqs_)):
-            self.one_hot_[i] = k
-            self.one_inv_[k] = i
+        self.one_hot_, self.one_inv_, self.Ym = {}, {}, {}
+        for class_idx, class_label in enumerate(self.classes_):
+            self.one_hot_[class_label] = class_idx
+            self.one_inv_[class_idx] = class_label
 
         n_channels, n_times = X.info["nchan"], len(X.times)
-        y_encoded = self.le_.transform(y)
 
         # Process each class separately according to MsetCCA algorithm
         # Reference: Zhang et al. 2014, "Frequency recognition in SSVEP-based BCI
         # using multiset canonical correlation analysis"
-        for m_class in self.classes_:
+        for class_label, class_idx in self.one_hot_.items():
             # Get trials for this class
-            class_mask = y_encoded == m_class
+            class_mask = y == class_label
             X_class = X[class_mask].get_data(copy=False)
             n_trials_class = X_class.shape[0]
 
             if n_trials_class < 2:
                 raise ValueError(
-                    f"Class {m_class} has only {n_trials_class} trial(s). "
+                    f"Class {class_label!r} has only {n_trials_class} trial(s). "
                     "MsetCCA requires at least 2 trials per class."
                 )
 
@@ -993,7 +1136,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
             # Compute template as the MEAN of filtered trials (not concatenation)
             # This is the key difference from the previous implementation
             # Ym shape: (n_filters, n_times)
-            self.Ym[m_class] = np.mean(Z, axis=0)
+            self.Ym[class_idx] = np.mean(Z, axis=0)
 
         return self
 
@@ -1021,14 +1164,13 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
         y = []
         for x in X:
-            corr_f = {}
+            scores = np.zeros(len(self.classes_))
             # Whiten test data to match training preprocessing
             x_white = _whitening(x)
-            for f in self.classes_:
-                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[f].T)
-                corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-            best_class = max(corr_f, key=corr_f.get)
-            y.append(self.one_inv_[best_class])
+            for class_idx in range(len(self.classes_)):
+                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[class_idx].T)
+                scores[class_idx] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+            y.append(self.classes_[int(np.argmax(scores))])
         return y
 
     def predict_proba(self, X):
@@ -1057,10 +1199,10 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         for i, x in enumerate(X):
             # Whiten test data to match training preprocessing
             x_white = _whitening(x)
-            for j, f in enumerate(self.classes_):
-                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[f].T)
-                P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-        return P / np.resize(P.sum(axis=1), P.T.shape).T
+            for class_idx in range(len(self.classes_)):
+                S_x, S_y = self.cca.fit_transform(x_white.T, self.Ym[class_idx].T)
+                P[i, class_idx] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+        return _normalize_score_matrix(P)
 
 
 class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
@@ -1098,11 +1240,11 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
     Attributes
     ----------
     classes_ : ndarray of shape (n_classes,)
-        Encoded class labels.
+        Class labels in the same label space as ``y``.
     freqs_ : list of str
         List of stimulus frequencies from training data.
     one_hot_ : dict
-        Mapping from frequency strings to encoded class labels.
+        Mapping from class labels to class indices.
     le_ : LabelEncoder
         Fitted label encoder.
     templates_ : dict
@@ -1150,15 +1292,15 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
 
         y = np.array(y)
         self.freqs_ = list(np.unique(y))
+        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
         self.le_ = LabelEncoder().fit(self.freqs_)
-        self.classes_ = self.le_.transform(self.freqs_)
-        for i, k in zip(self.freqs_, self.le_.transform(self.freqs_)):
-            self.one_hot_[i] = k
+        self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
+        self.templates_ = {}
 
-        for f in self.freqs_:
-            mask = y == f
+        for class_label in self.classes_:
+            mask = y == class_label
             X_f = X[mask].get_data(copy=False)
-            self.templates_[f] = np.mean(X_f, axis=0)
+            self.templates_[class_label] = np.mean(X_f, axis=0)
 
         return self
 
@@ -1178,11 +1320,11 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
         check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "le_", "templates_"])
         y = []
         for x in X:
-            corr_f = {}
-            for f in self.freqs_:
-                S_x, S_y = self.cca.fit_transform(x.T, self.templates_[f].T)
-                corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-            y.append(max(corr_f, key=corr_f.get))
+            scores = np.zeros(len(self.classes_))
+            for j, class_label in enumerate(self.classes_):
+                S_x, S_y = self.cca.fit_transform(x.T, self.templates_[class_label].T)
+                scores[j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+            y.append(self.classes_[int(np.argmax(scores))])
         return y
 
     def predict_proba(self, X):
@@ -1199,12 +1341,12 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
             Probability of each class for each trial.
         """
         check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "le_", "templates_"])
-        P = np.zeros(shape=(len(X), len(self.freqs_)))
+        P = np.zeros(shape=(len(X), len(self.classes_)))
         for i, x in enumerate(X):
-            for j, f in enumerate(self.freqs_):
-                S_x, S_y = self.cca.fit_transform(x.T, self.templates_[f].T)
-                P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-        return P / np.resize(P.sum(axis=1), P.T.shape).T
+            for j, class_label in enumerate(self.classes_):
+                S_x, S_y = self.cca.fit_transform(x.T, self.templates_[class_label].T)
+                P[i, j] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+        return _normalize_score_matrix(P)
 
 
 class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
@@ -1234,9 +1376,9 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
     - :math:`\\mathbf{Y}_n` is the sinusoidal reference for frequency :math:`f_n`
     - :math:`\\bar{\\mathbf{X}}_n` is the averaged individual template
     - :math:`\\hat{\\mathbf{w}}_{xn}` is the spatial filter from
-      :math:`\\text{CCA}(\\bar{\\mathbf{X}}_n, \\mathbf{Y}_n)`
+      :math:`\\text{CCA}(\\mathbf{X}, \\mathbf{Y}_n)`
     - :math:`\\tilde{\\mathbf{w}}_{xn}` is the spatial filter from
-      :math:`\\text{CCA}(\\mathbf{X}, \\bar{\\mathbf{X}}_n)`
+      :math:`\\text{CCA}(\\bar{\\mathbf{X}}_n, \\mathbf{Y}_n)`
 
     **Classification Rule**
 
@@ -1252,15 +1394,18 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
     ----------
     n_harmonics : int, default=3
         Number of harmonics for sinusoidal reference signal generation.
+    freq_map : dict | None, default=None
+        Optional explicit mapping ``{class_label: stimulus_frequency_hz}``.
+        If None, frequencies are inferred from ``X.event_id`` and event codes.
 
     Attributes
     ----------
     classes_ : ndarray of shape (n_classes,)
-        Encoded class labels.
+        Class labels in the same label space as ``y``.
     freqs_ : list of str
         Stimulus frequencies from training data.
     one_hot_ : dict
-        Mapping from frequency strings to encoded class labels.
+        Mapping from class labels to class indices.
     le_ : LabelEncoder
         Fitted label encoder.
     slen_ : float
@@ -1274,21 +1419,24 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
 
     References
     ----------
-    .. [1] Chen, X., Wang, Y., Nakanishi, M., Gao, X., Jung, T.-P., & Gao, S.
-           (2015). High-speed spelling with a noninvasive brain-computer
-           interface. Proceedings of the National Academy of Sciences, 112(44),
-           E6058-E6067. https://doi.org/10.1073/pnas.1508080112
+    .. [1] Chen, X., Wang, Y., Gao, S., Jung, T.-P., & Gao, X. (2015).
+           Filter bank canonical correlation analysis for implementing a
+           high-speed SSVEP-based brain-computer interface.
+           PLOS ONE, 10(12), e0140703.
+           https://doi.org/10.1371/journal.pone.0140703
 
     Notes
     -----
     .. versionadded:: 1.2.0
     """
 
-    def __init__(self, n_harmonics=3):
+    def __init__(self, n_harmonics=3, freq_map=None):
         self.n_harmonics = n_harmonics
+        self.freq_map = freq_map
         self.cca = CCA(n_components=1)
         self.classes_ = []
         self.one_hot_ = {}
+        self.class_freqs_ = {}
         self.templates_ = {}
         self.Yf = {}
         self.w_template_ = {}
@@ -1317,34 +1465,30 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
         self.slen_ = X.times[-1] - X.times[0]
         n_times = len(X.times)
         self.freqs_ = list(np.unique(y))
+        self.classes_ = np.array(self.freqs_, dtype=y.dtype if y.dtype != object else object)
         self.le_ = LabelEncoder().fit(self.freqs_)
-        self.classes_ = self.le_.transform(self.freqs_)
-        for i, k in zip(self.freqs_, self.le_.transform(self.freqs_)):
-            self.one_hot_[i] = k
+        self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
+        self.class_freqs_ = _infer_label_frequencies(X, y, self.classes_, self.freq_map)
+        self.templates_, self.Yf, self.w_template_ = {}, {}, {}
 
-        for f in self.freqs_:
+        for class_label in self.classes_:
             # Individual template
-            mask = y == f
+            mask = y == class_label
             X_f = X[mask].get_data(copy=False)
-            self.templates_[f] = np.mean(X_f, axis=0)
+            self.templates_[class_label] = np.mean(X_f, axis=0)
 
             # Sinusoidal reference
-            if str(f).replace(".", "", 1).isnumeric():
-                freq = float(f)
-                yf = []
-                for h in range(1, self.n_harmonics + 1):
-                    yf.append(
-                        np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                    )
-                    yf.append(
-                        np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
-                    )
-                self.Yf[f] = np.array(yf)
+            freq = self.class_freqs_[class_label]
+            yf = []
+            for h in range(1, self.n_harmonics + 1):
+                yf.append(np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
+                yf.append(np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times)))
+            self.Yf[class_label] = np.array(yf)
 
-                # Spatial filter from CCA(template, sinusoidal reference)
-                cca_tmp = CCA(n_components=1)
-                cca_tmp.fit(self.templates_[f].T, self.Yf[f].T)
-                self.w_template_[f] = cca_tmp.x_weights_
+            # Spatial filter from CCA(template, sinusoidal reference)
+            cca_tmp = CCA(n_components=1)
+            cca_tmp.fit(self.templates_[class_label].T, self.Yf[class_label].T)
+            self.w_template_[class_label] = cca_tmp.x_weights_
 
         return self
 
@@ -1363,42 +1507,49 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["freqs_", "classes_", "one_hot_", "le_", "slen_", "templates_", "Yf"],
+            [
+                "freqs_",
+                "classes_",
+                "one_hot_",
+                "le_",
+                "slen_",
+                "templates_",
+                "Yf",
+                "w_template_",
+                "class_freqs_",
+            ],
         )
         y = []
         for x in X:
-            rho = {}
-            for f in self.freqs_:
-                if not str(f).replace(".", "", 1).isnumeric():
-                    continue
-                template = self.templates_[f]
+            scores = np.zeros(len(self.classes_))
+            for j, class_label in enumerate(self.classes_):
+                template = self.templates_[class_label]
+                ref = self.Yf[class_label]
 
-                # r1: CCA(X, Y_n) - standard CCA
-                S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
-                r1 = np.corrcoef(S_x.T, S_y.T)[0, 1]
+                # r1 and Wx(X,Y): standard CCA between test data and sinusoidal reference.
+                cca_xy = CCA(n_components=1)
+                S_x, S_y = cca_xy.fit_transform(x.T, ref.T)
+                r1 = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+                w_xy = cca_xy.x_weights_
 
-                # r2: CCA(X, template) - individual template CCA
-                S_x2, S_y2 = self.cca.fit_transform(x.T, template.T)
-                r2 = np.corrcoef(S_x2.T, S_y2.T)[0, 1]
+                # r2: CCA between test data and individual template.
+                cca_xt = CCA(n_components=1)
+                S_x2, S_y2 = cca_xt.fit_transform(x.T, template.T)
+                r2 = _safe_corrcoef(S_x2.ravel(), S_y2.ravel())
 
-                # r3: spatial filter from CCA(template, Y_n) applied to X and template
-                w_xn = self.w_template_[f]
-                r3 = np.corrcoef(
-                    (x.T @ w_xn).flatten(), (template.T @ w_xn).flatten()
-                )[0, 1]
+                # r3: use spatial filter from CCA(X, Y_n) on both X and template.
+                r3 = _safe_corrcoef((x.T @ w_xy).ravel(), (template.T @ w_xy).ravel())
 
-                # r4: spatial filter from CCA(X, template) applied to X and template
-                cca_tmp = CCA(n_components=1)
-                cca_tmp.fit(x.T, template.T)
-                w_xn2 = cca_tmp.x_weights_
-                r4 = np.corrcoef(
-                    (x.T @ w_xn2).flatten(), (template.T @ w_xn2).flatten()
-                )[0, 1]
+                # r4: use spatial filter from CCA(template, Y_n) on both X and template.
+                w_template = self.w_template_[class_label]
+                r4 = _safe_corrcoef(
+                    (x.T @ w_template).ravel(), (template.T @ w_template).ravel()
+                )
 
-                # Fuse: sign(r) * r^2
-                rho[f] = sum(np.sign(r) * r**2 for r in [r1, r2, r3, r4])
+                # Fuse using signed squared correlations.
+                scores[j] = sum(np.sign(r) * (r**2) for r in [r1, r2, r3, r4])
 
-            y.append(max(rho, key=rho.get))
+            y.append(self.classes_[int(np.argmax(scores))])
         return y
 
     def predict_proba(self, X):
@@ -1416,39 +1567,41 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
         """
         check_is_fitted(
             self,
-            ["freqs_", "classes_", "one_hot_", "le_", "slen_", "templates_", "Yf"],
+            [
+                "freqs_",
+                "classes_",
+                "one_hot_",
+                "le_",
+                "slen_",
+                "templates_",
+                "Yf",
+                "w_template_",
+                "class_freqs_",
+            ],
         )
-        P = np.zeros(shape=(len(X), len(self.freqs_)))
+        P = np.zeros(shape=(len(X), len(self.classes_)))
         for i, x in enumerate(X):
-            for j, f in enumerate(self.freqs_):
-                if not str(f).replace(".", "", 1).isnumeric():
-                    continue
-                template = self.templates_[f]
+            for j, class_label in enumerate(self.classes_):
+                template = self.templates_[class_label]
+                ref = self.Yf[class_label]
 
-                S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
-                r1 = np.corrcoef(S_x.T, S_y.T)[0, 1]
+                cca_xy = CCA(n_components=1)
+                S_x, S_y = cca_xy.fit_transform(x.T, ref.T)
+                r1 = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+                w_xy = cca_xy.x_weights_
 
-                S_x2, S_y2 = self.cca.fit_transform(x.T, template.T)
-                r2 = np.corrcoef(S_x2.T, S_y2.T)[0, 1]
+                cca_xt = CCA(n_components=1)
+                S_x2, S_y2 = cca_xt.fit_transform(x.T, template.T)
+                r2 = _safe_corrcoef(S_x2.ravel(), S_y2.ravel())
 
-                w_xn = self.w_template_[f]
-                r3 = np.corrcoef(
-                    (x.T @ w_xn).flatten(), (template.T @ w_xn).flatten()
-                )[0, 1]
+                r3 = _safe_corrcoef((x.T @ w_xy).ravel(), (template.T @ w_xy).ravel())
+                w_template = self.w_template_[class_label]
+                r4 = _safe_corrcoef(
+                    (x.T @ w_template).ravel(), (template.T @ w_template).ravel()
+                )
+                P[i, j] = sum(np.sign(r) * (r**2) for r in [r1, r2, r3, r4])
 
-                cca_tmp = CCA(n_components=1)
-                cca_tmp.fit(x.T, template.T)
-                w_xn2 = cca_tmp.x_weights_
-                r4 = np.corrcoef(
-                    (x.T @ w_xn2).flatten(), (template.T @ w_xn2).flatten()
-                )[0, 1]
-
-                P[i, j] = sum(np.sign(r) * r**2 for r in [r1, r2, r3, r4])
-
-        # Shift to positive for probability normalization
-        P_min = P.min(axis=1, keepdims=True)
-        P_shifted = P - P_min + 1e-10
-        return P_shifted / P_shifted.sum(axis=1, keepdims=True)
+        return _normalize_score_matrix(P)
 
 
 class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):

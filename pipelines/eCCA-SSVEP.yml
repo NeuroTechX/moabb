@@ -4,7 +4,7 @@ paradigms:
   - SSVEP
 
 citations:
-  - https://doi.org/10.1073/pnas.1508080112
+  - https://doi.org/10.1371/journal.pone.0140703
 
 pipeline:
   - name: SSVEP_eCCA

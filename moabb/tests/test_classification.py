@@ -1,6 +1,8 @@
 import unittest
 
+import numpy as np
 import pytest
+from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.validation import NotFittedError, check_is_fitted
 
 from moabb.datasets.fake import FakeDataset
@@ -49,12 +51,33 @@ class TestSSVEP_CCA(unittest.TestCase):
         self.clf.fit(self.X, self.y)
         y_pred = self.clf.predict(self.X)
         self.assertEqual(len(y_pred), len(self.X))
+        self.assertTrue(set(y_pred).issubset(set(self.clf.classes_)))
 
     def test_predict_proba(self):
         self.clf.fit(self.X, self.y)
         P = self.clf.predict_proba(self.X)
         self.assertEqual(P.shape[0], len(self.X))
         self.assertEqual(P.shape[1], len(self.freqs))
+        y_pred = np.asarray(self.clf.predict(self.X))
+        y_from_proba = self.clf.classes_[np.argmax(P, axis=1)]
+        self.assertTrue(np.array_equal(y_pred, y_from_proba))
+
+    def test_fit_with_encoded_labels_requires_frequency_mapping_when_ambiguous(self):
+        y_encoded = LabelEncoder().fit_transform(self.y)
+        with self.assertRaises(ValueError):
+            self.clf.fit(self.X, y_encoded)
+
+    def test_fit_with_encoded_labels_and_explicit_frequency_mapping(self):
+        y_encoded = LabelEncoder().fit_transform(self.y)
+        self.clf = SSVEP_CCA(
+            n_harmonics=self.n_harmonics,
+            freq_map={0: 13.0, 1: 17.0, 2: 21.0},
+        )
+        self.clf.fit(self.X, y_encoded)
+        inferred_freqs = set(np.round(list(self.clf.class_freqs_.values()), 8))
+        self.assertEqual(inferred_freqs, {13.0, 17.0, 21.0})
+        y_pred = self.clf.predict(self.X)
+        self.assertTrue(set(y_pred).issubset(set(self.clf.classes_)))
 
     def test_fit_predict_is_fitted(self):
         self.assertRaises(NotFittedError, self.clf.predict, self.X)
@@ -161,12 +184,16 @@ class TestSSVEP_MsetCCA:
         self.clf.fit(self.X, self.y)
         y_pred = self.clf.predict(self.X)
         assert len(y_pred) == len(self.X)
+        assert set(y_pred).issubset(set(self.clf.classes_))
 
     def test_predict_proba(self):
         self.clf.fit(self.X, self.y)
         P = self.clf.predict_proba(self.X)
         assert P.shape[0] == len(self.X)
         assert P.shape[1] == len(self.freqs)
+        y_pred = np.asarray(self.clf.predict(self.X))
+        y_from_proba = self.clf.classes_[np.argmax(P, axis=1)]
+        assert np.array_equal(y_pred, y_from_proba)
 
     def test_fit_predict_is_fitted(self):
         with pytest.raises(NotFittedError):
@@ -209,12 +236,16 @@ class TestSSVEP_itCCA:
         self.clf.fit(self.X, self.y)
         y_pred = self.clf.predict(self.X)
         assert len(y_pred) == len(self.X)
+        assert set(y_pred).issubset(set(self.clf.classes_))
 
     def test_predict_proba(self):
         self.clf.fit(self.X, self.y)
         P = self.clf.predict_proba(self.X)
         assert P.shape[0] == len(self.X)
         assert P.shape[1] == len(self.freqs)
+        y_pred = np.asarray(self.clf.predict(self.X))
+        y_from_proba = self.clf.classes_[np.argmax(P, axis=1)]
+        assert np.array_equal(y_pred, y_from_proba)
 
     def test_fit_predict_is_fitted(self):
         with pytest.raises(NotFittedError):
@@ -266,6 +297,23 @@ class TestSSVEP_eCCA:
         P = self.clf.predict_proba(self.X)
         assert P.shape[0] == len(self.X)
         assert P.shape[1] == len(self.freqs)
+        y_pred = np.asarray(self.clf.predict(self.X))
+        y_from_proba = self.clf.classes_[np.argmax(P, axis=1)]
+        assert np.array_equal(y_pred, y_from_proba)
+
+    def test_fit_with_encoded_labels_requires_frequency_mapping_when_ambiguous(self):
+        y_encoded = LabelEncoder().fit_transform(self.y)
+        with pytest.raises(ValueError):
+            self.clf.fit(self.X, y_encoded)
+
+    def test_fit_with_encoded_labels_and_explicit_frequency_mapping(self):
+        y_encoded = LabelEncoder().fit_transform(self.y)
+        self.clf = SSVEP_eCCA(n_harmonics=3, freq_map={0: 13.0, 1: 17.0, 2: 21.0})
+        self.clf.fit(self.X, y_encoded)
+        inferred_freqs = set(np.round(list(self.clf.class_freqs_.values()), 8))
+        assert inferred_freqs == {13.0, 17.0, 21.0}
+        y_pred = self.clf.predict(self.X)
+        assert set(y_pred).issubset(set(self.clf.classes_))
 
     def test_fit_predict_is_fitted(self):
         with pytest.raises(NotFittedError):
