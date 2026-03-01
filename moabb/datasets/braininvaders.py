@@ -30,7 +30,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import block_rep
-from moabb.utils import depreciated_alias
+from moabb.utils import _handle_deprecated_kwargs, depreciated_alias
 
 
 BI2012a_URL = "https://zenodo.org/record/2649069/files/"
@@ -309,7 +309,7 @@ def _bi_data_path(  # noqa: C901
         conditions = []
         if ds.adaptive:
             conditions = conditions + ["adaptive"]
-        if ds.nonadaptive:
+        if ds.non_adaptive:
             conditions = conditions + ["nonadaptive"]
         types = []
         if ds.training:
@@ -467,9 +467,9 @@ class BI2012(BaseDataset):
             sampling_rate=128.0,
             n_channels=16,
             channel_types={"eeg": 16},
-            montage="10-20",
+            montage="standard_1020",
             hardware="NeXus-32 (MindMedia/TMSi)",
-            sensor_type="wet electrodes",
+            sensor_type="EEG",
             reference="hardware common average reference",
             ground="FZ",
             software="OpenVibe",
@@ -493,15 +493,15 @@ class BI2012(BaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
+                has_eog=False,
             ),
-            electrode_type="Silver/Silver Chloride wet electrodes",
+            electrode_type="wet",
             electrode_material="Silver/Silver Chloride",
         ),
         participants=ParticipantMetadata(
             n_subjects=25,
             health_status="healthy",
-            gender={"male": 19, "female": 7},
+            gender=None,
             age_mean=24.4,
             age_std=2.76,
             age_min=21,
@@ -515,14 +515,14 @@ class BI2012(BaseDataset):
             feedback_type="visual (game interface)",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="online",
+            mode="both",
             has_training_test_split=True,
             instructions="limit eye blinks, head movements and face muscular contractions; silently count the number of Target flashes",
             n_classes=2,
-            class_labels=["Target", "non-Target"],
+            class_labels=["Target", "NonTarget"],
             stimulus_type="visual flashes of alien groups",
             synchronicity="synchronous",
-            events={"Target": 1, "non-Target": 2},
+            events={"Target": 2, "NonTarget": 1},
             stimulus_presentation={
                 "repetition_structure": "12 flashes per repetition (2 Target, 10 non-Target)",
                 "flash_groups": "12 groups of 6 aliens (36 total aliens)",
@@ -542,10 +542,10 @@ class BI2012(BaseDataset):
                 "M. Congedo",
             ],
             institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2649006",
-            publication_year=2012,
+            publication_year=2019,
             senior_author="M. Congedo",
             institution_address="GIPSA-lab, 11 rue des Mathématiques, Grenoble Campus BP46, F-38402, France",
             keywords=[
@@ -558,9 +558,9 @@ class BI2012(BaseDataset):
             acknowledgements="All subjects were volunteers recruited by means of flyers and of the mailing list of the University of Grenoble-Alpes. All participants provided written informed consent confirming the notification of the experimental process, the data management procedures and the right to withdraw from the experiment at any moment.",
             license="CC-BY-4.0",
         ),
-        sessions_per_subject=2,
-        runs_per_session=1,
-        sessions=["Training", "Online"],
+        sessions_per_subject=1,
+        runs_per_session=2,
+        sessions=["0"],
         contributing_labs=["GIPSA-lab"],
         n_contributing_labs=1,
         data_processed=False,
@@ -573,8 +573,8 @@ class BI2012(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="raw EEG with software tagging (note: tagging introduces jitter and latency)",
             preprocessing_applied=False,
-            artifact_methods=["ICA"],
-            re_reference="hardware common average reference",
+            artifact_methods=None,
+            re_reference=None,
             notes="Software tagging introduces a jitter and a latency which artificially modify the ERPs onset. Strong drift over time resulting in higher jitter. Only possible to compare ERP acquired within the same experimental conditions when latency is not corrected.",
         ),
         signal_processing=SignalProcessingMetadata(
@@ -583,31 +583,38 @@ class BI2012(BaseDataset):
             spatial_filters=["xDAWN"],
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["cross_session"],
+            evaluation_type=None,
         ),
         performance={"balanced_accuracy": None},
         bci_application=BCIApplicationMetadata(
-            applications=["gaming", "vr_ar"],
+            applications=["gaming"],
             online_feedback=True,
-            environment="small room of 4 m² surface",
+            environment="laboratory",
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            n_repetitions=12,
-            n_targets=8,
+            n_repetitions=8,
+            n_targets=None,
         ),
         data_structure=DataStructureMetadata(
             n_trials={"Target": 128, "non-Target": 640},
             n_trials_per_class={"Target": 128, "non-Target": 640},
             trials_context="per session (Training session); variable in Online session depending on user performance",
-            n_blocks=2,
-            block_duration_s=210.0,
+            n_blocks=None,
+            block_duration_s=None,
         ),
         abstract="We describe the experimental procedures for a dataset that we have made publicly available at https://doi.org/10.5281/zenodo.2649006 in mat and csv formats. This dataset contains electroencephalographic (EEG) recordings of 25 subjects testing the Brain Invaders (1), a visual P300 Brain-Computer Interface inspired by the famous vintage video game Space Invaders (Taito, Tokyo, Japan). The visual P300 is an event-related potential elicited by a visual stimulation, peaking 240-600 ms after stimulus onset. EEG data were recorded by 16 electrodes in an experiment that took place in the GIPSA-lab, Grenoble, France, in 2012 (2,3). Python code for manipulating the data is available at https://github.com/plcrodrigues/py.BI.EEG.2012-GIPSA. The ID of this dataset is BI.EEG.2012-GIPSA.",
         methodology="The visual P300 is an event-related potential (ERP) elicited by a visual stimulation, peaking 240-600 ms after stimulus onset. The experiment features a training-test mode of operation and both a longitudinal and transversal design. Training session: Target alien chosen randomly at each repetition, 8 Targets total, 8 repetitions each, resulting in 128 Target trials and 640 non-Target flashes. Online session: consisted of three levels with different distractor configurations, minimum 3.5 minutes per level, counter-balanced order across subjects. Interface: 36 aliens flashing in 12 groups of 6, each repetition has 12 flashes (2 Target, 10 non-Target). P300 peak latency: 240-600 ms post-stimulus.",
     )
 
-    def __init__(self, Training=True, Online=False):
+    def __init__(
+        self, training=True, online=False, subjects=None, sessions=None, **kwargs
+    ):
+        deprecated_renames = {"Training": "training", "Online": "online"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BI2012")
+        training = resolved.get("training", training)
+        online = resolved.get("online", online)
+
         super().__init__(
             subjects=list(range(1, 26)),
             sessions_per_subject=1,
@@ -616,10 +623,12 @@ class BI2012(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2649006",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
-        self.training = Training
-        self.online = Online
+        self.training = training
+        self.online = online
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -704,7 +713,7 @@ class BI2013a(BaseDataset):
             sampling_rate=512.0,
             n_channels=16,
             channel_types={"eeg": 16},
-            montage="10-20",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet Silver/Silver Chloride electrodes",
             reference="left earlobe",
@@ -734,9 +743,7 @@ class BI2013a(BaseDataset):
             cap_model="g.GAMMAcap",
             electrode_type="wet",
             electrode_material="Silver/Silver Chloride",
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-            ),
+            auxiliary_channels=None,
         ),
         participants=ParticipantMetadata(
             n_subjects=24,
@@ -752,16 +759,16 @@ class BI2013a(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="p300",
             task_type="visual P300 BCI",
-            events={"Target": 2, "non-Target": 10},
+            events={"Target": 33285, "NonTarget": 33286},
             n_classes=2,
-            class_labels=["Target", "non-Target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=None,
             study_design="compare P300-based BCI with and without adaptive calibration using Riemannian geometry; randomised order of runs (adaptive vs non-adaptive)",
             feedback_type="visual (Brain Invaders video game interface)",
             stimulus_type="visual flashes",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="online",
+            mode="both",
             has_training_test_split=True,
             instructions="destroy targets in Brain Invaders BCI video game",
             stimulus_presentation={
@@ -782,7 +789,7 @@ class BI2013a(BaseDataset):
                 "M. Congedo",
             ],
             institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.1494163",
             publication_year=2019,
@@ -803,7 +810,7 @@ class BI2013a(BaseDataset):
             license="CC-BY-1.0",
         ),
         sessions_per_subject=8,
-        runs_per_session=1,
+        runs_per_session=2,
         contributing_labs=["GIPSA-lab"],
         n_contributing_labs=1,
         tags=Tags(
@@ -814,8 +821,8 @@ class BI2013a(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="raw EEG with software tagging via USB (note: tagging introduces jitter and latency)",
             preprocessing_applied=False,
-            artifact_methods=["ICA"],
-            re_reference="left earlobe",
+            artifact_methods=None,
+            re_reference=None,
             notes="Tags sent by application to amplifier through USB port and recorded as supplementary channel; tagging process identical in all experimental conditions",
         ),
         signal_processing=SignalProcessingMetadata(
@@ -840,8 +847,8 @@ class BI2013a(BaseDataset):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            n_targets=1,
-            n_repetitions=12,
+            n_targets=None,
+            n_repetitions=None,
         ),
         data_structure=DataStructureMetadata(
             n_trials={
@@ -860,7 +867,28 @@ class BI2013a(BaseDataset):
         methodology="Subjects participated in sessions with two runs (Non-Adaptive and Adaptive, randomised order). Each run had Training (calibration) and Online phases. In Non-Adaptive mode, Training data calibrated the MDM classifier for Online phase. In Adaptive mode, classifier initialized with generic class geometric means from previous experiment and continuously adapted using Riemannian method. Brain Invaders interface: 36 symbols in 12 groups, one repetition = 12 flashes (2 Target, 10 non-Target). Training phase: 80 Target and 400 non-Target flashes (fixed). Online phase: variable repetitions based on performance to destroy targets. Subjects blind to mode of operation.",
     )
 
-    def __init__(self, NonAdaptive=True, Adaptive=False, Training=True, Online=False):
+    def __init__(
+        self,
+        non_adaptive=True,
+        adaptive=False,
+        training=True,
+        online=False,
+        subjects=None,
+        sessions=None,
+        **kwargs,
+    ):
+        deprecated_renames = {
+            "NonAdaptive": "non_adaptive",
+            "Adaptive": "adaptive",
+            "Training": "training",
+            "Online": "online",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BI2013a")
+        non_adaptive = resolved.get("non_adaptive", non_adaptive)
+        adaptive = resolved.get("adaptive", adaptive)
+        training = resolved.get("training", training)
+        online = resolved.get("online", online)
+
         super().__init__(
             subjects=list(range(1, 25)),
             sessions_per_subject=8,
@@ -869,12 +897,14 @@ class BI2013a(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2669187",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
-        self.adaptive = Adaptive
-        self.nonadaptive = NonAdaptive
-        self.training = Training
-        self.online = Online
+        self.adaptive = adaptive
+        self.non_adaptive = non_adaptive
+        self.training = training
+        self.online = online
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -922,7 +952,7 @@ class BI2014a(BaseDataset):
             sampling_rate=512.0,
             n_channels=16,
             channel_types={"eeg": 16},
-            montage="10-10",
+            montage="standard_1010",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="dry electrodes",
             reference="right earlobe",
@@ -931,9 +961,9 @@ class BI2014a(BaseDataset):
             sensors=[
                 "Fp1",
                 "Fp2",
-                "F3",
+                "F5",
                 "AFz",
-                "F4",
+                "F6",
                 "T7",
                 "Cz",
                 "T8",
@@ -957,7 +987,7 @@ class BI2014a(BaseDataset):
             filters="no digital filter applied",
         ),
         participants=ParticipantMetadata(
-            n_subjects=71,
+            n_subjects=64,
             gender={"male": 49, "female": 22},
             age_mean=23.55,
             age_std=3.13,
@@ -973,7 +1003,7 @@ class BI2014a(BaseDataset):
             class_labels=["Target", "Non-Target"],
             trial_duration=None,
             study_design="calibration-less P300-based BCI system with dry electrodes; screening session for potential candidates for a broader multi-user BCI study",
-            feedback_type="visual (game interface)",
+            feedback_type="visual",
             stimulus_type="visual flashes",
             stimulus_modalities=["visual"],
             primary_modality="visual",
@@ -987,7 +1017,7 @@ class BI2014a(BaseDataset):
                 "non_target_flashes_per_repetition": "10",
                 "animation": "symbols slowly and regularly moving according to predefined path",
             },
-            events={"Target": 2, "Non-Target": 1},
+            events={"Target": 2, "NonTarget": 1},
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.3266223",
@@ -1002,7 +1032,7 @@ class BI2014a(BaseDataset):
                 "Marco Congedo",
             ],
             institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.3266223",
             publication_year=2019,
@@ -1024,9 +1054,9 @@ class BI2014a(BaseDataset):
             acknowledgements="At the end of the experiment one ticket of cinema was offered to each subject, for a value of 7.5 euros per subject.",
             license="CC-BY-4.0",
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=1,
-        sessions=["session_1", "session_2", "session_3"],
+        sessions=None,
         data_processed=False,
         file_format="mat and csv",
         tags=Tags(
@@ -1038,7 +1068,7 @@ class BI2014a(BaseDataset):
             data_state="raw EEG with hardware tagging (USB digital-to-analog converter for synchronization)",
             preprocessing_applied=False,
             artifact_methods=[],
-            re_reference="right earlobe",
+            re_reference=None,
             notes="No digital filter applied during recording. USB digital-to-analog converter used to reduce jitter and synchronize experimental tags with EEG signals.",
         ),
         signal_processing=SignalProcessingMetadata(
@@ -1054,7 +1084,7 @@ class BI2014a(BaseDataset):
         ),
         bci_application=BCIApplicationMetadata(
             applications=["gaming"],
-            environment="small room with a surface of four meters square, containing a 24' screen",
+            environment="laboratory",
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
@@ -1075,7 +1105,7 @@ class BI2014a(BaseDataset):
         methodology="The experiment was designed to study the viability of a calibration-less P300-based BCI system with dry electrodes. Visual P300 is an event-related potential (ERP) elicited by an expected but unpredictable target visual stimulation (oddball paradigm), with peaking amplitude 240-600 ms after stimulus onset. Two event-related stimuli: Target (P300 expected) and Non-Target (no P300). The experiment used Brain Invaders, a P300-based BCI open-source software. A repetition is composed of 12 flashes (one for each group), of which two include the Target symbol (Target flashes) and 10 do not (non-Target flashes). The ratio of Target versus non-Target epochs in the whole datasets is one-to-five. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. Game session was compounded by nine levels, consisting in a unique and predefined configuration of the 36 symbols of the interface. Players had up to eight attempts to destroy the target symbol. If the player missed all eight attempts, the level was started once again from the beginning. Average duration of five minutes for the nine levels. Experimenter could end the experiment if no control over the BCI system was gained after 10 minutes.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 65)),
             sessions_per_subject=1,
@@ -1084,6 +1114,8 @@ class BI2014a(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266222",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1133,7 +1165,7 @@ class BI2014b(BaseDataset):
             sampling_rate=512.0,
             n_channels=32,
             channel_types={"eeg": 32},
-            montage="10-10",
+            montage="standard_1010",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -1177,7 +1209,7 @@ class BI2014b(BaseDataset):
             cap_manufacturer="g.tec",
             cap_model="g.GAMMAcap",
             electrode_type="wet",
-            electrode_material="Silver/Silver Chloride",
+            electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
             n_subjects=38,
@@ -1191,13 +1223,13 @@ class BI2014b(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="p300",
             task_type="oddball",
-            events={"Target": 2, "Non-Target": 1},
+            events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["Target", "Non-Target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=None,
             study_design="multi-user/hyperscanning experiment with three randomized conditions (Solo1, Solo2, Collaboration). Subjects played in pairs. Solo conditions used a control design where non-playing participant focused on unanimated cross to prevent stimulus observation while EEG was recorded (to correct for fake inter-brain synchrony).",
             study_domain="inter-brain synchrony in collaborative BCI",
-            feedback_type="visual (game interface)",
+            feedback_type="visual",
             stimulus_type="visual flashes",
             stimulus_modalities=["visual"],
             primary_modality="visual",
@@ -1225,7 +1257,7 @@ class BI2014b(BaseDataset):
                 "Marco Congedo",
             ],
             institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.3267301",
             publication_year=2019,
@@ -1247,9 +1279,9 @@ class BI2014b(BaseDataset):
             ],
             license="CC-BY-4.0",
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=1,
-        sessions=["Solo1", "Solo2", "Collaboration"],
+        sessions=None,
         data_processed=False,
         file_format="mat and csv",
         tags=Tags(
@@ -1270,14 +1302,14 @@ class BI2014b(BaseDataset):
             evaluation_type=["cross_session"],
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["gaming", "hyperscanning", "multi-user BCI"],
+            applications=["gaming"],
             environment="small room with 24' screen, subjects sitting side by side at ~125cm distance, experimenter in adjacent room with one-way glass window",
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
             n_targets=1,
-            n_repetitions=12,
+            n_repetitions=None,
             soa_ms=None,
         ),
         data_structure=DataStructureMetadata(
@@ -1293,7 +1325,7 @@ class BI2014b(BaseDataset):
         methodology="Multi-user hyperscanning P300 BCI experiment designed to study inter-brain synchrony. Participants played Brain Invaders 2 in three conditions: Solo1 (player1 plays, player2 watches cross), Solo2 (roles reversed), and Collaboration (4 game sessions with both players). Each game session consisted of 9 levels with predefined alien configurations. A repetition used 12 flashes of pseudo-random groups of 6 symbols, ensuring each symbol flashed twice per repetition (1:5 Target:Non-Target ratio). Real-time adaptive RMDM classifier provided online feedback. Control condition (non-playing participant) allowed correction for fake inter-brain synchrony.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 39)),
             sessions_per_subject=1,
@@ -1302,6 +1334,8 @@ class BI2014b(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267301",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1400,13 +1434,13 @@ class BI2015a(BaseDataset):
             filters="no digital filter applied",
         ),
         participants=ParticipantMetadata(
-            n_subjects=50,
-            gender={"male": 36, "female": 14},
+            n_subjects=43,
+            gender={"male": 31, "female": 12},
             age_mean=23.70,
             age_std=3.19,
             health_status="healthy",
             bci_experience="mostly students and young researchers",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"Target": 2, "NonTarget": 1},
@@ -1424,10 +1458,7 @@ class BI2015a(BaseDataset):
             instructions="destroy target symbol within 8 attempts; aliens move slowly and regularly according to predefined path to maintain attention",
             has_training_test_split=False,
             stimulus_presentation={
-                "repetition_structure": "12 flashes of pseudo-random groups of 6 symbols per repetition",
-                "target_flash_per_repetition": "2",
-                "non_target_flash_per_repetition": "10",
-                "target_to_nontarget_ratio": "1:5",
+                "SoftwareName": "OpenViBE",
             },
         ),
         documentation=DocumentationMetadata(
@@ -1447,7 +1478,7 @@ class BI2015a(BaseDataset):
             senior_author="Marco Congedo",
             institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
             institution_address="GIPSA-lab, 11 rue des Mathématiques, Grenoble Campus BP46, F-38402, France",
-            country="France",
+            country="FR",
             publication_year=2019,
             keywords=[
                 "Electroencephalography (EEG)",
@@ -1502,7 +1533,7 @@ class BI2015a(BaseDataset):
         methodology="The experiment was designed to study the influence of the flash duration on a calibration-less P300-based BCI system with wet electrodes and as a screening session for potential candidates for a broader multi-user BCI study. The visual P300 is an event-related potential (ERP) elicited by an expected but unpredictable target visual stimulation (oddball paradigm), with peaking amplitude 240-600 ms after stimulus onset. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. This scheme allows a calibration-free classifier. Before and after the three game sessions, around one minute of resting state and eyes closed conditions were recorded. The interface of Brain Invaders is composed of 36 aliens. In the Brain Invaders P300 paradigm, a repetition is composed of 12 flashes of pseudo-random groups of six symbols chosen in such a way that after each repetition each symbol has flashed exactly two times. A game session was compounded by nine levels, consisting in a unique and predefined configuration of the 36 symbols of the interface. Aliens slowly and regularly moved according to a predefined path keeping constant the inter-distance between adjacent aliens to maintain high player's attention during the whole experiment.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 44)),
             sessions_per_subject=3,
@@ -1511,6 +1542,8 @@ class BI2015a(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266929",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1715,7 +1748,7 @@ class BI2015b(BaseDataset):
         methodology="The experiment consisted of three game sessions of Brain Invaders of 9 levels each with different flash duration (110ms, 80ms, 50ms). Before and after the three game sessions, around one minute of resting state and eyes closed conditions were recorded. The interface is composed of 36 aliens. A repetition is composed of 12 flashes of pseudo-random groups of six symbols chosen in such a way that after each repetition each symbol has flashed exactly two times. The ratio of Target versus non-Target is one-to-five. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. This scheme allows a calibration-free classifier.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 45)),
             sessions_per_subject=1,
@@ -1724,6 +1757,8 @@ class BI2015b(BaseDataset):
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267307",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -1821,23 +1856,23 @@ class Cattan2019_VR(BaseDataset):
             age_min=19.0,
             age_max=44.0,
             bci_experience="varied gaming experience: some played video games occasionally, some played First Person Shooters; varied VR experience from none to repetitive",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
             events={
-                "target_flash": 2,
-                "non_target_flash": 10,
+                "Target": 2,
+                "NonTarget": 1,
             },
             n_classes=2,
             class_labels=["target", "non_target"],
             trial_duration=None,
             study_design="randomized session order (PC vs VR); limit eye blinks, head movements and face muscular contractions",
-            feedback_type="random visual feedback (70% expected accuracy)",
+            feedback_type="visual",
             stimulus_type="flashing white crosses in 6x6 matrix",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="online",
+            mode="offline",
             has_training_test_split=False,
             instructions="focus on a red-squared target symbol while groups of six symbols flash",
             stimulus_presentation={
@@ -1855,7 +1890,7 @@ class Cattan2019_VR(BaseDataset):
                 "Marco Congedo",
             ],
             institution="GIPSA-lab",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2605204",
             publication_year=2019,
@@ -1904,9 +1939,9 @@ class Cattan2019_VR(BaseDataset):
             evaluation_type=["cross_session"],
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["gaming", "vr_ar"],
+            applications=["speller"],
             environment="PC and Virtual Reality (VRElegiant HMD with Huawei Ascend Mate 7 smartphone)",
-            online_feedback=True,
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
@@ -1923,7 +1958,22 @@ class Cattan2019_VR(BaseDataset):
         methodology="Two randomized sessions (PC and VR). Each session: 12 blocks of 5 repetitions. Each repetition: 12 flashes of groups of 6 symbols, ensuring each symbol flashes exactly 2 times. Target flashes twice per repetition (2 target flashes), non-target flashes 10 times. Random feedback given after each repetition (70% expected accuracy). P300 interface: 6x6 matrix of white flashing crosses with red-squared target. VR used passive HMD (VRElegiant) with Huawei Mate 7 smartphone. IMU deactivated to prevent drift. Unity engine used for identical visual stimulation across PC and VR.",
     )
 
-    def __init__(self, virtual_reality=False, screen_display=True):
+    def __init__(
+        self,
+        virtual_reality=True,
+        screen_display=True,
+        subjects=None,
+        sessions=None,
+        **kwargs,
+    ):
+        deprecated_renames = {
+            "VirtualReality": "virtual_reality",
+            "ScreenDisplay": "screen_display",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Cattan2019-VR")
+        virtual_reality = resolved.get("virtual_reality", virtual_reality)
+        screen_display = resolved.get("screen_display", screen_display)
+
         self.n_repetitions = 5
         super().__init__(
             subjects=list(range(1, 21 + 1)),
@@ -1933,6 +1983,8 @@ class Cattan2019_VR(BaseDataset):
             interval=[0, 1.0],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2605204",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
         self.virtual_reality = virtual_reality

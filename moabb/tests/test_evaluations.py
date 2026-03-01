@@ -24,6 +24,11 @@ from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
+def _identity(x):
+    """Identity function (replaces lambda to avoid MOABB hash warnings)."""
+    return x
+
+
 try:
     from codecarbon import EmissionsTracker  # noqa
 
@@ -224,7 +229,7 @@ class TestWithinSess:
 
         results0 = self.eval.process(pipelines0)
         results1 = self.eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)
@@ -398,7 +403,7 @@ class TestWithinSessLearningCurve:
 
         results0 = learning_curve_eval.process(pipelines0)
         results1 = learning_curve_eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = learning_curve_eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)

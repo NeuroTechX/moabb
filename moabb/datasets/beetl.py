@@ -22,6 +22,7 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import _handle_deprecated_kwargs
 
 from .base import BaseDataset
 from .download import get_dataset_path
@@ -161,7 +162,7 @@ class Beetl2021_A(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=3,
             health_status="healthy",
-            bci_experience="mixed",
+            bci_experience=None,
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -170,11 +171,11 @@ class Beetl2021_A(BaseDataset):
             n_classes=4,
             class_labels=["rest", "left_hand", "right_hand", "feet"],
             trial_duration=4.0,
-            mode="offline",
-            synchronicity="synchronous",
+            mode="online",
+            synchronicity=None,
             has_training_test_split=True,
-            feedback_type="online_racing_game",
-            study_design="transfer_learning_evaluation",
+            feedback_type="visual",
+            study_design="online_bci_game",
             study_domain="BCI",
         ),
         documentation=DocumentationMetadata(
@@ -232,9 +233,9 @@ class Beetl2021_A(BaseDataset):
             "arxiv": "https://arxiv.org/abs/2202.12950",
         },
         tags=Tags(
-            pathology=["healthy"],
-            modality=["motor"],
-            type=["imagery"],
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
@@ -250,8 +251,8 @@ class Beetl2021_A(BaseDataset):
                 "EEGInception",
                 "EEGNet",
                 "Shallow ConvNet",
-                "Deep Sets",
                 "SPDNet",
+                "MDRM",
             ],
             feature_extraction=[
                 "deep learning features",
@@ -261,7 +262,6 @@ class Beetl2021_A(BaseDataset):
             spatial_filters=[
                 "Euclidean Alignment",
                 "Label Alignment",
-                "Riemannian Alignment",
             ],
         ),
         cross_validation=CrossValidationMetadata(
@@ -278,7 +278,7 @@ class Beetl2021_A(BaseDataset):
             "ms01_team_accuracy": 59.87,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["brain-computer interface", "transfer learning benchmark"],
+            applications=["motor_control"],
             environment="lab",
             online_feedback=True,
         ),
@@ -288,15 +288,15 @@ class Beetl2021_A(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"training": "5 races", "testing": "10 races"},
-            n_blocks=15,
+            n_trials=None,
+            n_blocks=None,
             trials_context="Data collected during Cybathlon2020IC online racing game. Training data: 5 races per subject. Testing data: 10 races per subject. Each race contains multiple 4-second trials.",
         ),
         abstract="Transfer learning and meta-learning offer some of the most promising avenues to unlock the scalability of healthcare and consumer technologies driven by biosignal data. This is because current methods cannot generalise well across human subjects' data and handle learning from different heterogeneously collected data sets, thus limiting the scale of training data. On the other side, developments in transfer learning would benefit significantly from a real-world benchmark with immediate practical application. Therefore, we pick electroencephalography (EEG) as an exemplar for what makes biosignal machine learning hard. We design two transfer learning challenges around diagnostics and Brain-Computer Interfacing (BCI), that have to be solved in the face of low signal-to-noise ratios, major variability among subjects, differences in the data recording sessions and techniques, and even between the specific BCI tasks recorded in the dataset. Task 1 is centred on the field of medical diagnostics, addressing automatic sleep stage annotation across subjects. Task 2 is centred on Brain-Computer Interfacing (BCI), addressing motor imagery decoding across both subjects and data sets. The BEETL competition with its over 30 competing teams and its 3 winning entries brought attention to the potential of deep transfer learning and combinations of set theory and conventional machine learning techniques to overcome the challenges. The results set a new state-of-the-art for the real-world BEETL benchmark.",
         methodology="Dataset A is part of the BEETL Competition Task 2 (Motor Imagery). The data was collected in an online racing game format called Cybathlon2020IC. Dataset A contains data from subjects 1-3 (final phase) with 500 Hz sampling rate and 63 EEG channels. The data underwent frequency-domain preprocessing using a bandpass filter (1-100 Hz) and a 50 Hz notch filter to attenuate power line interference. The competition had two phases: leaderboard (subjects 1-2) and final (subjects 1-3). For the final phase, training data from 5 races and testing data from 10 races were provided for each subject. The data is segmented into 4-second trials. Motor imagery tasks include: Rest (label 0), Left hand (label 1), Right hand (label 2), and Feet (label 3). The challenge focused on transfer learning from multiple source datasets (Cho2017, BNCI2014, PhysionetMI) to target datasets (Weibo2014 and Cybathlon2020IC) with different EEG setups, electrode configurations, and task definitions. Winning solutions employed deep learning architectures (EEGInception, EEGNet), latent subject alignment methods (Deep Sets, statistical alignment), domain adaptation techniques (Euclidean Alignment, Label Alignment, Maximum Classifier Discrepancy), and Riemannian geometry approaches (SPDNet, MDRM).",
     )
 
-    def __init__(self, phase="final"):
+    def __init__(self, phase="final", subjects=None, sessions=None, **kwargs):
         """Initialize BEETL Dataset A.
 
         Parameters
@@ -304,11 +304,15 @@ class Beetl2021_A(BaseDataset):
         phase : str
             Either "leaderboard" (subjects 1-2) or "final" (subjects 1-3)
         """
+        deprecated_renames = {"Phase": "phase"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Beetl2021_A")
+        phase = resolved.get("phase", phase)
+
         if phase not in ["leaderboard", "final"]:
             raise ValueError("Phase must be either 'leaderboard' or 'final'")
 
         self.phase = phase
-        subjects = list(range(1, 3)) if phase == "leaderboard" else list(range(1, 4))
+        all_subjects = list(range(1, 3)) if phase == "leaderboard" else list(range(1, 4))
 
         # Channel setup
         self.ch_names = [
@@ -381,12 +385,14 @@ class Beetl2021_A(BaseDataset):
         self.phase = phase
 
         super().__init__(
-            subjects=subjects,
+            subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(rest=0, left_hand=1, right_hand=2, feet=3),
             code="Beetl2021-A",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -629,12 +635,12 @@ class Beetl2021_B(BaseDataset):
                 "P8",
             ],
             sensor_type="EEG",
-            filters="Bandpass filter (1-100 Hz), Notch filter (50 Hz)",
+            filters="Bandpass filter (1-100 Hz)",
             line_freq=50.0,
             montage="standard_1005",
         ),
         participants=ParticipantMetadata(
-            n_subjects=3,  # Beetl2021_B has subjects 3-5 in leaderboard, 4-5 in final
+            n_subjects=2,  # Beetl2021_B has subjects 3-5 in leaderboard, 4-5 in final (default=final)
             health_status="healthy",
             species="human",
         ),
@@ -652,13 +658,13 @@ class Beetl2021_B(BaseDataset):
             trial_duration=4.0,
             study_design="cross-dataset transfer learning",
             study_domain="Brain-Computer Interface",
-            feedback_type="online feedback",
-            synchronicity="cued",
-            mode="active",
+            feedback_type=None,
+            synchronicity="synchronous",
+            mode="offline",
             has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
-            description="Motor Imagery dataset from BEETL Competition - Dataset B. This is part of the BEETL (Benchmarks for EEG Transfer Learning) competition Task 2, which focuses on 3-way motor imagery classification (left-hand, right-hand motor imagery and 'reject') across both subjects and datasets. Dataset B contains data with 200 Hz sampling rate and 32 EEG channels selected from the Weibo2014 dataset.",
+            description="Motor Imagery dataset from BEETL Competition - Dataset B. Part of the NeurIPS 2021 BEETL competition Task 2 focusing on transfer learning for motor imagery decoding. Dataset B contains data from Weibo2014 with 32 EEG channels selected around the motor cortex, sampled at 200 Hz. 4-class motor imagery: left hand, right hand, feet, and rest.",
             investigators=[
                 "Xiaoxi Wei",
                 "A. Aldo Faisal",
@@ -683,18 +689,21 @@ class Beetl2021_B(BaseDataset):
                 "Piotr Tempczyk",
             ],
             institution="Imperial College London",
-            country="United Kingdom",
+            country="GB",
             repository="Figshare",
             data_url="https://beetl.ai/data",
             publication_year=2022,
             senior_author="A. Aldo Faisal",
             associated_paper_doi="10.48550/arXiv.2202.12950",
             funding=[
-                "Brain & Behaviour Lab, Imperial College London",
-                "Institute of Artificial & Human Intelligence, University of Bayreuth",
-                "Human Research and Engineering Directorate, DEVCOM Army Research Laboratory",
+                "UKRI Turing AI Fellowship Grant (EP/V025449/1)",
+                "ANR BrAIN AI chair (ANR-20-CHIA-0016)",
+                "CEA NUMERICS program",
+                "European Union Horizon 2020 Marie Sklodowska-Curie grant No 800945",
+                "Facebook Reality Labs",
+                "BCI Society",
             ],
-            institution_address="Imperial College London, United Kingdom",
+            institution_address="Brain & Behaviour Lab, Imperial College London, United Kingdom",
             institution_department="Brain & Behaviour Lab",
             keywords=[
                 "machine learning",
@@ -710,7 +719,7 @@ class Beetl2021_B(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=2,  # training and testing
-        sessions=["0leaderboardtrain", "1leaderboardtest", "0finaltrain", "1finaltest"],
+        sessions=["0"],
         data_processed=True,
         file_format="numpy",
         external_links={
@@ -721,23 +730,21 @@ class Beetl2021_B(BaseDataset):
         },
         tags=Tags(
             pathology=["Healthy"],
-            modality=["EEG"],
-            type=["motor imagery", "BCI", "transfer learning"],
+            modality=["Motor"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=[
                 "Bandpass filtering (1-100 Hz)",
-                "Notch filtering (50 Hz)",
-                "Channel selection (32 channels around motor cortex)",
-                "Segmentation into 4-second trials",
+                "Channel selection (32 channels from Weibo2014)",
             ],
             highpass_hz=1.0,
             lowpass_hz=100.0,
-            notch_hz=50.0,
+            notch_hz=None,
             filter_type="frequency-domain",
-            notes="Data was filtered in frequency domain and cut into 4 second trials for the competition",
+            notes="Data from Weibo2014 dataset with 32 channels selected around motor cortex. Filtered with bandpass 1-100 Hz. Cut into 4-second trials for the competition.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -775,13 +782,9 @@ class Beetl2021_B(BaseDataset):
             "balanced_accuracy_baseline": 49.9,
         },
         bci_application=BCIApplicationMetadata(
-            applications=[
-                "motor imagery decoding",
-                "BCI control",
-                "transfer learning benchmark",
-            ],
-            environment="online racing game (Cybathlon2020IC)",
-            online_feedback=True,
+            applications=["motor_control", "transfer_learning"],
+            environment="laboratory",
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor imagery",
@@ -795,7 +798,7 @@ class Beetl2021_B(BaseDataset):
         methodology="Task 2 is centred on transfer learning for BCI, addressing motor imagery decoding. The challenge lies in transferring from multiple data sets, which use different EEG setups comprising hundreds of users, to a set of new users that need to be up and running with only minutes worth of calibration data (transfer across subjects and data sets). Three source data sets (Cho2017, BNCI2014, PhysionetMI) are provided as training data. The algorithms are evaluated on new data sets with different setups, including differences in electrode channels, task definitions, and subjects. Dataset B is from Weibo2014 with 32 channels selected around motor cortex. For the leaderboard phase (subjects 3-5), only training data is provided. For the final phase (subjects 4-5), both training and testing data are included.",
     )
 
-    def __init__(self, phase="final"):
+    def __init__(self, phase="final", subjects=None, sessions=None, **kwargs):
         """Initialize BEETL Dataset B.
 
         Parameters
@@ -803,19 +806,25 @@ class Beetl2021_B(BaseDataset):
         phase : str
             Either "leaderboard" (subjects 3-5) or "final" (subjects 4-5)
         """
+        deprecated_renames = {"Phase": "phase"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Beetl2021_B")
+        phase = resolved.get("phase", phase)
+
         if phase not in ["leaderboard", "final"]:
             raise ValueError("Phase must be either 'leaderboard' or 'final'")
 
         self.phase = phase
-        subjects = list(range(3, 6)) if phase == "leaderboard" else list(range(4, 6))
+        all_subjects = list(range(3, 6)) if phase == "leaderboard" else list(range(4, 6))
 
         super().__init__(
-            subjects=subjects,
+            subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(left_hand=0, right_hand=1, feet=2, rest=3),
             code="Beetl2021-B",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
         self.ch_names = [

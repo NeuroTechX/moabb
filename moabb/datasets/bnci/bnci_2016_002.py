@@ -587,7 +587,7 @@ class BNCI2016_002(BNCIBaseDataset):
         ),
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(_SUBJECT_VP_CODES.keys()),
             sessions_per_subject=1,
@@ -601,4 +601,6 @@ class BNCI2016_002(BNCIBaseDataset):
             doi="10.1088/1741-2560/8/5/056001",
             load_fn=_load_data_002_2016,
             base_url=BBCI_URL,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )

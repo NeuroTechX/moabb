@@ -100,7 +100,16 @@ def mamem_event(eeg, dins, labels=None):
 class BaseMAMEM(BaseDataset):
     """Base class for MAMEM datasets."""
 
-    def __init__(self, events, sessions_per_subject, code, doi, figshare_id):
+    def __init__(
+        self,
+        events,
+        sessions_per_subject,
+        code,
+        doi,
+        figshare_id,
+        subjects=None,
+        sessions=None,
+    ):
         super().__init__(
             subjects=list(range(1, 12)),
             events=events,
@@ -109,6 +118,8 @@ class BaseMAMEM(BaseDataset):
             sessions_per_subject=sessions_per_subject,
             code=code,
             doi=doi,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.figshare_id = figshare_id
 
@@ -292,10 +303,10 @@ class MAMEM1(BaseMAMEM):
             channel_types={"eeg": 256},
             montage="GSN-HydroCel-256",
             hardware="EGI 300 Geodesic EEG System (GES 300)",
-            sensor_type="scalp electrodes",
-            reference="CAR",
-            software="Microsoft Visual Studio 2010 with OpenGL",
-            filters="5-48 Hz bandpass, 50 Hz notch",
+            sensor_type=None,
+            reference=None,
+            software=None,
+            filters=None,
             sensors=[
                 "E1",
                 "E10",
@@ -559,10 +570,8 @@ class MAMEM1(BaseMAMEM):
             cap_manufacturer="EGI",
             cap_model="HydroCel Geodesic Sensor Net (HCGSN)",
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_type=["vertical"],
-                has_emg=True,
-                other_physiological=["ecg", "gsr", "ppg"],
+                has_eog=False,
+                has_emg=False,
             ),
         ),
         participants=ParticipantMetadata(
@@ -604,12 +613,10 @@ class MAMEM1(BaseMAMEM):
             feedback_type="none",
             instructions="Subjects were instructed to focus attention on the flickering box, limit movements, and avoid swallowing or blinking during visual stimulation",
             stimulus_presentation={
+                "SoftwareName": "Microsoft Visual Studio 2010 with OpenGL",
                 "monitor": "22 inch LCD monitor",
                 "refresh_rate": "60 Hz",
-                "resolution": "1680x1050 pixels",
-                "stimulus_color": "violet box",
-                "background_color": "black",
-                "synchronization": "Stim Tracker ST-100 with light sensor",
+                "resolution": "1680x1080 pixels",
             },
         ),
         documentation=DocumentationMetadata(
@@ -625,7 +632,7 @@ class MAMEM1(BaseMAMEM):
                 "Ioannis Kompatsiaris",
             ],
             institution="Centre for Research and Technology Hellas (CERTH)",
-            country="Greece",
+            country="GR",
             repository="Figshare",
             data_url="https://dx.doi.org/10.6084/m9.figshare.2068677.v1",
             license="ODC-By-1.0",
@@ -645,9 +652,9 @@ class MAMEM1(BaseMAMEM):
                 "state-of-the-art algorithms",
             ],
         ),
-        sessions_per_subject=5,
-        runs_per_session=3,
-        sessions=["0a", "0b", "0c", "0d", "0e"],
+        sessions_per_subject=1,
+        runs_per_session=None,
+        sessions=None,
         data_processed=False,
         file_format="MATLAB .mat",
         tags=Tags(
@@ -656,22 +663,8 @@ class MAMEM1(BaseMAMEM):
             type=["Perception"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw EEG signals with DIN markers for synchronization",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "bandpass filtering (5-48 Hz)",
-                "notch filtering (50 Hz line frequency)",
-                "artifact removal (AMUSE or ICA)",
-                "CAR re-referencing",
-            ],
-            highpass_hz=5.0,
-            lowpass_hz=48.0,
-            bandpass={"low_cutoff_hz": 5.0, "high_cutoff_hz": 48.0},
-            notch_hz=50,
-            filter_type="Chebyshev (IIR) or FIR",
-            artifact_methods=["AMUSE", "ICA (FastICA)"],
-            re_reference="CAR",
-            notes="Multiple preprocessing methods evaluated in comparative study. Range 5-48 Hz chosen to capture stimulus frequencies and harmonics up to 4th order. EOG artifacts particularly noted for subject S007.",
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -703,12 +696,11 @@ class MAMEM1(BaseMAMEM):
             evaluation_type=["cross_subject"],
         ),
         performance={
-            "accuracy_percent": 74.42,
-            "optimal_configuration_improvement": 7.0,
-            "subject_S007_improvement_with_AMUSE": 30.0,
+            "default_accuracy_percent": 72.47,
+            "optimal_accuracy_percent": 79.47,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "control"],
+            applications=["communication"],
             environment="laboratory",
             online_feedback=False,
         ),
@@ -721,14 +713,12 @@ class MAMEM1(BaseMAMEM):
         data_structure=DataStructureMetadata(
             n_trials=1104,
             trials_context="Total 1104 trials across all subjects. Each session includes 23 trials (8 adaptation + 15 main). S001: 3 sessions, S003 and S004: 4 sessions, others: 5 sessions. Some sessions excluded due to technical issues.",
-            n_blocks=5,
-            block_duration_s=5.0,
         ),
         abstract="Brain-computer interfaces (BCIs) have been gaining momentum in making human-computer interaction more natural, especially for people with neuro-muscular disabilities. This report focuses on SSVEP-based BCIs and performs a comparative evaluation of the most promising algorithms. A dataset of 256-channel EEG signals from 11 subjects is provided, along with a processing toolbox for reproducing results and supporting further experimentation.",
         methodology="Empirical approach where each signal processing parameter (filtering, artifact removal, feature extraction, feature selection, classification) is studied independently by keeping all other parameters fixed. Leave-one-subject-out cross-validation used to evaluate system without subject-specific training. Multiple algorithms compared for each processing stage to obtain state-of-the-art baseline.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
@@ -736,6 +726,8 @@ class MAMEM1(BaseMAMEM):
             code="MAMEM1",
             doi="10.48550/arXiv.1602.00904",
             figshare_id=2068677,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -822,12 +814,12 @@ class MAMEM2(BaseMAMEM):
             sampling_rate=250.0,
             n_channels=256,
             channel_types={"eeg": 256},
-            montage="10-20",
+            montage="GSN-HydroCel-256",
             hardware="EGI 300 Geodesic EEG System (GES 300)",
-            sensor_type="scalp electrodes",
+            sensor_type=None,
             reference="Cz",
-            software="Microsoft Visual Studio 2010 with OpenGL",
-            filters="5-48 Hz bandpass",
+            software=None,
+            filters=None,
             sensors=[
                 "E1",
                 "E10",
@@ -1090,12 +1082,12 @@ class MAMEM2(BaseMAMEM):
             impedance_threshold_kohm=80.0,
             cap_manufacturer="EGI",
             cap_model="HydroCel Geodesic Sensor Net (HCGSN)",
-            electrode_type="HydroCel",
+            electrode_type=None,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_type=["vertical"],
-                has_emg=True,
-                other_physiological=["ecg", "gsr", "ppg"],
+                has_eog=None,
+                eog_type=None,
+                has_emg=False,
+                other_physiological=None,
             ),
         ),
         participants=ParticipantMetadata(
@@ -1105,8 +1097,8 @@ class MAMEM2(BaseMAMEM):
             age_min=24,
             age_max=39,
             handedness={"right": 10, "left": 1},
-            clinical_population="able-bodied subjects without any known neuro-muscular or mental disorders",
-            species="human",
+            clinical_population=None,
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
@@ -1115,25 +1107,23 @@ class MAMEM2(BaseMAMEM):
             class_labels=["6.66 Hz", "7.50 Hz", "8.57 Hz", "10.00 Hz", "12.00 Hz"],
             trial_duration=5.0,
             study_design="Subjects focus attention on visual stimuli flickering at different frequencies (6.66, 7.50, 8.57, 10.00, 12.00 Hz) to select commands. Each stimulus presented for 5 seconds followed by 5 seconds rest.",
-            stimulus_type="visual",
+            stimulus_type="flickering box",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             mode="offline",
             feedback_type="none",
             synchronicity="synchronous",
             stimulus_presentation={
+                "SoftwareName": "Microsoft Visual Studio 2010 with OpenGL",
                 "device": "22 inch LCD monitor",
                 "refresh_rate": "60 Hz",
                 "resolution": "1680x1080",
-                "stimulus_appearance": "violet box flickering at center",
-                "background": "black",
-                "synchronization": "Stim Tracker model ST-100 with light sensor",
             },
         ),
         documentation=DocumentationMetadata(
             doi="10.48550/arXiv.1602.00904",
             repository="GitHub",
-            data_url="https://github.com/MAMEM/ssvep-eeg-processing-toolbox",
+            data_url="https://figshare.com/articles/dataset/3153409",
             license="ODC-By-1.0",
             investigators=[
                 "Vangelis P. Oikonomou",
@@ -1145,7 +1135,7 @@ class MAMEM2(BaseMAMEM):
                 "Ioannis Kompatsiaris",
             ],
             institution="Centre for Research and Technology Hellas (CERTH)",
-            country="Greece",
+            country="GR",
             publication_year=2016,
             associated_paper_doi="arXiv:1602.00904v2",
             funding=["H2020-ICT-2014-644780"],
@@ -1163,29 +1153,16 @@ class MAMEM2(BaseMAMEM):
                 "classification",
             ],
         ),
-        sessions_per_subject=5,
+        sessions_per_subject=1,
         runs_per_session=5,
         tags=Tags(
             pathology=["Healthy"],
             modality=["Visual"],
-            type=["Perception"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "bandpass filtering (5-48 Hz)",
-                "notch filtering (50 Hz)",
-                "artifact removal (AMUSE, ICA)",
-                "normalization to zero mean",
-            ],
-            highpass_hz=5.0,
-            lowpass_hz=48.0,
-            bandpass={"low_cutoff_hz": 5.0, "high_cutoff_hz": 48.0},
-            notch_hz=50.0,
-            filter_type="IIR-Elliptic",
-            artifact_methods=["AMUSE", "ICA"],
-            re_reference="CAR",
-            notes="AMUSE removes first 15 and last 4 components. Optimal configuration uses IIR-Elliptic filter.",
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -1226,8 +1203,8 @@ class MAMEM2(BaseMAMEM):
             "processing_time_msec": 68,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["cursor control", "command selection"],
-            environment="indoor",
+            applications=["command_selection"],
+            environment="laboratory",
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
@@ -1238,28 +1215,24 @@ class MAMEM2(BaseMAMEM):
         ),
         data_structure=DataStructureMetadata(
             n_trials=1104,
-            n_trials_per_class={
-                "6.66 Hz": "~220 per frequency",
-                "7.50 Hz": "~220 per frequency",
-                "8.57 Hz": "~220 per frequency",
-                "10.00 Hz": "~220 per frequency",
-                "12.00 Hz": "~220 per frequency",
-            },
+            n_trials_per_class=None,
             trials_context="Each session includes 23 trials (8 adaptation trials excluded from analysis). 5 sessions per subject (with exceptions: S001=3 sessions, S003=4 sessions, S004=4 sessions). Total: 1104 trials of 5 seconds each.",
         ),
         abstract="Brain-computer interfaces (BCIs) have been gaining momentum in making human-computer interaction more natural, especially for people with neuro-muscular disabilities. This study focuses on SSVEP-based BCIs and performs a comparative evaluation of state-of-the-art algorithms for filtering, artifact removal, feature extraction, feature selection and classification. Dataset consists of 256-channel EEG signals from 11 subjects with 5 flickering frequencies (6.66, 7.50, 8.57, 10.00, 12.00 Hz).",
         methodology="Leave-one-subject-out cross-validation was used to evaluate a general-purpose BCI system without subject-specific training. Systematic comparison of algorithms across all signal processing stages: (1) Signal filtering: FIR vs IIR filters; (2) Artifact removal: AMUSE vs FastICA; (3) Feature extraction: PWelch, Periodogram, PYULEAR, DWT, STFT, Goertzel; (4) Feature selection: entropy-based methods and PCA/SVD; (5) Classification: SVM, LDA, KNN, Naive Bayes, Random Forest, AdaBoost. Optimal configuration achieved 74.42% mean accuracy using IIR-Elliptic filter, AMUSE artifact removal, PWelch feature extraction with nfft=512, segment length=350, overlap=0.75, and channel-138.",
-        data_processed=True,
-        file_format="EGI format",
+        data_processed=False,
+        file_format="MAT",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
             code="MAMEM2",
             doi="10.48550/arXiv.1602.00904",
             figshare_id=3153409,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1542,7 +1515,7 @@ class MAMEM3(BaseMAMEM):
         methodology="Comparative evaluation of SSVEP-based BCI algorithms using leave-one-subject-out cross-validation. The study examines filtering methods (IIR, FIR), artifact removal (AMUSE, ICA), feature extraction (Periodogram, Welch, Goertzel, Yule-AR, STFT, DWT), feature selection (Shannon entropy, PCA, ICA), and classification (LDA, SVM, kNN, Naive Bayes, Random Forest, CCA, ELM, Decision Trees). Each parameter is studied independently while keeping others fixed to identify optimal configurations.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             events={
                 "6.66": 33029,
@@ -1555,4 +1528,6 @@ class MAMEM3(BaseMAMEM):
             code="MAMEM3",
             doi="10.48550/arXiv.1602.00904",
             figshare_id=3413851,
+            subjects=subjects,
+            sessions=sessions,
         )

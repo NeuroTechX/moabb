@@ -25,6 +25,7 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import _handle_deprecated_kwargs
 
 
 Lee2019_URL = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100542/"
@@ -39,8 +40,27 @@ class Lee2019(BaseDataset):
         train_run=True,
         test_run=None,
         resting_state=False,
-        sessions=(1, 2),
+        sessions=None,
+        subjects=None,
+        **kwargs,
     ):
+        deprecated_renames = {
+            "TrainRun": "train_run",
+            "TestRun": "test_run",
+            "RestingState": "resting_state",
+            "Sessions": "sessions",
+            "Subjects": "subjects",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Lee2019")
+        train_run = resolved.get("train_run", train_run)
+        test_run = resolved.get("test_run", test_run)
+        resting_state = resolved.get("resting_state", resting_state)
+        sessions = resolved.get("sessions", sessions)
+        subjects = resolved.get("subjects", subjects)
+
+        if sessions is None:
+            sessions = (1, 2)
+
         if paradigm.lower() in ["imagery", "mi"]:
             paradigm = "imagery"
             code_suffix = "MI"
@@ -84,6 +104,8 @@ class Lee2019(BaseDataset):
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.code_suffix = code_suffix
         self.train_run = train_run
@@ -294,10 +316,10 @@ class Lee2019_MI(Lee2019):
             sampling_rate=1000.0,
             n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
-            montage="10-20",
+            montage="standard_1005",
             hardware="BrainAmp",
             sensor_type="Ag/AgCl",
-            reference="nose",
+            reference="nasion",
             ground="AFz",
             impedance_threshold_kohm=10.0,
             sensors=[
@@ -369,44 +391,42 @@ class Lee2019_MI(Lee2019):
                 "TTP7h",
             ],
             line_freq=60.0,
-            software="OpenBMI",
-            cap_manufacturer="Brain Products",
+            software=None,
+            cap_manufacturer=None,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_type=["horizontal", "vertical"],
+                has_eog=False,
                 has_emg=True,
                 emg_channels=4,
-                other_physiological=["gsr"],
             ),
         ),
         participants=ParticipantMetadata(
             n_subjects=54,
             health_status="healthy",
             gender={"female": 25, "male": 29},
-            age_mean=29.5,
+            age_mean=None,
             age_min=24,
             age_max=35,
             handedness={"right": 50, "left": 2, "ambidexter": 2},
             bci_experience="mixed",
             clinical_population=None,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"left_hand": 2, "right_hand": 1},
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
-            trial_duration=14.0,
-            study_design="Three BCI paradigms: binary-class MI (left/right hand imagery), 36-symbol ERP speller (row-column with face stimuli), four-target SSVEP (5.45, 6.67, 8.57, 12 Hz). Two sessions on different days. Both offline training and online test phases.",
+            trial_duration=4.0,
+            study_design="Binary-class motor imagery (left/right hand grasping). Two sessions on different days, each with offline training and online test phases of 100 trials each.",
             feedback_type="visual",
             stimulus_type="arrow",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             mode="both",
             has_training_test_split=True,
-            synchronicity="cue-based",
+            synchronicity="synchronous",
             instructions="Subjects performed the imagery task of grasping with the appropriate hand for 4 s when the right or left arrow appeared as a visual cue. First 3 s of each trial began with a black fixation cross to prepare subjects for the MI task. After each task, the screen remained blank for 6 s (± 1.5 s).",
-            tasks=["MI", "ERP", "SSVEP"],
+            tasks=["MI"],
         ),
         documentation=DocumentationMetadata(
             doi="10.1093/gigascience/giz002",
@@ -422,7 +442,7 @@ class Lee2019_MI(Lee2019):
                 "Seong-Whan Lee",
             ],
             institution="Korea University",
-            country="South Korea",
+            country="KR",
             publication_year=2019,
             senior_author="Seong-Whan Lee",
             contact_info=["sw.lee@korea.ac.kr"],
@@ -445,48 +465,21 @@ class Lee2019_MI(Lee2019):
         runs_per_session=1,
         tags=Tags(
             pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception", "Action"],
+            modality=["Motor"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw EEG available",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "downsampling",
-                "bandpass filtering",
-                "segmentation",
-                "baseline correction (ERP only)",
-            ],
-            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 40.0},
-            filter_type="Butterworth",
-            filter_order=5,
-            artifact_methods=["ICA"],
-            re_reference="car",
-            downsampled_to_hz=100.0,
-            epoch_window=[-200.0, 800.0],
-            notes="MI paradigm used 20 electrodes from motor cortex region. SSVEP used occipital electrodes. ERP used 32 electrodes.",
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA", "CNN", "Neural Network", "CCA"],
-            feature_extraction=[
-                "CSP",
-                "FBCSP",
-                "CSSP",
-                "BSSFO",
-                "Bandpower",
-                "ERD",
-                "ERS",
-                "PSD",
-                "Time-Frequency",
-                "MA",
-            ],
+            classifiers=["CSP+LDA", "CSSP", "FBCSP", "BSSFO"],
+            feature_extraction=["CSP", "CSSP", "FBCSP", "BSSFO", "log-variance"],
             frequency_bands={
-                "alpha": [8.0, 12.0],
                 "mu": [8.0, 12.0],
-                "theta": [4.0, 8.0],
-                "analyzed_range": [0.5, 40.0],
+                "analyzed_range": [8.0, 30.0],
             },
-            spatial_filters=["CSP", "FBCSP", "CSSP", "BSSFO"],
+            spatial_filters=["CSP", "CSSP", "FBCSP", "BSSFO"],
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="train-test split",
@@ -500,23 +493,23 @@ class Lee2019_MI(Lee2019):
             "session2_accuracy": 72.2,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["speller", "vr_ar", "communication", "general_purpose_bci"],
+            applications=["motor_control"],
             environment="laboratory",
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
-            imagery_tasks=["left_hand_grasping", "right_hand_grasping"],
+            imagery_tasks=["left_hand", "right_hand"],
             cue_duration_s=3.0,
             imagery_duration_s=4.0,
-            n_targets=2,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"MI": 200, "ERP": {"training": 1980, "test": 2160}, "SSVEP": 200},
-            trials_context="100 trials per class (balanced) in both training and test phases for MI paradigm",
+            n_trials=200,
+            n_trials_per_class={"left_hand": 100, "right_hand": 100},
+            trials_context="100 trials per session per phase (50 per class per phase). Training: 50 left + 50 right. Test: 50 left + 50 right. Total per session: 200.",
         ),
         file_format="MAT",
-        data_processed=True,
+        data_processed=False,
         abstract="Electroencephalography (EEG)-based brain-computer interface (BCI) systems are mainly divided into three major paradigms: motor imagery (MI), event-related potential (ERP), and steady-state visually evoked potential (SSVEP). Here, we present a BCI dataset that includes the three major BCI paradigms with a large number of subjects over multiple sessions. In addition, information about the psychological and physiological conditions of BCI users was obtained using a questionnaire, and task-unrelated parameters such as resting state, artifacts, and electromyography of both arms were also recorded. We evaluated the decoding accuracies for the individual paradigms and determined performance variations across both subjects and sessions. Furthermore, we looked for more general, severe cases of BCI illiteracy than have been previously reported in the literature. Average decoding accuracies across all subjects and sessions were 71.1% (± 0.15), 96.7% (± 0.05), and 95.1% (± 0.09), and rates of BCI illiteracy were 53.7%, 11.1%, and 10.2% for MI, ERP, and SSVEP, respectively. Compared to the ERP and SSVEP paradigms, the MI paradigm exhibited large performance variations between both subjects and sessions. Furthermore, we found that 27.8% (15 out of 54) of users were universally BCI literate, i.e., they were able to proficiently perform all three paradigms. Interestingly, we found no universally illiterate BCI user, i.e., all participants were able to control at least one type of BCI system.",
         methodology="Experimental procedure: 54 healthy subjects participated in two sessions on different days. Each session consisted of three BCI paradigms performed sequentially: ERP speller (36 symbols, row-column presentation with face stimuli), MI task (binary left/right hand imagery), and SSVEP (four target frequencies: 5.45, 6.67, 8.57, 12 Hz). Each paradigm had offline training and online test phases. EEG recorded at 1000 Hz with 62 Ag/AgCl electrodes using BrainAmp amplifier, nose-referenced, grounded to AFz. Impedance maintained below 10 kOhm. Subjects seated 60 cm from 21-inch LCD monitor. Questionnaires collected demographic, physiological, and psychological data. Artifact data (eye blinking, eye movements, teeth clenching, arm flexing) and resting state EEG also recorded. Total experiment duration: ~205 minutes per session.",
     )
@@ -607,10 +600,10 @@ class Lee2019_ERP(Lee2019):
             sampling_rate=1000.0,
             n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
-            montage="10-20",
+            montage="standard_1005",
             hardware="BrainAmp",
             sensor_type="Ag/AgCl",
-            reference="nose",
+            reference="nasion",
             ground="AFz",
             impedance_threshold_kohm=10,
             sensors=[
@@ -685,11 +678,9 @@ class Lee2019_ERP(Lee2019):
             software="OpenBMI",
             cap_manufacturer="Brain Products",
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_type=["horizontal", "vertical"],
+                has_eog=False,
                 has_emg=True,
                 emg_channels=4,
-                other_physiological=["noise_artifacts"],
             ),
         ),
         participants=ParticipantMetadata(
@@ -709,12 +700,12 @@ class Lee2019_ERP(Lee2019):
             n_classes=2,
             class_labels=["target", "non_target"],
             trial_duration=None,
-            study_design="Three BCI paradigms: binary-class MI (left/right hand imagery), 36-symbol ERP speller (row-column with face stimuli), four-target SSVEP (5.45, 6.67, 8.57, 12 Hz)",
+            study_design="36-symbol ERP row-column speller with random-set presentation and face stimuli, offline training and online test phases",
             feedback_type="visual",
             stimulus_type="rc_speller",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="sync",
+            mode="offline",
             has_training_test_split=True,
             instructions="Subjects were asked to copy-spell given sentences by gazing at target characters on screen. In training: 'NEURAL NETWORKS AND DEEP LEARNING' (33 characters), in test: 'PATTERN RECOGNITION MACHINE LEARNING' (36 characters). Participants counted number of times each target character flashed.",
             task_type="copy_spelling",
@@ -735,7 +726,7 @@ class Lee2019_ERP(Lee2019):
             institution="Korea University",
             institution_department="Department of Brain and Cognitive Engineering",
             institution_address="145 Anam-ro, Seongbuk-gu, Seoul, 02841, Korea",
-            country="South Korea",
+            country="KR",
             publication_year=2019,
             senior_author="Seong-Whan Lee",
             contact_info=[
@@ -752,7 +743,6 @@ class Lee2019_ERP(Lee2019):
                 "OpenBMI toolbox",
                 "BCI illiteracy",
             ],
-            acknowledgements="Published by Oxford University Press",
             license="GPL-3.0",
             repository="GigaDB",
         ),
@@ -764,25 +754,12 @@ class Lee2019_ERP(Lee2019):
             type=["Perception"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw EEG available, preprocessed data provided",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "downsampling",
-                "bandpass filtering",
-                "segmentation",
-                "baseline correction",
-            ],
-            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 40.0},
-            filter_type="Butterworth",
-            filter_order=5,
-            re_reference="nose",
-            downsampled_to_hz=100,
-            epoch_window=[-200.0, 800.0],
-            notes="ERP data: 32 electrodes selected for analysis (Fp-1/2, F-7/3/z/4/8, FC-5/1/2/6, T-7/8, C-3/z/4, TP-9/10, CP-5/1/2/6, P-7/3/z/4/8, PO-9/10, O-1/z/2). Baseline correction: mean amplitudes subtracted in -200 to 0 ms pre-stimulus interval.",
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA", "CNN", "CCA", "CSP", "CSSP", "FBCSP", "BSSFO"],
-            feature_extraction=["Mean Amplitudes", "spatio-temporal features"],
+            classifiers=["LDA"],
+            feature_extraction=["Mean Amplitudes"],
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="training-test split",
@@ -809,7 +786,7 @@ class Lee2019_ERP(Lee2019):
             trials_context="Training: copy-spell 'NEURAL NETWORKS AND DEEP LEARNING' (33 characters). Test: copy-spell 'PATTERN RECOGNITION MACHINE LEARNING' (36 characters). Each character received 5 sequences of 12 flashes (60 flashes total).",
         ),
         file_format="MAT",
-        data_processed=True,
+        data_processed=False,
     )
 
     __init__ = partialmethod(Lee2019.__init__, "ERP")
@@ -879,10 +856,10 @@ class Lee2019_SSVEP(Lee2019):
             sampling_rate=1000.0,
             n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
-            montage="10-20",
+            montage="standard_1005",
             hardware="BrainAmp",
             sensor_type="Ag/AgCl",
-            reference="nose",
+            reference="nasion",
             ground="AFz",
             impedance_threshold_kohm=10,
             sensors=[
@@ -955,12 +932,9 @@ class Lee2019_SSVEP(Lee2019):
             ],
             line_freq=60.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=2,
-                eog_type=["horizontal", "vertical"],
+                has_eog=False,
                 has_emg=True,
                 emg_channels=4,
-                other_physiological=["gsr"],
             ),
             software="OpenBMI",
         ),
@@ -968,12 +942,12 @@ class Lee2019_SSVEP(Lee2019):
             n_subjects=54,
             health_status="healthy",
             gender={"female": 25, "male": 29},
-            age_mean=29.5,
+            age_mean=None,
             age_min=24,
             age_max=35,
-            handedness={"right": 4},
+            handedness=None,
             bci_experience="mixed",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"12.0": 1, "8.57": 2, "6.67": 3, "5.45": 4},
@@ -981,7 +955,7 @@ class Lee2019_SSVEP(Lee2019):
             n_classes=4,
             class_labels=["down", "right", "left", "up"],
             trial_duration=4.0,
-            study_design="Three BCI paradigms: binary-class MI (left/right hand imagery), 36-symbol ERP speller (row-column with face stimuli), four-target SSVEP (5.45, 6.67, 8.57, 12 Hz)",
+            study_design="Four-target SSVEP paradigm with frequencies 5.45, 6.67, 8.57, and 12 Hz presented in four screen positions (down, right, left, up). Training phase (offline) and test phase (online with visual feedback). 25 trials per target frequency per phase.",
             feedback_type="visual",
             stimulus_type="flickering_box",
             stimulus_modalities=["visual"],
@@ -1008,7 +982,7 @@ class Lee2019_SSVEP(Lee2019):
             institution="Korea University",
             institution_department="Department of Brain and Cognitive Engineering",
             institution_address="145 Anam-ro, Seongbuk-gu, Seoul, 02841, Korea",
-            country="Korea",
+            country="KR",
             publication_year=2019,
             senior_author="Seong-Whan Lee",
             contact_info=[
@@ -1040,40 +1014,29 @@ class Lee2019_SSVEP(Lee2019):
             preprocessing_applied=True,
             preprocessing_steps=[
                 "downsampling",
-                "bandpass filtering",
             ],
-            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 40.0},
-            filter_type="Butterworth",
-            filter_order=5,
             downsampled_to_hz=100,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["CCA", "LDA", "CSP", "CSSP", "FBCSP", "BSSFO"],
-            feature_extraction=[
-                "CSP",
-                "CSSP",
-                "FBCSP",
-                "BSSFO",
-                "CCA",
-                "Bandpower",
-            ],
+            classifiers=["CCA"],
+            feature_extraction=["CCA", "PSD"],
         ),
         performance={
             "accuracy_percent": 95.1,
             "illiteracy_rate": 10.2,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "control"],
+            applications=["control"],
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
             n_targets=4,
             stimulus_frequencies_hz=[5.45, 6.67, 8.57, 12.0],
-            isi_ms=6000.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"MI": 200, "ERP": {"training": 1980, "test": 2160}, "SSVEP": 200},
+            n_trials=200,
+            n_trials_per_class={"5.45": 25, "6.67": 25, "8.57": 25, "12.0": 25},
             trials_context="100 trials (4 classes × 25 trials) in offline training phase and 100 trials in online test phase for SSVEP",
         ),
         file_format="MAT",

@@ -31,6 +31,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 
 # Link to the raw data
@@ -96,10 +97,10 @@ class Liu2024(BaseDataset):
             channel_types={"eeg": 29, "eog": 2},
             montage="10-10",
             hardware="ZhenTec NT1 wireless multichannel EEG acquisition system",
-            sensor_type="Ag/AgCl",
+            sensor_type="semi-dry Ag/AgCl",
             reference="CPz",
             ground="FPz",
-            software="EEGLAB",
+            software=None,
             impedance_threshold_kohm=20,
             sensors=[
                 "C3",
@@ -159,8 +160,8 @@ class Liu2024(BaseDataset):
             class_labels=["left_hand", "right_hand"],
             trial_duration=8.0,
             study_design="Imagining grasping a spherical object with left or right hand while watching a video of gripping motion. Each trial: instruction stage (prompt), MI stage (4s video-guided imagery), break stage (rest).",
-            feedback_type="video of gripping motion played during MI",
-            stimulus_type="video",
+            feedback_type="none",
+            stimulus_type="video and audio",
             stimulus_modalities=["visual", "audio"],
             mode="offline",
             events={"left_hand": 1, "right_hand": 2},
@@ -218,20 +219,19 @@ class Liu2024(BaseDataset):
             type=["Motor Imagery"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="both raw and preprocessed data available",
+            data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=[
                 "baseline removal (mean removal method)",
-                "bandpass filtering",
-                "FIR filtering",
+                "FIR filtering (0.5-40 Hz)",
             ],
             highpass_hz=0.5,
             lowpass_hz=40.0,
             bandpass=[0.5, 40.0],
-            filter_type="Butterworth",
-            filter_order="2nd order zero-phase",
-            artifact_methods=["manual inspection"],
-            re_reference="CPz",
+            filter_type=None,
+            filter_order=None,
+            artifact_methods=None,
+            re_reference=None,
             notes="Filtered data split into trials × channels × time-samples format by marker '1'. Some motion artifacts present in subjects 4, 5, 13, 14, 18, 24, 28, 33, 42, 43, 47, 48, 49.",
         ),
         signal_processing=SignalProcessingMetadata(
@@ -273,13 +273,13 @@ class Liu2024(BaseDataset):
             "TSLDA+DGFMDRM_accuracy": 61.20,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["rehabilitation", "neurorehabilitation", "neuroprosthetics"],
+            applications=["rehabilitation"],
             environment="laboratory",
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
-            imagery_tasks=["left_hand_grasp", "right_hand_grasp"],
+            imagery_tasks=["left_hand", "right_hand"],
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
@@ -291,19 +291,32 @@ class Liu2024(BaseDataset):
         data_processed=True,
         contributing_labs=[
             "Xuanwu Hospital Capital Medical University",
-            "National Center for Neurological Disorders",
-            "Xi'an Jiaotong University",
-            "University of Chinese Academy of Sciences",
-            "Spaulding Rehabilitation Hospital, Harvard Medical School",
-            "Radboud University Medical Center",
-            "Chinese Institute for Brain Research",
         ],
-        n_contributing_labs=7,
+        n_contributing_labs=1,
         abstract="The brain-computer interface (BCI) is a technology that involves direct communication with parts of the brain and has evolved rapidly in recent years; it has begun to be used in clinical practice, such as for patient rehabilitation. Patient electroencephalography (EEG) datasets are critical for algorithm optimization and clinical applications of BCIs but are rare at present. We collected data from 50 acute stroke patients with wireless portable saline EEG devices during the performance of two tasks: 1) imagining right-handed movements and 2) imagining left-handed movements. The dataset consists of four types of data: 1) the motor imagery instructions, 2) raw recording data, 3) pre-processed data after removing artefacts and other manipulations, and 4) patient characteristics. This is the first open dataset to address left- and right-handed motor imagery in acute stroke patients.",
         methodology="50 acute stroke patients (1-30 days post-stroke) performed 40 trials of hand-grip motor imagery (20 left, 20 right). Each 8s trial included instruction, 4s video-guided imagery, and rest phases. EEG recorded with 30-channel ZhenTec NT1 wireless system at 500 Hz. Data organized in BIDS format with raw (.mat) and preprocessed (.edf) versions. Clinical assessments: NIHSS (mean=4.16±2.85), MBI (mean=70.94±18.22), mRS (mean=2.66±1.44). 23 patients right hemiplegia, 27 left hemiplegia.",
     )
 
-    def __init__(self, break_events=False, instr_events=False):
+    def __init__(
+        self,
+        break_events=False,
+        instr_events=False,
+        subjects=None,
+        sessions=None,
+        **kwargs,
+    ):
+        deprecated_renames = {
+            "BreakEvents": "break_events",
+            "InstrEvents": "instr_events",
+            "Subjects": "subjects",
+            "Sessions": "sessions",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Liu2024")
+        break_events = resolved.get("break_events", break_events)
+        instr_events = resolved.get("instr_events", instr_events)
+        subjects = resolved.get("subjects", subjects)
+        sessions = resolved.get("sessions", sessions)
+
         self.break_events = break_events
         self.instr_events = instr_events
         self.events = {"left_hand": 1, "right_hand": 2}
@@ -319,6 +332,8 @@ class Liu2024(BaseDataset):
             interval=(2, 6),
             paradigm="imagery",
             doi="10.1038/s41597-023-02787-8",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def data_path(

@@ -13,7 +13,6 @@ from mne.utils import _open_lock
 
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
-    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -73,12 +72,12 @@ class Zhou2016(BaseBIDSDataset):
             sampling_rate=250.0,
             n_channels=14,
             channel_types={"eeg": 14},
-            montage="10-20",
+            montage="standard_1020",
             sensor_type="EEG",
-            hardware="BCI2000",
+            hardware=None,
             reference="left mastoid",
             ground="right mastoid",
-            software="BCI2000",
+            software=None,
             filters="0.1-100 Hz bandpass, 50 Hz notch",
             sensors=[
                 "Fp1",
@@ -97,12 +96,7 @@ class Zhou2016(BaseBIDSDataset):
                 "O2",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_type=["horizontal"],
-                has_emg=True,
-                other_physiological=["ecg", "gsr"],
-            ),
+            auxiliary_channels=None,
         ),
         participants=ParticipantMetadata(
             n_subjects=4,
@@ -110,7 +104,7 @@ class Zhou2016(BaseBIDSDataset):
             gender={"male": 1, "female": 3},
             age_min=22,
             age_max=28,
-            bci_experience="prior experience in the experimental paradigm",
+            bci_experience="experienced",
         ),
         experiment=ExperimentMetadata(
             events={"left_hand": 1, "right_hand": 2, "feet": 3},
@@ -119,11 +113,11 @@ class Zhou2016(BaseBIDSDataset):
             class_labels=["right_hand", "left_hand", "feet"],
             trial_duration=10.0,
             study_design="Three-class motor imagery (left hand, right hand, foot movement imagination) according to cue direction",
-            feedback_type="visual cue (red arrow)",
+            feedback_type="none",
             stimulus_type="visual arrow and beep",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
-            mode="online",
+            mode="offline",
             instructions="Subject sat in comfortable armchair facing computer screen. Trial started with short beep (1s preparation), followed by red arrow pointing randomly to three directions (left, right, or bottom) lasting 5s, then black screen for 4s. Subject instructed to immediately perform imagination tasks of left hand, right hand or foot movement according to cue direction, and relax during black screen.",
         ),
         documentation=DocumentationMetadata(
@@ -137,7 +131,7 @@ class Zhou2016(BaseBIDSDataset):
             ],
             institution="Anhui University",
             institution_department="School of Computer Science and Technology",
-            country="China",
+            country="CN",
             institution_address="Hefei, China",
             data_url="https://doi.org/10.6084/m9.figshare.2061654",
             publication_year=2016,
@@ -165,37 +159,19 @@ class Zhou2016(BaseBIDSDataset):
         tags=Tags(
             pathology=["Healthy"],
             modality=["Motor"],
-            type=["Motor"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw EEG available",
-            preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering", "trial rejection", "ICA"],
-            highpass_hz=8,
-            lowpass_hz=30,
-            bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 100.0},
-            notch_hz=[50],
-            filter_type="zero-phase FIR",
-            artifact_methods=["trial rejection", "ICA"],
-            re_reference="left mastoid",
-            epoch_window=[0.5, 5.0],
-            notes="Two different electrode-distributions were defined: eight-channel scheme (FP1, FP2, C3, Cz, C4, O1, Oz, O2) and nine-channel scheme (FC3, FCz, FC4, C3, Cz, C4, CP3, CPz, CP4). The one with higher classification accuracy was chosen for each subject.",
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA", "zero-training classifier"],
-            feature_extraction=[
-                "CSP",
-                "Bandpower",
-                "ERD",
-                "ERS",
-                "Covariance/Riemannian",
-                "Time-Frequency",
-                "ICA",
-            ],
+            classifiers=["zero-training classifier"],
+            feature_extraction=["CSP", "ICA"],
             frequency_bands={
-                "analyzed_range": [8.0, 30.0],
-                "mu": [10.0, 14.0],
-                "beta": [12.0, 16.0],
+                "mu_beta": [8.0, 30.0],
+                "active_S1_S2_S4": [10.0, 14.0],
+                "active_S3": [12.0, 16.0],
             },
             spatial_filters=["ICA", "CSP"],
         ),
@@ -208,8 +184,8 @@ class Zhou2016(BaseBIDSDataset):
             "ICA-T_session_transfer_success_rate": 67.0,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["vr_ar", "communication"],
-            environment="indoor laboratory",
+            applications=["motor_control"],
+            environment="laboratory",
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -222,10 +198,10 @@ class Zhou2016(BaseBIDSDataset):
             trials_context="per_run",
             n_trials_per_class={"right_hand": 25, "left_hand": 25, "feet": 25},
         ),
-        data_processed=True,
+        data_processed=False,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         """Initialize the BIDS dataset."""
         super().__init__(
             subjects=list(range(1, 5)),
@@ -237,6 +213,8 @@ class Zhou2016(BaseBIDSDataset):
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1371/journal.pone.0162657",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.zenodo_record_id = ZENODO_RECORD_ID
 

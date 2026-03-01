@@ -7,7 +7,6 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
-    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -75,10 +74,10 @@ class GrosseWentrup2009(BaseDataset):
             sampling_rate=500.0,
             n_channels=128,
             channel_types={"eeg": 128},
-            montage="10-20",
+            montage="standard_1020",
             hardware="BrainAmp",
-            reference="Car",
-            software="EEGLAB",
+            reference="Cz",
+            software=None,
             filters={"highpass_time_constant_s": 10},
             impedance_threshold_kohm=10,
             sensors=[
@@ -212,10 +211,7 @@ class GrosseWentrup2009(BaseDataset):
                 "128",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                other_physiological=["gsr"],
-            ),
-            sensor_type="Ag/AgCl",
+            sensor_type=None,
         ),
         participants=ParticipantMetadata(
             n_subjects=10,
@@ -223,7 +219,7 @@ class GrosseWentrup2009(BaseDataset):
             gender={"male": 8, "female": 2},
             age_mean=25.6,
             age_std=2.5,
-            handedness={"right": 8, "left": 2},
+            handedness={"right": 8},
             bci_experience="mixed",
             species="human",
         ),
@@ -232,12 +228,12 @@ class GrosseWentrup2009(BaseDataset):
             n_classes=2,
             class_labels=["right_hand", "left_hand"],
             trial_duration=10,
-            feedback_type="none (offline); visual cursor control (online experiment)",
+            feedback_type="none",
             stimulus_type="arrow_cue",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="both",
+            mode="offline",
             tasks=["motor_imagery"],
             task_type="motor_imagery",
             instructions="Subjects were instructed to perform haptic motor imagery of the left or the right hand during display of the arrow, as indicated by the direction of the arrow",
@@ -253,7 +249,7 @@ class GrosseWentrup2009(BaseDataset):
                 "Martin Buss",
             ],
             institution="Technische Universität München",
-            country="Germany",
+            country="DE",
             publication_year=2009,
             senior_author="Martin Buss",
             contact_info=["moritzgw@ieee.org"],
@@ -275,16 +271,14 @@ class GrosseWentrup2009(BaseDataset):
             type=["Motor"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
-            filter_type="analog high-pass",
-            highpass_hz=0.016,
+            data_state="preprocessed",
+            preprocessing_applied=True,
             artifact_methods=["none"],
             re_reference="car",
             notes="No trials were rejected and no artifact correction was performed. Data were re-referenced to common average reference offline.",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA"],
+            classifiers=["Logistic Regression"],
             feature_extraction=[
                 "CSP",
                 "Beamforming",
@@ -292,7 +286,7 @@ class GrosseWentrup2009(BaseDataset):
                 "Bandpower",
             ],
             frequency_bands={
-                "analyzed_range": [8.0, 30.0],
+                "analyzed_range": [7.0, 30.0],
             },
             spatial_filters=["CSP", "Beamforming", "Laplacian"],
         ),
@@ -301,9 +295,9 @@ class GrosseWentrup2009(BaseDataset):
             cv_method="bootstrapping",
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "assistive_technology"],
+            applications=["motor_control"],
             environment="shielded_room",
-            online_feedback=True,
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -317,11 +311,11 @@ class GrosseWentrup2009(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        data_processed=False,
-        file_format="mat",
+        data_processed=True,
+        file_format="set",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         self.events_id = dict(right_hand=2, left_hand=1)
         super().__init__(
             subjects=list(range(1, 11)),
@@ -331,6 +325,8 @@ class GrosseWentrup2009(BaseDataset):
             interval=[0, 7],
             paradigm="imagery",
             doi="10.1109/TBME.2008.2009768",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

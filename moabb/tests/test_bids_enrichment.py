@@ -266,7 +266,7 @@ class TestBuildSidecarEnrichment:
         assert entries["ManufacturersModelName"] == "BrainAmp"
         assert entries["SoftwareVersions"] == "BCI2000"
         assert entries["EEGPlacementScheme"] == "10-20 system"
-        assert entries["CapManufacturer"] == "Ag/AgCl"
+        assert entries["CapManufacturer"] == "n/a"
         assert entries["RecordingType"] == "continuous"
         assert entries["SoftwareFilters"] == "n/a"
 
@@ -469,20 +469,20 @@ class TestBuildSidecarEnrichment:
         assert entries["InstitutionAddress"] == "Inffeldgasse 13, 8010 Graz, Austria"
         assert entries["InstitutionalDepartmentName"] == "Institute of Neural Engineering"
 
-    def test_cap_manufacturer_fallback_to_sensor_type(self):
+    def test_cap_manufacturer_no_fallback_to_sensor_type(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
                 n_channels=22,
                 channel_types={"eeg": 22},
                 sensor_type="Ag/AgCl",
-                # cap_manufacturer is None → should fall back to sensor_type
+                # cap_manufacturer is None → should NOT fall back to sensor_type
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
         entries = _build_sidecar_enrichment(metadata)
-        assert entries["CapManufacturer"] == "Ag/AgCl"
+        assert entries["CapManufacturer"] == "n/a"
 
     def test_cap_manufacturer_overrides_sensor_type(self):
         metadata = DatasetMetadata(
@@ -499,6 +499,246 @@ class TestBuildSidecarEnrichment:
         entries = _build_sidecar_enrichment(metadata)
         # cap_manufacturer should win over sensor_type
         assert entries["CapManufacturer"] == "EasyCap"
+
+    def test_acq_filters_fallback_string(self):
+        """acq.filters used as HardwareFilters when prep filters are absent."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                filters="0.1-100 Hz bandpass",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["HardwareFilters"] == "0.1-100 Hz bandpass"
+
+    def test_acq_filters_fallback_dict(self):
+        """acq.filters dict used as HardwareFilters when prep filters are absent."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                filters={"bandpass": [0.1, 100]},
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["HardwareFilters"] == {"bandpass": [0.1, 100]}
+
+    def test_acq_filters_not_used_when_prep_filters_present(self):
+        """prep filters take priority over acq.filters."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                filters="0.1-100 Hz bandpass",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(highpass_hz=0.5, lowpass_hz=40.0),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        # Should be the dict from prep, not the string from acq
+        assert isinstance(entries["HardwareFilters"], dict)
+        assert entries["HardwareFilters"]["Bandpass"]["LowCutoffFrequency"] == 0.5
+
+    def test_filter_type_and_order_in_bandpass(self):
+        """filter_type and filter_order enrich HardwareFilters Bandpass."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(
+                bandpass=[0.5, 100.0],
+                filter_type="butterworth",
+                filter_order=4,
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        bp = entries["HardwareFilters"]["Bandpass"]
+        assert bp["Type"] == "butterworth"
+        assert bp["Order"] == 4
+
+    def test_re_reference_fallback(self):
+        """prep.re_reference used as EEGReference when acq.reference absent."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(re_reference="average"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["EEGReference"] == "average"
+
+    def test_re_reference_not_used_when_acq_reference_set(self):
+        """acq.reference takes priority over prep.re_reference."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                reference="left mastoid",
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(re_reference="average"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["EEGReference"] == "left mastoid"
+
+    def test_preprocessing_steps_software_filters(self):
+        """prep.preprocessing_steps builds SoftwareFilters dict."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            preprocessing=PreprocessingMetadata(
+                preprocessing_steps=["bandpass filter", "ICA", "epoching"],
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["SoftwareFilters"] == {
+            "preprocessing_steps": {"Description": "bandpass filter, ICA, epoching"}
+        }
+
+    def test_impedance_threshold_scalar(self):
+        """acq.impedance_threshold_kohm scalar sets SubjectArtefactDescription."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                impedance_threshold_kohm=20,
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["SubjectArtefactDescription"] == "Impedance kept below 20 kOhm"
+
+    def test_impedance_threshold_dict(self):
+        """acq.impedance_threshold_kohm dict sets SubjectArtefactDescription."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256,
+                n_channels=22,
+                channel_types={"eeg": 22},
+                impedance_threshold_kohm={"eeg": 20, "emg": 50},
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        desc = entries["SubjectArtefactDescription"]
+        assert "eeg: 20 kOhm" in desc
+        assert "emg: 50 kOhm" in desc
+        assert desc.startswith("Impedance kept below ")
+
+    def test_task_description_with_timing(self):
+        """TaskDescription enriched with trial timing info."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(
+                paradigm="imagery",
+                study_design="Four-class motor imagery",
+                trial_duration=3.0,
+            ),
+            paradigm_specific=ParadigmSpecificMetadata(
+                cue_duration_s=1.0,
+                imagery_duration_s=3.0,
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        desc = entries["TaskDescription"]
+        assert desc.startswith("Four-class motor imagery")
+        assert "Trial duration: 3.0s" in desc
+        assert "cue: 1.0s" in desc
+        assert "imagery: 3.0s" in desc
+
+    def test_task_description_with_task_type(self):
+        """TaskDescription prepended with task_type."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(
+                paradigm="imagery",
+                study_design="Motor imagery BCI",
+                task_type="left_right_hand",
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["TaskDescription"] == "[left_right_hand] Motor imagery BCI"
+
+    def test_task_description_with_ssvep_timing(self):
+        """TaskDescription with SSVEP stimulus frequencies."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(
+                paradigm="ssvep",
+                study_design="SSVEP BCI experiment",
+            ),
+            paradigm_specific=ParadigmSpecificMetadata(
+                stimulus_frequencies_hz=[8.0, 10.0, 12.0],
+                isi_ms=500.0,
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        desc = entries["TaskDescription"]
+        assert "ISI: 500.0ms" in desc
+        assert "stimulus frequencies: [8.0, 10.0, 12.0] Hz" in desc
+
+    def test_country_fallback_for_institution_address(self):
+        """doc.country used as InstitutionAddress when address is absent."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                institution="TU Graz",
+                country="Austria",
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["InstitutionAddress"] == "Austria"
+
+    def test_country_not_used_when_address_present(self):
+        """doc.institution_address takes priority over doc.country."""
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                institution="TU Graz",
+                institution_address="Inffeldgasse 13, 8010 Graz, Austria",
+                country="Austria",
+            ),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["InstitutionAddress"] == "Inffeldgasse 13, 8010 Graz, Austria"
 
 
 # ============================================================
@@ -588,6 +828,55 @@ class TestBuildDatasetDescriptionKwargs:
         assert kwargs["acknowledgements"] == "Thanks to all participants."
         assert kwargs["how_to_acknowledge"] == "Please cite doi:10.1234/foo."
         assert kwargs["ethics_approvals"] == ["IRB-2020-001", "EC-2020-042"]
+
+    def test_source_datasets_with_url(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                publication_year=2019,
+                data_url="https://example.com/data",
+            ),
+        )
+        ds = self._make_dataset(metadata=metadata)
+        kwargs = _build_dataset_description_kwargs(ds)
+        sd = kwargs["source_datasets"][0]
+        # PublicationYear is now written by _update_dataset_description_extra,
+        # not included in source_datasets (mne_bids rejects unknown keys).
+        assert "PublicationYear" not in sd
+        assert sd["URL"] == "https://example.com/data"
+        assert sd["DOI"] == "10.1234/test"
+
+    def test_publication_year_not_in_source_datasets(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(publication_year=2021),
+        )
+        ds = self._make_dataset(metadata=metadata)
+        kwargs = _build_dataset_description_kwargs(ds)
+        # No URL means source_datasets stays as default (DOI only)
+        assert kwargs["source_datasets"] == [dict(DOI="10.1234/test")]
+
+    def test_no_publication_year_no_url_keeps_default(self):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(license="MIT"),
+        )
+        ds = self._make_dataset(metadata=metadata)
+        kwargs = _build_dataset_description_kwargs(ds)
+        # source_datasets should remain the default (DOI only)
+        assert kwargs["source_datasets"] == [dict(DOI="10.1234/test")]
 
 
 # ============================================================
@@ -1025,6 +1314,99 @@ class TestUpdateDatasetDescriptionExtra:
         )
         # Should not crash
         _update_dataset_description_extra(tmp_path, metadata)
+
+    def test_bci_applications_merged_into_keywords(self, tmp_path):
+        desc_path = tmp_path / "dataset_description.json"
+        with open(desc_path, "w") as f:
+            json.dump({"Name": "Test"}, f)
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            tags=Tags(
+                pathology=["healthy"],
+                modality=["motor"],
+                type=["imagery"],
+            ),
+            bci_application=BCIApplicationMetadata(
+                applications=["speller", "wheelchair"],
+            ),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        with open(desc_path) as f:
+            desc = json.load(f)
+        assert "speller" in desc["Keywords"]
+        assert "wheelchair" in desc["Keywords"]
+        assert "healthy" in desc["Keywords"]
+        assert "motor" in desc["Keywords"]
+
+    def test_bci_applications_not_merged_when_explicit_keywords(self, tmp_path):
+        desc_path = tmp_path / "dataset_description.json"
+        with open(desc_path, "w") as f:
+            json.dump({"Name": "Test"}, f)
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(keywords=["BCI", "EEG"]),
+            bci_application=BCIApplicationMetadata(
+                applications=["speller"],
+            ),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        with open(desc_path) as f:
+            desc = json.load(f)
+        assert desc["Keywords"] == ["BCI", "EEG"]
+        assert "speller" not in desc["Keywords"]
+
+    def test_publication_year_added(self, tmp_path):
+        desc_path = tmp_path / "dataset_description.json"
+        with open(desc_path, "w") as f:
+            json.dump({"Name": "Test"}, f)
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(
+                publication_year=2021,
+                keywords=["BCI"],
+            ),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        with open(desc_path) as f:
+            desc = json.load(f)
+        assert desc["PublicationYear"] == 2021
+
+    def test_publication_year_not_overwritten(self, tmp_path):
+        desc_path = tmp_path / "dataset_description.json"
+        with open(desc_path, "w") as f:
+            json.dump({"Name": "Test", "PublicationYear": 2019}, f)
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(publication_year=2021),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        with open(desc_path) as f:
+            desc = json.load(f)
+        assert desc["PublicationYear"] == 2019
 
 
 # ============================================================

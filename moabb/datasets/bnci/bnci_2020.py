@@ -530,7 +530,7 @@ class BNCI2020_001(BNCIBaseDataset):
         methodology="Study participants performed self-initiated reach-and-grasp actions. They were instructed to rest their right hand on a sensorized base position positioned in front of them. On the table, we placed an empty jar and a jar with a spoon stuck in it. Both objects were in a comfortable reaching distance equidistant to the study participants' right hand. Participants were instructed to perform reach-and-grasp actions using their right hand towards the objects placed on the table. In case of the empty jar they grasped the objects using a palmar grasp. In case of the spoon, they were instructed to grasp the spoon with a lateral grasp. Though participants performed the tasks in a self-initiated manner, we instructed them to focus their gaze on the designated object for 2 s before initiating the reach-and-grasp action. Once they completed the grasp, they held the object for at least 1–2 s. When they returned their hand to the starting position, a small insert on a screen showed them the number of grasps they had already performed on the designated object. Participants paused at least for 4 s before starting a new trial (inter trial interval). 80 trials per condition were distributed over 4 runs of 20 trials each. After each run, the position of the objects presented on the table was switched. Rest recordings (3 min) were performed at the start, after the second movement run (at half time) and at the end of the experiment, where participants were tasked to focus their gaze on a fixation point in the middle of the table.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, TOTAL_SUBJECTS_001 + 1)),
             sessions_per_subject=1,
@@ -541,6 +541,8 @@ class BNCI2020_001(BNCIBaseDataset):
             doi="10.3389/fnins.2020.00849",
             load_fn=_load_data_001_2020,
             base_url=BNCI_URL,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -1030,7 +1032,7 @@ class BNCI2020_002(BNCIBaseDataset):
         data_processed=False,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 19)),
             sessions_per_subject=1,
@@ -1041,4 +1043,6 @@ class BNCI2020_002(BNCIBaseDataset):
             doi="10.3389/fnins.2020.591777",
             load_fn=_load_data_002_2020,
             base_url=BNCI_URL,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )

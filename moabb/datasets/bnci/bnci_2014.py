@@ -459,7 +459,7 @@ class BNCI2014_001(MNEBNCI):
         runs_per_session=6,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -468,6 +468,8 @@ class BNCI2014_001(MNEBNCI):
             interval=[2, 6],
             paradigm="imagery",
             doi="10.3389/fnins.2012.00055",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -679,7 +681,7 @@ class BNCI2014_002(MNEBNCI):
         data_processed=True,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
@@ -688,6 +690,8 @@ class BNCI2014_002(MNEBNCI):
             interval=[3, 8],
             paradigm="imagery",
             doi="10.1007/s00500-012-0895-4",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -747,12 +751,12 @@ class BNCI2014_004(MNEBNCI):
             sampling_rate=250.0,
             n_channels=3,
             channel_types={"eeg": 3, "eog": 3},
-            montage="bipolar",
-            hardware="BrainAmp",
-            sensor_type="Ag/AgCl",
+            montage="standard_1020",
+            hardware="g.tec",
+            sensor_type="EEG",
             reference="left mastoid",
-            ground="right mastoid",
-            software="rtsBCI",
+            ground="Fz",
+            software="rtsBCI (MATLAB/Simulink)",
             filters="0.5-100 Hz bandpass, 50 Hz notch",
             sensors=[
                 "C3",
@@ -768,21 +772,21 @@ class BNCI2014_004(MNEBNCI):
                 has_eog=True,
                 eog_channels=3,
                 eog_type=["horizontal", "vertical", "radial"],
-                has_emg=True,
-                emg_channels=4,
+                has_emg=False,
+                emg_channels=None,
                 other_physiological=None,
             ),
             cap_manufacturer="Easycap",
             cap_model=None,
-            electrode_type="Ag/AgCl",
+            electrode_type=None,
             electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
             n_subjects=9,
             health_status="healthy",
-            gender={"male": 6, "female": 4},
-            age_mean=None,
-            age_std=None,
+            gender=None,
+            age_mean=24.7,
+            age_std=3.3,
             age_min=None,
             age_max=None,
             ages=None,
@@ -818,12 +822,12 @@ class BNCI2014_004(MNEBNCI):
             tasks=["left_hand_imagery", "right_hand_imagery"],
             study_design="Two-class motor imagery: left hand and right hand. Screening sessions (01T, 02T) without feedback, feedback sessions (03T, 04E, 05E) with smiley feedback.",
             study_domain="brain-computer interface",
-            feedback_type="smiley_visual",
+            feedback_type="visual",
             stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="cue_based",
-            mode="mixed",
+            mode="both",
             has_training_test_split=True,
             instructions="Subjects selected their best motor imagery strategy (e.g., squeezing a ball or pulling a brake) and performed kinesthetic motor imagery of left or right hand movements.",
             cog_atlas_id=None,
@@ -833,7 +837,7 @@ class BNCI2014_004(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2007.906956",
-            description="BCI Competition 2008 - Graz data set B: Two-class motor imagery dataset with screening (no feedback) and feedback sessions. Subjects navigated through a virtual apartment using left/right hand motor imagery.",
+            description="BCI Competition 2008 - Graz data set B: Two-class motor imagery dataset (left/right hand) with screening sessions (no feedback) and smiley feedback sessions. 9 subjects, 3 bipolar EEG channels (C3, Cz, C4) + 3 EOG channels, 250 Hz.",
             investigators=[
                 "R. Leeb",
                 "C. Brunner",
@@ -846,23 +850,21 @@ class BNCI2014_004(MNEBNCI):
                 "H. Bischof",
             ],
             institution="Graz University of Technology",
-            country="Austria",
+            country="AT",
             repository="BNCI Horizon",
             data_url="http://biosig.sourceforge.net/",
             license="CC-BY-ND-4.0",
             publication_year=2007,
             senior_author="G. Pfurtscheller",
-            institution_department="Institute for Knowledge Discovery, Institute for Human-Computer Interfaces",
+            institution_department="Institute for Knowledge Discovery",
             keywords=[
                 "brain-computer interface",
                 "BCI",
                 "electroencephalogram",
                 "EEG",
-                "motivation",
                 "motor imagery",
-                "navigation",
-                "virtual environment",
-                "virtual reality",
+                "BCI competition",
+                "smiley feedback",
             ],
         ),
         sessions_per_subject=5,
@@ -882,7 +884,6 @@ class BNCI2014_004(MNEBNCI):
             preprocessing_steps=[
                 "bandpass filtering",
                 "notch filtering",
-                "EOG artifact correction",
             ],
             highpass_hz=0.5,
             lowpass_hz=100.0,
@@ -890,11 +891,11 @@ class BNCI2014_004(MNEBNCI):
             notch_hz=[50.0],
             filter_type="analog",
             filter_order=None,
-            artifact_methods=["linear regression EOG correction", "trial rejection"],
+            artifact_methods=None,
             re_reference=None,
             downsampled_to_hz=None,
             epoch_window=None,
-            notes="EOG artifact correction using linear regression. Artifact trials marked with event type 1023.",
+            notes="Online bandpass (0.5-100 Hz) and notch (50 Hz) filters applied during recording. Artifact trials marked with event type 1023. EOG channels provided for user-applied artifact correction.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
@@ -909,7 +910,7 @@ class BNCI2014_004(MNEBNCI):
         ),
         performance={},
         bci_application=BCIApplicationMetadata(
-            applications=["virtual_environment_navigation", "communication"],
+            applications=["motor_control"],
             environment="laboratory",
             online_feedback=True,
         ),
@@ -928,17 +929,17 @@ class BNCI2014_004(MNEBNCI):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"screening": 120, "feedback": 80},
+            n_trials={"screening": 120, "feedback": 160},
             n_trials_per_class=None,
             n_blocks=None,
             block_duration_s=None,
             trials_context="per session",
         ),
-        abstract="This data set consists of EEG data from 9 subjects of a study on motor imagery based BCI. Subjects performed two-class motor imagery (left hand vs right hand) in screening sessions without feedback and feedback sessions with smiley feedback. The goal was to enable subjects to navigate freely through a virtual apartment.",
-        methodology="Subjects performed kinesthetic motor imagery of left or right hand movements. Two screening sessions (01T, 02T) without feedback (6 runs with 10 trials each = 120 trials per session). Three feedback sessions (03T, 04E, 05E) with smiley feedback (4 runs with 20 trials each = 80 trials per session). Trials started with fixation cross and beep, followed by arrow cue (1.25s), then imagery period (4s for screening, 4.5s for feedback). Three bipolar EEG channels (C3, Cz, C4) were recorded at 250 Hz with 0.5-100 Hz bandpass and 50 Hz notch filter. EOG correction using linear regression. Features: Bandpower in specific frequency bands. Classifier: LDA with 10x10 cross-validation.",
+        abstract="BCI Competition 2008 Graz data set B. EEG data from 9 subjects performing two-class motor imagery (left hand vs right hand). Two screening sessions without feedback (120 trials each) and three feedback sessions with smiley feedback (160 trials each). Three bipolar EEG channels (C3, Cz, C4) and three EOG channels recorded at 250 Hz.",
+        methodology="Subjects performed kinesthetic motor imagery of left or right hand movements. Two screening sessions (01T, 02T) without feedback: 6 runs x 20 trials = 120 trials per session. Three feedback sessions (03T, 04E, 05E) with smiley feedback: 4 runs x 40 trials (20 per class) = 160 trials per session. Screening trials: fixation cross + beep at t=0, arrow cue at ~t=2 for 1.25s, imagery for 4s, break. Feedback trials: smiley at t=0, beep at t=2, cue from t=3 to t=7.5 with continuous smiley feedback. Three bipolar EEG channels (C3, Cz, C4) plus three monopolar EOG channels recorded at 250 Hz with 0.5-100 Hz bandpass and 50 Hz notch filter. EEG ground at Fz, EOG reference at left mastoid. Amplifier: g.tec. Software: rtsBCI (MATLAB/Simulink).",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
@@ -947,6 +948,8 @@ class BNCI2014_004(MNEBNCI):
             interval=[3, 7.5],
             paradigm="imagery",
             doi="10.1109/TNSRE.2007.906956",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -1137,7 +1140,7 @@ class BNCI2014_008(MNEBNCI):
         runs_per_session=1,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
@@ -1146,6 +1149,8 @@ class BNCI2014_008(MNEBNCI):
             interval=[0, 1.0],
             paradigm="p300",
             doi="10.3389/fnhum.2013.00732",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -1345,7 +1350,7 @@ class BNCI2014_009(MNEBNCI):
         methodology="Ten healthy subjects (10 female, mean age = 26.8 ± 5.6) with previous experience with P300-based BCIs attended 4 recording sessions. Scalp EEG potentials were measured using 16 Ag/AgCl electrodes arranged on an elastic cap per the 10-10 standard. Each electrode was referenced to the linked earlobes and grounded to the right mastoid. The EEG was acquired using a g.USBamp amplifier (g.Tec, Austria), digitized at 256 Hz, high pass- and low pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively. The electrode impedance did not exceed 10 kΩ. Visual stimulation, acquisition and online classification were performed with BCI2000. Each subject attended 4 recording sessions. During each session, the subject performed three runs with each of the stimulation interfaces. Each trial consisted of eight stimulation sequences, and thus, 16 intensifications of the target character. Each stimulus was intensified for 125 ms, with an inter stimulus interval (ISI) of 125 ms, yielding a 250 ms lag between the appearance of two stimuli (SOA). Pseudorandom stimulation sequences were assembled so that each target intensification would not occur within 500 ms after the previous one to avoid the attentional blink phenomenon.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=3,
@@ -1354,4 +1359,6 @@ class BNCI2014_009(MNEBNCI):
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1088/1741-2560/11/3/035008",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )

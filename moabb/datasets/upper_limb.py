@@ -19,6 +19,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 from . import download as dl
 
@@ -77,10 +78,10 @@ class Ofner2017(BaseDataset):
             n_channels=61,
             channel_types={"eeg": 61, "eog": 3, "misc": 32},
             hardware="g.tec medical engineering GmbH",
-            sensor_type="active electrodes",
+            sensor_type="active",
             reference="right mastoid",
             ground="AFz",
-            software="EEGLAB",
+            software=None,
             filters="0.01-200 Hz bandpass (8th order Chebyshev), 50 Hz notch",
             sensors=[
                 "C1",
@@ -184,10 +185,7 @@ class Ofner2017(BaseDataset):
             montage="standard_1005",
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_emg=False,
-                other_physiological=[
-                    "exoskeleton_joint_angles",
-                    "data_glove_finger_positions",
-                ],
+                other_physiological=None,
             ),
         ),
         participants=ParticipantMetadata(
@@ -222,14 +220,14 @@ class Ofner2017(BaseDataset):
                 "hand_close",
                 "rest",
             ],
-            trial_duration=17.0,
+            trial_duration=None,
             study_design="Trial-based paradigm with sustained movements/motor imagery. Each trial: fixation cross at 0s, cue presentation at 2s, sustained movement/MI execution. Subjects performed both movement execution (ME) and motor imagery (MI) in separate sessions.",
-            feedback_type="visual cues on computer screen",
+            feedback_type="none",
             stimulus_type="visual cue",
             synchronicity="synchronous",
-            mode="both",
+            mode="offline",
             instructions="Subjects were instructed to execute sustained movements in ME session and perform kinesthetic motor imagery in MI session. For rest class, subjects were instructed to avoid any movement and to stay in the starting position.",
-            stimulus_presentation={"fixation_onset_s": "0", "cue_onset_s": "2"},
+            stimulus_presentation=None,
             has_training_test_split=False,
         ),
         documentation=DocumentationMetadata(
@@ -245,7 +243,7 @@ class Ofner2017(BaseDataset):
             contact_info=["gernot.mueller@tugraz.at"],
             institution="Graz University of Technology",
             institution_department="Institute of Neural Engineering, BCI-Lab",
-            country="Austria",
+            country="AT",
             publication_year=2017,
             funding=[
                 "H2020-643955 MoreGrasp",
@@ -280,28 +278,10 @@ class Ofner2017(BaseDataset):
             type=["Motor Imagery", "Motor Execution"],
         ),
         preprocessing=PreprocessingMetadata(
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Noisy channel detection and removal (joint probability)",
-                "Downsampling to 256 Hz",
-                "Artifact marking (bandpass 0.3-70 Hz)",
-                "Threshold detection (-200 to 200 μV)",
-                "Abnormal joint probability detection",
-                "Abnormal kurtosis detection",
-                "Bandpass filtering 0.3-3 Hz",
-                "Common average reference",
-            ],
-            bandpass={"low_cutoff_hz": 0.3, "high_cutoff_hz": 3.0},
-            notch_hz=[50],
-            filter_type="Butterworth",
-            filter_order=4,
-            artifact_methods=["threshold detection", "joint probability", "kurtosis"],
-            re_reference="common average reference",
-            downsampled_to_hz=256.0,
-            notes="Original acquisition filter: 0.01-200 Hz (8th order Chebyshev). Preprocessing filter: 0.3-3 Hz (4th order zero-phase Butterworth).",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["sLDA", "Shrinkage LDA"],
+            classifiers=["sLDA"],
             feature_extraction=[
                 "time-domain signals",
                 "discriminative spatial patterns (DSP)",
@@ -317,14 +297,13 @@ class Ofner2017(BaseDataset):
             evaluation_type=["within-session"],
         ),
         performance={
-            "accuracy_percent": 55.0,
             "mov_vs_mov_ME": 55.0,
             "mov_vs_rest_ME": 87.0,
             "mov_vs_mov_MI": 27.0,
             "mov_vs_rest_MI": 73.0,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["neuroprosthesis", "robotic_arm", "FES"],
+            applications=["neuroprosthesis", "robotic_arm"],
             environment="laboratory",
             online_feedback=False,
         ),
@@ -358,7 +337,14 @@ class Ofner2017(BaseDataset):
         methodology="Subjects performed 6 sustained upper limb movements (elbow flexion/extension, forearm supination/pronation, hand open/close) plus rest in two separate sessions (movement execution and motor imagery). EEG was recorded from 61 channels, filtered to 0.3-3 Hz, and classified using shrinkage LDA with discriminative spatial patterns. Source localization was performed using sLORETA. Classification employed both single time-point and time-window approaches with 10x10-fold cross-validation.",
     )
 
-    def __init__(self, imagined=True, executed=False):
+    def __init__(
+        self, imagined=True, executed=True, subjects=None, sessions=None, **kwargs
+    ):
+        deprecated_renames = {"Imagined": "imagined", "Executed": "executed"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Ofner2017")
+        imagined = resolved.get("imagined", imagined)
+        executed = resolved.get("executed", executed)
+
         self.imagined = imagined
         self.executed = executed
         self.event_id = {
@@ -380,6 +366,8 @@ class Ofner2017(BaseDataset):
             interval=[0, 3],  # according to paper 2-5
             paradigm="imagery",
             doi="10.1371/journal.pone.0182578",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

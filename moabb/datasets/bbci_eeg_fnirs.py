@@ -28,6 +28,7 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import _handle_deprecated_kwargs
 
 from .base import BaseDataset
 
@@ -104,7 +105,22 @@ class BaseShin2017(BaseDataset):
         motor_imagery=True,
         mental_arithmetic=False,
         accept=False,
+        subjects=None,
+        sessions=None,
+        **kwargs,
     ):
+        deprecated_renames = {
+            "FNIRS": "fnirs",
+            "MotorImagery": "motor_imagery",
+            "MentalArithmetic": "mental_arithmetic",
+            "Accept": "accept",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "BaseShin2017")
+        fnirs = resolved.get("fnirs", fnirs)
+        motor_imagery = resolved.get("motor_imagery", motor_imagery)
+        mental_arithmetic = resolved.get("mental_arithmetic", mental_arithmetic)
+        accept = resolved.get("accept", accept)
+
         if not any([motor_imagery, mental_arithmetic]):
             raise (
                 ValueError(
@@ -134,6 +150,8 @@ class BaseShin2017(BaseDataset):
             interval=[0, 10],
             paradigm="imagery",  # no arithmetic paradigm in MOABB at the moment
             doi="10.1109/TNSRE.2016.2628057",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
         if fnirs:
@@ -314,7 +332,7 @@ class Shin2017A(BaseShin2017):
             sensor_type="active electrodes",
             reference="linked mastoids",
             ground="Fz",
-            software="MATLAB",
+            software=None,
             cap_manufacturer="EASYCAP GmbH",
             cap_model="custom-made stretchy fabric cap",
             sensors=[
@@ -361,7 +379,7 @@ class Shin2017A(BaseShin2017):
             ),
         ),
         participants=ParticipantMetadata(
-            n_subjects=30,
+            n_subjects=29,
             health_status="healthy",
             gender={"male": 14, "female": 15},
             age_mean=28.5,
@@ -376,8 +394,8 @@ class Shin2017A(BaseShin2017):
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trial_duration=10.0,
-            study_design="Dataset A: left vs right hand motor imagery (kinesthetic imagery of opening and closing hands); Dataset B: mental arithmetic (serial subtraction) vs baseline/rest",
-            feedback_type="visual",
+            study_design="Dataset A: left vs right hand motor imagery (kinesthetic imagery of opening and closing hands)",
+            feedback_type="none",
             stimulus_type="visual arrow and fixation cross",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
@@ -398,7 +416,7 @@ class Shin2017A(BaseShin2017):
                 "Klaus-Robert Müller",
             ],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             publication_year=2017,
             senior_author="Klaus-Robert Müller",
             contact_info=["h2j@kumoh.ac.kr", "klaus-robert.mueller@tuberlin.de"],
@@ -425,20 +443,20 @@ class Shin2017A(BaseShin2017):
                 "open access dataset",
             ],
             repository="GitHub",
-            data_url="https://github.com/bbci/bbci_public/",
+            data_url="http://doc.ml.tu-berlin.de/hBCI",
             license="GPL-3.0",
         ),
         sessions_per_subject=3,
         runs_per_session=1,
-        data_processed=False,
+        data_processed=True,
         file_format="MATLAB",
         tags=Tags(
             pathology=["Healthy"],
-            modality=["Visual", "Auditory"],
-            type=["Motor Imagery"],
+            modality=["Motor"],
+            type=["Imagery"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw data available",
+            data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=[
                 "common average reference",
@@ -454,8 +472,6 @@ class Shin2017A(BaseShin2017):
             artifact_methods=["ICA", "EOG rejection"],
             re_reference="car",
             downsampled_to_hz=200.0,
-            epoch_window=[-5.0, 20.0],
-            notes="Preprocessing applied for analysis only. Raw data is available.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["Shrinkage LDA"],
@@ -480,7 +496,7 @@ class Shin2017A(BaseShin2017):
             "EEG+HbR+HbO_accuracy": 74.2,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["hybrid BCI", "multimodal BCI research"],
+            applications=["motor_control"],
             environment="laboratory",
             online_feedback=False,
         ),
@@ -504,13 +520,18 @@ class Shin2017A(BaseShin2017):
         methodology="Twenty-nine right-handed and one left-handed healthy subjects participated in motor imagery and mental arithmetic tasks. EEG data was recorded at 1000 Hz using 30 active electrodes with a BrainAmp amplifier, referenced to linked mastoids. NIRS data was collected at 12.5 Hz using NIRScout with 14 sources and 16 detectors resulting in 36 channels. Three sessions were conducted for each paradigm (MI and MA). Each session included 20 trials with 10s task periods and 15-17s rest periods. For MI, subjects performed kinesthetic hand gripping imagery at 1 Hz pace. Visual instructions included arrows for MI and arithmetic problems for MA. Motion artifacts from eye/head movements were also recorded. Signal processing included CSP for spatial filtering, log-variance features, and shrinkage LDA classifier with 10x5-fold cross-validation.",
     )
 
-    def __init__(self, accept=False):
+    def __init__(self, accept=False, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"Accept": "accept"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Shin2017A")
+        accept = resolved.get("accept", accept)
         super().__init__(
             suffix="A",
             fnirs=False,
             motor_imagery=True,
             mental_arithmetic=False,
             accept=accept,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -667,7 +688,7 @@ class Shin2017B(BaseShin2017):
             cap_model="custom-made stretchy fabric cap",
         ),
         participants=ParticipantMetadata(
-            n_subjects=30,
+            n_subjects=29,
             health_status="healthy",
             gender={"male": 14, "female": 15},
             age_mean=28.5,
@@ -679,19 +700,19 @@ class Shin2017B(BaseShin2017):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=2,
-            class_labels=["left_hand", "right_hand"],
+            class_labels=["subtraction", "rest"],
             trial_duration=10.0,
-            study_design="Dataset A: left vs right hand motor imagery (kinesthetic imagery of opening and closing hands); Dataset B: mental arithmetic (serial subtraction) vs baseline/rest",
-            feedback_type="visual",
-            stimulus_type="visual instruction",
+            study_design="Dataset B: mental arithmetic (serial subtraction of one-digit number) versus baseline/rest task",
+            feedback_type="none",
+            stimulus_type="visual instruction (subtraction problem and fixation cross)",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="cued-synchronous",
             mode="offline",
             has_training_test_split=False,
-            instructions="For MI: perform kinesthetic MI (imagine opening and closing hands as grabbing a ball) at 1 Hz pace. For MA: repeatedly subtract one-digit number from result of previous subtraction",
-            events={"left_hand": 30, "right_hand": 30},
-            trials_per_class={"left_hand": 30, "right_hand": 30},
+            instructions="For the MA task, subjects memorized an initial subtraction (three-digit minus one-digit) displayed for 2s, then repeatedly subtracted the one-digit number from each result. For baseline, subjects rested with no specific thought.",
+            events={"subtraction": 3, "rest": 4},
+            trials_per_class={"subtraction": 30, "rest": 30},
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2016.2628057",
@@ -706,7 +727,7 @@ class Shin2017B(BaseShin2017):
                 "Klaus-Robert Müller",
             ],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             publication_year=2017,
             senior_author="Klaus-Robert Müller",
             contact_info=["h2j@kumoh.ac.kr", "klaus-robert.mueller@tuberlin.de"],
@@ -735,28 +756,25 @@ class Shin2017B(BaseShin2017):
                 "open access dataset",
             ],
             repository="GitHub",
-            data_url="https://github.com/bbci/bbci_public/",
+            data_url="http://doc.ml.tu-berlin.de/hBCI",
             license="GPL-3.0",
         ),
-        sessions_per_subject=6,
+        sessions_per_subject=3,
         runs_per_session=1,
         sessions=[
-            "session_1",
-            "session_2",
-            "session_3",
-            "session_4",
-            "session_5",
-            "session_6",
+            "1arithmetic",
+            "3arithmetic",
+            "5arithmetic",
         ],
         data_processed=True,
         file_format="MATLAB",
         tags=Tags(
             pathology=["Healthy"],
-            modality=["Visual", "Auditory"],
-            type=["Perception", "Imagery"],
+            modality=["Cognitive"],
+            type=["Cognitive"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="preprocessed data available",
+            data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=[
                 "common average reference",
@@ -772,41 +790,36 @@ class Shin2017B(BaseShin2017):
             artifact_methods=["EOG correction", "ICA"],
             re_reference="car",
             downsampled_to_hz=200.0,
-            epoch_window=[-5.0, 20.0],
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA", "Shrinkage LDA"],
-            feature_extraction=["CSP", "log-variance", "slope"],
+            feature_extraction=["CSP", "log-variance"],
             frequency_bands={
-                "mu": [8, 12],
-                "beta": [12, 25],
-                "analyzed_range": [8.0, 25.0],
+                "analyzed_range": [4.0, 35.0],
             },
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="10x5-fold",
-            cv_folds=50,
+            cv_folds=5,
             evaluation_type=["within_subject"],
         ),
         performance={
-            "accuracy_percent": 65.6,
-            "EEG_max_accuracy": 65.6,
-            "HbR_max_accuracy": 66.5,
-            "HbO_max_accuracy": 63.5,
-            "hybrid_EEG_HbR_HbO_accuracy": 70.0,
+            "MA_EEG_max_accuracy": 75.9,
+            "MA_HbR_max_accuracy": 80.7,
+            "MA_HbO_max_accuracy": 83.6,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "rehabilitation"],
+            applications=["hybrid_bci_research"],
             environment="laboratory",
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             n_repetitions=20,
-            imagery_tasks=["left_hand", "right_hand"],
-            imagery_duration_s=10.0,
-            cue_duration_s=2.0,
+            imagery_tasks=None,
+            imagery_duration_s=None,
+            cue_duration_s=None,
         ),
         data_structure=DataStructureMetadata(
             n_trials={
@@ -820,11 +833,16 @@ class Shin2017B(BaseShin2017):
         methodology="Thirty subjects performed 6 sessions alternating between motor imagery (dataset A: left/right hand) and mental arithmetic (dataset B: MA vs rest). Each session: 20 trials with 2s cue, 10s task, 15-17s rest. EEG recorded at 1000 Hz with 30 channels, downsampled to 200 Hz. Preprocessing: CAR, 0.5-50 Hz bandpass (4th order Chebyshev II), ICA-based EOG rejection. Feature extraction: CSP with log-variance of first/last 3 components using 3s moving window (1s step). Classification: shrinkage LDA with 10x5-fold CV. Hybrid analysis combines EEG and NIRS outputs using meta-classifier.",
     )
 
-    def __init__(self, accept=False):
+    def __init__(self, accept=False, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"Accept": "accept"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Shin2017B")
+        accept = resolved.get("accept", accept)
         super().__init__(
             suffix="B",
             fnirs=False,
             motor_imagery=False,
             mental_arithmetic=True,
+            subjects=subjects,
+            sessions=sessions,
             accept=accept,
         )

@@ -22,6 +22,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.utils import _handle_deprecated_kwargs
 
 
 Castillos2023_URL = "https://zenodo.org/records/8255618"
@@ -39,7 +40,16 @@ class BaseCastillos2023(BaseDataset):
         paradigm,
         paradigm_type,
         window_size=0.25,
+        subjects=None,
+        sessions=None,
+        **kwargs,
     ):
+        deprecated_renames = {"WindowSize": "window_size"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "BaseCastillos2023"
+        )
+        window_size = resolved.get("window_size", window_size)
+
         super().__init__(
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=sessions_per_subject,
@@ -48,6 +58,8 @@ class BaseCastillos2023(BaseDataset):
             interval=(0, window_size),
             paradigm=paradigm,
             doi="https://doi.org/10.1016/j.neuroimage.2023.120446",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.paradigm_type = paradigm_type
         self.sfreq = 500
@@ -390,7 +402,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
             reference="FCz",
             ground="FPz",
             hardware="BrainProducts LiveAmp 32",
-            software="Lab Streaming Layer",
+            software=None,
             filters={
                 "notch": {
                     "freq": 50.0,
@@ -405,7 +417,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
             auxiliary_channels=None,
             cap_manufacturer="BrainProducts",
             cap_model="Acticap",
-            electrode_type="wet",
+            electrode_type="active",
             electrode_material=None,
         ),
         participants=ParticipantMetadata(
@@ -427,15 +439,10 @@ class CastillosBurstVEP100(BaseCastillos2023):
         experiment=ExperimentMetadata(
             paradigm="cvep",
             task_type="target selection",
-            events={"burst_100": 1, "burst_40": 2, "mseq_100": 3, "mseq_40": 4},
-            n_classes=4,
-            class_labels=["burst_100", "burst_40", "mseq_100", "mseq_40"],
-            trials_per_class={
-                "burst_100": 60,
-                "burst_40": 60,
-                "mseq_100": 60,
-                "mseq_40": 60,
-            },
+            events={"0": 100, "1": 101},
+            n_classes=2,
+            class_labels=["0", "1"],
+            trials_per_class=None,
             trial_duration=2.2,
             tasks=["visual attention", "target selection"],
             study_design="factorial within-subject",
@@ -446,7 +453,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
-            has_training_test_split=True,
+            has_training_test_split=False,
             instructions="Focus on cued targets sequentially in random order",
             cog_atlas_id=None,
             cog_po_id=None,
@@ -468,10 +475,10 @@ class CastillosBurstVEP100(BaseCastillos2023):
                 "Frédéric Dehais",
             ],
             institution="Institut Supérieur de l'Aéronautique et de l'Espace (ISAE-SUPAERO)",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://zenodo.org/record/8255618",
-            license="CC BY 4.0",
+            license="CC BY",
             publication_year=2023,
             senior_author="Frédéric Dehais",
             contact_info=["kalou.cabrera-castillos@isae-supaero.fr"],
@@ -503,7 +510,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
         contributing_labs=None,
         n_contributing_labs=1,
         data_processed=False,
-        file_format="xdf",
+        file_format="EEGLAB .set",
         external_links={
             "source": "https://zenodo.org/record/8255618",
             "github": "https://github.com/neuroergoISAE/burst_codes",
@@ -514,22 +521,17 @@ class CastillosBurstVEP100(BaseCastillos2023):
             type=["reactive BCI", "c-VEP", "visual evoked potentials"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw with minimal preprocessing",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "average re-referencing",
-                "IIR notch filter (49.9-50.1 Hz)",
-                "epoching (0-2.2s)",
-                "baseline removal",
-            ],
-            notch_hz=50.0,
-            filter_type="IIR cut-band",
-            filter_order=16,
+            data_state="raw",
+            preprocessing_applied=None,
+            preprocessing_steps=None,
+            notch_hz=None,
+            filter_type=None,
+            filter_order=None,
             artifact_methods=None,
-            re_reference="average",
+            re_reference=None,
             downsampled_to_hz=None,
-            epoch_window=[0.0, 2.2],
-            notes="Electrodes analyzed: O1, O2, Oz, Pz, P3, P4, P8, P9. For VEP analysis: bandpass 0.1-40 Hz (FIR, order 16501), epochs -0.5 to 1s",
+            epoch_window=None,
+            notes=None,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["Convolutional Neural Network (CNN)", "Pearson correlation"],
@@ -561,11 +563,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
             "mseq_100_accuracy": 85.0,
         },
         bci_application=BCIApplicationMetadata(
-            applications=[
-                "reactive BCI",
-                "target selection",
-                "potential speller interface",
-            ],
+            applications=["reactive BCI"],
             environment="controlled laboratory",
             online_feedback=False,
         ),
@@ -573,33 +571,33 @@ class CastillosBurstVEP100(BaseCastillos2023):
             detected_paradigm="cvep",
             stimulus_frequencies_hz=None,
             frequency_resolution_hz=None,
-            code_type="burst and m-sequence",
-            code_length=132,
+            code_type="burst",
+            code_length=None,
             n_targets=4,
-            n_repetitions=15,
-            isi_ms=700.0,
+            n_repetitions=None,
+            isi_ms=None,
             soa_ms=None,
             imagery_tasks=None,
             cue_duration_s=0.5,
             imagery_duration_s=None,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=240,
-            n_trials_per_class={
-                "burst_100": 60,
-                "burst_40": 60,
-                "mseq_100": 60,
-                "mseq_40": 60,
-            },
+            n_trials=60,
+            n_trials_per_class=None,
             n_blocks=15,
             block_duration_s=None,
-            trials_context="15 blocks × 4 trials per condition (burst/mseq × 100%/40%)",
+            trials_context="15 blocks x 4 trials per block = 60 trials per subject for burst c-VEP at 100% amplitude",
         ),
         abstract="The utilization of aperiodic flickering visual stimuli under the form of code-modulated Visual Evoked Potentials (c-VEP) represents a pivotal advancement in the field of reactive Brain–Computer Interface (rBCI). This study introduces Burst c-VEP, an innovative variant involving short bursts of aperiodic visual flashes at 2-4 flashes per second. The proposed burst c-VEP sequences exhibited higher accuracy (90.5%-95.6%) compared to m-sequence counterparts (71.4%-85.0%) with mean selection time of 1.5s. Reducing stimulus intensity to 40% amplitude depth only slightly decreased accuracy to 94.2% while substantially improving user experience. The collected dataset and CNN architecture implementation are shared through open-access repositories.",
         methodology="Twelve healthy participants completed an offline 4-class c-VEP protocol using a factorial design. EEG was recorded at 500 Hz using BrainProducts LiveAmp 32-channel system. Participants focused on cued targets with factorial manipulation of pattern type (burst vs m-sequence) and amplitude depth (100% vs 40%). Visual stimuli were presented on a 60 Hz Dell monitor. Burst codes consisted of brief flashes (~50ms) with minimum 200ms inter-burst interval, while m-sequences used Fibonacci-type LFSR with segmented 132-frame subsequences. A CNN architecture with spatial (8x1, 16 filters), temporal (1x32, 8 filters), and 2D convolution (5x5, 4 filters) layers decoded EEG using 250ms sliding windows with 2ms stride. Calibration data ranged from 1-6 blocks (8.8-52.8s). Classification used sequential train/test splits with Pearson correlation for target selection. VEP analysis examined amplitude, latency, and inter-trial coherence. Statistical analyses used 2×2 repeated measures ANOVA.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"WindowSize": "window_size"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
+        window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -607,6 +605,8 @@ class CastillosBurstVEP100(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="burst100",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -697,8 +697,8 @@ class CastillosBurstVEP40(BaseCastillos2023):
             sensor_type="eeg",
             reference="FCz",
             ground="FPz",
-            hardware="BrainProduct LiveAmp 32 active electrodes wet-EEG setup",
-            software="Python with Psychopy toolbox, Lab Streaming Layer",
+            hardware="BrainProducts LiveAmp 32",
+            software=None,
             filters={
                 "line_noise": "IIR cut-band filter between 49.9 and 50.1 Hz of order 16"
             },
@@ -706,9 +706,9 @@ class CastillosBurstVEP40(BaseCastillos2023):
             montage="standard_1020",
             impedance_threshold_kohm=25.0,
             auxiliary_channels=None,
-            cap_manufacturer="BrainProduct",
+            cap_manufacturer="BrainProducts",
             cap_model="Acticap",
-            electrode_type="wet",
+            electrode_type="active",
             electrode_material=None,
         ),
         participants=ParticipantMetadata(
@@ -730,25 +730,20 @@ class CastillosBurstVEP40(BaseCastillos2023):
         experiment=ExperimentMetadata(
             paradigm="cvep",
             task_type="reactive BCI",
-            events={"target_1": 1, "target_2": 2, "target_3": 3, "target_4": 4},
-            n_classes=4,
-            class_labels=["target_1", "target_2", "target_3", "target_4"],
-            trials_per_class={
-                "target_1": 60,
-                "target_2": 60,
-                "target_3": 60,
-                "target_4": 60,
-            },
+            events={"0": 100, "1": 101},
+            n_classes=2,
+            class_labels=["0", "1"],
+            trials_per_class=None,
             trial_duration=2.2,
             tasks=["attend to cued target"],
             study_design="factorial design",
             study_domain="brain-computer interface",
-            feedback_type=None,
+            feedback_type="none",
             stimulus_type="aperiodic visual flashes",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="cued",
+            mode="offline",
             has_training_test_split=False,
             instructions="Participants were instructed to focus on c-VEP targets cued sequentially",
             cog_atlas_id=None,
@@ -768,7 +763,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
                 "Frédéric Dehais",
             ],
             institution="Institut Supérieur de l'Aéronautique et de l'Espace (ISAE-SUPAERO)",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://zenodo.org/record/8255618",
             license="CC BY",
@@ -796,13 +791,10 @@ class CastillosBurstVEP40(BaseCastillos2023):
         sessions_per_subject=1,
         runs_per_session=1,
         sessions=None,
-        contributing_labs=[
-            "ISAE-SUPAERO Human Factors and Neuroergonomics",
-            "Drexel University Biomedical Engineering",
-        ],
-        n_contributing_labs=2,
+        contributing_labs=None,
+        n_contributing_labs=1,
         data_processed=False,
-        file_format="xdf",
+        file_format="EEGLAB .set",
         external_links={
             "source": "https://zenodo.org/record/8255618",
         },
@@ -812,22 +804,17 @@ class CastillosBurstVEP40(BaseCastillos2023):
             type=["reactive BCI", "c-VEP"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw with minimal preprocessing",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Average re-referencing",
-                "IIR cut-band filter for line noise removal",
-                "Epoching from 0 to 2.2s around flicker onset",
-                "Baseline removal",
-            ],
-            notch_hz=50.0,
-            filter_type="IIR cut-band",
-            filter_order=16,
+            data_state="raw",
+            preprocessing_applied=None,
+            preprocessing_steps=None,
+            notch_hz=None,
+            filter_type=None,
+            filter_order=None,
             artifact_methods=None,
-            re_reference="average",
+            re_reference=None,
             downsampled_to_hz=None,
-            epoch_window=[0.0, 2.2],
-            notes="Analysis conducted on subset of electrodes: O1, O2, Oz, Pz, P3, P4, P8, P9",
+            epoch_window=None,
+            notes=None,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["CNN", "Convolutional Neural Network"],
@@ -858,33 +845,33 @@ class CastillosBurstVEP40(BaseCastillos2023):
             detected_paradigm="cvep",
             stimulus_frequencies_hz=[2.0, 3.0, 4.0],
             frequency_resolution_hz=None,
-            code_type="Burst c-VEP and m-sequence",
+            code_type="burst",
             code_length=None,
             n_targets=4,
             n_repetitions=None,
-            isi_ms=700.0,
+            isi_ms=None,
             soa_ms=None,
             imagery_tasks=None,
             cue_duration_s=0.5,
             imagery_duration_s=None,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=240,
-            n_trials_per_class={
-                "target_1": 60,
-                "target_2": 60,
-                "target_3": 60,
-                "target_4": 60,
-            },
+            n_trials=60,
+            n_trials_per_class=None,
             n_blocks=15,
             block_duration_s=None,
-            trials_context="15 blocks of 4 trials for each of 4 conditions (burst or m-sequence × 40% or 100%)",
+            trials_context="15 blocks x 4 trials per block = 60 trials per subject for burst c-VEP at 40% amplitude",
         ),
         abstract="The utilization of aperiodic flickering visual stimuli under the form of code-modulated Visual Evoked Potentials (c-VEP) represents a pivotal advancement in the field of reactive Brain–Computer Interface (rBCI). A major advantage of the c-VEP approach is that the training of the model is independent of the number and complexity of targets, which helps reduce calibration time. Nevertheless, the existing designs of c-VEP stimuli can be further improved in terms of visual user experience but also to achieve a higher signal-to-noise ratio, while shortening the selection time and calibration process. In this study, we introduce an innovative variant of code-VEP, referred to as 'Burst c-VEP'. This original approach involves the presentation of short bursts of aperiodic visual flashes at a deliberately slow rate, typically ranging from two to four flashes per second. The rationale behind this design is to leverage the sensitivity of the primary visual cortex to transient changes in low-level stimuli features to reliably elicit distinctive series of visual evoked potentials. In comparison to other types of faster-paced code sequences, burst c-VEP exhibit favorable properties to achieve high bitwise decoding performance using convolutional neural networks (CNN), which yields potential to attain faster selection time with the need for less calibration data. Furthermore, our investigation focuses on reducing the perceptual saliency of c-VEP through the attenuation of visual stimuli contrast and intensity to significantly improve users' visual comfort. The proposed solutions were tested through an offline 4-classes c-VEP protocol involving 12 participants. Following a factorial design, participants were instructed to focus on c-VEP targets whose pattern (burst and maximum-length sequences) and amplitude (100% or 40% amplitude depth modulations) were manipulated across experimental conditions. Firstly, the full amplitude burst c-VEP sequences exhibited higher accuracy, ranging from 90.5% (with 17.6 s of calibration data) to 95.6% (with 52.8 s of calibration data), compared to its m-sequence counterpart (71.4% to 85.0%). The mean selection time for both types of codes (1.5 s) compared favorably to reports from previous studies. Secondly, our findings revealed that lowering the intensity of the stimuli only slightly decreased the accuracy of the burst code sequences to 94.2% while leading to substantial improvements in terms of user experience. Taken together, these results demonstrate the high potential of the proposed burst codes to advance reactive BCI both in terms of performance and usability. The collected dataset, along with the proposed CNN architecture implementation, are shared through open-access repositories.",
         methodology="Factorial experimental design with 12 participants. Four conditions: burst or m-sequence codes × 100% or 40% amplitude depth. Participants attended to cued targets presented as aperiodic visual flashes. Burst codes: 50ms flashes at 2-4 Hz with 200ms minimum inter-burst interval. M-sequences: pseudo-random binary sequences at ~10 Hz. EEG recorded at 500 Hz using 32-channel BrainProduct LiveAmp. Analysis on occipital/parietal electrodes. CNN-based bitwise decoding (improved EEG2Code architecture). Each participant completed 15 blocks of 4 trials per condition (60 trials per class, 240 total trials). Trial structure: 700ms ITI, 500ms cue, 2200ms stimulation. Display: Dell P2419HC 60Hz LCD. Luminance: medium grey background (124 lux), 100% condition (168 lux), 40% condition (142 lux). Preprocessing: average re-reference, 50Hz notch filter (IIR order 16), epoching 0-2.2s, baseline removal. Subjective assessments of visual comfort, tiredness, and intrusiveness collected.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"WindowSize": "window_size"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
+        window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -892,6 +879,8 @@ class CastillosBurstVEP40(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="burst40",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -982,17 +971,14 @@ class CastillosCVEP100(BaseCastillos2023):
             reference="FCz",
             ground="FPz",
             hardware="BrainProducts LiveAmp",
-            software="PsychoPy",
-            filters={
-                "notch": "49.9-50.1 Hz (IIR order 16)",
-                "bandpass": "0.1-40 Hz (FIR, order 16501)",
-            },
+            software=None,
+            filters=None,
             line_freq=50.0,
             montage="standard_1020",
             impedance_threshold_kohm=25.0,
             cap_manufacturer="BrainProducts",
             cap_model="Acticap",
-            electrode_type="active wet electrodes",
+            electrode_type="active",
         ),
         participants=ParticipantMetadata(
             n_subjects=12,
@@ -1006,7 +992,7 @@ class CastillosCVEP100(BaseCastillos2023):
             paradigm="cvep",
             task_type="visual attention",
             events={"0": 100, "1": 101},
-            n_classes=4,
+            n_classes=2,
             class_labels=["target_1", "target_2", "target_3", "target_4"],
             trial_duration=2.2,
             study_design="factorial design (code type × amplitude depth)",
@@ -1016,8 +1002,8 @@ class CastillosCVEP100(BaseCastillos2023):
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="cued reactive",
-            has_training_test_split=True,
+            mode="offline",
+            has_training_test_split=False,
             instructions="focus on four targets that were cued sequentially in a random order for 0.5 s, followed by a 2.2 s stimulation phase, before a 0.7 s inter-trial period",
             stimulus_presentation={
                 "display": "Dell P2419HC LCD monitor",
@@ -1043,7 +1029,7 @@ class CastillosCVEP100(BaseCastillos2023):
                 "Frédéric Dehais",
             ],
             institution="Institut Supérieur de l'Aéronautique et de l'Espace (ISAE-SUPAERO)",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://zenodo.org/record/8255618",
             license="CC BY",
@@ -1086,21 +1072,15 @@ class CastillosCVEP100(BaseCastillos2023):
         ),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Average re-referencing",
-                "IIR notch filter 49.9-50.1 Hz (order 16)",
-                "Epoching 0 to 2.2s around flicker onset",
-                "Baseline removal",
-                "Additional VEP analysis: bandpass 0.1-40 Hz (FIR order 16501)",
-            ],
-            notch_hz=50.0,
-            filter_type="IIR notch (order 16) for line noise; FIR (order 16501) for VEP analysis",
-            highpass_hz=0.1,
-            lowpass_hz=40.0,
-            re_reference="average",
-            epoch_window=[0.0, 2.2],
-            notes="Lab Streaming Layer used for synchronization of EEG data and markers",
+            preprocessing_applied=None,
+            preprocessing_steps=None,
+            notch_hz=None,
+            filter_type=None,
+            highpass_hz=None,
+            lowpass_hz=None,
+            re_reference=None,
+            epoch_window=None,
+            notes=None,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["Convolutional Neural Network (CNN)"],
@@ -1124,7 +1104,7 @@ class CastillosCVEP100(BaseCastillos2023):
             "calibration_data_6blocks_s": 52.8,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["reactive BCI", "brain-computer interface speller"],
+            applications=["reactive BCI"],
             environment="laboratory",
             online_feedback=False,
         ),
@@ -1133,8 +1113,8 @@ class CastillosCVEP100(BaseCastillos2023):
             code_type="m-sequence (maximum-length sequence)",
             code_length=132,
             n_targets=4,
-            n_repetitions=15,
-            soa_ms=500.0,
+            n_repetitions=None,
+            soa_ms=None,
         ),
         data_structure=DataStructureMetadata(
             n_trials=60,
@@ -1145,7 +1125,12 @@ class CastillosCVEP100(BaseCastillos2023):
         methodology="Factorial experimental design with 12 healthy participants. EEG recorded with BrainProducts LiveAmp 32-channel system at 500 Hz. Four conditions tested: burst c-VEP and m-sequence c-VEP, each at 100% and 40% amplitude depth. Participants focused on cued targets (4 classes) in 15 blocks of 4 trials per condition. CNN-based decoding with 250ms sliding windows. Subjective ratings collected for visual comfort, mental tiredness, and intrusiveness. VEP analysis included amplitude, latency, and inter-trial coherence metrics.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"WindowSize": "window_size"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
+        window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -1153,6 +1138,8 @@ class CastillosCVEP100(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="mseq100",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -1243,8 +1230,8 @@ class CastillosCVEP40(BaseCastillos2023):
             sensor_type="EEG",
             reference="FCz",
             ground="FPz",
-            hardware="BrainProduct LiveAmp 32",
-            software="Lab Streaming Layer",
+            hardware="BrainProducts LiveAmp 32",
+            software=None,
             filters={"line_noise_filter": "IIR cut-band filter 49.9-50.1 Hz, order 16"},
             line_freq=50.0,
             montage="standard_1020",
@@ -1252,7 +1239,7 @@ class CastillosCVEP40(BaseCastillos2023):
             auxiliary_channels=None,
             cap_manufacturer="BrainProducts",
             cap_model="Acticap",
-            electrode_type="wet",
+            electrode_type="active",
             electrode_material=None,
         ),
         participants=ParticipantMetadata(
@@ -1274,26 +1261,21 @@ class CastillosCVEP40(BaseCastillos2023):
         experiment=ExperimentMetadata(
             paradigm="cvep",
             task_type="reactive BCI",
-            events={"target_1": 1, "target_2": 2, "target_3": 3, "target_4": 4},
-            n_classes=4,
-            class_labels=["target_1", "target_2", "target_3", "target_4"],
-            trials_per_class={
-                "target_1": 60,
-                "target_2": 60,
-                "target_3": 60,
-                "target_4": 60,
-            },
+            events={"0": 100, "1": 101},
+            n_classes=2,
+            class_labels=["0", "1"],
+            trials_per_class=None,
             trial_duration=2.2,
             tasks=["visual_attention"],
             study_design="factorial design",
-            study_domain="basic neuroscience",
-            feedback_type="cue-based",
+            study_domain="brain-computer interface",
+            feedback_type="none",
             stimulus_type="visual flicker",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
-            has_training_test_split=True,
+            has_training_test_split=False,
             instructions="focus on targets that were cued sequentially in a random order for 0.5 s, followed by a 2.2 s stimulation phase",
             cog_atlas_id=None,
             cog_po_id=None,
@@ -1316,7 +1298,7 @@ class CastillosCVEP40(BaseCastillos2023):
                 "Frédéric Dehais",
             ],
             institution="Institut Supérieur de l'Aéronautique et de l'Espace (ISAE-SUPAERO)",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://zenodo.org/record/8255618",
             license="CC BY",
@@ -1329,7 +1311,7 @@ class CastillosCVEP40(BaseCastillos2023):
             institution_department="Human Factors and Neuroergonomics",
             ethics_approval=["University of Toulouse CER approval number 2020-334"],
             acknowledgements=None,
-            how_to_acknowledge="Declaration of Helsinki",
+            how_to_acknowledge=None,
             keywords=[
                 "Code-VEP",
                 "Reactive BCI",
@@ -1341,10 +1323,10 @@ class CastillosCVEP40(BaseCastillos2023):
         sessions_per_subject=1,
         runs_per_session=1,
         sessions=None,
-        contributing_labs=["ISAE-SUPAERO", "Drexel University"],
-        n_contributing_labs=2,
+        contributing_labs=None,
+        n_contributing_labs=1,
         data_processed=False,
-        file_format="xdf",
+        file_format="EEGLAB .set",
         external_links={
             "source": "https://zenodo.org/record/8255618",
         },
@@ -1355,21 +1337,16 @@ class CastillosCVEP40(BaseCastillos2023):
         ),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "average re-reference",
-                "IIR cut-band filter 49.9-50.1 Hz order 16",
-                "epoching 0-2.2s from flicker onset",
-                "baseline removal",
-            ],
-            notch_hz=[50.0],
-            filter_type="IIR",
-            filter_order=16,
+            preprocessing_applied=None,
+            preprocessing_steps=None,
+            notch_hz=None,
+            filter_type=None,
+            filter_order=None,
             artifact_methods=None,
-            re_reference="average",
+            re_reference=None,
             downsampled_to_hz=None,
-            epoch_window=[0.0, 2.2],
-            notes="Analysis conducted on subset of electrodes: O1, O2, Oz, Pz, P3, P4, P8, P9",
+            epoch_window=None,
+            notes=None,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["CNN (Convolutional Neural Network)"],
@@ -1392,7 +1369,7 @@ class CastillosCVEP40(BaseCastillos2023):
             "mean_selection_time": 1.5,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "control"],
+            applications=["reactive BCI"],
             environment="laboratory",
             online_feedback=False,
         ),
@@ -1400,33 +1377,33 @@ class CastillosCVEP40(BaseCastillos2023):
             detected_paradigm="cvep",
             stimulus_frequencies_hz=None,
             frequency_resolution_hz=None,
-            code_type="burst c-VEP and m-sequence",
+            code_type="m-sequence",
             code_length=None,
             n_targets=4,
             n_repetitions=None,
-            isi_ms=700.0,
+            isi_ms=None,
             soa_ms=None,
             imagery_tasks=None,
             cue_duration_s=0.5,
             imagery_duration_s=None,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=240,
-            n_trials_per_class={
-                "target_1": 60,
-                "target_2": 60,
-                "target_3": 60,
-                "target_4": 60,
-            },
+            n_trials=60,
+            n_trials_per_class=None,
             n_blocks=15,
             block_duration_s=None,
-            trials_context="4 trials per block × 4 conditions × 15 blocks = 240 trials total",
+            trials_context="15 blocks x 4 trials per block = 60 trials per subject for m-sequence c-VEP at 40% amplitude",
         ),
         abstract="The utilization of aperiodic flickering visual stimuli under the form of code-modulated Visual Evoked Potentials (c-VEP) represents a pivotal advancement in the field of reactive Brain–Computer Interface (rBCI). This study introduces an innovative variant of code-VEP, referred to as 'Burst c-VEP', involving the presentation of short bursts of aperiodic visual flashes at a deliberately slow rate (2-4 flashes per second). The study tested an offline 4-classes c-VEP protocol involving 12 participants with factorial design manipulating pattern (burst and m-sequences) and amplitude (100% or 40% depth modulations). Full amplitude burst c-VEP sequences exhibited higher accuracy (90.5% with 17.6s calibration to 95.6% with 52.8s calibration) compared to m-sequence (71.4% to 85.0%). Mean selection time was 1.5s. Lowering intensity to 40% decreased accuracy slightly to 94.2% while improving user experience substantially.",
         methodology="Factorial experimental design with 12 participants. Four conditions: burst vs m-sequence × 100% vs 40% amplitude depth. Participants seated comfortably, presented with 15 blocks of 4 trials for each condition. Each trial: 0.5s cue (red-bordered square), 2.2s stimulation, 0.7s inter-trial interval. Four disc targets (150 pixels) on Dell monitor (60 Hz). Background: medium grey (50% max luminance, 124 lux). 100% condition: modulation to brightest white (168 lux). 40% condition: 40% of grey-to-white range (142 lux). EEG recorded with BrainProducts LiveAmp (32 channels, 500 Hz), impedance <25kΩ. Analysis on subset: O1, O2, Oz, Pz, P3, P4, P8, P9. Preprocessing: average re-reference, IIR notch filter (49.9-50.1 Hz, order 16), epoching (0-2.2s), baseline removal. Classification: CNN architecture with sliding windows for bitwise decoding.",
     )
 
-    def __init__(self, window_size=0.25):
+    def __init__(self, window_size=0.25, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"WindowSize": "window_size"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, self.__class__.__name__
+        )
+        window_size = resolved.get("window_size", window_size)
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -1434,4 +1411,6 @@ class CastillosCVEP40(BaseCastillos2023):
             paradigm="cvep",
             paradigm_type="mseq40",
             window_size=window_size,
+            subjects=subjects,
+            sessions=sessions,
         )

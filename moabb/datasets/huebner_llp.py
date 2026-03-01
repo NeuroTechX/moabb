@@ -41,6 +41,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         n_subjects,
         raw_slice_offset,
         use_blocks_as_sessions=True,
+        subjects=None,
+        sessions=None,
         **kwargs,
     ):
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
@@ -52,6 +54,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             events=dict(Target=10002, NonTarget=10001),
             paradigm="p300",
             subjects=(np.arange(n_subjects) + 1).tolist(),
+            selected_subjects=subjects,
+            selected_sessions=sessions,
             **kwargs,
         )
 
@@ -180,12 +184,12 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             sampling_rate=1000.0,
             n_channels=31,
             channel_types={"eeg": 31, "misc": 6},
-            montage="extended 10-20",
+            montage="standard_1020",
             hardware="BrainAmp DC",
-            sensor_type="Ag/AgCl",
+            sensor_type="passive Ag/AgCl",
             reference="nose",
             ground="FCz",
-            software="BBCI Toolbox",
+            software=None,
             impedance_threshold_kohm=20.0,
             sensors=[
                 "C3",
@@ -231,7 +235,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
                 has_eog=True,
                 eog_channels=1,
                 eog_type=["vertical"],
-                other_physiological=["pulse", "breathing"],
+                other_physiological=["pulse", "respiration"],
             ),
             cap_manufacturer="EasyCap",
         ),
@@ -241,7 +245,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             gender={"female": 5, "male": 8},
             age_mean=26.0,
             age_std=1.5,
-            bci_experience="naive",
+            bci_experience="mostly naive",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -251,11 +255,11 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             class_labels=["target", "non-target"],
             trial_duration=25.0,
             study_design="Visual ERP speller copy-spelling task using a 6x7 grid with learning from label proportions (LLP) classifier. Two sequences with different target/non-target ratios: sequence 1 (3 targets/8 stimuli), sequence 2 (2 targets/18 stimuli). Unsupervised calibrationless approach.",
-            feedback_type="visual feedback after each character (4s)",
+            feedback_type="visual",
             stimulus_type="character matrix",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="synchronous",
+            mode="online",
             synchronicity="synchronous",
             has_training_test_split=False,
             instructions="Copy-spelling task: subjects spelled the sentence 'FRANZY JAGT IM KOMPLETT VERWAHRLOSTEN TAXI QUER DURCH FREIBURG' three times",
@@ -290,7 +294,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             institution="Albert-Ludwigs-University",
             institution_department="Brain State Decoding Lab, Cluster of Excellence BrainLinks-BrainTools, Department of Computer Science",
             institution_address="Freiburg, Germany",
-            country="Germany",
+            country="DE",
             funding=[
                 "BrainLinks-BrainTools Cluster of Excellence funded by the German Research Foundation (DFG), grant number EXC 1086",
                 "bwHPC initiative, grant INST 39/963-1 FUGG",
@@ -319,28 +323,11 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
         tags=Tags(
             pathology=["Healthy"],
             modality=["Visual"],
-            type=["Perception"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="preprocessed",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "bandpass filtering (0.5-8 Hz)",
-                "downsampling to 100 Hz",
-                "epoching [-200, 700] ms",
-                "baseline correction [-200, 0] ms",
-                "removed Fp1 and Fp2 channels",
-                "feature extraction (mean amplitudes of 6 time intervals per channel)",
-            ],
-            highpass_hz=0.5,
-            lowpass_hz=8.0,
-            bandpass=[0.5, 8.0],
-            filter_type="Chebyshev Type II",
-            filter_order=3,
-            re_reference="nose",
-            downsampled_to_hz=100.0,
-            epoch_window=[-0.2, 0.7],
-            notes="Features: mean amplitudes of 6 intervals ([50,120], [121,200], [201,280], [281,380], [381,530], [531,700] ms) per channel, resulting in 6×29=174 features per epoch",
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -375,23 +362,29 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
             n_targets=42,
-            n_repetitions=189,
             soa_ms=250.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=189,
-            trials_context="63 characters spelled 3 times = 189 trials total; 68 highlighting events per trial (16 targets, 52 non-targets); 12852 total epochs per subject",
+            n_trials=12852,
+            trials_context="68 highlighting events per character, 63 characters per sentence, 3 sentences = 68*63*3 = 12852 EEG epochs per subject. Each epoch is a Target (10002) or NonTarget (10001) event.",
         ),
         sessions_per_subject=3,
         runs_per_session=9,
         sessions=["session_1"],
-        data_processed=True,
-        file_format="EEG",
+        data_processed=False,
+        file_format="BrainVision",
         abstract="Using traditional approaches, a brain-computer interface (BCI) requires the collection of calibration data for new subjects prior to online use. This work introduces learning from label proportions (LLP) to the BCI community as a new unsupervised, and easy-to-implement classification approach for ERP-based BCIs. The LLP estimates the mean target and non-target responses based on known proportions of these two classes in different groups of the data. We present a visual ERP speller to meet the requirements of LLP. For evaluation, we ran simulations on artificially created data sets and conducted an online BCI study with 13 subjects performing a copy-spelling task. Theoretical considerations show that LLP is guaranteed to minimize the loss function similar to a corresponding supervised classifier. LLP performed well in simulations and in the online application, where 84.5% of characters were spelled correctly on average without prior calibration.",
         methodology="The experiment used a modified visual ERP speller with a 6×7 grid. Two distinct stimulus sequences with different target/non-target ratios were used: sequence 1 had 3 targets in 8 stimuli, sequence 2 had 2 targets in 18 stimuli. Each trial consisted of 4 sequences of length 8 and 2 sequences of length 18, totaling 68 highlighting events per character. The LLP algorithm exploited these known proportions to reconstruct mean target and non-target ERP responses without requiring labeled data. The classifier was reset at the start of each sentence and retrained after each character. Subjects spelled a German pangram sentence three times. One subject (S2) had prior EEG experience; others were naive. Sessions lasted about 3 hours including setup. Participants were compensated 8 Euros per hour.",
     )
 
-    def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
+    def __init__(
+        self,
+        interval=None,
+        raw_slice_offset=None,
+        use_blocks_as_sessions=True,
+        subjects=None,
+        sessions=None,
+    ):
         llp_speller_paper_doi = "10.1371/journal.pone.0175856"
         super().__init__(
             src_url=VISUAL_SPELLER_LLP_URL,
@@ -402,6 +395,8 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             interval=interval,
             doi=llp_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 
@@ -449,7 +444,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             montage="extended 10-20",
             hardware="BrainAmp DC",
             sensor_type="Ag/AgCl",
-            reference="not specified",
+            reference="nose",
             software="BBCI toolbox",
             impedance_threshold_kohm=20.0,
             sensors=[
@@ -501,7 +496,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             age_mean=26,
             age_min=19,
             age_max=31,
-            bci_experience="mostly naive",
+            bci_experience="mixed",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -510,14 +505,14 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             class_labels=["target", "non-target"],
             trial_duration=17.0,
             study_design="Visual ERP copy-spelling task using a modified 6x6 grid extended with 10 # symbols as visual blanks, using flexible highlighting scheme with two interleaved sequences to enable unsupervised learning methods (EM, LLP, MIX)",
-            feedback_type="visual feedback after each character",
+            feedback_type="visual",
             stimulus_type="modified matrix speller with flexible highlighting",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="synchronous",
+            mode="online",
             instructions="copy-spelling task - spell German sentence 'Franzy jagt im Taxi quer durch das'",
             tasks=["copy-spelling"],
-            events={"target": 1, "non-target": 2},
+            events={"Target": 10002, "NonTarget": 10001},
             stimulus_presentation={
                 "soa_ms": "250",
                 "stimulus_duration_ms": "100",
@@ -529,9 +524,8 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.192684",
-            associated_paper_doi="10.1109/MCI.2018.2807039",
             repository="Zenodo",
-            data_url="http://doi.org/10.5281/zenodo.192684",
+            data_url="https://zenodo.org/record/5831879",
             publication_year=2018,
             investigators=[
                 "David Hübner",
@@ -541,7 +535,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
                 "Michael Tangermann",
             ],
             institution="University of Freiburg",
-            country="Germany",
+            country="DE",
             institution_department="Brain State Decoding Lab",
             contact_info=[
                 "p.kindermans@tu-berlin.de",
@@ -552,7 +546,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
                 "bwHPC initiative, grant INST 39/963-1 FUGG",
                 "European Union's Horizon 2020 research and innovation program under the Marie Sklodowska-Curie grant agreement NO 657679",
                 "Special Research Fund of Ghent University",
-                "DFG (DFG SPP 527, MU 987/14-1)",
+                "DFG (DFG SPP 1527, MU 987/14-1)",
                 "Federal Ministry for Education and Research (BMBF No. 2017-0-00451)",
                 "Brain Korea 21 Plus Program by the Institute for Information & Communications Technology Promotion (IITP) grant (1IS14013A) funded by the Korean government",
             ],
@@ -569,43 +563,23 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
                 "EEG",
             ],
             license="CC-BY-4.0",
+            associated_paper_doi="10.1109/MCI.2018.2807039",
         ),
         sessions_per_subject=3,
-        runs_per_session=10,
-        sessions=["session_1"],
-        contributing_labs=[
-            "Brain State Decoding Lab, University of Freiburg",
-            "Electronics and Information Systems, Ghent University",
-            "Machine Learning Group, Berlin Institute of Technology",
-            "Department of Brain and Cognitive Engineering, Korea University",
-            "Max Planck Institute for Informatics",
-        ],
-        n_contributing_labs=5,
-        data_processed=True,
-        file_format="not specified",
+        runs_per_session=None,
+        sessions=["0", "1", "2"],
+        contributing_labs=None,
+        n_contributing_labs=None,
+        data_processed=False,
+        file_format="BrainVision",
         tags=Tags(
             pathology=["Healthy"],
             modality=["Visual"],
-            type=["Perception", "Communication", "Spelling"],
+            type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw with online preprocessing",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "bandpass filtering (0.5-8 Hz)",
-                "downsampling to 100 Hz",
-                "epoching",
-                "baseline correction",
-            ],
-            highpass_hz=0.5,
-            lowpass_hz=8.0,
-            bandpass=[0.5, 8.0],
-            filter_type="Chebyshev Type II",
-            filter_order=3,
-            re_reference="not specified",
-            downsampled_to_hz=100.0,
-            epoch_window=[-0.2, 0.7],
-            notes="Epochs windowed to [-200, 700] ms relative to stimulus onset and corrected for baseline shifts observed in the interval [-200, 0] ms. No artifact rejection was applied - participants were instructed to avoid artifacts.",
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -635,8 +609,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            n_targets=36,
-            n_repetitions=1,
+            n_targets=46,
             isi_ms=150.0,
             soa_ms=250.0,
         ),
@@ -649,7 +622,14 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         methodology="Online study comparing three unsupervised learning methods (EM, LLP, MIX) for P300 speller. Twelve healthy volunteers (8 female, 4 male, mean age 26, range 19-31 years) participated in a single session each. Subjects spelled the German sentence 'Franzy jagt im Taxi quer durch das' (35 characters) in three blocks, each using a different unsupervised algorithm in pseudo-randomized order. Each trial (spelling one character) consisted of 68 highlighting events with 250 ms SOA and 100 ms stimulus duration (ISI=150 ms). The speller used a modified 6x6 grid with 36 normal characters extended with 10 # symbols as visual blanks (total 46 symbols). Two interleaved highlighting sequences were used: S1 highlighted only normal characters, S2 highlighted both normal characters and # symbols, creating different known target-to-non-target ratios to enable learning from label proportions. Highlighting consisted of brightness enhancement, rotation, enlargement and trichromatic grid overlay. Classifiers were randomly initialized at block start and updated after each trial. No labeled data was provided during online session. Participants sat 80 cm from a 24-inch screen. EEG was recorded from 31 passive Ag/AgCl electrodes (EasyCap) placed according to extended 10-20 system, with impedances kept below 20 kOhm. Signals were recorded and amplified by BrainAmp DC at 1 kHz sampling rate using BBCI toolbox in Matlab. Data was bandpass filtered (0.5-8 Hz, 3rd order Chebyshev Type II), downsampled to 100 Hz, epoched to [-200, 700] ms relative to stimulus onset, and baseline corrected using [-200, 0] ms interval. Features were mean amplitudes of six time intervals ([50-120], [121-200], [201-280], [281-380], [381-530], [531-700] ms post-stimulus) per channel. No artifact rejection was applied; participants were instructed to avoid artifacts. Performance metrics: spelling accuracy and AUC for target vs. non-target discrimination. Results showed MIX method achieved ~80% accuracy after ~7 characters (168 seconds, 476 epochs) and performed comparably to supervised regularized LDA trained on same amount of labeled data after 10+ characters. Ethics approval was obtained from University Medical Center Freiburg. Participants were compensated 8 Euros per hour for the ~3 hour session (including EEG setup).",
     )
 
-    def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
+    def __init__(
+        self,
+        interval=None,
+        raw_slice_offset=None,
+        use_blocks_as_sessions=True,
+        subjects=None,
+        sessions=None,
+    ):
         mix_speller_paper_doi = "10.1109/MCI.2018.2807039"
         super().__init__(
             src_url=VISUAL_SPELLER_MIX_URL,
@@ -660,6 +640,8 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             interval=interval,
             doi=mix_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
+            subjects=subjects,
+            sessions=sessions,
         )
 
 

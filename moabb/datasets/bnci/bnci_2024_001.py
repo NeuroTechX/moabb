@@ -547,7 +547,7 @@ class BNCI2024_001(BNCIBaseDataset):
         methodology="Participants wrote 10 letters using right index finger with motion capture tracking (30 Hz, 2D positions). Two-round session with 7 runs (round 1) and 8 runs (round 2), 40 trials per run, 8.5s per trial. Training phase included 4 steps: observation, guided following, unguided following, and execution without feedback. Classification using sliding-window approach with sLDA and EEGNet CNN. Trajectory decoding using EEGNet architecture adapted for regression of position-based (px, py, vx, vy), distance-based (d, ḋ, θ, θ̇), and speed-based (s) kinematics.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 21)),
             sessions_per_subject=1,
@@ -569,4 +569,6 @@ class BNCI2024_001(BNCIBaseDataset):
             doi="10.1016/j.compbiomed.2024.109132",
             load_fn=_load_data_001_2024,
             base_url=BNCI_URL,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )

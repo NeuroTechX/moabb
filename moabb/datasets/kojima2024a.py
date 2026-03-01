@@ -164,7 +164,7 @@ class Kojima2024A(BaseDataset):
             reference="right earlobe",
             ground="left earlobe",
             hardware="Brain Amp DC (Brain Products GmbH, Germany) and MR plus (Brain Products GmbH, Germany)",
-            software="Cakewalk by BandLab for auditory stimuli generation",
+            software=None,
             filters={"bandpass": "0.1 Hz to 100 Hz"},
             line_freq=50.0,
             montage="standard_1020",
@@ -179,7 +179,7 @@ class Kojima2024A(BaseDataset):
             ),
             cap_manufacturer="EASYCAP GmbH",
             cap_model=None,
-            electrode_type="Ag-AgCl",
+            electrode_type=None,
             electrode_material="Ag-AgCl",
         ),
         participants=ParticipantMetadata(
@@ -221,12 +221,12 @@ class Kojima2024A(BaseDataset):
             tasks=["attend to Stream 1", "attend to Stream 2", "attend to Stream 3"],
             study_design="within-subject",
             study_domain="auditory BCI",
-            feedback_type="no feedback",
+            feedback_type="none",
             stimulus_type="auditory musical tones",
             stimulus_modalities=["auditory"],
             primary_modality="auditory",
             synchronicity="synchronous",
-            mode="oddball paradigm with auditory stream segregation",
+            mode="offline",
             has_training_test_split=False,
             instructions="Subjects were requested to attend to one of three streams and to count the number of target stimuli in the attended stream",
             cog_atlas_id=None,
@@ -243,7 +243,7 @@ class Kojima2024A(BaseDataset):
             description="A 3-class auditory BCI using three tone sequences based on auditory stream segregation. Musical tones were presented to subjects' right ear, and subjects attended to one of three streams while counting target stimuli. P300 activity was elicited by target stimuli in the attended stream.",
             investigators=["Simon Kojima", "Shin'ichiro Kanoh"],
             institution="Shibaura Institute of Technology",
-            country="Japan",
+            country="JP",
             repository="Harvard Dataverse",
             data_url="https://doi.org/10.7910/DVN/MQOVEY",
             license="Creative Commons Attribution License",
@@ -275,7 +275,7 @@ class Kojima2024A(BaseDataset):
         contributing_labs=None,
         n_contributing_labs=1,
         data_processed=False,
-        file_format="mat",
+        file_format="BrainVision",
         external_links={
             "source": "https://doi.org/10.7910/DVN/MQOVEY",
             "paper": "https://doi.org/10.1371/journal.pone.0303565",
@@ -287,17 +287,17 @@ class Kojima2024A(BaseDataset):
             data_state="raw",
             preprocessing_applied=False,
             preprocessing_steps=None,
-            highpass_hz=0.1,
-            lowpass_hz=100.0,
-            bandpass=[0.1, 100.0],
+            highpass_hz=None,
+            lowpass_hz=None,
+            bandpass=None,
             notch_hz=None,
-            filter_type="zero-phase 2nd-order Butterworth IIR filter",
-            filter_order=2,
+            filter_type=None,
+            filter_order=None,
             artifact_methods=None,
             re_reference=None,
             downsampled_to_hz=None,
             epoch_window=None,
-            notes="Hardware filters applied during acquisition: bandpass 0.1 Hz to 100 Hz",
+            notes=None,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["Logistic Regression", "Minimum Distance to Mean (MDM)"],
@@ -320,13 +320,13 @@ class Kojima2024A(BaseDataset):
             "metric": "MCC (Matthews correlation coefficient)",
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "control interface"],
+            applications=["communication"],
             environment="laboratory",
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            stimulus_frequencies_hz=[131.0, 196.0, 587.0, 880.0, 2637.0, 3951.0],
+            stimulus_frequencies_hz=None,
             frequency_resolution_hz=None,
             code_type=None,
             code_length=None,
@@ -335,13 +335,13 @@ class Kojima2024A(BaseDataset):
             isi_ms=None,
             soa_ms=180.0,
             imagery_tasks=None,
-            cue_duration_s=0.15,
+            cue_duration_s=None,
             imagery_duration_s=None,
         ),
         data_structure=DataStructureMetadata(
             n_trials=None,
             n_trials_per_class=None,
-            n_blocks=2,
+            n_blocks=6,
             block_duration_s=300.0,
             trials_context="Each task block had 3 runs (5 minutes each). Subjects counted target stimuli in Streams 1, 2, and 3 on the 1st, 2nd, and 3rd measurements respectively. Task block was repeated twice.",
         ),
@@ -349,19 +349,20 @@ class Kojima2024A(BaseDataset):
         methodology="Musical tones generated by a digital auditory workstation were used as auditory stimuli. Piano tones from a MIDI sound source were presented using a digital signal processor and headphones to participants' right ear only. Three tone streams were created using auditory stream segregation, each consisting of standard (90% probability) and deviant (10% probability) tones. The duration of each tone was 150 ms with stimulus onset asynchrony of 180 ms. The 64-channel EEG and 2-channel EOG signals were recorded at 1000 Hz. Each experiment consisted of two task blocks with three runs each (5 minutes per run). Subjects counted target stimuli in different streams across runs. Data analysis involved bandpass filtering (0.1-40 Hz for ERP analysis, 1-40 Hz for classification), baseline correction, artifact rejection (±100μV for EEG, ±500μV for EOG), xDAWN spatial filtering, and classification using Riemannian geometry with covariance matrices and logistic regression. Performance was evaluated using 10-fold cross validation with accuracy and Matthews correlation coefficient (MCC) metrics.",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
 
-        self.subject_list = list(range(1, 12))
         self.n_channels = 64
 
         super().__init__(
-            self.subject_list,
+            list(range(1, 12)),
             sessions_per_subject=1,
             events=dict(Target=1, NonTarget=0),
             code="Kojima2024A",
             interval=[-0.5, 1.2],
             paradigm="p300",
             doi="10.7910/DVN/MQOVEY",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_files_list(self, subject, manifest):
