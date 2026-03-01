@@ -6,19 +6,27 @@ import abc
 import logging
 import re
 import traceback
+import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import cached_property
 from inspect import signature
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Union
+from urllib.parse import quote
 
 import mne_bids
 import numpy as np
 import pandas as pd
 from mne_bids import events_file_to_annotation_kwargs
 
-from moabb.datasets.bids_interface import StepType, _interface_map
+from moabb.datasets.bids_interface import (
+    _FORMAT_EXTENSION_MAP,
+    StepType,
+    _BIDSInterfaceRawEDFNoDesc,
+    _interface_map,
+    get_bids_root,
+)
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
@@ -176,6 +184,17 @@ def is_abbrev(abbrev_name: str, full_name: str):
     and in the same order. They must share the same capital letters."""
     pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
+
+
+def _is_event_int(v):
+    """Return True if v is int or np.integer but not bool."""
+    return not isinstance(v, bool) and isinstance(v, (int, np.integer))
+
+
+_KWARG_HINT = (
+    "Check that keyword arguments were not accidentally "
+    "included inside the events dict."
+)
 
 
 def check_subject_names(data):
@@ -341,11 +360,7 @@ def _format_age(participants) -> str | None:
 
 
 def _format_bandpass(preprocessing) -> str | None:
-    filter_details = getattr(preprocessing, "filter_details", None)
-    if filter_details is None:
-        return None
-
-    bandpass = getattr(filter_details, "bandpass", None)
+    bandpass = getattr(preprocessing, "bandpass", None)
     if isinstance(bandpass, dict):
         low = bandpass.get(
             "low",
@@ -367,8 +382,8 @@ def _format_bandpass(preprocessing) -> str | None:
             f"-{_format_metadata_value(bandpass[1])} Hz"
         )
 
-    highpass = getattr(filter_details, "highpass_hz", None)
-    lowpass = getattr(filter_details, "lowpass_hz", None)
+    highpass = getattr(preprocessing, "highpass_hz", None)
+    lowpass = getattr(preprocessing, "lowpass_hz", None)
     if highpass is not None and lowpass is not None:
         return f"{_format_metadata_value(highpass)}-{_format_metadata_value(lowpass)} Hz"
     return None
@@ -440,7 +455,9 @@ def _metadata_doc_sections(metadata: Any, existing_doc: str) -> str:
     if documentation is not None:
         data_url = getattr(documentation, "data_url", None)
     if data_url is None and external_links is not None:
-        data_url = getattr(external_links, "source_url", None)
+        data_url = (
+            external_links.get("source") if isinstance(external_links, dict) else None
+        )
 
     if documentation is not None or _has_nonempty(data_url):
         blocks.append(
@@ -484,6 +501,39 @@ def _metadata_doc_sections(metadata: Any, existing_doc: str) -> str:
     return "\n\n".join(blocks)
 
 
+def _format_feedback_section(dataset_id: str) -> str:
+    """Generate a feedback section with a button to report issues on GitHub."""
+    issue_title = quote(f"[Dataset] Issue with {dataset_id}")
+    issue_body = quote(
+        f"## Dataset\n\n"
+        f"- **Dataset ID:** {dataset_id}\n\n"
+        f"## Issue Description\n\n"
+        f"Please describe the issue you encountered with this dataset:\n\n"
+        f"## Steps to Reproduce\n\n"
+        f"1. \n2. \n3. \n\n"
+        f"## Expected Behavior\n\n\n"
+        f"## Additional Context\n\n"
+    )
+    github_url = (
+        f"https://github.com/NeuroTechX/moabb/issues/new"
+        f"?title={issue_title}&body={issue_body}&labels=dataset"
+    )
+
+    return (
+        f"    .. admonition:: Found an issue with this dataset?\n"
+        f"       :class: tip\n"
+        f"\n"
+        f"       If you encounter any problems with this dataset (missing files,\n"
+        f"       incorrect metadata, loading errors, etc.), please let us know!\n"
+        f"\n"
+        f"       .. button-link:: {github_url}\n"
+        f"          :color: primary\n"
+        f"          :outline:\n"
+        f"\n"
+        f"          Report an Issue on GitHub"
+    )
+
+
 class MetaclassDataset(abc.ABCMeta):
     def __new__(cls, name, bases, attrs):
         doc = attrs.get("__doc__", "") or ""
@@ -503,6 +553,14 @@ class MetaclassDataset(abc.ABCMeta):
         metadata_sections = _metadata_doc_sections(attrs.get("METADATA"), doc)
         if metadata_sections:
             insert_blocks.append(metadata_sections)
+
+        # Add the feedback section for real (non-base, non-fake) dataset classes
+        if (
+            "Found an issue with this dataset?" not in doc
+            and name not in ("BaseDataset", "BaseBIDSDataset", "LocalBIDSDataset")
+            and not name.startswith("Fake")
+        ):
+            insert_blocks.append(_format_feedback_section(name))
 
         if insert_blocks:
             if doc.strip():
@@ -568,6 +626,9 @@ class BaseDataset(metaclass=MetaclassDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        *,
+        selected_subjects=None,
+        selected_sessions=None,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -589,14 +650,79 @@ class BaseDataset(metaclass=MetaclassDataset):
                 "See moabb.datasets.base.is_abbrev for more information."
             )
 
-        self.subject_list = subjects
+        self._all_subjects = list(subjects)
+        if selected_subjects is not None:
+            selected_subjects = list(selected_subjects)
+            # Warn on duplicate subjects and deduplicate preserving order
+            if len(selected_subjects) != len(set(selected_subjects)):
+                unique = dict.fromkeys(selected_subjects)
+                dupes = [s for s in unique if selected_subjects.count(s) > 1]
+                warnings.warn(
+                    f"Duplicate subjects detected: {dupes}. "
+                    "Duplicates will be removed, preserving order.",
+                    stacklevel=2,
+                )
+                selected_subjects = list(unique)
+            invalid = [s for s in selected_subjects if s not in self._all_subjects]
+            if invalid:
+                raise ValueError(
+                    f"Invalid subjects: {invalid}. "
+                    f"Valid subjects are: {self._all_subjects}"
+                )
+            self.subject_list = selected_subjects
+        else:
+            self.subject_list = list(subjects)
         self.n_sessions = sessions_per_subject
+
+        # Validate selected_sessions
+        if selected_sessions is not None:
+            try:
+                selected_sessions = list(selected_sessions)
+            except TypeError:
+                raise TypeError(
+                    f"selected_sessions must be an iterable, "
+                    f"got {type(selected_sessions).__name__}"
+                ) from None
+            bad = [s for s in selected_sessions if not isinstance(s, (int, str))]
+            if bad:
+                raise TypeError(
+                    f"selected_sessions elements must be int or str, "
+                    f"got: {[(type(s).__name__, s) for s in bad]}"
+                )
+        self._selected_sessions = selected_sessions
+
+        # Validate events dict integrity
+        if not isinstance(events, dict):
+            raise TypeError(f"events must be a dict, got {type(events).__name__}")
+        for key, value in events.items():
+            if not isinstance(key, str):
+                raise TypeError(
+                    f"All event dict keys must be strings, but got "
+                    f"{type(key).__name__}: {key!r}. {_KWARG_HINT}"
+                )
+            if isinstance(value, (list, tuple)):
+                for i, v in enumerate(value):
+                    if not _is_event_int(v):
+                        raise TypeError(
+                            f"Event {key!r} list element {i} is {v!r} "
+                            f"({type(v).__name__}), expected int. {_KWARG_HINT}"
+                        )
+            elif not _is_event_int(value):
+                raise TypeError(
+                    f"Event {key!r} has value {value!r} ({type(value).__name__}), "
+                    f"expected int or list of int. {_KWARG_HINT}"
+                )
         self.event_id = events
         self.code = code
         self.interval = interval
         self.paradigm = paradigm
         self.doi = doi
         self.unit_factor = unit_factor
+
+    @property
+    def all_subjects(self):
+        """Full list of subjects available in this dataset (unfiltered)."""
+        return list(self._all_subjects)
 
     @cached_property
     def metadata(self) -> "DatasetMetadata | None":
@@ -744,6 +870,8 @@ class BaseDataset(metaclass=MetaclassDataset):
         if not isinstance(subjects, list):
             raise ValueError("subjects must be a list")
 
+        effective_sessions = self._selected_sessions
+
         cache_config = CacheConfig.make(cache_config)
 
         if process_pipeline is None:
@@ -753,11 +881,17 @@ class BaseDataset(metaclass=MetaclassDataset):
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
-            data[subject] = self._get_single_subject_data_using_cache(
+            subject_data = self._get_single_subject_data_using_cache(
                 subject,
                 cache_config,
                 process_pipeline,
             )
+            if effective_sessions is not None:
+                str_sessions = {str(s) for s in effective_sessions}
+                subject_data = {
+                    k: v for k, v in subject_data.items() if k in str_sessions
+                }
+            data[subject] = subject_data
         check_subject_names(data)
         check_session_names(data)
         check_run_names(data)
@@ -823,6 +957,99 @@ class BaseDataset(metaclass=MetaclassDataset):
                     update_path=update_path,
                     verbose=verbose,
                 )
+
+    def convert_to_bids(
+        self, path=None, subjects=None, overwrite=False, format="EDF", verbose=None
+    ):
+        """Convert the dataset to BIDS format.
+
+        Saves the raw EEG data in a BIDS-compliant directory structure.
+        Unlike the caching mechanism (see :class:`CacheConfig`), the files
+        produced here do **not** contain a processing-pipeline hash
+        (``desc-<hash>``) in their names, making the output a clean,
+        shareable BIDS dataset.
+
+        Parameters
+        ----------
+        path : str | Path | None
+            Directory under which the BIDS dataset will be written.
+            If ``None`` the default MNE data directory is used (same default
+            as the rest of MOABB).
+        subjects : list of int | None
+            Subject numbers to convert.  If ``None``, all subjects in
+            :attr:`subject_list` are converted.
+        overwrite : bool
+            If ``True``, existing BIDS files for a subject are removed before
+            saving.  Default is ``False``.
+        format : str
+            The file format for the raw EEG data.  Supported values are
+            ``"EDF"`` (default), ``"BrainVision"``, ``"BDF"``, and
+            ``"EEGLAB"``.
+        verbose : str | None
+            Verbosity level forwarded to MNE/MNE-BIDS.
+
+        Returns
+        -------
+        bids_root : pathlib.Path
+            Path to the root of the written BIDS dataset.
+
+        Examples
+        --------
+        >>> from moabb.datasets import AlexMI
+        >>> dataset = AlexMI()
+        >>> bids_root = dataset.convert_to_bids(path='/tmp/bids', subjects=[1])
+
+        See Also
+        --------
+        CacheConfig : Cache configuration for :meth:`get_data`.
+        moabb.datasets.bids_interface.get_bids_root : Return the BIDS root path.
+
+        Notes
+        -----
+
+        .. versionadded:: 1.5
+        """
+        if format not in _FORMAT_EXTENSION_MAP:
+            raise ValueError(
+                f"Unsupported format {format!r}. "
+                f"Allowed formats are {tuple(_FORMAT_EXTENSION_MAP)}"
+            )
+        if subjects is None:
+            subjects = self.subject_list
+
+        invalid = [s for s in subjects if s not in self.subject_list]
+        if invalid:
+            raise ValueError(
+                f"Invalid subject(s) {invalid}. "
+                f"Valid subjects are {self.subject_list}"
+            )
+
+        ext = _FORMAT_EXTENSION_MAP[format]
+
+        for subject in subjects:
+            interface = _BIDSInterfaceRawEDFNoDesc(
+                dataset=self,
+                subject=subject,
+                path=path,
+                process_pipeline=None,
+                verbose=verbose,
+                _format=format,
+            )
+            if overwrite:
+                interface.erase()
+            else:
+                subject_dir = interface.root / f"sub-{subject}"
+                if any(subject_dir.rglob(f"*{ext}")):
+                    log.info(
+                        "BIDS data already exists for %s, skipping "
+                        "(use overwrite=True to overwrite).",
+                        repr(interface),
+                    )
+                    continue
+            sessions_data = self.get_data(subjects=[subject])
+            interface.save(sessions_data[subject])
+
+        return get_bids_root(self.code, path)
 
     def _get_single_subject_data_using_cache(
         self, subject, cache_config, process_pipeline

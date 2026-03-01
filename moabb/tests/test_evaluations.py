@@ -25,6 +25,11 @@ from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
+def _identity(x):
+    """Identity function (replaces lambda to avoid MOABB hash warnings)."""
+    return x
+
+
 try:
     from codecarbon import EmissionsTracker  # noqa
 
@@ -225,7 +230,7 @@ class TestWithinSess:
 
         results0 = self.eval.process(pipelines0)
         results1 = self.eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)
@@ -399,7 +404,7 @@ class TestWithinSessLearningCurve:
 
         results0 = learning_curve_eval.process(pipelines0)
         results1 = learning_curve_eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = learning_curve_eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)
@@ -454,7 +459,7 @@ class Test_CrossSess(TestWithinSess):
         assert "requires at least 2 sessions" in error_msg
 
 
-class UtilEvaluation:
+class TestUtilEvaluation:
     def test_save_model_cv(self):
         model = Dummy()
         save_path = "test_save_path"
@@ -500,7 +505,7 @@ class UtilEvaluation:
             import torch
             from skorch import NeuralNetClassifier
         except ImportError:
-            self.skipTest("skorch library not available")
+            pytest.skip("skorch library not available")
 
         step = NeuralNetClassifier(module=torch.nn.Linear(10, 2))
         step.initialize()

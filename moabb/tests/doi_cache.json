@@ -1,0 +1,1082 @@
+{
+    "_metadata": {
+        "total": 91
+    },
+    "10.1002/hbm.23730": {
+        "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
+        "authors": [
+            "Robin Tibor Schirrmeister",
+            "Jost Tobias Springenberg",
+            "Lukas Dominique Josef Fiederer",
+            "Martin Glasstetter",
+            "Katharina Eggensperger",
+            "Michael Tangermann",
+            "Frank Hutter",
+            "Wolfram Burgard",
+            "Tonio Ball"
+        ],
+        "year": 2017,
+        "doi": "10.1002/hbm.23730"
+    },
+    "10.1007/s00500-012-0895-4": {
+        "title": "Brain\u2013computer interfacing: more than the sum of its parts",
+        "authors": [
+            "Reinhold Scherer",
+            "Josef Faller",
+            "David Balderas",
+            "Elisabeth V. C. Friedrich",
+            "Markus Pr\u00f6ll",
+            "Brendan Allison",
+            "Gernot M\u00fcller-Putz"
+        ],
+        "year": 2012,
+        "doi": "10.1007/s00500-012-0895-4"
+    },
+    "10.1016/j.clinph.2012.12.050": {
+        "title": "Gaze-independent BCI-spelling using rapid serial visual presentation (RSVP)",
+        "authors": [
+            "Laura Acqualagna",
+            "Benjamin Blankertz"
+        ],
+        "year": 2013,
+        "doi": "10.1016/j.clinph.2012.12.050"
+    },
+    "10.1016/j.compbiomed.2024.109132": {
+        "title": "Handwritten character classification from EEG through continuous kinematic decoding",
+        "authors": [
+            "Markus R. Crell",
+            "Gernot R. M\u00fcller-Putz"
+        ],
+        "year": 2024,
+        "doi": "10.1016/j.compbiomed.2024.109132"
+    },
+    "10.1016/j.jneumeth.2007.03.005": {
+        "title": "An efficient P300-based brain\u2013computer interface for disabled subjects",
+        "authors": [
+            "Ulrich Hoffmann",
+            "Jean-Marc Vesin",
+            "Touradj Ebrahimi",
+            "Karin Diserens"
+        ],
+        "year": 2008,
+        "doi": "10.1016/j.jneumeth.2007.03.005"
+    },
+    "10.1016/j.neucom.2016.01.007": {
+        "title": "Online SSVEP-based BCI using Riemannian geometry",
+        "authors": [
+            "Emmanuel K. Kalunga",
+            "Sylvain Chevallier",
+            "Quentin Barth\u00e9lemy",
+            "Karim Djouani",
+            "Eric Monacelli",
+            "Yskandar Hamam"
+        ],
+        "year": 2016,
+        "doi": "10.1016/j.neucom.2016.01.007"
+    },
+    "10.1016/j.neulet.2009.06.045": {
+        "title": "How many people are able to control a P300-based brain\u2013computer interface (BCI)?",
+        "authors": [
+            "Christoph Guger",
+            "Shahab Daban",
+            "Eric Sellers",
+            "Clemens Holzner",
+            "Gunther Krausz",
+            "Roberta Carabalona",
+            "Furio Gramatica",
+            "Guenter Edlinger"
+        ],
+        "year": 2009,
+        "doi": "10.1016/j.neulet.2009.06.045"
+    },
+    "10.1016/j.neuroimage.2023.120446": {
+        "title": "Burst c-VEP Based BCI: Optimizing stimulus design for enhanced classification with minimal calibration data and improved user experience",
+        "authors": [
+            "Kalou Cabrera Castillos",
+            "Simon Ladouce",
+            "Ludovic Darmet",
+            "Fr\u00e9d\u00e9ric Dehais"
+        ],
+        "year": 2023,
+        "doi": "10.1016/j.neuroimage.2023.120446"
+    },
+    "10.1038/s41597-021-00883-1": {
+        "title": "Continuous sensorimotor rhythm based brain computer interface learning in a large population",
+        "authors": [
+            "James R. Stieger",
+            "Stephen A. Engel",
+            "Bin He"
+        ],
+        "year": 2021,
+        "doi": "10.1038/s41597-021-00883-1"
+    },
+    "10.1038/s41597-022-01898-y": {
+        "title": "Open multi-session and multi-task EEG cognitive Dataset for passive brain-computer Interface Applications",
+        "authors": [
+            "Marcel F. Hinss",
+            "Emilie S. Jahanpour",
+            "Bertille Somon",
+            "Lou Pluchon",
+            "Fr\u00e9d\u00e9ric Dehais",
+            "Rapha\u00eblle N. Roy"
+        ],
+        "year": 2023,
+        "doi": "10.1038/s41597-022-01898-y"
+    },
+    "10.1038/s41597-023-02445-z": {
+        "title": "A large EEG database with users\u2019 profile information for motor imagery brain-computer interface research",
+        "authors": [
+            "Pauline Dreyer",
+            "Aline Roc",
+            "L\u00e9a Pillette",
+            "S\u00e9bastien Rimbert",
+            "Fabien Lotte"
+        ],
+        "year": 2023,
+        "doi": "10.1038/s41597-023-02445-z"
+    },
+    "10.1038/s41597-023-02787-8": {
+        "title": "An EEG motor imagery dataset for brain computer interface in acute stroke patients",
+        "authors": [
+            "Haijie Liu",
+            "Penghu Wei",
+            "Haochong Wang",
+            "Xiaodong Lv",
+            "Wei Duan",
+            "Meijie Li",
+            "Yan Zhao",
+            "Qingmei Wang",
+            "Xinyuan Chen",
+            "Gaige Shi",
+            "Bo Han",
+            "Junwei Hao"
+        ],
+        "year": 2024,
+        "doi": "10.1038/s41597-023-02787-8"
+    },
+    "10.1038/s41598-019-43594-9": {
+        "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
+        "authors": [
+            "Patrick Ofner",
+            "Andreas Schwarz",
+            "Joana Pereira",
+            "Daniela Wyss",
+            "Renate Wildburger",
+            "Gernot R. M\u00fcller-Putz"
+        ],
+        "year": 2019,
+        "doi": "10.1038/s41598-019-43594-9"
+    },
+    "10.1088/1741-2552/ab4057": {
+        "title": "Low channel count montages using sensor tying for VEP-based BCI",
+        "authors": [
+            "S Ahmadi",
+            "M Borhanazad",
+            "D Tump",
+            "J Farquhar",
+            "P Desain"
+        ],
+        "year": 2019,
+        "doi": "10.1088/1741-2552/ab4057"
+    },
+    "10.1088/1741-2552/abecef": {
+        "title": "From full calibration to zero training for a code-modulated visual evoked potentials brain computer interface",
+        "authors": [
+            "Jordy Thielen",
+            "Pieter Marsman",
+            "Jason Farquhar",
+            "Peter Desain"
+        ],
+        "year": 2021,
+        "doi": "10.1088/1741-2552/abecef"
+    },
+    "10.1088/1741-2552/ac689f": {
+        "title": "Continuous 2D trajectory decoding from attempted movement: across-session performance in able-bodied and feasibility in a spinal cord injured participant",
+        "authors": [
+            "Hannah S Pulferer",
+            "Brynja \u00c1sgeirsd\u00f3ttir",
+            "Valeria Mondini",
+            "Andreea I Sburlea",
+            "Gernot R M\u00fcller-Putz"
+        ],
+        "year": 2022,
+        "doi": "10.1088/1741-2552/ac689f"
+    },
+    "10.1088/1741-2552/ada0ea": {
+        "title": "Simultaneous encoding of speed, distance, and direction in discrete reaching: an EEG study",
+        "authors": [
+            "Nitikorn Srisrisawang",
+            "Gernot R M\u00fcller-Putz"
+        ],
+        "year": 2024,
+        "doi": "10.1088/1741-2552/ada0ea"
+    },
+    "10.1088/1741-2560/11/2/026009": {
+        "title": "Decoding auditory attention to instruments in polyphonic music using single-trial EEG classification",
+        "authors": [
+            "M S Treder",
+            "H Purwins",
+            "D Miklody",
+            "I Sturm",
+            "B Blankertz"
+        ],
+        "year": 2014,
+        "doi": "10.1088/1741-2560/11/2/026009"
+    },
+    "10.1088/1741-2560/11/3/035008": {
+        "title": "Influence of P300 latency jitter on event related potential-based brain\u2013computer interface performance",
+        "authors": [
+            "P Aric\u00f2",
+            "F Aloise",
+            "F Schettini",
+            "S Salinari",
+            "D Mattia",
+            "F Cincotti"
+        ],
+        "year": 2014,
+        "doi": "10.1088/1741-2560/11/3/035008"
+    },
+    "10.1088/1741-2560/8/5/056001": {
+        "title": "EEG potentials predict upcoming emergency brakings during simulated driving",
+        "authors": [
+            "Stefan Haufe",
+            "Matthias S Treder",
+            "Manfred F Gugler",
+            "Max Sagebaum",
+            "Gabriel Curio",
+            "Benjamin Blankertz"
+        ],
+        "year": 2011,
+        "doi": "10.1088/1741-2560/8/5/056001"
+    },
+    "10.1088/1741-2560/8/6/066003": {
+        "title": "Gaze-independent brain\u2013computer interfaces based on covert attention and feature attention",
+        "authors": [
+            "M S Treder",
+            "N M Schmidt",
+            "B Blankertz"
+        ],
+        "year": 2011,
+        "doi": "10.1088/1741-2560/8/6/066003"
+    },
+    "10.1088/1741-2560/9/4/045006": {
+        "title": "Exploring motion VEPs for gaze-independent communication",
+        "authors": [
+            "Sulamith Schaeff",
+            "Matthias Sebastian Treder",
+            "Bastian Venthur",
+            "Benjamin Blankertz"
+        ],
+        "year": 2012,
+        "doi": "10.1088/1741-2560/9/4/045006"
+    },
+    "10.1093/gigascience/gix034": {
+        "title": "EEG datasets for motor imagery brain\u2013computer interface",
+        "authors": [
+            "Hohyun Cho",
+            "Minkyu Ahn",
+            "Sangtae Ahn",
+            "Moonyoung Kwon",
+            "Sung Chan Jun"
+        ],
+        "year": 2017,
+        "doi": "10.1093/gigascience/gix034"
+    },
+    "10.1093/gigascience/giz002": {
+        "title": "EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy",
+        "authors": [
+            "Min-Ho Lee",
+            "O-Yeon Kwon",
+            "Yong-Jeong Kim",
+            "Hong-Kyung Kim",
+            "Young-Eun Lee",
+            "John Williamson",
+            "Siamac Fazli",
+            "Seong-Whan Lee"
+        ],
+        "year": 2019,
+        "doi": "10.1093/gigascience/giz002"
+    },
+    "10.1109/MCI.2018.2807039": {
+        "title": "Unsupervised Learning for Brain-Computer Interfaces Based on Event-Related Potentials: Review and Online Comparison [Research Frontier]",
+        "authors": [
+            "David Hubner",
+            "Thibault Verhoeven",
+            "Klaus-Robert Muller",
+            "Pieter-Jan Kindermans",
+            "Michael Tangermann"
+        ],
+        "year": 2018,
+        "doi": "10.1109/MCI.2018.2807039"
+    },
+    "10.1109/TAFFC.2021.3059688": {
+        "title": "EEG-Based Online Regulation of Difficulty in Simulated Flying",
+        "authors": [
+            "Ping-Keng Jao",
+            "Ricardo Chavarriaga",
+            "Jos\u00e9 del R. Mill\u00e1n"
+        ],
+        "year": 2023,
+        "doi": "10.1109/TAFFC.2021.3059688"
+    },
+    "10.1109/TBME.2004.827072": {
+        "title": "BCI2000: A General-Purpose Brain-Computer Interface (BCI) System",
+        "authors": [
+            "G. Schalk",
+            "D.J. McFarland",
+            "T. Hinterberger",
+            "N. Birbaumer",
+            "J.R. Wolpaw"
+        ],
+        "year": 2004,
+        "doi": "10.1109/TBME.2004.827072"
+    },
+    "10.1109/TBME.2004.827088": {
+        "title": "Boosting bit rates in noninvasive EEG single-trial classifications by feature combination and multiclass paradigms",
+        "authors": [
+            "G. Dornhege",
+            "B. Blankertz",
+            "G. Curio",
+            "K.-R. Muller"
+        ],
+        "year": 2004,
+        "doi": "10.1109/TBME.2004.827088"
+    },
+    "10.1109/TBME.2008.2009768": {
+        "title": "Beamforming in Noninvasive Brain\u2013Computer Interfaces",
+        "authors": [
+            "M. Grosse-Wentrup",
+            "C. Liefhold",
+            "K. Gramann",
+            "M. Buss"
+        ],
+        "year": 2009,
+        "doi": "10.1109/TBME.2008.2009768"
+    },
+    "10.1109/THMS.2020.3038339": {
+        "title": "EEG Correlates of Difficulty Levels in Dynamical Transitions of Simulated Flying and Mapping Tasks",
+        "authors": [
+            "Ping-Keng Jao",
+            "Ricardo Chavarriaga",
+            "Fabio Dell'Agnola",
+            "Adriana Arza",
+            "David Atienza",
+            "Jose del R. Millan"
+        ],
+        "year": 2021,
+        "doi": "10.1109/THMS.2020.3038339"
+    },
+    "10.1109/TNSRE.2007.906956": {
+        "title": "Brain\u2013Computer Communication: Motivation, Aim, and Impact of Exploring a Virtual Apartment",
+        "authors": [
+            "Robert Leeb",
+            "Felix Lee",
+            "Claudia Keinrath",
+            "Reinhold Scherer",
+            "Horst Bischof",
+            "Gert Pfurtscheller"
+        ],
+        "year": 2007,
+        "doi": "10.1109/TNSRE.2007.906956"
+    },
+    "10.1109/TNSRE.2010.2053387": {
+        "title": "Learning From EEG Error-Related Potentials in Noninvasive Brain-Computer Interfaces",
+        "authors": [
+            "Ricardo Chavarriaga",
+            "Jos\u00e9 del R. Millan"
+        ],
+        "year": 2010,
+        "doi": "10.1109/TNSRE.2010.2053387"
+    },
+    "10.1109/TNSRE.2016.2627556": {
+        "title": "A Benchmark Dataset for SSVEP-Based Brain\u2013Computer Interfaces",
+        "authors": [
+            "Yijun Wang",
+            "Xiaogang Chen",
+            "Xiaorong Gao",
+            "Shangkai Gao"
+        ],
+        "year": 2017,
+        "doi": "10.1109/TNSRE.2016.2627556"
+    },
+    "10.1109/TNSRE.2016.2628057": {
+        "title": "Open Access Dataset for EEG+NIRS Single-Trial Classification",
+        "authors": [
+            "Jaeyoung Shin",
+            "Alexander von Luhmann",
+            "Benjamin Blankertz",
+            "Do-Won Kim",
+            "Jichai Jeong",
+            "Han-Jeong Hwang",
+            "Klaus-Robert Muller"
+        ],
+        "year": 2017,
+        "doi": "10.1109/TNSRE.2016.2628057"
+    },
+    "10.1109/tnsre.2012.2189584": {
+        "title": "Autocalibration and Recurrent Adaptation: Towards a Plug and Play Online ERD-BCI",
+        "authors": [
+            "Josef Faller",
+            "Carmen Vidaurre",
+            "Teodoro Solis-Escalante",
+            "Christa Neuper",
+            "Reinhold Scherer"
+        ],
+        "year": 2012,
+        "doi": "10.1109/tnsre.2012.2189584"
+    },
+    "10.1371/journal.pone.0009813": {
+        "title": "A New Auditory Multi-Class Brain-Computer Interface Paradigm: Spatial Hearing as an Informative Cue",
+        "authors": [
+            "Martijn Schreuder",
+            "Benjamin Blankertz",
+            "Michael Tangermann"
+        ],
+        "year": 2010,
+        "doi": "10.1371/journal.pone.0009813"
+    },
+    "10.1371/journal.pone.0114853": {
+        "title": "Evaluation of EEG Oscillatory Patterns and Cognitive Process during Simple and Compound Limb Motor Imagery",
+        "authors": [
+            "Weibo Yi",
+            "Shuang Qiu",
+            "Kun Wang",
+            "Hongzhi Qi",
+            "Lixin Zhang",
+            "Peng Zhou",
+            "Feng He",
+            "Dong Ming"
+        ],
+        "year": 2014,
+        "doi": "10.1371/journal.pone.0114853"
+    },
+    "10.1371/journal.pone.0123727": {
+        "title": "Individually Adapted Imagery Improves Brain-Computer Interface Performance in End-Users with Disability",
+        "authors": [
+            "Reinhold Scherer",
+            "Josef Faller",
+            "Elisabeth V. C. Friedrich",
+            "Eloy Opisso",
+            "Ursula Costa",
+            "Andrea K\u00fcbler",
+            "Gernot R. M\u00fcller-Putz"
+        ],
+        "year": 2015,
+        "doi": "10.1371/journal.pone.0123727"
+    },
+    "10.1371/journal.pone.0133797": {
+        "title": "Broad-Band Visually Evoked Potentials: Re(con)volution in Brain-Computer Interfacing",
+        "authors": [
+            "Jordy Thielen",
+            "Philip van den Broek",
+            "Jason Farquhar",
+            "Peter Desain"
+        ],
+        "year": 2015,
+        "doi": "10.1371/journal.pone.0133797"
+    },
+    "10.1371/journal.pone.0140703": {
+        "title": "A Comparison Study of Canonical Correlation Analysis Based Methods for Detecting Steady-State Visual Evoked Potentials",
+        "authors": [
+            "Masaki Nakanishi",
+            "Yijun Wang",
+            "Yu-Te Wang",
+            "Tzyy-Ping Jung"
+        ],
+        "year": 2015,
+        "doi": "10.1371/journal.pone.0140703"
+    },
+    "10.1371/journal.pone.0162657": {
+        "title": "A Fully Automated Trial Selection Method for Optimization of Motor Imagery Based Brain-Computer Interface",
+        "authors": [
+            "Bangyan Zhou",
+            "Xiaopei Wu",
+            "Zhao Lv",
+            "Lei Zhang",
+            "Xiaojin Guo"
+        ],
+        "year": 2016,
+        "doi": "10.1371/journal.pone.0162657"
+    },
+    "10.1371/journal.pone.0175856": {
+        "title": "Learning from label proportions in brain-computer interfaces: Online unsupervised learning with guarantees",
+        "authors": [
+            "David H\u00fcbner",
+            "Thibault Verhoeven",
+            "Konstantin Schmid",
+            "Klaus-Robert M\u00fcller",
+            "Michael Tangermann",
+            "Pieter-Jan Kindermans"
+        ],
+        "year": 2017,
+        "doi": "10.1371/journal.pone.0175856"
+    },
+    "10.1371/journal.pone.0182578": {
+        "title": "Upper limb movements can be decoded from the time-domain of low-frequency EEG",
+        "authors": [
+            "Patrick Ofner",
+            "Andreas Schwarz",
+            "Joana Pereira",
+            "Gernot R. M\u00fcller-Putz"
+        ],
+        "year": 2017,
+        "doi": "10.1371/journal.pone.0182578"
+    },
+    "10.1371/journal.pone.0303565": {
+        "title": "An auditory brain-computer interface based on selective attention to multiple tone streams",
+        "authors": [
+            "Simon Kojima",
+            "Shin\u2019ichiro Kanoh"
+        ],
+        "year": 2024,
+        "doi": "10.1371/journal.pone.0303565"
+    },
+    "10.1515/bmt-2014-0117": {
+        "title": "Random forests in non-invasive sensorimotor rhythm brain-computer interfaces: a practical and convenient non-linear classifier",
+        "authors": [
+            "David Steyrl",
+            "Reinhold Scherer",
+            "Josef Faller",
+            "Gernot R. M\u00fcller-Putz"
+        ],
+        "year": 2016,
+        "doi": "10.1515/bmt-2014-0117"
+    },
+    "10.2312/vriphys.20181064": {
+        "title": "The Impact of Passive Head-Mounted Virtual Reality Devices on the Quality of EEG Signals",
+        "authors": [
+            "Gr\u00e9goire Cattan",
+            "Anton Andreev",
+            "Cesar Mendoza",
+            "Marco Congedo"
+        ],
+        "year": 2018,
+        "doi": "10.2312/vriphys.20181064"
+    },
+    "10.3217/978-3-85125-378-8-61": {
+        "title": "Motor Imagery Brain-Computer Interfaces: Random Forests Vs Regularized Lda - Non-Linear Beats Linear",
+        "authors": [
+            "",
+            "",
+            "",
+            ""
+        ],
+        "year": 2014,
+        "doi": "10.3217/978-3-85125-378-8-61"
+    },
+    "10.3389/fnhum.2013.00732": {
+        "title": "Attention and P300-based BCI performance in people with amyotrophic lateral sclerosis",
+        "authors": [
+            "Angela Riccio",
+            "Luca Simione",
+            "Francesca Schettini",
+            "Alessia Pizzimenti",
+            "Maurizio Inghilleri",
+            "Marta Olivetti Belardinelli",
+            "Donatella Mattia",
+            "Febo Cincotti"
+        ],
+        "year": 2013,
+        "doi": "10.3389/fnhum.2013.00732"
+    },
+    "10.3389/fnhum.2024.1461960": {
+        "title": "Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing",
+        "authors": [
+            "Simon Kojima",
+            "Shin'ichiro Kanoh"
+        ],
+        "year": 2024,
+        "doi": "10.3389/fnhum.2024.1461960"
+    },
+    "10.3389/fnins.2011.00099": {
+        "title": "A novel 9-class auditory ERP paradigm driving a predictive text entry system",
+        "authors": [
+            "Johannes H\u00f6hne"
+        ],
+        "year": 2011,
+        "doi": "10.3389/fnins.2011.00099"
+    },
+    "10.3389/fnins.2011.00112": {
+        "title": "Listen, You are Writing! Speeding up Online Spelling with a Dynamic Auditory BCI",
+        "authors": [
+            "Martijn Schreuder",
+            "Thomas Rost",
+            "Michael Tangermann"
+        ],
+        "year": 2011,
+        "doi": "10.3389/fnins.2011.00112"
+    },
+    "10.3389/fnins.2012.00055": {
+        "title": "Review of the BCI Competition IV",
+        "authors": [
+            "Michael Tangermann",
+            "Klaus-Robert M\u00fcller",
+            "Ad Aertsen",
+            "Niels Birbaumer",
+            "Christoph Braun",
+            "Clemens Brunner",
+            "Robert Leeb",
+            "Carsten Mehring",
+            "Kai J. Miller",
+            "Gernot R. M\u00fcller-Putz",
+            "Guido Nolte",
+            "Gert Pfurtscheller",
+            "Hubert Preissl",
+            "Gerwin Schalk",
+            "Alois Schl\u00f6gl",
+            "Carmen Vidaurre",
+            "Stephan Waldert",
+            "Benjamin Blankertz"
+        ],
+        "year": 2012,
+        "doi": "10.3389/fnins.2012.00055"
+    },
+    "10.3389/fnins.2020.00849": {
+        "title": "Analyzing and Decoding Natural Reach-and-Grasp Actions Using Gel, Water and Dry EEG Systems",
+        "authors": [
+            "Andreas Schwarz",
+            "Carlos Escolano",
+            "Luis Montesano",
+            "Gernot R. M\u00fcller-Putz"
+        ],
+        "year": 2020,
+        "doi": "10.3389/fnins.2020.00849"
+    },
+    "10.3389/fnins.2020.591777": {
+        "title": "Impact of Stimulus Features on the Performance of a Gaze-Independent Brain-Computer Interface Based on Covert Spatial Attention Shifts",
+        "authors": [
+            "Christoph Reichert",
+            "Igor Fabian Tellez Ceja",
+            "Catherine M. Sweeney-Reed",
+            "Hans-Jochen Heinze",
+            "Hermann Hinrichs",
+            "Stefan D\u00fcrschmid"
+        ],
+        "year": 2020,
+        "doi": "10.3389/fnins.2020.591777"
+    },
+    "10.34973/1ecz-1232": {
+        "title": "Broad-Band Visually Evoked Potentials: Re(con)volution in Brain-Computer Interfacing",
+        "authors": [
+            "Jordy Thielen",
+            "Jason Farquhar",
+            "Peter Desain"
+        ],
+        "year": 2018,
+        "doi": "10.34973/1ecz-1232"
+    },
+    "10.34973/9txv-z787": {
+        "title": "From full calibration to zero training for a code-modulated visual evoked potentials brain computer interface",
+        "authors": [
+            "Jordy Thielen",
+            "Pieter Marsman",
+            "Jason Farquhar",
+            "Peter Desain"
+        ],
+        "year": 17,
+        "doi": "10.34973/9txv-z787"
+    },
+    "10.48550/arXiv.1602.00904": {
+        "title": "Comparative evaluation of state-of-the-art algorithms for SSVEP-based BCIs",
+        "authors": [
+            "Vangelis P. Oikonomou",
+            "Georgios Liaros",
+            "Kostantinos Georgiadis",
+            "Elisavet Chatzilari",
+            "Katerina Adam",
+            "Spiros Nikolopoulos",
+            "Ioannis Kompatsiaris"
+        ],
+        "year": 2016,
+        "doi": "10.48550/arXiv.1602.00904"
+    },
+    "10.48550/arXiv.2109.06011": {
+        "title": "Online Optimization of Stimulation Speed in an Auditory Brain-Computer Interface under Time Constraints",
+        "authors": [
+            "Jan Sosulski",
+            "David H\u00fcbner",
+            "Aaron Klein",
+            "Michael Tangermann"
+        ],
+        "year": 2021,
+        "doi": "10.48550/arXiv.2109.06011"
+    },
+    "10.48550/arXiv.2202.12950": {
+        "title": "2021 BEETL Competition: Advancing Transfer Learning for Subject Independence &amp; Heterogenous EEG Data Sets",
+        "authors": [
+            "Xiaoxi Wei",
+            "A. Aldo Faisal",
+            "Moritz Grosse-Wentrup",
+            "Alexandre Gramfort",
+            "Sylvain Chevallier",
+            "Vinay Jayaram",
+            "Camille Jeunet",
+            "Stylianos Bakas",
+            "Siegfried Ludwig",
+            "Konstantinos Barmpas",
+            "Mehdi Bahri",
+            "Yannis Panagakis",
+            "Nikolaos Laskaris",
+            "Dimitrios A. Adamos",
+            "Stefanos Zafeiriou",
+            "William C. Duong",
+            "Stephen M. Gordon",
+            "Vernon J. Lawhern",
+            "Maciej \u015aliwowski",
+            "Vincent Rouanne",
+            "Piotr Tempczyk"
+        ],
+        "year": 2022,
+        "doi": "10.48550/arXiv.2202.12950"
+    },
+    "10.48550/arXiv.2509.23247": {
+        "title": "Explicit modelling of subject dependency in BCI decoding",
+        "authors": [
+            "Michele Romani",
+            "Francesco Paissan",
+            "Andrea Foss\u00e0",
+            "Elisabetta Farella"
+        ],
+        "year": 2025,
+        "doi": "10.48550/arXiv.2509.23247"
+    },
+    "10.48550/arXiv.2510.10169": {
+        "title": "BrainForm: a Serious Game for BCI Training and Data Collection",
+        "authors": [
+            "Michele Romani",
+            "Devis Zanoni",
+            "Elisabetta Farella",
+            "Luca Turchet"
+        ],
+        "year": 2025,
+        "doi": "10.48550/arXiv.2510.10169"
+    },
+    "10.5281/zenodo.1494163": {
+        "title": "Brain Invaders Adaptive versus Non-Adaptive P300 Brain-Computer Interface dataset",
+        "authors": [
+            "Erwan Vaineau",
+            "Alexandre Barachant",
+            "Anton Andreev",
+            "Pedro L. C. Rodrigues",
+            "Gr\u00e9goire Cattan",
+            "Marco Congedo"
+        ],
+        "year": 2018,
+        "doi": "10.5281/zenodo.1494163"
+    },
+    "10.5281/zenodo.192684": {
+        "title": "Eeg Data For: \"Learning From Label Proportions In Brain-Computer Interfaces\"",
+        "authors": [
+            "David H\u00fcbner"
+        ],
+        "year": 2016,
+        "doi": "10.5281/zenodo.192684"
+    },
+    "10.5281/zenodo.2222268": {
+        "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
+        "authors": [
+            "Patrick Ofner",
+            "Andreas Schwarz",
+            "Joana Pereira",
+            "Daniela Wyss",
+            "Renate Wildburger",
+            "Gernot R. M\u00fcller-Putz"
+        ],
+        "year": 2018,
+        "doi": "10.5281/zenodo.2222268"
+    },
+    "10.5281/zenodo.2348891": {
+        "title": "EEG Alpha Waves dataset",
+        "authors": [
+            "Gr\u00e9goire Cattan",
+            "Pedro L. C. Rodrigues",
+            "Marco Congedo"
+        ],
+        "year": 2018,
+        "doi": "10.5281/zenodo.2348891"
+    },
+    "10.5281/zenodo.2348892": {
+        "title": "EEG Alpha Waves dataset",
+        "authors": [
+            "Gr\u00e9goire Cattan",
+            "Pedro L. C. Rodrigues",
+            "Marco Congedo"
+        ],
+        "year": 2018,
+        "doi": "10.5281/zenodo.2348892"
+    },
+    "10.5281/zenodo.2605204": {
+        "title": "Dataset of an EEG-based BCI experiment in Virtual Reality and on a Personal Computer",
+        "authors": [
+            "Gr\u00e9goire Cattan",
+            "Anton Andreev",
+            "Pedro L. C. Rodrigues",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.2605204"
+    },
+    "10.5281/zenodo.2617084": {
+        "title": "Passive Head-Mounted Display Music-Listening EEG dataset",
+        "authors": [
+            "Gr\u00e9goire Cattan",
+            "Pedro L. C. Rodrigues",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.2617084"
+    },
+    "10.5281/zenodo.2649006": {
+        "title": "Building Brain Invaders: EEG data of an experimental validation",
+        "authors": [
+            "Gijsbrecht Franciscus Petrus Van Veen",
+            "Alexandre Barachant",
+            "Anton Andreev",
+            "Gr\u00e9goire Cattan",
+            "Pedro Luis Coelho Rodrigues",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.2649006"
+    },
+    "10.5281/zenodo.2669187": {
+        "title": "Brain Invaders Adaptive versus Non-Adaptive P300 Brain-Computer Interface dataset",
+        "authors": [
+            "Erwan Vaineau",
+            "Alexandre Barachant",
+            "Anton Andreev",
+            "Pedro L. C. Rodrigues",
+            "Gr\u00e9goire Cattan",
+            "Marco Congedo"
+        ],
+        "year": 2018,
+        "doi": "10.5281/zenodo.2669187"
+    },
+    "10.5281/zenodo.3266222": {
+        "title": "Brain Invaders calibration-less P300-based BCI using dry EEG electrodes Dataset (bi2014a)",
+        "authors": [
+            "Louis Korczowski",
+            "Ekaterina Ostaschenko",
+            "Anton Andreev",
+            "Gr\u00e9goire Cattan",
+            "Pedro Luis Coelho Rodrigues",
+            "Violette Gautheret",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.3266222"
+    },
+    "10.5281/zenodo.3266223": {
+        "title": "Brain Invaders calibration-less P300-based BCI using dry EEG electrodes Dataset (bi2014a)",
+        "authors": [
+            "Louis Korczowski",
+            "Ekaterina Ostaschenko",
+            "Anton Andreev",
+            "Gr\u00e9goire Cattan",
+            "Pedro Luis Coelho Rodrigues",
+            "Violette Gautheret",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.3266223"
+    },
+    "10.5281/zenodo.3266929": {
+        "title": "Brain Invaders calibration-less P300-based BCI with modulation of flash duration Dataset (bi2015a)",
+        "authors": [
+            "Louis Korczowski",
+            "Martine Cederhout",
+            "Anton Andreev",
+            "Gr\u00e9goire Cattan",
+            "Pedro Luis Coelho Rodrigues",
+            "Violette Gautheret",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.3266929"
+    },
+    "10.5281/zenodo.3266930": {
+        "title": "Brain Invaders calibration-less P300-based BCI with modulation of flash duration Dataset (bi2015a)",
+        "authors": [
+            "Louis Korczowski",
+            "Martine Cederhout",
+            "Anton Andreev",
+            "Gr\u00e9goire Cattan",
+            "Pedro Luis Coelho Rodrigues",
+            "Violette Gautheret",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.3266930"
+    },
+    "10.5281/zenodo.3267301": {
+        "title": "Brain Invaders Solo versus Collaboration: Multi-User P300-based Brain-Computer Interface Dataset (bi2014b)",
+        "authors": [
+            "Louis Korczowski",
+            "Ekaterina Ostaschenko",
+            "Anton Andreev",
+            "Gr\u00e9goire Cattan",
+            "Pedro Luis Coelho Rodrigues",
+            "Violette Gautheret",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.3267301"
+    },
+    "10.5281/zenodo.3267307": {
+        "title": "Brain Invaders Cooperative versus Competitive: Multi-User P300-based Brain-Computer Interface Dataset (bi2015b)",
+        "authors": [
+            "Louis Korczowski",
+            "Martine Cederhout",
+            "Anton Andreev",
+            "Gr\u00e9goire Cattan",
+            "Pedro Luis Coelho Rodrigues",
+            "Violette Gautheret",
+            "Marco Congedo"
+        ],
+        "year": 2019,
+        "doi": "10.5281/zenodo.3267307"
+    },
+    "10.5281/zenodo.6874128": {
+        "title": "COG-BCI database: A multi-session and multi-task EEG cognitive dataset for passive brain-computer interfaces",
+        "authors": [
+            "Marcel F. Hinss",
+            "Emilie S. Jahanpour",
+            "Bertille Somon",
+            "Lou Pluchon",
+            "Fr\u00e9d\u00e9ric Dehais",
+            "Rapha\u00eblle N. Roy"
+        ],
+        "year": 2022,
+        "doi": "10.5281/zenodo.6874128"
+    },
+    "10.5281/zenodo.806022": {
+        "title": "Eeg Motor Imagery Dataset From The Phd Thesis \"Commande Robuste D'Un Effecteur Par Une Interface Cerveau Machine Eeg Asynchrone\"",
+        "authors": [
+            "Alexandre Barachant"
+        ],
+        "year": 2012,
+        "doi": "10.5281/zenodo.806022"
+    },
+    "10.5281/zenodo.8089820": {
+        "title": "A large EEG database with users' profile information for motor imagery Brain-Computer Interface research",
+        "authors": [
+            "",
+            "",
+            "Rimbert S\u00e9bastien",
+            "",
+            "Lotte Fabien"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.8089820"
+    },
+    "10.5281/zenodo.8255618": {
+        "title": "4-class code-VEP EEG data",
+        "authors": [
+            "Kalou Cabrera Castillos"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.8255618"
+    },
+    "10.5524/100295": {
+        "title": "Supporting data for \"EEG datasets for motor imagery brain computer interface\"",
+        "authors": [
+            "Hohyun Cho",
+            "Minkyu Ahn",
+            "Sangtae Ahn",
+            "Moonyoung Kwon",
+            "Sung, Chan Jun"
+        ],
+        "year": 2017,
+        "doi": "10.5524/100295"
+    },
+    "10.5524/100542": {
+        "title": "Supporting data for \"EEG Dataset and OpenBMI Toolbox for Three BCI Paradigms: An Investigation into BCI Illiteracy\"",
+        "authors": [
+            "Min-Ho Lee",
+            "O-Yeon Kwon",
+            "Yong-Jeong Kim",
+            "Hong-Kyung Kim",
+            "Young-Eun Lee",
+            "John Williamson",
+            "Siamac Fazli",
+            "Seong-Whan Lee"
+        ],
+        "year": 2019,
+        "doi": "10.5524/100542"
+    },
+    "10.6084/m9.figshare.13123148": {
+        "title": "Human EEG Dataset for Brain-Computer Interface and Meditation",
+        "authors": [
+            "James Stieger"
+        ],
+        "year": 2021,
+        "doi": "10.6084/m9.figshare.13123148"
+    },
+    "10.6084/m9.figshare.13123148.v1": {
+        "title": "Human EEG Dataset for Brain-Computer Interface and Meditation",
+        "authors": [
+            "James Stieger"
+        ],
+        "year": 2021,
+        "doi": "10.6084/m9.figshare.13123148.v1"
+    },
+    "10.6084/m9.figshare.2061654": {
+        "title": "three-class motor imagery EEG data.zip",
+        "authors": [
+            ""
+        ],
+        "year": 2016,
+        "doi": "10.6084/m9.figshare.2061654"
+    },
+    "10.6084/m9.figshare.2068677.v1": {
+        "title": "MAMEM EEG SSVEP Dataset I (256 channels, 11 subjects, 5 frequencies)",
+        "authors": [
+            "Spiros Nikolopoulos"
+        ],
+        "year": 2016,
+        "doi": "10.6084/m9.figshare.2068677.v1"
+    },
+    "10.6084/m9.figshare.21679035.v5": {
+        "title": "EEG datasets of stroke patients",
+        "authors": [
+            "Haijie Liu",
+            "Xiaodong Lv"
+        ],
+        "year": 2023,
+        "doi": "10.6084/m9.figshare.21679035.v5"
+    },
+    "10.6094/UNIFR/154576": {
+        "title": "Electroencephalogram signals recorded from 13 healthy subjects during an auditory oddball paradigm under different stimulus onset asynchrony conditions",
+        "authors": [
+            "Jan Sosulski",
+            "Michael Tangermann"
+        ],
+        "year": 2019,
+        "doi": "10.6094/UNIFR/154576"
+    },
+    "10.7910/DVN/1UJDV6": {
+        "title": "Replication Data for: Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing",
+        "authors": [
+            "Simon Kojima"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/1UJDV6"
+    },
+    "10.7910/DVN/27306": {
+        "title": "EEG data of simple and compound limb motor imagery",
+        "authors": [
+            "Yi Weibo"
+        ],
+        "year": 2014,
+        "doi": "10.7910/DVN/27306"
+    },
+    "10.7910/DVN/MQOVEY": {
+        "title": "Replication Data for: An auditory brain-computer interface based on selective attention to multiple tone streams",
+        "authors": [
+            "Simon Kojima",
+            "Shin'ichiro Kanoh"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/MQOVEY"
+    }
+}

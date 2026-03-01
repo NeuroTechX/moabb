@@ -49,6 +49,7 @@ jobs:
             --exclude "gitter\\.im"
             --exclude "gitlab\\.com"
             --exclude "dx\\.doi\\.org"
+            --exclude "doi\\.org/10\\.5281/zenodo"
             "./**/*.md"
             "./**/*.rst"
           fail: true

@@ -14,11 +14,11 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -30,8 +30,8 @@ from moabb.datasets.metadata.schema import (
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
 BF_archive_name = "BIDS.zip"
-BF_folder_name = "BrainForm-BIDS-eeg-dataset"
 BF_dataset_name = "RomaniBF2025ERP"
+BF_folder_name = f"MNE-{BF_dataset_name}-data"
 
 BRAINFORM_dataset_params = {
     "dataset_name": BF_dataset_name,
@@ -132,80 +132,130 @@ class RomaniBF2025ERP(BaseDataset):
             sampling_rate=250.0,
             n_channels=8,
             channel_types={"eeg": 8},
-            montage="10-20",
-            hardware="g.tec",
-            sensor_type="conductive gel electrodes",
-            reference="mastoid",
-            ground="mastoid",
-            software="OpenViBE",
+            montage="standard_1020",
+            hardware="g.tec Unicorn Hybrid Black",
+            sensor_type="EEG",
+            reference="right mastoid",
+            ground="left mastoid",
+            software=None,
             sensors=["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"],
             line_freq=50.0,
+            cap_manufacturer="g.tec",
+            cap_model="Unicorn Hybrid Black",
+            electrode_type="conductive gel",
         ),
         participants=ParticipantMetadata(
             n_subjects=22,
             health_status="healthy",
             gender={"female": 10, "male": 12},
             age_mean=21.87,
+            age_std=3.22,
             bci_experience="naive",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
+            events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
-            n_classes=1,
-            class_labels=["rest"],
+            n_classes=2,
+            class_labels=["target", "non-target"],
             trial_duration=0.9,
-            study_design="minimize move-\nment during recording to reduce motion artifacts.",
-            feedback_type="real-time visual feedback (green outline on spelled symbol), calibration feedback color-coded (red <80%, yellow 80-90%, green >90%)",
+            study_design="Within-subject study with two main sessions separated by visual texture swap (counterbalanced). Each session: calibration, tutorial, practice run with Complex Task (5 targets) and Speller Task (10 targets). Optional free-play third session for 16 participants.",
+            feedback_type="visual",
             stimulus_type="flickering",
-            stimulus_modalities=["visual", "multisensory"],
-            primary_modality="multisensory",
-            synchronicity="asynchronous",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
             mode="online",
+            tasks=[
+                "Complex Task (5 colored laser beams)",
+                "Speller Task (10 color targets)",
+            ],
+            study_domain="BCI training, serious gaming, skill acquisition",
+            instructions="minimize movement during recording to reduce motion artifacts, focus on flickering targets for calibration and task completion",
+            has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
-            doi="10.1371/journal.pone.0111070",
+            description="BrainForm: a Serious Game for BCI Training and Data Collection - gamified BCI training system designed for scalable data collection using consumer hardware",
+            investigators=[
+                "Michele Romani",
+                "Devis Zanoni",
+                "Elisabetta Farella",
+                "Luca Turchet",
+            ],
+            institution="University of Trento",
+            country="IT",
+            publication_year=2025,
+            senior_author="Luca Turchet",
+            institution_address="38122, Trento, Italy",
+            institution_department=None,
+            associated_paper_doi=None,
+            keywords=[
+                "Brain-Computer Interfaces",
+                "Event-Related Potentials",
+                "Machine Learning",
+                "Serious Games",
+                "Human factors",
+            ],
+            doi="10.48550/arXiv.2510.10169",
             repository="GitHub",
-            data_url="https://github.com/BRomans/BrainForm",
+            data_url="https://zenodo.org/records/17225966",
+            license="CC-BY-4.0",
         ),
         tags=Tags(
             pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
+            modality=["ERP"],
+            type=["P300"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw EEG data available in public dataset",
-            preprocessing_applied=True,
-            preprocessing_steps=["notch filter", "bandpass filter", "segmentation"],
-            filter_details=FilterDetails(
-                highpass_hz=0.5,
-                lowpass_hz=15,
-                bandpass=[0.5, 15],
-                notch_hz=[50, 60],
-                filter_order="2nd-order for notch, 6th-order for bandpass",
-            ),
-            artifact_methods=["ICA"],
+            data_state="raw",
+            preprocessing_applied=False,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=None,
         ),
         bci_application=BCIApplicationMetadata(
-            applications=[
-                "speller",
-                "wheelchair/navigation",
-                "prosthetic",
-                "gaming",
-                "vr_ar",
-                "communication",
-            ],
-            environment="home",
+            applications=["speller", "gaming"],
+            environment="laboratory",
+            online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
+            n_targets=10,
+            n_repetitions=None,
+            isi_ms=None,
+            soa_ms=100.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=60,
-            trials_context="total",
+            n_trials=600,
+            trials_context="Per calibration session: 600 total stimulus events (60 target + 540 non-target from 10 unique targets). ~1 minute duration.",
+            n_blocks=None,
+            block_duration_s=None,
         ),
-        data_processed=True,
+        sessions_per_subject=2,
+        runs_per_session=1,
+        sessions=None,
+        contributing_labs=["University of Trento", "Fondazione Bruno Kessler"],
+        n_contributing_labs=2,
+        data_processed=False,
+        file_format="EDF",
+        cross_validation=CrossValidationMetadata(
+            cv_method="cross-validation",
+            cv_folds=None,
+            evaluation_type=["within-subject"],
+        ),
+        performance={
+            "task_accuracy_complex_median_t2a": 0.833,
+            "task_accuracy_speller_median_t3b": 0.833,
+            "itr_complex_mean_t2a": 10.76,
+            "itr_speller_mean_t3b": 21.95,
+            "calibration_attempts_session1_mean": 2.64,
+            "calibration_attempts_session2_mean": 2.68,
+        },
+        abstract="BrainForm is a gamified Brain-Computer Interface (BCI) training system designed for scalable data collection using consumer hardware and a minimal setup. We investigated (1) how users develop BCI control skills across repeated sessions and (2) perceptual and performance effects of two visual stimulation textures. Game Experience Questionnaire (GEQ) scores for Flow, Positive Affect, Competence and Challenge were strongly positive, indicating sustained engagement. A within-subject study with multiple runs, two task complexities, and post-session questionnaires revealed no significant performance differences between textures but increased ocular irritation over time. Online metrics—Task Accuracy, Task Time, and Information Transfer Rate—improved across sessions, confirming learning effects for symbol spelling, even under pressure conditions. Our results highlight the potential of BrainForm as a scalable, user-friendly BCI research tool and offer guidance for sustained engagement and reduced training fatigue.",
+        methodology="Structured protocol consisting of: (1) introductory tutorial, (2) two practice runs involving calibration and control with up to ten flickering targets, (3) final timed challenge. Two main sessions separated by short break and visual texture swap (counterbalanced). Calibration: 60 trials focusing on single flashing target (~1 minute), repeated until 80%+ accuracy. Tasks: Complex Task (5 colored laser beams, game-oriented) and Speller Task (10 color targets, BCI-oriented symbol spelling). Optional free-play run for 16 participants. Data collection: raw EEG, performance metrics, in-game metadata, and questionnaires (demographic, session questionnaire, GEQ).",
     )
 
     def __init__(
@@ -222,6 +272,7 @@ class RomaniBF2025ERP(BaseDataset):
         include_inference: bool = False,
         load_failed: bool = False,
         montage: str = "standard_1020",
+        sessions=None,
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -300,6 +351,7 @@ class RomaniBF2025ERP(BaseDataset):
             interval=interval,
             paradigm="p300",
             doi="10.48550/arXiv.2510.10169",
+            selected_sessions=sessions,
         )
 
     def _ensure_data_downloaded(self) -> None:
@@ -354,8 +406,25 @@ class RomaniBF2025ERP(BaseDataset):
             Corrected path to the actual BIDS root.
         """
 
-        # Rename unzipped folder after download if needed
+        # Handle backward compatibility: rename old folder to new nomenclature
         parent_folder = path.parent
+        legacy_folder_name = "BrainForm-BIDS-eeg-dataset"
+        legacy_path = parent_folder / legacy_folder_name
+        if legacy_path.exists() and not path.exists():
+            # Migrate from legacy folder name to new MOABB nomenclature
+            logging.info(
+                f"Migrating dataset from legacy folder '{legacy_folder_name}' "
+                f"to MOABB nomenclature '{path.name}'"
+            )
+            try:
+                shutil.move(str(legacy_path), str(path))
+            except OSError as e:
+                logging.warning(
+                    f"Could not migrate legacy folder: {e}. Using legacy path."
+                )
+                path = legacy_path
+
+        # Rename unzipped folder after download if needed
         unzipped_folder = BF_archive_name + ".unzip"
         unzipped_path = parent_folder / unzipped_folder
         if os.path.exists(unzipped_path):
@@ -528,7 +597,12 @@ class RomaniBF2025ERP(BaseDataset):
                     sessions[ses_name]["2inference"] = raw_infer
 
             except Exception as e:
-                logging.error(f"Error reading {bids_path}: {e}")
+                logging.error(
+                    f"Error reading {bids_path}: {e}. "
+                    f"Session '{ses_name}' for subject '{subject_label}' "
+                    "will be skipped.",
+                    exc_info=True,
+                )
 
         return sessions
 
@@ -558,7 +632,7 @@ class RomaniBF2025ERP(BaseDataset):
         info = mne.create_info([stim_name], raw.info["sfreq"], ["stim"])
         stim_raw = mne.io.RawArray(stim_data, info)
         raw.drop_channels([stim_name])
-        raw.add_channels([stim_raw])
+        raw.add_channels([stim_raw], force_update_info=True)
 
         return raw
 

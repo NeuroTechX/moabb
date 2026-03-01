@@ -12,6 +12,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.utils import _handle_deprecated_kwargs
 
 
 MARTINEZCAGIGAL2023_CHECKER_URL = "https://uvadoc.uva.es/handle/10324/70973"
@@ -127,7 +128,13 @@ class MartinezCagigal2023Checker(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
-    def __init__(self, conditions=ALL_CONDITIONS):
+    def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"Conditions": "conditions"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "MartinezCagigal2023Checker"
+        )
+        conditions = resolved.get("conditions", conditions)
+
         # Validate conditions
         for cond in conditions:
             if cond not in ALL_CONDITIONS:
@@ -145,6 +152,8 @@ class MartinezCagigal2023Checker(BaseDataset):
             interval=(0, 1),  # Don't use this, it depends on the condition
             paradigm="cvep",
             doi="https://doi.org/10.71569/7c67-v596",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

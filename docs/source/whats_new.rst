@@ -37,8 +37,19 @@ Enhancements
 - Implement :class:`moabb.evaluations.splitters.LearningCurveSplitter` as a dedicated sklearn-compatible cross-validator for learning curves, enabling learning curve analysis with any evaluation type (:gh:`963` by `Bruno Aristimunha`_)
 - Flattened parallel evaluation: all CV folds across all datasets are now executed in a single ``joblib.Parallel`` call via ``_process_parallel()``, replacing per-dataset sequential evaluation with full cross-dataset parallelism (by `Bruno Aristimunha`_)
 - Auto-generate dataset documentation admonitions (Participants, Equipment, Preprocessing, Data Access, Experimental Protocol) from class-level ``METADATA`` when missing, while preserving manually written sections (:gh:`960` by `Bruno Aristimunha`_)
+- Add a "Report an Issue on GitHub" feedback section to all dataset docstrings so users can easily report dataset problems (:gh:`982` by `Bruno Aristimunha`_)
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
+- Add automatic HED 8.4.0 (Hierarchical Event Descriptors) annotations to BIDS export with 83 validated paradigm-specific tags covering all MOABB datasets, ``HEDVersion`` in ``dataset_description.json``, events.json sidecar patching, per-dataset override via ``ExperimentMetadata.hed_tags``, and ``Label/`` fallback for unmapped events (:gh:`974` by `Bruno Aristimunha`_)
+- Add advanced tutorial on Riemannian Artifact Rejection (Riemannian Potato and Potato Field) as a pre-processing step using pipeline surgery (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
+- Add pipeline surgery methods (``find_steps``, ``insert_step``, ``remove_step``) to :class:`moabb.datasets.preprocessing.FixedPipeline` for easier pipeline manipulation (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
+- Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
+- Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
+- Add and correct ``license`` and ``repository`` fields in ``DocumentationMetadata`` across all datasets against upstream sources; standardize all license strings to SPDX identifiers; correct DOIs for BNCI2014_002 and MAMEM1/2/3 datasets (by `Katelyn Begany`_)
+- Validate and correct metadata across 45 datasets against original publications, fixing ~920 fields including country codes, preprocessing conflation, reference electrodes, and fabricated auxiliary channels (:gh:`1001` by `Bruno Aristimunha`_)
+- Add :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method for exporting raw EEG datasets to clean BIDS-compliant directory structures without processing-pipeline hash in filenames (by `Bruno Aristimunha`_)
+- Expose ``subjects`` and ``sessions`` parameters on all dataset constructors to allow filtering at instantiation time (e.g., ``PhysionetMI(subjects=[1, 2, 3])``). Add ``all_subjects`` property and ``sessions`` parameter to ``get_data()`` (by `Bruno Aristimunha`_)
+- Add Copy and CSV export buttons to benchmark results tables on the results webpage, enabling users to copy or download table data directly (:gh:`1002` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -52,6 +63,7 @@ API changes
 - Added four new BNCI P300/ERP dataset classes: :class:`moabb.datasets.BNCI2015_009` (AMUSE), :class:`moabb.datasets.BNCI2015_010` (RSVP), :class:`moabb.datasets.BNCI2015_012` (PASS2D), and :class:`moabb.datasets.BNCI2015_013` (ErrP) (by `Bruno Aristimunha`_).
 - Removed ``data_size`` and ``n_perms`` parameters from :class:`moabb.evaluations.WithinSessionEvaluation`. Use ``cv_class=LearningCurveSplitter`` with ``cv_kwargs=dict(data_size=..., n_perms=...)`` instead (:gh:`963` by `Bruno Aristimunha`_)
 - Learning curve results now automatically include "data_size" and "permutation" columns when using ``LearningCurveSplitter`` (:gh:`963` by `Bruno Aristimunha`_)
+- Replace wildcard imports with explicit class imports in :mod:`moabb.paradigms` (:gh:`1004` by `Bruno Aristimunha`_)
 
 Requirements
 ~~~~~~~~~~~~
@@ -60,6 +72,9 @@ Requirements
 
 Bugs
 ~~~~
+- Fix missing ``P300`` from the list of valid paradigms in the :func:`moabb.benchmark` docstring (by `Bruno Aristimunha`_)
+- Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
+- Added missing metadata DOIs for AlexMI, PhysionetMI, GrosseWentrup2009, Shin2017A, Shin2017B, BNCI2014_004, and BNCI2003_004 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
 - Fixed measurement date setting for BNCI datasets to use specific collection years from papers (by `Bruno Aristimunha`_)
 - Ensured proper subject ID assignment for BIDS compliance across all BNCI datasets (by `Bruno Aristimunha`_)
@@ -76,12 +91,23 @@ Bugs
 - ``LearningCurveSplitter`` now skips training splits that collapse to a single class (e.g., with very small ``data_size``) and emits a ``RuntimeWarning`` instead of producing NaN results (:gh:`963` by `Bruno Aristimunha`_)
 - Fix double µV-to-V conversion in BNCI2003-004 and BNCI2015-006: data loaded in microvolts was labeled as volts without unit conversion, causing a second scaling during EDF export via ``mne_bids`` (by `Bruno Aristimunha`_)
 - Fix ``Beetl2021_A`` and ``Beetl2021_B`` 403 Forbidden errors by skipping Figshare API calls when data already exists locally, and fix double-nested zip extraction directory structure (:gh:`969` by `Bruno Aristimunha`_)
+- Fix wrong channel names in Riemannian Artifact Rejection tutorial that caused ``pick()`` to fail on BNCI2014-009 (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.RomaniBF2025ERP` to follow MOABB nomenclature pattern by using dynamic folder name ``MNE-{code}-data`` instead of hardcoded folder name. Automatically migrates legacy folder ``BrainForm-BIDS-eeg-dataset`` to new nomenclature for backward compatibility (by `Bruno Aristimunha`_)
+- Move BIDS cache lock file from the BIDS subject folder to the ``code/`` folder for BIDS validator compliance. Lock files are now written per-session as ``code/sub-{subject}_ses-{session}_desc-{hash}_lockfile.json``. Backward compatibility is preserved for caches created with the old location (:gh:`986` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Fixed ``erase()`` in :class:`moabb.datasets.bids_interface.BIDSInterfaceBase` to handle multi-session datasets correctly by using per-session ``rm()`` calls instead of a single subject-level call, which previously caused a ``RuntimeError`` when looking up ``scans.tsv`` across multiple sessions (:gh:`986` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Fix ``MOABB_RESULTS`` default path to respect ``MNE_DATA`` configuration instead of hardcoding ``~/mne_data``, and fix docs CI cache to use workspace-relative ``MNE_DATA`` path and cache ``~/.mne`` config directory (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.RomaniBF2025ERP` ``get_data()`` failing with description merge error when adding stim channel, causing sessions to be silently dropped (:gh:`991` by `Bruno Aristimunha`_)
+- Fix docs CI cache: set ``MNE_DATA`` env var and persist ``~/.mne`` config directory so dataset paths survive cache restore (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.Liu2024` download failure by switching Figshare URLs from ``figshare.com/ndownloader`` to ``ndownloader.figshare.com`` and adding ``BadZipFile`` recovery for corrupted cached downloads (:gh:`992` by `Bruno Aristimunha`_)
+- Fix TRCA Riemannian mean convergence failure by regularizing ill-conditioned cross-covariance matrices in :class:`moabb.pipelines.classification.SSVEP_TRCA`. Eigenvalue clamping bounds the condition number, eliminating ``Convergence not reached`` and ``invalid value encountered in log`` warnings (by `Bruno Aristimunha`_)
+- Add documentation note to :class:`moabb.datasets.PhysionetMI` that subject 88 was recorded at 128 Hz instead of 160 Hz, which causes errors when loaded alongside other subjects (:gh:`538` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
+- Resolve all 216 pytest warnings across the test suite by addressing root causes: clear Epochs annotations before concatenation, replace lambda with named function in test pipelines, re-apply montage after ``add_reference_channels``, conditionally pass ``groups`` parameter in splitters using ``GroupsConsumerMixin``, use ``os.environ`` in ``FakeDataset`` to avoid non-standard config warnings, and suppress intentional ``OptunaSearchCV`` experimental warnings at init (by `Bruno Aristimunha`_)
+- Added systematic DOI validation test suite that checks format, docstring tracking, resolution, and author overlap across all datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
 - Added new datasets :class:`moabb.datasets.BNCI2020_001`, :class:`moabb.datasets.BNCI2020_002`, :class:`moabb.datasets.BNCI2022_001`, :class:`moabb.datasets.BNCI2025_001`, and :class:`moabb.datasets.BNCI2025_002` (by `Bruno Aristimunha`_).
-
 - Persist docs/test CI MNE dataset cache across runs to reduce cold-cache downloads (:gh:`946` by `Bruno Aristimunha`_)
 - Refactor evaluation scoring into shared utility functions for future improvements (:gh:`948` by `Bruno Aristimunha`_)
 - Centralize CV resolution in BaseEvaluation with new ``_resolve_cv()`` method for consistent cross-validation handling across all evaluation types. Add ``_build_result()`` and ``_build_scored_result()`` helpers to centralize result dict construction across WithinSession, CrossSession, and CrossSubject evaluations, replacing manual dict assembly in each (:gh:`963` by `Bruno Aristimunha`_)
@@ -97,6 +123,8 @@ Code health
 - Move ``_pipeline_requires_epochs()`` from ``evaluations.py`` to ``utils.py`` for shared access by ``BaseEvaluation._load_data()`` (:gh:`963` by `Bruno Aristimunha`_)
 - Move ``WithinSessionSplitter`` creation outside the per-session loop in ``WithinSessionEvaluation``, since splitter parameters do not change per session (:gh:`963` by `Bruno Aristimunha`_)
 - Add a compile smoke test (``moabb/tests/test_compilation.py``) that validates syntax for all Python files under ``moabb/`` using ``py_compile`` (:gh:`960` by `Bruno Aristimunha`_)
+- Add persistent DOI resolution cache (``moabb/tests/doi_cache.json``) for ``test_doi_validation.py`` to avoid network requests on every test run, reducing DOI test time from ~9 minutes to <1 second. Refresh with ``--update-doi-cache`` (:gh:`996` by `Bruno Aristimunha`_)
+- Fix ``UtilEvaluation`` test class not discovered by pytest: renamed to ``TestUtilEvaluation`` and replaced ``self.skipTest`` (unittest-only) with ``pytest.skip`` (:gh:`1005` by `Bruno Aristimunha`_)
 
 Version 1.4.3 (Stable - PyPi)
 -------------------------------
@@ -743,3 +771,5 @@ API changes
 .. _Victor Martinez-Cagigal: https://github.com/vicmarcag
 .. _Mateusz Naklicki: https://github.com/luluu9
 .. _Matthias Dold: https://github.com/matthiasdold
+.. _Davoud Hajhassani: https://github.com/Davoud-Hajhassani
+.. _Katelyn Begany: https://github.com/kbegany

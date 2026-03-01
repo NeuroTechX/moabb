@@ -6,6 +6,7 @@ import warnings
 import zipfile as z
 from pathlib import Path
 from typing import Any, Dict, Tuple
+from zipfile import BadZipFile
 
 import mne
 import numpy as np
@@ -23,24 +24,22 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
 from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.utils import _handle_deprecated_kwargs
 
 
 # Link to the raw data
-LIU2024_URL = "https://figshare.com/ndownloader/files/38516654"
+LIU2024_URL = "https://ndownloader.figshare.com/files/38516654"
 
 # Links to the electrodes and events information files
-LIU2024_ELECTRODES = "https://figshare.com/ndownloader/files/38516078"
-LIU2024_EVENTS = "https://figshare.com/ndownloader/files/38516084"
+LIU2024_ELECTRODES = "https://ndownloader.figshare.com/files/38516078"
+LIU2024_EVENTS = "https://ndownloader.figshare.com/files/38516084"
 
 
 class Liu2024(BaseDataset):
@@ -94,138 +93,230 @@ class Liu2024(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=30,
-            channel_types={"eeg": 30},
+            n_channels=29,
+            channel_types={"eeg": 29, "eog": 2},
             montage="10-10",
             hardware="ZhenTec NT1 wireless multichannel EEG acquisition system",
-            sensor_type="Ag/AgCl",
-            reference="Car",
-            software="EEGLAB",
+            sensor_type="semi-dry Ag/AgCl",
+            reference="CPz",
+            ground="FPz",
+            software=None,
             impedance_threshold_kohm=20,
             sensors=[
-                "Fp1",
-                "Fp2",
-                "F7",
-                "F3",
-                "Fz",
-                "F4",
-                "F8",
-                "FC5",
-                "FC1",
-                "FC2",
-                "FC6",
-                "T7",
                 "C3",
-                "Cz",
                 "C4",
-                "T8",
-                "CP5",
-                "CP1",
-                "CP2",
-                "CP6",
-                "P7",
-                "P3",
-                "Pz",
-                "P4",
-                "P8",
-                "PO9",
+                "CP3",
+                "CP4",
+                "Cz",
+                "F3",
+                "F4",
+                "F7",
+                "F8",
+                "FC3",
+                "FC4",
+                "FCz",
+                "FP1",
+                "FP2",
+                "FT7",
+                "FT8",
+                "Fz",
+                "HEOL",
                 "O1",
-                "Oz",
                 "O2",
-                "PO10",
+                "Oz",
+                "P3",
+                "P4",
+                "Pz",
+                "T3",
+                "T4",
+                "T5",
+                "T6",
+                "TP7",
+                "TP8",
+                "VEOR",
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
                 eog_channels=2,
                 eog_type=["horizontal", "vertical"],
-                other_physiological=["gsr"],
             ),
+            electrode_material="Ag/AgCl semi-dry electrodes based on highly absorbable porous sponges dampened with 3% NaCl solution",
         ),
         participants=ParticipantMetadata(
             n_subjects=50,
-            health_status="healthy",
+            health_status="acute stroke patients",
+            clinical_population="acute stroke patients (1-30 days post-stroke)",
             gender={"male": 39, "female": 11},
             age_mean=56.7,
+            age_std=10.57,
+            age_min=31.0,
+            age_max=77.0,
+            species="human",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
-            n_classes=1,
-            class_labels=["rest"],
-            trial_duration=8,
-            study_design="Imagining grasping a spherical object with left or right hand while watching a video of gripping motion",
-            feedback_type="video of gripping motion played during MI",
-            stimulus_type="avatar",
-            mode="online",
+            n_classes=2,
+            class_labels=["left_hand", "right_hand"],
+            trial_duration=8.0,
+            study_design="Imagining grasping a spherical object with left or right hand while watching a video of gripping motion. Each trial: instruction stage (prompt), MI stage (4s video-guided imagery), break stage (rest).",
+            feedback_type="none",
+            stimulus_type="video and audio",
+            stimulus_modalities=["visual", "audio"],
+            mode="offline",
+            events={"left_hand": 1, "right_hand": 2},
+            instructions="Subject sat approximately 80 cm from computer screen. Computer played audio instructions. Patients imagined grasping spherical object with prompted hand during 4s video playback.",
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-023-02787-8",
+            description="EEG motor imagery dataset from 50 acute stroke patients performing left- and right-handed hand-grip imagination tasks. First open dataset addressing left- and right-handed motor imagery in acute stroke patients.",
+            investigators=[
+                "Haijie Liu",
+                "Penghu Wei",
+                "Haochong Wang",
+                "Xiaodong Lv",
+                "Wei Duan",
+                "Meijie Li",
+                "Yan Zhao",
+                "Qingmei Wang",
+                "Xinyuan Chen",
+                "Gaige Shi",
+                "Bo Han",
+                "Junwei Hao",
+            ],
+            senior_author="Junwei Hao",
+            contact_info=["haojunwei@vip.163.com"],
+            institution="Xuanwu Hospital Capital Medical University",
+            institution_address="Beijing, 100053, China",
+            institution_department="Department of Neurology",
+            country="CN",
+            data_url="https://doi.org/10.6084/m9.figshare.21679035.v5",
+            publication_year=2024,
+            funding=[
+                "National Natural Science Foundation of China (grant nos. 82090043 and 81825008)"
+            ],
+            ethics_approval=[
+                "Ethics Committee of Xuanwu Hospital of Capital Medical University (No. 2021-236)"
+            ],
+            keywords=[
+                "motor imagery",
+                "BCI",
+                "brain-computer interface",
+                "stroke patients",
+                "EEG",
+                "rehabilitation",
+                "acute stroke",
+                "hand-grip imagery",
+            ],
+            license="CC-BY-4.0",
+            repository="Figshare",
         ),
+        sessions_per_subject=1,
+        runs_per_session=1,
         tags=Tags(
-            pathology=["Healthy"],
+            pathology=["Stroke"],
             modality=["Motor"],
-            type=["Motor"],
+            type=["Motor Imagery"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="both raw and preprocessed data available",
+            data_state="preprocessed",
             preprocessing_applied=True,
-            preprocessing_steps=["baseline removal", "bandpass filtering"],
-            filter_details=FilterDetails(
-                highpass_hz=0.5,
-                lowpass_hz=40,
-                bandpass=[0.5, 40],
-                filter_type="Butterworth",
-            ),
-            artifact_methods=["ICA"],
-            re_reference="car",
+            preprocessing_steps=[
+                "baseline removal (mean removal method)",
+                "FIR filtering (0.5-40 Hz)",
+            ],
+            highpass_hz=0.5,
+            lowpass_hz=40.0,
+            bandpass=[0.5, 40.0],
+            filter_type=None,
+            filter_order=None,
+            artifact_methods=None,
+            re_reference=None,
+            notes="Filtered data split into trials × channels × time-samples format by marker '1'. Some motion artifacts present in subjects 4, 5, 13, 14, 18, 24, 28, 33, 42, 43, 47, 48, 49.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
                 "LDA",
                 "SVM",
-                "CNN",
-                "Neural Network",
-                "MDM",
-                "EEGNet",
-                "Riemannian",
+                "MDRM",
+                "TSLDA",
+                "DGFMDRM",
             ],
             feature_extraction=[
                 "CSP",
                 "FBCSP",
-                "ERD",
-                "ERS",
-                "Wavelet",
+                "ERD/ERS",
                 "Covariance/Riemannian",
-                "Time-Frequency",
                 "Tangent Space",
+                "Time-Frequency (Wavelet)",
+                "TWFB (Time Window Filter Bank)",
             ],
-            frequency_bands=FrequencyBands(
-                alpha=[8.0, 15.0],
-                analyzed_range=[0.5, 40.0],
-            ),
+            frequency_bands={
+                "alpha": [8.0, 15.0],
+                "beta": [15.0, 30.0],
+                "analyzed_range": [0.5, 40.0],
+            },
+            spatial_filters=["CSP", "FBCSP", "Discriminant Geodesic Filtering"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold",
+            cv_method="10-fold cross-validation",
             cv_folds=10,
-            evaluation_type=["transfer_learning"],
+            evaluation_type=["within_subject"],
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=72.21,
-        ),
+        performance={
+            "accuracy_percent": 72.21,
+            "kappa": 0.4442,
+            "precision": 0.7543,
+            "sensitivity": 0.7845,
+            "CSP+LDA_accuracy": 55.57,
+            "FBCSP+SVM_accuracy": 57.57,
+            "TSLDA+DGFMDRM_accuracy": 61.20,
+        },
         bci_application=BCIApplicationMetadata(
-            applications=["prosthetic", "smart_home", "vr_ar", "communication"],
-            environment="outdoor",
+            applications=["rehabilitation"],
+            environment="laboratory",
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
+            imagery_tasks=["left_hand", "right_hand"],
+            imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=40,
+            n_trials_per_class={"left_hand": 20, "right_hand": 20},
+            trials_context="40 trials per subject total (20 left-hand, 20 right-hand), alternating. Each trial: 8s total (instruction + 4s MI + break). Training/test split: 60%/40%.",
         ),
+        file_format="MAT and EDF",
         data_processed=True,
+        contributing_labs=[
+            "Xuanwu Hospital Capital Medical University",
+        ],
+        n_contributing_labs=1,
+        abstract="The brain-computer interface (BCI) is a technology that involves direct communication with parts of the brain and has evolved rapidly in recent years; it has begun to be used in clinical practice, such as for patient rehabilitation. Patient electroencephalography (EEG) datasets are critical for algorithm optimization and clinical applications of BCIs but are rare at present. We collected data from 50 acute stroke patients with wireless portable saline EEG devices during the performance of two tasks: 1) imagining right-handed movements and 2) imagining left-handed movements. The dataset consists of four types of data: 1) the motor imagery instructions, 2) raw recording data, 3) pre-processed data after removing artefacts and other manipulations, and 4) patient characteristics. This is the first open dataset to address left- and right-handed motor imagery in acute stroke patients.",
+        methodology="50 acute stroke patients (1-30 days post-stroke) performed 40 trials of hand-grip motor imagery (20 left, 20 right). Each 8s trial included instruction, 4s video-guided imagery, and rest phases. EEG recorded with 30-channel ZhenTec NT1 wireless system at 500 Hz. Data organized in BIDS format with raw (.mat) and preprocessed (.edf) versions. Clinical assessments: NIHSS (mean=4.16±2.85), MBI (mean=70.94±18.22), mRS (mean=2.66±1.44). 23 patients right hemiplegia, 27 left hemiplegia.",
     )
 
-    def __init__(self, break_events=False, instr_events=False):
+    def __init__(
+        self,
+        break_events=False,
+        instr_events=False,
+        subjects=None,
+        sessions=None,
+        **kwargs,
+    ):
+        deprecated_renames = {
+            "BreakEvents": "break_events",
+            "InstrEvents": "instr_events",
+            "Subjects": "subjects",
+            "Sessions": "sessions",
+        }
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Liu2024")
+        break_events = resolved.get("break_events", break_events)
+        instr_events = resolved.get("instr_events", instr_events)
+        subjects = resolved.get("subjects", subjects)
+        sessions = resolved.get("sessions", sessions)
+
         self.break_events = break_events
         self.instr_events = instr_events
         self.events = {"left_hand": 1, "right_hand": 2}
@@ -241,6 +332,8 @@ class Liu2024(BaseDataset):
             interval=(2, 6),
             paradigm="imagery",
             doi="10.1038/s41597-023-02787-8",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def data_path(
@@ -282,8 +375,15 @@ class Liu2024(BaseDataset):
 
         # Extract the zip file if it hasn't been extracted yet
         if not (path_folder / "edffile").is_dir():
-            zip_ref = z.ZipFile(path_zip, "r")
-            zip_ref.extractall(path_folder)
+            try:
+                with z.ZipFile(path_zip, "r") as zip_ref:
+                    zip_ref.extractall(path_folder)
+            except BadZipFile:
+                warnings.warn("Corrupted zip file detected, re-downloading...")
+                path_zip.unlink(missing_ok=True)
+                path_zip = Path(dl.data_dl(LIU2024_URL, self.code, force_update=True))
+                with z.ZipFile(path_zip, "r") as zip_ref:
+                    zip_ref.extractall(path_folder)
 
         subject_paths = []
         sub = f"sub-{subject:02d}"
