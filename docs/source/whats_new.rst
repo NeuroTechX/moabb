@@ -48,6 +48,7 @@ Enhancements
 - Validate and correct metadata across 45 datasets against original publications, fixing ~920 fields including country codes, preprocessing conflation, reference electrodes, and fabricated auxiliary channels (:gh:`1001` by `Bruno Aristimunha`_)
 - Add :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method for exporting raw EEG datasets to clean BIDS-compliant directory structures without processing-pipeline hash in filenames (by `Bruno Aristimunha`_)
 - Expose ``subjects`` and ``sessions`` parameters on all dataset constructors to allow filtering at instantiation time (e.g., ``PhysionetMI(subjects=[1, 2, 3])``). Add ``all_subjects`` property and ``sessions`` parameter to ``get_data()`` (by `Bruno Aristimunha`_)
+- Add Copy and CSV export buttons to benchmark results tables on the results webpage, enabling users to copy or download table data directly (:gh:`1002` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -61,6 +62,7 @@ API changes
 - Added four new BNCI P300/ERP dataset classes: :class:`moabb.datasets.BNCI2015_009` (AMUSE), :class:`moabb.datasets.BNCI2015_010` (RSVP), :class:`moabb.datasets.BNCI2015_012` (PASS2D), and :class:`moabb.datasets.BNCI2015_013` (ErrP) (by `Bruno Aristimunha`_).
 - Removed ``data_size`` and ``n_perms`` parameters from :class:`moabb.evaluations.WithinSessionEvaluation`. Use ``cv_class=LearningCurveSplitter`` with ``cv_kwargs=dict(data_size=..., n_perms=...)`` instead (:gh:`963` by `Bruno Aristimunha`_)
 - Learning curve results now automatically include "data_size" and "permutation" columns when using ``LearningCurveSplitter`` (:gh:`963` by `Bruno Aristimunha`_)
+- Replace wildcard imports with explicit class imports in :mod:`moabb.paradigms` (:gh:`1004` by `Bruno Aristimunha`_)
 
 Requirements
 ~~~~~~~~~~~~
@@ -69,6 +71,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix missing ``P300`` from the list of valid paradigms in the :func:`moabb.benchmark` docstring (by `Bruno Aristimunha`_)
 - Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Added missing metadata DOIs for AlexMI, PhysionetMI, GrosseWentrup2009, Shin2017A, Shin2017B, BNCI2014_004, and BNCI2003_004 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
@@ -95,6 +98,7 @@ Bugs
 - Fix docs CI cache: set ``MNE_DATA`` env var and persist ``~/.mne`` config directory so dataset paths survive cache restore (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Liu2024` download failure by switching Figshare URLs from ``figshare.com/ndownloader`` to ``ndownloader.figshare.com`` and adding ``BadZipFile`` recovery for corrupted cached downloads (:gh:`992` by `Bruno Aristimunha`_)
 - Fix TRCA Riemannian mean convergence failure by regularizing ill-conditioned cross-covariance matrices in :class:`moabb.pipelines.classification.SSVEP_TRCA`. Eigenvalue clamping bounds the condition number, eliminating ``Convergence not reached`` and ``invalid value encountered in log`` warnings (by `Bruno Aristimunha`_)
+- Add documentation note to :class:`moabb.datasets.PhysionetMI` that subject 88 was recorded at 128 Hz instead of 160 Hz, which causes errors when loaded alongside other subjects (:gh:`538` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
