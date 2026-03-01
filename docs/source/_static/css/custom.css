@@ -1708,30 +1708,59 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
    API Page Styling – scoped to the API page via #api-and-main-concepts
    =================================================================== */
 
-/* --- 1A. Prose line-length constraint (API page only) --- */
-#api-and-main-concepts > section > p {
-  max-width: 68rem;
+/* --- 1. API hero section: centered diagram + intro --- */
+.api-hero {
+  text-align: center;
+  max-width: 56rem;
+  margin: 0 auto 2rem;
 }
-
-/* --- 1B. Architecture diagram: left-aligned, same content edge --- */
-.api-architecture-diagram {
-  max-width: 52rem;
-  margin: 1.5rem 0 1rem;
+.api-hero .api-architecture-diagram {
+  max-width: 42rem;
+  margin: 1rem auto 0.5rem;
 }
-.api-architecture-diagram img {
+.api-hero .api-architecture-diagram img {
   width: 100%;
   height: auto;
 }
-.api-architecture-diagram .caption-text {
+.api-hero .api-architecture-diagram .caption-text {
   font-size: 0.92rem;
+  font-weight: 500;
   color: var(--pst-color-text-muted);
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
+}
+.api-intro {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  text-align: center;
+  max-width: 52rem;
+  margin: 0.75rem auto;
+}
+.api-intro:first-of-type {
+  margin-top: 1.25rem;
 }
 
-/* --- 2. Heading vertical rhythm (API page only) --- */
+/* Concept colors with underline accents from diagram box fills */
+.concept-dataset    { color: #b86e00; border-bottom: 2px solid #ffe6cc; }
+.concept-paradigm   { color: #7a6800; border-bottom: 2px solid #fff2cc; }
+.concept-evaluation { color: #3d7a2e; border-bottom: 2px solid #d5e8d4; }
+.concept-pipeline   { color: #3a6590; border-bottom: 2px solid #dae8fc; }
+
+[data-theme="dark"] .concept-dataset    { color: #f0b44a; border-bottom-color: rgba(240, 180, 74, 0.25); }
+[data-theme="dark"] .concept-paradigm   { color: #e0c85a; border-bottom-color: rgba(224, 200, 90, 0.25); }
+[data-theme="dark"] .concept-evaluation { color: #92c876; border-bottom-color: rgba(146, 200, 118, 0.25); }
+[data-theme="dark"] .concept-pipeline   { color: #7ca8d4; border-bottom-color: rgba(124, 168, 212, 0.25); }
+
+/* --- 2. Heading vertical rhythm + section breaks (API page only) --- */
 #api-and-main-concepts > section > h2 {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
   margin-bottom: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--pst-color-border);
+}
+/* Skip border on the first h2 — the hero provides enough separation */
+#api-and-main-concepts > section:first-of-type > h2 {
+  border-top: none;
+  padding-top: 0;
 }
 #api-and-main-concepts > section > section > h3 {
   margin-top: 2rem;
@@ -1740,7 +1769,16 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
   border-bottom: 1px solid var(--pst-color-border);
 }
 
-/* --- 3. Autosummary table styling --- */
+/* --- 3. Section intro paragraphs: muted, narrower for readability --- */
+#api-and-main-concepts > section > p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--pst-color-text-muted);
+  max-width: 65ch;
+  margin-bottom: 1.5rem;
+}
+
+/* --- 4. Autosummary table styling --- */
 table.autosummary {
   margin-top: 0.5rem;
   table-layout: fixed;
@@ -1751,6 +1789,14 @@ table.autosummary col:first-child {
 }
 table.autosummary td:first-child {
   word-break: break-word;
+}
+table.autosummary td {
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+}
+/* Zebra-striping for long table scannability */
+table.autosummary tr:nth-child(even) td {
+  background-color: color-mix(in srgb, var(--pst-color-surface) 50%, transparent);
 }
 
 /* Soften dataset link styling: less weight, slightly muted */
@@ -1765,19 +1811,18 @@ table.autosummary td:nth-child(2) {
   color: var(--pst-color-text-base);
 }
 
-/* --- 4. Benchmark admonition code block (API page only) --- */
+/* --- 5. Benchmark admonition code block (API page only) --- */
 #api-and-main-concepts .admonition .highlight {
   max-width: 68rem;
 }
 
-/* --- 5. Right-sidebar TOC enhancements --- */
+/* --- 6. Right-sidebar TOC enhancements --- */
 .bd-toc nav > ul > li > a {
   font-size: 0.88rem;
 }
 .bd-toc nav ul li a.active {
   font-weight: 600;
   color: var(--pst-color-primary);
-  border-left: 2px solid var(--pst-color-primary);
-  padding-left: 0.4rem;
-  margin-left: -0.5rem;
+  box-shadow: inset 2px 0 0 var(--pst-color-primary);
+  padding-left: 0.5rem;
 }

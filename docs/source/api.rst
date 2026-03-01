@@ -2,6 +2,10 @@
 API and Main Concepts
 =====================
 
+.. raw:: html
+
+   <div class="api-hero">
+
 .. figure:: images/architecture.svg
    :alt: Concept flow in MOABB
    :class: api-architecture-diagram
@@ -9,12 +13,22 @@ API and Main Concepts
    Datasets and Paradigms define the problem; Evaluations and Pipelines
    define the measurement.
 
-There are 4 main concepts in the MOABB: **the datasets**, **the paradigms**, **the
-evaluations**, and **the pipelines**. In addition, we offer **statistical**,
-**visualization**, **utilities** to simplify the workflow.
+.. raw:: html
 
-And if you want to just run the benchmark, you can use our **benchmark** module that wraps
-all the steps in a single function.
+   <p class="api-intro">
+   There are 4 main concepts in the MOABB:
+   <strong class="concept-dataset">the datasets</strong>,
+   <strong class="concept-paradigm">the paradigms</strong>,
+   <strong class="concept-evaluation">the evaluations</strong>, and
+   <strong class="concept-pipeline">the pipelines</strong>.
+   In addition, we offer <strong>statistical</strong>,
+   <strong>visualization</strong>, <strong>utilities</strong> to simplify the workflow.
+   </p>
+   <p class="api-intro">
+   And if you want to just run the benchmark, you can use our
+   <strong>benchmark</strong> module that wraps all the steps in a single function.
+   </p>
+   </div>
 
 
 Datasets
