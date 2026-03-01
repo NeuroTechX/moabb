@@ -1,6 +1,4 @@
 import logging
-from copy import deepcopy
-from typing import Union
 
 import numpy as np
 from sklearn.base import clone
@@ -20,23 +18,13 @@ from moabb.evaluations.splitters import (
 )
 from moabb.evaluations.utils import (
     _average_scores,
+    _carbonfootprint,
     _create_scorer,
     _update_result_with_scores,
 )
 
 
-try:
-    from codecarbon import EmissionsTracker  # noqa
-
-    _carbonfootprint = True
-except ImportError:
-    _carbonfootprint = False
-
-
 log = logging.getLogger(__name__)
-
-# Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
-Vector = Union[list, tuple, np.ndarray]
 
 
 class WithinSessionEvaluation(BaseEvaluation):
@@ -124,14 +112,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 subjects=[subject],
             )
 
-            cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
-            self.cv = WithinSessionSplitter(
-                n_folds=5,
-                shuffle=True,
-                random_state=self.random_state,
-                cv_class=cv_class,
-                **cv_kwargs,
-            )
+            self.cv = self._create_splitter()
 
             # iterate over sessions
             for session in np.unique(metadata.session):
@@ -332,10 +313,7 @@ class CrossSessionEvaluation(BaseEvaluation):
 
             for name, clf in run_pipes.items():
                 # we want to store a results per session
-                cv_class, cv_kwargs = self._resolve_cv(LeaveOneGroupOut)
-                self.cv = CrossSessionSplitter(
-                    cv_class=cv_class, random_state=self.random_state, **cv_kwargs
-                )
+                self.cv = self._create_splitter()
                 inner_cv = StratifiedKFold(
                     3, shuffle=True, random_state=self.random_state
                 )
@@ -514,22 +492,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         nchan = self._get_nchan(X)
 
         # perform leave one subject out CV
-        if self.n_splits is None:
-            default_class = LeaveOneGroupOut
-            default_kwargs = {}
-            adjust_subjects = False
-        else:
-            default_class = GroupKFold
-            default_kwargs = {"n_splits": self.n_splits}
-            adjust_subjects = True
-
-        cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
-        if self.cv_class is None and adjust_subjects:
+        self.cv = self._create_splitter()
+        if self.n_splits is not None and self.cv_class is None:
             n_subjects = self.n_splits
-
-        self.cv = CrossSubjectSplitter(
-            cv_class=cv_class, random_state=self.random_state, **cv_kwargs
-        )
 
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
@@ -556,7 +521,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 clf = self._grid_search(
                     param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
-                cvclf = deepcopy(clf)
+                cvclf = clone(clf)
 
                 duration, emissions, task_name = self._fit_cv(
                     cvclf,

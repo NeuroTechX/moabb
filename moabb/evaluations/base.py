@@ -18,6 +18,7 @@ from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import (
     Emissions,
     _average_scores,
+    _carbonfootprint,
     _convert_sklearn_params_to_optuna,
     _create_save_path,
     _create_scorer,
@@ -37,13 +38,6 @@ from moabb.utils import verbose
 search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
-
-try:
-    import codecarbon  # noqa
-
-    _carbonfootprint = True
-except ImportError:
-    _carbonfootprint = False
 
 # Making the optuna soft dependency
 
@@ -146,11 +140,10 @@ def _evaluate_fold(
         y_test = y[test_idx]
 
     inner_cv = StratifiedKFold(3, shuffle=True, random_state=random_state)
-    grid_clf = clone(pipeline)
     grid_clf, is_search = _grid_search_static(
         param_grid=param_grid,
         name=pipeline_name,
-        grid_clf=grid_clf,
+        grid_clf=clone(pipeline),
         inner_cv=inner_cv,
         scoring=scoring,
         n_jobs=config["n_jobs_grid"],
@@ -158,7 +151,7 @@ def _evaluate_fold(
         time_out=config["time_out"],
     )
 
-    cvclf = clone(grid_clf)
+    cvclf = clone(grid_clf) if is_search else grid_clf
     nchan = _get_nchan(X)
 
     # Set up emissions tracker
@@ -682,12 +675,10 @@ class BaseEvaluation(ABC):
 
             for name, clf in run_pipes.items():
                 task_config = dict(config)
-                if param_grid is None:
-                    task_param_grid = None
-                elif isinstance(param_grid, dict) and name in param_grid:
+                if param_grid is not None and name in param_grid:
                     task_param_grid = {name: deepcopy(param_grid[name])}
                 else:
-                    task_param_grid = deepcopy(param_grid)
+                    task_param_grid = None
                 task_config["param_grid"] = task_param_grid
                 tasks.append(
                     dict(
@@ -1030,38 +1021,15 @@ class BaseEvaluation(ABC):
         return "requirements not met"
 
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
-        extra_params = {}
-        if param_grid is not None:
-            if name in param_grid:
-                if self.optuna:
-                    search = search_methods["optuna"]
-                    param_grid[name] = _convert_sklearn_params_to_optuna(param_grid[name])
-                    extra_params["timeout"] = self.time_out
-                else:
-                    search = search_methods["grid"]
-
-                # Use primary scorer for grid search
-                if isinstance(self.paradigm.scoring, dict):
-                    refit = next(iter(self.paradigm.scoring))
-                else:
-                    refit = True
-
-                search = search(
-                    grid_clf,
-                    param_grid[name],
-                    refit=refit,
-                    cv=inner_cv,
-                    n_jobs=self.n_jobs,
-                    scoring=self.paradigm.scoring,
-                    return_train_score=True,
-                    **extra_params,
-                )
-                self.search = True
-                return search
-            else:
-                self.search = True
-                return grid_clf
-
-        else:
-            self.search = False
-            return grid_clf
+        result, is_search = _grid_search_static(
+            param_grid=param_grid,
+            name=name,
+            grid_clf=grid_clf,
+            inner_cv=inner_cv,
+            scoring=self.paradigm.scoring,
+            n_jobs=self.n_jobs,
+            optuna=self.optuna,
+            time_out=self.time_out,
+        )
+        self.search = is_search
+        return result
