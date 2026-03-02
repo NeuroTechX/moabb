@@ -17,7 +17,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
@@ -29,6 +29,26 @@ DATASET_PATH_PATTERNS = [
     re.compile(r"^/docs/generated/moabb\.datasets\.([A-Za-z0-9_]+)/?$"),
     re.compile(r"^/generated/moabb\.datasets\.([A-Za-z0-9_]+)/?$"),
 ]
+
+
+def _normalize_dataset_name(name: str) -> str:
+    """Normalize dataset name for alias matching."""
+    return re.sub(r"[^a-z0-9]+", "", str(name).strip().lower())
+
+
+def _build_canonical_name_map() -> dict[str, str]:
+    """Map normalized dataset names to canonical class names."""
+    mapping: dict[str, str] = {}
+    try:
+        from moabb.datasets.utils import dataset_list
+
+        for ds_cls in dataset_list:
+            name = ds_cls.__name__
+            mapping[_normalize_dataset_name(name)] = name
+    except Exception:
+        # Keep empty map; we still export raw names as fallback.
+        pass
+    return mapping
 
 
 def _utc_now_iso() -> str:
@@ -65,6 +85,23 @@ def _extract_dataset_class(page_path: str) -> str | None:
         if match:
             return match.group(1)
     return None
+
+
+def _canonical_dataset_name(name: str, canonical_map: dict[str, str]) -> str:
+    """Return canonical dataset name when an alias is detected."""
+    key = _normalize_dataset_name(name)
+    return canonical_map.get(key, name)
+
+
+def _merge_counts_by_canonical(
+    counts: dict[str, int], canonical_map: dict[str, str]
+) -> dict[str, int]:
+    """Merge duplicate aliases into canonical dataset names."""
+    merged: dict[str, int] = {}
+    for name, value in counts.items():
+        canonical = _canonical_dataset_name(name, canonical_map)
+        merged[canonical] = merged.get(canonical, 0) + int(value)
+    return merged
 
 
 def _run_report(
@@ -139,6 +176,106 @@ def _run_report(
             continue
         per_dataset[ds_name] = per_dataset.get(ds_name, 0) + value
     return per_dataset
+
+
+def _run_report_daily(
+    *,
+    property_id: str,
+    access_token: str,
+    start_date: str,
+    end_date: str,
+    timeout_seconds: float,
+    canonical_map: dict[str, str],
+) -> dict[str, dict[str, int]]:
+    """Return per-dataset daily views: {dataset: {YYYYMMDD: views}}."""
+    import requests
+
+    url = (
+        f"https://analyticsdata.googleapis.com/v1beta/properties/{property_id}:runReport"
+    )
+    payload = {
+        "dateRanges": [{"startDate": start_date, "endDate": end_date}],
+        "dimensions": [{"name": "pagePath"}, {"name": "date"}],
+        "metrics": [{"name": "screenPageViews"}],
+        "dimensionFilter": {
+            "orGroup": {
+                "expressions": [
+                    {
+                        "filter": {
+                            "fieldName": "pagePath",
+                            "stringFilter": {
+                                "matchType": "BEGINS_WITH",
+                                "value": "/docs/generated/moabb.datasets.",
+                            },
+                        }
+                    },
+                    {
+                        "filter": {
+                            "fieldName": "pagePath",
+                            "stringFilter": {
+                                "matchType": "BEGINS_WITH",
+                                "value": "/generated/moabb.datasets.",
+                            },
+                        }
+                    },
+                ]
+            }
+        },
+        "keepEmptyRows": False,
+        "limit": "250000",
+    }
+
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    response = requests.post(url, headers=headers, json=payload, timeout=timeout_seconds)
+    if response.status_code >= 400:
+        text = response.text[:1000]
+        raise RuntimeError(f"GA4 daily runReport failed ({response.status_code}): {text}")
+
+    data = response.json()
+    rows = data.get("rows", [])
+    out: dict[str, dict[str, int]] = {}
+    for row in rows:
+        dims = row.get("dimensionValues") or []
+        mets = row.get("metricValues") or []
+        if len(dims) < 2 or not mets:
+            continue
+        page_path = dims[0].get("value", "")
+        day = dims[1].get("value", "")
+        ds_name = _extract_dataset_class(page_path)
+        if not ds_name or not day:
+            continue
+        ds_name = _canonical_dataset_name(ds_name, canonical_map)
+        try:
+            value = int(mets[0].get("value", "0"))
+        except ValueError:
+            continue
+        bucket = out.setdefault(ds_name, {})
+        bucket[day] = bucket.get(day, 0) + value
+    return out
+
+
+def _build_weekly_series(
+    per_dataset_daily: dict[str, dict[str, int]], *, n_weeks: int = 12
+) -> dict[str, list[int]]:
+    """Aggregate daily counts into n_weeks rolling 7-day bins."""
+    end_day = date.today() - timedelta(days=1)
+    start_day = end_day - timedelta(days=(n_weeks * 7 - 1))
+
+    series: dict[str, list[int]] = {}
+    for ds_name, daily in per_dataset_daily.items():
+        values = []
+        for week in range(n_weeks):
+            bucket_start = start_day + timedelta(days=week * 7)
+            total = 0
+            for offset in range(7):
+                key = (bucket_start + timedelta(days=offset)).strftime("%Y%m%d")
+                total += int(daily.get(key, 0))
+            values.append(total)
+        series[ds_name] = values
+    return series
 
 
 def _build_access_token(service_account_file: str) -> str:
@@ -220,6 +357,7 @@ def main() -> int:
             temp_file.close()
             service_account_file = temp_file.name
 
+        canonical_map = _build_canonical_name_map()
         access_token = _build_access_token(service_account_file)
         last30 = _run_report(
             property_id=property_id,
@@ -228,6 +366,7 @@ def main() -> int:
             end_date="yesterday",
             timeout_seconds=args.timeout_seconds,
         )
+        last30 = _merge_counts_by_canonical(last30, canonical_map)
         all_time = _run_report(
             property_id=property_id,
             access_token=access_token,
@@ -236,12 +375,23 @@ def main() -> int:
             end_date="yesterday",
             timeout_seconds=args.timeout_seconds,
         )
+        all_time = _merge_counts_by_canonical(all_time, canonical_map)
+        daily_12w = _run_report_daily(
+            property_id=property_id,
+            access_token=access_token,
+            start_date="84daysAgo",
+            end_date="yesterday",
+            timeout_seconds=args.timeout_seconds,
+            canonical_map=canonical_map,
+        )
+        weekly_12 = _build_weekly_series(daily_12w, n_weeks=12)
 
         merged: dict[str, dict[str, int]] = {}
-        for name in set(last30) | set(all_time):
+        for name in set(last30) | set(all_time) | set(weekly_12):
             merged[name] = {
                 "last30": int(last30.get(name, 0)),
                 "all_time": int(all_time.get(name, 0)),
+                "weekly_12": [int(v) for v in weekly_12.get(name, [0] * 12)],
             }
 
         _write_snapshot(

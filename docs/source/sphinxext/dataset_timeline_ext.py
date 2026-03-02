@@ -18,9 +18,11 @@ To regenerate *all* SVGs (timelines + viz), run (from the repo root)::
 import csv
 import inspect
 import json
+import math
 import os
 import re
 import statistics
+from datetime import datetime, timezone
 from html import escape
 from urllib.parse import quote
 from urllib.request import Request, urlopen
@@ -884,39 +886,102 @@ def _load_dataset_pageviews(srcdir):
         return _DATASET_PAGEVIEWS_CACHE
 
     snapshot_path = os.path.join(srcdir, "_static", "analytics", "pageviews.json")
-    counts = {}
+    payload = {
+        "generated_at_utc": "",
+        "status": "disabled",
+        "reason": "",
+        "counts": {},
+        "ranks": {},
+    }
+
+    def _norm_name(name):
+        return re.sub(r"[^a-z0-9]+", "", str(name).strip().lower())
+
+    canonical_name_map = {}
+    try:
+        from moabb.datasets.utils import dataset_list
+
+        for ds_cls in dataset_list:
+            canonical_name_map[_norm_name(ds_cls.__name__)] = ds_cls.__name__
+    except Exception:
+        canonical_name_map = {}
+
     try:
         with open(snapshot_path, encoding="utf-8") as f:
-            payload = json.load(f)
-        raw_counts = payload.get("counts", {})
+            raw_payload = json.load(f)
+        payload["generated_at_utc"] = str(raw_payload.get("generated_at_utc", "") or "")
+        payload["status"] = str(raw_payload.get("status", "") or "disabled")
+        payload["reason"] = str(raw_payload.get("reason", "") or "")
+
+        raw_counts = raw_payload.get("counts", {})
+        merged_counts = {}
         if isinstance(raw_counts, dict):
             for cls_name, values in raw_counts.items():
                 if not isinstance(values, dict):
                     continue
-                entry = {}
+                canonical = canonical_name_map.get(_norm_name(cls_name), str(cls_name))
+                entry = merged_counts.setdefault(
+                    canonical, {"last30": 0, "all_time": 0, "weekly_12": [0] * 12}
+                )
                 if "last30" in values:
                     try:
-                        entry["last30"] = int(values["last30"])
+                        entry["last30"] += int(values["last30"])
                     except (TypeError, ValueError):
                         pass
                 if "all_time" in values:
                     try:
-                        entry["all_time"] = int(values["all_time"])
+                        entry["all_time"] += int(values["all_time"])
                     except (TypeError, ValueError):
                         pass
-                if entry:
-                    counts[str(cls_name)] = entry
-    except Exception:
-        counts = {}
+                weekly = values.get("weekly_12")
+                if isinstance(weekly, list):
+                    for i, val in enumerate(weekly[:12]):
+                        try:
+                            entry["weekly_12"][i] += int(val)
+                        except (TypeError, ValueError):
+                            pass
+        payload["counts"] = merged_counts
 
-    _DATASET_PAGEVIEWS_CACHE = counts
+        ranked = sorted(
+            payload["counts"].items(),
+            key=lambda kv: (-int(kv[1].get("all_time", 0)), kv[0]),
+        )
+        total = len(ranked)
+        ranks = {}
+        if total > 0:
+            for idx, (name, _) in enumerate(ranked, start=1):
+                ranks[name] = {
+                    "rank": idx,
+                    "total": total,
+                    "top_percent": max(1, math.ceil((idx / total) * 100)),
+                }
+        payload["ranks"] = ranks
+    except Exception:
+        pass
+
+    _DATASET_PAGEVIEWS_CACHE = payload
     _DATASET_PAGEVIEWS_CACHE_SRC = srcdir
-    return counts
+    return payload
 
 
 def _get_dataset_pageview_counts(srcdir, cls_name):
     """Return page view counts for a dataset class name (if available)."""
-    return _load_dataset_pageviews(srcdir).get(cls_name, {})
+    return _load_dataset_pageviews(srcdir).get("counts", {}).get(cls_name, {})
+
+
+def _get_dataset_pageview_rank(srcdir, cls_name):
+    """Return pageview rank metadata for a dataset class name (if available)."""
+    return _load_dataset_pageviews(srcdir).get("ranks", {}).get(cls_name, {})
+
+
+def _get_dataset_pageview_meta(srcdir):
+    """Return GA pageview snapshot metadata."""
+    payload = _load_dataset_pageviews(srcdir)
+    return {
+        "generated_at_utc": payload.get("generated_at_utc", ""),
+        "status": payload.get("status", ""),
+        "reason": payload.get("reason", ""),
+    }
 
 
 def _format_count(value):
@@ -925,6 +990,60 @@ def _format_count(value):
         return f"{int(value):,}"
     except (TypeError, ValueError):
         return "n/a"
+
+
+def _format_updated_utc(iso_text):
+    """Format ISO timestamp into YYYY-MM-DD UTC."""
+    if not iso_text:
+        return "n/a"
+    try:
+        parsed = datetime.fromisoformat(str(iso_text).replace("Z", "+00:00"))
+        parsed = parsed.astimezone(timezone.utc)
+        return parsed.strftime("%Y-%m-%d UTC")
+    except Exception:
+        return "n/a"
+
+
+def _sparkline_svg(values):
+    """Return an inline SVG sparkline for a sequence of numeric values."""
+    if not isinstance(values, list) or len(values) < 2:
+        return ""
+    nums = []
+    for val in values[:12]:
+        try:
+            nums.append(max(0, int(val)))
+        except (TypeError, ValueError):
+            nums.append(0)
+    if len(nums) < 2:
+        return ""
+
+    width, height = 110, 28
+    pad = 2
+    min_y = pad
+    max_y = height - pad
+    max_val = max(nums) if nums else 0
+    denom = max_val if max_val > 0 else 1
+    step = (width - 2 * pad) / (len(nums) - 1)
+
+    points = []
+    for i, val in enumerate(nums):
+        x = pad + i * step
+        y = max_y - ((val / denom) * (max_y - min_y))
+        points.append((x, y))
+
+    line_points = " ".join(f"{x:.2f},{y:.2f}" for x, y in points)
+    area_path = (
+        f"M {points[0][0]:.2f} {max_y:.2f} "
+        + " ".join(f"L {x:.2f} {y:.2f}" for x, y in points)
+        + f" L {points[-1][0]:.2f} {max_y:.2f} Z"
+    )
+    return (
+        '<svg class="ds-views-spark" viewBox="0 0 110 28" '
+        'role="img" aria-label="Weekly page views over the last 12 weeks">'
+        f'<path class="ds-views-spark-area" d="{area_path}"></path>'
+        f'<polyline class="ds-views-spark-line" points="{line_points}"></polyline>'
+        "</svg>"
+    )
 
 
 def _make_provenance_html(info):
@@ -985,7 +1104,14 @@ def _make_provenance_html(info):
 
 
 def _make_header_html(
-    cls_name, info, source_url=None, *, live_citations=True, pageview_counts=None
+    cls_name,
+    info,
+    source_url=None,
+    *,
+    live_citations=True,
+    pageview_counts=None,
+    pageview_rank=None,
+    pageview_meta=None,
 ):
     """Build the enhanced dataset card HTML (Layer 1)."""
     paradigm = info.get("paradigm") or "unknown"
@@ -1086,12 +1212,33 @@ def _make_header_html(
         else None
     )
     views_html = (
-        '<p class="ds-views-line" title="Google Analytics 4 page views">'
-        '<span class="ds-views-label">Page Views</span>'
-        f"30d: <strong>{_format_count(last30)}</strong>"
+        '<div class="ds-views-line" title="Google Analytics 4 page views">'
+        '<div class="ds-views-main">'
+        '<div class="ds-views-head"><span class="ds-views-label">Page Views</span>'
+        f'<span class="ds-views-updated">Updated: {_format_updated_utc((pageview_meta or {}).get("generated_at_utc"))}</span>'
+        "</div>"
+        '<div class="ds-views-metrics">'
+        f"<span>30d: <strong>{_format_count(last30)}</strong></span>"
         '<span class="ds-provenance-sep">·</span>'
-        f"all-time: <strong>{_format_count(all_time)}</strong>"
-        "</p>"
+        f"<span>all-time: <strong>{_format_count(all_time)}</strong></span>"
+        "</div>"
+        '<div class="ds-views-rank">'
+        + (
+            f"#{int((pageview_rank or {}).get('rank'))} of {int((pageview_rank or {}).get('total'))} "
+            f"· Top {int((pageview_rank or {}).get('top_percent'))}% most viewed"
+            if isinstance(pageview_rank, dict)
+            and pageview_rank.get("rank")
+            and pageview_rank.get("total")
+            else "Ranking: n/a"
+        )
+        + "</div>"
+        "</div>"
+        + (
+            f'<div class="ds-views-spark-wrap">{_sparkline_svg((pageview_counts or {}).get("weekly_12"))}</div>'
+            if isinstance(pageview_counts, dict)
+            else ""
+        )
+        + "</div>"
     )
     benchmark_html = _make_benchmark_context_html(cls_name, info)
     benchmark_ctx = _get_benchmark_context(cls_name)
@@ -1689,12 +1836,16 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
     if info:
         live_citations = getattr(app.config, "dataset_card_live_citations", True)
         pageview_counts = _get_dataset_pageview_counts(app.srcdir, cls_name)
+        pageview_rank = _get_dataset_pageview_rank(app.srcdir, cls_name)
+        pageview_meta = _get_dataset_pageview_meta(app.srcdir)
         header_html = _make_header_html(
             cls_name,
             info,
             source_url=source_url,
             live_citations=live_citations,
             pageview_counts=pageview_counts,
+            pageview_rank=pageview_rank,
+            pageview_meta=pageview_meta,
         )
         top_block.append(".. raw:: html")
         top_block.append("")
