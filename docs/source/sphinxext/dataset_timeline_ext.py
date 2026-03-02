@@ -213,6 +213,26 @@ def _format_resolved_citation(meta):
     return lead
 
 
+def _select_preferred_paper_doi(dataset_doi, documentation_doi, associated_paper_doi):
+    """Pick the DOI that should represent the associated paper.
+
+    Priority:
+    1) explicit documentation.associated_paper_doi
+    2) documentation.doi
+    3) dataset-level doi
+    """
+    candidates = [associated_paper_doi, documentation_doi, dataset_doi]
+    for value in candidates:
+        norm = _normalize_doi(value)
+        if norm and _is_likely_doi(norm):
+            return norm
+    for value in candidates:
+        norm = _normalize_doi(value)
+        if norm:
+            return norm
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Dataset info extraction
 # ---------------------------------------------------------------------------
@@ -228,7 +248,7 @@ def _get_dataset_info(obj):
         default_subject = subject_list[0] if subject_list else 1
         n_sessions = getattr(ds, "n_sessions", None)
         code = getattr(ds, "code", None)
-        doi = getattr(ds, "doi", None)
+        dataset_doi = getattr(ds, "doi", None)
         event_id = getattr(ds, "event_id", None) or {}
         interval = getattr(ds, "interval", None)
 
@@ -261,6 +281,8 @@ def _get_dataset_info(obj):
         country = None
         publication_year = None
         paper_description = None
+        documentation_doi = None
+        associated_paper_doi = None
 
         if metadata is not None:
             acq = getattr(metadata, "acquisition", None)
@@ -298,6 +320,8 @@ def _get_dataset_info(obj):
 
             doc = getattr(metadata, "documentation", None)
             if doc is not None:
+                documentation_doi = getattr(doc, "doi", None)
+                associated_paper_doi = getattr(doc, "associated_paper_doi", None)
                 investigators = getattr(doc, "investigators", None)
                 senior_author = getattr(doc, "senior_author", None)
                 contact_info = getattr(doc, "contact_info", None)
@@ -305,6 +329,12 @@ def _get_dataset_info(obj):
                 country = getattr(doc, "country", None)
                 publication_year = getattr(doc, "publication_year", None)
                 paper_description = getattr(doc, "description", None)
+
+        paper_doi = _select_preferred_paper_doi(
+            dataset_doi=dataset_doi,
+            documentation_doi=documentation_doi,
+            associated_paper_doi=associated_paper_doi,
+        )
 
         # Fallbacks
         if n_classes is None and event_id:
@@ -327,7 +357,11 @@ def _get_dataset_info(obj):
             "default_subject": default_subject,
             "n_sessions": n_sessions,
             "code": code,
-            "doi": doi,
+            "doi": dataset_doi,
+            "dataset_doi": dataset_doi,
+            "documentation_doi": documentation_doi,
+            "associated_paper_doi": associated_paper_doi,
+            "paper_doi": paper_doi,
             "sampling_rate": sampling_rate,
             "n_channels": n_channels,
             "channel_types": channel_types,
@@ -587,8 +621,9 @@ def _make_benchmark_context_html(cls_name, info):
 def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
     """Build a compact citation and impact block."""
     code = str(info.get("code") or "")
-    doi = _normalize_doi(info.get("doi"))
-    if not code and not doi:
+    paper_doi = _normalize_doi(info.get("paper_doi") or info.get("doi"))
+    dataset_doi = _normalize_doi(info.get("dataset_doi") or info.get("doi"))
+    if not code and not paper_doi and not dataset_doi:
         return ""
 
     pwc_slug = code.lower().replace("_", "-") if code else ""
@@ -600,21 +635,21 @@ def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
 
     items = []
     script_html = ""
-    if doi:
-        doi_link_href = escape(f"https://doi.org/{quote(doi, safe='')}", quote=True)
+    if paper_doi:
+        doi_link_href = escape(f"https://doi.org/{quote(paper_doi, safe='')}", quote=True)
         items.append(
-            f'<li><span>DOI</span><a href="{doi_link_href}" '
-            f'target="_blank" rel="noopener">{escape(doi)}</a></li>'
+            f'<li><span>Paper DOI</span><a href="{doi_link_href}" '
+            f'target="_blank" rel="noopener">{escape(paper_doi)}</a></li>'
         )
-        if _is_likely_doi(doi):
+        if _is_likely_doi(paper_doi):
             if live_citations:
                 items.append(
-                    f'<li><span>Citations</span><strong class="ds-citation-count" data-doi="{escape(doi)}">Loading…</strong></li>'
+                    f'<li><span>Citations</span><strong class="ds-citation-count" data-doi="{escape(paper_doi)}">Loading…</strong></li>'
                 )
 
-                openalex_id = quote(f"https://doi.org/{doi}", safe="")
+                openalex_id = quote(f"https://doi.org/{paper_doi}", safe="")
                 openalex_url = f"https://api.openalex.org/works/{openalex_id}"
-                crossref_url = f"https://api.crossref.org/works/{quote(doi)}"
+                crossref_url = f"https://api.crossref.org/works/{quote(paper_doi)}"
                 items.append(
                     "<li><span>Public API</span>"
                     f'<span class="ds-citation-links"><a href="{crossref_url}" target="_blank" rel="noopener">Crossref</a>'
@@ -675,12 +710,20 @@ def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
 """
             else:
                 doi_static_href = escape(
-                    f"https://doi.org/{quote(doi, safe='')}", quote=True
+                    f"https://doi.org/{quote(paper_doi, safe='')}", quote=True
                 )
                 items.append(
                     f'<li><span>Citations</span><a href="{doi_static_href}" '
                     f'target="_blank" rel="noopener">See DOI</a></li>'
                 )
+    if dataset_doi and dataset_doi != paper_doi:
+        data_doi_href = escape(
+            f"https://doi.org/{quote(dataset_doi, safe='')}", quote=True
+        )
+        items.append(
+            f'<li><span>Data DOI</span><a href="{data_doi_href}" '
+            f'target="_blank" rel="noopener">{escape(dataset_doi)}</a></li>'
+        )
     if pwc_url:
         items.append(
             f'<li><span>PapersWithCode</span><a href="{pwc_url}" target="_blank" '
@@ -1119,7 +1162,7 @@ def _make_header_html(
     color = _PARADIGM_COLORS.get(paradigm, "#546E7A")
     n_subj = info.get("n_subjects")
     n_sess = info.get("n_sessions")
-    doi = _normalize_doi(info.get("doi"))
+    paper_doi = _normalize_doi(info.get("paper_doi") or info.get("doi"))
     sampling_rate = info.get("sampling_rate")
     n_channels = info.get("n_channels")
     channel_types = info.get("channel_types")
@@ -1283,8 +1326,8 @@ def _make_header_html(
             "</button>"
         )
     )
-    if doi:
-        doi_href = escape(f"https://doi.org/{quote(doi, safe='')}", quote=True)
+    if paper_doi:
+        doi_href = escape(f"https://doi.org/{quote(paper_doi, safe='')}", quote=True)
         actions.append(
             f'<a class="ds-btn" href="{doi_href}" '
             f'target="_blank" rel="noopener">Read Paper</a>'
