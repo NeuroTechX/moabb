@@ -1990,7 +1990,7 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
   font-size: 1rem;
   line-height: 1.7;
   color: var(--pst-color-text-muted);
-  max-width: 65ch;
+  max-width: none;
   margin-bottom: 1.5rem;
 }
 
