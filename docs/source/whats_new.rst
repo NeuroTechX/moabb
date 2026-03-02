@@ -20,6 +20,8 @@ Version 1.5  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Redesign dataset API pages with a structured snapshot card, visual summary blocks, HED-tag visualization, benchmark highlights, citation/public API cards, and responsive mobile improvements (:gh:`1000` by `Bruno Aristimunha`_)
+- Add GA4 pageview metrics and popularity ranking to dataset documentation cards, with inline sparkline charts showing 90-day traffic trends (by `Bruno Aristimunha`_)
+- Polish API reference page with color-coded concept highlights, section breaks, table styling, and scoped CSS to avoid affecting other pages (by `Bruno Aristimunha`_)
 - Implementation of Pseudo-Online framework (:gh:`641` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
@@ -73,6 +75,9 @@ Requirements
 
 Bugs
 ~~~~
+- Fix DOI escaping in "See DOI" fallback link on dataset citation cards (:gh:`1000` by `Bruno Aristimunha`_)
+- Prefer paper DOI over data DOI in dataset citation card when both are available (:gh:`1000` by `Bruno Aristimunha`_)
+- Fix timeline SVG card artifact caused by link styling on dataset pages (by `Bruno Aristimunha`_)
 - Fix class-balance visualization counts by normalizing metadata/event class labels (e.g., ``NonTarget`` vs ``non-target``) and use the first valid dataset subject in generated quickstart snippets instead of hardcoded ``subjects=[1]`` (:gh:`1000` by `Bruno Aristimunha`_)
 - Fix missing ``P300`` from the list of valid paradigms in the :func:`moabb.benchmark` docstring (by `Bruno Aristimunha`_)
 - Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
@@ -111,6 +116,11 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
+- Generate dataset timeline SVGs at Sphinx build time instead of tracking pre-rendered files in git (by `Bruno Aristimunha`_)
+- Fix Sphinx documentation warnings and move sliding-estimator tutorial to advanced examples (by `Bruno Aristimunha`_)
+- Fix autosummary descriptions in API page by skipping ``dataset_timeline_ext`` in summary context (by `Bruno Aristimunha`_)
+- Hide right sidebar and admonition icons on dataset pages for a cleaner layout using per-page meta directives (by `Bruno Aristimunha`_)
+- Add GA4 pageview export script and CI workflow integration for automated dataset traffic metrics (by `Bruno Aristimunha`_)
 - Resolve all 216 pytest warnings across the test suite by addressing root causes: clear Epochs annotations before concatenation, replace lambda with named function in test pipelines, re-apply montage after ``add_reference_channels``, conditionally pass ``groups`` parameter in splitters using ``GroupsConsumerMixin``, use ``os.environ`` in ``FakeDataset`` to avoid non-standard config warnings, and suppress intentional ``OptunaSearchCV`` experimental warnings at init (by `Bruno Aristimunha`_)
 - Added systematic DOI validation test suite that checks format, docstring tracking, resolution, and author overlap across all datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).
