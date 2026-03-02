@@ -142,3 +142,7 @@ results/results*
 *.zip
 *.html
 *.pdf
+
+# Auto-generated dataset SVGs (built during doc build)
+docs/source/_static/timelines/
+docs/source/_static/viz/

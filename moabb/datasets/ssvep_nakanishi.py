@@ -274,7 +274,7 @@ class Nakanishi2015(BaseDataset):
         fname = self.data_path(subject)
         mat = loadmat(fname, squeeze_me=True)
         data = np.transpose(mat["eeg"], axes=(0, 3, 1, 2))
-        data = np.reshape(data, newshape=(-1, n_channels, n_samples))
+        data = np.reshape(data, (-1, n_channels, n_samples))
         data = data - data.mean(axis=2, keepdims=True)
         raw_events = np.zeros((data.shape[0], 1, n_samples))
         raw_events[:, 0, 0] = np.array(

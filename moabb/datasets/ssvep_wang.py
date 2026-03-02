@@ -465,7 +465,7 @@ class Wang2016(BaseDataset):
         mat = loadmat(fname[:-4])
 
         data = np.transpose(mat["data"], axes=(2, 3, 0, 1))
-        data = np.reshape(data, newshape=(-1, n_channels, n_samples))
+        data = np.reshape(data, (-1, n_channels, n_samples))
         data = data - data.mean(axis=2, keepdims=True)
         raw_events = np.zeros((data.shape[0], 1, n_samples))
         raw_events[:, 0, 0] = np.array(

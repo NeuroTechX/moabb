@@ -7,7 +7,16 @@ end with a sklearn compatible estimator.
 from warnings import warn
 
 # flake8: noqa
-from .classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
+from .classification import (
+    SSVEP_CCA,
+    SSVEP_SSCOR,
+    SSVEP_TDCA,
+    SSVEP_TRCA,
+    SSVEP_TRCA_R,
+    SSVEP_eCCA,
+    SSVEP_itCCA,
+    SSVEP_MsetCCA,
+)
 from .features import (
     FM,
     AugmentedDataset,

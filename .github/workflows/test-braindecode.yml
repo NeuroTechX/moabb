@@ -31,12 +31,12 @@ jobs:
           enable-cache: true
 
       # Cache MNE Data
-      - name: Create/Restore MNE Data Cache
+      - name: Restore MNE Data Cache
         id: cache-mne_data
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne-braindecode-v1
+          key: ${{ runner.os }}-mne-braindecode-v2
           restore-keys: |
             ${{ runner.os }}-mne-braindecode-v1
 
@@ -53,3 +53,10 @@ jobs:
           echo "Running tests"
           uv pip install pytest-xdist
           pytest test/ --quiet -n auto
+
+      - name: Save MNE Data Cache
+        if: success() && steps.cache-mne_data.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-braindecode-v2

@@ -397,3 +397,1435 @@ div.frontpage-gallery .card-img-overlay {
         justify-content: flex-start;
     }
 }
+
+/* ================================================================
+   DATASET DOCUMENTATION PAGES
+   Refined cards, structured metadata, branded accents
+   ================================================================ */
+
+/*
+ * These styles target the admonition blocks that MOABB auto-generates
+ * inside dataset docstrings (Dataset summary, Participants, Equipment,
+ * Preprocessing, Experimental Protocol, Data Access).
+ *
+ * Detection: pages containing .admonition-dataset-summary are dataset pages.
+ */
+
+/* ---- Dataset design tokens ---- */
+:root {
+  --ds-accent: #0f5d8f;
+  --ds-accent-strong: #0a3f64;
+  --ds-accent-soft: rgba(15, 93, 143, 0.12);
+  --ds-border-soft: rgba(15, 93, 143, 0.22);
+  --ds-surface: #f6fbff;
+  --ds-shadow: 0 14px 30px rgba(15, 60, 95, 0.08);
+  --ds-radius: 14px;
+  --ds-font-heading: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
+  --ds-font-body: "Source Sans 3", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+html[data-theme="dark"] {
+  --ds-accent: #4ba3d7;
+  --ds-accent-strong: #7ec2ea;
+  --ds-accent-soft: rgba(75, 163, 215, 0.2);
+  --ds-border-soft: rgba(75, 163, 215, 0.34);
+  --ds-surface: rgba(12, 28, 42, 0.7);
+  --ds-shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
+}
+
+/* ---- Metadata card grid ---- */
+.admonition-dataset-summary,
+.admonition-participants,
+.admonition-equipment,
+.admonition-preprocessing,
+.admonition-data-access,
+.admonition-experimental-protocol {
+  border: 1px solid var(--ds-border-soft);
+  border-radius: var(--ds-radius);
+  background: linear-gradient(180deg, var(--ds-surface) 0%, var(--pst-color-surface) 100%);
+  box-shadow: var(--ds-shadow);
+  padding: 0;
+  margin-bottom: 1.05rem;
+  overflow: hidden;
+  transition: box-shadow 220ms ease, border-color 220ms ease,
+              transform 220ms ease;
+}
+
+.admonition-dataset-summary:hover,
+.admonition-participants:hover,
+.admonition-equipment:hover,
+.admonition-preprocessing:hover,
+.admonition-data-access:hover,
+.admonition-experimental-protocol:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(11, 52, 82, 0.12);
+  border-color: var(--ds-accent-soft);
+}
+
+/* Card titles */
+.admonition-dataset-summary > .admonition-title,
+.admonition-participants > .admonition-title,
+.admonition-equipment > .admonition-title,
+.admonition-preprocessing > .admonition-title,
+.admonition-data-access > .admonition-title,
+.admonition-experimental-protocol > .admonition-title {
+  background: linear-gradient(130deg, var(--ds-accent) 0%, var(--ds-accent-strong) 100%);
+  color: #ffffff;
+  font-family: var(--ds-font-heading);
+  font-weight: 680;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.58rem 1.05rem;
+  margin: 0;
+  border: none;
+}
+
+.admonition-dataset-summary > .admonition-title::before,
+.admonition-participants > .admonition-title::before,
+.admonition-equipment > .admonition-title::before,
+.admonition-preprocessing > .admonition-title::before,
+.admonition-data-access > .admonition-title::before,
+.admonition-experimental-protocol > .admonition-title::before {
+  display: none;
+}
+
+/* Card body content */
+.admonition-dataset-summary > :not(.admonition-title),
+.admonition-participants > :not(.admonition-title),
+.admonition-equipment > :not(.admonition-title),
+.admonition-preprocessing > :not(.admonition-title),
+.admonition-data-access > :not(.admonition-title),
+.admonition-experimental-protocol > :not(.admonition-title) {
+  padding: 0.62rem 1.05rem;
+  font-family: var(--ds-font-body);
+}
+
+.admonition-dataset-summary > ul,
+.admonition-participants > ul,
+.admonition-equipment > ul,
+.admonition-preprocessing > ul,
+.admonition-data-access > ul,
+.admonition-experimental-protocol > ul {
+  margin: 0;
+  padding: 0.6rem 1rem 0.6rem 1.5rem;
+  list-style: none;
+}
+
+.admonition-dataset-summary > ul > li,
+.admonition-participants > ul > li,
+.admonition-equipment > ul > li,
+.admonition-preprocessing > ul > li,
+.admonition-data-access > ul > li,
+.admonition-experimental-protocol > ul > li {
+  padding: 0.34rem 0;
+  border-bottom: 1px solid var(--ds-accent-soft);
+  font-size: 0.92rem;
+  line-height: 1.48;
+}
+
+.admonition-dataset-summary > ul > li:last-child,
+.admonition-participants > ul > li:last-child,
+.admonition-equipment > ul > li:last-child,
+.admonition-preprocessing > ul > li:last-child,
+.admonition-data-access > ul > li:last-child,
+.admonition-experimental-protocol > ul > li:last-child {
+  border-bottom: none;
+}
+
+/* ---- Dataset summary table ---- */
+.admonition-dataset-summary table {
+  margin: 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admonition-dataset-summary table td {
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid var(--ds-accent-soft);
+  font-size: 0.92rem;
+  font-family: var(--ds-font-body);
+}
+
+.admonition-dataset-summary table tr:last-child td {
+  border-bottom: none;
+}
+
+.admonition-dataset-summary table td:first-child {
+  font-weight: 650;
+  color: var(--pst-color-text-muted);
+  white-space: nowrap;
+  width: 42%;
+}
+
+/* ---- "Found an issue?" tip box ---- */
+.tip.admonition {
+  border: 1px solid var(--pst-color-border);
+  border-radius: 10px;
+  border-left: 4px solid #007CBA;
+  background: var(--pst-color-surface);
+  margin: 1.5rem 0;
+}
+
+.tip.admonition > .admonition-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+/* ---- Timeline section ---- */
+.timeline-diagram {
+  border: 1px solid var(--pst-color-border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  margin-top: 0.5rem;
+}
+
+html[data-theme="dark"] .timeline-diagram {
+  background: var(--pst-color-surface);
+  border-color: var(--pst-color-border);
+}
+
+.timeline-disclaimer {
+  font-size: 0.73rem;
+  color: var(--pst-color-text-muted);
+  font-style: normal;
+  margin-top: 0.45rem;
+  margin-bottom: 0.95rem;
+  padding: 0.36rem 0.5rem;
+  line-height: 1.34;
+  border-left: 2px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.045);
+  border-radius: 6px;
+  opacity: 0.84;
+}
+
+.timeline-disclaimer::before {
+  content: "ⓘ ";
+  font-size: 0.76rem;
+}
+
+html[data-theme="dark"] .timeline-disclaimer {
+  background: rgba(75, 163, 215, 0.09);
+}
+
+/* ---- Dataset branded header ---- */
+.ds-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.06) 0%,
+    rgba(0, 90, 140, 0.03) 100%
+  );
+  border: 1px solid rgba(0, 124, 186, 0.15);
+  border-radius: 10px;
+}
+
+html[data-theme="dark"] .ds-header {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.12) 0%,
+    rgba(0, 90, 140, 0.06) 100%
+  );
+  border-color: rgba(0, 124, 186, 0.25);
+}
+
+.ds-header-logo {
+  height: 36px;
+  width: auto;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.ds-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ds-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.79rem;
+  font-family: var(--ds-font-heading);
+  font-weight: 630;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+  color: #ffffff;
+  background: var(--chip-color, #546E7A);
+  border: 1px solid transparent;
+}
+
+.ds-chip-muted {
+  background: rgba(15, 93, 143, 0.07);
+  color: var(--pst-color-text-base);
+  border: 1px solid var(--ds-accent-soft);
+  font-weight: 560;
+}
+
+html[data-theme="dark"] .ds-chip-muted {
+  background: rgba(75, 163, 215, 0.13);
+}
+
+.ds-chip-doi {
+  background: transparent !important;
+  color: #007CBA !important;
+  border: 1px solid #007CBA;
+  text-decoration: none;
+}
+
+.ds-chip-doi:hover {
+  background: #007CBA !important;
+  color: #ffffff !important;
+}
+
+@media (max-width: 768px) {
+  .ds-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+}
+
+/* ---- Class signature ---- */
+dl.py.class > dt.sig-object {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.06) 0%,
+    rgba(0, 124, 186, 0.02) 100%
+  );
+  border: 1px solid rgba(0, 124, 186, 0.15);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+}
+
+/* Break each parameter onto its own line */
+dl.py.class > dt.sig-object > .sig-paren:first-of-type {
+  /* opening paren */
+}
+
+dl.py.class > dt.sig-object > .sig-paren:first-of-type ~ em.sig-param {
+  display: block;
+  padding-left: 2rem;
+}
+
+dl.py.class > dt.sig-object > .sig-paren:last-of-type {
+  display: block;
+}
+
+html[data-theme="dark"] dl.py.class > dt.sig-object {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 124, 186, 0.12) 0%,
+    rgba(0, 124, 186, 0.04) 100%
+  );
+  border-color: rgba(0, 124, 186, 0.25);
+}
+
+/* ---- Section rubrics ---- */
+dl.py.class .rubric {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pst-color-text-base);
+  border-bottom: 2px solid #007CBA;
+  padding-bottom: 0.35rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ---- References section ---- */
+dl.py.class .citation-list {
+  background: var(--pst-color-surface);
+  border: 1px solid var(--pst-color-border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+dl.py.class .citation-list .citation {
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* ---- Version badges ---- */
+dl.py.class .versionadded,
+dl.py.class .versionchanged,
+dl.py.class .deprecated {
+  font-size: 0.85rem;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  margin: 0.5rem 0;
+}
+
+/* ---- Dark mode overrides ---- */
+html[data-theme="dark"] .admonition-dataset-summary,
+html[data-theme="dark"] .admonition-participants,
+html[data-theme="dark"] .admonition-equipment,
+html[data-theme="dark"] .admonition-preprocessing,
+html[data-theme="dark"] .admonition-data-access,
+html[data-theme="dark"] .admonition-experimental-protocol {
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.32);
+}
+
+html[data-theme="dark"] .admonition-dataset-summary:hover,
+html[data-theme="dark"] .admonition-participants:hover,
+html[data-theme="dark"] .admonition-equipment:hover,
+html[data-theme="dark"] .admonition-preprocessing:hover,
+html[data-theme="dark"] .admonition-data-access:hover,
+html[data-theme="dark"] .admonition-experimental-protocol:hover {
+  box-shadow: 0 20px 34px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .admonition-dataset-summary > .admonition-title,
+html[data-theme="dark"] .admonition-participants > .admonition-title,
+html[data-theme="dark"] .admonition-equipment > .admonition-title,
+html[data-theme="dark"] .admonition-preprocessing > .admonition-title,
+html[data-theme="dark"] .admonition-data-access > .admonition-title,
+html[data-theme="dark"] .admonition-experimental-protocol > .admonition-title {
+  background: linear-gradient(135deg, var(--ds-accent) 0%, var(--ds-accent-strong) 100%);
+}
+
+/* ---- Responsive stacking ---- */
+@media (max-width: 768px) {
+  .admonition-dataset-summary table td:first-child {
+    width: auto;
+  }
+
+  .timeline-diagram {
+    padding: 0.4rem;
+  }
+}
+
+/* ================================================================
+   ENHANCED DATASET CARD (Layer 1)
+   ================================================================ */
+
+.ds-card {
+  position: relative;
+  padding: 1.05rem 1.2rem 1rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--ds-font-body);
+  background: linear-gradient(165deg, var(--ds-surface) 0%, var(--pst-color-surface) 75%);
+  border: 1px solid var(--ds-border-soft);
+  border-radius: calc(var(--ds-radius) + 1px);
+  box-shadow: var(--ds-shadow);
+  overflow: hidden;
+  animation: ds-card-enter 420ms ease-out;
+}
+
+.ds-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ds-accent) 0%, var(--ds-accent-strong) 100%);
+}
+
+.ds-card-source {
+  position: absolute;
+  top: 0.78rem;
+  right: 1.02rem;
+  font-size: 0.9rem;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-weight: 700;
+  padding: 0.08rem 0.28rem;
+  border-radius: 7px;
+  background: rgba(15, 93, 143, 0.08);
+  color: var(--ds-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  z-index: 2;
+}
+
+.ds-card-source:hover {
+  color: var(--ds-accent);
+}
+
+html[data-theme="dark"] .ds-card {
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+}
+
+.ds-card-head {
+  margin-bottom: 0.85rem;
+}
+
+.ds-card-kicker {
+  margin: 0 0 0.3rem 0;
+  font-size: 0.71rem;
+  font-family: var(--ds-font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ds-accent);
+  font-weight: 700;
+}
+
+.ds-card-title {
+  margin: 0;
+  font-size: 1.36rem;
+  font-family: var(--ds-font-heading);
+  font-weight: 740;
+  letter-spacing: 0.01em;
+  line-height: 1.16;
+  color: var(--pst-color-text-base);
+}
+
+.ds-subtitle {
+  margin: 0.36rem 0 0 0;
+  font-size: 0.95rem;
+  color: var(--pst-color-text-muted);
+  font-weight: 540;
+  line-height: 1.5;
+}
+
+.ds-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.42rem;
+  margin-bottom: 0.74rem;
+}
+
+.ds-class-line {
+  margin: 0 0 0.85rem 0;
+  font-size: 0.83rem;
+  color: var(--pst-color-text-base);
+  line-height: 1.45;
+  padding: 0.36rem 0.52rem;
+  border-radius: 8px;
+  background: rgba(15, 93, 143, 0.07);
+  border: 1px solid var(--ds-accent-soft);
+}
+
+.ds-class-line-label {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-family: var(--ds-font-heading);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
+}
+
+.ds-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Buttons */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-family: var(--ds-font-heading);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: 1px solid var(--ds-border-soft);
+  background: transparent;
+  color: var(--pst-color-text-base) !important;
+  transition: background-color 200ms ease, border-color 200ms ease,
+              transform 180ms ease, box-shadow 180ms ease;
+}
+
+.ds-btn:hover {
+  background: var(--ds-surface);
+  border-color: var(--ds-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 16px rgba(11, 52, 82, 0.13);
+}
+
+.ds-btn:focus-visible {
+  outline: 2px solid var(--ds-accent);
+  outline-offset: 2px;
+}
+
+.ds-btn-primary {
+  background: linear-gradient(120deg, var(--ds-accent) 0%, var(--ds-accent-strong) 100%) !important;
+  color: #ffffff !important;
+  border-color: transparent;
+}
+
+.ds-btn-primary:hover {
+  background: linear-gradient(120deg, #1576b4 0%, #0d4e79 100%) !important;
+  border-color: transparent;
+}
+
+.ds-btn-toggle[aria-expanded="true"] {
+  box-shadow: 0 0 0 2px var(--ds-accent-soft);
+}
+
+/* Quickstart code collapsible */
+.ds-quickstart {
+  margin-top: 0.78rem;
+  border: 1px solid var(--ds-accent-soft);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(15, 93, 143, 0.06);
+}
+
+.ds-quickstart[open] {
+  border-color: var(--ds-accent);
+}
+
+.ds-quickstart-summary {
+  display: block;
+  padding: 0.4rem 0.8rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ds-accent-soft, #7aafcf);
+  cursor: pointer;
+  border: 0;
+}
+
+.ds-quickstart-summary:focus-visible {
+  outline: 2px solid var(--ds-accent, #0f5d8f);
+  outline-offset: -2px;
+}
+
+.ds-quickstart-code {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  background: transparent;
+  font-size: 0.85rem;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  line-height: 1.55;
+  overflow-x: auto;
+  border-radius: 0;
+}
+
+html[data-theme="dark"] .ds-quickstart-code {
+  color: #d9ecf8;
+}
+
+html[data-theme="dark"] .ds-quickstart {
+  background: rgba(75, 163, 215, 0.12);
+}
+
+.ds-benchmark-context,
+.ds-caveats {
+  margin-top: 0.7rem;
+  padding: 0.65rem 0.78rem;
+  border-radius: 10px;
+  border: 1px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.06);
+}
+
+html[data-theme="dark"] .ds-benchmark-context,
+html[data-theme="dark"] .ds-caveats {
+  background: rgba(75, 163, 215, 0.1);
+}
+
+.ds-benchmark-title,
+.ds-caveats-title {
+  margin: 0 0 0.32rem 0;
+  font-family: var(--ds-font-heading);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
+}
+
+.ds-benchmark-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.ds-eval-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.1);
+  color: var(--ds-accent-strong);
+  font-family: var(--ds-font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+html[data-theme="dark"] .ds-eval-pill {
+  background: rgba(75, 163, 215, 0.16);
+}
+
+.ds-benchmark-summary {
+  margin: 0 0 0.36rem 0;
+  font-size: 0.8rem;
+  line-height: 1.42;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-benchmark-note {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.79rem;
+  line-height: 1.4;
+  color: var(--pst-color-text-base);
+  padding: 0.3rem 0.45rem;
+  border-radius: 7px;
+  border-left: 3px solid var(--ds-accent);
+  background: rgba(15, 93, 143, 0.08);
+}
+
+html[data-theme="dark"] .ds-benchmark-note {
+  background: rgba(75, 163, 215, 0.13);
+}
+
+.ds-benchmark-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: 0 0 0.42rem 0;
+  font-size: 0.78rem;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-benchmark-context ul,
+.ds-caveats ul,
+.ds-citation-impact ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.22rem;
+}
+
+.ds-benchmark-context li,
+.ds-caveats li,
+.ds-citation-impact li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-size: 0.8rem;
+  line-height: 1.38;
+}
+
+.ds-caveats li {
+  display: block;
+}
+
+.ds-benchmark-context li em {
+  font-style: normal;
+  font-size: 0.73rem;
+  color: var(--pst-color-text-muted);
+  margin-left: 0.35rem;
+}
+
+.ds-benchmark-context li strong {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.79rem;
+  color: var(--ds-accent-strong);
+}
+
+.ds-citation-impact {
+  margin-top: 0.7rem;
+  padding: 0.65rem 0.78rem;
+  border-radius: 10px;
+  border: 1px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.06);
+}
+
+html[data-theme="dark"] .ds-citation-impact {
+  background: rgba(75, 163, 215, 0.1);
+}
+
+.ds-citation-title {
+  margin: 0 0 0.32rem 0;
+  font-family: var(--ds-font-heading);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
+}
+
+.ds-citation-impact li a,
+.ds-citation-impact li strong {
+  font-size: 0.78rem;
+}
+
+.ds-citation-links {
+  white-space: nowrap;
+}
+
+@keyframes ds-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================================================
+   VISUAL SUMMARY GRID (Layer 2)
+   ================================================================ */
+
+.ds-viz-card {
+  border: 1px solid var(--ds-border-soft) !important;
+  border-radius: var(--ds-radius) !important;
+  box-shadow: 0 10px 22px rgba(11, 52, 82, 0.08) !important;
+  background: linear-gradient(180deg, var(--ds-surface) 0%, var(--pst-color-surface) 100%);
+  overflow: hidden;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.ds-viz-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(11, 52, 82, 0.12) !important;
+}
+
+.ds-viz-card .sd-card-title {
+  margin-bottom: 0.55rem;
+  font-family: var(--ds-font-heading);
+  font-size: 0.79rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-accent);
+  border-bottom: 1px solid var(--ds-accent-soft);
+  padding-bottom: 0.35rem;
+}
+
+.ds-viz-card .sd-card-body {
+  padding: 0.62rem 0.68rem;
+}
+
+.ds-viz-note {
+  margin: 0.46rem 0 0 0;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: var(--pst-color-text-muted);
+  border-top: 1px dashed var(--ds-accent-soft);
+  padding-top: 0.38rem;
+}
+
+.ds-hed-card {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.79rem;
+  color: var(--pst-color-text-base);
+}
+
+.ds-hed-empty {
+  border: 1px dashed var(--ds-accent-soft);
+  border-radius: 8px;
+  background: rgba(15, 93, 143, 0.05);
+  padding: 0.5rem 0.6rem;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-hed-empty p {
+  margin: 0;
+  line-height: 1.38;
+}
+
+.ds-hed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ds-hed-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.16rem 0.45rem;
+  border: 1px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.09);
+  color: var(--ds-accent-strong);
+  font-family: var(--ds-font-heading);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ds-hed-meta {
+  font-size: 0.74rem;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-hed-source {
+  margin: -0.08rem 0 0.05rem 0;
+  font-size: 0.69rem;
+  color: var(--pst-color-text-muted);
+  opacity: 0.88;
+}
+
+.ds-hed-bars {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.ds-hed-bar-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ds-hed-bar-label {
+  min-width: 5rem;
+  font-size: 0.73rem;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-hed-bar {
+  position: relative;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: rgba(15, 93, 143, 0.09);
+  overflow: hidden;
+}
+
+.ds-hed-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ds-accent) 0%, #4e9ed2 100%);
+}
+
+.ds-hed-bar-row strong {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.73rem;
+  color: var(--ds-accent-strong);
+}
+
+.ds-hed-events {
+  display: grid;
+  gap: 0.25rem;
+  border-top: 1px dashed var(--ds-accent-soft);
+  padding-top: 0.4rem;
+}
+
+.ds-hed-tree-block {
+  margin-top: 0.36rem;
+  border-top: 1px dashed var(--ds-accent-soft);
+  padding-top: 0.42rem;
+}
+
+.ds-hed-tree-title {
+  margin: 0 0 0.26rem 0;
+  font-size: 0.72rem;
+  color: var(--pst-color-text-muted);
+  font-family: var(--ds-font-heading);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ds-hed-tree-item {
+  border: 1px solid var(--ds-accent-soft);
+  border-radius: 8px;
+  background: rgba(15, 93, 143, 0.04);
+  margin-bottom: 0.24rem;
+  overflow: hidden;
+}
+
+.ds-hed-tree-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.24rem 0.42rem;
+  font-size: 0.72rem;
+  color: var(--pst-color-text-base);
+}
+
+.ds-hed-tree-summary::-webkit-details-marker {
+  display: none;
+}
+
+.ds-hed-tree-summary::before {
+  content: "▸ ";
+  color: var(--ds-accent);
+}
+
+.ds-hed-tree-item[open] .ds-hed-tree-summary::before {
+  content: "▾ ";
+}
+
+.ds-hed-tree-pre {
+  margin: 0;
+  padding: 0.34rem 0.48rem 0.45rem;
+  border-top: 1px dashed var(--ds-accent-soft);
+  font-size: 0.69rem;
+  line-height: 1.35;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  color: var(--pst-color-text-base);
+  background: transparent;
+  white-space: pre-wrap;
+}
+
+.ds-hed-event-row {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, auto) 1fr;
+  align-items: start;
+  gap: 0.45rem;
+}
+
+.ds-hed-event-name {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-hed-chip-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.24rem;
+}
+
+.ds-hed-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.13rem 0.35rem;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  border: 1px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.07);
+  color: var(--pst-color-text-base);
+}
+
+html[data-theme="dark"] .ds-hed-empty,
+html[data-theme="dark"] .ds-hed-chip,
+html[data-theme="dark"] .ds-hed-pill,
+html[data-theme="dark"] .ds-hed-bar {
+  background: rgba(75, 163, 215, 0.12);
+}
+
+html[data-theme="dark"] .ds-hed-tree-item {
+  background: rgba(75, 163, 215, 0.08);
+}
+
+.viz-diagram {
+  border-radius: 10px;
+  border: 1px solid var(--ds-accent-soft);
+  background: #ffffff;
+  padding: 0.3rem;
+}
+
+html[data-theme="dark"] .viz-diagram {
+  background: rgba(8, 21, 31, 0.82);
+  border-color: rgba(120, 191, 235, 0.3);
+}
+
+html[data-theme="dark"] .ds-viz-card {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Channel summary card */
+.ds-channel-card {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  font-family: var(--ds-font-body);
+  color: var(--pst-color-text-base);
+  padding: 0.26rem 0.08rem;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.ds-channel-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.55rem;
+  align-items: baseline;
+  border-bottom: 1px solid var(--ds-accent-soft);
+  padding: 0.2rem 0;
+}
+
+.ds-channel-row:last-child {
+  border-bottom: none;
+}
+
+.ds-channel-row span {
+  color: var(--pst-color-text-muted);
+  font-size: 0.78rem;
+}
+
+.ds-channel-row strong {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--pst-color-text-base);
+}
+
+/* ================================================================
+   TABBED LAYOUT (Layer 3) — sphinx-design tab-set overrides
+   ================================================================ */
+
+/* Active tab style: MOABB blue */
+dl.py.class .sd-tab-set > input:checked + label {
+  border-bottom-color: var(--ds-accent);
+  color: var(--ds-accent);
+}
+
+html[data-theme="dark"] dl.py.class .sd-tab-set > input:checked + label {
+  border-bottom-color: var(--ds-accent-strong);
+  color: var(--ds-accent-strong);
+}
+
+dl.py.class .sd-tab-set > label {
+  font-size: 0.85rem;
+  font-family: var(--ds-font-heading);
+  font-weight: 650;
+  padding: 0.52rem 0.95rem;
+  letter-spacing: 0.03em;
+}
+
+dl.py.class .sd-tab-set > label:hover {
+  color: var(--ds-accent);
+}
+
+/* Reduce metadata card visual weight inside tabs */
+dl.py.class .sd-tab-content .admonition-dataset-summary,
+dl.py.class .sd-tab-content .admonition-participants,
+dl.py.class .sd-tab-content .admonition-equipment,
+dl.py.class .sd-tab-content .admonition-preprocessing,
+dl.py.class .sd-tab-content .admonition-data-access,
+dl.py.class .sd-tab-content .admonition-experimental-protocol {
+  box-shadow: none;
+  border-color: var(--pst-color-border);
+}
+
+dl.py.class .sd-tab-content .admonition-dataset-summary > .admonition-title,
+dl.py.class .sd-tab-content .admonition-participants > .admonition-title,
+dl.py.class .sd-tab-content .admonition-equipment > .admonition-title,
+dl.py.class .sd-tab-content .admonition-preprocessing > .admonition-title,
+dl.py.class .sd-tab-content .admonition-data-access > .admonition-title,
+dl.py.class .sd-tab-content .admonition-experimental-protocol > .admonition-title {
+  background: linear-gradient(135deg, #007CBA 0%, #1E88E5 100%);
+  font-size: 0.78rem;
+  padding: 0.4rem 0.85rem;
+}
+
+.admonition-dataset-summary.admonition > .admonition-title::before,
+.admonition-participants.admonition > .admonition-title::before,
+.admonition-equipment.admonition > .admonition-title::before,
+.admonition-preprocessing.admonition > .admonition-title::before,
+.admonition-data-access.admonition > .admonition-title::before,
+.admonition-experimental-protocol.admonition > .admonition-title::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Hide standalone class signature strip on dataset pages */
+section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
+  display: none !important;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 768px) {
+  /* Force visual summary cards to a single column on small screens */
+  dl.py.class .sd-container-fluid .sd-row > .sd-col {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .ds-card {
+    padding: 0.9rem 0.85rem 0.85rem;
+  }
+
+  .ds-card-source {
+    top: 0.68rem;
+    right: 0.78rem;
+    font-size: 0.82rem;
+  }
+
+  .ds-card-title {
+    font-size: 1.12rem;
+  }
+
+  .ds-stats {
+    gap: 0.35rem;
+  }
+
+  .ds-class-line {
+    margin-bottom: 0.62rem;
+    padding: 0.28rem 0.44rem;
+  }
+
+  .ds-actions {
+    gap: 0.42rem;
+  }
+
+  .ds-btn {
+    flex: 1 1 auto;
+    padding: 0.37rem 0.64rem;
+    font-size: 0.74rem;
+  }
+
+  /* Make long dataset class names readable on mobile */
+  .bd-article-container h1 {
+    font-size: clamp(1.45rem, 6.7vw, 1.95rem);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .bd-breadcrumbs {
+    font-size: 0.84rem;
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+
+  dl.py.class > dt.sig {
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+    line-height: 1.35;
+    font-size: 0.95rem;
+  }
+
+  dl.py.class > dt.sig .sig-name,
+  dl.py.class > dt.sig .sig-prename {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  dl.py.class > dt.sig .viewcode-link {
+    display: inline-block;
+    margin-top: 0.22rem;
+  }
+
+  .ds-benchmark-context li,
+  .ds-caveats li,
+  .ds-citation-impact li {
+    display: block;
+  }
+
+  .ds-benchmark-context li strong {
+    display: inline-block;
+    margin-top: 0.12rem;
+  }
+
+  .ds-benchmark-meta {
+    display: block;
+  }
+
+  .ds-quickstart-code {
+    padding: 0.76rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .ds-viz-card .sd-card-title {
+    font-size: 0.73rem;
+  }
+
+  .ds-actions .ds-btn {
+    flex: 1 1 calc(50% - 0.3rem);
+    min-height: 2.1rem;
+  }
+
+  .ds-actions .ds-btn-toggle {
+    flex-basis: 100%;
+  }
+
+  .ds-quickstart-code code {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .bd-article-container a.headerlink {
+    display: none !important;
+  }
+
+  .ds-hed-event-row {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .ds-hed-bar-label {
+    min-width: 4.2rem;
+  }
+}
+
+/* Dataset-page mobile layout: hide left nav and use full content width */
+@media (max-width: 992px) {
+  #pst-primary-sidebar,
+  .bd-sidebar-primary {
+    display: none !important;
+  }
+
+  .bd-main .bd-content {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .bd-main .bd-content .bd-article-container {
+    max-width: 100% !important;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+
+  .sidebar-toggle.primary-toggle {
+    display: none !important;
+  }
+
+  .bd-header-announcement__content {
+    gap: 0.35rem 0.55rem;
+    padding: 0.52rem 0.75rem;
+    font-size: 0.92rem;
+  }
+
+  .moabb-announcement-secondary {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .bd-header-announcement {
+    display: none !important;
+  }
+}
+
+/* Note: right sidebar is removed per-page via metadata directive
+   injected by dataset_timeline_ext.py */
+
+
+/* ===================================================================
+   API Page Styling – scoped to the API page via #api-and-main-concepts
+   =================================================================== */
+
+/* --- 1. API hero section: centered diagram + intro --- */
+.api-hero {
+  text-align: center;
+  max-width: 56rem;
+  margin: 0 auto 2rem;
+}
+.api-hero .api-architecture-diagram {
+  max-width: 42rem;
+  margin: 1rem auto 0.5rem;
+}
+.api-hero .api-architecture-diagram img {
+  width: 100%;
+  height: auto;
+}
+.api-hero .api-architecture-diagram .caption-text {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--pst-color-text-muted);
+  margin-top: 0.25rem;
+}
+.api-intro {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  text-align: center;
+  max-width: 52rem;
+  margin: 0.75rem auto;
+}
+.api-intro:first-of-type {
+  margin-top: 1.25rem;
+}
+
+/* Concept colors with underline accents from diagram box fills */
+.concept-dataset    { color: #b86e00; border-bottom: 2px solid #ffe6cc; }
+.concept-paradigm   { color: #7a6800; border-bottom: 2px solid #fff2cc; }
+.concept-evaluation { color: #3d7a2e; border-bottom: 2px solid #d5e8d4; }
+.concept-pipeline   { color: #3a6590; border-bottom: 2px solid #dae8fc; }
+
+[data-theme="dark"] .concept-dataset    { color: #f0b44a; border-bottom-color: rgba(240, 180, 74, 0.25); }
+[data-theme="dark"] .concept-paradigm   { color: #e0c85a; border-bottom-color: rgba(224, 200, 90, 0.25); }
+[data-theme="dark"] .concept-evaluation { color: #92c876; border-bottom-color: rgba(146, 200, 118, 0.25); }
+[data-theme="dark"] .concept-pipeline   { color: #7ca8d4; border-bottom-color: rgba(124, 168, 212, 0.25); }
+
+/* --- 2. Heading vertical rhythm + section breaks (API page only) --- */
+#api-and-main-concepts > section > h2 {
+  margin-top: 3rem;
+  margin-bottom: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--pst-color-border);
+}
+/* Skip border on the first h2 — the hero provides enough separation */
+#api-and-main-concepts > section:first-of-type > h2 {
+  border-top: none;
+  padding-top: 0;
+}
+#api-and-main-concepts > section > section > h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--pst-color-border);
+}
+
+/* --- 3. Section intro paragraphs: muted, narrower for readability --- */
+#api-and-main-concepts > section > p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--pst-color-text-muted);
+  max-width: 65ch;
+  margin-bottom: 1.5rem;
+}
+
+/* --- 4. Autosummary table styling --- */
+table.autosummary {
+  margin-top: 0.5rem;
+  table-layout: fixed;
+  width: 100%;
+}
+table.autosummary col:first-child {
+  width: 36%;
+}
+table.autosummary td:first-child {
+  word-break: break-word;
+}
+table.autosummary td {
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+}
+/* Zebra-striping for long table scannability */
+table.autosummary tr:nth-child(even) td {
+  background-color: color-mix(in srgb, var(--pst-color-surface) 50%, transparent);
+}
+
+/* Soften dataset link styling: less weight, slightly muted */
+table.autosummary td:first-child a code {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--pst-color-link) 82%, var(--pst-color-text-base));
+}
+table.autosummary td:first-child a:hover code {
+  color: var(--pst-color-link);
+}
+table.autosummary td:nth-child(2) {
+  color: var(--pst-color-text-base);
+}
+
+/* --- 5. Benchmark admonition code block (API page only) --- */
+#api-and-main-concepts .admonition .highlight {
+  max-width: 68rem;
+}
+
+/* --- 6. Right-sidebar TOC enhancements --- */
+.bd-toc nav > ul > li > a {
+  font-size: 0.88rem;
+}
+.bd-toc nav ul li a.active {
+  font-weight: 600;
+  color: var(--pst-color-primary);
+  box-shadow: inset 2px 0 0 var(--pst-color-primary);
+  padding-left: 0.5rem;
+}
