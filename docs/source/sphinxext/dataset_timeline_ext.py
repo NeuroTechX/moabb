@@ -1081,6 +1081,7 @@ def _make_header_html(
     )
     views_html = (
         '<div class="ds-views-line" title="Google Analytics 4 page views">'
+        '<div class="ds-views-main">'
         '<div class="ds-views-head"><span class="ds-views-label">Page Views</span>'
         f'<span class="ds-views-updated">Updated: {_format_updated_utc((pageview_meta or {}).get("generated_at_utc"))}</span>'
         "</div>"
@@ -1099,6 +1100,7 @@ def _make_header_html(
             else "Ranking: n/a"
         )
         + "</div>"
+        "</div>"
         + (
             f'<div class="ds-views-spark-wrap">{_sparkline_svg((pageview_counts or {}).get("weekly_12"))}</div>'
             if isinstance(pageview_counts, dict)

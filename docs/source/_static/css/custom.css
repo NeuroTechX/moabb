@@ -900,6 +900,10 @@ html[data-theme="dark"] .ds-card {
 }
 
 .ds-views-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.3rem 0.9rem;
   margin: 0 0 0.72rem 0;
   font-size: 0.8rem;
   line-height: 1.42;
@@ -908,6 +912,10 @@ html[data-theme="dark"] .ds-card {
   border-radius: 8px;
   background: rgba(15, 93, 143, 0.06);
   border: 1px dashed var(--ds-accent-soft);
+}
+
+.ds-views-main {
+  min-width: 0;
 }
 
 .ds-views-head {
@@ -953,13 +961,14 @@ html[data-theme="dark"] .ds-card {
 }
 
 .ds-views-spark-wrap {
-  margin-top: 0.14rem;
+  justify-self: end;
+  align-self: end;
 }
 
 .ds-views-spark {
   display: block;
-  width: 100%;
-  max-width: 180px;
+  width: 180px;
+  max-width: 100%;
   height: 30px;
 }
 
@@ -979,6 +988,20 @@ html[data-theme="dark"] .ds-views-line {
 
 html[data-theme="dark"] .ds-views-spark-area {
   fill: rgba(75, 163, 215, 0.18);
+}
+
+@media (max-width: 700px) {
+  .ds-views-line {
+    grid-template-columns: 1fr;
+  }
+
+  .ds-views-spark-wrap {
+    justify-self: start;
+  }
+
+  .ds-views-spark {
+    width: 160px;
+  }
 }
 
 .ds-class-line {
