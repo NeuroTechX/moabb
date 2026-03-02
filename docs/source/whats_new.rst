@@ -48,7 +48,7 @@ Enhancements
 - Validate and correct metadata across 45 datasets against original publications, fixing ~920 fields including country codes, preprocessing conflation, reference electrodes, and fabricated auxiliary channels (:gh:`1001` by `Bruno Aristimunha`_)
 - Add :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method for exporting raw EEG datasets to clean BIDS-compliant directory structures without processing-pipeline hash in filenames (by `Bruno Aristimunha`_)
 - Expose ``subjects`` and ``sessions`` parameters on all dataset constructors to allow filtering at instantiation time (e.g., ``PhysionetMI(subjects=[1, 2, 3])``). Add ``all_subjects`` property and ``sessions`` parameter to ``get_data()`` (by `Bruno Aristimunha`_)
-- Merged duplicate dataset creation tutorials (Tutorial 4 and Tutorial 5 had identical titles) into a single comprehensive guide covering :class:`~moabb.datasets.base.BaseDataset`, :class:`~moabb.datasets.base.BaseBIDSDataset`, :class:`~moabb.datasets.base.LocalBIDSDataset`, and :class:`~moabb.datasets.compound_dataset.CompoundDataset` (:gh:`1007` by `Bruno Aristimunha`_)
+- Enhance Tutorial 4 ("Creating a dataset class") with a new section demonstrating :class:`~moabb.datasets.base.BaseBIDSDataset` and :class:`~moabb.datasets.base.LocalBIDSDataset` as the recommended approach for adding BIDS-format datasets to MOABB (:gh:`1007` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~

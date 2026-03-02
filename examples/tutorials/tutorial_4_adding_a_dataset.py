@@ -14,33 +14,27 @@ format of your data:
    ``BaseBIDSDataset`` is used for online datasets (only the download step
    needs to be implemented); ``LocalBIDSDataset`` is used for local or private
    datasets with no subclassing required at all.
-3. :class:`~moabb.datasets.compound_dataset.CompoundDataset` — for building a
-   new dataset by selecting subjects/sessions/runs from existing MOABB datasets
-   or by merging several datasets together.
 
-This tutorial illustrates all three approaches.
+**BIDS is the preferred format for new datasets in MOABB.**
+
+This tutorial illustrates both approaches.
 """
 
-# Authors: Pedro L. C. Rodrigues, Sylvain Chevallier, Gregoire Cattan
+# Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
 
 import mne
 import numpy as np
 from pyriemann.classification import MDM
-from pyriemann.estimation import Covariances, ERPCovariances
+from pyriemann.estimation import Covariances
 from scipy.io import loadmat, savemat
 from sklearn.pipeline import make_pipeline
 
-from moabb.datasets import Cattan2019_VR
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseBIDSDataset, BaseDataset
-from moabb.datasets.braininvaders import BI2014a
-from moabb.datasets.compound_dataset import CompoundDataset
-from moabb.datasets.utils import blocks_reps
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
-from moabb.paradigms.p300 import P300
 
 
 ##############################################################################
@@ -270,103 +264,3 @@ class ExampleBIDSDataset(BaseBIDSDataset):
 #
 #    paradigm = LeftRightImagery()
 #    X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
-
-##############################################################################
-# 3. Building a dataset from existing MOABB datasets (CompoundDataset)
-# ====================================================================
-#
-# The :class:`~moabb.datasets.compound_dataset.CompoundDataset` class lets you
-# build a new dataset by **selecting** a subset of subjects, sessions, or runs
-# from one or more existing MOABB datasets, or by **merging** several datasets
-# together.
-#
-# This is useful when you want to:
-#
-# * restrict an existing dataset to a specific set of subjects or sessions,
-# * combine subjects from different datasets into a single object for
-#   evaluation, or
-# * prototype a new dataset before it is officially added to MOABB.
-#
-# Creation of subject selections
-# --------------------------------
-#
-# A ``CompoundDataset`` accepts a ``subjects_list`` where every element is a
-# tuple of four values:
-#
-# - the original MOABB dataset object
-# - the subject number to select
-# - the sessions — a session name (``'0'``), a list of sessions
-#   (``['0', '1']``), or ``None`` to keep all sessions
-# - the runs — a run name, a list of run names, or ``None`` to keep all runs
-
-
-class CustomDataset1(CompoundDataset):
-    def __init__(self):
-        biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
-        runs = blocks_reps([0, 2], [0, 1, 2, 3, 4], biVR.n_repetitions)
-        subjects_list = [
-            (biVR, 1, "0VR", runs),
-            (biVR, 2, "0VR", runs),
-        ]
-        CompoundDataset.__init__(
-            self,
-            subjects_list=subjects_list,
-            code="CustomDataset1",
-            interval=[0, 1.0],
-        )
-
-
-class CustomDataset2(CompoundDataset):
-    def __init__(self):
-        bi2014 = BI2014a()
-        subjects_list = [
-            (bi2014, 4, None, None),
-            (bi2014, 7, None, None),
-        ]
-        CompoundDataset.__init__(
-            self,
-            subjects_list=subjects_list,
-            code="CustomDataset2",
-            interval=[0, 1.0],
-        )
-
-
-##############################################################################
-# Merging the datasets
-# --------------------
-#
-# Two ``CompoundDataset`` objects can be merged into a new one by providing
-# them directly as the ``subjects_list``:
-
-
-class CustomDataset3(CompoundDataset):
-    def __init__(self):
-        subjects_list = [CustomDataset1(), CustomDataset2()]
-        CompoundDataset.__init__(
-            self,
-            subjects_list=subjects_list,
-            code="CustomDataset3",
-            interval=[0, 1.0],
-        )
-
-
-##############################################################################
-# Evaluate and display
-# --------------------
-#
-# A ``CompoundDataset`` can be used as a regular MOABB dataset in any
-# evaluation — nothing changes in the evaluation pipeline:
-
-paradigm_p300 = P300()
-pipelines_p300 = {}
-pipelines_p300["MDM"] = make_pipeline(
-    ERPCovariances(estimator="lwf"), MDM(metric="riemann")
-)
-
-datasets = [CustomDataset3()]
-evaluation2 = WithinSessionEvaluation(
-    paradigm=paradigm_p300, datasets=datasets, overwrite=False, suffix="newdataset"
-)
-scores2 = evaluation2.process(pipelines_p300)
-
-print(scores2)
