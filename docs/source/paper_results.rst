@@ -14,6 +14,9 @@
    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.js"></script>
 
    <style>
     table.dataTable {
@@ -30,6 +33,55 @@
     html[data-theme="dark"] .dtfc-fixed-start {
       background-color: #1e1e1e !important;
       color: #ffffff !important;
+    }
+
+    /* DataTables button styling */
+    .dt-buttons .dt-button {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px !important;
+      border-radius: 999px !important;
+      border: 1px solid var(--pst-color-border, #ccc) !important;
+      background: transparent !important;
+      color: var(--pst-color-text-base, #333) !important;
+      font-size: 0.875rem !important;
+      font-weight: 500 !important;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s !important;
+      line-height: 1.4 !important;
+    }
+    .dt-buttons .dt-button:hover {
+      border-color: #007CBA !important;
+      color: #007CBA !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 124, 186, 0.15);
+      background: transparent !important;
+    }
+    .dt-buttons .dt-button:active {
+      transform: scale(0.96) !important;
+      box-shadow: none !important;
+    }
+    .dt-buttons .dt-button:focus {
+      outline: 2px solid #007CBA !important;
+      outline-offset: 2px !important;
+    }
+    .dt-buttons .dt-button svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+
+    /* Dark mode overrides */
+    html[data-theme="dark"] .dt-buttons .dt-button {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: #e0e0e0 !important;
+    }
+    html[data-theme="dark"] .dt-buttons .dt-button:hover {
+      border-color: #3db5e6 !important;
+      color: #3db5e6 !important;
+      box-shadow: 0 2px 6px rgba(61, 181, 230, 0.2);
     }
    </style>
 
@@ -134,6 +186,10 @@ We use all the classes available in the dataset.
 
   <script type="text/javascript">
      $(document).ready(function() {
+       var copyIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+       var checkIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>';
+       var csvIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>';
+
        $(".sortable").each(function() {
          const $table = $(this);
 
@@ -146,6 +202,31 @@ We use all the classes available in the dataset.
            scrollCollapse: true,
            info: false,
            searching: false,
+           layout: {
+             topStart: {
+               buttons: [
+                 {
+                   extend: 'copy',
+                   text: copyIcon + ' Copy Table',
+                   action: function(e, dt, node, config) {
+                     var self = this;
+                     $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, node, config);
+                     var $btn = $(node);
+                     var originalText = $btn.html();
+                     $btn.html(checkIcon + ' Copied!');
+                     setTimeout(function() {
+                       $btn.html(originalText);
+                     }, 2000);
+                   }
+                 },
+                 {
+                   extend: 'csv',
+                   text: csvIcon + ' Export CSV',
+                   title: 'moabb_benchmark'
+                 }
+               ],
+             },
+           },
          });
        });
      });

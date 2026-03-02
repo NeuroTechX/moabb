@@ -6,10 +6,30 @@ have two-class, multi-class, or continuous paradigms; similarly,
 different preprocessing is necessary for ERP vs ERD paradigms.
 """
 
-# flake8: noqa
-from moabb.paradigms.cvep import *
-from moabb.paradigms.fixed_interval_windows import *
-from moabb.paradigms.motor_imagery import *
-from moabb.paradigms.p300 import *
-from moabb.paradigms.resting_state import *
-from moabb.paradigms.ssvep import *
+from .cvep import CVEP as CVEP
+from .cvep import BaseCVEP as BaseCVEP
+from .cvep import FakeCVEPParadigm as FakeCVEPParadigm
+from .cvep import FilterBankCVEP as FilterBankCVEP
+from .fixed_interval_windows import (
+    BaseFixedIntervalWindowsProcessing as BaseFixedIntervalWindowsProcessing,
+)
+from .fixed_interval_windows import (
+    FilterBankFixedIntervalWindowsProcessing as FilterBankFixedIntervalWindowsProcessing,
+)
+from .fixed_interval_windows import (
+    FixedIntervalWindowsProcessing as FixedIntervalWindowsProcessing,
+)
+from .motor_imagery import BaseMotorImagery as BaseMotorImagery
+from .motor_imagery import FakeImageryParadigm as FakeImageryParadigm
+from .motor_imagery import FilterBankLeftRightImagery as FilterBankLeftRightImagery
+from .motor_imagery import FilterBankMotorImagery as FilterBankMotorImagery
+from .motor_imagery import LeftRightImagery as LeftRightImagery
+from .motor_imagery import MotorImagery as MotorImagery
+from .p300 import P300 as P300
+from .p300 import BaseP300 as BaseP300
+from .p300 import FakeP300Paradigm as FakeP300Paradigm
+from .resting_state import RestingStateToP300Adapter as RestingStateToP300Adapter
+from .ssvep import SSVEP as SSVEP
+from .ssvep import BaseSSVEP as BaseSSVEP
+from .ssvep import FakeSSVEPParadigm as FakeSSVEPParadigm
+from .ssvep import FilterBankSSVEP as FilterBankSSVEP
