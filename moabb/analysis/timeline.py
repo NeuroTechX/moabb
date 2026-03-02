@@ -215,7 +215,10 @@ def _draw_phase_block(
         edgecolor=style["edgecolor"],
         linewidth=1.2,
         hatch=hatch,
+        mutation_aspect=1,
     )
+    # Prevent degenerate Q curves in SVG that cause miter-join "ear" artifacts
+    rect.set_joinstyle("round")
     ax.add_patch(rect)
     # Label text colour: white on dark backgrounds
     dark_styles = {"eyes_closed", "code_stim", "target", "imagery", "feedback", "flicker"}

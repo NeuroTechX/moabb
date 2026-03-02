@@ -78,10 +78,10 @@ if _build_sitemap in {"0", "false", "no"}:
     extensions = [ext for ext in extensions if ext != "sphinx_sitemap"]
 
 # Dataset card extension settings.
-# Keep SVG auto-generation off by default to avoid expensive full-dataset
-# rendering in every docs build; enable explicitly via env var when needed.
+# SVG auto-generation is on by default so stimulus protocol plots render in
+# the published docs; disable via env var if needed for faster local builds.
 dataset_card_generate_svgs = os.environ.get(
-    "MOABB_DATASET_CARD_GENERATE_SVGS", "0"
+    "MOABB_DATASET_CARD_GENERATE_SVGS", "1"
 ).strip().lower() in {"1", "true", "yes"}
 
 

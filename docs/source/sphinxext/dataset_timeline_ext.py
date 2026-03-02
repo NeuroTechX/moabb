@@ -250,6 +250,13 @@ def _get_dataset_info(obj):
         sessions_per_subject = None
         hed_tags = None
         exp = None
+        investigators = None
+        senior_author = None
+        contact_info = None
+        institution = None
+        country = None
+        publication_year = None
+        paper_description = None
 
         if metadata is not None:
             acq = getattr(metadata, "acquisition", None)
@@ -284,6 +291,16 @@ def _get_dataset_info(obj):
 
             runs_per_session = getattr(metadata, "runs_per_session", None)
             sessions_per_subject = getattr(metadata, "sessions_per_subject", None)
+
+            doc = getattr(metadata, "documentation", None)
+            if doc is not None:
+                investigators = getattr(doc, "investigators", None)
+                senior_author = getattr(doc, "senior_author", None)
+                contact_info = getattr(doc, "contact_info", None)
+                institution = getattr(doc, "institution", None)
+                country = getattr(doc, "country", None)
+                publication_year = getattr(doc, "publication_year", None)
+                paper_description = getattr(doc, "description", None)
 
         # Fallbacks
         if n_classes is None and event_id:
@@ -324,6 +341,13 @@ def _get_dataset_info(obj):
             "runs_per_session": runs_per_session,
             "sessions_per_subject": sessions_per_subject,
             "hed_tags": hed_tags,
+            "investigators": investigators,
+            "senior_author": senior_author,
+            "contact_info": contact_info,
+            "institution": institution,
+            "country": country,
+            "publication_year": publication_year,
+            "paper_description": paper_description,
         }
     except Exception:
         return None
@@ -452,11 +476,15 @@ def _get_benchmark_context(cls_name):
                     if score is not None:
                         scores.append(score)
                 if scores:
+                    mean_val = statistics.mean(scores)
+                    std_val = statistics.stdev(scores) if len(scores) > 1 else 0.0
                     entries.append(
                         {
                             "label": label,
+                            "max": max(scores),
                             "median": statistics.median(scores),
-                            "best": max(scores),
+                            "mean": mean_val,
+                            "std": std_val,
                             "n_pipelines": len(scores),
                         }
                     )
@@ -466,41 +494,6 @@ def _get_benchmark_context(cls_name):
     context = {"n_tables": len(entries), "entries": entries}
     _BENCHMARK_CONTEXT_CACHE[cls_name] = context
     return context
-
-
-def _make_known_caveats_html(info):
-    """Build a compact known-caveats list from available metadata."""
-    caveats = []
-    n_subj = info.get("n_subjects")
-    n_sessions = info.get("n_sessions")
-    n_classes = info.get("n_classes")
-    montage = info.get("montage")
-    n_channels = info.get("n_channels")
-    code = str(info.get("code") or "")
-
-    if n_subj is not None and n_subj < 12:
-        caveats.append(f"Small cohort: {n_subj} subjects")
-    if n_sessions == 1:
-        caveats.append("Single-session recordings")
-    if montage and montage != "standard_1005":
-        caveats.append("Custom montage (non-10-05)")
-    if n_channels is not None and n_channels < 16:
-        caveats.append("Low channel density for spatial decoding")
-    if n_classes is not None and n_classes >= 4:
-        caveats.append(f"{n_classes}-class paradigm increases task complexity")
-    if "bnci" in code.lower():
-        caveats.append("Competition dataset in controlled lab conditions")
-
-    if not caveats:
-        return ""
-
-    items = "\n      ".join(f"<li>{escape(c)}</li>" for c in caveats[:4])
-    return (
-        '<div class="ds-caveats">'
-        '<p class="ds-caveats-title">Known Caveats</p>'
-        f"<ul>{items}</ul>"
-        "</div>"
-    )
 
 
 def _estimate_relative_difficulty(info, benchmark_ctx):
@@ -559,11 +552,17 @@ def _make_benchmark_context_html(cls_name, info):
 
     rows = []
     for entry in ctx["entries"][:4]:
+        stats_str = (
+            f'Max {entry["max"]:.2f} · '
+            f'Median {entry["median"]:.2f} · '
+            f'Mean {entry["mean"]:.2f} · '
+            f'Std {entry["std"]:.2f}'
+        )
         rows.append(
             "<li>"
             f'<span>{escape(entry["label"])} '
             f'<em>{entry["n_pipelines"]} pipelines</em></span>'
-            f"<strong>{entry['median']:.1f} WS</strong>"
+            f'<strong class="ds-bench-stats">{stats_str}</strong>'
             "</li>"
         )
     rows_html = "\n      ".join(rows)
@@ -574,7 +573,7 @@ def _make_benchmark_context_html(cls_name, info):
         '<span class="ds-eval-pill">WithinSession</span>'
         "</div>"
         f'<p class="ds-benchmark-summary">Included in {ctx["n_tables"]} MOABB benchmark table(s). '
-        "Scores are per-dataset medians across available pipelines.</p>"
+        "Scores are across available pipelines (WithinSession accuracy).</p>"
         f'<p class="ds-benchmark-meta"><span><strong>Sample frame:</strong> {escape(sample_frame or "N/A")}</span></p>'
         f"<ul>{rows_html}</ul>"
         "</div>"
@@ -800,6 +799,139 @@ def _make_github_issue_url(cls_name):
     return escape(url, quote=True)
 
 
+_COUNTRY_TO_ISO2 = {
+    "argentina": "AR",
+    "australia": "AU",
+    "austria": "AT",
+    "belgium": "BE",
+    "brazil": "BR",
+    "canada": "CA",
+    "chile": "CL",
+    "china": "CN",
+    "colombia": "CO",
+    "czech republic": "CZ",
+    "czechia": "CZ",
+    "denmark": "DK",
+    "egypt": "EG",
+    "finland": "FI",
+    "france": "FR",
+    "germany": "DE",
+    "greece": "GR",
+    "hungary": "HU",
+    "india": "IN",
+    "iran": "IR",
+    "ireland": "IE",
+    "israel": "IL",
+    "italy": "IT",
+    "japan": "JP",
+    "malaysia": "MY",
+    "mexico": "MX",
+    "netherlands": "NL",
+    "new zealand": "NZ",
+    "norway": "NO",
+    "pakistan": "PK",
+    "poland": "PL",
+    "portugal": "PT",
+    "romania": "RO",
+    "russia": "RU",
+    "saudi arabia": "SA",
+    "singapore": "SG",
+    "south korea": "KR",
+    "korea": "KR",
+    "spain": "ES",
+    "sweden": "SE",
+    "switzerland": "CH",
+    "taiwan": "TW",
+    "thailand": "TH",
+    "turkey": "TR",
+    "uk": "GB",
+    "united kingdom": "GB",
+    "usa": "US",
+    "united states": "US",
+    "vietnam": "VN",
+}
+
+
+def _country_flag(country_str):
+    """Return a flag emoji for a country name or ISO 3166-1 alpha-2 code."""
+    if not country_str:
+        return ""
+    key = country_str.strip().lower()
+    # Try direct lookup in name map, then treat input as ISO code
+    iso2 = _COUNTRY_TO_ISO2.get(key, country_str.strip().upper())
+    if len(iso2) != 2 or not iso2.isalpha():
+        return ""
+    # Convert to regional indicator symbols (Unicode flag)
+    return "".join(chr(0x1F1E6 + ord(c) - ord("A")) for c in iso2.upper())
+
+
+def _highlight_python(code):
+    """Highlight a Python code string using Pygments, returning HTML."""
+    from pygments import highlight as _pygments_highlight
+    from pygments.formatters import HtmlFormatter
+    from pygments.lexers import PythonLexer
+
+    formatter = HtmlFormatter(nowrap=False, cssclass="highlight")
+    return _pygments_highlight(code, PythonLexer(), formatter)
+
+
+def _make_provenance_html(info):
+    """Build the author provenance byline block for the card header."""
+    investigators = info.get("investigators") or []
+    senior_author = info.get("senior_author")
+    contact_info = info.get("contact_info") or []
+    institution = info.get("institution")
+    country = info.get("country")
+    publication_year = info.get("publication_year")
+
+    if not investigators and not senior_author:
+        return ""
+
+    # Build author name spans — all authors listed, senior author highlighted
+    senior_lower = (senior_author or "").strip().lower()
+    author_spans = []
+    for name in investigators:
+        safe = escape(name)
+        if name.strip().lower() == senior_lower:
+            author_spans.append(
+                f'<span class="ds-author-name ds-author-senior">{safe}</span>'
+            )
+        else:
+            author_spans.append(f'<span class="ds-author-name">{safe}</span>')
+
+    authors_line = ""
+    if author_spans:
+        authors_line = (
+            '<p class="ds-authors">'
+            '<span class="ds-authors-label">Authors</span>'
+            f'{", ".join(author_spans)}'
+            "</p>"
+        )
+
+    # Build provenance meta line: flag institution, country · year · email
+    meta_parts = []
+    if institution:
+        flag = _country_flag(country) if country else ""
+        flag_prefix = f"{flag}\u2002" if flag else ""
+        inst_str = f"{flag_prefix}{escape(institution)}"
+        if country:
+            inst_str += f", {escape(country)}"
+        meta_parts.append(f"<span>{inst_str}</span>")
+    if publication_year:
+        meta_parts.append(f"<span>{int(publication_year)}</span>")
+    if contact_info:
+        email = contact_info[0]
+        safe_email = escape(email)
+        meta_parts.append(f'<a href="mailto:{safe_email}">{safe_email}</a>')
+
+    meta_line = ""
+    if meta_parts:
+        sep = '<span class="ds-provenance-sep">\u00b7</span>'
+        meta_line = f'<div class="ds-provenance-meta">{sep.join(meta_parts)}</div>'
+
+    return f'<div class="ds-provenance">{authors_line}{meta_line}</div>'
+
+
 def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
     """Build the enhanced dataset card HTML (Layer 1)."""
     paradigm = info.get("paradigm") or "unknown"
@@ -889,7 +1021,6 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
         chips.append(f'<span class="ds-chip ds-chip-muted">{dur_display} s trials</span>')
 
     chips_html = "\n      ".join(chips)
-    caveats_html = _make_known_caveats_html(info)
     benchmark_html = _make_benchmark_context_html(cls_name, info)
     benchmark_ctx = _get_benchmark_context(cls_name)
     citation_html = _make_citation_impact_html(
@@ -947,18 +1078,29 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
     )
     actions_html = "\n      ".join(actions)
 
-    # --- Quickstart code block ---
-    quickstart = (
-        f'<details id="{quickstart_id}" class="ds-quickstart">\n'
-        f'  <summary class="ds-quickstart-summary">Toggle quickstart code</summary>\n'
-        f'  <pre class="ds-quickstart-code"><code>'
+    # --- Quickstart code block (Pygments-highlighted) ---
+    quickstart_code = (
         f"from moabb.datasets import {cls_name}\n\n"
         f"dataset = {cls_name}()\n"
         f"data = dataset.get_data(subjects=[{subject_literal}])\n"
         f"print(data[{subject_literal}])"
-        f"</code></pre>\n"
+    )
+    hl_code = _highlight_python(quickstart_code)
+    quickstart = (
+        f'<details id="{quickstart_id}" class="ds-quickstart">\n'
+        f'  <summary class="ds-quickstart-summary">Toggle quickstart code</summary>\n'
+        f'  <div class="ds-quickstart-code">{hl_code}</div>\n'
         f"</details>"
     )
+
+    # --- Alt name (paper description) ---
+    alt_name_html = ""
+    paper_desc = info.get("paper_description")
+    if paper_desc:
+        alt_name_html = f'<p class="ds-card-alt-name">{escape(paper_desc)}</p>'
+
+    # --- Author provenance ---
+    provenance_html = _make_provenance_html(info)
 
     return f"""\
 <div class="ds-card" role="region" aria-label="{cls_name} dataset overview">
@@ -966,7 +1108,9 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">{cls_name}</p>
+    {alt_name_html}
     <p class="ds-subtitle">{subtitle}</p>
+    {provenance_html}
   </div>
   <div class="ds-stats">
       {chips_html}
@@ -978,7 +1122,6 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
   {quickstart}
   {benchmark_html}
   {citation_html}
-  {caveats_html}
 </div>"""
 
 
@@ -995,7 +1138,6 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
     n_classes = info.get("n_classes")
     class_labels = info.get("class_labels") or []
     display_n_classes = len(class_labels) if class_labels else n_classes
-    n_trials_per_class = info.get("n_trials_per_class")
     runs_per_session = info.get("runs_per_session")
     n_sessions = info.get("n_sessions")
     trial_duration = info.get("trial_duration")
@@ -1004,24 +1146,19 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
 
     # Check which SVGs exist
     timeline_svg = os.path.join(srcdir, "_static", "timelines", f"{cls_name}.svg")
-    sessions_svg = os.path.join(srcdir, "_static", "viz", f"{cls_name}_sessions.svg")
-    classes_svg = os.path.join(srcdir, "_static", "viz", f"{cls_name}_classes.svg")
 
     has_timeline = os.path.exists(timeline_svg)
-    has_sessions = os.path.exists(sessions_svg)
-    has_classes = os.path.exists(classes_svg)
     # Build channel summary HTML
     channel_html = _make_channel_summary_html(info)
 
-    # Count how many grid items we have
-    n_items = sum([has_timeline, has_hed, has_classes, has_sessions, bool(channel_html)])
+    # Count how many grid items we have (timeline gets full width, others share row)
+    n_items = sum([has_timeline, has_hed, bool(channel_html)])
     if n_items == 0:
-        # At minimum show the timeline if it exists, else skip grid
         if not has_timeline:
             return []
 
-    # Determine grid columns — use 2 if 2+ items, else 1
-    n_cols = 2 if n_items >= 2 else 1
+    # Timeline gets its own full-width row; remaining items share a 2-col row
+    n_cols = 2 if (n_items - int(has_timeline)) >= 2 else 1
 
     lines.extend(
         [
@@ -1046,33 +1183,11 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
         )
     protocol_note = " \u00b7 ".join(protocol_bits)
 
-    sessions_bits = []
-    if n_sessions is not None:
-        sessions_bits.append(f"{n_sessions} sessions/subject")
-    if runs_per_session is not None:
-        sessions_bits.append(f"{runs_per_session} runs/session")
-    if (
-        isinstance(n_trials_per_class, (int, float))
-        and display_n_classes is not None
-        and n_sessions
-        and runs_per_session
-        and trial_duration
-    ):
-        try:
-            trials_per_session = (n_trials_per_class * display_n_classes) / n_sessions
-            trials_per_run = trials_per_session / runs_per_session
-            run_active_seconds = trials_per_run * trial_duration
-            sessions_bits.append(
-                f"~{_format_duration_seconds(run_active_seconds)} active time/run (no inter-trial gaps)"
-            )
-        except Exception:
-            pass
-    sessions_note = " \u00b7 ".join(sessions_bits)
-
     if has_timeline:
         lines.extend(
             [
                 "   .. grid-item-card:: Stimulus Protocol",
+                "      :columns: 12",
                 "      :class-card: ds-viz-card",
                 "",
                 f"      .. image:: /_static/timelines/{cls_name}.svg",
@@ -1104,41 +1219,6 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
         for hed_line in hed_html.split("\n"):
             lines.append(f"         {hed_line}")
         lines.append("")
-
-    if has_classes:
-        lines.extend(
-            [
-                "   .. grid-item-card:: Class Balance",
-                "      :class-card: ds-viz-card",
-                "",
-                f"      .. image:: /_static/viz/{cls_name}_classes.svg",
-                "         :width: 100%",
-                "         :class: viz-diagram",
-                "",
-            ]
-        )
-
-    if has_sessions:
-        lines.extend(
-            [
-                "   .. grid-item-card:: Sessions & Blocks",
-                "      :class-card: ds-viz-card",
-                "",
-                f"      .. image:: /_static/viz/{cls_name}_sessions.svg",
-                "         :width: 100%",
-                "         :class: viz-diagram",
-                "",
-            ]
-        )
-        if sessions_note:
-            lines.extend(
-                [
-                    "      .. raw:: html",
-                    "",
-                    f'         <p class="ds-viz-note">{escape(sessions_note)}</p>',
-                    "",
-                ]
-            )
 
     if channel_html:
         lines.extend(
@@ -1599,10 +1679,10 @@ def source_read_add_inherited(app, docname, source):
 
 
 def _generate_all_svgs(app):
-    """Generate timeline, class-balance, and session-structure SVGs.
+    """Generate stimulus timeline SVGs.
 
     Runs once at the start of the Sphinx build (builder-inited event).
-    SVGs are written to ``_static/timelines/`` and ``_static/viz/``.
+    SVGs are written to ``_static/timelines/``.
 
     Controlled by the ``dataset_card_generate_svgs`` config value
     (default ``True``).  When ``False``, SVG generation is skipped entirely.
@@ -1615,16 +1695,10 @@ def _generate_all_svgs(app):
 
     srcdir = app.srcdir
     timeline_dir = os.path.join(srcdir, "_static", "timelines")
-    viz_dir = os.path.join(srcdir, "_static", "viz")
     os.makedirs(timeline_dir, exist_ok=True)
-    os.makedirs(viz_dir, exist_ok=True)
 
     try:
-        from moabb.analysis.timeline import (
-            class_balance_svg,
-            session_structure_svg,
-            stimulus_timeline_svg,
-        )
+        from moabb.analysis.timeline import stimulus_timeline_svg
         from moabb.datasets.utils import dataset_list
     except ImportError:
         traceback.print_exc()
@@ -1648,28 +1722,6 @@ def _generate_all_svgs(app):
                 svg = stimulus_timeline_svg(ds)
                 with open(timeline_path, "w", encoding="utf-8") as f:
                     f.write(svg)
-            except Exception:
-                pass
-
-        # Class balance
-        classes_path = os.path.join(viz_dir, f"{name}_classes.svg")
-        if not os.path.exists(classes_path):
-            try:
-                svg = class_balance_svg(ds)
-                if svg:
-                    with open(classes_path, "w", encoding="utf-8") as f:
-                        f.write(svg)
-            except Exception:
-                pass
-
-        # Session structure
-        sessions_path = os.path.join(viz_dir, f"{name}_sessions.svg")
-        if not os.path.exists(sessions_path):
-            try:
-                svg = session_structure_svg(ds)
-                if svg:
-                    with open(sessions_path, "w", encoding="utf-8") as f:
-                        f.write(svg)
             except Exception:
                 pass
 

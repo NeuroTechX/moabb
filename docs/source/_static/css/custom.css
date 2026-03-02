@@ -894,6 +894,76 @@ html[data-theme="dark"] .ds-card {
   line-height: 1.5;
 }
 
+/* --- Alt name / paper title --- */
+.ds-card-alt-name {
+  margin: 0.18rem 0 0 0;
+  font-size: 0.88rem;
+  font-style: italic;
+  font-weight: 450;
+  color: var(--pst-color-text-muted);
+  line-height: 1.4;
+}
+
+/* --- Author provenance byline --- */
+.ds-provenance {
+  margin-top: 0.55rem;
+  padding-top: 0.48rem;
+  border-top: 1px solid var(--ds-accent-soft);
+}
+
+.ds-authors {
+  margin: 0 0 0.22rem 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--pst-color-text-base);
+}
+
+.ds-authors-label {
+  display: inline-block;
+  margin-right: 0.4rem;
+  font-family: var(--ds-font-heading);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
+  vertical-align: baseline;
+}
+
+.ds-author-name {
+  font-weight: 500;
+}
+
+.ds-author-senior {
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: var(--ds-accent-soft);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1.5px;
+}
+
+.ds-provenance-meta {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--pst-color-text-muted);
+  line-height: 1.4;
+}
+
+.ds-provenance-meta a {
+  color: var(--ds-accent);
+  text-decoration: none;
+}
+
+.ds-provenance-meta a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ds-provenance-sep {
+  margin: 0 0.3rem;
+  opacity: 0.45;
+}
+
 .ds-stats {
   display: flex;
   flex-wrap: wrap;
@@ -993,10 +1063,14 @@ html[data-theme="dark"] .ds-card {
 
 .ds-quickstart-summary {
   display: block;
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0.78rem;
   margin: 0;
-  font-size: 0.8rem;
-  color: var(--ds-accent-soft, #7aafcf);
+  font-family: var(--ds-font-heading);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
   cursor: pointer;
   border: 0;
 }
@@ -1025,8 +1099,7 @@ html[data-theme="dark"] .ds-quickstart {
   background: rgba(75, 163, 215, 0.12);
 }
 
-.ds-benchmark-context,
-.ds-caveats {
+.ds-benchmark-context {
   margin-top: 0.7rem;
   padding: 0.65rem 0.78rem;
   border-radius: 10px;
@@ -1034,13 +1107,11 @@ html[data-theme="dark"] .ds-quickstart {
   background: rgba(15, 93, 143, 0.06);
 }
 
-html[data-theme="dark"] .ds-benchmark-context,
-html[data-theme="dark"] .ds-caveats {
+html[data-theme="dark"] .ds-benchmark-context {
   background: rgba(75, 163, 215, 0.1);
 }
 
-.ds-benchmark-title,
-.ds-caveats-title {
+.ds-benchmark-title {
   margin: 0 0 0.32rem 0;
   font-family: var(--ds-font-heading);
   font-size: 0.74rem;
@@ -1109,7 +1180,6 @@ html[data-theme="dark"] .ds-benchmark-note {
 }
 
 .ds-benchmark-context ul,
-.ds-caveats ul,
 .ds-citation-impact ul {
   list-style: none;
   margin: 0;
@@ -1119,7 +1189,6 @@ html[data-theme="dark"] .ds-benchmark-note {
 }
 
 .ds-benchmark-context li,
-.ds-caveats li,
 .ds-citation-impact li {
   display: flex;
   justify-content: space-between;
@@ -1129,9 +1198,6 @@ html[data-theme="dark"] .ds-benchmark-note {
   line-height: 1.38;
 }
 
-.ds-caveats li {
-  display: block;
-}
 
 .ds-benchmark-context li em {
   font-style: normal;
@@ -1144,6 +1210,12 @@ html[data-theme="dark"] .ds-benchmark-note {
   font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
   font-size: 0.79rem;
   color: var(--ds-accent-strong);
+}
+
+.ds-bench-stats {
+  font-size: 0.73rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .ds-citation-impact {
@@ -1622,7 +1694,6 @@ section[id^="moabb-datasets-"] dl.py.class > dt.sig.sig-object.py {
   }
 
   .ds-benchmark-context li,
-  .ds-caveats li,
   .ds-citation-impact li {
     display: block;
   }
