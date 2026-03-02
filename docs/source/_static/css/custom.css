@@ -1714,6 +1714,35 @@ dl.py.class .sd-tab-content .admonition-experimental-protocol > .admonition-titl
 .admonition-experimental-protocol.admonition > .admonition-title::before {
   content: none !important;
   display: none !important;
+  background: none !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.admonition-dataset-summary.admonition > .admonition-title::after,
+.admonition-participants.admonition > .admonition-title::after,
+.admonition-equipment.admonition > .admonition-title::after,
+.admonition-preprocessing.admonition > .admonition-title::after,
+.admonition-data-access.admonition > .admonition-title::after,
+.admonition-experimental-protocol.admonition > .admonition-title::after {
+  content: none !important;
+  display: none !important;
+}
+
+.admonition-dataset-summary.admonition > .admonition-title i,
+.admonition-dataset-summary.admonition > .admonition-title svg,
+.admonition-participants.admonition > .admonition-title i,
+.admonition-participants.admonition > .admonition-title svg,
+.admonition-equipment.admonition > .admonition-title i,
+.admonition-equipment.admonition > .admonition-title svg,
+.admonition-preprocessing.admonition > .admonition-title i,
+.admonition-preprocessing.admonition > .admonition-title svg,
+.admonition-data-access.admonition > .admonition-title i,
+.admonition-data-access.admonition > .admonition-title svg,
+.admonition-experimental-protocol.admonition > .admonition-title i,
+.admonition-experimental-protocol.admonition > .admonition-title svg {
+  display: none !important;
 }
 
 /* Hide standalone class signature strip on dataset pages */
