@@ -327,6 +327,10 @@ class Results:
                 return work_plan, None
 
             cached_df = self._to_dataframe_from_file(f, digests=list(digests.values()))
+            # Filter to current dataset to avoid mixing rows from other datasets
+            # that share the same pipeline digest.
+            if cached_df is not None and not cached_df.empty:
+                cached_df = cached_df[cached_df["dataset"] == dataset.code]
             return work_plan, cached_df
 
     def batch_not_yet_computed(self, pipelines, dataset, subjects, process_pipeline):

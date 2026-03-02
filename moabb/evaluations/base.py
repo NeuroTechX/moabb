@@ -726,6 +726,8 @@ class BaseEvaluation(ABC):
             if col != "score":
                 df[col] = df[col].fillna(df["score"])
 
+        has_carbon = "carbon_emission" in df.columns
+
         grouped = df.groupby(group_keys, sort=False)
         agg_df = grouped[agg_cols].mean()
 
@@ -735,8 +737,11 @@ class BaseEvaluation(ABC):
             template["n_samples"] = template.get("n_samples_total", template["n_samples"])
             for col in agg_cols:
                 template[col] = agg_df.loc[key, col]
+            if has_carbon:
+                template["carbon_emission"] = sub_df["carbon_emission"].sum()
             template.pop("n_samples_total", None)
             template.pop("is_error", None)
+            template.pop("codecarbon_task_name", None)
             results.append(template)
         return results
 
@@ -832,7 +837,7 @@ class BaseEvaluation(ABC):
         return pd.concat(res_per_db, ignore_index=True)
 
     def _process_parallel(self, pipelines, param_grid, postprocess_pipeline):
-        """Flattened parallel process: all folds across all datasets in parallel."""
+        """Flattened parallel process: all folds per dataset in parallel."""
         res_per_db = []
 
         for dataset in self.datasets:
