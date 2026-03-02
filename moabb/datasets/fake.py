@@ -18,6 +18,9 @@ class FakeDataset(BaseDataset):
 
     By default, the dataset has 2 sessions, 10 subjects, and 3 classes.
 
+    .. versionchanged:: 0.4.3
+        Added ``annotations`` parameter.
+
     Parameters
     ----------
     event_list: list or tuple of str
@@ -43,8 +46,6 @@ class FakeDataset(BaseDataset):
         If True, pass events through stim channel.
     annotations: bool
         If True, pass events through Annotations.
-
-        .. versionadded:: 0.4.3
     """
 
     def __init__(

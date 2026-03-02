@@ -1,7 +1,7 @@
 """
-========================================
+==============================================
 Time-Resolved Decoding with SlidingEstimator
-========================================
+==============================================
 
 This example shows how to perform time-resolved decoding of EEG signals using
 :class:`mne.decoding.SlidingEstimator`. Instead of reducing the entire trial to
