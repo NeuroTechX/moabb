@@ -70,6 +70,15 @@ jobs:
       - name: Install moabb
         run: |
           uv pip install -e .[docs,deeplearning,optuna,external,carbonemission]
+          uv pip install google-auth requests
+
+      - name: Export GA4 page views snapshot
+        env:
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python .github/scripts/export_ga4_pageviews.py \
+            --output docs/source/_static/analytics/pageviews.json
 
       - name: Configure MOABB download directory
         run: |

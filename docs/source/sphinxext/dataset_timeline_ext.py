@@ -55,6 +55,8 @@ _BENCHMARK_CONTEXT_CACHE = {}
 _DOI_METADATA_CACHE = {}
 _DOI_CACHE_LOADED = False
 _DOI_RE = re.compile(r"^10\.\d{4,}/", re.IGNORECASE)
+_DATASET_PAGEVIEWS_CACHE = None
+_DATASET_PAGEVIEWS_CACHE_SRC = None
 
 
 def _is_concrete_dataset(obj):
@@ -875,6 +877,56 @@ def _highlight_python(code):
     return _pygments_highlight(code, PythonLexer(), formatter)
 
 
+def _load_dataset_pageviews(srcdir):
+    """Load GA4 dataset page views snapshot from docs static assets."""
+    global _DATASET_PAGEVIEWS_CACHE, _DATASET_PAGEVIEWS_CACHE_SRC
+    if _DATASET_PAGEVIEWS_CACHE is not None and _DATASET_PAGEVIEWS_CACHE_SRC == srcdir:
+        return _DATASET_PAGEVIEWS_CACHE
+
+    snapshot_path = os.path.join(srcdir, "_static", "analytics", "pageviews.json")
+    counts = {}
+    try:
+        with open(snapshot_path, encoding="utf-8") as f:
+            payload = json.load(f)
+        raw_counts = payload.get("counts", {})
+        if isinstance(raw_counts, dict):
+            for cls_name, values in raw_counts.items():
+                if not isinstance(values, dict):
+                    continue
+                entry = {}
+                if "last30" in values:
+                    try:
+                        entry["last30"] = int(values["last30"])
+                    except (TypeError, ValueError):
+                        pass
+                if "all_time" in values:
+                    try:
+                        entry["all_time"] = int(values["all_time"])
+                    except (TypeError, ValueError):
+                        pass
+                if entry:
+                    counts[str(cls_name)] = entry
+    except Exception:
+        counts = {}
+
+    _DATASET_PAGEVIEWS_CACHE = counts
+    _DATASET_PAGEVIEWS_CACHE_SRC = srcdir
+    return counts
+
+
+def _get_dataset_pageview_counts(srcdir, cls_name):
+    """Return page view counts for a dataset class name (if available)."""
+    return _load_dataset_pageviews(srcdir).get(cls_name, {})
+
+
+def _format_count(value):
+    """Return a thousands-separated integer string, or 'n/a'."""
+    try:
+        return f"{int(value):,}"
+    except (TypeError, ValueError):
+        return "n/a"
+
+
 def _make_provenance_html(info):
     """Build the author provenance byline block for the card header."""
     investigators = info.get("investigators") or []
@@ -932,7 +984,9 @@ def _make_provenance_html(info):
     return f'<div class="ds-provenance">{authors_line}{meta_line}</div>'
 
 
-def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
+def _make_header_html(
+    cls_name, info, source_url=None, *, live_citations=True, pageview_counts=None
+):
     """Build the enhanced dataset card HTML (Layer 1)."""
     paradigm = info.get("paradigm") or "unknown"
     label = _PARADIGM_LABELS.get(paradigm, paradigm.title())
@@ -1021,6 +1075,24 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
         chips.append(f'<span class="ds-chip ds-chip-muted">{dur_display} s trials</span>')
 
     chips_html = "\n      ".join(chips)
+    last30 = (
+        pageview_counts.get("last30")
+        if isinstance(pageview_counts, dict) and "last30" in pageview_counts
+        else None
+    )
+    all_time = (
+        pageview_counts.get("all_time")
+        if isinstance(pageview_counts, dict) and "all_time" in pageview_counts
+        else None
+    )
+    views_html = (
+        '<p class="ds-views-line" title="Google Analytics 4 page views">'
+        '<span class="ds-views-label">Page Views</span>'
+        f"30d: <strong>{_format_count(last30)}</strong>"
+        '<span class="ds-provenance-sep">·</span>'
+        f"all-time: <strong>{_format_count(all_time)}</strong>"
+        "</p>"
+    )
     benchmark_html = _make_benchmark_context_html(cls_name, info)
     benchmark_ctx = _get_benchmark_context(cls_name)
     citation_html = _make_citation_impact_html(
@@ -1115,6 +1187,7 @@ def _make_header_html(cls_name, info, source_url=None, *, live_citations=True):
   <div class="ds-stats">
       {chips_html}
   </div>
+  {views_html}
   {class_line}
   <div class="ds-actions">
       {actions_html}
@@ -1615,8 +1688,13 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
     top_block = []
     if info:
         live_citations = getattr(app.config, "dataset_card_live_citations", True)
+        pageview_counts = _get_dataset_pageview_counts(app.srcdir, cls_name)
         header_html = _make_header_html(
-            cls_name, info, source_url=source_url, live_citations=live_citations
+            cls_name,
+            info,
+            source_url=source_url,
+            live_citations=live_citations,
+            pageview_counts=pageview_counts,
         )
         top_block.append(".. raw:: html")
         top_block.append("")

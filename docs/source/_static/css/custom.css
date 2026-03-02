@@ -972,6 +972,38 @@ html[data-theme="dark"] .ds-card {
   margin-bottom: 0.74rem;
 }
 
+.ds-views-line {
+  margin: 0 0 0.72rem 0;
+  font-size: 0.8rem;
+  line-height: 1.42;
+  color: var(--pst-color-text-base);
+  padding: 0.33rem 0.5rem;
+  border-radius: 8px;
+  background: rgba(15, 93, 143, 0.06);
+  border: 1px dashed var(--ds-accent-soft);
+}
+
+.ds-views-label {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-family: var(--ds-font-heading);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
+}
+
+.ds-views-line strong {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--ds-accent-strong);
+}
+
+html[data-theme="dark"] .ds-views-line {
+  background: rgba(75, 163, 215, 0.12);
+}
+
 .ds-class-line {
   margin: 0 0 0.85rem 0;
   font-size: 0.83rem;

@@ -1,0 +1,417 @@
+{
+    "counts": {
+        "AlexMI": {
+            "all_time": 1504,
+            "last30": 91
+        },
+        "BI2012": {
+            "all_time": 403,
+            "last30": 40
+        },
+        "BI2013a": {
+            "all_time": 334,
+            "last30": 28
+        },
+        "BI2014a": {
+            "all_time": 272,
+            "last30": 18
+        },
+        "BI2014b": {
+            "all_time": 190,
+            "last30": 24
+        },
+        "BI2015a": {
+            "all_time": 213,
+            "last30": 15
+        },
+        "BI2015b": {
+            "all_time": 206,
+            "last30": 12
+        },
+        "BNCI2003_004": {
+            "all_time": 24,
+            "last30": 24
+        },
+        "BNCI2014001": {
+            "all_time": 836,
+            "last30": 0
+        },
+        "BNCI2014002": {
+            "all_time": 121,
+            "last30": 0
+        },
+        "BNCI2014004": {
+            "all_time": 150,
+            "last30": 0
+        },
+        "BNCI2014008": {
+            "all_time": 85,
+            "last30": 0
+        },
+        "BNCI2014009": {
+            "all_time": 81,
+            "last30": 0
+        },
+        "BNCI2014_001": {
+            "all_time": 4911,
+            "last30": 261
+        },
+        "BNCI2014_002": {
+            "all_time": 1121,
+            "last30": 65
+        },
+        "BNCI2014_004": {
+            "all_time": 1161,
+            "last30": 84
+        },
+        "BNCI2014_008": {
+            "all_time": 349,
+            "last30": 27
+        },
+        "BNCI2014_009": {
+            "all_time": 440,
+            "last30": 38
+        },
+        "BNCI2015001": {
+            "all_time": 82,
+            "last30": 0
+        },
+        "BNCI2015003": {
+            "all_time": 52,
+            "last30": 0
+        },
+        "BNCI2015004": {
+            "all_time": 79,
+            "last30": 0
+        },
+        "BNCI2015_001": {
+            "all_time": 996,
+            "last30": 47
+        },
+        "BNCI2015_003": {
+            "all_time": 191,
+            "last30": 16
+        },
+        "BNCI2015_004": {
+            "all_time": 722,
+            "last30": 37
+        },
+        "BNCI2015_006": {
+            "all_time": 6,
+            "last30": 6
+        },
+        "BNCI2015_007": {
+            "all_time": 6,
+            "last30": 6
+        },
+        "BNCI2015_008": {
+            "all_time": 10,
+            "last30": 10
+        },
+        "BNCI2015_009": {
+            "all_time": 11,
+            "last30": 11
+        },
+        "BNCI2015_010": {
+            "all_time": 5,
+            "last30": 5
+        },
+        "BNCI2015_012": {
+            "all_time": 9,
+            "last30": 9
+        },
+        "BNCI2015_013": {
+            "all_time": 12,
+            "last30": 12
+        },
+        "BNCI2016_002": {
+            "all_time": 14,
+            "last30": 14
+        },
+        "BNCI2019_001": {
+            "all_time": 23,
+            "last30": 23
+        },
+        "BNCI2020_001": {
+            "all_time": 21,
+            "last30": 21
+        },
+        "BNCI2020_002": {
+            "all_time": 9,
+            "last30": 9
+        },
+        "BNCI2022_001": {
+            "all_time": 23,
+            "last30": 23
+        },
+        "BNCI2024_001": {
+            "all_time": 23,
+            "last30": 23
+        },
+        "BNCI2025_001": {
+            "all_time": 22,
+            "last30": 22
+        },
+        "BNCI2025_002": {
+            "all_time": 27,
+            "last30": 27
+        },
+        "Beetl2021_A": {
+            "all_time": 190,
+            "last30": 42
+        },
+        "Beetl2021_B": {
+            "all_time": 97,
+            "last30": 22
+        },
+        "CastillosBurstVEP100": {
+            "all_time": 81,
+            "last30": 13
+        },
+        "CastillosBurstVEP40": {
+            "all_time": 48,
+            "last30": 2
+        },
+        "CastillosCVEP100": {
+            "all_time": 37,
+            "last30": 3
+        },
+        "CastillosCVEP40": {
+            "all_time": 42,
+            "last30": 12
+        },
+        "Cattan2019_PHMD": {
+            "all_time": 174,
+            "last30": 12
+        },
+        "Cattan2019_VR": {
+            "all_time": 209,
+            "last30": 10
+        },
+        "Cho2017": {
+            "all_time": 1711,
+            "last30": 69
+        },
+        "DemonsP300": {
+            "all_time": 171,
+            "last30": 0
+        },
+        "Dreyer2023": {
+            "all_time": 294,
+            "last30": 64
+        },
+        "Dreyer2023A": {
+            "all_time": 184,
+            "last30": 45
+        },
+        "Dreyer2023B": {
+            "all_time": 92,
+            "last30": 25
+        },
+        "Dreyer2023C": {
+            "all_time": 84,
+            "last30": 26
+        },
+        "EPFLP300": {
+            "all_time": 344,
+            "last30": 27
+        },
+        "ErpCore2021_ERN": {
+            "all_time": 66,
+            "last30": 10
+        },
+        "ErpCore2021_LRP": {
+            "all_time": 35,
+            "last30": 5
+        },
+        "ErpCore2021_MMN": {
+            "all_time": 29,
+            "last30": 4
+        },
+        "ErpCore2021_N170": {
+            "all_time": 43,
+            "last30": 8
+        },
+        "ErpCore2021_N2pc": {
+            "all_time": 35,
+            "last30": 6
+        },
+        "ErpCore2021_N400": {
+            "all_time": 50,
+            "last30": 8
+        },
+        "ErpCore2021_P3": {
+            "all_time": 49,
+            "last30": 20
+        },
+        "GrosseWentrup2009": {
+            "all_time": 440,
+            "last30": 30
+        },
+        "HeadMountedDisplay": {
+            "all_time": 3,
+            "last30": 0
+        },
+        "Hinss2021": {
+            "all_time": 120,
+            "last30": 13
+        },
+        "Huebner2017": {
+            "all_time": 167,
+            "last30": 9
+        },
+        "Huebner2018": {
+            "all_time": 131,
+            "last30": 6
+        },
+        "Kalunga2016": {
+            "all_time": 338,
+            "last30": 12
+        },
+        "Kojima2024A": {
+            "all_time": 55,
+            "last30": 8
+        },
+        "Kojima2024B": {
+            "all_time": 34,
+            "last30": 8
+        },
+        "Lee2019_ERP": {
+            "all_time": 578,
+            "last30": 40
+        },
+        "Lee2019_MI": {
+            "all_time": 1451,
+            "last30": 90
+        },
+        "Lee2019_SSVEP": {
+            "all_time": 426,
+            "last30": 20
+        },
+        "Liu2024": {
+            "all_time": 388,
+            "last30": 81
+        },
+        "MAMEM1": {
+            "all_time": 268,
+            "last30": 18
+        },
+        "MAMEM2": {
+            "all_time": 203,
+            "last30": 11
+        },
+        "MAMEM3": {
+            "all_time": 298,
+            "last30": 12
+        },
+        "MartinezCagigal2023Checker": {
+            "all_time": 8,
+            "last30": 8
+        },
+        "MartinezCagigal2023Pary": {
+            "all_time": 6,
+            "last30": 6
+        },
+        "MunichMI": {
+            "all_time": 60,
+            "last30": 0
+        },
+        "Nakanishi2015": {
+            "all_time": 435,
+            "last30": 14
+        },
+        "Ofner2017": {
+            "all_time": 561,
+            "last30": 26
+        },
+        "PhysionetMI": {
+            "all_time": 2077,
+            "last30": 198
+        },
+        "Rodrigues2017": {
+            "all_time": 67,
+            "last30": 10
+        },
+        "RomaniBF2025ERP": {
+            "all_time": 26,
+            "last30": 18
+        },
+        "SSVEPExo": {
+            "all_time": 55,
+            "last30": 0
+        },
+        "Schirrmeister2017": {
+            "all_time": 1739,
+            "last30": 39
+        },
+        "Shin2017A": {
+            "all_time": 526,
+            "last30": 28
+        },
+        "Shin2017B": {
+            "all_time": 306,
+            "last30": 15
+        },
+        "Sosulski2019": {
+            "all_time": 180,
+            "last30": 16
+        },
+        "Stieger2021": {
+            "all_time": 690,
+            "last30": 87
+        },
+        "Thielen2015": {
+            "all_time": 73,
+            "last30": 6
+        },
+        "Thielen2021": {
+            "all_time": 142,
+            "last30": 10
+        },
+        "VirtualReality": {
+            "all_time": 9,
+            "last30": 0
+        },
+        "Wang2016": {
+            "all_time": 482,
+            "last30": 19
+        },
+        "Weibo2014": {
+            "all_time": 853,
+            "last30": 57
+        },
+        "Zhou2016": {
+            "all_time": 903,
+            "last30": 48
+        },
+        "bi2012": {
+            "all_time": 23,
+            "last30": 0
+        },
+        "bi2013a": {
+            "all_time": 75,
+            "last30": 0
+        },
+        "bi2014a": {
+            "all_time": 10,
+            "last30": 0
+        },
+        "bi2014b": {
+            "all_time": 10,
+            "last30": 0
+        },
+        "bi2015a": {
+            "all_time": 20,
+            "last30": 0
+        },
+        "bi2015b": {
+            "all_time": 15,
+            "last30": 0
+        }
+    },
+    "generated_at_utc": "2026-03-02T12:28:47+00:00",
+    "property_id": "355435362",
+    "reason": "ga4 export successful",
+    "source": "ga4-data-api",
+    "status": "ok"
+}
