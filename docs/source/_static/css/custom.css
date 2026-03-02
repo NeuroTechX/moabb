@@ -573,16 +573,24 @@ html[data-theme="dark"] {
 }
 
 /* ---- Timeline section ---- */
-.timeline-diagram {
+a.timeline-diagram {
+  display: block;
+  margin-top: 0.5rem;
+  line-height: 0;
+  text-decoration: none;
+}
+
+img.timeline-diagram {
   border: 1px solid var(--pst-color-border);
   border-radius: 10px;
   padding: 0.75rem;
   background: #ffffff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-  margin-top: 0.5rem;
+  display: block;
+  width: 100%;
 }
 
-html[data-theme="dark"] .timeline-diagram {
+html[data-theme="dark"] img.timeline-diagram {
   background: var(--pst-color-surface);
   border-color: var(--pst-color-border);
 }
@@ -800,7 +808,7 @@ html[data-theme="dark"] .admonition-experimental-protocol > .admonition-title {
     width: auto;
   }
 
-  .timeline-diagram {
+  img.timeline-diagram {
     padding: 0.4rem;
   }
 }
