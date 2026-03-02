@@ -310,6 +310,7 @@ html_css_files = [
 html_js_files = [
     "https://code.jquery.com/jquery-3.7.1.min.js",
     "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js",
+    "js/section-nav-hierarchy.js",
 ]
 
 # If true, links to the reST sources are added to the pages.

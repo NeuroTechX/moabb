@@ -2042,3 +2042,61 @@ table.autosummary td:nth-child(2) {
   box-shadow: inset 2px 0 0 var(--pst-color-primary);
   padding-left: 0.5rem;
 }
+
+.bd-toc nav li.toc-dataset-group > .toc-dataset-group-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--pst-color-text-muted);
+  padding-left: 1.1rem;
+  margin-top: 0.2rem;
+  cursor: default;
+}
+
+.bd-toc nav li.toc-dataset-group > .toc-dataset-list {
+  margin-top: 0.1rem;
+}
+
+.bd-toc nav li.toc-dataset-group > .toc-dataset-list a.nav-link {
+  font-size: 0.78rem;
+  color: var(--pst-color-text-muted);
+  padding-left: 1.6rem;
+  line-height: 1.25;
+}
+
+.bd-toc nav li.toc-dataset-group > .toc-dataset-list a.nav-link:hover {
+  color: var(--pst-color-link);
+}
+
+nav.bd-docs-nav ul.toc-datasets-root {
+  margin-bottom: 0.65rem;
+}
+
+nav.bd-docs-nav li.toc-group-datasets > .toc-group-label {
+  display: block;
+  margin: 0.25rem 0 0.2rem 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pst-color-text-muted);
+}
+
+nav.bd-docs-nav li.toc-group-paradigm > .toc-subgroup-label {
+  display: block;
+  margin: 0.22rem 0 0.08rem 0.95rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--pst-color-text-muted) 88%, var(--pst-color-text-base));
+}
+
+nav.bd-docs-nav li.toc-group-paradigm > ul.nav.bd-sidenav {
+  margin-left: 0.75rem;
+  border-left: 1px solid color-mix(in srgb, var(--pst-color-border) 70%, transparent);
+  padding-left: 0.3rem;
+}
+
+nav.bd-docs-nav li.toc-dataset-item > a {
+  font-size: 0.86rem;
+}
