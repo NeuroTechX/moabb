@@ -647,106 +647,10 @@ class WithinSubjectEvaluation(BaseEvaluation):
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
     ):
-        # Collect all pipelines that need computing across subjects
-        run_pipes = {}
-        for subject in dataset.subject_list:
-            run_pipes.update(
-                self.results.not_yet_computed(
-                    pipelines, dataset, subject, process_pipeline
-                )
-            )
-        if len(run_pipes) == 0:
-            return
-
-        X, y, metadata = self._load_data(
-            dataset,
-            run_pipes,
-            process_pipeline,
-            postprocess_pipeline,
+        raise RuntimeError(
+            "WithinSubjectEvaluation.evaluate() legacy path has been removed. "
+            "Use WithinSubjectEvaluation.process() with the splitter-based engine."
         )
-        le = LabelEncoder()
-        y = y if self.mne_labels else le.fit_transform(y)
-
-        groups = metadata.subject.values
-        sessions = metadata.session.values
-        nchan = self._get_nchan(X)
-
-        self.cv = self._create_splitter()
-        inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
-
-        if _carbonfootprint:
-            tracker = self.emissions.create_tracker()
-            tracker.start()
-
-        # Accumulate per-fold results, then aggregate
-        all_fold_results = []
-
-        for cv_ind, (train, test) in enumerate(
-            tqdm(
-                self.cv.split(y, metadata),
-                total=self.cv.get_n_splits(metadata),
-                desc=f"{dataset.code}-WithinSubject",
-            )
-        ):
-            subject = groups[test[0]]
-            run_pipes = self.results.not_yet_computed(
-                pipelines, dataset, subject, process_pipeline
-            )
-
-            for name, clf in run_pipes.items():
-                clf = self._grid_search(
-                    param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
-                )
-                cvclf = clone(clf)
-
-                duration, emissions, task_name = self._fit_cv(
-                    cvclf,
-                    X[train],
-                    y[train],
-                    tracker if _carbonfootprint else None,
-                )
-                self._maybe_save_model_cv(
-                    cvclf,
-                    dataset,
-                    subject,
-                    "",
-                    name,
-                    cv_ind,
-                    eval_type="WithinSubject",
-                )
-
-                scorer = _create_scorer(cvclf, self.paradigm.scoring)
-
-                for sess in np.unique(sessions[test]):
-                    ix = sessions[test] == sess
-
-                    res = self._build_scored_result(
-                        dataset,
-                        subject,
-                        sess,
-                        name,
-                        len(train),
-                        nchan,
-                        duration,
-                        scorer,
-                        cvclf,
-                        X[test[ix]],
-                        y[test[ix]],
-                    )
-
-                    if _carbonfootprint:
-                        self._attach_emissions(res, emissions, task_name)
-
-                    all_fold_results.append(res)
-
-        if _carbonfootprint:
-            tracker.stop()
-
-        # Aggregate fold results by (subject, session, pipeline)
-        for agg_res in self._aggregate_fold_results(all_fold_results):
-            agg_res.pop("n_samples_total", None)
-            agg_res.pop("is_error", None)
-            yield agg_res
 
     def is_valid(self, dataset):
         return True

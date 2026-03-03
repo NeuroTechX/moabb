@@ -447,6 +447,58 @@ class TestWithinSubj(TestWithinSess):
             optuna=False,
         )
 
+    def test_eval_results(self):
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
+            list(
+                self.eval.evaluate(
+                    dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+                )
+            )
+
+    def test_compound_dataset(self):
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
+            list(
+                self.eval.evaluate(
+                    dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+                )
+            )
+
+    def test_eval_grid_search(self):
+        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
+            list(
+                self.eval.evaluate(
+                    dataset,
+                    pipelines,
+                    param_grid=param_grid,
+                    process_pipeline=process_pipeline,
+                )
+            )
+
+    def test_eval_grid_search_optuna(self):
+        if not optuna_available:
+            pytest.skip("Optuna is not available")
+        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        self.eval.optuna = True
+        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
+            list(
+                self.eval.evaluate(
+                    dataset,
+                    pipelines,
+                    param_grid=param_grid,
+                    process_pipeline=process_pipeline,
+                )
+            )
+        self.eval.optuna = False
+
+    def test_within_session_evaluation_save_model(self):
+        self.eval.process(pipelines)
+        super().test_within_session_evaluation_save_model()
+
 
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
@@ -966,8 +1018,22 @@ class TestParallelLegacyEquivalence:
         self._compare_parallel_vs_legacy(ev.CrossSubjectEvaluation, tmp_path)
 
     def test_within_subject_equivalence(self, tmp_path):
-        """WithinSubject parallel matches legacy scores."""
-        self._compare_parallel_vs_legacy(ev.WithinSubjectEvaluation, tmp_path)
+        """WithinSubject legacy path is intentionally disabled."""
+        paradigm = FakeImageryParadigm()
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=12)
+        eval_legacy = ev.WithinSubjectEvaluation(
+            paradigm=paradigm,
+            datasets=[ds],
+            random_state=42,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "legacy"),
+        )
+        with pytest.raises(
+            RuntimeError, match="WithinSubjectEvaluation.evaluate\\(\\) legacy path"
+        ):
+            eval_legacy._process_legacy(
+                pipelines, param_grid=None, postprocess_pipeline=None
+            )
 
 
 class TestAggregateFoldResults:
