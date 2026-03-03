@@ -1,7 +1,7 @@
 """
-====================================
-Tutorial 5: Creating a dataset class
-====================================
+=============================================================
+Tutorial 5: Combining Multiple Datasets into a Single Dataset
+=============================================================
 """
 
 # Author: Gregoire Cattan

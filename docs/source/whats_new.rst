@@ -20,6 +20,8 @@ Version 1.5  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Redesign dataset API pages with a structured snapshot card, visual summary blocks, HED-tag visualization, benchmark highlights, citation/public API cards, and responsive mobile improvements (:gh:`1000` by `Bruno Aristimunha`_)
+- Add GA4 pageview metrics and popularity ranking to dataset documentation cards, with inline sparkline charts showing 90-day traffic trends (by `Bruno Aristimunha`_)
+- Polish API reference page with color-coded concept highlights, section breaks, table styling, and scoped CSS to avoid affecting other pages (by `Bruno Aristimunha`_)
 - Implementation of Pseudo-Online framework (:gh:`641` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Introduce a new logo for the MOABB library (:gh:`858` by `Pierre Guetschel`_ and community)
 - Better verbosity control for initialization of the library (:gh:`850` by `Bruno Aristimunha`_)
@@ -42,8 +44,9 @@ Enhancements
 - Add ``additional_metadata`` parameter to ``paradigm.get_data()`` to fetch additional metadata columns from BIDS ``events.tsv`` files. Supports ``"all"`` to load all columns or a list of specific column names (:gh:`744` by `Matthias Dold`_)
 - Add ``get_additional_metadata()`` method to :class:`moabb.datasets.base.BaseDataset` allowing datasets to provide additional metadata for epochs. Implemented for BIDS datasets in :class:`moabb.datasets.base.BaseBIDSDataset` (:gh:`744` by `Matthias Dold`_)
 - Add automatic HED 8.4.0 (Hierarchical Event Descriptors) annotations to BIDS export with 83 validated paradigm-specific tags covering all MOABB datasets, ``HEDVersion`` in ``dataset_description.json``, events.json sidecar patching, per-dataset override via ``ExperimentMetadata.hed_tags``, and ``Label/`` fallback for unmapped events (:gh:`974` by `Bruno Aristimunha`_)
-- Add tutorial on time-resolved decoding with :class:`mne.decoding.SlidingEstimator`, showing how to evaluate per-time-point AUC across subjects as an alternative to pseudo-online evaluation (by `Bruno Aristimunha`_)
+- Add tutorial on time-resolved decoding with :class:`mne.decoding.SlidingEstimator`, showing how to evaluate per-time-point AUC across subjects as an alternative to pseudo-online evaluation (:gh:`718` by `Bruno Aristimunha`_)
 - Add advanced tutorial on Riemannian Artifact Rejection (Riemannian Potato and Potato Field) as a pre-processing step using pipeline surgery (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
+- Simplify the Riemannian Artifact Rejection tutorial by using pyRiemann's enhanced ``PotatoField`` API (per-potato metrics and configurable p-value combination), and refresh the 2D potato visualization to better match the pyRiemann reference (:gh:`1011` by `Bruno Aristimunha`_)
 - Add pipeline surgery methods (``find_steps``, ``insert_step``, ``remove_step``) to :class:`moabb.datasets.preprocessing.FixedPipeline` for easier pipeline manipulation (by `Davoud Hajhassani`_ and `Bruno Aristimunha`_)
 - Add license metadata to all datasets with known licenses, covering BNCI, BrainInvaders, ErpCore2021, Castillos, MartinezCagigal2023, Beetl2021, Kojima2024, Dreyer2023, and many others (:gh:`989` by `Bruno Aristimunha`_)
 - Add parametrized test ``test_all_datasets_have_license`` to ensure all datasets declare a license in their documentation metadata (:gh:`989` by `Bruno Aristimunha`_)
@@ -51,6 +54,7 @@ Enhancements
 - Validate and correct metadata across 45 datasets against original publications, fixing ~920 fields including country codes, preprocessing conflation, reference electrodes, and fabricated auxiliary channels (:gh:`1001` by `Bruno Aristimunha`_)
 - Add :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method for exporting raw EEG datasets to clean BIDS-compliant directory structures without processing-pipeline hash in filenames (by `Bruno Aristimunha`_)
 - Expose ``subjects`` and ``sessions`` parameters on all dataset constructors to allow filtering at instantiation time (e.g., ``PhysionetMI(subjects=[1, 2, 3])``). Add ``all_subjects`` property and ``sessions`` parameter to ``get_data()`` (by `Bruno Aristimunha`_)
+- Enhance Tutorial 4 ("Creating a dataset class") with a new section demonstrating :class:`~moabb.datasets.base.BaseBIDSDataset` and :class:`~moabb.datasets.base.LocalBIDSDataset` as the recommended approach for adding BIDS-format datasets to MOABB (:gh:`1007` by `Bruno Aristimunha`_)
 - Add Copy and CSV export buttons to benchmark results tables on the results webpage, enabling users to copy or download table data directly (:gh:`1002` by `Bruno Aristimunha`_)
 
 API changes
@@ -71,9 +75,13 @@ Requirements
 ~~~~~~~~~~~~
 - Allows CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
 - Added ``filelock`` as a core dependency to fix missing import errors in utils (:gh:`959` by `Mateusz Naklicki`_).
+- Temporarily track ``pyriemann`` from GitHub source (``master``) to use new ``PotatoField`` capabilities introduced in pyRiemann PR #423 (:gh:`1011` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
+- Fix DOI escaping in "See DOI" fallback link on dataset citation cards (:gh:`1000` by `Bruno Aristimunha`_)
+- Prefer paper DOI over data DOI in dataset citation card when both are available (:gh:`1000` by `Bruno Aristimunha`_)
+- Fix timeline SVG card artifact caused by link styling on dataset pages (by `Bruno Aristimunha`_)
 - Fix class-balance visualization counts by normalizing metadata/event class labels (e.g., ``NonTarget`` vs ``non-target``) and use the first valid dataset subject in generated quickstart snippets instead of hardcoded ``subjects=[1]`` (:gh:`1000` by `Bruno Aristimunha`_)
 - Fix missing ``P300`` from the list of valid paradigms in the :func:`moabb.benchmark` docstring (by `Bruno Aristimunha`_)
 - Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
@@ -113,6 +121,11 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
+- Generate dataset timeline SVGs at Sphinx build time instead of tracking pre-rendered files in git (by `Bruno Aristimunha`_)
+- Fix Sphinx documentation warnings and move sliding-estimator tutorial to advanced examples (by `Bruno Aristimunha`_)
+- Fix autosummary descriptions in API page by skipping ``dataset_timeline_ext`` in summary context (by `Bruno Aristimunha`_)
+- Hide right sidebar and admonition icons on dataset pages for a cleaner layout using per-page meta directives (by `Bruno Aristimunha`_)
+- Add GA4 pageview export script and CI workflow integration for automated dataset traffic metrics (by `Bruno Aristimunha`_)
 - Resolve all 216 pytest warnings across the test suite by addressing root causes: clear Epochs annotations before concatenation, replace lambda with named function in test pipelines, re-apply montage after ``add_reference_channels``, conditionally pass ``groups`` parameter in splitters using ``GroupsConsumerMixin``, use ``os.environ`` in ``FakeDataset`` to avoid non-standard config warnings, and suppress intentional ``OptunaSearchCV`` experimental warnings at init (by `Bruno Aristimunha`_)
 - Added systematic DOI validation test suite that checks format, docstring tracking, resolution, and author overlap across all datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Further reorganized BNCI datasets into year-specific modules (``bnci_2003``, ``bnci_2014``, ``bnci_2015``, ``bnci_2019``) with shared helpers in ``legacy_base`` for clearer maintenance. The temporary ``legacy.py`` file has been removed (by `Bruno Aristimunha`_).

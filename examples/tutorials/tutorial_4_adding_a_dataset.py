@@ -1,7 +1,23 @@
 """
 ====================================
-Tutorial 4: Creating a dataset class
+Tutorial 4: Creating custom datasets
 ====================================
+
+MOABB provides several ways to integrate a custom dataset, depending on the
+format of your data:
+
+1. :class:`~moabb.datasets.base.BaseDataset` — for datasets with arbitrary
+   file formats. Requires implementing data downloading and file reading.
+2. :class:`~moabb.datasets.base.BaseBIDSDataset` /
+   :class:`~moabb.datasets.base.LocalBIDSDataset` — for datasets already
+   provided in `BIDS format <https://bids.neuroimaging.io/>`_.
+   ``BaseBIDSDataset`` is used for online datasets (only the download step
+   needs to be implemented); ``LocalBIDSDataset`` is used for local or private
+   datasets with no subclassing required at all.
+
+**BIDS is the preferred format for new datasets in MOABB.**
+
+This tutorial illustrates both approaches.
 """
 
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
@@ -16,12 +32,15 @@ from scipy.io import loadmat, savemat
 from sklearn.pipeline import make_pipeline
 
 from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
+from moabb.datasets.base import BaseBIDSDataset, BaseDataset
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
 
 ##############################################################################
+# 1. Creating a dataset class from scratch (BaseDataset)
+# ======================================================
+#
 # Creating some Data
 # ------------------
 #
@@ -30,7 +49,7 @@ from moabb.paradigms import LeftRightImagery
 # 8 channels lasting for 150 seconds (sampling frequency 256 Hz). We have
 # included the script that creates this dataset and have uploaded it online.
 # The fake dataset is available on the
-# `Zenodo website <https://sandbox.zenodo.org/record/369543>`_
+# `Zenodo website <https://zenodo.org/records/14973598>`_
 
 
 def create_example_dataset():
@@ -172,3 +191,76 @@ print(scores)
 # your data on public server (like Zenodo or Figshare) and signal that you
 # want to add your dataset to MOABB in the  `dedicated issue <https://github.com/NeuroTechX/moabb/issues/1>`_.  # noqa: E501
 # You could then follow the instructions on `how to contribute <https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md>`_  # noqa: E501
+
+##############################################################################
+# 2. Creating a BIDS dataset class (BaseBIDSDataset)
+# ==================================================
+#
+# If your dataset is already provided in the
+# `BIDS format <https://bids.neuroimaging.io/>`_, you can subclass
+# :class:`~moabb.datasets.base.BaseBIDSDataset` instead of
+# :class:`~moabb.datasets.base.BaseDataset`.
+# The ``BaseBIDSDataset`` base class handles reading the BIDS files
+# automatically via ``mne-bids``; you only need to implement the
+# ``_download_subject`` method that downloads the data for a single subject
+# and returns the local path to the **root** of the BIDS dataset.
+#
+# Several MOABB datasets already use this approach — for example
+# :class:`moabb.datasets.Zhou2016`.
+#
+# The skeleton below shows the minimal implementation required.
+# **Note:** ``ExampleBIDSDataset`` is intentionally non-functional — its
+# ``_download_subject`` raises ``NotImplementedError``. Replace it with your
+# own download logic before instantiating the class.
+
+
+class ExampleBIDSDataset(BaseBIDSDataset):
+    """Skeleton showing how to wrap an online BIDS dataset.
+
+    Replace ``_download_subject`` with the actual download logic for your
+    dataset (e.g. fetching a zip archive from Zenodo and extracting it).
+    """
+
+    def __init__(self):
+        super().__init__(
+            subjects=[1, 2, 3],
+            sessions_per_subject=1,
+            events={"left_hand": 1, "right_hand": 2},
+            code="ExampleBIDSDataset",
+            interval=[0, 0.75],
+            paradigm="imagery",
+            doi="",
+        )
+
+    def _download_subject(self, subject, path, force_update, update_path, verbose):
+        """Download the BIDS dataset for *subject* and return the BIDS root."""
+        # Example (not executed here — replace with your actual download URL):
+        #
+        #   url = f"https://zenodo.org/records/XXXXX/files/bids_dataset.zip"
+        #   bids_root = dl.data_dl(url, "ExampleBIDSDataset")
+        #   return bids_root
+        raise NotImplementedError("Replace this with your actual download logic.")
+
+
+##############################################################################
+# Using LocalBIDSDataset for local/private BIDS datasets
+# -------------------------------------------------------
+#
+# If you already have a BIDS dataset on your local machine and you do **not**
+# want to write a dedicated class, you can use
+# :class:`~moabb.datasets.base.LocalBIDSDataset` directly.
+# It auto-discovers subjects and sessions from the BIDS directory structure:
+#
+# .. code-block:: python
+#
+#    from moabb.datasets.base import LocalBIDSDataset
+#
+#    dataset = LocalBIDSDataset(
+#        bids_root="/path/to/bids/dataset",
+#        events={"left_hand": 1, "right_hand": 2},
+#        interval=[0, 0.75],
+#        paradigm="imagery",
+#    )
+#
+#    paradigm = LeftRightImagery()
+#    X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
