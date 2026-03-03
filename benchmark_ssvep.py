@@ -99,7 +99,7 @@ def run_within_session_manual(name, dataset_cls, fmin, fmax, n_blocks, n_subject
     return pd.DataFrame(results)
 
 
-def run_cross_session(name, dataset_cls, fmin, fmax, n_subjects):
+def run_cross_session(name, dataset_cls, fmin, fmax, n_subjects, events=None):
     """Cross-session evaluation using MOABB's CrossSessionEvaluation.
 
     Uses mne_labels=True to keep original frequency string labels
@@ -109,8 +109,10 @@ def run_cross_session(name, dataset_cls, fmin, fmax, n_subjects):
     ds = dataset_cls()
     ds.subject_list = ds.subject_list[:n_subjects]
 
-    paradigm = SSVEP(fmin=fmin, fmax=fmax, n_classes=None)
-    freq_map = build_freq_map(ds.event_id)
+    n_classes = len(events) if events else None
+    paradigm = SSVEP(fmin=fmin, fmax=fmax, n_classes=n_classes, events=events)
+    used = paradigm.used_events(ds)
+    freq_map = {name: float(name) for name in used.keys()}
     pipelines = make_pipelines(freq_map)
 
     evaluation = CrossSessionEvaluation(
@@ -146,22 +148,72 @@ WITHIN_CONFIGS = [
     ),
 ]
 
+# Han2024Fatigue low-freq and high-freq event lists (16 classes each)
+# Use the exact event name strings from the dataset's event_id
+_HAN_LOW_EVENTS = [
+    "8",
+    "8.5",
+    "9",
+    "9.5",
+    "10",
+    "10.5",
+    "11",
+    "11.5",
+    "12",
+    "12.5",
+    "13",
+    "13.5",
+    "14",
+    "14.5",
+    "15",
+    "15.5",
+]
+_HAN_HIGH_EVENTS = [
+    "25.5",
+    "26",
+    "26.5",
+    "27",
+    "27.5",
+    "28",
+    "28.5",
+    "29",
+    "29.5",
+    "30",
+    "30.5",
+    "31",
+    "31.5",
+    "32",
+    "32.5",
+    "33",
+]
+
 CROSS_CONFIGS = [
     (
         "Liu2022EldBETA",
         Liu2022EldBETA,
         7,
         50,
+        None,
         "Leave-1-block-out (7 blocks), 9ch, 140ms lat | "
         "CCA ~85%, eCCA 86.2%, eTRCA 86.8% (at 1s, 100 subj)",
     ),
     (
-        "Han2024Fatigue",
+        "Han2024Fatigue-Low",
         Han2024Fatigue,
         7,
-        50,
+        16,
+        _HAN_LOW_EVENTS,
         "Train->Fatigue cross-session, 10ch, 140ms lat | "
-        "TRCA-FS 92.4% low-freq (at 2s, 24 subj)",
+        "TRCA-FS 92.4% low-freq 16-class (at 2s, 24 subj)",
+    ),
+    (
+        "Han2024Fatigue-High",
+        Han2024Fatigue,
+        25,
+        34,
+        _HAN_HIGH_EVENTS,
+        "Train->Fatigue cross-session, 10ch, 140ms lat | "
+        "TRCA-FS 88.9% high-freq 16-class (at 2s, 24 subj)",
     ),
 ]
 
@@ -191,14 +243,14 @@ for name, cls, fmin, fmax, n_blocks, paper_ref in WITHIN_CONFIGS:
         traceback.print_exc()
 
 # ── Cross-session benchmarks (MOABB evaluation) ─────────────────────
-for name, cls, fmin, fmax, paper_ref in CROSS_CONFIGS:
+for name, cls, fmin, fmax, events, paper_ref in CROSS_CONFIGS:
     print(f"\n{'='*60}")
     print(f"{name} (CrossSession, leave-1-session-out)")
     print(f"  Paper: {paper_ref}")
     print(f"{'='*60}")
 
     try:
-        results = run_cross_session(name, cls, fmin, fmax, N_SUBJECTS)
+        results = run_cross_session(name, cls, fmin, fmax, N_SUBJECTS, events=events)
         results["dataset_name"] = name
         all_results.append(results)
 

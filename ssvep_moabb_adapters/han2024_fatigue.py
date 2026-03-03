@@ -87,7 +87,7 @@ class Han2024Fatigue(BaseDataset):
             sessions_per_subject=2,
             events=self._events,
             code="Han2024Fatigue",
-            interval=[0.0, 2.0],
+            interval=[0.14, 2.14],
             paradigm="ssvep",
             doi="10.1109/TNSRE.2024.3380635",
             selected_subjects=subjects,
