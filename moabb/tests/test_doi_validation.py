@@ -41,6 +41,7 @@ _DATA_REPO_PREFIXES = (
     "10.34973/",
     "10.18115/",
     "10.48550/arXiv.",
+    "10.35376/",
 )
 _DOI_URL_PREFIXES = (
     "https://doi.org/",
@@ -106,6 +107,8 @@ def _collect_dois(cls) -> dict[str, str | None]:
             result["metadata.associated_paper"] = _normalize_doi(
                 getattr(doc, "associated_paper_doi", None)
             )
+            for j, rd in enumerate(getattr(doc, "related_paper_dois", None) or []):
+                result[f"metadata.related.{j}"] = _normalize_doi(rd)
 
     for i, doi in enumerate(_extract_docstring_dois(cls)):
         result[f"docstring.{i}"] = doi
@@ -250,6 +253,10 @@ def test_docstring_dois_tracked(dataset_class):
             m = re.search(r"10\.\d{4,}/[^\s]+", data_url)
             if m:
                 known.add(m.group().rstrip(".,;:)"))
+        for rd in getattr(meta.documentation, "related_paper_dois", None) or []:
+            nd = _normalize_doi(rd)
+            if nd and _is_doi(nd):
+                known.add(nd)
 
     doc_dois = [dois[k] for k in sorted(dois) if k.startswith("docstring.") and dois[k]]
     if not doc_dois:

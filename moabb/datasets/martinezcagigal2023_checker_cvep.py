@@ -148,6 +148,7 @@ class MartinezCagigal2023Checker(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.71569/7c67-v596",
             associated_paper_doi="10.3389/fnhum.2023.1288438",
+            related_paper_dois=["10.1016/j.cmpb.2023.107357"],
             publication_year=2023,
             investigators=[
                 "Álvaro Fernández-Rodríguez",

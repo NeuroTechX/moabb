@@ -178,6 +178,10 @@ class MartinezCagigal2023Pary(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.71569/025s-eq10",
             associated_paper_doi="10.1016/j.eswa.2023.120815",
+            related_paper_dois=[
+                "10.1088/1741-2552/ac38cf",
+                "10.1016/j.cmpb.2023.107357",
+            ],
             publication_year=2023,
             investigators=[
                 "Víctor Martínez-Cagigal",
