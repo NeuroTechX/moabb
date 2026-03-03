@@ -18,7 +18,7 @@ from moabb.analysis.results import get_digest, get_string_rep
 from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
-from moabb.evaluations.base import optuna_available
+from moabb.evaluations.base import BaseEvaluation, optuna_available
 from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.evaluations.utils import _create_save_path as create_save_path
 from moabb.evaluations.utils import _save_model_cv as save_model_cv
@@ -49,6 +49,32 @@ class DummyClassifier(sklearn.base.BaseEstimator):
 
     def __init__(self, kernel):
         self.kernel = kernel
+
+
+class LegacyOnlyEvaluation(BaseEvaluation):
+    """Minimal evaluation that intentionally uses legacy process path."""
+
+    def _create_splitter(self):
+        return None
+
+    def evaluate(
+        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+    ):
+        for subject in dataset.subject_list:
+            for name in pipelines:
+                yield {
+                    "time": 0.0,
+                    "dataset": dataset,
+                    "subject": subject,
+                    "session": "0",
+                    "score": 0.0,
+                    "n_samples": 1,
+                    "n_channels": 1,
+                    "pipeline": name,
+                }
+
+    def is_valid(self, dataset):
+        return True
 
 
 class TestWithinSess:
@@ -807,6 +833,19 @@ class TestParallelProcess:
 
         results = evaluation.process(pipelines)
         assert len(results) == 4
+
+    def test_process_warns_on_legacy_fallback(self, tmp_path):
+        """Legacy fallback path emits a deprecation warning."""
+        evaluation = LegacyOnlyEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            overwrite=True,
+            hdf5_path=str(tmp_path / "legacy_warning"),
+        )
+
+        with pytest.warns(FutureWarning, match="deprecated"):
+            results = evaluation.process(pipelines)
+        assert len(results) == len(dataset.subject_list)
 
     def test_within_session_dataset_order_deterministic(self, tmp_path):
         """Fixed random_state should give same scores regardless dataset order."""

@@ -791,6 +791,13 @@ class BaseEvaluation(ABC):
             return self._process_parallel(pipelines, param_grid, postprocess_pipeline)
 
         # Fallback to old approach (dataset-level parallelism)
+        warn(
+            "Legacy dataset-level evaluation loop is deprecated and will be removed "
+            "in a future release. Implement _create_splitter() to use the "
+            "flattened parallel evaluation path.",
+            FutureWarning,
+            stacklevel=2,
+        )
         return self._process_legacy(pipelines, param_grid, postprocess_pipeline)
 
     def _process_legacy(self, pipelines, param_grid, postprocess_pipeline):
