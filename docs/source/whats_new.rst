@@ -84,6 +84,7 @@ Bugs
 - Fix timeline SVG card artifact caused by link styling on dataset pages (by `Bruno Aristimunha`_)
 - Fix class-balance visualization counts by normalizing metadata/event class labels (e.g., ``NonTarget`` vs ``non-target``) and use the first valid dataset subject in generated quickstart snippets instead of hardcoded ``subjects=[1]`` (:gh:`1000` by `Bruno Aristimunha`_)
 - Fix missing ``P300`` from the list of valid paradigms in the :func:`moabb.benchmark` docstring (by `Bruno Aristimunha`_)
+- Fix critical trigger alignment bug in :class:`moabb.datasets.Liu2024` where ``create_event_array()`` selected the first 40 of 120 STI triggers (mixing instruction, MI, and break onsets) instead of filtering for only the MI onset triggers (value=2). Also fix swapped left/right hand label mapping in ``encoding()`` and correct epoch interval from ``(2, 6)`` to ``(0, 4)`` to match MI onset triggers (by `Bruno Aristimunha`_)
 - Fixed incorrect DOIs in Dreyer2023, RomaniBF2025ERP, BNCI2015_003, BNCI2015_004, and BNCI2015_012 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Added missing metadata DOIs for AlexMI, PhysionetMI, GrosseWentrup2009, Shin2017A, Shin2017B, BNCI2014_004, and BNCI2003_004 datasets (:gh:`977` by `Bruno Aristimunha`_)
 - Fixed montage not being set before BIDS cache conversion in BNCI datasets (by `Bruno Aristimunha`_)
