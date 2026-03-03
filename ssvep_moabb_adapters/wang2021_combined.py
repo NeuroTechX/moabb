@@ -4,17 +4,13 @@ Wang et al. (2021), European Journal of Neuroscience.
 DOI: 10.1111/ejn.15030
 """
 
-import logging
 from pathlib import Path
 
 import mne
-import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
-
-log = logging.getLogger(__name__)
 
 FIGSHARE_URL = "https://ndownloader.figshare.com/files/25000886"  # Raw data.rar
 
@@ -103,13 +99,7 @@ class Wang2021Combined(BaseDataset):
             raw = mne.io.read_raw_cnt(cnt_path, preload=True, verbose=False)
 
             # Rename annotation descriptions from trigger codes to frequencies
-            new_descriptions = np.array(
-                [
-                    self._TRIGGER_MAP.get(desc, desc)
-                    for desc in raw.annotations.description
-                ]
-            )
-            raw.annotations.description = new_descriptions
+            raw.annotations.rename(self._TRIGGER_MAP)
 
             runs[str(run_idx)] = raw
 

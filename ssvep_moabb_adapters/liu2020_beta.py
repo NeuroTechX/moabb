@@ -4,22 +4,18 @@ Liu et al. (2020), Frontiers in Neuroscience.
 DOI: 10.3389/fnins.2020.00627
 """
 
-import logging
 import os
 import tarfile
 from pathlib import Path
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
+from ._utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
-log = logging.getLogger(__name__)
 
 BETA_URL = "http://bci.med.tsinghua.edu.cn/upload/liubingchuan/"
 
@@ -85,14 +81,6 @@ class Liu2020BETA(BaseDataset):
         "13.4": 25, "13.6": 26, "13.8": 27, "14": 28, "14.2": 29, "14.4": 30, "14.6": 31, "14.8": 32,
         "15": 33, "15.2": 34, "15.4": 35, "15.6": 36, "15.8": 37, "8": 38, "8.2": 39, "8.4": 40,
     }
-    _ch_names = [
-        "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6",
-        "F8", "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8", "T7", "C5",
-        "C3", "C1", "Cz", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1", "CPz",
-        "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6",
-        "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
-        "CB2", "stim",
-    ]
     # fmt: on
 
     def __init__(self, subjects=None, sessions=None):
@@ -119,34 +107,15 @@ class Liu2020BETA(BaseDataset):
         # Struct: data.EEG shape [64, 750, 4, 40] (ch, time, blocks, targets)
         raw_data = mat["data"]
         eeg = raw_data["EEG"].item()
-        n_samples = eeg.shape[1]  # 750
 
         # Transpose to [targets, blocks, channels, time] then reshape
         data = np.transpose(eeg, axes=(3, 2, 0, 1))
-        data = np.reshape(data, (-1, n_channels, n_samples))
-        data = data - data.mean(axis=2, keepdims=True)
+        data = np.reshape(data, (-1, n_channels, eeg.shape[1]))
 
-        # Build stim channel: event code at sample 0 of each trial
-        raw_events = np.zeros((data.shape[0], 1, n_samples))
-        raw_events[:, 0, 0] = np.array(
-            [n_blocks * [i + 1] for i in range(n_classes)]
-        ).flatten()
-        data = np.concatenate([1e-6 * data, raw_events], axis=1)
-
-        # Add zero-padding buffers between trials
-        log.info(
-            "Trial data de-meaned and concatenated with a buffer"
-            " to create continuous data"
+        event_ids = np.repeat(np.arange(1, n_classes + 1), n_blocks)
+        raw = build_raw_from_epochs(
+            data, TSINGHUA_64CH_NAMES, 250, event_ids, "standard_1005"
         )
-        buff = (data.shape[0], n_channels + 1, 50)
-        data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
-
-        ch_types = ["eeg"] * 64 + ["stim"]
-        sfreq = 250
-        info = create_info(self._ch_names, sfreq, ch_types)
-        raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
-        montage = make_standard_montage("standard_1005")
-        raw.set_montage(montage, on_missing="ignore")
         return {"0": {"0": raw}}
 
     def data_path(

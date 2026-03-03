@@ -4,18 +4,14 @@ Lee et al. (2021), Scientific Data.
 DOI: 10.1038/s41597-021-01094-4
 """
 
-import logging
 from functools import partialmethod
 from pathlib import Path
 
 import mne
-import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
-
-log = logging.getLogger(__name__)
 
 OSF_CODE = "r7s9b"
 
@@ -135,23 +131,11 @@ class Lee2021Mobile(BaseDataset):
 
             raw = mne.io.read_raw_brainvision(str(vhdr_path), preload=True, verbose=False)
 
-            # Rename stimulus markers to frequency strings for SSVEP paradigm
+            # Rename stimulus markers to match event names
             if self._task_name == "SSVEP":
-                new_descriptions = np.array(
-                    [
-                        self._SSVEP_MARKER_MAP.get(desc, desc)
-                        for desc in raw.annotations.description
-                    ]
-                )
-                raw.annotations.description = new_descriptions
+                raw.annotations.rename(self._SSVEP_MARKER_MAP)
             elif self._task_name == "ERP":
-                new_descriptions = np.array(
-                    [
-                        self._ERP_MARKER_MAP.get(desc, desc)
-                        for desc in raw.annotations.description
-                    ]
-                )
-                raw.annotations.description = new_descriptions
+                raw.annotations.rename(self._ERP_MARKER_MAP)
 
             sessions[session] = {"0": raw}
 

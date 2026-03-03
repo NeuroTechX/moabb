@@ -4,59 +4,16 @@ Dong and Tian (2023), Brain Science Advances.
 DOI: 10.26599/BSA.2023.9050020
 """
 
-import logging
-from pathlib import Path
-
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
+from ._utils import build_raw_from_epochs
 
-log = logging.getLogger(__name__)
 
-# Google Drive folder: https://drive.google.com/drive/folders/1TXuxU863nZoniZRgNWZy0PRuL8lhBuP4
-DONG_DRIVE_FOLDER = "1TXuxU863nZoniZRgNWZy0PRuL8lhBuP4"
-
-# Google Drive file IDs for individual subject .mat files.
-# fmt: off
-_GDRIVE_FILE_IDS = {
-    1: "1aR6f5Wq75I6NBdHDoroUDupHvW-7jo7k", 2: "1HBgq8IezHzsUwtcopYmjfzPqzEI4uWWW",
-    3: "1cL1KlqTawL__jb3xHmFLtbZEDBF4NAGp", 4: "13G3Co4Twl_iTPMxbsMWdo5ce_bomxvdp",
-    5: "1Z4zx1eFKBrVf0ogVJPfqPWDrWdnncaEh", 6: "17fRsWaokYKdW5XLmbm3alFocmXyvZvdH",
-    7: "1GbOV1s2OCzXxctT6ilCb7kEYnRewDtIG", 8: "1KcnuTqbMPf21F3HAcqQCJTJ_HRCpIhXg",
-    9: "1jzN-oTKYf3o-A8gwpCooPCHppiiQnTjy", 10: "1LEkQ2euH5_dBmvMRGBZizB63d9aioMmy",
-    11: "1EnsSmG7jTmwCtqo0oveOPj9i-z2MB-bz", 12: "1njpF_ZO8aTFa8nYyYZcxb5xAIBM6VCfJ",
-    13: "1TMUH1ARAyl6tG06pa7Bybv2gbzsvL1Pe", 14: "1m3lCS8Gucg1SJSN8G7FRJLEfZekB_opy",
-    15: "1C-VCJFQdheEbAie6o8Vr8J7S_Wuob4Q5", 16: "1TrHRtCleleJ2nh57ZpoPxD2YHnY6ZEVJ",
-    17: "1fcPy8Ae-Yio3LtB-Q3ditkC3hI0UxHXM", 18: "115OE8pqTmflQLcXF8m6P5fN1J58vLYIb",
-    19: "1ldwCRxi-pcglzOlVkPRfJ16fUX1k4cFq", 20: "1EhgikqW5vl8xsPjpqnCKFOLsM8oQ93R1",
-    21: "1lwQqDw97cblFyVo53tys-OEO2q05C-fE", 22: "1a5Ggk149cENZWOfcRBYLlPCiwBOfyPUe",
-    23: "1Ss_DgoKi_htZWFNko99-9cpMK5ZUL0vB", 24: "1BK1DyxMSxRcbe0XoP5SEwIOpLB_-WRoX",
-    25: "1q__Lvf7NJE9xQCUXXPUYy8kFN4UcuVZM", 26: "1hMrXesaBMxPkv6SDDWIl2kcJbkX4_nwj",
-    27: "1UBflugMNYyKPpB-7I3I2w2EScvGCglMW", 28: "17SYONaCKCTVGqtbSvNyb32Cl0wS66nab",
-    29: "1R3Uf0mjafzaorf0TC29bYYQcnUPBRsdH", 30: "1CzvcZYhME1_7tkvhtlX9hPsAZ3Q7GXmc",
-    31: "1gmDk3DfemSQwHw8Ymk0MXAcT6EDX6XOd", 32: "1WIAoXqFEZJwIznrhdGfsawkjrCeOS_D_",
-    33: "1iv0RdQHpluEjVI8cyiMNwPu_X5gAJRor", 34: "1h0ON9UqA4AATXhUjLo9qkPE35kYO0D4E",
-    35: "1R-P63ATFQUaQvcIGAypiLo95xaAceF1Y", 36: "1THnsLWVZsIhlKZBhiNMNgJSxIM-edVwY",
-    37: "1lNzRRYPPgtyh4texSOrB1TkrY9wNC464", 38: "1ar_f28WdsqQRT5b-1W866jiKXmBCqVfR",
-    39: "1yO2H_PUQoHsNEC1tv3UuI_s0gmAxWf-8", 40: "1Q9xr5ogP6hTIsyUb0_8lNSYDXxgIqHL1",
-    41: "17DBxOWqOeYb5JRmr2k9dw_jlt_UlbwDF", 42: "1XO7d1gX4BdpJUCbULBofQlPLYy5Fj2vH",
-    43: "14w2H3bh8UW7Tj9t3DFSfqnpzXd7z-wlm", 44: "1CIlKRDkosbJuhEFAS60zZhpZ0Ae3pVM2",
-    45: "1GjZ5o8-p4IockDd9XTW64HKN1JjDyyhX", 46: "1PtDnEUeAjq-pj3YA_qAW4o1BByjdAwZr",
-    47: "1irhi5K-vT68SM1FO897RiKZRypZLxoIp", 48: "1QF81qWc-_4_RzD002vhiQ-SEP5-8n7qQ",
-    49: "1w_mFvfw_AliDIoZ6f07FyJwc_H0a0lI_", 50: "1xZWafLnnSIKnlXO_sYcARWDww1_po4QT",
-    51: "1R_v1yZXAfy97VyMGgH-1bkoHPDqAYcCR", 52: "1HcNQL_mMMOtE4FfoqAiSn6ukbWsdf4BX",
-    53: "1DXZIZKFNQqtLrYcInkSaWXYkN57fGV_J", 54: "1a2S4ui_QdkIp6FPP46QnuMjHNlBcwa5m",
-    55: "1B_5hZR8GbsWl1h-z46KFsso-nT5-GUeF", 56: "1o_uEAqk9gJXz8k8jynf6BkqwBx8IrM6x",
-    57: "1M5TjqxZlqfd8lYsVqafezR5WRiUPKLnb", 58: "1p6vfRUfkYuIEXoFmmSOwofIOuudFHevp",
-    59: "1ZkBuxg_6HZaD9LJ0zkhgZpPJt4TuAf9u",
-}
-# fmt: on
+ZENODO_URL = "https://zenodo.org/records/18847318/files/"
 
 
 class Dong2023(BaseDataset):
@@ -81,11 +38,6 @@ class Dong2023(BaseDataset):
     Each trial epoch spans 5 s (0.5 s pre-stimulus + 4 s stimulation + 0.5 s
     post-stimulus) at 250 Hz = 1250 samples.
 
-    Warnings
-    --------
-    Data is hosted on Google Drive. Requires the ``gdown`` package for
-    automated download (``pip install gdown``).
-
     References
     ----------
     .. [1] Y. Dong and S. Tian, "A large database towards user-friendly
@@ -106,7 +58,7 @@ class Dong2023(BaseDataset):
     }
     # fmt: on
 
-    _ch_names = ["POz", "PO3", "PO4", "PO7", "PO8", "Oz", "O1", "O2", "stim"]
+    _ch_names = ["POz", "PO3", "PO4", "PO7", "PO8", "Oz", "O1", "O2"]
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
@@ -123,7 +75,7 @@ class Dong2023(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
-        n_channels, n_samples, n_blocks = 8, 1250, 4
+        n_channels, n_blocks = 8, 4
         n_classes = len(self.event_id)
 
         fname = self.data_path(subject)
@@ -131,31 +83,12 @@ class Dong2023(BaseDataset):
 
         # .mat key "eegdata" with shape [8, 1250, 40, 4]
         # (channels, timepoints, targets, blocks)
-        data = np.transpose(mat["eegdata"], axes=(2, 3, 0, 1))
-        data = np.reshape(data, (-1, n_channels, n_samples))
-        data = data - data.mean(axis=2, keepdims=True)
+        eeg = mat["eegdata"]
+        data = np.transpose(eeg, axes=(2, 3, 0, 1))
+        data = np.reshape(data, (-1, n_channels, eeg.shape[1]))
 
-        # Build stim channel
-        raw_events = np.zeros((data.shape[0], 1, n_samples))
-        raw_events[:, 0, 0] = np.array(
-            [n_blocks * [i + 1] for i in range(n_classes)]
-        ).flatten()
-        data = np.concatenate([1e-6 * data, raw_events], axis=1)
-
-        # Add zero-padding buffers
-        log.info(
-            "Trial data de-meaned and concatenated with a buffer"
-            " to create continuous data"
-        )
-        buff = (data.shape[0], n_channels + 1, 50)
-        data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
-
-        ch_types = ["eeg"] * n_channels + ["stim"]
-        sfreq = 250
-        info = create_info(self._ch_names, sfreq, ch_types)
-        raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
-        montage = make_standard_montage("standard_1005")
-        raw.set_montage(montage, on_missing="ignore")
+        event_ids = np.repeat(np.arange(1, n_classes + 1), n_blocks)
+        raw = build_raw_from_epochs(data, self._ch_names, 250, event_ids, "standard_1005")
         return {"0": {"0": raw}}
 
     def data_path(
@@ -165,39 +98,5 @@ class Dong2023(BaseDataset):
             raise ValueError("Invalid subject number")
 
         sign = "DONG2023"
-        data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
-
-        # Check if already downloaded
-        mat_file = data_dir / f"S{subject}.mat"
-        if mat_file.exists() and not force_update:
-            return str(mat_file)
-
-        data_dir.mkdir(parents=True, exist_ok=True)
-
-        if subject in _GDRIVE_FILE_IDS:
-            # Download individual file via gdown
-            try:
-                import gdown
-            except ImportError:
-                raise ImportError(
-                    "The Dong2023 dataset requires the 'gdown' package. "
-                    "Install it with: pip install gdown"
-                )
-            file_id = _GDRIVE_FILE_IDS[subject]
-            gdown.download(id=file_id, output=str(mat_file), quiet=False)
-        else:
-            raise FileNotFoundError(
-                f"No known Google Drive file ID for subject {subject}. "
-                f"Please download S{subject}.mat manually from "
-                f"https://drive.google.com/drive/folders/{DONG_DRIVE_FOLDER} "
-                f"and place it in {data_dir}"
-            )
-
-        if not mat_file.exists():
-            raise FileNotFoundError(
-                f"Download failed for S{subject}.mat. Please download "
-                f"manually from https://drive.google.com/drive/folders/"
-                f"{DONG_DRIVE_FOLDER}"
-            )
-
-        return str(mat_file)
+        url = f"{ZENODO_URL}S{subject}.mat?download=1"
+        return dl.data_dl(url, sign, path, force_update, verbose)

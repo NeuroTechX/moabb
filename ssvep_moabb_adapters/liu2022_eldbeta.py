@@ -4,23 +4,17 @@ Liu et al. (2022), Scientific Data.
 DOI: 10.1038/s41597-022-01372-9
 """
 
-import logging
 import tarfile
 from pathlib import Path
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
+from ._utils import FIGSHARE_DL_URL, TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
-log = logging.getLogger(__name__)
-
-FIGSHARE_DL_URL = "https://ndownloader.figshare.com/files/"
 
 # Figshare file IDs for per-subject tar.gz files (S1.tar.gz through S100.tar.gz)
 # fmt: off
@@ -94,14 +88,6 @@ class Liu2022EldBETA(BaseDataset):
         "11.5": 6, "9": 7, "10.5": 8, "12": 9,
     }
 
-    _ch_names = [
-        "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6",
-        "F8", "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8", "T7", "C5",
-        "C3", "C1", "Cz", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1", "CPz",
-        "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6",
-        "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
-        "CB2", "stim",
-    ]
     # fmt: on
 
     def __init__(self, subjects=None, sessions=None):
@@ -119,7 +105,6 @@ class Liu2022EldBETA(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return data for one subject across all 7 blocks."""
-        n_channels = 64
         sfreq = 250
 
         fname = self.data_path(subject)
@@ -131,37 +116,16 @@ class Liu2022EldBETA(BaseDataset):
         epoch = eeg["Epoch"].item()
         n_classes = epoch.shape[2]  # 9
         n_blocks = epoch.shape[3]  # 7
-        n_samples = epoch.shape[1]  # 1500
+
+        event_ids = np.arange(1, n_classes + 1)
 
         sessions = {}
         for block_idx in range(n_blocks):
             block_data = epoch[:, :, :, block_idx]  # (64, 1500, 9)
-            # Rearrange to (n_classes, n_channels, n_times)
             block_data = np.transpose(block_data, (2, 0, 1))  # (9, 64, 1500)
-            block_data = block_data - block_data.mean(axis=2, keepdims=True)
-
-            stim = np.zeros((n_classes, 1, n_samples))
-            stim[:, 0, 0] = np.arange(1, n_classes + 1)
-
-            block_data = np.concatenate([1e-6 * block_data, stim], axis=1)
-
-            log.info(
-                "Trial data de-meaned and concatenated with a buffer"
-                " to create continuous data"
+            raw = build_raw_from_epochs(
+                block_data, TSINGHUA_64CH_NAMES, sfreq, event_ids, "standard_1005"
             )
-            buff = np.zeros((n_classes, n_channels + 1, 50))
-            block_data = np.concatenate([buff, block_data, buff], axis=2)
-
-            ch_types = ["eeg"] * n_channels + ["stim"]
-            info = create_info(self._ch_names, sfreq=sfreq, ch_types=ch_types)
-            raw = RawArray(
-                data=np.concatenate(list(block_data), axis=1),
-                info=info,
-                verbose=False,
-            )
-            montage = make_standard_montage("standard_1005")
-            raw.set_montage(montage, on_missing="ignore")
-
             sessions[str(block_idx)] = {"0": raw}
 
         return sessions

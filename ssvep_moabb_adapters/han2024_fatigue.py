@@ -4,21 +4,17 @@ Han et al. (2024), IEEE TNSRE.
 DOI: 10.1109/TNSRE.2024.3380635
 """
 
-import logging
 import zipfile
 from pathlib import Path
 
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
+from ._utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
-log = logging.getLogger(__name__)
 
 ZENODO_URL = "https://zenodo.org/records/10507229/files/"
 
@@ -83,14 +79,6 @@ class Han2024Fatigue(BaseDataset):
         "31.5": 29, "32": 30, "32.5": 31, "33": 32,
     }
 
-    _ch_names = [
-        "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6",
-        "F8", "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8", "T7", "C5",
-        "C3", "C1", "Cz", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1", "CPz",
-        "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6",
-        "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
-        "CB2", "stim",
-    ]
     # fmt: on
 
     def __init__(self, subjects=None, sessions=None):
@@ -114,54 +102,39 @@ class Han2024Fatigue(BaseDataset):
         timepoints, blocks). Training files have 6 blocks, fatigue files
         have 24 blocks.
         """
-        n_channels, n_targets = 64, 16
+        n_targets = 16
         sfreq = 1000
 
         file_paths = self.data_path(subject)
 
         # Group conditions by session: train→session '0', fatigue→session '1'
-        session_data = {"0": [], "1": []}
+        session_epochs = {"0": [], "1": []}
+        session_events = {"0": [], "1": []}
         for dir_name, freq_band, phase in _CONDITIONS:
             mat_path = file_paths[dir_name]
             mat = loadmat(mat_path, squeeze_me=True)
             data = mat["data"]  # (16, 64, 3000, N_blocks)
-            n_samples = data.shape[2]
             n_blocks = data.shape[3]
 
             # Event offset: low-freq classes are 1-16, high-freq are 17-32
             event_offset = 16 if freq_band == "high" else 0
             sess_key = "0" if phase == "train" else "1"
+            event_ids = np.arange(1, n_targets + 1) + event_offset
 
             for block_idx in range(n_blocks):
                 block_data = data[:, :, :, block_idx]  # (16, 64, 3000)
-                block_data = block_data - block_data.mean(axis=2, keepdims=True)
-
-                stim = np.zeros((n_targets, 1, n_samples))
-                stim[:, 0, 0] = np.arange(1, n_targets + 1) + event_offset
-
-                trial_data = np.concatenate([1e-6 * block_data, stim], axis=1)
-                buff = np.zeros((n_targets, n_channels + 1, 50))
-                trial_data = np.concatenate([buff, trial_data, buff], axis=2)
-                session_data[sess_key].append(trial_data)
+                session_epochs[sess_key].append(block_data)
+                session_events[sess_key].append(event_ids)
 
         sessions = {}
-        for sess_name, trials_list in session_data.items():
-            if not trials_list:
+        for sess_name in session_epochs:
+            if not session_epochs[sess_name]:
                 continue
-            all_trials = np.concatenate(trials_list, axis=0)
-            ch_types = ["eeg"] * n_channels + ["stim"]
-            info = create_info(self._ch_names, sfreq, ch_types)
-            log.info(
-                "Trial data de-meaned and concatenated with a buffer"
-                " to create continuous data"
+            all_data = np.concatenate(session_epochs[sess_name], axis=0)
+            all_events = np.concatenate(session_events[sess_name])
+            raw = build_raw_from_epochs(
+                all_data, TSINGHUA_64CH_NAMES, sfreq, all_events, "standard_1005"
             )
-            raw = RawArray(
-                data=np.concatenate(list(all_trials), axis=1),
-                info=info,
-                verbose=False,
-            )
-            montage = make_standard_montage("standard_1005")
-            raw.set_montage(montage, on_missing="ignore")
             sessions[sess_name] = {"0": raw}
 
         return sessions

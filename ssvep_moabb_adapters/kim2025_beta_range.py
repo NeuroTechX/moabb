@@ -4,21 +4,14 @@ Kim et al. (2025), Scientific Data.
 DOI: 10.1038/s41597-025-06032-2
 """
 
-import logging
-
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
+from ._utils import FIGSHARE_DL_URL, build_raw_from_epochs
 
-log = logging.getLogger(__name__)
-
-FIGSHARE_DL_URL = "https://ndownloader.figshare.com/files/"
 
 # Figshare file IDs for raw_eeg_ssvep_subj_NN.mat
 # fmt: off
@@ -129,7 +122,6 @@ class Kim2025BetaRange(BaseDataset):
         data = eeg_struct["data"]  # shape: (33, 7168, 40, 6)
         ch_names_raw = list(eeg_struct["chan_locs"])
         srate = int(eeg_struct["srate"])  # 1024
-        n_channels = data.shape[0]  # 33
         n_classes = data.shape[2]  # 40
         n_blocks = data.shape[3]  # 6
 
@@ -138,39 +130,20 @@ class Kim2025BetaRange(BaseDataset):
 
         # Normalize channel names to match MNE standard_1005
         ch_names = _normalize_ch_names(ch_names_raw)
+        event_ids = np.arange(1, n_classes + 1)
 
         sessions = {}
         for block_idx in range(n_blocks):
             block_data = data[:, :, :, block_idx]  # (33, 7168, 40)
-            # Rearrange to (n_classes, n_channels, n_times)
             block_data = np.transpose(block_data, (2, 0, 1))  # (40, 33, 7168)
-            block_data = block_data - block_data.mean(axis=2, keepdims=True)
-
-            n_times = block_data.shape[2]
-            stim = np.zeros((n_classes, 1, n_times))
-            # Place event marker at stimulus onset (2 s into the epoch)
-            stim[:, 0, onset_sample] = np.arange(1, n_classes + 1)
-
-            block_data = np.concatenate([1e-6 * block_data, stim], axis=1)
-
-            log.info(
-                "Trial data de-meaned and concatenated with a buffer"
-                " to create continuous data"
+            raw = build_raw_from_epochs(
+                block_data,
+                ch_names,
+                srate,
+                event_ids,
+                "standard_1005",
+                onset_sample=onset_sample,
             )
-            buff = np.zeros((n_classes, n_channels + 1, 50))
-            block_data = np.concatenate([buff, block_data, buff], axis=2)
-
-            all_ch_names = ch_names + ["stim"]
-            ch_types = ["eeg"] * n_channels + ["stim"]
-            info = create_info(all_ch_names, sfreq=srate, ch_types=ch_types)
-            raw = RawArray(
-                data=np.concatenate(list(block_data), axis=1),
-                info=info,
-                verbose=False,
-            )
-            montage = make_standard_montage("standard_1005")
-            raw.set_montage(montage, on_missing="ignore")
-
             sessions[str(block_idx)] = {"0": raw}
 
         return sessions
