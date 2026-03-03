@@ -103,7 +103,7 @@ class Chen2017SingleFlicker(BaseDataset):
         n_channels = 32
         sfreq = 512
 
-        mat_files = self._get_mat_files(subject)
+        mat_files = self.data_path(subject)
         if not mat_files:
             raise FileNotFoundError(f"No .mat files found for subject {subject}")
 
@@ -130,8 +130,10 @@ class Chen2017SingleFlicker(BaseDataset):
                 # De-mean
                 eeg = eeg - eeg.mean(axis=1, keepdims=True)
 
-                # Map ASCII class code to event ID
-                event_id = self._CLASS_MAP.get(int(trial_class), int(trial_class))
+                # Map ASCII class code to event ID; skip unknown codes
+                event_id = self._CLASS_MAP.get(int(trial_class))
+                if event_id is None:
+                    continue
 
                 # Build stim channel
                 stim = np.zeros((1, n_samples))
@@ -161,21 +163,6 @@ class Chen2017SingleFlicker(BaseDataset):
         montage = make_standard_montage("biosemi32")
         raw.set_montage(montage, on_missing="ignore")
         return {"0": {"0": raw}}
-
-    def _get_mat_files(self, subject):
-        """Get all .mat files for a given subject."""
-        data_dir = self._get_extract_dir(subject)
-        # Online .mat files named: {subject}_{repeat}_{random}.mat
-        pattern = f"{subject}_*.mat"
-        files = sorted(data_dir.rglob(pattern))
-        return files
-
-    def _get_extract_dir(self, subject):
-        """Get the extraction directory, downloading if needed."""
-        sign = "CHEN2017SINGLEFLICKER"
-        data_dir = Path(dl.get_dataset_path(sign, None)) / f"MNE-{sign.lower()}-data"
-        data_dir.mkdir(parents=True, exist_ok=True)
-        return data_dir
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

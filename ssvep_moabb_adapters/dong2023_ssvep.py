@@ -140,7 +140,7 @@ class Dong2023(BaseDataset):
         data = np.concatenate([1e-6 * data, raw_events], axis=1)
 
         # Add zero-padding buffers
-        log.warning(
+        log.info(
             "Trial data de-meaned and concatenated with a buffer"
             " to create continuous data"
         )
@@ -152,7 +152,7 @@ class Dong2023(BaseDataset):
         info = create_info(self._ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
         montage = make_standard_montage("standard_1005")
-        raw.set_montage(montage)
+        raw.set_montage(montage, on_missing="ignore")
         return {"0": {"0": raw}}
 
     def data_path(

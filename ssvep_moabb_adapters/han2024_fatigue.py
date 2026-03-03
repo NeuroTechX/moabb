@@ -151,6 +151,10 @@ class Han2024Fatigue(BaseDataset):
             all_trials = np.concatenate(trials_list, axis=0)
             ch_types = ["eeg"] * n_channels + ["stim"]
             info = create_info(self._ch_names, sfreq, ch_types)
+            log.warning(
+                "Trial data de-meaned and concatenated with a buffer"
+                " to create continuous data"
+            )
             raw = RawArray(
                 data=np.concatenate(list(all_trials), axis=1),
                 info=info,

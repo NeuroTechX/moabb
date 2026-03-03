@@ -34,22 +34,47 @@ _SSVEP_FILE_IDS = {
 }
 # fmt: on
 
-# 40 frequencies in JFPM column-major order (8 rows x 5 columns):
-# Column 1: 14.0, 15.0, ..., 21.0; Column 2: 14.2, 15.2, ..., 21.2; etc.
-# fmt: off
-_FREQS = [
-    14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-    14.2, 15.2, 16.2, 17.2, 18.2, 19.2, 20.2, 21.2,
-    14.4, 15.4, 16.4, 17.4, 18.4, 19.4, 20.4, 21.4,
-    14.6, 15.6, 16.6, 17.6, 18.6, 19.6, 20.6, 21.6,
-    14.8, 15.8, 16.8, 17.8, 18.8, 19.8, 20.8, 21.8,
-]
 _EVENTS = {
-    "14": 1, "15": 2, "16": 3, "17": 4, "18": 5, "19": 6, "20": 7, "21": 8,
-    "14.2": 9, "15.2": 10, "16.2": 11, "17.2": 12, "18.2": 13, "19.2": 14, "20.2": 15, "21.2": 16,
-    "14.4": 17, "15.4": 18, "16.4": 19, "17.4": 20, "18.4": 21, "19.4": 22, "20.4": 23, "21.4": 24,
-    "14.6": 25, "15.6": 26, "16.6": 27, "17.6": 28, "18.6": 29, "19.6": 30, "20.6": 31, "21.6": 32,
-    "14.8": 33, "15.8": 34, "16.8": 35, "17.8": 36, "18.8": 37, "19.8": 38, "20.8": 39, "21.8": 40,
+    "14": 1,
+    "15": 2,
+    "16": 3,
+    "17": 4,
+    "18": 5,
+    "19": 6,
+    "20": 7,
+    "21": 8,
+    "14.2": 9,
+    "15.2": 10,
+    "16.2": 11,
+    "17.2": 12,
+    "18.2": 13,
+    "19.2": 14,
+    "20.2": 15,
+    "21.2": 16,
+    "14.4": 17,
+    "15.4": 18,
+    "16.4": 19,
+    "17.4": 20,
+    "18.4": 21,
+    "19.4": 22,
+    "20.4": 23,
+    "21.4": 24,
+    "14.6": 25,
+    "15.6": 26,
+    "16.6": 27,
+    "17.6": 28,
+    "18.6": 29,
+    "19.6": 30,
+    "20.6": 31,
+    "21.6": 32,
+    "14.8": 33,
+    "15.8": 34,
+    "16.8": 35,
+    "17.8": 36,
+    "18.8": 37,
+    "19.8": 38,
+    "20.8": 39,
+    "21.8": 40,
 }
 # fmt: on
 
@@ -67,8 +92,10 @@ class Kim2025BetaRange(BaseDataset):
 
     Each subject completed 6 blocks of 40 trials. Trial structure was 1.5 s
     rest, 0.5 s cue, and 5.0 s SSVEP stimulation. EEG was recorded at 1024 Hz
-    with a BioSemi ActiveTwo system. Epochs span [-2000, 5000] ms relative to
-    stimulus onset (7168 samples at 1024 Hz).
+    with a BioSemi ActiveTwo system. Stored epochs span [-2000, 5000] ms
+    relative to stimulus onset (7168 samples at 1024 Hz). The event marker is
+    placed at stimulus onset (sample 2048), and interval=[0.0, 5.0] extracts
+    the 5 s stimulation window.
 
     The stimuli were presented in a 5x8 matrix on a 120 Hz monitor.
 
@@ -106,6 +133,9 @@ class Kim2025BetaRange(BaseDataset):
         n_classes = data.shape[2]  # 40
         n_blocks = data.shape[3]  # 6
 
+        # Epoch window is [-2000, 5000] ms; stimulus onset is at +2000 ms
+        onset_sample = int(round(2.0 * srate))  # sample 2048
+
         # Normalize channel names to match MNE standard_1005
         ch_names = _normalize_ch_names(ch_names_raw)
 
@@ -118,10 +148,15 @@ class Kim2025BetaRange(BaseDataset):
 
             n_times = block_data.shape[2]
             stim = np.zeros((n_classes, 1, n_times))
-            stim[:, 0, 0] = np.arange(1, n_classes + 1)
+            # Place event marker at stimulus onset (2 s into the epoch)
+            stim[:, 0, onset_sample] = np.arange(1, n_classes + 1)
 
             block_data = np.concatenate([1e-6 * block_data, stim], axis=1)
 
+            log.info(
+                "Trial data de-meaned and concatenated with a buffer"
+                " to create continuous data"
+            )
             buff = np.zeros((n_classes, n_channels + 1, 50))
             block_data = np.concatenate([buff, block_data, buff], axis=2)
 

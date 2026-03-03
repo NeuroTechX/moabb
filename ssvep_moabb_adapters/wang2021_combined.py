@@ -97,8 +97,6 @@ class Wang2021Combined(BaseDataset):
         frequency strings (14.17, 12.14, 9.44, 7.73) matching _events.
         """
         cnt_files = self.data_path(subject)
-        if isinstance(cnt_files, str):
-            cnt_files = [cnt_files]
 
         runs = {}
         for run_idx, cnt_path in enumerate(cnt_files):
@@ -183,9 +181,7 @@ class Wang2021Combined(BaseDataset):
         for p in all_cnt:
             # Pattern: subjectname_scheme_run.cnt
             parts = p.stem.rsplit("_", 2)
-            if len(parts) >= 3:
-                subject_names.add(parts[0])
-            elif len(parts) >= 2:
+            if len(parts) >= 2:
                 subject_names.add(parts[0])
 
         subject_names = sorted(subject_names)

@@ -145,6 +145,10 @@ class Liu2022EldBETA(BaseDataset):
 
             block_data = np.concatenate([1e-6 * block_data, stim], axis=1)
 
+            log.info(
+                "Trial data de-meaned and concatenated with a buffer"
+                " to create continuous data"
+            )
             buff = np.zeros((n_classes, n_channels + 1, 50))
             block_data = np.concatenate([buff, block_data, buff], axis=2)
 
@@ -184,7 +188,7 @@ class Liu2022EldBETA(BaseDataset):
         extract_dir = data_dir / "eldBETA"
         extract_dir.mkdir(parents=True, exist_ok=True)
         with tarfile.open(tar_path, "r:gz") as tf:
-            tf.extractall(extract_dir, filter="data")
+            tf.extractall(extract_dir)
 
         # Search for the .mat file
         if mat_file.exists():

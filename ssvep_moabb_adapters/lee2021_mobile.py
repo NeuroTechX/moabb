@@ -9,6 +9,7 @@ from functools import partialmethod
 from pathlib import Path
 
 import mne
+import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -67,6 +68,12 @@ class Lee2021Mobile(BaseDataset):
         "Stimulus/S 13": "12.0",
     }
 
+    # BrainVision annotation → label mapping for ERP (P300)
+    _ERP_MARKER_MAP = {
+        "Stimulus/S  2": "Target",
+        "Stimulus/S  1": "NonTarget",
+    }
+
     def __init__(
         self,
         paradigm,
@@ -88,7 +95,6 @@ class Lee2021Mobile(BaseDataset):
         else:
             raise ValueError(f"Unknown paradigm '{paradigm}'. Use 'ssvep' or 'erp'.")
 
-        self._paradigm_suffix = code_suffix
         self._task_name = code_suffix
 
         super().__init__(
@@ -111,11 +117,7 @@ class Lee2021Mobile(BaseDataset):
         Annotations from the .vmrk marker file are used instead, with
         stimulus markers renamed to frequency strings for the SSVEP paradigm.
         """
-        import numpy as np
-
         vhdr_files = self.data_path(subject)
-        if isinstance(vhdr_files, str):
-            vhdr_files = [vhdr_files]
 
         sessions = {}
         for vhdr_path in vhdr_files:
@@ -138,6 +140,14 @@ class Lee2021Mobile(BaseDataset):
                 new_descriptions = np.array(
                     [
                         self._SSVEP_MARKER_MAP.get(desc, desc)
+                        for desc in raw.annotations.description
+                    ]
+                )
+                raw.annotations.description = new_descriptions
+            elif self._task_name == "ERP":
+                new_descriptions = np.array(
+                    [
+                        self._ERP_MARKER_MAP.get(desc, desc)
                         for desc in raw.annotations.description
                     ]
                 )

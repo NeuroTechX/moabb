@@ -134,7 +134,7 @@ class Liu2020BETA(BaseDataset):
         data = np.concatenate([1e-6 * data, raw_events], axis=1)
 
         # Add zero-padding buffers between trials
-        log.warning(
+        log.info(
             "Trial data de-meaned and concatenated with a buffer"
             " to create continuous data"
         )
@@ -171,7 +171,7 @@ class Liu2020BETA(BaseDataset):
         # Extract the archive
         data_dir.mkdir(parents=True, exist_ok=True)
         with tarfile.open(tar_path, "r:gz") as tf:
-            tf.extractall(data_dir, filter="data")
+            tf.extractall(data_dir)
 
         # The tar may extract into a subdirectory - find the .mat file
         if mat_file.exists():
