@@ -47,8 +47,8 @@ def pipelines():
         return {"LDA": make_pipeline(LDA())}
 
 
-def _run_and_get_scores(eval_class, paradigm, dataset, pipelines, seed=42):
-    """Run an evaluation and return sorted score DataFrame."""
+def _run_and_get_scores(eval_class, paradigm, dataset, pipelines, seed=42, legacy=False):
+    """Run an evaluation (parallel or legacy) and return sorted score DataFrame."""
     with tempfile.TemporaryDirectory() as tmp:
         ev = eval_class(
             paradigm=paradigm,
@@ -58,74 +58,32 @@ def _run_and_get_scores(eval_class, paradigm, dataset, pipelines, seed=42):
             overwrite=True,
             hdf5_path=tmp,
         )
-        results = ev.process(pipelines)
-    keys = ["subject", "session", "pipeline"]
-    return results[keys + ["score"]].sort_values(keys).reset_index(drop=True)
-
-
-def _run_legacy_and_get_scores(eval_class, paradigm, dataset, pipelines, seed=42):
-    """Run the legacy path and return sorted score DataFrame."""
-    with tempfile.TemporaryDirectory() as tmp:
-        ev = eval_class(
-            paradigm=paradigm,
-            datasets=[dataset],
-            random_state=seed,
-            n_jobs=1,
-            overwrite=True,
-            hdf5_path=tmp,
-        )
-        results = ev._process_legacy(
-            pipelines, param_grid=None, postprocess_pipeline=None
-        )
+        if legacy:
+            results = ev._process_legacy(
+                pipelines, param_grid=None, postprocess_pipeline=None
+            )
+        else:
+            results = ev.process(pipelines)
     keys = ["subject", "session", "pipeline"]
     return results[keys + ["score"]].sort_values(keys).reset_index(drop=True)
 
 
 @pytest.mark.slow
-class TestParallelLegacyRealData:
+@pytest.mark.parametrize(
+    "eval_class",
+    [WithinSessionEvaluation, CrossSessionEvaluation, CrossSubjectEvaluation],
+    ids=["WithinSession", "CrossSession", "CrossSubject"],
+)
+def test_parallel_legacy_scores_match(eval_class, real_dataset, paradigm, pipelines):
     """Verify parallel and legacy paths produce identical scores on real data."""
-
-    def test_within_session_scores_match(self, real_dataset, paradigm, pipelines):
-        parallel = _run_and_get_scores(
-            WithinSessionEvaluation, paradigm, real_dataset, pipelines
-        )
-        legacy = _run_legacy_and_get_scores(
-            WithinSessionEvaluation, paradigm, real_dataset, pipelines
-        )
-        np.testing.assert_allclose(
-            parallel["score"].to_numpy(),
-            legacy["score"].to_numpy(),
-            rtol=1e-10,
-            atol=1e-10,
-            err_msg="WithinSession parallel vs legacy scores differ on real data",
-        )
-
-    def test_cross_session_scores_match(self, real_dataset, paradigm, pipelines):
-        parallel = _run_and_get_scores(
-            CrossSessionEvaluation, paradigm, real_dataset, pipelines
-        )
-        legacy = _run_legacy_and_get_scores(
-            CrossSessionEvaluation, paradigm, real_dataset, pipelines
-        )
-        np.testing.assert_allclose(
-            parallel["score"].to_numpy(),
-            legacy["score"].to_numpy(),
-            rtol=1e-10,
-            atol=1e-10,
-            err_msg="CrossSession parallel vs legacy scores differ on real data",
-        )
-
-    def test_cross_subject_scores_match(self, real_dataset, paradigm, pipelines):
-        parallel = _run_and_get_scores(
-            CrossSubjectEvaluation, paradigm, real_dataset, pipelines
-        )
-        legacy = _run_legacy_and_get_scores(
-            CrossSubjectEvaluation, paradigm, real_dataset, pipelines
-        )
-        np.testing.assert_allclose(
-            parallel["score"].to_numpy(),
-            legacy["score"].to_numpy(),
-            rtol=1e-10,
-            atol=1e-10,
-            err_msg="CrossSubject parallel vs legacy scores differ on real data",
-        )
+    parallel = _run_and_get_scores(eval_class, paradigm, real_dataset, pipelines)
+    legacy = _run_and_get_scores(
+        eval_class, paradigm, real_dataset, pipelines, legacy=True
+    )
+    np.testing.assert_allclose(
+        parallel["score"].to_numpy(),
+        legacy["score"].to_numpy(),
+        rtol=1e-10,
+        atol=1e-10,
+        err_msg=f"{eval_class.__name__} parallel vs legacy scores differ on real data",
+    )

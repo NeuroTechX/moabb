@@ -67,52 +67,6 @@ BNCI2015_001_results = """
 27,0.6693,0.10934806,200.0,12,1B,13,2,BNCI2015-001,mdm
 """
 
-
-@pytest.mark.parametrize("dataset_class", [BNCI2014_001, BNCI2015_001])
-def test_decoding_performance_stable(dataset_class):
-    dataset_name = dataset_class.__name__
-    random_state = check_random_state(42)
-
-    dataset_cls = dataset_class
-    dataset = dataset_cls()
-    paradigm = MotorImagery()
-
-    # Simple pipeline
-    pipeline = make_pipeline(XdawnCovariances(nfilter=4), MDM(n_jobs=4))
-
-    # Evaluate
-    evaluation = CrossSessionEvaluation(
-        paradigm=paradigm, datasets=[dataset], overwrite=True, random_state=random_state
-    )
-    results = evaluation.process({"mdm": pipeline})
-    results.drop(columns=["time"], inplace=True)
-    results["score"] = results["score"].astype(np.float32)
-    results["samples"] = results["samples"].astype(int)
-    results["subject"] = results["subject"].astype(int)
-
-    # reading the score reference in put into the an dataframe
-    csv_map = {
-        "BNCI2014_001": BNCI2014_001_results,
-        "BNCI2015_001": BNCI2015_001_results,
-    }
-    reference_performance = pd.read_csv(io.StringIO(csv_map[dataset_name]))
-    reference_performance = reference_performance.drop(columns=["time", "Unnamed: 0"])
-    reference_performance["score"] = reference_performance["score"].astype(np.float32)
-    reference_performance["samples"] = reference_performance["samples"].astype(int)
-    reference_performance["subject"] = reference_performance["subject"].astype(int)
-    reference_performance["channels"] = reference_performance["channels"].astype(int)
-    reference_performance["n_sessions"] = reference_performance["n_sessions"].astype(int)
-
-    # Sort rows for a stable, order-invariant compare
-    sort_cols = ["dataset", "subject", "session", "pipeline"]
-    results = results.sort_values(sort_cols).reset_index(drop=True)
-    reference_performance = reference_performance.sort_values(sort_cols).reset_index(
-        drop=True
-    )
-
-    pd.testing.assert_frame_equal(results, reference_performance)
-
-
 BNCI2014_001_within_session_results = """
 ,score,time,samples,subject,session,channels,n_sessions,dataset,pipeline
 0,0.7393829,0.1,288,1,0train,22,2,BNCI2014-001,mdm
@@ -136,15 +90,13 @@ BNCI2014_001_within_session_results = """
 """
 
 
-def test_within_session_performance_stable():
+def _assert_performance_stable(eval_class, dataset, reference_csv):
+    """Run evaluation and compare results against a reference CSV."""
     random_state = check_random_state(42)
-
-    dataset = BNCI2014_001()
     paradigm = MotorImagery()
-
     pipeline = make_pipeline(XdawnCovariances(nfilter=4), MDM(n_jobs=4))
 
-    evaluation = WithinSessionEvaluation(
+    evaluation = eval_class(
         paradigm=paradigm, datasets=[dataset], overwrite=True, random_state=random_state
     )
     results = evaluation.process({"mdm": pipeline})
@@ -153,7 +105,7 @@ def test_within_session_performance_stable():
     results["samples"] = results["samples"].astype(int)
     results["subject"] = results["subject"].astype(int)
 
-    reference_performance = pd.read_csv(io.StringIO(BNCI2014_001_within_session_results))
+    reference_performance = pd.read_csv(io.StringIO(reference_csv))
     reference_performance = reference_performance.drop(columns=["time", "Unnamed: 0"])
     reference_performance["score"] = reference_performance["score"].astype(np.float32)
     reference_performance["samples"] = reference_performance["samples"].astype(int)
@@ -168,3 +120,20 @@ def test_within_session_performance_stable():
     )
 
     pd.testing.assert_frame_equal(results, reference_performance)
+
+
+@pytest.mark.parametrize("dataset_class", [BNCI2014_001, BNCI2015_001])
+def test_decoding_performance_stable(dataset_class):
+    csv_map = {
+        "BNCI2014_001": BNCI2014_001_results,
+        "BNCI2015_001": BNCI2015_001_results,
+    }
+    _assert_performance_stable(
+        CrossSessionEvaluation, dataset_class(), csv_map[dataset_class.__name__]
+    )
+
+
+def test_within_session_performance_stable():
+    _assert_performance_stable(
+        WithinSessionEvaluation, BNCI2014_001(), BNCI2014_001_within_session_results
+    )
