@@ -133,9 +133,28 @@ class Rodrigues2017(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.2348891",
+            associated_paper_doi="hal-02086581",
+            publication_year=2018,
+            investigators=[
+                "Grégoire Cattan",
+                "Pedro Luiz Coelho Rodrigues",
+                "Marco Congedo",
+            ],
+            senior_author="Marco Congedo",
+            institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
+            institution_department="GIPSA-lab",
+            institution_address="11 rue des Mathématiques, Grenoble Campus BP46, F-38402, France",
+            country="FR",
+            contact_info=["pedro-luiz.coelho-rodrigues@grenoble-inp.fr"],
+            ethics_approval=["All participants provided written informed consent"],
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2348891",
             license="CC-BY-4.0",
+            how_to_acknowledge=(
+                "Please cite: Cattan, Rodrigues & Congedo (2018). "
+                "EEG Alpha Waves Dataset. GIPSA-lab Research Report. "
+                "https://hal.science/hal-02086581"
+            ),
         ),
         tags=Tags(
             pathology=["Healthy"],

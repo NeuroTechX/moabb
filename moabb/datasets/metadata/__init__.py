@@ -378,9 +378,48 @@ def _apply_dataset_family_defaults(
     # ERP CORE defaults
     if name.startswith("ErpCore2021"):
         documentation = metadata.documentation or DocumentationMetadata()
-        doc_updates = {"doi": "10.1016/j.neuroimage.2020.117465"}
+        doc_updates = {
+            "doi": "10.1016/j.neuroimage.2020.117465",
+            "publication_year": 2021,
+            "investigators": [
+                "Emily S. Kappenman",
+                "Jaclyn L. Farrens",
+                "Wendy Zhang",
+                "Andrew X. Stewart",
+                "Steven J. Luck",
+            ],
+            "senior_author": "Steven J. Luck",
+            "institution": "San Diego State University",
+            "institution_department": "Department of Psychology",
+            "institution_address": "San Diego, CA, 92120, USA",
+            "country": "US",
+            "contact_info": ["emily.kappenman@sdsu.edu"],
+            "ethics_approval": [
+                "Approved by the Institutional Review Board at the University of California, Davis"
+            ],
+            "funding": [
+                "NIH R01MH087450",
+                "NIH R25MH080794",
+            ],
+            "acknowledgements": (
+                "We thank Mike Blank and David Woods at Neurobehavioral Systems, Inc. "
+                "for providing professional programming of the tasks in Presentation. "
+                "Programming, data analysis, and manuscript preparation were made possible "
+                "by NIH grants R01MH087450 and R25MH080794."
+            ),
+            "data_url": "https://doi.org/10.18115/D5JW4R",
+            "how_to_acknowledge": (
+                "Please cite: Kappenman et al. (2021). ERP CORE: An open resource "
+                "for human event-related potential research. NeuroImage, 225, 117465. "
+                "https://doi.org/10.1016/j.neuroimage.2020.117465"
+            ),
+        }
         if not documentation.license:
             doc_updates["license"] = "CC BY 4.0"
+        # Only set fields that are not already populated
+        for key, value in list(doc_updates.items()):
+            if getattr(documentation, key, None):
+                del doc_updates[key]
         documentation = replace(documentation, **doc_updates)
         acquisition = metadata.acquisition or AcquisitionMetadata()
         acquisition = replace(
@@ -423,8 +462,46 @@ def _apply_dataset_family_defaults(
     # MartinezCagigal cVEP defaults
     if name.startswith("MartinezCagigal2023"):
         documentation = metadata.documentation or DocumentationMetadata()
+        doc_updates = {
+            "associated_paper_doi": "10.1016/j.eswa.2023.120815",
+            "publication_year": 2023,
+            "investigators": [
+                "Víctor Martínez-Cagigal",
+                "Eduardo Santamaría-Vázquez",
+                "Sergio Pérez-Velasco",
+                "Diego Marcos-Martínez",
+                "Selene Moreno-Calderón",
+                "Roberto Hornero",
+            ],
+            "senior_author": "Roberto Hornero",
+            "institution": "University of Valladolid",
+            "institution_department": "Biomedical Engineering Group, ETSIT",
+            "institution_address": "Paseo de Belén, 15, 47011, Valladolid, Spain",
+            "country": "ES",
+            "contact_info": ["victor.martinez@gib.tel.uva.es"],
+            "ethics_approval": [
+                "Approved by the local ethics committee; all participants provided informed consent"
+            ],
+            "funding": [
+                "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00)",
+                "CIBER-BBN through Instituto de Salud Carlos III",
+            ],
+            "acknowledgements": (
+                "This study was partially funded by Ministerio de Ciencia e Innovación/Agencia "
+                "Estatal de Investigación and ERDF, and CIBER-BBN through Instituto de Salud Carlos III."
+            ),
+            "how_to_acknowledge": (
+                "Please cite: Martínez-Cagigal et al. (2023). Non-binary m-sequences for more "
+                "comfortable brain-computer interfaces based on c-VEPs. Expert Systems With "
+                "Applications, 232, 120815. https://doi.org/10.1016/j.eswa.2023.120815"
+            ),
+        }
         if not documentation.license:
-            documentation = replace(documentation, license="CC-BY-NC-SA-4.0")
+            doc_updates["license"] = "CC-BY-NC-SA-4.0"
+        for key, value in list(doc_updates.items()):
+            if getattr(documentation, key, None):
+                del doc_updates[key]
+        documentation = replace(documentation, **doc_updates)
         acquisition = metadata.acquisition or AcquisitionMetadata()
         acquisition = replace(
             acquisition,
