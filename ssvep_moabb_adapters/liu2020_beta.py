@@ -13,6 +13,16 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+)
 
 from ._utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
@@ -70,6 +80,66 @@ class Liu2020BETA(BaseDataset):
        Neuroscience, vol. 14, p. 627, 2020.
        DOI: 10.3389/fnins.2020.00627
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=64,
+            channel_types={"eeg": 64},
+            montage="standard_1005",
+            hardware="Synamps2 (Neuroscan)",
+            sensors=TSINGHUA_64CH_NAMES,
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=70,
+            health_status="healthy",
+            gender={"male": 42, "female": 28},
+            age_mean=25.14,
+            age_min=9,
+            age_max=64,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=40,
+            trial_duration=3.0,
+            stimulus_type="JFPM visual flicker",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.3389/fnins.2020.00627",
+            investigators=[
+                "Bingchuan Liu",
+                "Xiaoshan Huang",
+                "Yijun Wang",
+                "Xiaogang Chen",
+                "Xiaorong Gao",
+            ],
+            senior_author="Xiaorong Gao",
+            institution="Tsinghua University",
+            country="CN",
+            repository="Tsinghua BCI Lab",
+            data_url="http://bci.med.tsinghua.edu.cn/upload/liubingchuan/",
+            publication_year=2020,
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched",
+            downsampled_to_hz=250.0,
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            stimulus_frequencies_hz=[8.0 + i * 0.2 for i in range(40)],
+            frequency_resolution_hz=0.2,
+        ),
+        data_structure=DataStructureMetadata(
+            n_blocks=4,
+            n_trials=160,
+        ),
+        file_format="MAT",
+    )
 
     # fmt: off
     # Frequencies follow the BETA keyboard layout (row-major reading of 5x8 grid),

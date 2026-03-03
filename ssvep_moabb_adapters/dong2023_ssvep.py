@@ -9,6 +9,16 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+)
 
 from ._utils import build_raw_from_epochs
 
@@ -44,6 +54,63 @@ class Dong2023(BaseDataset):
        SSVEP-based BCI," Brain Science Advances, vol. 9, no. 4,
        pp. 297-309, 2023. DOI: 10.26599/BSA.2023.9050020
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=8,
+            channel_types={"eeg": 8},
+            montage="standard_1005",
+            hardware="NeuSenW (Neuracle)",
+            sensor_type="semi-dry (pre-gelled)",
+            sensors=["POz", "PO3", "PO4", "PO7", "PO8", "Oz", "O1", "O2"],
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=59,
+            health_status="healthy",
+            gender={"male": 38, "female": 21},
+            age_mean=12.3,
+            age_min=10,
+            age_max=16,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=40,
+            trial_duration=4.0,
+            stimulus_type="JFPM visual flicker",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+            feedback_type="visual",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.26599/BSA.2023.9050020",
+            investigators=["Yue Dong", "Sen Tian"],
+            senior_author="Yue Dong",
+            institution="Jiangsu JITRI Brain Machine Fusion Intelligence Institute",
+            country="CN",
+            repository="Zenodo",
+            data_url="https://zenodo.org/records/18847318",
+            license="CC BY-NC 4.0",
+            publication_year=2023,
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched",
+            downsampled_to_hz=250.0,
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            stimulus_frequencies_hz=[8.0 + i * 0.2 for i in range(40)],
+            frequency_resolution_hz=0.2,
+        ),
+        data_structure=DataStructureMetadata(
+            n_blocks=4,
+            n_trials=160,
+        ),
+        file_format="MAT",
+    )
 
     # 40 frequencies (8.0-15.8 Hz, 0.2 Hz step) in 4x10 row-major order
     # matching the Dong2023 stimulus layout (Figure 1b in paper).

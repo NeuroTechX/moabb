@@ -12,6 +12,16 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+)
 
 from ._utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
@@ -48,6 +58,20 @@ class Han2024Fatigue(BaseDataset):
     EEG was recorded at 1000 Hz with a Synamps2 system (Neuroscan) and 64
     channels. Each epoch spans 3000 samples (3 s at 1000 Hz).
 
+    .. note::
+
+       Channel selection is critical for this dataset. Using all 64 channels
+       with CCA-based methods yields near-chance accuracy because the high
+       channel-to-sample ratio causes overfitting. The paper uses 9 occipital
+       channels (PO7, PO3, POz, PO4, PO8, O1, Oz, O2, and one additional)
+       and achieves >90% with TRCA. Users should pick occipital channels
+       before classification.
+
+       Additionally, the cross-session evaluation (training on alert session
+       '0', testing on fatigued session '1') is a challenging domain-shift
+       problem that standard CCA/TRCA may not handle well without
+       fatigue-aware strategies.
+
     Data is stored as [16, 64, 3000, N_blocks] matrices (targets, channels,
     timepoints, blocks) in per-subject zip files on Zenodo. Each subject has
     4 separate files: low_frequency_train, low_frequency_fatigue,
@@ -64,6 +88,70 @@ class Han2024Fatigue(BaseDataset):
        Strategy," IEEE Trans. Neural Syst. Rehab. Eng., vol. 32,
        pp. 1407-1415, 2024. DOI: 10.1109/TNSRE.2024.3380635
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1000.0,
+            n_channels=64,
+            channel_types={"eeg": 64},
+            montage="standard_1005",
+            hardware="Synamps2 (Neuroscan)",
+            sensors=TSINGHUA_64CH_NAMES,
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=24,
+            health_status="healthy",
+            gender={"male": 12, "female": 12},
+            age_min=18,
+            age_max=26,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=32,
+            trial_duration=2.0,
+            stimulus_type="JFPM visual flicker",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+            has_training_test_split=True,
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1109/TNSRE.2024.3380635",
+            investigators=[
+                "Yuheng Han",
+                "Yufeng Ke",
+                "Ruiyan Wang",
+                "Tao Wang",
+                "Dong Ming",
+            ],
+            senior_author="Dong Ming",
+            institution="Tianjin University",
+            country="CN",
+            repository="Zenodo",
+            data_url="https://zenodo.org/records/10507229",
+            license="CC BY 4.0",
+            publication_year=2024,
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            stimulus_frequencies_hz=(
+                [8.0 + i * 0.5 for i in range(16)] + [25.5 + i * 0.5 for i in range(16)]
+            ),
+            frequency_resolution_hz=0.5,
+        ),
+        data_structure=DataStructureMetadata(
+            n_blocks=60,
+            n_trials="960 per frequency band (16 targets x 60 blocks)",
+            trials_context="6 training + 24 fatigue blocks per frequency condition",
+        ),
+        sessions_per_subject=2,
+        file_format="MAT",
+    )
 
     # fmt: off
     # Low-frequency events (16): 8.0-15.5 Hz, 0.5 Hz step

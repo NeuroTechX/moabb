@@ -9,6 +9,16 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+)
 
 from ._utils import FIGSHARE_DL_URL, build_raw_from_epochs
 
@@ -99,6 +109,61 @@ class Kim2025BetaRange(BaseDataset):
        Scientific Data, vol. 12, p. 1751, 2025.
        DOI: 10.1038/s41597-025-06032-2
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1024.0,
+            n_channels=33,
+            channel_types={"eeg": 31, "misc": 2},
+            montage="standard_1005",
+            hardware="BioSemi ActiveTwo",
+            reference="CMS/DRL",
+            line_freq=60.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=40,
+            health_status="healthy",
+            gender={"male": 25, "female": 15},
+            age_mean=22.8,
+            age_min=20,
+            age_max=35,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=40,
+            trial_duration=5.0,
+            stimulus_type="JFPM visual flicker",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1038/s41597-025-06032-2",
+            investigators=["Heegyu Kim", "Kyungho Won", "Minkyu Ahn", "Sung Chan Jun"],
+            senior_author="Sung Chan Jun",
+            institution="Gwangju Institute of Science and Technology",
+            country="KR",
+            repository="Figshare",
+            data_url="https://doi.org/10.6084/m9.figshare.28806815.v2",
+            license="CC BY 4.0",
+            publication_year=2025,
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched",
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            stimulus_frequencies_hz=[14.0 + i * 0.2 for i in range(40)],
+            frequency_resolution_hz=0.2,
+        ),
+        data_structure=DataStructureMetadata(
+            n_blocks=6,
+            n_trials=240,
+        ),
+        sessions_per_subject=6,
+        file_format="MAT",
+    )
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

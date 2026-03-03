@@ -12,6 +12,16 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+)
 
 from ._utils import FIGSHARE_DL_URL, TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
@@ -79,6 +89,67 @@ class Liu2022EldBETA(BaseDataset):
        Population," Scientific Data, vol. 9, p. 252, 2022.
        DOI: 10.1038/s41597-022-01372-9
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=250.0,
+            n_channels=64,
+            channel_types={"eeg": 64},
+            montage="standard_1005",
+            hardware="Synamps2 (Neuroscan)",
+            sensors=TSINGHUA_64CH_NAMES,
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=100,
+            health_status="healthy",
+            gender={"male": 33, "female": 67},
+            age_mean=63.17,
+            age_min=52,
+            age_max=81,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=9,
+            trial_duration=5.0,
+            stimulus_type="JFPM visual flicker",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1038/s41597-022-01372-9",
+            investigators=[
+                "Bingchuan Liu",
+                "Yijun Wang",
+                "Xiaorong Gao",
+                "Xiaogang Chen",
+            ],
+            senior_author="Xiaogang Chen",
+            institution="Tsinghua University",
+            country="CN",
+            repository="Figshare",
+            data_url="https://doi.org/10.6084/m9.figshare.18032669",
+            license="CC BY 4.0",
+            publication_year=2022,
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched",
+            downsampled_to_hz=250.0,
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            stimulus_frequencies_hz=[8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0],
+            frequency_resolution_hz=0.5,
+        ),
+        data_structure=DataStructureMetadata(
+            n_blocks=7,
+            n_trials=63,
+        ),
+        sessions_per_subject=7,
+        file_format="MAT",
+    )
 
     # fmt: off
     # Events follow JFPM column-major order matching target indices 1-9:

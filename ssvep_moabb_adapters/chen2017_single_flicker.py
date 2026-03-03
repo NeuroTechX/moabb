@@ -16,6 +16,13 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
 
 
 log = logging.getLogger(__name__)
@@ -62,6 +69,53 @@ class Chen2017SingleFlicker(BaseDataset):
        navigation," PLoS ONE, vol. 12, no. 5, e0178385, 2017.
        DOI: 10.1371/journal.pone.0178385
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=512.0,
+            n_channels=32,
+            channel_types={"eeg": 32},
+            montage="biosemi32",
+            hardware="BioSemi ActiveTwo",
+            reference="CMS/DRL",
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=12,
+            health_status="healthy",
+            gender={"male": 5, "female": 7},
+            age_mean=23.5,
+            age_min=19,
+            age_max=32,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=4,
+            stimulus_type="single-flicker spatially coded",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="online",
+            feedback_type="visual",
+            study_design="Spatial navigation with single 15 Hz flicker",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1371/journal.pone.0178385",
+            investigators=[
+                "Jingjing Chen",
+                "Dan Zhang",
+                "Andreas K. Engel",
+                "Qin Gong",
+                "Alexander Maye",
+            ],
+            senior_author="Alexander Maye",
+            institution="University Medical Center Hamburg-Eppendorf",
+            country="DE",
+            repository="Zenodo",
+            data_url="https://zenodo.org/records/580485",
+            publication_year=2017,
+        ),
+    )
 
     # BioSemi 32-channel layout
     # fmt: off

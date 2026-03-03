@@ -11,6 +11,13 @@ import mne
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
 
 
 OSF_CODE = "r7s9b"
@@ -56,6 +63,50 @@ class Lee2021Mobile(BaseDataset):
        standing, walking, and running," Scientific Data, vol. 8, p. 315,
        2021. DOI: 10.1038/s41597-021-01094-4
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=500.0,
+            n_channels=32,
+            channel_types={"eeg": 32},
+            montage="standard_1005",
+            hardware="BrainAmp (Brain Product GmbH)",
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=24,
+            health_status="healthy",
+            gender={"male": 14, "female": 10},
+            age_mean=24.5,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=3,
+            trial_duration=5.0,
+            stimulus_type="visual flicker",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+            study_design="BCI during motion (standing/walking/running)",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1038/s41597-021-01094-4",
+            investigators=[
+                "Young-Eun Lee",
+                "Gi-Hwan Shin",
+                "Minji Lee",
+                "Seong-Whan Lee",
+            ],
+            senior_author="Seong-Whan Lee",
+            institution="Korea University",
+            country="KR",
+            repository="OSF",
+            data_url="https://osf.io/r7s9b/",
+            license="CC BY 4.0",
+            publication_year=2021,
+        ),
+        sessions_per_subject=4,
+    )
 
     # BrainVision annotation → frequency mapping for SSVEP
     _SSVEP_MARKER_MAP = {

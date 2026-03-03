@@ -10,6 +10,13 @@ import mne
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
 
 
 FIGSHARE_URL = "https://ndownloader.figshare.com/files/25000886"  # Raw data.rar
@@ -54,6 +61,49 @@ class Wang2021Combined(BaseDataset):
        European Journal of Neuroscience, vol. 53, no. 3, pp. 861-875, 2021.
        DOI: 10.1111/ejn.15030
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1000.0,
+            n_channels=32,
+            channel_types={"eeg": 32},
+            montage="standard_1005",
+            hardware="eego mylab (ANT Neuro)",
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=8,
+            health_status="healthy",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="ssvep",
+            n_classes=4,
+            trial_duration=5.0,
+            stimulus_type="overlapping SSVEP arrows (CRT 85 Hz)",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+            study_design="One-to-two combined SSVEP with overlapping stimuli",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1111/ejn.15030",
+            investigators=[
+                "Lu Wang",
+                "Zhenhao Zhang",
+                "Dan Han",
+                "Zhijun Zhang",
+                "Zhifang Liu",
+                "Wei Liu",
+            ],
+            senior_author="Zhijun Zhang",
+            institution="Shandong University",
+            country="CN",
+            repository="Figshare",
+            data_url="https://doi.org/10.6084/m9.figshare.12628471",
+            publication_year=2021,
+        ),
+    )
 
     _events = {
         "14.17": 1,  # Up arrow (85/6 Hz)
