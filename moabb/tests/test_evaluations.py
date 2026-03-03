@@ -447,28 +447,11 @@ class TestWithinSubj(TestWithinSess):
             optuna=False,
         )
 
-    def test_eval_results(self):
+    def _assert_legacy_evaluate_disabled(self, param_grid=None):
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
-            list(
-                self.eval.evaluate(
-                    dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
-                )
-            )
-
-    def test_compound_dataset(self):
-        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
-            list(
-                self.eval.evaluate(
-                    dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
-                )
-            )
-
-    def test_eval_grid_search(self):
-        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
-        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
+        with pytest.raises(
+            RuntimeError, match="WithinSubjectEvaluation legacy evaluate\\(\\) path"
+        ):
             list(
                 self.eval.evaluate(
                     dataset,
@@ -477,22 +460,25 @@ class TestWithinSubj(TestWithinSess):
                     process_pipeline=process_pipeline,
                 )
             )
+
+    def test_eval_results(self):
+        self._assert_legacy_evaluate_disabled()
+
+    def test_compound_dataset(self):
+        self._assert_legacy_evaluate_disabled()
+
+    def test_eval_grid_search(self):
+        self._assert_legacy_evaluate_disabled(
+            param_grid={"C": {"csp__metric": ["euclid", "riemann"]}}
+        )
 
     def test_eval_grid_search_optuna(self):
         if not optuna_available:
             pytest.skip("Optuna is not available")
-        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
-        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
         self.eval.optuna = True
-        with pytest.raises(RuntimeError, match="WithinSubjectEvaluation.evaluate"):
-            list(
-                self.eval.evaluate(
-                    dataset,
-                    pipelines,
-                    param_grid=param_grid,
-                    process_pipeline=process_pipeline,
-                )
-            )
+        self._assert_legacy_evaluate_disabled(
+            param_grid={"C": {"csp__metric": ["euclid", "riemann"]}}
+        )
         self.eval.optuna = False
 
     def test_within_session_evaluation_save_model(self):
@@ -1029,7 +1015,7 @@ class TestParallelLegacyEquivalence:
             hdf5_path=str(tmp_path / "legacy"),
         )
         with pytest.raises(
-            RuntimeError, match="WithinSubjectEvaluation.evaluate\\(\\) legacy path"
+            RuntimeError, match="WithinSubjectEvaluation legacy evaluate\\(\\) path"
         ):
             eval_legacy._process_legacy(
                 pipelines, param_grid=None, postprocess_pipeline=None

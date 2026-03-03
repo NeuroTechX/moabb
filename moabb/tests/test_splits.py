@@ -115,10 +115,12 @@ def eval_split_cross_subject(shuffle, random_state, data):
         yield metadata.index[train_mask].values, metadata.index[test_mask].values
 
 
-def _metadata_with_dataset_column(metadata):
+def _metadata_with_dataset_column(metadata, n_datasets=3):
+    """Attach a synthetic dataset-group column while preserving subjects."""
     metadata = metadata.copy()
     subjects = np.array(metadata["subject"].unique())
-    dataset_labels = np.array(["ds_a", "ds_b", "ds_c"])
+    n_datasets = max(1, min(n_datasets, len(subjects)))
+    dataset_labels = np.array([f"ds_{i + 1}" for i in range(n_datasets)])
     subject_to_dataset = {
         subject: dataset_labels[i % len(dataset_labels)]
         for i, subject in enumerate(subjects)
@@ -139,11 +141,11 @@ def eval_split_cross_dataset(shuffle, random_state, data):
     else:
         splitter = LeaveOneGroupOut()
 
-    for train_ds_idx, test_ds_idx in splitter.split(
+    for train_dataset_idx, test_dataset_idx in splitter.split(
         X=np.zeros(len(datasets)), y=None, groups=datasets
     ):
-        train_mask = metadata["dataset"].isin(datasets[train_ds_idx])
-        test_mask = metadata["dataset"].isin(datasets[test_ds_idx])
+        train_mask = metadata["dataset"].isin(datasets[train_dataset_idx])
+        test_mask = metadata["dataset"].isin(datasets[test_dataset_idx])
 
         yield metadata.index[train_mask].values, metadata.index[test_mask].values
 

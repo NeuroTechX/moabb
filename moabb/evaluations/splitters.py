@@ -584,6 +584,24 @@ class CrossDatasetSplitter(BaseCrossValidator):
 
     This splitter works like CrossSubjectSplitter, but uses a configurable
     metadata column (``group_column``) to define train/test groups.
+
+    Parameters
+    ----------
+    cv_class: cross-validation class, default=LeaveOneGroupOut
+        Cross-validation strategy for splitting train/test dataset groups.
+    group_column: str, default="dataset"
+        Column name in metadata used as grouping key.
+    random_state: int, RandomState instance or None, default=None
+        Controls randomness for ``cv_class`` when supported.
+    cv_kwargs: dict
+        Additional arguments passed to ``cv_class``.
+
+    Yields
+    ------
+    train : ndarray
+        Training indices for the split.
+    test : ndarray
+        Test indices for the split.
     """
 
     metadata_columns = ("test_dataset", "train_datasets")
@@ -599,21 +617,21 @@ class CrossDatasetSplitter(BaseCrossValidator):
         self.group_column = group_column
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
+        self.random_state = random_state
         self._last_split_metadata = None
 
         params = inspect.signature(self.cv_class).parameters
         if "random_state" in params:
             self._cv_kwargs["random_state"] = random_state
 
+        # Detect whether the cv_class uses the groups parameter
         self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
 
-    def _get_groups(self, metadata):
+    def get_n_splits(self, metadata):
+        """Return number of splits for cross-validation."""
         if self.group_column not in metadata.columns:
             raise ValueError(f"Column '{self.group_column}' was not found in metadata.")
-        return metadata[self.group_column].to_numpy()
-
-    def get_n_splits(self, metadata):
-        groups = self._get_groups(metadata)
+        groups = metadata[self.group_column].to_numpy()
         splitter = self.cv_class(**self._cv_kwargs)
         get_n_splits_kwargs = {"X": metadata.index}
         if self._cv_uses_groups:
@@ -621,18 +639,22 @@ class CrossDatasetSplitter(BaseCrossValidator):
         return splitter.get_n_splits(**get_n_splits_kwargs)
 
     def split(self, y, metadata):
+        # here, I am getting the index across all entries
         all_index = metadata.index.values
-        groups = self._get_groups(metadata)
+        if self.group_column not in metadata.columns:
+            raise ValueError(f"Column '{self.group_column}' was not found in metadata.")
+        groups = metadata[self.group_column].to_numpy()
         splitter = self.cv_class(**self._cv_kwargs)
         self._last_split_metadata = None
 
+        # Only pass groups to cv_classes that actually use them
         split_kwargs = {"X": all_index, "y": y}
         if self._cv_uses_groups:
             split_kwargs["groups"] = groups
 
-        for train_idx, test_idx in splitter.split(**split_kwargs):
-            train_groups = np.unique(groups[train_idx]).tolist()
-            test_groups = np.unique(groups[test_idx]).tolist()
+        for train_group_idx, test_group_idx in splitter.split(**split_kwargs):
+            train_groups = np.unique(groups[train_group_idx]).tolist()
+            test_groups = np.unique(groups[test_group_idx]).tolist()
 
             split_metadata = {
                 "train_datasets": tuple(train_groups),
@@ -644,7 +666,7 @@ class CrossDatasetSplitter(BaseCrossValidator):
             if inner_metadata:
                 split_metadata.update(inner_metadata)
             self._last_split_metadata = split_metadata
-            yield all_index[train_idx], all_index[test_idx]
+            yield all_index[train_group_idx], all_index[test_group_idx]
 
     def get_metadata(self):
         """Return metadata for the most recent split."""

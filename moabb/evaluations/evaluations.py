@@ -643,13 +643,12 @@ class WithinSubjectEvaluation(BaseEvaluation):
             **cv_kwargs,
         )
 
-    # flake8: noqa: C901
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
     ):
         raise RuntimeError(
-            "WithinSubjectEvaluation.evaluate() legacy path has been removed. "
-            "Use WithinSubjectEvaluation.process() with the splitter-based engine."
+            "WithinSubjectEvaluation legacy evaluate() path has been removed. "
+            "Use WithinSubjectEvaluation.process() with the splitter-based path."
         )
 
     def is_valid(self, dataset):
