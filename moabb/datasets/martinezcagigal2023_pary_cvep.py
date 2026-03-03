@@ -11,6 +11,10 @@ from dateutil import parser
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
+from moabb.datasets.metadata.schema import (
+    DatasetMetadata,
+    DocumentationMetadata,
+)
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 from moabb.utils import _handle_deprecated_kwargs
 
@@ -68,6 +72,8 @@ log = logging.getLogger(__name__)
 
 class MartinezCagigal2023Pary(BaseDataset):
     """P-ary m-sequence-based c-VEP dataset from Martínez-Cagigal et al. (2023)
+
+    .. autoattribute:: METADATA
 
     **Dataset Description**
 
@@ -157,6 +163,45 @@ class MartinezCagigal2023Pary(BaseDataset):
 
     .. versionadded:: 1.2.0
     """
+
+    METADATA = DatasetMetadata(
+        documentation=DocumentationMetadata(
+            doi="10.71569/025s-eq10",
+            associated_paper_doi="10.1016/j.eswa.2023.120815",
+            publication_year=2023,
+            investigators=[
+                "Víctor Martínez-Cagigal",
+                "Eduardo Santamaría-Vázquez",
+                "Sergio Pérez-Velasco",
+                "Diego Marcos-Martínez",
+                "Selene Moreno-Calderón",
+                "Roberto Hornero",
+            ],
+            senior_author="Roberto Hornero",
+            institution="University of Valladolid",
+            institution_department="Biomedical Engineering Group, ETSIT",
+            institution_address="Paseo de Belén, 15, 47011, Valladolid, Spain",
+            country="ES",
+            contact_info=["victor.martinez@gib.tel.uva.es"],
+            ethics_approval=[
+                "Approved by the local ethics committee; all participants provided informed consent"
+            ],
+            funding=[
+                "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00)",
+                "CIBER-BBN through Instituto de Salud Carlos III",
+            ],
+            acknowledgements=(
+                "This study was partially funded by Ministerio de Ciencia e Innovación/Agencia "
+                "Estatal de Investigación and ERDF, and CIBER-BBN through Instituto de Salud Carlos III."
+            ),
+            data_url="https://doi.org/10.71569/025s-eq10",
+            how_to_acknowledge=(
+                "Please cite: Martínez-Cagigal et al. (2023). Non-binary m-sequences for more "
+                "comfortable brain-computer interfaces based on c-VEPs. Expert Systems With "
+                "Applications, 232, 120815. https://doi.org/10.1016/j.eswa.2023.120815"
+            ),
+        ),
+    )
 
     def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"Conditions": "conditions"}

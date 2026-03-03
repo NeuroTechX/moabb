@@ -459,49 +459,8 @@ def _apply_dataset_family_defaults(
             experiment=experiment,
         )
 
-    # MartinezCagigal cVEP defaults
+    # MartinezCagigal cVEP defaults (documentation is set per-dataset in each class)
     if name.startswith("MartinezCagigal2023"):
-        documentation = metadata.documentation or DocumentationMetadata()
-        doc_updates = {
-            "associated_paper_doi": "10.1016/j.eswa.2023.120815",
-            "publication_year": 2023,
-            "investigators": [
-                "Víctor Martínez-Cagigal",
-                "Eduardo Santamaría-Vázquez",
-                "Sergio Pérez-Velasco",
-                "Diego Marcos-Martínez",
-                "Selene Moreno-Calderón",
-                "Roberto Hornero",
-            ],
-            "senior_author": "Roberto Hornero",
-            "institution": "University of Valladolid",
-            "institution_department": "Biomedical Engineering Group, ETSIT",
-            "institution_address": "Paseo de Belén, 15, 47011, Valladolid, Spain",
-            "country": "ES",
-            "contact_info": ["victor.martinez@gib.tel.uva.es"],
-            "ethics_approval": [
-                "Approved by the local ethics committee; all participants provided informed consent"
-            ],
-            "funding": [
-                "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00)",
-                "CIBER-BBN through Instituto de Salud Carlos III",
-            ],
-            "acknowledgements": (
-                "This study was partially funded by Ministerio de Ciencia e Innovación/Agencia "
-                "Estatal de Investigación and ERDF, and CIBER-BBN through Instituto de Salud Carlos III."
-            ),
-            "how_to_acknowledge": (
-                "Please cite: Martínez-Cagigal et al. (2023). Non-binary m-sequences for more "
-                "comfortable brain-computer interfaces based on c-VEPs. Expert Systems With "
-                "Applications, 232, 120815. https://doi.org/10.1016/j.eswa.2023.120815"
-            ),
-        }
-        if not documentation.license:
-            doc_updates["license"] = "CC-BY-NC-SA-4.0"
-        for key, value in list(doc_updates.items()):
-            if getattr(documentation, key, None):
-                del doc_updates[key]
-        documentation = replace(documentation, **doc_updates)
         acquisition = metadata.acquisition or AcquisitionMetadata()
         acquisition = replace(
             acquisition,
@@ -515,7 +474,6 @@ def _apply_dataset_family_defaults(
         experiment = replace(experiment, paradigm="cvep")
         metadata = replace(
             metadata,
-            documentation=documentation,
             acquisition=acquisition,
             participants=participants,
             experiment=experiment,
