@@ -12,8 +12,11 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
 from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
     DatasetMetadata,
     DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
 )
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 from moabb.utils import _handle_deprecated_kwargs
@@ -165,6 +168,13 @@ class MartinezCagigal2023Pary(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            n_channels=16,
+            channel_types={"eeg": 16},
+        ),
+        participants=ParticipantMetadata(n_subjects=16),
+        experiment=ExperimentMetadata(paradigm="cvep"),
         documentation=DocumentationMetadata(
             doi="10.71569/025s-eq10",
             associated_paper_doi="10.1016/j.eswa.2023.120815",

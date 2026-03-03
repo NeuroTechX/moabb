@@ -161,12 +161,12 @@ _MANUAL_METADATA_OVERRIDES = {
     "Kojima2024B": {
         "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"},
     },
-    # Dreyer2023 variants without METADATA blocks
+    # Dreyer2023 variants (METADATA inherited from _Dreyer2023Base)
     "Dreyer2023B": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+        "documentation": {"repository": "Osf"},
     },
     "Dreyer2023C": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+        "documentation": {"repository": "Osf"},
     },
 }
 
