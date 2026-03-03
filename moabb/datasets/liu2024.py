@@ -97,7 +97,10 @@ class Liu2024(BaseDataset):
             channel_types={"eeg": 29, "eog": 2},
             montage="10-10",
             hardware="ZhenTec NT1 wireless multichannel EEG acquisition system",
+            cap_manufacturer="Xi'an ZhenTec Intelligence Technology Co., Ltd.",
+            cap_model="ZhenTec NT1",
             sensor_type="semi-dry Ag/AgCl",
+            electrode_type="semi-dry",
             reference="CPz",
             ground="FPz",
             software=None,
@@ -152,18 +155,21 @@ class Liu2024(BaseDataset):
             age_std=10.57,
             age_min=31.0,
             age_max=77.0,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
+            trials_per_class={"left_hand": 20, "right_hand": 20},
             trial_duration=8.0,
             study_design="Imagining grasping a spherical object with left or right hand while watching a video of gripping motion. Each trial: instruction stage (prompt), MI stage (4s video-guided imagery), break stage (rest).",
             feedback_type="none",
             stimulus_type="video and audio",
             stimulus_modalities=["visual", "audio"],
+            synchronicity="cue-based",
             mode="offline",
+            has_training_test_split=True,
             events={"left_hand": 1, "right_hand": 2},
             instructions="Subject sat approximately 80 cm from computer screen. Computer played audio instructions. Patients imagined grasping spherical object with prompted hand during 4s video playback.",
         ),
@@ -207,6 +213,8 @@ class Liu2024(BaseDataset):
                 "rehabilitation",
                 "acute stroke",
                 "hand-grip imagery",
+                "databases",
+                "scientific data",
             ],
             license="CC-BY-4.0",
             repository="Figshare",
@@ -228,33 +236,33 @@ class Liu2024(BaseDataset):
             highpass_hz=0.5,
             lowpass_hz=40.0,
             bandpass=[0.5, 40.0],
-            filter_type=None,
+            filter_type="FIR",
             filter_order=None,
             artifact_methods=None,
             re_reference=None,
-            notes="Filtered data split into trials × channels × time-samples format by marker '1'. Some motion artifacts present in subjects 4, 5, 13, 14, 18, 24, 28, 33, 42, 43, 47, 48, 49.",
+            epoch_window=[0.0, 8.0],
+            notes="Preprocessed with EEGLAB toolbox in MATLAB R2019b. Filtered data split into trials x channels x time-samples format by marker '1'. Some motion artifacts present in subjects 4, 5, 13, 14, 18, 24, 28, 33, 42, 43, 47, 48, 49.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
-                "LDA",
-                "SVM",
-                "MDRM",
-                "TSLDA",
-                "DGFMDRM",
+                "CSP+LDA",
+                "FBCSP+SVM",
+                "TSLDA+DGFMDRM",
+                "TWFB+DGFMDM",
             ],
             feature_extraction=[
                 "CSP",
                 "FBCSP",
                 "ERD/ERS",
-                "Covariance/Riemannian",
+                "Riemannian geometry (SCMs on SPD manifolds)",
                 "Tangent Space",
-                "Time-Frequency (Wavelet)",
+                "Time-Frequency (Morlet wavelet)",
                 "TWFB (Time Window Filter Bank)",
             ],
             frequency_bands={
                 "alpha": [8.0, 15.0],
                 "beta": [15.0, 30.0],
-                "analyzed_range": [0.5, 40.0],
+                "analyzed_range": [8.0, 30.0],
             },
             spatial_filters=["CSP", "FBCSP", "Discriminant Geodesic Filtering"],
         ),
@@ -264,22 +272,23 @@ class Liu2024(BaseDataset):
             evaluation_type=["within_subject"],
         ),
         performance={
-            "accuracy_percent": 72.21,
-            "kappa": 0.4442,
-            "precision": 0.7543,
-            "sensitivity": 0.7845,
             "CSP+LDA_accuracy": 55.57,
             "FBCSP+SVM_accuracy": 57.57,
             "TSLDA+DGFMDRM_accuracy": 61.20,
+            "TWFB+DGFMDM_accuracy": 72.21,
+            "TWFB+DGFMDM_kappa": 0.4442,
+            "TWFB+DGFMDM_precision": 0.7543,
+            "TWFB+DGFMDM_sensitivity": 0.7845,
         },
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation"],
-            environment="laboratory",
+            environment="hospital",
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand"],
+            cue_duration_s=2.0,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
@@ -294,7 +303,7 @@ class Liu2024(BaseDataset):
         ],
         n_contributing_labs=1,
         abstract="The brain-computer interface (BCI) is a technology that involves direct communication with parts of the brain and has evolved rapidly in recent years; it has begun to be used in clinical practice, such as for patient rehabilitation. Patient electroencephalography (EEG) datasets are critical for algorithm optimization and clinical applications of BCIs but are rare at present. We collected data from 50 acute stroke patients with wireless portable saline EEG devices during the performance of two tasks: 1) imagining right-handed movements and 2) imagining left-handed movements. The dataset consists of four types of data: 1) the motor imagery instructions, 2) raw recording data, 3) pre-processed data after removing artefacts and other manipulations, and 4) patient characteristics. This is the first open dataset to address left- and right-handed motor imagery in acute stroke patients.",
-        methodology="50 acute stroke patients (1-30 days post-stroke) performed 40 trials of hand-grip motor imagery (20 left, 20 right). Each 8s trial included instruction, 4s video-guided imagery, and rest phases. EEG recorded with 30-channel ZhenTec NT1 wireless system at 500 Hz. Data organized in BIDS format with raw (.mat) and preprocessed (.edf) versions. Clinical assessments: NIHSS (mean=4.16±2.85), MBI (mean=70.94±18.22), mRS (mean=2.66±1.44). 23 patients right hemiplegia, 27 left hemiplegia.",
+        methodology="50 acute stroke patients (1-30 days post-stroke) performed 40 trials of hand-grip motor imagery (20 left, 20 right). Each 8s trial included instruction, 4s video-guided imagery, and rest phases. EEG recorded with ZhenTec NT1 wireless system (29 EEG + 2 EOG channels) at 500 Hz. Data organized in EEG-BIDS format with raw (.mat) and preprocessed (.edf) versions. Clinical assessments: NIHSS (mean=4.16, SD=2.85), MBI (mean=70.94, SD=18.22), mRS (mean=2.66, SD=1.44). 23 patients right hemiplegia, 27 left hemiplegia.",
     )
 
     def __init__(
@@ -320,16 +329,16 @@ class Liu2024(BaseDataset):
         self.break_events = break_events
         self.instr_events = instr_events
         self.events = {"left_hand": 1, "right_hand": 2}
-        if break_events:
-            self.events["instr"] = 3
         if instr_events:
+            self.events["instr"] = 3
+        if break_events:
             self.events["break"] = 4
         super().__init__(
             subjects=list(range(1, 50 + 1)),
             sessions_per_subject=1,
             events=self.events,
             code="Liu2024",
-            interval=(2, 6),
+            interval=(0, 4),
             paradigm="imagery",
             doi="10.1038/s41597-023-02787-8",
             selected_subjects=subjects,
@@ -396,7 +405,7 @@ class Liu2024(BaseDataset):
 
         return subject_paths
 
-    def encoding(self, events_df: pd.DataFrame) -> Tuple[np.array, Dict[int, str]]:
+    def encoding(self, events_df: pd.DataFrame) -> Tuple[np.array, Dict[int, str], set]:
         """Encode the columns 'value' and 'trial_type' into a single event type.
 
         Parameters
@@ -408,6 +417,10 @@ class Liu2024(BaseDataset):
         -------
         np.ndarray
             Array of encoded event types.
+        dict
+            Mapping from event codes to event names.
+        set
+            Set of STI channel values included in the encoding.
 
         Notes
         -----
@@ -423,8 +436,8 @@ class Liu2024(BaseDataset):
         """
         # Define the mapping dictionary
         encoding_mapping = {
-            (2, 2): 1,  # Left hand, MI
-            (1, 2): 2,  # Right hand, MI
+            (1, 2): 1,  # Left hand MI (trial_type=1 per paper = left)
+            (2, 2): 2,  # Right hand MI (trial_type=2 per paper = right)
         }
 
         mapping = {
@@ -435,8 +448,8 @@ class Liu2024(BaseDataset):
         if self.instr_events:
             encoding_mapping.update(
                 {
-                    (1, 1): 3,  # Right hand, instructions
-                    (2, 1): 3,  # Left hand, instructions
+                    (1, 1): 3,  # Left hand, instructions
+                    (2, 1): 3,  # Right hand, instructions
                 }
             )
             mapping[3] = "instr"
@@ -444,11 +457,14 @@ class Liu2024(BaseDataset):
         if self.break_events:
             encoding_mapping.update(
                 {
-                    (1, 3): 4,  # Right hand, break
-                    (2, 3): 4,  # Left hand, break
+                    (1, 3): 4,  # Left hand, break
+                    (2, 3): 4,  # Right hand, break
                 }
             )
             mapping[4] = "break"
+
+        # Collect the set of STI channel values included in the encoding
+        stim_values = {v for (_, v) in encoding_mapping.keys()}
 
         # Filter out rows that won't be encoded
         valid_tuples = encoding_mapping.keys()
@@ -463,7 +479,7 @@ class Liu2024(BaseDataset):
             lambda row: encoding_mapping[(row["trial_type"], row["value"])], axis=1
         )
 
-        return event_category, mapping
+        return event_category, mapping, stim_values
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
@@ -512,9 +528,11 @@ class Liu2024(BaseDataset):
         events_df = pd.read_csv(path_events, sep="\t")
 
         # Encode the events
-        event_category, mapping = self.encoding(events_df=events_df)
+        event_category, mapping, stim_values = self.encoding(events_df=events_df)
 
-        events = self.create_event_array(raw=raw, event_category=event_category)
+        events = self.create_event_array(
+            raw=raw, event_category=event_category, stim_values=stim_values
+        )
 
         # Creating and setting annotations from the events
         annotations = mne.annotations_from_events(
@@ -569,7 +587,9 @@ class Liu2024(BaseDataset):
         return file_electrodes_tsv
 
     @staticmethod
-    def create_event_array(raw: Any, event_category: np.ndarray) -> np.ndarray:
+    def create_event_array(
+        raw: Any, event_category: np.ndarray, stim_values: set
+    ) -> np.ndarray:
         """
         This method creates an event array based on the stimulus channel.
 
@@ -579,13 +599,17 @@ class Liu2024(BaseDataset):
             The raw data.
         event_category : np.ndarray
             The event categories.
+        stim_values : set
+            Set of STI channel values to select triggers for.
 
         Returns
         -------
         events : np.ndarray
             The created events array.
         """
-        _, idx_trigger = np.nonzero(raw.copy().pick("STI").get_data())
+        sti_data = raw.copy().pick("STI").get_data().flatten()
+        # Only select triggers matching the requested stage values
+        idx_trigger = np.where(np.isin(sti_data, list(stim_values)))[0]
         n_label_stim = len(event_category)
         # Create the events array based on the stimulus channel
         events = np.column_stack(
