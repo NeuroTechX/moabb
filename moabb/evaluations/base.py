@@ -523,7 +523,7 @@ class BaseEvaluation(ABC):
         """Build a result dict and score it in one place."""
         metadata = {}
         if split_metadata is None:
-            splitter = getattr(getattr(self, "cv", None), "_current_splitter", None)
+            splitter = getattr(self, "cv", None)
             if splitter is not None and hasattr(splitter, "get_metadata"):
                 split_metadata = splitter.get_metadata()
         if split_metadata:
@@ -650,16 +650,28 @@ class BaseEvaluation(ABC):
             param_grid=None,  # overridden per-task below if needed
         )
 
+    @staticmethod
+    def _preview_splits(splitter, y, metadata):
+        """Materialize folds up front with optional splitter metadata."""
+        preview = []
+        for cv_ind, (train_idx, test_idx) in enumerate(splitter.split(y, metadata)):
+            split_metadata = None
+            if hasattr(splitter, "get_metadata"):
+                split_metadata = splitter.get_metadata()
+                if split_metadata is not None:
+                    split_metadata = dict(split_metadata)
+            preview.append((cv_ind, train_idx, test_idx, split_metadata))
+        return preview
+
     def _build_task_list(
         self, dataset, X, y, metadata, splitter, work_plan, pipelines, param_grid
     ):
         """Build a flat list of fold tasks for parallel execution."""
         tasks = []
         config = self._build_eval_config(param_grid)
+        fold_preview = self._preview_splits(splitter, y, metadata)
 
-        per_split = hasattr(getattr(splitter, "cv_class", None), "get_metadata")
-
-        for cv_ind, (train_idx, test_idx) in enumerate(splitter.split(y, metadata)):
+        for cv_ind, train_idx, test_idx, split_meta in fold_preview:
             test_meta = metadata.iloc[test_idx]
             subject = test_meta["subject"].iloc[0]
 
@@ -667,12 +679,6 @@ class BaseEvaluation(ABC):
                 continue
             run_pipes = work_plan[subject]
             session = test_meta["session"].iloc[0]
-
-            split_meta = None
-            if per_split and hasattr(splitter, "_current_splitter"):
-                inner = splitter._current_splitter
-                if hasattr(inner, "get_metadata"):
-                    split_meta = inner.get_metadata()
 
             for name, clf in run_pipes.items():
                 task_config = dict(config)

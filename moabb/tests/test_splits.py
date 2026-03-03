@@ -19,6 +19,7 @@ from sklearn.utils import check_random_state
 
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.splitters import (
+    CrossDatasetSplitter,
     CrossSessionSplitter,
     CrossSubjectSplitter,
     LearningCurveSplitter,
@@ -114,6 +115,39 @@ def eval_split_cross_subject(shuffle, random_state, data):
         yield metadata.index[train_mask].values, metadata.index[test_mask].values
 
 
+def _metadata_with_dataset_column(metadata):
+    metadata = metadata.copy()
+    subjects = np.array(metadata["subject"].unique())
+    dataset_labels = np.array(["ds_a", "ds_b", "ds_c"])
+    subject_to_dataset = {
+        subject: dataset_labels[i % len(dataset_labels)]
+        for i, subject in enumerate(subjects)
+    }
+    metadata["dataset"] = metadata["subject"].map(subject_to_dataset)
+    return metadata
+
+
+def eval_split_cross_dataset(shuffle, random_state, data):
+    rng = check_random_state(random_state) if shuffle else None
+
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    datasets = metadata["dataset"].unique()
+
+    if shuffle:
+        splitter = GroupShuffleSplit(random_state=rng)
+    else:
+        splitter = LeaveOneGroupOut()
+
+    for train_ds_idx, test_ds_idx in splitter.split(
+        X=np.zeros(len(datasets)), y=None, groups=datasets
+    ):
+        train_mask = metadata["dataset"].isin(datasets[train_ds_idx])
+        test_mask = metadata["dataset"].isin(datasets[test_ds_idx])
+
+        yield metadata.index[train_mask].values, metadata.index[test_mask].values
+
+
 def eval_split_cross_session(shuffle, random_state, data):
     _, y, metadata = data
 
@@ -188,6 +222,7 @@ def test_is_shuffling(data):
         WithinSubjectSplitter,
         CrossSessionSplitter,
         CrossSubjectSplitter,
+        CrossDatasetSplitter,
     ],
 )
 def test_custom_inner_cv(
@@ -195,6 +230,8 @@ def test_custom_inner_cv(
     data,
 ):
     X, y, metadata = data
+    if splitter == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
     # Use a custom inner cv
     split = splitter(cv_class=TimeSeriesSplit, max_train_size=2)
 
@@ -260,15 +297,20 @@ def test_cross_session(shuffle, random_state, data):
         )
 
 
-@pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
+@pytest.mark.parametrize(
+    "splitter", [CrossSessionSplitter, CrossSubjectSplitter, CrossDatasetSplitter]
+)
 @pytest.mark.parametrize("shuffle, random_state", [(False, None), (True, 0), (True, 42)])
 def test_cross_compatibility(splitter, shuffle, random_state, data):
     _, y, metadata = data
 
     if splitter == CrossSessionSplitter:
         function_split = eval_split_cross_session
-    else:
+    elif splitter == CrossSubjectSplitter:
         function_split = eval_split_cross_subject
+    else:
+        function_split = eval_split_cross_dataset
+        metadata = _metadata_with_dataset_column(metadata)
 
     params = {"random_state": random_state}
     if splitter == CrossSessionSplitter:
@@ -430,6 +472,16 @@ def test_cross_subject_get_n_splits(data):
     assert n_splits == 5  # 5 subjects
 
 
+def test_cross_dataset_get_n_splits(data):
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+
+    split = CrossDatasetSplitter()
+
+    n_splits = split.get_n_splits(metadata)
+    assert n_splits == metadata["dataset"].nunique()
+
+
 def test_within_subject_get_n_splits(data):
     _, y, metadata = data
 
@@ -439,9 +491,13 @@ def test_within_subject_get_n_splits(data):
     assert n_splits == 5 * 5  # 5 subjects, 5 folds each
 
 
-@pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
+@pytest.mark.parametrize(
+    "splitter", [CrossSessionSplitter, CrossSubjectSplitter, CrossDatasetSplitter]
+)
 def test_if_split_is_not_random(data, splitter):
     _, y, metadata = data
+    if splitter == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
 
     if splitter == CrossSessionSplitter:
         split = splitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)
@@ -521,11 +577,14 @@ def test_learning_curve_splitter_metadata():
         WithinSubjectSplitter,
         CrossSessionSplitter,
         CrossSubjectSplitter,
+        CrossDatasetSplitter,
     ],
 )
 def test_learning_curve_as_cv_class(splitter, data):
     """Test that LearningCurveSplitter can be used as cv_class for all splitters."""
     _, y, metadata = data
+    if splitter == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
 
     data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
     n_perms = np.array([2, 1])
@@ -567,6 +626,10 @@ def test_learning_curve_as_cv_class(splitter, data):
             train_subjects = set(metadata.loc[train]["subject"])
             test_subjects = set(metadata.loc[test]["subject"])
             assert train_subjects.isdisjoint(test_subjects)
+        elif splitter == CrossDatasetSplitter:
+            train_datasets = set(metadata.loc[train]["dataset"])
+            test_datasets = set(metadata.loc[test]["dataset"])
+            assert train_datasets.isdisjoint(test_datasets)
 
 
 @pytest.mark.parametrize(
@@ -576,11 +639,14 @@ def test_learning_curve_as_cv_class(splitter, data):
         WithinSubjectSplitter,
         CrossSessionSplitter,
         CrossSubjectSplitter,
+        CrossDatasetSplitter,
     ],
 )
-def test_current_splitter_is_set(splitter_cls, data):
-    """Test that _current_splitter is set after split() for all splitters."""
+def test_splitter_metadata_interface(splitter_cls, data):
+    """Test get_metadata() access for splitters using metadata-aware inner CV."""
     _, y, metadata = data
+    if splitter_cls == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
 
     data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
     n_perms = np.array([2, 1])
@@ -598,14 +664,18 @@ def test_current_splitter_is_set(splitter_cls, data):
         **extra_kwargs,
     )
 
-    splits = list(split.split(y, metadata))
-    assert len(splits) > 0
+    has_split = False
+    for _train, _test in split.split(y, metadata):
+        has_split = True
+        meta = split.get_metadata()
+        assert meta is not None
+        assert meta["data_size"] is not None
+        assert meta["permutation"] is not None
+    assert has_split
 
-    # Verify _current_splitter is set and accessible
-    assert hasattr(split, "_current_splitter")
-    assert split._current_splitter is not None
 
-    # Verify metadata is accessible through _current_splitter
-    meta = split._current_splitter.get_metadata()
-    assert meta["data_size"] is not None
-    assert meta["permutation"] is not None
+def test_cross_dataset_requires_group_column(data):
+    _, y, metadata = data
+    splitter = CrossDatasetSplitter(group_column="does_not_exist")
+    with pytest.raises(ValueError):
+        list(splitter.split(y, metadata))

@@ -21,6 +21,13 @@ log = logging.getLogger(__name__)
 Vector = Union[list, tuple, np.ndarray]
 
 
+def _splitter_metadata(splitter):
+    """Return metadata from an inner splitter when available."""
+    if hasattr(splitter, "get_metadata"):
+        return splitter.get_metadata()
+    return None
+
+
 class WithinSessionSplitter(BaseCrossValidator):
     """Data splitter for within session evaluation.
 
@@ -87,6 +94,7 @@ class WithinSessionSplitter(BaseCrossValidator):
         ]:
             if p in params:
                 self._cv_kwargs[p] = v
+        self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
@@ -107,6 +115,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         all_index = metadata.index.values
+        self._last_split_metadata = None
 
         # Shuffle subjects if required
         # Convert to numpy array to avoid ArrowStringArray shuffle warning
@@ -147,12 +156,14 @@ class WithinSessionSplitter(BaseCrossValidator):
                 # Instantiate a new internal splitter for each session
                 splitter = self.cv_class(**cv_kwargs)
 
-                # Store reference to the current inner splitter for metadata access
-                self._current_splitter = splitter
-
                 # Split using the current instance of StratifiedKFold by default
                 for train_ix, test_ix in splitter.split(indices, y_session):
+                    self._last_split_metadata = _splitter_metadata(splitter)
                     yield indices[train_ix], indices[test_ix]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
 
 class WithinSubjectSplitter(BaseCrossValidator):
@@ -220,6 +231,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
         ]:
             if p in params:
                 self._cv_kwargs[p] = v
+        self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         """
@@ -257,6 +269,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         all_index = metadata.index.values
+        self._last_split_metadata = None
 
         # Shuffle subjects if required
         # Convert to numpy array to avoid ArrowStringArray shuffle warning
@@ -272,12 +285,14 @@ class WithinSubjectSplitter(BaseCrossValidator):
             # Instantiate a new internal splitter for each subject
             splitter = self.cv_class(**self._cv_kwargs)
 
-            # Store reference to the current inner splitter for metadata access
-            self._current_splitter = splitter
-
             # Split using the cross-validation strategy across all sessions of the subject
             for train_ix, test_ix in splitter.split(subject_indices, y_subject):
+                self._last_split_metadata = _splitter_metadata(splitter)
                 yield subject_indices[train_ix], subject_indices[test_ix]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
 
 class CrossSessionSplitter(BaseCrossValidator):
@@ -364,6 +379,7 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         # Detect whether the cv_class uses the groups parameter
         self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+        self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         """
@@ -403,6 +419,7 @@ class CrossSessionSplitter(BaseCrossValidator):
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
         all_index = metadata.index.values
+        self._last_split_metadata = None
         # I check how many subjects are here:
         subjects = metadata["subject"].unique()
 
@@ -435,7 +452,6 @@ class CrossSessionSplitter(BaseCrossValidator):
 
             # by default, I am using LeaveOneGroupOut
             splitter = self.cv_class(**cv_kwargs)
-            self._current_splitter = splitter
 
             # Only pass groups to cv_classes that actually use them
             # (detected via GroupsConsumerMixin). This avoids the
@@ -445,9 +461,14 @@ class CrossSessionSplitter(BaseCrossValidator):
                 split_kwargs["groups"] = subject_metadata["session"]
 
             for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
+                self._last_split_metadata = _splitter_metadata(splitter)
                 yield subject_indices[train_session_idx], subject_indices[
                     test_session_idx
                 ]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
 
 class CrossSubjectSplitter(BaseCrossValidator):
@@ -506,6 +527,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         # Detect whether the cv_class uses the groups parameter
         self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+        self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         """
@@ -539,9 +561,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         all_index = metadata.index.values
 
         splitter = self.cv_class(**self._cv_kwargs)
-
-        # Store reference to the current inner splitter for metadata access
-        self._current_splitter = splitter
+        self._last_split_metadata = None
 
         # Only pass groups to cv_classes that actually use them
         # (detected via GroupsConsumerMixin). This avoids the
@@ -551,7 +571,84 @@ class CrossSubjectSplitter(BaseCrossValidator):
             split_kwargs["groups"] = metadata["subject"]
 
         for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
+            self._last_split_metadata = _splitter_metadata(splitter)
             yield all_index[train_session_idx], all_index[test_session_idx]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
+
+
+class CrossDatasetSplitter(BaseCrossValidator):
+    """Data splitter for leave-dataset-out style evaluation.
+
+    This splitter works like CrossSubjectSplitter, but uses a configurable
+    metadata column (``group_column``) to define train/test groups.
+    """
+
+    metadata_columns = ("test_dataset", "train_datasets")
+
+    def __init__(
+        self,
+        cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
+        group_column: str = "dataset",
+        random_state: int = None,
+        **cv_kwargs,
+    ):
+        self.cv_class = cv_class
+        self.group_column = group_column
+        self.cv_kwargs = cv_kwargs
+        self._cv_kwargs = dict(**cv_kwargs)
+        self._last_split_metadata = None
+
+        params = inspect.signature(self.cv_class).parameters
+        if "random_state" in params:
+            self._cv_kwargs["random_state"] = random_state
+
+        self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+
+    def _get_groups(self, metadata):
+        if self.group_column not in metadata.columns:
+            raise ValueError(f"Column '{self.group_column}' was not found in metadata.")
+        return metadata[self.group_column].to_numpy()
+
+    def get_n_splits(self, metadata):
+        groups = self._get_groups(metadata)
+        splitter = self.cv_class(**self._cv_kwargs)
+        get_n_splits_kwargs = {"X": metadata.index}
+        if self._cv_uses_groups:
+            get_n_splits_kwargs["groups"] = groups
+        return splitter.get_n_splits(**get_n_splits_kwargs)
+
+    def split(self, y, metadata):
+        all_index = metadata.index.values
+        groups = self._get_groups(metadata)
+        splitter = self.cv_class(**self._cv_kwargs)
+        self._last_split_metadata = None
+
+        split_kwargs = {"X": all_index, "y": y}
+        if self._cv_uses_groups:
+            split_kwargs["groups"] = groups
+
+        for train_idx, test_idx in splitter.split(**split_kwargs):
+            train_groups = np.unique(groups[train_idx]).tolist()
+            test_groups = np.unique(groups[test_idx]).tolist()
+
+            split_metadata = {
+                "train_datasets": tuple(train_groups),
+                "test_dataset": (
+                    test_groups[0] if len(test_groups) == 1 else tuple(test_groups)
+                ),
+            }
+            inner_metadata = _splitter_metadata(splitter)
+            if inner_metadata:
+                split_metadata.update(inner_metadata)
+            self._last_split_metadata = split_metadata
+            yield all_index[train_idx], all_index[test_idx]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
 
 class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
