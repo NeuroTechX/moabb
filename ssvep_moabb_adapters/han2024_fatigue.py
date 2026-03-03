@@ -98,7 +98,7 @@ class Han2024Fatigue(BaseDataset):
             subjects=list(range(1, 25)),
             sessions_per_subject=2,
             events=self._events,
-            code="Han2024-Fatigue",
+            code="Han2024Fatigue",
             interval=[0.0, 2.0],
             paradigm="ssvep",
             doi="10.1109/TNSRE.2024.3380635",
@@ -151,7 +151,7 @@ class Han2024Fatigue(BaseDataset):
             all_trials = np.concatenate(trials_list, axis=0)
             ch_types = ["eeg"] * n_channels + ["stim"]
             info = create_info(self._ch_names, sfreq, ch_types)
-            log.warning(
+            log.info(
                 "Trial data de-meaned and concatenated with a buffer"
                 " to create continuous data"
             )

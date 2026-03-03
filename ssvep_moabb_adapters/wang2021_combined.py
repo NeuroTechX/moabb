@@ -29,9 +29,9 @@ class Wang2021Combined(BaseDataset):
     arrow directions (up, down, left, right), each flickering at a distinct
     frequency derived from the 85 Hz CRT refresh rate.
 
-    20 subjects participated across two experiments:
-    - Experiment 1 (P1-P10): Scheme 1 (moving dot-formed arrows)
-    - Experiment 2 (P11-P20): Scheme 2 (space-based attention) and
+    8 subjects are available in the Figshare archive across two experiments:
+    - Experiment 1 (P1-P5): Scheme 1 (moving dot-formed arrows)
+    - Experiment 2 (P6-P8): Scheme 2 (space-based attention) and
       Scheme 3 (object-based attention)
 
     EEG was recorded at 1000 Hz with a 32-channel ANT Neuro system.
@@ -76,10 +76,10 @@ class Wang2021Combined(BaseDataset):
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
-            subjects=list(range(1, 21)),
+            subjects=list(range(1, 9)),
             sessions_per_subject=1,
             events=self._events,
-            code="Wang2021-Combined",
+            code="Wang2021Combined",
             interval=[0.0, 5.0],
             paradigm="ssvep",
             doi="10.1111/ejn.15030",

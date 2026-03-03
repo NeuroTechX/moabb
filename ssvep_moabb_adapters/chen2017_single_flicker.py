@@ -44,7 +44,8 @@ class Chen2017SingleFlicker(BaseDataset):
     variable-length trials from the adaptive online BCI.
 
     Each subject completed approximately 16 game rounds. Trial durations
-    vary as the online classifier made decisions at different speeds.
+    vary as the online classifier made decisions at different speeds
+    (typically ~3.5 s per trial).
 
     Warnings
     --------
@@ -83,8 +84,8 @@ class Chen2017SingleFlicker(BaseDataset):
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
             events=self._events,
-            code="Chen2017-SingleFlicker",
-            interval=[0.0, 4.0],
+            code="Chen2017SingleFlicker",
+            interval=[0.0, 3.5],
             paradigm="ssvep",
             doi="10.1371/journal.pone.0178385",
             selected_subjects=subjects,
@@ -151,7 +152,7 @@ class Chen2017SingleFlicker(BaseDataset):
             raise ValueError(f"No valid trials found for subject {subject}")
 
         # Concatenate all trials into continuous data
-        log.warning(
+        log.info(
             "Trial data de-meaned and concatenated with a buffer"
             " to create continuous data"
         )

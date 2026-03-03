@@ -112,7 +112,7 @@ class Kim2025BetaRange(BaseDataset):
             subjects=list(range(1, 41)),
             sessions_per_subject=6,
             events=_EVENTS,
-            code="Kim2025-BetaRange",
+            code="Kim2025BetaRange",
             interval=[0.0, 5.0],
             paradigm="ssvep",
             doi="10.1038/s41597-025-06032-2",

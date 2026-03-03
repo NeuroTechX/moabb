@@ -23,7 +23,6 @@ log = logging.getLogger(__name__)
 DONG_DRIVE_FOLDER = "1TXuxU863nZoniZRgNWZy0PRuL8lhBuP4"
 
 # Google Drive file IDs for individual subject .mat files.
-# Due to Google Drive's 50-file folder listing limit, only S1-S48 have known IDs.
 # fmt: off
 _GDRIVE_FILE_IDS = {
     1: "1aR6f5Wq75I6NBdHDoroUDupHvW-7jo7k", 2: "1HBgq8IezHzsUwtcopYmjfzPqzEI4uWWW",
@@ -50,6 +49,12 @@ _GDRIVE_FILE_IDS = {
     43: "14w2H3bh8UW7Tj9t3DFSfqnpzXd7z-wlm", 44: "1CIlKRDkosbJuhEFAS60zZhpZ0Ae3pVM2",
     45: "1GjZ5o8-p4IockDd9XTW64HKN1JjDyyhX", 46: "1PtDnEUeAjq-pj3YA_qAW4o1BByjdAwZr",
     47: "1irhi5K-vT68SM1FO897RiKZRypZLxoIp", 48: "1QF81qWc-_4_RzD002vhiQ-SEP5-8n7qQ",
+    49: "1w_mFvfw_AliDIoZ6f07FyJwc_H0a0lI_", 50: "1xZWafLnnSIKnlXO_sYcARWDww1_po4QT",
+    51: "1R_v1yZXAfy97VyMGgH-1bkoHPDqAYcCR", 52: "1HcNQL_mMMOtE4FfoqAiSn6ukbWsdf4BX",
+    53: "1DXZIZKFNQqtLrYcInkSaWXYkN57fGV_J", 54: "1a2S4ui_QdkIp6FPP46QnuMjHNlBcwa5m",
+    55: "1B_5hZR8GbsWl1h-z46KFsso-nT5-GUeF", 56: "1o_uEAqk9gJXz8k8jynf6BkqwBx8IrM6x",
+    57: "1M5TjqxZlqfd8lYsVqafezR5WRiUPKLnb", 58: "1p6vfRUfkYuIEXoFmmSOwofIOuudFHevp",
+    59: "1ZkBuxg_6HZaD9LJ0zkhgZpPJt4TuAf9u",
 }
 # fmt: on
 
@@ -79,9 +84,7 @@ class Dong2023(BaseDataset):
     Warnings
     --------
     Data is hosted on Google Drive. Requires the ``gdown`` package for
-    automated download (``pip install gdown``). Due to Google Drive's
-    folder listing limit, subjects S49-S59 may require manual download
-    from the shared folder.
+    automated download (``pip install gdown``).
 
     References
     ----------

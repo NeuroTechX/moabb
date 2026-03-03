@@ -15,7 +15,7 @@ from ssvep_moabb_adapters.tests.conftest import requires_download
 # All datasets to test with their configurations
 DATASETS = [
     ("Liu2020BETA", "ssvep_moabb_adapters.liu2020_beta", "Liu2020BETA"),
-    ("Liu2022EldBETA", "ssvep_moabb_adapters.chen2024_eldbeta", "Liu2022EldBETA"),
+    ("Liu2022EldBETA", "ssvep_moabb_adapters.liu2022_eldbeta", "Liu2022EldBETA"),
     ("Kim2025BetaRange", "ssvep_moabb_adapters.kim2025_beta_range", "Kim2025BetaRange"),
     ("Dong2023", "ssvep_moabb_adapters.dong2023_ssvep", "Dong2023"),
     ("Han2024Fatigue", "ssvep_moabb_adapters.han2024_fatigue", "Han2024Fatigue"),
@@ -191,7 +191,7 @@ class TestImports:
             ("Dong2023", 59, 40),
             ("Han2024Fatigue", 24, 32),
             ("Chen2017SingleFlicker", 12, 4),
-            ("Wang2021Combined", 20, 4),
+            ("Wang2021Combined", 8, 4),
             ("Lee2021Mobile_SSVEP", 24, 3),
         ],
     )

@@ -109,7 +109,7 @@ class Liu2022EldBETA(BaseDataset):
             subjects=list(range(1, 101)),
             sessions_per_subject=7,
             events=self._events,
-            code="Liu2022-EldBETA",
+            code="Liu2022EldBETA",
             interval=[0, 6.0],
             paradigm="ssvep",
             doi="10.1038/s41597-022-01372-9",

@@ -100,7 +100,7 @@ class Liu2020BETA(BaseDataset):
             subjects=list(range(1, 71)),
             sessions_per_subject=1,
             events=self._events,
-            code="Liu2020-BETA",
+            code="Liu2020BETA",
             interval=[0, 3.0],
             paradigm="ssvep",
             doi="10.3389/fnins.2020.00627",
