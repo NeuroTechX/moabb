@@ -8,6 +8,12 @@ def pytest_addoption(parser):
         help="Run the download tests. This requires an internet connection and can take a long time.",
     )
     parser.addoption(
+        "--run-slow",
+        action="store_true",
+        default=False,
+        help="Run slow tests that use real datasets.",
+    )
+    parser.addoption(
         "--update-doi-cache",
         action="store_true",
         default=False,
@@ -63,3 +69,8 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "download" in item.keywords:
                 item.add_marker(skip_download)
+    if not config.getoption("--run-slow"):
+        skip_slow = pytest.mark.skip(reason="need --run-slow option to run")
+        for item in items:
+            if "slow" in item.keywords:
+                item.add_marker(skip_slow)

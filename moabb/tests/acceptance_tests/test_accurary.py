@@ -9,7 +9,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.utils import check_random_state
 
 from moabb.datasets import BNCI2014_001, BNCI2015_001
-from moabb.evaluations import CrossSessionEvaluation
+from moabb.evaluations import CrossSessionEvaluation, WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
 
 
@@ -104,6 +104,63 @@ def test_decoding_performance_stable(dataset_class):
     reference_performance["n_sessions"] = reference_performance["n_sessions"].astype(int)
 
     # Sort rows for a stable, order-invariant compare
+    sort_cols = ["dataset", "subject", "session", "pipeline"]
+    results = results.sort_values(sort_cols).reset_index(drop=True)
+    reference_performance = reference_performance.sort_values(sort_cols).reset_index(
+        drop=True
+    )
+
+    pd.testing.assert_frame_equal(results, reference_performance)
+
+
+BNCI2014_001_within_session_results = """
+,score,time,samples,subject,session,channels,n_sessions,dataset,pipeline
+0,0.7393829,0.1,288,1,0train,22,2,BNCI2014-001,mdm
+1,0.68082273,0.1,288,1,1test,22,2,BNCI2014-001,mdm
+2,0.56575924,0.1,288,2,0train,22,2,BNCI2014-001,mdm
+3,0.5451906,0.1,288,2,1test,22,2,BNCI2014-001,mdm
+4,0.7047187,0.1,288,3,0train,22,2,BNCI2014-001,mdm
+5,0.73623717,0.1,288,3,1test,22,2,BNCI2014-001,mdm
+6,0.49316394,0.1,288,4,0train,22,2,BNCI2014-001,mdm
+7,0.61784637,0.1,288,4,1test,22,2,BNCI2014-001,mdm
+8,0.45154265,0.1,288,5,0train,22,2,BNCI2014-001,mdm
+9,0.46866304,0.1,288,5,1test,22,2,BNCI2014-001,mdm
+10,0.45166364,0.1,288,6,0train,22,2,BNCI2014-001,mdm
+11,0.46188748,0.1,288,6,1test,22,2,BNCI2014-001,mdm
+12,0.7154265,0.1,288,7,0train,22,2,BNCI2014-001,mdm
+13,0.7844525,0.1,288,7,1test,22,2,BNCI2014-001,mdm
+14,0.7503327,0.1,288,8,0train,22,2,BNCI2014-001,mdm
+15,0.6908046,0.1,288,8,1test,22,2,BNCI2014-001,mdm
+16,0.57295823,0.1,288,9,0train,22,2,BNCI2014-001,mdm
+17,0.8091954,0.1,288,9,1test,22,2,BNCI2014-001,mdm
+"""
+
+
+def test_within_session_performance_stable():
+    random_state = check_random_state(42)
+
+    dataset = BNCI2014_001()
+    paradigm = MotorImagery()
+
+    pipeline = make_pipeline(XdawnCovariances(nfilter=4), MDM(n_jobs=4))
+
+    evaluation = WithinSessionEvaluation(
+        paradigm=paradigm, datasets=[dataset], overwrite=True, random_state=random_state
+    )
+    results = evaluation.process({"mdm": pipeline})
+    results.drop(columns=["time"], inplace=True)
+    results["score"] = results["score"].astype(np.float32)
+    results["samples"] = results["samples"].astype(int)
+    results["subject"] = results["subject"].astype(int)
+
+    reference_performance = pd.read_csv(io.StringIO(BNCI2014_001_within_session_results))
+    reference_performance = reference_performance.drop(columns=["time", "Unnamed: 0"])
+    reference_performance["score"] = reference_performance["score"].astype(np.float32)
+    reference_performance["samples"] = reference_performance["samples"].astype(int)
+    reference_performance["subject"] = reference_performance["subject"].astype(int)
+    reference_performance["channels"] = reference_performance["channels"].astype(int)
+    reference_performance["n_sessions"] = reference_performance["n_sessions"].astype(int)
+
     sort_cols = ["dataset", "subject", "session", "pipeline"]
     results = results.sort_values(sort_cols).reset_index(drop=True)
     reference_performance = reference_performance.sort_values(sort_cols).reset_index(

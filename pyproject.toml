@@ -128,4 +128,5 @@ python_files = [
 markers = [
     "network: tests that require network access (CrossRef/DataCite APIs)",
     "download: tests that require downloading dataset files",
+    "slow: tests that use real datasets and take a long time to run",
 ]

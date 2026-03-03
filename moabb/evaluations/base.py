@@ -236,7 +236,7 @@ def _evaluate_fold(
                     res[col] = math.nan
         _update_result_with_scores(res, score)
         if _carbonfootprint:
-            res["carbon_emission"] = (1000 * emissions,)
+            res["carbon_emission"] = 1000 * emissions
             res["codecarbon_task_name"] = task_name
         results.append(res)
 
@@ -582,7 +582,7 @@ class BaseEvaluation(ABC):
 
     @staticmethod
     def _attach_emissions(res, emissions, task_name):
-        res["carbon_emission"] = (1000 * emissions,)
+        res["carbon_emission"] = 1000 * emissions
         res["codecarbon_task_name"] = task_name
 
     def _build_result(
@@ -825,8 +825,7 @@ class BaseEvaluation(ABC):
             processing_params, parallel_results
         ):
             for res in results:
-                self._log_result(res)
-            self._push_results_batch(results, pipelines, process_pipeline)
+                self.push_result(res, pipelines, process_pipeline)
 
             res_per_db.append(
                 self.results.to_dataframe(
