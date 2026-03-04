@@ -695,6 +695,35 @@ html[data-theme="dark"] .ds-chip-muted {
   color: #ffffff !important;
 }
 
+/* License chip */
+.ds-chip-license {
+  background: rgba(46, 125, 50, 0.08);
+  color: var(--pst-color-text-base);
+  border: 1px solid rgba(46, 125, 50, 0.35);
+  font-weight: 560;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  gap: 0.2rem;
+}
+.ds-chip-license:hover {
+  background: rgba(46, 125, 50, 0.18);
+  border-color: rgba(46, 125, 50, 0.55);
+  color: var(--pst-color-text-base);
+  text-decoration: none;
+}
+.ds-chip-license svg {
+  flex-shrink: 0;
+}
+html[data-theme="dark"] .ds-chip-license {
+  background: rgba(76, 175, 80, 0.12);
+  border-color: rgba(76, 175, 80, 0.35);
+}
+html[data-theme="dark"] .ds-chip-license:hover {
+  background: rgba(76, 175, 80, 0.22);
+  border-color: rgba(76, 175, 80, 0.55);
+}
+
 @media (max-width: 768px) {
   .ds-header {
     flex-direction: column;

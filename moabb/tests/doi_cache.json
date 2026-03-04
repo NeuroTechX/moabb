@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 91
+        "total": 96
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -41,6 +41,20 @@
         "year": 2013,
         "doi": "10.1016/j.clinph.2012.12.050"
     },
+    "10.1016/j.cmpb.2023.107357": {
+        "title": "MEDUSA\u00a9: A novel Python-based software ecosystem to accelerate brain-computer interface and cognitive neuroscience research",
+        "authors": [
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Diego Marcos-Mart\u00ednez",
+            "V\u00edctor Rodr\u00edguez-Gonz\u00e1lez",
+            "Sergio P\u00e9rez-Velasco",
+            "Selene Moreno-Calder\u00f3n",
+            "Roberto Hornero"
+        ],
+        "year": 2023,
+        "doi": "10.1016/j.cmpb.2023.107357"
+    },
     "10.1016/j.compbiomed.2024.109132": {
         "title": "Handwritten character classification from EEG through continuous kinematic decoding",
         "authors": [
@@ -49,6 +63,19 @@
         ],
         "year": 2024,
         "doi": "10.1016/j.compbiomed.2024.109132"
+    },
+    "10.1016/j.eswa.2023.120815": {
+        "title": "Non-binary m-sequences for more comfortable brain\u2013computer interfaces based on c-VEPs",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "Sergio P\u00e9rez-Velasco",
+            "Diego Marcos-Mart\u00ednez",
+            "Selene Moreno-Calder\u00f3n",
+            "Roberto Hornero"
+        ],
+        "year": 2023,
+        "doi": "10.1016/j.eswa.2023.120815"
     },
     "10.1016/j.jneumeth.2007.03.005": {
         "title": "An efficient P300-based brain\u2013computer interface for disabled subjects",
@@ -189,6 +216,19 @@
         ],
         "year": 2021,
         "doi": "10.1088/1741-2552/abecef"
+    },
+    "10.1088/1741-2552/ac38cf": {
+        "title": "Brain\u2013computer interfaces based on code-modulated visual evoked potentials (c-VEP): a literature review",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Jordy Thielen",
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "Sergio P\u00e9rez-Velasco",
+            "Peter Desain",
+            "Roberto Hornero"
+        ],
+        "year": 2021,
+        "doi": "10.1088/1741-2552/ac38cf"
     },
     "10.1088/1741-2552/ac689f": {
         "title": "Continuous 2D trajectory decoding from attempted movement: across-session performance in able-bodied and feasibility in a spinal cord injured participant",
@@ -579,6 +619,18 @@
         "year": 2013,
         "doi": "10.3389/fnhum.2013.00732"
     },
+    "10.3389/fnhum.2023.1288438": {
+        "title": "Influence of spatial frequency in visual stimuli for cVEP-based BCIs: evaluation of performance and user experience",
+        "authors": [
+            "\u00c1lvaro Fern\u00e1ndez-Rodr\u00edguez",
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "Ricardo Ron-Angevin",
+            "Roberto Hornero"
+        ],
+        "year": 2023,
+        "doi": "10.3389/fnhum.2023.1288438"
+    },
     "10.3389/fnhum.2024.1461960": {
         "title": "Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing",
         "authors": [
@@ -675,6 +727,14 @@
         ],
         "year": 17,
         "doi": "10.34973/9txv-z787"
+    },
+    "10.35376/10324/70945": {
+        "title": "Dataset: Non-binary m-sequences for more comfortable brain\u2013computer interfaces based on c-VEPs",
+        "authors": [
+            "V\u00edctor Mart\u00ednez Cagigal"
+        ],
+        "year": 2024,
+        "doi": "10.35376/10324/70945"
     },
     "10.48550/arXiv.1602.00904": {
         "title": "Comparative evaluation of state-of-the-art algorithms for SSVEP-based BCIs",
@@ -957,18 +1017,6 @@
         "year": 2012,
         "doi": "10.5281/zenodo.806022"
     },
-    "10.5281/zenodo.8089820": {
-        "title": "A large EEG database with users' profile information for motor imagery Brain-Computer Interface research",
-        "authors": [
-            "",
-            "",
-            "Rimbert S\u00e9bastien",
-            "",
-            "Lotte Fabien"
-        ],
-        "year": 2023,
-        "doi": "10.5281/zenodo.8089820"
-    },
     "10.5281/zenodo.8255618": {
         "title": "4-class code-VEP EEG data",
         "authors": [
@@ -1003,14 +1051,6 @@
         ],
         "year": 2019,
         "doi": "10.5524/100542"
-    },
-    "10.6084/m9.figshare.13123148": {
-        "title": "Human EEG Dataset for Brain-Computer Interface and Meditation",
-        "authors": [
-            "James Stieger"
-        ],
-        "year": 2021,
-        "doi": "10.6084/m9.figshare.13123148"
     },
     "10.6084/m9.figshare.13123148.v1": {
         "title": "Human EEG Dataset for Brain-Computer Interface and Meditation",
@@ -1053,6 +1093,22 @@
         ],
         "year": 2019,
         "doi": "10.6094/UNIFR/154576"
+    },
+    "10.71569/025s-eq10": {
+        "title": "Dataset: Non-binary m-sequences for more comfortable brain\u2013computer interfaces based on c-VEPs",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal"
+        ],
+        "year": 2024,
+        "doi": "10.71569/025s-eq10"
+    },
+    "10.71569/7c67-v596": {
+        "title": "Dataset: Influence of spatial frequency in visual stimuli for cVEP-based BCIs: evaluation of performance and user experience",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal"
+        ],
+        "year": 2023,
+        "doi": "10.71569/7c67-v596"
     },
     "10.7910/DVN/1UJDV6": {
         "title": "Replication Data for: Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing",

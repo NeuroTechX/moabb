@@ -6,15 +6,24 @@ from datetime import datetime
 from mne.utils import _open_lock
 
 from moabb.analysis import plotting as plt
+from moabb.analysis.chance_level import (  # noqa: F401
+    adjusted_chance_level,
+    chance_by_chance,
+)
 from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
     find_significant_differences,
 )
 from moabb.analysis.plotting import (  # noqa: F401
     codecarbon_plot,
+    distribution_plot,
     emissions_summary,
 )
 from moabb.analysis.results import Results  # noqa: F401
+from moabb.analysis.style import (  # noqa: F401
+    MOABB_PALETTE,
+    apply_moabb_style,
+)
 from moabb.analysis.timeline import (  # noqa: F401
     class_balance_svg,
     plot_class_balance,

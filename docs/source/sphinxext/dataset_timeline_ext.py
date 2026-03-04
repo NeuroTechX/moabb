@@ -16,6 +16,7 @@ To regenerate *all* SVGs (timelines + viz), run (from the repo root)::
 """
 
 import csv
+import functools
 import inspect
 import json
 import math
@@ -59,6 +60,107 @@ _DOI_CACHE_LOADED = False
 _DOI_RE = re.compile(r"^10\.\d{4,}/", re.IGNORECASE)
 _DATASET_PAGEVIEWS_CACHE = None
 _DATASET_PAGEVIEWS_CACHE_SRC = None
+
+# ---------------------------------------------------------------------------
+# Official Creative Commons SVG icons (from creativecommons/cc-assets)
+# Stored as individual .svg files in _static/icons/cc/.
+# ---------------------------------------------------------------------------
+
+_CC_ICONS_DIR = os.path.join(os.path.dirname(__file__), "..", "_static", "icons", "cc")
+
+
+@functools.lru_cache(maxsize=None)
+def _cc_icon_svg(icon_key, size=16):
+    """Return an inline ``<svg>`` element for a Creative Commons icon.
+
+    Reads the SVG file from ``_static/icons/cc/<icon_key>.svg`` (cached via
+    ``lru_cache``) and injects ``width``/``height``/``aria-hidden`` attributes
+    so it can be embedded inline.
+    """
+    svg_path = os.path.join(_CC_ICONS_DIR, f"{icon_key}.svg")
+    try:
+        with open(svg_path, "r") as fh:
+            svg = fh.read().strip()
+    except FileNotFoundError:
+        return ""
+    if not svg:
+        return ""
+    # Inject width/height/aria-hidden into the opening <svg> tag.
+    return svg.replace(
+        "<svg ",
+        f'<svg width="{size}" height="{size}" aria-hidden="true" ',
+        1,
+    )
+
+
+# ---------------------------------------------------------------------------
+# License resolution
+# ---------------------------------------------------------------------------
+
+_LICENSE_INFO = {
+    "cc-by-4.0": (
+        "CC BY 4.0",
+        "https://creativecommons.org/licenses/by/4.0/",
+        ["cc", "by"],
+    ),
+    "cc-by-1.0": (
+        "CC BY 1.0",
+        "https://creativecommons.org/licenses/by/1.0/",
+        ["cc", "by"],
+    ),
+    "cc-by-sa-4.0": (
+        "CC BY-SA 4.0",
+        "https://creativecommons.org/licenses/by-sa/4.0/",
+        ["cc", "by", "sa"],
+    ),
+    "cc-by-nc-4.0": (
+        "CC BY-NC 4.0",
+        "https://creativecommons.org/licenses/by-nc/4.0/",
+        ["cc", "by", "nc"],
+    ),
+    "cc-by-nc-sa-4.0": (
+        "CC BY-NC-SA 4.0",
+        "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        ["cc", "by", "nc", "sa"],
+    ),
+    "cc-by-nc-nd-4.0": (
+        "CC BY-NC-ND 4.0",
+        "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        ["cc", "by", "nc", "nd"],
+    ),
+    "cc-by-nd-4.0": (
+        "CC BY-ND 4.0",
+        "https://creativecommons.org/licenses/by-nd/4.0/",
+        ["cc", "by", "nd"],
+    ),
+    "cc0-1.0": (
+        "CC0 1.0",
+        "https://creativecommons.org/publicdomain/zero/1.0/",
+        ["cc", "zero"],
+    ),
+    "odc-by-1.0": ("ODC-By 1.0", "https://opendatacommons.org/licenses/by/1-0/", []),
+    "gpl-3.0": ("GPL 3.0", "https://www.gnu.org/licenses/gpl-3.0.html", []),
+    "unknown": ("Unknown", None, []),
+}
+
+# Aliases for non-standard license strings found in dataset metadata.
+_LICENSE_ALIASES = {
+    "creative commons attribution license": "cc-by-4.0",
+    "cc by": "cc-by-4.0",
+    "cc by 4.0": "cc-by-4.0",
+}
+
+
+def _normalize_license(raw):
+    """Normalize a raw license string to a ``_LICENSE_INFO`` key (or *None*)."""
+    if not raw:
+        return None
+    key = raw.strip().lower().replace(" ", "-")
+    if key in _LICENSE_INFO:
+        return key
+    # Try alias lookup: space-preserved form first, then hyphenated form.
+    alias_key = raw.strip().lower()
+    return _LICENSE_ALIASES.get(alias_key) or _LICENSE_ALIASES.get(key)
 
 
 def _is_concrete_dataset(obj):
@@ -283,6 +385,7 @@ def _get_dataset_info(obj):
         paper_description = None
         documentation_doi = None
         associated_paper_doi = None
+        license_str = None
 
         if metadata is not None:
             acq = getattr(metadata, "acquisition", None)
@@ -329,6 +432,7 @@ def _get_dataset_info(obj):
                 country = getattr(doc, "country", None)
                 publication_year = getattr(doc, "publication_year", None)
                 paper_description = getattr(doc, "description", None)
+                license_str = getattr(doc, "license", None)
 
         paper_doi = _select_preferred_paper_doi(
             dataset_doi=dataset_doi,
@@ -386,6 +490,7 @@ def _get_dataset_info(obj):
             "country": country,
             "publication_year": publication_year,
             "paper_description": paper_description,
+            "license": license_str,
         }
     except Exception:
         return None
@@ -1242,6 +1347,24 @@ def _make_header_html(
             else f"{int(trial_duration)}.0"
         )
         chips.append(f'<span class="ds-chip ds-chip-muted">{dur_display} s trials</span>')
+
+    # License chip
+    license_raw = info.get("license")
+    license_key = _normalize_license(license_raw)
+    if license_key:
+        display_name, license_url, icon_keys = _LICENSE_INFO[license_key]
+        icons_html = "".join(_cc_icon_svg(k) for k in icon_keys)
+        if license_url:
+            chips.append(
+                f'<a class="ds-chip ds-chip-license" href="{escape(license_url)}" '
+                f'target="_blank" rel="noopener" title="{escape(display_name)}">'
+                f"{icons_html}{escape(display_name)}</a>"
+            )
+        else:
+            chips.append(
+                f'<span class="ds-chip ds-chip-license" title="{escape(display_name)}">'
+                f"{icons_html}{escape(display_name)}</span>"
+            )
 
     chips_html = "\n      ".join(chips)
     last30 = (

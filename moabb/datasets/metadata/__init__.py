@@ -161,12 +161,12 @@ _MANUAL_METADATA_OVERRIDES = {
     "Kojima2024B": {
         "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"},
     },
-    # Dreyer2023 variants without METADATA blocks
+    # Dreyer2023 variants (METADATA inherited from _Dreyer2023Base)
     "Dreyer2023B": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+        "documentation": {"repository": "Osf"},
     },
     "Dreyer2023C": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+        "documentation": {"repository": "Osf"},
     },
 }
 
@@ -378,9 +378,48 @@ def _apply_dataset_family_defaults(
     # ERP CORE defaults
     if name.startswith("ErpCore2021"):
         documentation = metadata.documentation or DocumentationMetadata()
-        doc_updates = {"doi": "10.1016/j.neuroimage.2020.117465"}
+        doc_updates = {
+            "doi": "10.1016/j.neuroimage.2020.117465",
+            "publication_year": 2021,
+            "investigators": [
+                "Emily S. Kappenman",
+                "Jaclyn L. Farrens",
+                "Wendy Zhang",
+                "Andrew X. Stewart",
+                "Steven J. Luck",
+            ],
+            "senior_author": "Steven J. Luck",
+            "institution": "San Diego State University",
+            "institution_department": "Department of Psychology",
+            "institution_address": "San Diego, CA, 92120, USA",
+            "country": "US",
+            "contact_info": ["emily.kappenman@sdsu.edu"],
+            "ethics_approval": [
+                "Approved by the Institutional Review Board at the University of California, Davis"
+            ],
+            "funding": [
+                "NIH R01MH087450",
+                "NIH R25MH080794",
+            ],
+            "acknowledgements": (
+                "We thank Mike Blank and David Woods at Neurobehavioral Systems, Inc. "
+                "for providing professional programming of the tasks in Presentation. "
+                "Programming, data analysis, and manuscript preparation were made possible "
+                "by NIH grants R01MH087450 and R25MH080794."
+            ),
+            "data_url": "https://doi.org/10.18115/D5JW4R",
+            "how_to_acknowledge": (
+                "Please cite: Kappenman et al. (2021). ERP CORE: An open resource "
+                "for human event-related potential research. NeuroImage, 225, 117465. "
+                "https://doi.org/10.1016/j.neuroimage.2020.117465"
+            ),
+        }
         if not documentation.license:
             doc_updates["license"] = "CC BY 4.0"
+        # Only set fields that are not already populated
+        for key, value in list(doc_updates.items()):
+            if getattr(documentation, key, None):
+                del doc_updates[key]
         documentation = replace(documentation, **doc_updates)
         acquisition = metadata.acquisition or AcquisitionMetadata()
         acquisition = replace(
@@ -420,11 +459,8 @@ def _apply_dataset_family_defaults(
             experiment=experiment,
         )
 
-    # MartinezCagigal cVEP defaults
+    # MartinezCagigal cVEP defaults (documentation is set per-dataset in each class)
     if name.startswith("MartinezCagigal2023"):
-        documentation = metadata.documentation or DocumentationMetadata()
-        if not documentation.license:
-            documentation = replace(documentation, license="CC-BY-NC-SA-4.0")
         acquisition = metadata.acquisition or AcquisitionMetadata()
         acquisition = replace(
             acquisition,
@@ -438,7 +474,6 @@ def _apply_dataset_family_defaults(
         experiment = replace(experiment, paradigm="cvep")
         metadata = replace(
             metadata,
-            documentation=documentation,
             acquisition=acquisition,
             participants=participants,
             experiment=experiment,
