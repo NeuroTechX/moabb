@@ -112,6 +112,7 @@ Bugs
 - Fix docs CI cache: set ``MNE_DATA`` env var and persist ``~/.mne`` config directory so dataset paths survive cache restore (by `Bruno Aristimunha`_)
 - Fix CI dataset cache reuse across commits/PR updates by using stable cache keys and default-branch cache saves for docs/tests workflows, avoiding repeated dataset downloads (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Liu2024` download failure by switching Figshare URLs from ``figshare.com/ndownloader`` to ``ndownloader.figshare.com`` and adding ``BadZipFile`` recovery for corrupted cached downloads (:gh:`992` by `Bruno Aristimunha`_)
+- Remove redundant ``autoattribute METADATA`` from MartinezCagigal2023 Checker and Pary docstrings (:gh:`1022` by `Bruno Aristimunha`_)
 - Fix TRCA Riemannian mean convergence failure by regularizing ill-conditioned cross-covariance matrices in :class:`moabb.pipelines.classification.SSVEP_TRCA`. Eigenvalue clamping bounds the condition number, eliminating ``Convergence not reached`` and ``invalid value encountered in log`` warnings (by `Bruno Aristimunha`_)
 - Fix SSVEP CCA-family estimator consistency and eCCA formulation:
   :class:`moabb.pipelines.classification.SSVEP_CCA`,
