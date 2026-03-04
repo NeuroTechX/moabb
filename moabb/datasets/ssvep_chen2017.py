@@ -43,24 +43,27 @@ class Chen2017SingleFlicker(BaseDataset):
 
     The dataset contains 32-channel EEG recorded from 12 healthy subjects
     (7 female, 5 male, mean age 23.5, range 19-32) using a BioSemi ActiveTwo
-    system at 512 Hz.
+    system.
 
-    Only the online .mat files are loaded (training .xdf files are skipped
-    as pyxdf is not a moabb dependency). Each .mat file corresponds to one
-    game round of an online spatial navigation task. Data contains
-    variable-length trials from the adaptive online BCI.
+    Two sessions are available per subject:
 
-    Each subject completed approximately 16 game rounds. Trial durations
-    vary as the online classifier made decisions at different speeds
-    (typically ~3.5 s per trial).
+    - **Session "0" (training)**: Structured calibration data from ``.xdf``
+      files recorded at 2048 Hz. Each subject has 2 runs of 100 trials
+      (50 per direction, 200 total), with ~3.5 s per trial. Requires
+      ``pyxdf`` (install with ``pip install moabb[xdf]``).
+    - **Session "1" (online)**: Adaptive BCI game data from ``.mat`` files
+      recorded at 512 Hz. Variable-length trials from approximately 16 game
+      rounds per subject.
+
+    Both sessions use the same BioSemi ActiveTwo cap with 32 EEG channels
+    (A1-A32) and biosemi32 montage. The sampling rates differ between
+    sessions (2048 Hz for training, 512 Hz for online).
 
     Warnings
     --------
     This paradigm uses a SINGLE flicker frequency (15 Hz) with spatially-coded
     directions. Standard frequency-based SSVEP analysis (CCA, FBCCA) will NOT
     work. Use broadband spatial features or classification approaches instead.
-
-    The .xdf training files are not loaded. If needed, install pyxdf separately.
 
     References
     ----------
@@ -72,7 +75,7 @@ class Chen2017SingleFlicker(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=2048.0,
             n_channels=32,
             channel_types={"eeg": 32},
             montage="biosemi32",
@@ -134,10 +137,13 @@ class Chen2017SingleFlicker(BaseDataset):
     # ASCII class codes in .mat files -> event IDs
     _CLASS_MAP = {ord("N"): 1, ord("E"): 2, ord("W"): 3, ord("S"): 4}
 
+    # Marker strings in .xdf files -> event IDs
+    _XDF_MARKER_MAP = {"N": 1, "E": 2, "W": 3, "S": 4}
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 13)),
-            sessions_per_subject=1,
+            sessions_per_subject=2,
             events=self._events,
             code="Chen2017SingleFlicker",
             interval=[0.0, 3.5],
@@ -148,7 +154,86 @@ class Chen2017SingleFlicker(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """Return data for one subject from all online game rounds.
+        """Return data for one subject with training and online sessions.
+
+        Session "0" (training): XDF calibration data at 2048 Hz (requires pyxdf).
+        Session "1" (online): MAT game data at 512 Hz.
+        """
+        file_paths = self.data_path(subject)
+        sessions = {}
+
+        # Session "0": training data from .xdf files
+        xdf_files = file_paths.get("xdf", [])
+        if xdf_files:
+            runs = {}
+            for run_idx, xdf_path in enumerate(xdf_files):
+                runs[str(run_idx)] = self._load_xdf_run(xdf_path)
+            sessions["0"] = runs
+
+        # Session "1": online data from .mat files
+        mat_files = file_paths.get("mat", [])
+        if mat_files:
+            sessions["1"] = {"0": self._load_mat_data(subject, mat_files)}
+
+        if not sessions:
+            raise FileNotFoundError(f"No data files found for subject {subject}")
+
+        return sessions
+
+    def _load_xdf_run(self, xdf_path):
+        """Load one XDF training run and return a Raw object.
+
+        XDF files contain a 57-channel EEG stream at 2048 Hz and a Markers
+        stream with direction labels ("N", "E", "W", "S", "0").
+        Channels 1:33 (A1-A32) are extracted as EEG.
+        """
+        from mne.utils import _soft_import
+
+        pyxdf = _soft_import("pyxdf", "loading XDF training data")
+
+        streams, _ = pyxdf.load_xdf(str(xdf_path))
+
+        # Find EEG and Marker streams
+        eeg_stream = None
+        marker_stream = None
+        for s in streams:
+            stream_type = s["info"]["type"][0]
+            if stream_type == "EEG":
+                eeg_stream = s
+            elif stream_type == "Markers":
+                marker_stream = s
+
+        if eeg_stream is None:
+            raise ValueError(f"No EEG stream found in {xdf_path}")
+        if marker_stream is None:
+            raise ValueError(f"No Marker stream found in {xdf_path}")
+
+        # EEG: shape (n_samples, 57), select channels 1:33 (A1-A32)
+        eeg_data = eeg_stream["time_series"][:, 1:33].T  # -> (32, n_samples)
+        eeg_ts = eeg_stream["time_stamps"]
+        sfreq = 2048
+
+        # Build stim channel from marker timestamps
+        stim = np.zeros((1, eeg_data.shape[1]))
+        for marker, ts in zip(marker_stream["time_series"], marker_stream["time_stamps"]):
+            label = marker[0]
+            if label in self._XDF_MARKER_MAP:
+                sample_idx = np.searchsorted(eeg_ts, ts)
+                if 0 <= sample_idx < eeg_data.shape[1]:
+                    stim[0, sample_idx] = self._XDF_MARKER_MAP[label]
+
+        # Scale to Volts and build RawArray
+        data = np.concatenate([1e-6 * eeg_data, stim], axis=0)
+
+        ch_types = ["eeg"] * 32 + ["stim"]
+        info = create_info(self._ch_names, sfreq, ch_types)
+        raw = RawArray(data=data, info=info, verbose=False)
+        montage = make_standard_montage("biosemi32")
+        raw.set_montage(montage, on_missing="ignore")
+        return raw
+
+    def _load_mat_data(self, subject, mat_files):
+        """Load all .mat game rounds for one subject and return a Raw object.
 
         Raw .mat files contain 57-channel BioSemi data: row 0 is trigger
         (Trig1), rows 1-32 are EEG (A1-A32), rows 33-56 are external
@@ -158,10 +243,6 @@ class Chen2017SingleFlicker(BaseDataset):
         """
         n_channels = 32
         sfreq = 512
-
-        mat_files = self.data_path(subject)
-        if not mat_files:
-            raise FileNotFoundError(f"No .mat files found for subject {subject}")
 
         all_trials = []
         for mat_file in mat_files:
@@ -218,7 +299,7 @@ class Chen2017SingleFlicker(BaseDataset):
         raw = RawArray(data=continuous, info=info, verbose=False)
         montage = make_standard_montage("biosemi32")
         raw.set_montage(montage, on_missing="ignore")
-        return {"0": {"0": raw}}
+        return raw
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -226,23 +307,28 @@ class Chen2017SingleFlicker(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        sign = "CHEN2017SINGLEFLICKER"
+        sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
 
         # Check if already extracted
         mat_files = sorted(data_dir.rglob(f"{subject}_*.mat"))
-        if mat_files and not force_update:
-            return [str(f) for f in mat_files]
+        xdf_files = sorted(data_dir.rglob(f"{subject}_*.xdf"))
+        if (mat_files or xdf_files) and not force_update:
+            return {
+                "mat": [str(f) for f in mat_files],
+                "xdf": [str(f) for f in xdf_files],
+            }
 
         # Download the zip
         zip_path = dl.data_dl(ZENODO_URL, sign, path, force_update, verbose)
 
-        # Extract only .mat files (skip .xdf)
+        # Extract both .mat and .xdf files
         data_dir.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(zip_path, "r") as zf:
             for member in zf.namelist():
-                if member.endswith(".mat"):
+                if member.endswith(".mat") or member.endswith(".xdf"):
                     zf.extract(member, data_dir)
 
         mat_files = sorted(data_dir.rglob(f"{subject}_*.mat"))
-        return [str(f) for f in mat_files]
+        xdf_files = sorted(data_dir.rglob(f"{subject}_*.xdf"))
+        return {"mat": [str(f) for f in mat_files], "xdf": [str(f) for f in xdf_files]}

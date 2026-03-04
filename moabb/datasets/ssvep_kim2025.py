@@ -219,7 +219,7 @@ class Kim2025BetaRange(BaseDataset):
             raise ValueError(f"Invalid subject number: {subject}")
         file_id = _SSVEP_FILE_IDS[subject]
         url = f"{FIGSHARE_DL_URL}{file_id}"
-        return dl.data_dl(url, "KIM2025BETARANGE", path, force_update, verbose)
+        return dl.data_dl(url, self.code, path, force_update, verbose)
 
 
 def _normalize_ch_names(ch_names):

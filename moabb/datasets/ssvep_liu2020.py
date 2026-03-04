@@ -193,7 +193,7 @@ class Liu2020BETA(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        sign = "LIU2020BETA"
+        sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
 
         # Check if the extracted .mat file already exists

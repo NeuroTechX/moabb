@@ -198,7 +198,7 @@ class Lee2021Mobile(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        sign = "LEE2021MOBILE"
+        sign = self.code.split("-")[0]
         bids_root = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
         sub_dir = bids_root / f"sub-{subject:02d}"
 

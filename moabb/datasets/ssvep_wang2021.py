@@ -163,7 +163,7 @@ class Wang2021Combined(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        sign = "WANG2021COMBINED"
+        sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
 
         # Check if .cnt files are already extracted

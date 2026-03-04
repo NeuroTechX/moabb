@@ -166,6 +166,6 @@ class Dong2023(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        sign = "DONG2023"
+        sign = self.code
         url = f"{ZENODO_URL}S{subject}.mat?download=1"
         return dl.data_dl(url, sign, path, force_update, verbose)

@@ -262,7 +262,7 @@ class Liu2022EldBETA(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number: {subject}")
 
-        sign = "LIU2022ELDBETA"
+        sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
         extract_dir = data_dir / "eldBETA"
 
