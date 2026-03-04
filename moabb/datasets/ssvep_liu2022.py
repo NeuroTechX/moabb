@@ -222,10 +222,7 @@ class Liu2022EldBETA(BaseDataset):
         extract_dir = data_dir / "eldBETA"
         extract_dir.mkdir(parents=True, exist_ok=True)
         with tarfile.open(tar_path, "r:gz") as tf:
-            # Extract only .mat files (skip unused BIDS/GDF files)
-            for member in tf.getmembers():
-                if member.name.endswith(".mat"):
-                    tf.extract(member, extract_dir)
+            tf.extractall(extract_dir)
 
         # Search for the .mat file
         if mat_file.exists():
