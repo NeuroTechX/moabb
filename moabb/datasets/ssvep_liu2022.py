@@ -4,11 +4,13 @@ Liu et al. (2022), Scientific Data.
 DOI: 10.1038/s41597-022-01372-9
 """
 
+import struct
 import tarfile
+import tempfile
 from pathlib import Path
 
+import mne
 import numpy as np
-from scipy.io import loadmat
 
 from . import download as dl
 from .base import BaseDataset
@@ -20,9 +22,8 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PreprocessingMetadata,
 )
-from .utils import FIGSHARE_DL_URL, TSINGHUA_64CH_NAMES, build_raw_from_epochs
+from .utils import FIGSHARE_DL_URL
 
 
 # Figshare file IDs for per-subject tar.gz files (S1.tar.gz through S100.tar.gz)
@@ -51,6 +52,66 @@ _FIGSHARE_FILE_IDS = {
 }
 # fmt: on
 
+# GDF event annotations use target indices "1"-"9" (strings, as MNE annotations
+# are always str). Map to frequency strings following the JFPM column-major order
+# of the 3x3 stimulus grid.
+_TARGET_TO_FREQ = {
+    "1": "8",
+    "2": "9.5",
+    "3": "11",
+    "4": "8.5",
+    "5": "10",
+    "6": "11.5",
+    "7": "9",
+    "8": "10.5",
+    "9": "12",
+}
+
+
+def _read_patched_gdf(gdf_path):
+    """Read a GDF file exported by biosig4octave, patching a known header bug.
+
+    The eldBETA GDF 2.11 files contain an extra 256-byte metadata block
+    (from ``BioSig/EEGLAB writeeeg.m``) that makes the declared header
+    size (``header_nblocks``) one block larger than expected by MNE's GDF
+    parser (which expects ``1 + nchan`` blocks). This function creates a
+    temporary patched copy with the extra block removed and reads it with
+    ``mne.io.read_raw_gdf``.
+    """
+    with open(gdf_path, "rb") as f:
+        data = bytearray(f.read())
+
+    # GDF 2.x fixed header: header_nblocks at byte 184 (uint16), nchan at byte 252
+    nblocks = struct.unpack_from("<H", data, 184)[0]
+    nchan = struct.unpack_from("<H", data, 252)[0]
+    expected_nblocks = 1 + nchan
+
+    if nblocks != expected_nblocks:
+        # Patch header_nblocks to the expected value
+        struct.pack_into("<H", data, 184, expected_nblocks)
+        # Remove extra blocks between the variable header and data
+        expected_end = expected_nblocks * 256
+        actual_end = nblocks * 256
+        data = bytes(data[:expected_end]) + bytes(data[actual_end:])
+
+    tmp = tempfile.NamedTemporaryFile(suffix=".gdf", delete=False)
+    tmp_path = tmp.name
+    try:
+        tmp.write(data)
+        tmp.close()
+        raw = mne.io.read_raw_gdf(tmp_path, preload=True, verbose=False)
+
+        # GDF data records are 1-second blocks; the last block is
+        # NaN-padded if the recording doesn't fill it completely.
+        # Crop trailing NaN now, while the temp file still exists.
+        if np.isnan(raw._data[0, -1]):
+            last_valid = np.where(~np.isnan(raw._data[0]))[0][-1]
+            raw.crop(tmax=raw.times[last_valid])
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)
+
+    return raw
+
 
 class Liu2022EldBETA(BaseDataset):
     """eldBETA SSVEP benchmark dataset for elderly population.
@@ -66,20 +127,20 @@ class Liu2022EldBETA(BaseDataset):
     Each subject completed 7 blocks of 9 trials. Each trial consisted of a
     4 s target cue followed by 5 s of SSVEP stimulation and 1 s rest (10 s
     total per trial). EEG was recorded at 1000 Hz with a Synamps2 system
-    (Neuroscan) using 64 channels, then downsampled to 250 Hz.
+    (Neuroscan) using 64 channels.
 
-    Data is stored as 4D matrices [64, 1500, 9, 7] corresponding to
-    [channels, time points, target index, block index]. Each epoch is 6 s
-    (1500 samples at 250 Hz).
+    Data is loaded from the BIDS-formatted GDF files included in each
+    subject's Figshare archive. The GDF files contain continuous recordings
+    at 1000 Hz with event annotations marking each stimulus onset.
 
     Warnings
     --------
+    The GDF files in the archive are mislabeled with ``.edf`` extension
+    and contain an extra header block from the biosig4octave exporter.
+    This adapter patches the header on-the-fly before reading.
+
     Like Wang2016 and BETA, this dataset uses the same 64-channel Tsinghua
     Neuroscan cap layout including 'CB1' and 'CB2' channels.
-
-    The Figshare archive for each subject also includes BIDS-formatted GDF
-    files (mislabeled as .edf). This implementation loads the .mat files
-    for reliability.
 
     References
     ----------
@@ -91,12 +152,11 @@ class Liu2022EldBETA(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=250.0,
+            sampling_rate=1000.0,
             n_channels=64,
             channel_types={"eeg": 64},
             montage="standard_1005",
             hardware="Synamps2 (Neuroscan)",
-            sensors=TSINGHUA_64CH_NAMES,
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -133,13 +193,19 @@ class Liu2022EldBETA(BaseDataset):
             license="CC BY 4.0",
             publication_year=2022,
         ),
-        preprocessing=PreprocessingMetadata(
-            data_state="epoched",
-            downsampled_to_hz=250.0,
-        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
-            stimulus_frequencies_hz=[8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0],
+            stimulus_frequencies_hz=[
+                8.0,
+                8.5,
+                9.0,
+                9.5,
+                10.0,
+                10.5,
+                11.0,
+                11.5,
+                12.0,
+            ],
             frequency_resolution_hz=0.5,
         ),
         data_structure=DataStructureMetadata(
@@ -147,18 +213,11 @@ class Liu2022EldBETA(BaseDataset):
             n_trials=63,
         ),
         sessions_per_subject=7,
-        file_format="MAT",
+        file_format="GDF (BIDS)",
     )
 
-    # fmt: off
-    # Events follow JFPM column-major order matching target indices 1-9:
-    # 3x3 grid read column-major: 8.0, 9.5, 11.0, 8.5, 10.0, 11.5, 9.0, 10.5, 12.0
-    _events = {
-        "8": 1, "9.5": 2, "11": 3, "8.5": 4, "10": 5,
-        "11.5": 6, "9": 7, "10.5": 8, "12": 9,
-    }
-
-    # fmt: on
+    # Derived from _TARGET_TO_FREQ: frequency string -> target index
+    _events = {freq: int(idx) for idx, freq in _TARGET_TO_FREQ.items()}
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
@@ -174,28 +233,20 @@ class Liu2022EldBETA(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """Return data for one subject across all 7 blocks."""
-        sfreq = 250
+        """Return data for one subject across all 7 blocks from BIDS/GDF files."""
+        gdf_paths = self.data_path(subject)
 
-        fname = self.data_path(subject)
-        mat = loadmat(fname, squeeze_me=True)
-
-        # Struct: data.EEG.Epoch shape [64, 1500, 9, 7] (ch, time, targets, blocks)
-        raw_data = mat["data"]
-        eeg = raw_data["EEG"].item()
-        epoch = eeg["Epoch"].item()
-        n_classes = epoch.shape[2]  # 9
-        n_blocks = epoch.shape[3]  # 7
-
-        event_ids = np.arange(1, n_classes + 1)
+        montage = mne.channels.make_standard_montage("standard_1005")
 
         sessions = {}
-        for block_idx in range(n_blocks):
-            block_data = epoch[:, :, :, block_idx]  # (64, 1500, 9)
-            block_data = np.transpose(block_data, (2, 0, 1))  # (9, 64, 1500)
-            raw = build_raw_from_epochs(
-                block_data, TSINGHUA_64CH_NAMES, sfreq, event_ids, "standard_1005"
-            )
+        for block_idx, gdf_path in enumerate(gdf_paths):
+            raw = _read_patched_gdf(gdf_path)
+
+            # Rename annotations from target indices ("1"-"9") to
+            # frequency strings ("8", "9.5", ...) matching _events
+            raw.annotations.rename(_TARGET_TO_FREQ)
+            raw.set_montage(montage, on_missing="ignore")
+
             sessions[str(block_idx)] = {"0": raw}
 
         return sessions
@@ -203,32 +254,48 @@ class Liu2022EldBETA(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
+        """Return list of 7 GDF file paths (one per session/block).
+
+        Downloads and extracts the subject's Figshare tar.gz archive if needed.
+        """
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number: {subject}")
 
         sign = "LIU2022ELDBETA"
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
+        extract_dir = data_dir / "eldBETA"
 
-        # Check if the .mat file already exists
-        mat_file = data_dir / "eldBETA" / f"S{subject}.mat"
-        if mat_file.exists() and not force_update:
-            return str(mat_file)
+        sub_label = f"sub-{subject:03d}"
+        gdf_paths = []
+        for ses in range(1, self.n_sessions + 1):
+            ses_label = f"ses-{ses:02d}"
+            gdf_file = (
+                extract_dir
+                / sub_label
+                / ses_label
+                / "eeg"
+                / f"{sub_label}_{ses_label}_task-ssvep_eeg.edf"
+            )
+            gdf_paths.append(gdf_file)
+
+        if all(p.exists() for p in gdf_paths) and not force_update:
+            return [str(p) for p in gdf_paths]
 
         # Download and extract the subject archive
         file_id = _FIGSHARE_FILE_IDS[subject]
         url = f"{FIGSHARE_DL_URL}{file_id}"
         tar_path = dl.data_dl(url, sign, path, force_update, verbose)
 
-        extract_dir = data_dir / "eldBETA"
         extract_dir.mkdir(parents=True, exist_ok=True)
         with tarfile.open(tar_path, "r:gz") as tf:
             tf.extractall(extract_dir)
 
-        # Search for the .mat file
-        if mat_file.exists():
-            return str(mat_file)
+        # Verify files exist after extraction
+        missing = [p for p in gdf_paths if not p.exists()]
+        if missing:
+            raise FileNotFoundError(
+                f"Could not find {len(missing)} GDF files for subject {subject} "
+                f"after extraction. First missing: {missing[0]}"
+            )
 
-        for p in extract_dir.rglob(f"S{subject}.mat"):
-            return str(p)
-
-        raise FileNotFoundError(f"Could not find S{subject}.mat after extracting archive")
+        return [str(p) for p in gdf_paths]

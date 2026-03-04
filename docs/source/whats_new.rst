@@ -19,6 +19,7 @@ Version 1.5  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add 8 new SSVEP dataset adapters covering 357+ subjects: :class:`moabb.datasets.Liu2020BETA` (70 subjects, 40-class JFPM), :class:`moabb.datasets.Liu2022EldBETA` (100 elderly subjects, 9-class, BIDS/GDF format), :class:`moabb.datasets.Kim2025BetaRange` (40 subjects, 40-class beta-range), :class:`moabb.datasets.Dong2023` (59 subjects, 40-class), :class:`moabb.datasets.Lee2021Mobile_SSVEP` and :class:`moabb.datasets.Lee2021Mobile_ERP` (24 subjects, mobile BCI), :class:`moabb.datasets.Chen2017SingleFlicker` (12 subjects, spatial SSVEP), :class:`moabb.datasets.Wang2021Combined` (8 subjects, combined SSVEP), and :class:`moabb.datasets.Han2024Fatigue` (24 subjects, fatigue study with low/high frequency paradigms). Add shared utilities ``build_raw_from_epochs``, ``TSINGHUA_64CH_NAMES``, and ``FIGSHARE_DL_URL`` to :mod:`moabb.datasets.utils` (by `Bruno Aristimunha`_)
 - Redesign dataset API pages with a structured snapshot card, visual summary blocks, HED-tag visualization, benchmark highlights, citation/public API cards, and responsive mobile improvements (:gh:`1000` by `Bruno Aristimunha`_)
 - Add GA4 pageview metrics and popularity ranking to dataset documentation cards, with inline sparkline charts showing 90-day traffic trends (by `Bruno Aristimunha`_)
 - Polish API reference page with color-coded concept highlights, section breaks, table styling, and scoped CSS to avoid affecting other pages (by `Bruno Aristimunha`_)
