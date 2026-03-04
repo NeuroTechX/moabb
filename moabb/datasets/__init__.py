@@ -82,6 +82,7 @@ from .huebner_llp import Huebner2017, Huebner2018
 from .kojima2024a import Kojima2024A
 from .kojima2024b import Kojima2024B
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
+from .lee2021_mobile import Lee2021Mobile_ERP, Lee2021Mobile_SSVEP
 from .liu2024 import Liu2024
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
@@ -93,11 +94,18 @@ from .physionet_mi import PhysionetMI
 from .romani_bf2025_erp import RomaniBF2025ERP
 from .schirrmeister2017 import Schirrmeister2017
 from .sosulski2019 import Sosulski2019
+from .ssvep_chen2017 import Chen2017SingleFlicker
+from .ssvep_dong2023 import Dong2023
 from .ssvep_exo import SSVEPExo  # noqa: F401
 from .ssvep_exo import Kalunga2016
+from .ssvep_han2024 import Han2024Fatigue
+from .ssvep_kim2025 import Kim2025BetaRange
+from .ssvep_liu2020 import Liu2020BETA
+from .ssvep_liu2022 import Liu2022EldBETA
 from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
+from .ssvep_wang2021 import Wang2021Combined
 from .stieger2021 import Stieger2021
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021

@@ -6,3 +6,11 @@ MAMEM2,10,256,5,20-30,3,250,1,https://paperswithcode.com/dataset/mamem2-moabb
 MAMEM3,10,14,4,20-30,3,128,1,https://paperswithcode.com/dataset/mamem3-moabb
 Nakanishi2015,9,8,12,15,4.15,256,1,https://paperswithcode.com/dataset/nakanishi2015-moabb
 Wang2016,34,64,40,6,5,250,1,https://paperswithcode.com/dataset/wang2016-moabb
+Liu2020BETA,70,64,40,4,3,250,1,
+Liu2022EldBETA,100,64,9,7,6,250,7,
+Kim2025BetaRange,40,33,40,6,5,1024,6,
+Dong2023,59,8,40,4,4,250,1,
+Lee2021Mobile_SSVEP,24,32,3,20,5,500,4,
+Chen2017SingleFlicker,12,32,4,varies,3.5,512,1,
+Wang2021Combined,8,32,4,varies,5,1000,1,
+Han2024Fatigue,24,64,32,6-24,2,1000,2,
