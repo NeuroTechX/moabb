@@ -55,8 +55,6 @@ class MartinezCagigal2023Checker(BaseDataset):
     """Checkerboard m-sequence-based c-VEP dataset from
     Martínez-Cagigal et al. (2025) and Fernández-Rodríguez et al. (2023).
 
-    .. autoattribute:: METADATA
-
     **Dataset Description**
 
     This dataset, accessible at [1]_, was originally recorded for study [2]_,

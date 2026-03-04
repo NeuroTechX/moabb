@@ -76,8 +76,6 @@ log = logging.getLogger(__name__)
 class MartinezCagigal2023Pary(BaseDataset):
     """P-ary m-sequence-based c-VEP dataset from Martínez-Cagigal et al. (2023)
 
-    .. autoattribute:: METADATA
-
     **Dataset Description**
 
     This dataset was originally recorded for study [1]_, which evaluated
