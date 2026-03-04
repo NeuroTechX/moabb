@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 91
+        "total": 101
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -110,6 +110,28 @@
         "year": 2021,
         "doi": "10.1038/s41597-021-00883-1"
     },
+    "10.1038/s41597-021-01094-4": {
+        "title": "Mobile BCI dataset of scalp- and ear-EEGs with ERP and SSVEP paradigms while standing, walking, and running",
+        "authors": [
+            "Young-Eun Lee",
+            "Gi-Hwan Shin",
+            "Minji Lee",
+            "Seong-Whan Lee"
+        ],
+        "year": 2021,
+        "doi": "10.1038/s41597-021-01094-4"
+    },
+    "10.1038/s41597-022-01372-9": {
+        "title": "eldBETA: A Large Eldercare-oriented Benchmark Database of SSVEP-BCI for the Aging Population",
+        "authors": [
+            "Bingchuan Liu",
+            "Yijun Wang",
+            "Xiaorong Gao",
+            "Xiaogang Chen"
+        ],
+        "year": 2022,
+        "doi": "10.1038/s41597-022-01372-9"
+    },
     "10.1038/s41597-022-01898-y": {
         "title": "Open multi-session and multi-task EEG cognitive Dataset for passive brain-computer Interface Applications",
         "authors": [
@@ -153,6 +175,17 @@
         ],
         "year": 2024,
         "doi": "10.1038/s41597-023-02787-8"
+    },
+    "10.1038/s41597-025-06032-2": {
+        "title": "A 40-Class SSVEP Speller Dataset: Beta Range Stimulation for Low-Fatigue BCI Applications",
+        "authors": [
+            "Heegyu Kim",
+            "Kyungho Won",
+            "Minkyu Ahn",
+            "Sung Chan Jun"
+        ],
+        "year": 2025,
+        "doi": "10.1038/s41597-025-06032-2"
     },
     "10.1038/s41598-019-43594-9": {
         "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
@@ -413,6 +446,18 @@
         "year": 2017,
         "doi": "10.1109/TNSRE.2016.2628057"
     },
+    "10.1109/TNSRE.2024.3380635": {
+        "title": "Enhancing SSVEP-BCI Performance Under Fatigue State Using Dynamic Stopping Strategy",
+        "authors": [
+            "Yuheng Han",
+            "Yufeng Ke",
+            "Ruiyan Wang",
+            "Tao Wang",
+            "Dong Ming"
+        ],
+        "year": 2024,
+        "doi": "10.1109/TNSRE.2024.3380635"
+    },
     "10.1109/tnsre.2012.2189584": {
         "title": "Autocalibration and Recurrent Adaptation: Towards a Plug and Play Online ERD-BCI",
         "authors": [
@@ -424,6 +469,19 @@
         ],
         "year": 2012,
         "doi": "10.1109/tnsre.2012.2189584"
+    },
+    "10.1111/ejn.15030": {
+        "title": "Single stimulus location for two inputs: A combined brain\u2013computer interface based on Steady\u2010State Visual Evoked Potential (SSVEP)",
+        "authors": [
+            "Lu Wang",
+            "Zhenhao Zhang",
+            "Dan Han",
+            "Zhijun Zhang",
+            "Zhifang Liu",
+            "Wei Liu"
+        ],
+        "year": 2020,
+        "doi": "10.1111/ejn.15030"
     },
     "10.1371/journal.pone.0009813": {
         "title": "A New Auditory Multi-Class Brain-Computer Interface Paradigm: Spatial Hearing as an Informative Cue",
@@ -511,6 +569,18 @@
         "year": 2017,
         "doi": "10.1371/journal.pone.0175856"
     },
+    "10.1371/journal.pone.0178385": {
+        "title": "Application of a single-flicker online SSVEP BCI for spatial navigation",
+        "authors": [
+            "Jingjing Chen",
+            "Dan Zhang",
+            "Andreas K. Engel",
+            "Qin Gong",
+            "Alexander Maye"
+        ],
+        "year": 2017,
+        "doi": "10.1371/journal.pone.0178385"
+    },
     "10.1371/journal.pone.0182578": {
         "title": "Upper limb movements can be decoded from the time-domain of low-frequency EEG",
         "authors": [
@@ -552,6 +622,15 @@
         ],
         "year": 2018,
         "doi": "10.2312/vriphys.20181064"
+    },
+    "10.26599/BSA.2023.9050020": {
+        "title": "A large database towards user-friendly SSVEP-based BCI",
+        "authors": [
+            "Yue Dong",
+            "Sen Tian"
+        ],
+        "year": 2023,
+        "doi": "10.26599/BSA.2023.9050020"
     },
     "10.3217/978-3-85125-378-8-61": {
         "title": "Motor Imagery Brain-Computer Interfaces: Random Forests Vs Regularized Lda - Non-Linear Beats Linear",
@@ -630,6 +709,18 @@
         ],
         "year": 2012,
         "doi": "10.3389/fnins.2012.00055"
+    },
+    "10.3389/fnins.2020.00627": {
+        "title": "BETA: A Large Benchmark Database Toward SSVEP-BCI Application",
+        "authors": [
+            "Bingchuan Liu",
+            "Xiaoshan Huang",
+            "Yijun Wang",
+            "Xiaogang Chen",
+            "Xiaorong Gao"
+        ],
+        "year": 2020,
+        "doi": "10.3389/fnins.2020.00627"
     },
     "10.3389/fnins.2020.00849": {
         "title": "Analyzing and Decoding Natural Reach-and-Grasp Actions Using Gel, Water and Dry EEG Systems",
@@ -1020,6 +1111,17 @@
         "year": 2021,
         "doi": "10.6084/m9.figshare.13123148.v1"
     },
+    "10.6084/m9.figshare.18032669": {
+        "title": "eldBETA: A Large Eldercare-oriented Benchmark Database of SSVEP-BCI for the Aging Population",
+        "authors": [
+            "Bingchuan Liu",
+            "Yijun Wang",
+            "Xiaorong Gao",
+            "Xiaogang Chen"
+        ],
+        "year": 2022,
+        "doi": "10.6084/m9.figshare.18032669"
+    },
     "10.6084/m9.figshare.2061654": {
         "title": "three-class motor imagery EEG data.zip",
         "authors": [
@@ -1044,6 +1146,14 @@
         ],
         "year": 2023,
         "doi": "10.6084/m9.figshare.21679035.v5"
+    },
+    "10.6084/m9.figshare.28806815.v2": {
+        "title": "SSVEP 40class dataset",
+        "authors": [
+            "Heegyu Kim"
+        ],
+        "year": 2025,
+        "doi": "10.6084/m9.figshare.28806815.v2"
     },
     "10.6094/UNIFR/154576": {
         "title": "Electroencephalogram signals recorded from 13 healthy subjects during an auditory oddball paradigm under different stimulus onset asynchrony conditions",

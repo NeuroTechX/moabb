@@ -522,7 +522,7 @@ class TestMetadataCatalog:
 
     def test_catalog_dataset_count(self):
         """Test that catalog contains expected number of datasets."""
-        assert len(DATASET_METADATA_CATALOG) == 84
+        assert len(DATASET_METADATA_CATALOG) == 93
 
     def test_bnci2015_006_metadata(self):
         """Test BNCI2015_006 music BCI metadata."""
@@ -587,8 +587,8 @@ class TestMetadataCatalog:
         "paradigm,expected_count",
         [
             ("imagery", 31),
-            ("p300", 35),
-            ("ssvep", 7),
+            ("p300", 36),
+            ("ssvep", 15),
             ("cvep", 8),
             ("rstate", 3),
         ],

@@ -101,7 +101,7 @@ class Wang2021Combined(BaseDataset):
             institution="Shandong University",
             country="CN",
             repository="Figshare",
-            data_url="https://doi.org/10.6084/m9.figshare.12628471",
+            data_url="https://figshare.com/ndownloader/files/25000886",
             license="CC BY 4.0",
             publication_year=2021,
         ),

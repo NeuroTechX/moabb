@@ -288,4 +288,48 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
     See :class:`Lee2021Mobile` for full documentation.
     """
 
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=500.0,
+            n_channels=32,
+            channel_types={"eeg": 32},
+            montage="standard_1005",
+            hardware="BrainAmp (Brain Product GmbH)",
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=24,
+            health_status="healthy",
+            gender={"male": 14, "female": 10},
+            age_mean=24.5,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="p300",
+            n_classes=2,
+            trial_duration=1.0,
+            stimulus_type="visual oddball",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+            study_design="BCI during motion (standing/walking/running)",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1038/s41597-021-01094-4",
+            investigators=[
+                "Young-Eun Lee",
+                "Gi-Hwan Shin",
+                "Minji Lee",
+                "Seong-Whan Lee",
+            ],
+            senior_author="Seong-Whan Lee",
+            institution="Korea University",
+            country="KR",
+            repository="OSF",
+            data_url="https://osf.io/r7s9b/",
+            license="CC BY 4.0",
+            publication_year=2021,
+        ),
+        sessions_per_subject=5,
+    )
+
     __init__ = partialmethod(Lee2021Mobile.__init__, "ERP")

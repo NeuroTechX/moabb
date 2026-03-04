@@ -104,8 +104,9 @@ def _read_patched_gdf(gdf_path):
         # GDF data records are 1-second blocks; the last block is
         # NaN-padded if the recording doesn't fill it completely.
         # Crop trailing NaN now, while the temp file still exists.
-        if np.isnan(raw._data[0, -1]):
-            last_valid = np.where(~np.isnan(raw._data[0]))[0][-1]
+        first_chan = raw.get_data(picks=[0])
+        if np.isnan(first_chan[0, -1]):
+            last_valid = np.where(~np.isnan(first_chan[0]))[0][-1]
             raw.crop(tmax=raw.times[last_valid])
     finally:
         Path(tmp_path).unlink(missing_ok=True)
