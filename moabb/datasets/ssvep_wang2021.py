@@ -17,9 +17,10 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParticipantMetadata,
 )
+from .utils import FIGSHARE_DL_URL
 
 
-FIGSHARE_URL = "https://ndownloader.figshare.com/files/25000886"  # Raw data.rar
+_RAR_FILE_ID = "25000886"  # Raw data.rar
 
 
 class Wang2021Combined(BaseDataset):
@@ -171,7 +172,9 @@ class Wang2021Combined(BaseDataset):
             return cnt_files
 
         # Download the outer RAR archive
-        rar_path = dl.data_dl(FIGSHARE_URL, sign, path, force_update, verbose)
+        rar_path = dl.data_dl(
+            f"{FIGSHARE_DL_URL}{_RAR_FILE_ID}", sign, path, force_update, verbose
+        )
 
         # Extract nested RARs
         try:

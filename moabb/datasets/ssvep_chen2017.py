@@ -132,7 +132,7 @@ class Chen2017SingleFlicker(BaseDataset):
     _events = {"north": 1, "east": 2, "west": 3, "south": 4}
 
     # ASCII class codes in .mat files -> event IDs
-    _CLASS_MAP = {78: 1, 69: 2, 87: 3, 83: 4}  # N->north, E->east, W->west, S->south
+    _CLASS_MAP = {ord("N"): 1, ord("E"): 2, ord("W"): 3, ord("S"): 4}
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

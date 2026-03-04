@@ -206,12 +206,13 @@ class Han2024Fatigue(BaseDataset):
             # Event offset: low-freq classes are 1-16, high-freq are 17-32
             event_offset = 16 if freq_band == "high" else 0
             sess_key = "0" if phase == "train" else "1"
-            event_ids = np.arange(1, n_targets + 1) + event_offset
 
-            for block_idx in range(n_blocks):
-                block_data = data[:, :, :, block_idx]  # (16, 64, 3000)
-                session_epochs[sess_key].append(block_data)
-                session_events[sess_key].append(event_ids)
+            # Reshape all blocks at once: (N_blocks*16, 64, 3000)
+            reshaped = data.transpose(3, 0, 1, 2).reshape(-1, 64, 3000)
+            event_ids = np.tile(np.arange(1, n_targets + 1) + event_offset, n_blocks)
+
+            session_epochs[sess_key].append(reshaped)
+            session_events[sess_key].append(event_ids)
 
         sessions = {}
         for sess_name in session_epochs:

@@ -4,7 +4,6 @@ Liu et al. (2020), Frontiers in Neuroscience.
 DOI: 10.3389/fnins.2020.00627
 """
 
-import os
 import tarfile
 from pathlib import Path
 
@@ -207,20 +206,21 @@ class Liu2020BETA(BaseDataset):
         url = BETA_URL + tar_name
         tar_path = dl.data_dl(url, sign, path, force_update, verbose)
 
-        # Extract the archive
+        # Extract only the needed subject's .mat file
+        target_name = f"S{subject}.mat"
         data_dir.mkdir(parents=True, exist_ok=True)
         with tarfile.open(tar_path, "r:gz") as tf:
-            tf.extractall(data_dir)
+            for member in tf.getmembers():
+                if member.name.endswith(target_name):
+                    tf.extract(member, data_dir)
 
-        # The tar may extract into a subdirectory - find the .mat file
         if mat_file.exists():
             return str(mat_file)
 
-        # Search for the file in subdirectories
-        for root, dirs, files in os.walk(data_dir):
-            for f in files:
-                if f == f"S{subject}.mat":
-                    return os.path.join(root, f)
+        # Search subdirectories in case tar has nested structure
+        found = next(data_dir.rglob(target_name), None)
+        if found:
+            return str(found)
 
         raise FileNotFoundError(
             f"Could not find S{subject}.mat after extracting {tar_name}"

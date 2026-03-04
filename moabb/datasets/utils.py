@@ -439,15 +439,16 @@ def build_raw_from_epochs(
     """
     n_trials, n_channels, n_samples = data.shape
 
-    # De-mean each trial
+    # De-mean and scale each trial in-place (callers pass freshly created arrays)
     data = data - data.mean(axis=2, keepdims=True)
+    data *= scale
 
     # Build stim channel
     stim = np.zeros((n_trials, 1, n_samples))
     stim[:, 0, onset_sample] = event_ids
 
-    # Combine scaled EEG + stim, add zero-padding buffers
-    combined = np.concatenate([scale * data, stim], axis=1)
+    # Combine EEG + stim, add zero-padding buffers
+    combined = np.concatenate([data, stim], axis=1)
     n_total_ch = n_channels + 1
 
     if buffer_samples > 0:
