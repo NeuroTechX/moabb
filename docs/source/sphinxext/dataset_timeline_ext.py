@@ -221,6 +221,12 @@ def _normalize_doi(value):
     return text
 
 
+def _dataset_dom_id(prefix, cls_name):
+    """Return a stable DOM id fragment for a dataset class."""
+    slug = re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
+    return f"{prefix}-{slug}"
+
+
 def _is_likely_doi(value):
     """Return True if the value matches a DOI-like pattern."""
     norm = _normalize_doi(value)
@@ -838,7 +844,9 @@ def _make_citation_impact_html(
             f'<li><span>MOABB tables</span><strong>{benchmark_ctx["n_tables"]} (WithinSession)</strong></li>'
         )
     # --- Page Views row (single rich entry in the same list) ---
-    if isinstance(pageview_counts, dict):
+    if isinstance(pageview_counts, dict) and any(
+        key in pageview_counts for key in ("last30", "all_time", "weekly_12")
+    ):
         last30 = pageview_counts.get("last30")
         all_time = pageview_counts.get("all_time")
         updated_str = _format_updated_utc((pageview_meta or {}).get("generated_at_utc"))
@@ -897,24 +905,28 @@ def _make_citation_impact_html(
 
 def _extract_description_text(lines):
     """Extract plain description lines from docstring, skipping admonitions/directives."""
+
+    def _skip_directive_block(start_idx):
+        directive_indent = len(lines[start_idx]) - len(lines[start_idx].lstrip())
+        i = start_idx + 1
+        while i < len(lines):
+            if lines[i].strip() == "":
+                i += 1
+                continue
+            line_indent = len(lines[i]) - len(lines[i].lstrip())
+            if line_indent > directive_indent:
+                i += 1
+                continue
+            break
+        return i
+
     desc = []
     i = 0
     while i < len(lines):
         stripped = lines[i].strip()
         # Skip admonition blocks (directive + indented body)
         if stripped.startswith(".. admonition::"):
-            adm_indent = len(lines[i]) - len(lines[i].lstrip())
-            i += 1
-            # Skip indented body of admonition (indent > directive indent)
-            while i < len(lines):
-                if lines[i].strip() == "":
-                    i += 1
-                    continue
-                line_indent = len(lines[i]) - len(lines[i].lstrip())
-                if line_indent > adm_indent:
-                    i += 1
-                    continue
-                break
+            i = _skip_directive_block(i)
             continue
         # Stop at rubrics and version directives
         if stripped.startswith(".. rubric::"):
@@ -923,6 +935,9 @@ def _extract_description_text(lines):
             (".. versionadded::", ".. versionchanged::", ".. deprecated::")
         ):
             break
+        if stripped.startswith(".. "):
+            i = _skip_directive_block(i)
+            continue
         # Stop at underline-style "references" or "References" header
         if (
             stripped.lower() in ("references", "references:")
@@ -983,7 +998,7 @@ def _rst_inline_to_html(text):
     return "".join(parts)
 
 
-def _make_overview_teaser_html(info, description_lines, cls_name):
+def _make_overview_teaser_html(description_lines, cls_name):
     """Build a collapsible overview teaser panel with key facts."""
     if not description_lines:
         return ""
@@ -1057,9 +1072,7 @@ def _make_overview_teaser_html(info, description_lines, cls_name):
         )
 
     # --- Compose component ---
-    overview_id = (
-        "ds-overview-" + re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
-    )
+    overview_id = _dataset_dom_id("ds-overview", cls_name)
 
     teaser_parts = []
     for p in teaser_paragraphs:
@@ -1097,10 +1110,12 @@ def _make_overview_teaser_html(info, description_lines, cls_name):
         f"{full_section}"
         f'<div class="ds-overview-actions">'
         f"{toggle_btn}"
-        f'<a class="ds-overview-tab-link" href="#sd-tab-item-0" '
+        f'<a class="ds-overview-tab-link" href="#{overview_id}" '
         f'onclick="event.preventDefault();'
-        f"var r=document.getElementById('sd-tab-item-0');"
-        f"if(r){{r.checked=true;r.scrollIntoView({{behavior:'smooth',block:'start'}});}}"
+        f"var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');"
+        f"if(tab){{tab.click();}}"
+        f"var target=document.getElementById('{overview_id}');"
+        f"if(target){{target.scrollIntoView({{behavior:'smooth',block:'start'}});}}"
         f'">Open in Overview tab →</a>'
         f"</div>"
         f"</div>"
@@ -1534,9 +1549,8 @@ def _make_header_html(
     default_subject = info.get("default_subject", 1)
     subject_literal = repr(default_subject)
     code = info.get("code")
-    quickstart_id = (
-        "ds-quickstart-" + re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
-    )
+    quickstart_id = _dataset_dom_id("ds-quickstart", cls_name)
+    quickstart_btn_id = _dataset_dom_id("ds-quickstart-btn", cls_name)
     source_html = ""
     if source_url:
         source_html = (
@@ -1660,14 +1674,17 @@ def _make_header_html(
 
     # --- Action buttons ---
     actions = []
-    # Quickstart button toggles details panel
+    # Quickstart button toggles the code panel
     actions.append(
         (
-            f'<button class="ds-btn ds-btn-primary ds-btn-toggle" type="button" '
+            f'<button id="{quickstart_btn_id}" class="ds-btn ds-btn-primary ds-btn-toggle" type="button" '
             f'aria-controls="{quickstart_id}" aria-expanded="false" '
             f"onclick=\"var el=document.getElementById('{quickstart_id}');"
-            "if(el){el.open=!el.open;"
-            "this.setAttribute('aria-expanded',el.open?'true':'false');}\">"
+            "if(el){var expanded=this.getAttribute('aria-expanded')==='true';"
+            "var next=!expanded;"
+            "this.setAttribute('aria-expanded',next?'true':'false');"
+            "el.hidden=!next;"
+            "el.setAttribute('aria-hidden',next?'false':'true');}\">"
             "Quickstart"
             "</button>"
         )
@@ -1695,10 +1712,10 @@ def _make_header_html(
     )
     hl_code = _highlight_python(quickstart_code)
     quickstart = (
-        f'<details id="{quickstart_id}" class="ds-quickstart">\n'
-        f'  <summary class="ds-quickstart-summary">Toggle quickstart code</summary>\n'
+        f'<div id="{quickstart_id}" class="ds-quickstart" role="region" '
+        f'aria-labelledby="{quickstart_btn_id}" aria-hidden="true" hidden>\n'
         f'  <div class="ds-quickstart-code">{hl_code}</div>\n'
-        f"</details>"
+        f"</div>"
     )
 
     # --- Alt name (paper description) ---
@@ -1711,7 +1728,7 @@ def _make_header_html(
     provenance_html = _make_provenance_html(info)
 
     # --- Overview teaser ---
-    overview_teaser = _make_overview_teaser_html(info, description_lines or [], cls_name)
+    overview_teaser = _make_overview_teaser_html(description_lines or [], cls_name)
 
     return f"""\
 <div class="ds-card" role="region" aria-label="{cls_name} dataset overview">
@@ -2105,10 +2122,15 @@ def _restructure_docstring_lines(lines, cls_name, default_subject=1):
     # Tab-set directive
     new_lines.append("")
     new_lines.append(".. tab-set::")
+    new_lines.append("   :class: ds-doc-tabs")
     new_lines.append("")
 
     # --- Tab: Overview ---
     new_lines.append("   .. tab-item:: Overview")
+    new_lines.append("")
+    new_lines.append(
+        " " * TAB_INDENT + f".. _{_dataset_dom_id('ds-overview', cls_name)}:"
+    )
     new_lines.append("")
     if description_lines:
         new_lines.extend(_reindent(description_lines, TAB_INDENT))
