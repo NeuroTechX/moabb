@@ -1311,7 +1311,7 @@ html[data-theme="dark"] .ds-overview-teaser {
   box-shadow: 0 0 0 2px var(--ds-accent-soft);
 }
 
-/* Quickstart code collapsible */
+/* Quickstart code panel */
 .ds-quickstart {
   margin-top: 0.78rem;
   border: 1px solid var(--ds-accent-soft);
@@ -1320,27 +1320,8 @@ html[data-theme="dark"] .ds-overview-teaser {
   background: rgba(15, 93, 143, 0.06);
 }
 
-.ds-quickstart[open] {
+.ds-quickstart:not([hidden]) {
   border-color: var(--ds-accent);
-}
-
-.ds-quickstart-summary {
-  display: block;
-  padding: 0.4rem 0.78rem;
-  margin: 0;
-  font-family: var(--ds-font-heading);
-  font-size: 0.74rem;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--ds-accent);
-  font-weight: 700;
-  cursor: pointer;
-  border: 0;
-}
-
-.ds-quickstart-summary:focus-visible {
-  outline: 2px solid var(--ds-accent, #0f5d8f);
-  outline-offset: -2px;
 }
 
 .ds-quickstart-code {

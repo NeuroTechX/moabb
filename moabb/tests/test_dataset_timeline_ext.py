@@ -1,3 +1,5 @@
+import re
+
 from docs.source.sphinxext import dataset_timeline_ext as ext
 
 
@@ -71,3 +73,24 @@ def test_citation_impact_shows_zero_pageviews_when_dataset_exists():
     assert "Page Views" in html
     assert "30d: <strong>0</strong>" in html
     assert "all-time: <strong>0</strong>" in html
+
+
+def test_header_html_quickstart_button_reveals_code_panel():
+    html = ext._make_header_html(
+        "SampleDataset",
+        {"paradigm": "cvep", "default_subject": 7},
+        live_citations=False,
+        pageview_counts={},
+        pageview_rank={},
+        pageview_meta={},
+    )
+
+    assert 'id="ds-quickstart-btn-sampledataset"' in html
+    assert 'aria-controls="ds-quickstart-sampledataset"' in html
+    assert 'aria-labelledby="ds-quickstart-btn-sampledataset"' in html
+    assert 'aria-hidden="true" hidden' in html
+    assert "Toggle quickstart code" not in html
+    text = re.sub(r"<[^>]+>", "", html)
+    assert "from moabb.datasets import SampleDataset" in text
+    assert "dataset = SampleDataset()" in text
+    assert "data = dataset.get_data(subjects=[7])" in text
