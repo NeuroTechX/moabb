@@ -16,12 +16,14 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    Tags,
 )
 from .utils import FIGSHARE_DL_URL
 
@@ -159,6 +161,8 @@ class Liu2022EldBETA(BaseDataset):
             montage="standard_1005",
             hardware="Synamps2 (Neuroscan)",
             line_freq=50.0,
+            reference="Cz",
+            impedance_threshold_kohm=20,
         ),
         participants=ParticipantMetadata(
             n_subjects=100,
@@ -167,6 +171,7 @@ class Liu2022EldBETA(BaseDataset):
             age_mean=63.17,
             age_min=52,
             age_max=81,
+            age_std=6.05,
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
@@ -176,7 +181,10 @@ class Liu2022EldBETA(BaseDataset):
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="offline",
+            mode="online",
+            task_type="9-target SSVEP speller",
+            feedback_type="visual",
+            has_training_test_split=False,
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-022-01372-9",
@@ -193,6 +201,16 @@ class Liu2022EldBETA(BaseDataset):
             data_url="https://doi.org/10.6084/m9.figshare.18032669",
             license="CC BY 4.0",
             publication_year=2022,
+            institution_department="Department of Biomedical Engineering, School of Medicine, Tsinghua University",
+            ethics_approval=[
+                "Institutional Review Board of Tsinghua University, No. 20210032"
+            ],
+            funding=[
+                "National Natural Science Foundation of China (No. 62171473)",
+                "Doctoral Brain+X Seed Grant Program of Tsinghua University",
+                "Strategic Priority Research Program of Chinese Academy of Sciences (No. XDB32040200)",
+            ],
+            keywords=["SSVEP", "BCI", "EEG", "elderly", "aging", "benchmark", "JFPM"],
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
@@ -212,6 +230,16 @@ class Liu2022EldBETA(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=7,
             n_trials=63,
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="lab",
+            online_feedback=True,
+            applications=["speller"],
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
         ),
         sessions_per_subject=7,
         file_format="GDF (BIDS)",

@@ -11,6 +11,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -18,6 +19,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    Tags,
 )
 from .utils import build_raw_from_epochs
 
@@ -64,6 +66,8 @@ class Dong2023(BaseDataset):
             sensor_type="semi-dry (pre-gelled)",
             sensors=["POz", "PO3", "PO4", "PO7", "PO8", "Oz", "O1", "O2"],
             line_freq=50.0,
+            reference="Fp1",
+            ground="Fp2",
         ),
         participants=ParticipantMetadata(
             n_subjects=59,
@@ -83,6 +87,8 @@ class Dong2023(BaseDataset):
             synchronicity="synchronous",
             mode="offline",
             feedback_type="visual",
+            task_type="SSVEP speller",
+            has_training_test_split=False,
         ),
         documentation=DocumentationMetadata(
             doi="10.26599/BSA.2023.9050020",
@@ -107,6 +113,15 @@ class Dong2023(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=4,
             n_trials=160,
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="non-shielded",
+            online_feedback=True,
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
         ),
         file_format="MAT",
     )

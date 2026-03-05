@@ -67,6 +67,7 @@ documentation = "https://moabb.neurotechx.com/docs/index.html"
 carbonemission = ["codecarbon>=2.1.4"]
 deeplearning = ["braindecode>=0.8.1"]
 optuna = ["optuna>=3.6.1", "optuna-integration>=3.6.0"]
+xdf = ["pyxdf>=1.16.4"]
 tests = [
     "pytest>=8.3.5",
     "pytest-cov>=5.0.0",
@@ -95,6 +96,7 @@ all = [
     "moabb[carbonemission]",
     "moabb[deeplearning]",
     "moabb[optuna]",
+    "moabb[xdf]",
     "moabb[tests]",
     "moabb[docs]",
 ]

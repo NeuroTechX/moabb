@@ -14,6 +14,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -21,6 +22,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    Tags,
 )
 from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
@@ -97,6 +99,10 @@ class Han2024Fatigue(BaseDataset):
             hardware="Synamps2 (Neuroscan)",
             sensors=TSINGHUA_64CH_NAMES,
             line_freq=50.0,
+            reference="Cz",
+            ground="midway between Fz and FPz",
+            impedance_threshold_kohm=10,
+            filters={"bandpass_hz": [0.15, 200.0]},
         ),
         participants=ParticipantMetadata(
             n_subjects=24,
@@ -115,6 +121,8 @@ class Han2024Fatigue(BaseDataset):
             synchronicity="synchronous",
             mode="offline",
             has_training_test_split=True,
+            task_type="gaze-shifting",
+            feedback_type="none",
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2024.3380635",
@@ -132,6 +140,13 @@ class Han2024Fatigue(BaseDataset):
             data_url="https://zenodo.org/records/10507229",
             license="CC BY 4.0",
             publication_year=2024,
+            institution_department="Academy of Medical Engineering and Translational Medicine, Tianjin University",
+            ethics_approval=["Research Ethics Committee of Tianjin University"],
+            funding=[
+                "National Key Research and Development Program of China (Grant 2021YFF1200603)",
+                "National Natural Science Foundation of China (Grants 62276184, 61806141)",
+            ],
+            keywords=["SSVEP", "BCI", "fatigue", "dynamic stopping", "EEG"],
         ),
         preprocessing=PreprocessingMetadata(
             data_state="epoched",
@@ -147,6 +162,15 @@ class Han2024Fatigue(BaseDataset):
             n_blocks=60,
             n_trials="960 per frequency band (16 targets x 60 blocks)",
             trials_context="6 training + 24 fatigue blocks per frequency condition",
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="lab",
+            online_feedback=False,
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
         ),
         sessions_per_subject=2,
         file_format="MAT",

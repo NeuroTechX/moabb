@@ -18,10 +18,13 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
+    Tags,
 )
 
 
@@ -82,6 +85,9 @@ class Chen2017SingleFlicker(BaseDataset):
             hardware="BioSemi ActiveTwo",
             reference="CMS/DRL",
             line_freq=50.0,
+            sensor_type="active",
+            electrode_material="sintered Ag/AgCl",
+            cap_manufacturer="BioSemi",
         ),
         participants=ParticipantMetadata(
             n_subjects=12,
@@ -101,6 +107,9 @@ class Chen2017SingleFlicker(BaseDataset):
             mode="online",
             feedback_type="visual",
             study_design="Spatial navigation with single 15 Hz flicker",
+            task_type="spatial navigation",
+            class_labels=["north", "east", "west", "south"],
+            has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0178385",
@@ -118,7 +127,34 @@ class Chen2017SingleFlicker(BaseDataset):
             data_url="https://zenodo.org/records/580485",
             license="CC BY 4.0",
             publication_year=2017,
+            institution_department="Department of Neurophysiology and Pathophysiology, University Medical Center Hamburg-Eppendorf",
+            ethics_approval=["Ethics committee of the medical association, Hamburg"],
+            funding=[
+                "DFG TRR169/B1/Z2 Crossmodal Learning",
+                "Landesforschungsfoerderung Hamburg CROSS FV25",
+            ],
+            keywords=[
+                "SSVEP",
+                "BCI",
+                "spatial navigation",
+                "single-flicker",
+                "online BCI",
+            ],
         ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            stimulus_frequencies_hz=[15.0],
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="lab",
+            online_feedback=True,
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
+        ),
+        file_format="XDF/MAT",
     )
 
     # BioSemi 32-channel layout

@@ -14,6 +14,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -21,6 +22,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    Tags,
 )
 from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
 
@@ -88,6 +90,8 @@ class Liu2020BETA(BaseDataset):
             hardware="Synamps2 (Neuroscan)",
             sensors=TSINGHUA_64CH_NAMES,
             line_freq=50.0,
+            reference="Cz",
+            impedance_threshold_kohm=10,
         ),
         participants=ParticipantMetadata(
             n_subjects=70,
@@ -96,6 +100,8 @@ class Liu2020BETA(BaseDataset):
             age_mean=25.14,
             age_min=9,
             age_max=64,
+            age_std=7.97,
+            bci_experience="experienced",
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
@@ -106,6 +112,9 @@ class Liu2020BETA(BaseDataset):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
+            task_type="cued-spelling",
+            feedback_type="visual",
+            has_training_test_split=False,
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2020.00627",
@@ -123,10 +132,21 @@ class Liu2020BETA(BaseDataset):
             data_url="http://bci.med.tsinghua.edu.cn/upload/liubingchuan/",
             license="Non-commercial research use",
             publication_year=2020,
+            institution_department="Department of Biomedical Engineering, Tsinghua University",
+            ethics_approval=["Ethics Committee of Tsinghua University, No. 20190002"],
+            funding=[
+                "National Key Research and Development Program of China (No. 2017YFB1002505)",
+                "Strategic Priority Research Program of Chinese Academy of Sciences (No. XDB32040200)",
+                "Key Research and Development Program of Guangdong Province (No. 2018B030339001)",
+                "National Natural Science Foundation of China (Grant No. 61431007)",
+            ],
+            keywords=["SSVEP", "BCI", "EEG", "benchmark", "JFPM"],
         ),
         preprocessing=PreprocessingMetadata(
             data_state="epoched",
             downsampled_to_hz=250.0,
+            notch_hz=50,
+            filter_type="zero-phase FIR",
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
@@ -136,6 +156,16 @@ class Liu2020BETA(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=4,
             n_trials=160,
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="classroom",
+            online_feedback=True,
+            applications=["speller"],
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
         ),
         file_format="MAT",
     )

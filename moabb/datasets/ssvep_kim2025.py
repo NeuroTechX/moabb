@@ -11,6 +11,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -18,6 +19,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    Tags,
 )
 from .utils import FIGSHARE_DL_URL, build_raw_from_epochs
 
@@ -118,6 +120,13 @@ class Kim2025BetaRange(BaseDataset):
             hardware="BioSemi ActiveTwo",
             reference="CMS/DRL",
             line_freq=60.0,
+            sensor_type="active",
+            electrode_type="wet",
+            electrode_material="Ag/AgCl",
+            ground="CMS/DRL near Pz",
+            impedance_threshold_kohm=5,
+            software="OpenViBE",
+            cap_manufacturer="BioSemi",
         ),
         participants=ParticipantMetadata(
             n_subjects=40,
@@ -126,6 +135,8 @@ class Kim2025BetaRange(BaseDataset):
             age_mean=22.8,
             age_min=20,
             age_max=35,
+            age_std=3.34,
+            bci_experience="3 of 40 had prior SSVEP-BCI experience",
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
@@ -136,6 +147,9 @@ class Kim2025BetaRange(BaseDataset):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
+            task_type="speller",
+            feedback_type="none",
+            has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-025-06032-2",
@@ -147,6 +161,17 @@ class Kim2025BetaRange(BaseDataset):
             data_url="https://doi.org/10.6084/m9.figshare.28806815.v2",
             license="CC BY 4.0",
             publication_year=2025,
+            institution_department="School of Electrical Engineering and Computer Science, GIST",
+            ethics_approval=["GIST IRB, No. 20211201-HR-64-02-04"],
+            keywords=[
+                "SSVEP",
+                "BCI",
+                "beta range",
+                "visual fatigue",
+                "40-class speller",
+                "JFPM",
+                "EEG",
+            ],
         ),
         preprocessing=PreprocessingMetadata(
             data_state="epoched",
@@ -159,6 +184,15 @@ class Kim2025BetaRange(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=6,
             n_trials=240,
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="lab",
+            online_feedback=False,
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
         ),
         sessions_per_subject=6,
         file_format="MAT",

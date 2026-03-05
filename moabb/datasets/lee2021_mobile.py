@@ -13,10 +13,13 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    Tags,
 )
 
 
@@ -71,12 +74,24 @@ class Lee2021Mobile(BaseDataset):
             channel_types={"eeg": 32},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
+            line_freq=60.0,
+            sensor_type="Ag/AgCl",
+            electrode_material="Ag/AgCl",
+            reference="FCz",
+            ground="Fpz",
+            impedance_threshold_kohm=50,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["vertical", "horizontal"],
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=24,
             health_status="healthy",
             gender={"male": 14, "female": 10},
             age_mean=24.5,
+            age_std=2.9,
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
@@ -104,8 +119,27 @@ class Lee2021Mobile(BaseDataset):
             data_url="https://osf.io/r7s9b/",
             license="CC BY 4.0",
             publication_year=2021,
+            ethics_approval=[
+                "Institutional Review Board of Korea University, KUIRB-2019-0194-01"
+            ],
+            funding=[
+                "IITP No. 2017-0-00451",
+                "IITP No. 2015-0-00185",
+                "IITP No. 2019-0-00079",
+            ],
+            keywords=["SSVEP", "ERP", "mobile BCI", "ear-EEG", "locomotion"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="mobile",
+            online_feedback=False,
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
         ),
         sessions_per_subject=4,
+        file_format="BrainVision",
     )
 
     # BrainVision annotation -> frequency mapping for SSVEP
@@ -295,12 +329,24 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             channel_types={"eeg": 32},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
+            line_freq=60.0,
+            sensor_type="Ag/AgCl",
+            electrode_material="Ag/AgCl",
+            reference="FCz",
+            ground="Fpz",
+            impedance_threshold_kohm=50,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["vertical", "horizontal"],
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=24,
             health_status="healthy",
             gender={"male": 14, "female": 10},
             age_mean=24.5,
+            age_std=2.9,
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
@@ -328,8 +374,27 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             data_url="https://osf.io/r7s9b/",
             license="CC BY 4.0",
             publication_year=2021,
+            ethics_approval=[
+                "Institutional Review Board of Korea University, KUIRB-2019-0194-01"
+            ],
+            funding=[
+                "IITP No. 2017-0-00451",
+                "IITP No. 2015-0-00185",
+                "IITP No. 2019-0-00079",
+            ],
+            keywords=["SSVEP", "ERP", "mobile BCI", "ear-EEG", "locomotion"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            environment="mobile",
+            online_feedback=False,
+        ),
+        tags=Tags(
+            pathology=["healthy"],
+            modality=["visual"],
+            type=["perception"],
         ),
         sessions_per_subject=5,
+        file_format="BrainVision",
     )
 
     __init__ = partialmethod(Lee2021Mobile.__init__, "ERP")
