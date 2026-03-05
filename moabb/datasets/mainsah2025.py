@@ -562,7 +562,7 @@ class Mainsah2025(BaseDataset):
             try:
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
-                    raw = read_raw_edf(str(fpath), preload=True, verbose="ERROR")
+                    raw = read_raw_edf(str(fpath), preload=False, verbose="ERROR")
             except Exception as e:
                 log.warning("Failed to read %s: %s", fpath.name, e)
                 continue
@@ -610,7 +610,7 @@ class Mainsah2025(BaseDataset):
         if "StimulusType" not in raw.ch_names:
             return None
 
-        # Read stimulus channels
+        # Read stimulus channels (loads only these two channels into memory)
         stim_begin = raw.get_data(picks=["StimulusBegin"])[0]
         stim_type = raw.get_data(picks=["StimulusType"])[0]
 
@@ -642,9 +642,10 @@ class Mainsah2025(BaseDataset):
         if not eeg_channels:
             return None
 
-        # Rename and pick EEG channels
+        # Rename, pick EEG channels, then load data (avoids loading unused channels)
         raw.rename_channels(ch_rename)
         raw.pick(eeg_channels)
+        raw.load_data()
         raw.set_channel_types({ch: "eeg" for ch in raw.ch_names})
 
         # Set annotations
@@ -656,7 +657,7 @@ class Mainsah2025(BaseDataset):
                 mne.channels.make_standard_montage("standard_1020"),
                 on_missing="warn",
             )
-        except Exception:
-            pass
+        except Exception as e:
+            log.warning("Could not set montage: %s", e)
 
         return raw
