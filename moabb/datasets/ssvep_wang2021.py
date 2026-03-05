@@ -24,8 +24,8 @@ from .metadata.schema import (
 )
 
 
-# TODO: Replace with actual Zenodo URL after uploading the repackaged ZIP
-ZENODO_URL = "https://zenodo.org/records/XXXXXXX/files/wang2021_raw_data.zip"
+_ZENODO_RECORD = "18873228"
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 
 class Wang2021Combined(BaseDataset):
@@ -103,7 +103,7 @@ class Wang2021Combined(BaseDataset):
             institution="Shandong University",
             country="CN",
             repository="Zenodo",
-            data_url=ZENODO_URL,
+            data_url=_ZENODO_BASE.rsplit("/files", 1)[0],
             license="CC BY 4.0",
             publication_year=2021,
         ),
@@ -184,26 +184,26 @@ class Wang2021Combined(BaseDataset):
 
         sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
+        subject_dir = data_dir / f"S{subject:02d}"
 
-        # Check if .cnt files are already extracted
-        subject_dir = data_dir / "wang2021_raw_data" / f"S{subject:02d}"
+        # Return cached files if already extracted
         cnt_files = sorted(subject_dir.glob("*.cnt")) if subject_dir.is_dir() else []
         if cnt_files and not force_update:
             return [str(f) for f in cnt_files]
 
-        # Download the ZIP archive
-        zip_path = dl.data_dl(ZENODO_URL, sign, path, force_update, verbose)
+        # Download per-subject ZIP from Zenodo
+        zip_name = f"S{subject:02d}.zip"
+        url = f"{_ZENODO_BASE}/{zip_name}"
+        zip_path = dl.data_dl(url, sign, path, force_update, verbose)
 
-        # Extract all .cnt files
-        data_dir.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(data_dir)
+        # Extract .cnt files into subject directory
+        subject_dir.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(zip_path) as zf:
+            zf.extractall(subject_dir)
 
-        # Find subject's .cnt files
         cnt_files = sorted(subject_dir.glob("*.cnt"))
         if not cnt_files:
             raise FileNotFoundError(
-                f"Could not find .cnt files for subject {subject} " f"in {subject_dir}"
+                f"No .cnt files found for subject {subject} in {subject_dir}"
             )
-
         return [str(f) for f in cnt_files]
