@@ -1,7 +1,4 @@
 {
-    "_metadata": {
-        "total": 91
-    },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
         "authors": [
@@ -424,6 +421,16 @@
         ],
         "year": 2012,
         "doi": "10.1109/tnsre.2012.2189584"
+    },
+    "10.13026/0byy-ry86": {
+        "title": "bigP3BCI: An Open, Diverse and Machine Learning Ready P300-based Brain-Computer Interface Dataset",
+        "authors": [
+            "Boyla Mainsah",
+            "Chance Fleeting",
+            "Thomas Balmat",
+            "Eric Sellers",
+            "Leslie Collins"
+        ]
     },
     "10.1371/journal.pone.0009813": {
         "title": "A New Auditory Multi-Class Brain-Computer Interface Paradigm: Spatial Hearing as an Informative Cue",
@@ -1078,5 +1085,8 @@
         ],
         "year": 2024,
         "doi": "10.7910/DVN/MQOVEY"
+    },
+    "_metadata": {
+        "total": 91
     }
 }
