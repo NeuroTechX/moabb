@@ -723,8 +723,16 @@ def _make_benchmark_context_html(cls_name, info):
     )
 
 
-def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
-    """Build a compact citation and impact block."""
+def _make_citation_impact_html(
+    info,
+    benchmark_ctx,
+    *,
+    live_citations=True,
+    pageview_counts=None,
+    pageview_rank=None,
+    pageview_meta=None,
+):
+    """Build a compact citation, impact, and visibility block."""
     code = str(info.get("code") or "")
     paper_doi = _normalize_doi(info.get("paper_doi") or info.get("doi"))
     dataset_doi = _normalize_doi(info.get("dataset_doi") or info.get("doi"))
@@ -838,13 +846,58 @@ def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
         items.append(
             f'<li><span>MOABB tables</span><strong>{benchmark_ctx["n_tables"]} (WithinSession)</strong></li>'
         )
+    # --- Page Views row (single rich entry in the same list) ---
+    if isinstance(pageview_counts, dict):
+        last30 = pageview_counts.get("last30")
+        all_time = pageview_counts.get("all_time")
+        updated_str = _format_updated_utc((pageview_meta or {}).get("generated_at_utc"))
+
+        # Rank line
+        if (
+            isinstance(pageview_rank, dict)
+            and pageview_rank.get("rank")
+            and pageview_rank.get("total")
+        ):
+            rank_line = (
+                f'<div class="ds-pv-rank">#{int(pageview_rank["rank"])} of '
+                f'{int(pageview_rank["total"])} · Top {int(pageview_rank.get("top_percent", 0))}% most viewed</div>'
+            )
+        else:
+            rank_line = '<div class="ds-pv-rank">Ranking: n/a</div>'
+
+        # Sparkline
+        sparkline_cell = ""
+        weekly = pageview_counts.get("weekly_12")
+        if weekly:
+            sparkline_cell = (
+                f'<div class="ds-pv-spark" aria-label="Page views trend (last 12 weeks)">'
+                f"{_sparkline_svg(weekly)}</div>"
+            )
+
+        # Compose the rich right-hand value
+        pv_value = (
+            f'<div class="ds-pv-detail">'
+            f'<div class="ds-pv-body">'
+            f'<div class="ds-pv-metrics">'
+            f"30d: <strong>{_format_count(last30)}</strong>"
+            f' <span class="ds-provenance-sep">·</span> '
+            f"all-time: <strong>{_format_count(all_time)}</strong>"
+            f"</div>"
+            f"{rank_line}"
+            f'<div class="ds-pv-updated">Updated: {updated_str}</div>'
+            f"</div>"
+            f"{sparkline_cell}"
+            f"</div>"
+        )
+        items.append(f'<li class="ds-pv-row"><span>Page Views</span>{pv_value}</li>')
+
     if not items:
         return ""
 
     list_html = "\n      ".join(items)
     return (
         '<div class="ds-citation-impact">'
-        '<p class="ds-citation-title">Citation & Impact</p>'
+        '<p class="ds-citation-title">Citation &amp; Impact</p>'
         f"<ul>{list_html}</ul>"
         f"{script_html}"
         "</div>"
@@ -1367,49 +1420,15 @@ def _make_header_html(
             )
 
     chips_html = "\n      ".join(chips)
-    last30 = (
-        pageview_counts.get("last30")
-        if isinstance(pageview_counts, dict) and "last30" in pageview_counts
-        else None
-    )
-    all_time = (
-        pageview_counts.get("all_time")
-        if isinstance(pageview_counts, dict) and "all_time" in pageview_counts
-        else None
-    )
-    views_html = (
-        '<div class="ds-views-line" title="Google Analytics 4 page views">'
-        '<div class="ds-views-main">'
-        '<div class="ds-views-head"><span class="ds-views-label">Page Views</span>'
-        f'<span class="ds-views-updated">Updated: {_format_updated_utc((pageview_meta or {}).get("generated_at_utc"))}</span>'
-        "</div>"
-        '<div class="ds-views-metrics">'
-        f"<span>30d: <strong>{_format_count(last30)}</strong></span>"
-        '<span class="ds-provenance-sep">·</span>'
-        f"<span>all-time: <strong>{_format_count(all_time)}</strong></span>"
-        "</div>"
-        '<div class="ds-views-rank">'
-        + (
-            f"#{int((pageview_rank or {}).get('rank'))} of {int((pageview_rank or {}).get('total'))} "
-            f"· Top {int((pageview_rank or {}).get('top_percent'))}% most viewed"
-            if isinstance(pageview_rank, dict)
-            and pageview_rank.get("rank")
-            and pageview_rank.get("total")
-            else "Ranking: n/a"
-        )
-        + "</div>"
-        "</div>"
-        + (
-            f'<div class="ds-views-spark-wrap">{_sparkline_svg((pageview_counts or {}).get("weekly_12"))}</div>'
-            if isinstance(pageview_counts, dict)
-            else ""
-        )
-        + "</div>"
-    )
     benchmark_html = _make_benchmark_context_html(cls_name, info)
     benchmark_ctx = _get_benchmark_context(cls_name)
     citation_html = _make_citation_impact_html(
-        info, benchmark_ctx, live_citations=live_citations
+        info,
+        benchmark_ctx,
+        live_citations=live_citations,
+        pageview_counts=pageview_counts,
+        pageview_rank=pageview_rank,
+        pageview_meta=pageview_meta,
     )
     compare_anchor_map = {
         "imagery": "motor-imagery",
@@ -1500,7 +1519,6 @@ def _make_header_html(
   <div class="ds-stats">
       {chips_html}
   </div>
-  {views_html}
   {class_line}
   <div class="ds-actions">
       {actions_html}
