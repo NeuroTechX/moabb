@@ -5,6 +5,9 @@ from __future__ import annotations
 import abc
 import inspect
 import logging
+import stat
+import tarfile
+import zipfile
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -400,6 +403,49 @@ TSINGHUA_64CH_NAMES = [
 # fmt: on
 
 
+def _validate_member_destination(dest_dir: Path, member_name: str):
+    """Ensure archive member extraction stays within destination directory."""
+    target = (dest_dir / member_name).resolve()
+    try:
+        target.relative_to(dest_dir)
+    except ValueError as exc:
+        raise ValueError(
+            f"Unsafe archive member path {member_name!r} escapes {dest_dir}."
+        ) from exc
+    return target
+
+
+def safe_extract_zip(zf: zipfile.ZipFile, dest_dir: Path, members=None):
+    """Safely extract a ZIP archive into ``dest_dir`` (path traversal protected)."""
+    dest_dir = Path(dest_dir).resolve()
+    selected = members if members is not None else zf.infolist()
+
+    for member in selected:
+        info = member if isinstance(member, zipfile.ZipInfo) else zf.getinfo(member)
+        _validate_member_destination(dest_dir, info.filename)
+        # Reject symlink entries when present in UNIX mode bits.
+        mode = info.external_attr >> 16
+        if mode and stat.S_ISLNK(mode):
+            raise ValueError(
+                f"Unsafe ZIP member {info.filename!r}: symbolic links are not allowed."
+            )
+
+    zf.extractall(dest_dir, members=selected)
+
+
+def safe_extract_tar(tf: tarfile.TarFile, dest_dir: Path, members=None):
+    """Safely extract a TAR archive into ``dest_dir`` (path traversal protected)."""
+    dest_dir = Path(dest_dir).resolve()
+    selected = members if members is not None else tf.getmembers()
+
+    for member in selected:
+        _validate_member_destination(dest_dir, member.name)
+        if member.issym() or member.islnk():
+            raise ValueError(f"Unsafe TAR member {member.name!r}: links are not allowed.")
+
+    tf.extractall(dest_dir, members=selected)
+
+
 def build_raw_from_epochs(
     data,
     ch_names,
@@ -437,7 +483,43 @@ def build_raw_from_epochs(
     raw : mne.io.RawArray
         Continuous raw data with EEG + stim channels.
     """
+    data = np.asarray(data)
+    if data.ndim != 3:
+        raise ValueError(
+            "data must have shape (n_trials, n_channels, n_samples), "
+            f"got array with shape {data.shape}."
+        )
     n_trials, n_channels, n_samples = data.shape
+
+    if isinstance(ch_names, str):
+        raise ValueError(
+            "ch_names must be a sequence of channel names, not a single string."
+        )
+    if len(ch_names) != n_channels:
+        raise ValueError(
+            f"ch_names length ({len(ch_names)}) must match n_channels ({n_channels})."
+        )
+
+    event_ids = np.asarray(event_ids)
+    if event_ids.ndim != 1:
+        raise ValueError(
+            "event_ids must be a 1D array-like of length n_trials; "
+            f"got shape {event_ids.shape}."
+        )
+    if len(event_ids) != n_trials:
+        raise ValueError(
+            f"event_ids length ({len(event_ids)}) must match n_trials ({n_trials})."
+        )
+
+    if isinstance(onset_sample, bool) or not isinstance(onset_sample, (int, np.integer)):
+        raise ValueError(
+            f"onset_sample must be an integer in [0, {n_samples - 1}], got "
+            f"{onset_sample!r} ({type(onset_sample).__name__})."
+        )
+    if onset_sample < 0 or onset_sample >= n_samples:
+        raise ValueError(
+            f"onset_sample ({onset_sample}) must be between 0 and {n_samples - 1}."
+        )
 
     # De-mean and scale each trial in-place (callers pass freshly created arrays)
     data = data - data.mean(axis=2, keepdims=True)

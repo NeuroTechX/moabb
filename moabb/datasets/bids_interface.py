@@ -82,6 +82,145 @@ def _split_manufacturer(hardware):
     return hardware, hardware
 
 
+_SEX_LABEL_TO_CODE = {"male": 1, "female": 2}
+_SEX_CODE_TO_LABEL = {v: k for k, v in _SEX_LABEL_TO_CODE.items()}
+_HAND_LABEL_TO_CODE = {"right": 1, "left": 2, "ambidextrous": 3}
+_HAND_CODE_TO_LABEL = {v: k for k, v in _HAND_LABEL_TO_CODE.items()}
+
+
+def _is_missing_participant_value(value):
+    """Return True when a participant value should be treated as unknown."""
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"", "n/a", "na", "none", "unknown", "null"}
+    return False
+
+
+def _get_subject_list_value(values, subject_idx):
+    """Return per-subject value from list-like metadata fields."""
+    if values is None or subject_idx >= len(values):
+        return None
+    value = values[subject_idx]
+    if _is_missing_participant_value(value):
+        return None
+    return value
+
+
+def _normalize_sex_value(value):
+    """Normalize sex values to BIDS labels ('male'/'female')."""
+    if _is_missing_participant_value(value) or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)) and int(value) in _SEX_CODE_TO_LABEL:
+        return _SEX_CODE_TO_LABEL[int(value)]
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        mapping = {
+            "male": "male",
+            "m": "male",
+            "man": "male",
+            "1": "male",
+            "female": "female",
+            "f": "female",
+            "woman": "female",
+            "2": "female",
+        }
+        return mapping.get(normalized)
+    return None
+
+
+def _normalize_hand_value(value):
+    """Normalize handedness values to BIDS labels."""
+    if _is_missing_participant_value(value) or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)) and int(value) in _HAND_CODE_TO_LABEL:
+        return _HAND_CODE_TO_LABEL[int(value)]
+    if isinstance(value, str):
+        normalized = value.strip().lower().replace("_", " ").replace("-", " ")
+        mapping = {
+            "right": "right",
+            "r": "right",
+            "right handed": "right",
+            "rh": "right",
+            "left": "left",
+            "l": "left",
+            "left handed": "left",
+            "lh": "left",
+            "ambidextrous": "ambidextrous",
+            "ambi": "ambidextrous",
+            "both": "ambidextrous",
+            "mixed": "ambidextrous",
+            "3": "ambidextrous",
+            "1": "right",
+            "2": "left",
+        }
+        return mapping.get(normalized)
+    return None
+
+
+def _resolve_subject_age(participants, subject_idx, raw=None):
+    """Resolve age with priority: per-subject list -> raw -> aggregate mean -> n/a."""
+    age = _get_subject_list_value(participants.ages, subject_idx)
+    if age is not None:
+        return age
+
+    if raw is not None and hasattr(raw, "_moabb_subject_age"):
+        raw_age = getattr(raw, "_moabb_subject_age")
+        if not _is_missing_participant_value(raw_age):
+            return raw_age
+
+    if participants.age_mean is not None:
+        return participants.age_mean
+    return "n/a"
+
+
+def _resolve_subject_sex(participants, subject_idx, raw=None):
+    """Resolve sex with priority: per-subject list -> raw subject_info -> n/a."""
+    sex = _normalize_sex_value(_get_subject_list_value(participants.sexes, subject_idx))
+    if sex is not None:
+        return sex
+
+    if raw is not None:
+        subject_info = raw.info.get("subject_info") or {}
+        sex = _normalize_sex_value(subject_info.get("sex"))
+        if sex is not None:
+            return sex
+    return "n/a"
+
+
+def _resolve_subject_hand(participants, subject_idx, raw=None):
+    """Resolve hand with robust fallback: list -> raw -> aggregate -> n/a."""
+    hand = _normalize_hand_value(
+        _get_subject_list_value(participants.handedness_list, subject_idx)
+    )
+    if hand is not None:
+        return hand
+
+    if raw is not None:
+        subject_info = raw.info.get("subject_info") or {}
+        hand = _normalize_hand_value(subject_info.get("hand"))
+        if hand is not None:
+            return hand
+
+    if isinstance(participants.handedness, dict):
+        counts = {"right": 0, "left": 0, "ambidextrous": 0}
+        for label, count in participants.handedness.items():
+            normalized = _normalize_hand_value(label)
+            if normalized in counts and isinstance(count, (int, float)):
+                counts[normalized] += count
+        total = sum(counts.values())
+        if total > 0:
+            for label, count in counts.items():
+                if count == total:
+                    return label
+    elif isinstance(participants.handedness, str):
+        hand = _normalize_hand_value(participants.handedness)
+        if hand is not None:
+            return hand
+
+    return "n/a"
+
+
 def _enrich_raw_info_from_metadata(raw, metadata, subject):
     """Set ``raw.info`` fields from dataset metadata before ``write_raw_bids``.
 
@@ -112,15 +251,11 @@ def _enrich_raw_info_from_metadata(raw, metadata, subject):
     subject_info = raw.info.get("subject_info") or {}
     subject_idx = subject - 1  # MOABB subjects are 1-based
 
-    # Sex: BIDS uses FHIR codes (0=unknown, 1=male, 2=female)
-    # Per-subject list takes priority over aggregate gender dict
-    _SEX_MAP = {"male": 1, "female": 2}
-    if (
-        participants.sexes
-        and subject_idx < len(participants.sexes)
-        and participants.sexes[subject_idx] is not None
-    ):
-        subject_info["sex"] = _SEX_MAP.get(participants.sexes[subject_idx].lower(), 0)
+    # Sex: BIDS uses FHIR codes (0=unknown, 1=male, 2=female).
+    # Per-subject list takes priority over aggregate gender dict.
+    sex = _normalize_sex_value(_get_subject_list_value(participants.sexes, subject_idx))
+    if sex is not None:
+        subject_info["sex"] = _SEX_LABEL_TO_CODE[sex]
     elif participants.gender:
         # Fallback: only set if the population is homogeneous (all one gender)
         total = sum(participants.gender.values())
@@ -132,17 +267,13 @@ def _enrich_raw_info_from_metadata(raw, metadata, subject):
     if (participants.gender or participants.sexes) and "his_id" not in subject_info:
         subject_info.setdefault("his_id", str(subject))
 
-    # Handedness: BIDS uses 1=right, 2=left, 3=ambidextrous
-    # Per-subject list takes priority over aggregate handedness
-    _HAND_MAP = {"right": 1, "left": 2, "ambidextrous": 3}
-    if (
-        participants.handedness_list
-        and subject_idx < len(participants.handedness_list)
-        and participants.handedness_list[subject_idx] is not None
-    ):
-        subject_info["hand"] = _HAND_MAP.get(
-            participants.handedness_list[subject_idx].lower(), 0
-        )
+    # Handedness: BIDS uses 1=right, 2=left, 3=ambidextrous.
+    # Per-subject list takes priority over aggregate handedness.
+    hand = _normalize_hand_value(
+        _get_subject_list_value(participants.handedness_list, subject_idx)
+    )
+    if hand is not None:
+        subject_info["hand"] = _HAND_LABEL_TO_CODE[hand]
     elif isinstance(participants.handedness, dict):
         total = sum(participants.handedness.values())
         if participants.handedness.get("right", 0) == total:
@@ -670,18 +801,8 @@ def _update_participants_tsv(root, subject, metadata, raw=None):
     if not tsv_path.exists():
         return
 
-    # Determine age for this subject
-    age = "n/a"
     subject_idx = subject - 1  # MOABB subjects are 1-based
-    if participants.ages and subject_idx < len(participants.ages):
-        age = participants.ages[subject_idx]
-    elif participants.age_mean is not None:
-        age = participants.age_mean
-
-    # Fallback: check raw for age (stored by dataset adapters)
-    if age == "n/a" and raw is not None:
-        if hasattr(raw, "_moabb_subject_age"):
-            age = raw._moabb_subject_age
+    age = _resolve_subject_age(participants, subject_idx, raw=raw)
 
     # Determine group (clinical_population takes priority over health_status)
     group = "n/a"
@@ -690,24 +811,8 @@ def _update_participants_tsv(root, subject, metadata, raw=None):
     elif participants.health_status:
         group = participants.health_status
 
-    # Determine per-subject sex
-    sex = "n/a"
-    if participants.sexes and subject_idx < len(participants.sexes):
-        sex = participants.sexes[subject_idx]
-
-    # Fallback: check raw.info["subject_info"] for sex
-    if sex == "n/a" and raw is not None:
-        si = raw.info.get("subject_info") or {}
-        sex_code = si.get("sex", 0)
-        if sex_code == 1:
-            sex = "male"
-        elif sex_code == 2:
-            sex = "female"
-
-    # Determine per-subject handedness
-    hand = "n/a"
-    if participants.handedness_list and subject_idx < len(participants.handedness_list):
-        hand = participants.handedness_list[subject_idx]
+    sex = _resolve_subject_sex(participants, subject_idx, raw=raw)
+    hand = _resolve_subject_hand(participants, subject_idx, raw=raw)
 
     # BCI experience
     bci_experience = "n/a"

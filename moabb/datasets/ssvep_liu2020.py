@@ -24,7 +24,7 @@ from .metadata.schema import (
     PreprocessingMetadata,
     Tags,
 )
-from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
+from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs, safe_extract_tar
 
 
 BETA_URL = "http://bci.med.tsinghua.edu.cn/upload/liubingchuan/"
@@ -255,9 +255,10 @@ class Liu2020BETA(BaseDataset):
         target_name = f"S{subject}.mat"
         data_dir.mkdir(parents=True, exist_ok=True)
         with tarfile.open(tar_path, "r:gz") as tf:
-            for member in tf.getmembers():
-                if member.name.endswith(target_name):
-                    tf.extract(member, data_dir)
+            members = [
+                member for member in tf.getmembers() if member.name.endswith(target_name)
+            ]
+            safe_extract_tar(tf, data_dir, members=members)
 
         if mat_file.exists():
             return str(mat_file)

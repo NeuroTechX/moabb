@@ -26,6 +26,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+from .utils import safe_extract_zip
 
 
 log = logging.getLogger(__name__)
@@ -223,9 +224,13 @@ class Chen2017SingleFlicker(BaseDataset):
         stream with direction labels ("N", "E", "W", "S", "0").
         Channels 1:33 (A1-A32) are extracted as EEG.
         """
-        from mne.utils import _soft_import
-
-        pyxdf = _soft_import("pyxdf", "loading XDF training data")
+        try:
+            import pyxdf
+        except ImportError as exc:
+            raise ImportError(
+                "The 'pyxdf' package is required to load XDF training data for "
+                "Chen2017SingleFlicker. Install it with `pip install moabb[xdf]`."
+            ) from exc
 
         streams, _ = pyxdf.load_xdf(str(xdf_path))
 
@@ -361,9 +366,12 @@ class Chen2017SingleFlicker(BaseDataset):
         # Extract both .mat and .xdf files
         data_dir.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(zip_path, "r") as zf:
-            for member in zf.namelist():
-                if member.endswith(".mat") or member.endswith(".xdf"):
-                    zf.extract(member, data_dir)
+            selected = [
+                member
+                for member in zf.infolist()
+                if member.filename.endswith(".mat") or member.filename.endswith(".xdf")
+            ]
+            safe_extract_zip(zf, data_dir, members=selected)
 
         mat_files = sorted(data_dir.rglob(f"{subject}_*.mat"))
         xdf_files = sorted(data_dir.rglob(f"{subject}_*.xdf"))

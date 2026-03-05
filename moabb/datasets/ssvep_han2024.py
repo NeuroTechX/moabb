@@ -24,7 +24,7 @@ from .metadata.schema import (
     PreprocessingMetadata,
     Tags,
 )
-from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs
+from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs, safe_extract_zip
 
 
 ZENODO_URL = "https://zenodo.org/records/10507229/files/"
@@ -280,7 +280,7 @@ class Han2024Fatigue(BaseDataset):
         # Extract
         data_dir.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(data_dir)
+            safe_extract_zip(zf, data_dir)
 
         # Find the .mat files in subdirectories
         all_paths = {}

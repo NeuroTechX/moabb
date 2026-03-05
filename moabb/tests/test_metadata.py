@@ -1,8 +1,14 @@
 """Tests for the metadata schema module."""
 
+import csv
 import dataclasses
+import json
 import typing
+from pathlib import Path
+from types import SimpleNamespace
 
+import mne
+import numpy as np
 import pytest
 
 # Module-level imports used as monkeypatch targets (setattr requires the module object)
@@ -11,6 +17,8 @@ import moabb.datasets.metadata as metadata_module  # noqa: F401
 import moabb.datasets.utils as dataset_utils  # noqa: F401
 
 # Named imports for direct use in test assertions and setup
+from moabb.datasets.bids_interface import _update_participants_tsv
+from moabb.datasets.lee2021_mobile import Lee2021Mobile
 from moabb.datasets.metadata import (
     DATASET_METADATA_CATALOG,
     AcquisitionMetadata,
@@ -20,7 +28,7 @@ from moabb.datasets.metadata import (
     ParticipantMetadata,
     get_dataset_metadata,
 )
-from moabb.datasets.utils import _init_dataset, dataset_dict
+from moabb.datasets.utils import _init_dataset, build_raw_from_epochs, dataset_dict
 
 
 class TestAcquisitionMetadata:
@@ -583,26 +591,37 @@ class TestMetadataCatalog:
             assert metadata.experiment.paradigm == "p300"
             assert "10.1016/j.neuroimage.2020.117465" in metadata.documentation.doi
 
-    @pytest.mark.parametrize(
-        "paradigm,expected_count",
-        [
-            ("imagery", 31),
-            ("p300", 36),
-            ("ssvep", 15),
-            ("cvep", 8),
-            ("rstate", 3),
-        ],
-    )
-    def test_paradigm_counts(self, paradigm, expected_count):
-        """Test that each paradigm has expected number of datasets."""
-        count = sum(
-            1
-            for m in DATASET_METADATA_CATALOG.values()
-            if m.experiment.paradigm == paradigm
+    @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep", "cvep", "rstate"])
+    def test_paradigm_counts(self, paradigm):
+        """Cross-check catalog paradigm counts against summary CSV rows."""
+        catalog_names = {
+            name
+            for name, meta in DATASET_METADATA_CATALOG.items()
+            if meta.experiment.paradigm == paradigm
+        }
+
+        summary_path = (
+            Path(__file__).resolve().parents[1] / "datasets" / f"summary_{paradigm}.csv"
         )
-        assert (
-            count == expected_count
-        ), f"Expected {expected_count} {paradigm} datasets, found {count}"
+        with open(summary_path, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            summary_names = {
+                row["Dataset"].strip() for row in reader if row.get("Dataset")
+            }
+
+        # Every summary entry should correspond to a catalog entry.
+        assert summary_names <= catalog_names
+
+        # Catalog entries omitted from summary must be umbrella datasets
+        # represented by one or more explicit variants (e.g., Name_*).
+        missing_from_summary = catalog_names - summary_names
+        allowed_omissions = {
+            name
+            for name in missing_from_summary
+            if any(candidate.startswith(f"{name}_") for candidate in catalog_names)
+        }
+        assert missing_from_summary == allowed_omissions
+        assert len(catalog_names) == len(summary_names) + len(allowed_omissions)
 
     def test_detected_paradigm_matches_experiment(self):
         """Test that detected_paradigm agrees with experiment.paradigm."""
@@ -744,3 +763,185 @@ class TestMetadataCatalog:
         assert (
             all_errors == []
         ), f"Found {len(all_errors)} type violations:\n" + "\n".join(all_errors[:20])
+
+
+class TestBuildRawFromEpochsValidation:
+    def test_valid_build_raw_from_epochs(self):
+        data = np.arange(2 * 3 * 4, dtype=float).reshape(2, 3, 4)
+        raw = build_raw_from_epochs(
+            data=data,
+            ch_names=["C3", "Cz", "C4"],
+            sfreq=128.0,
+            event_ids=[1, 2],
+            montage_name="standard_1005",
+            onset_sample=1,
+            buffer_samples=0,
+        )
+
+        stim = raw.get_data(picks=[raw.ch_names.index("stim")])[0]
+        assert raw.info["nchan"] == 4
+        assert np.where(stim > 0)[0].tolist() == [1, 5]
+        assert stim[1] == 1
+        assert stim[5] == 2
+
+    def test_rejects_invalid_data_shape(self):
+        with pytest.raises(ValueError, match="data must have shape"):
+            build_raw_from_epochs(
+                data=np.zeros((3, 4)),
+                ch_names=["C3", "Cz", "C4"],
+                sfreq=128.0,
+                event_ids=[1, 2, 3],
+                montage_name="standard_1005",
+            )
+
+    def test_rejects_scalar_event_ids(self):
+        with pytest.raises(ValueError, match="event_ids must be a 1D array-like"):
+            build_raw_from_epochs(
+                data=np.zeros((2, 3, 4)),
+                ch_names=["C3", "Cz", "C4"],
+                sfreq=128.0,
+                event_ids=1,
+                montage_name="standard_1005",
+            )
+
+    def test_rejects_negative_onset_sample(self):
+        with pytest.raises(ValueError, match="onset_sample .* must be between 0"):
+            build_raw_from_epochs(
+                data=np.zeros((2, 3, 4)),
+                ch_names=["C3", "Cz", "C4"],
+                sfreq=128.0,
+                event_ids=[1, 2],
+                montage_name="standard_1005",
+                onset_sample=-1,
+            )
+
+
+class TestLee2021MobileSessionNormalization:
+    @staticmethod
+    def _make_mock_raw():
+        info = mne.create_info(["Oz"], sfreq=500.0, ch_types=["eeg"])
+        raw = mne.io.RawArray(np.zeros((1, 50)), info, verbose=False)
+        raw.set_annotations(
+            mne.Annotations(
+                onset=[0.0, 0.01, 0.02],
+                duration=[0.0, 0.0, 0.0],
+                description=["Stimulus/S 11", "Stimulus/S 12", "Stimulus/S 13"],
+            )
+        )
+        return raw
+
+    def test_selected_sessions_accept_unpadded_integer(self, monkeypatch):
+        dataset = Lee2021Mobile(paradigm="ssvep", subjects=[1], sessions=[2])
+        fake_files = [
+            "/tmp/sub-01_ses-02_task-SSVEP_eeg.vhdr",
+            "/tmp/sub-01_ses-03_task-SSVEP_eeg.vhdr",
+        ]
+        monkeypatch.setattr(dataset, "data_path", lambda subject: fake_files)
+        monkeypatch.setattr(
+            "moabb.datasets.lee2021_mobile.mne.io.read_raw_brainvision",
+            lambda *args, **kwargs: self._make_mock_raw(),
+        )
+
+        subject_sessions = dataset._get_single_subject_data(1)
+        assert set(subject_sessions) == {"2", "3"}
+
+        monkeypatch.setattr(
+            dataset,
+            "_get_single_subject_data_using_cache",
+            lambda subject, cache_config, process_pipeline: subject_sessions,
+        )
+        data = dataset.get_data(subjects=[1])
+        assert set(data[1]) == {"2"}
+
+
+class TestParticipantsResolutionOrdering:
+    @staticmethod
+    def _write_participants_tsv(tmp_path, participant_ids):
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            for pid in participant_ids:
+                writer.writerow({"participant_id": pid})
+        return tsv_path
+
+    @staticmethod
+    def _read_participants_tsv(tsv_path):
+        with open(tsv_path, newline="", encoding="utf-8") as f:
+            return list(csv.DictReader(f, delimiter="\t"))
+
+    @staticmethod
+    def _make_raw(subject_info=None, age=None):
+        raw = SimpleNamespace(info={})
+        if subject_info is not None:
+            raw.info["subject_info"] = subject_info
+        if age is not None:
+            raw._moabb_subject_age = age
+        return raw
+
+    def test_age_resolution_priority(self, tmp_path):
+        tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=2,
+                ages=[25, None],
+                age_mean=44.0,
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+
+        _update_participants_tsv(tmp_path, 1, metadata, raw=self._make_raw(age=31))
+        _update_participants_tsv(tmp_path, 2, metadata, raw=self._make_raw(age=31))
+        rows = self._read_participants_tsv(tsv_path)
+
+        assert rows[0]["age"] == "25"
+        assert rows[1]["age"] == "31"
+
+    def test_sex_and_hand_resolution_priority_and_parsing(self, tmp_path):
+        tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=2,
+                sexes=["male", None],
+                handedness_list=[None, None],
+                handedness={"left": 2},
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+
+        # Subject 1: metadata list has priority over raw sex.
+        _update_participants_tsv(
+            tmp_path,
+            1,
+            metadata,
+            raw=self._make_raw(subject_info={"sex": 2, "hand": 2}),
+        )
+        # Subject 2: fallback to raw subject_info with numeric strings.
+        _update_participants_tsv(
+            tmp_path,
+            2,
+            metadata,
+            raw=self._make_raw(subject_info={"sex": "2", "hand": "1"}),
+        )
+        rows = self._read_participants_tsv(tsv_path)
+
+        assert rows[0]["sex"] == "male"
+        assert rows[0]["hand"] == "left"
+        assert rows[1]["sex"] == "female"
+        assert rows[1]["hand"] == "right"
+
+    def test_doi_cache_metadata_total_matches_entries(self):
+        cache_path = Path(__file__).resolve().parent / "doi_cache.json"
+        with open(cache_path, encoding="utf-8") as f:
+            cache = json.load(f)
+        assert "_metadata" in cache
+        assert "total" in cache["_metadata"]
+        total = cache["_metadata"]["total"]
+        actual = sum(1 for key in cache if key != "_metadata")
+        assert total == actual

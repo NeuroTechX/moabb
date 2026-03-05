@@ -25,7 +25,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from .utils import FIGSHARE_DL_URL
+from .utils import FIGSHARE_DL_URL, safe_extract_tar
 
 
 # Figshare file IDs for per-subject tar.gz files (S1.tar.gz through S100.tar.gz)
@@ -522,7 +522,7 @@ class Liu2022EldBETA(BaseDataset):
 
         extract_dir.mkdir(parents=True, exist_ok=True)
         with tarfile.open(tar_path, "r:gz") as tf:
-            tf.extractall(extract_dir)
+            safe_extract_tar(tf, extract_dir)
 
         # Verify files exist after extraction
         missing = [p for p in gdf_paths if not p.exists()]

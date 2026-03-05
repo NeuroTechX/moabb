@@ -22,6 +22,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+from .utils import safe_extract_zip
 
 
 _ZENODO_RECORD = "18873228"
@@ -50,9 +51,9 @@ class Wang2021Combined(BaseDataset):
 
     Warnings
     --------
-    The original Figshare archive contained only 8 of the 20 subjects
-    described in the paper. Subject numbering (S01-S08) is based on
-    alphabetical order of the original subject name prefixes.
+    The Zenodo archive used by this adapter contains only 8 of the 20
+    subjects described in the paper. Subject numbering (S01-S08) is based
+    on alphabetical order of the original subject name prefixes.
 
     References
     ----------
@@ -167,7 +168,8 @@ class Wang2021Combined(BaseDataset):
 
         runs = {}
         for run_idx, cnt_path in enumerate(cnt_files):
-            raw = mne.io.read_raw_cnt(cnt_path, preload=True, verbose=False)
+            # ANT Neuro .cnt files should be read with the ANT reader.
+            raw = mne.io.read_raw_ant(cnt_path, preload=True, verbose=False)
 
             # Rename annotation descriptions from trigger codes to frequencies
             raw.annotations.rename(self._TRIGGER_MAP)
@@ -199,7 +201,7 @@ class Wang2021Combined(BaseDataset):
         # Extract .cnt files into subject directory
         subject_dir.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(zip_path) as zf:
-            zf.extractall(subject_dir)
+            safe_extract_zip(zf, subject_dir)
 
         cnt_files = sorted(subject_dir.glob("*.cnt"))
         if not cnt_files:

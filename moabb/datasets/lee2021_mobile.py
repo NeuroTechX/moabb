@@ -268,6 +268,12 @@ class Lee2021Mobile(BaseDataset):
                     break
             if session is None:
                 session = "0"
+            else:
+                # Canonicalize BIDS ses-02 -> "2" so selected_sessions=[2] matches.
+                try:
+                    session = str(int(session))
+                except ValueError:
+                    session = str(session)
 
             raw = mne.io.read_raw_brainvision(str(vhdr_path), preload=True, verbose=False)
 
