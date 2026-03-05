@@ -36,29 +36,75 @@ BASE_URL = "https://physionet.org/files/bigp3bci/1.0.0/"
 # URL for the SHA256SUMS.txt file used as manifest
 _MANIFEST_URL = BASE_URL + "SHA256SUMS.txt"
 
-# Studies and their subject counts
-# Study letter -> (n_subjects, has_ALS, grid_size, site)
+# Studies and their metadata
+# Study letter -> (local_subject_ids, has_ALS, grid_size, site)
+# Local IDs are non-sequential in some studies (gaps from excluded participants)
 _STUDIES = {
-    "A": (13, False, "9x8", "Duke"),
-    "B": (18, True, "6x6", "ETSU"),
-    "C": (19, False, "9x8", "Duke"),
-    "D": (17, False, "9x8", "Duke"),
-    "E": (8, False, "9x8", "Duke"),
-    "F": (10, True, "9x8", "Mixed"),
-    "G": (20, False, "9x8", "Duke"),
-    "H": (16, False, "9x8", "Duke"),
-    "I": (13, False, "9x8", "Duke"),
-    "J": (20, False, "6x6", "ETSU"),
-    "K": (5, False, "9x8", "Duke"),
-    "L": (11, True, "6x6", "ETSU"),
-    "M": (21, False, "9x8", "Duke"),
-    "N": (8, True, "6x6", "ETSU"),
-    "O": (18, False, "9x8", "ETSU"),
-    "P": (19, False, "9x8", "ETSU"),
-    "Q": (36, False, "9x8", "ETSU"),
-    "R": (20, False, "9x8", "ETSU"),
-    "S1": (10, False, "9x8", "ETSU"),
-    "S2": (24, False, "9x8", "ETSU"),
+    "A": ([1, 2, 3, 4, 5, 6, 7, 9, 14, 15, 16, 17, 19], False, "9x8", "Duke"),
+    "B": (
+        [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21],
+        True,
+        "6x6",
+        "ETSU",
+    ),
+    "C": (
+        [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 22],
+        False,
+        "9x8",
+        "Duke",
+    ),
+    "D": (list(range(1, 18)), False, "9x8", "Duke"),
+    "E": (list(range(1, 9)), False, "9x8", "Duke"),
+    "F": ([3, 5, 6, 7, 8, 20, 21, 23, 24, 25], True, "9x8", "Mixed"),
+    "G": (list(range(1, 21)), False, "9x8", "Duke"),
+    "H": (list(range(1, 17)), False, "9x8", "Duke"),
+    "I": (list(range(1, 14)), False, "9x8", "Duke"),
+    "J": (list(range(1, 21)), False, "6x6", "ETSU"),
+    "K": ([1, 2, 3, 4, 9], False, "9x8", "Duke"),
+    "L": (list(range(1, 12)), True, "6x6", "ETSU"),
+    "M": (
+        [4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
+        False,
+        "9x8",
+        "Duke",
+    ),
+    "N": (list(range(1, 9)), True, "6x6", "ETSU"),
+    "O": (list(range(1, 19)), False, "9x8", "ETSU"),
+    "P": (list(range(1, 20)), False, "9x8", "ETSU"),
+    "Q": (list(range(1, 37)), False, "9x8", "ETSU"),
+    "R": (list(range(1, 21)), False, "9x8", "ETSU"),
+    "S1": (list(range(1, 11)), False, "9x8", "ETSU"),
+    "S2": (
+        [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            25,
+            26,
+            27,
+            28,
+        ],
+        False,
+        "9x8",
+        "ETSU",
+    ),
 }
 
 # 16 EEG channels used in ETSU studies (subset of Duke's 32)
@@ -105,12 +151,13 @@ _DUKE_CHANNELS = _ETSU_CHANNELS + [
 def _build_subject_map():
     """Build a mapping from global subject number to (study, local_subject_num).
 
-    Returns a dict: {1: ("A", 1), 2: ("A", 2), ..., 326: ("S2", 24)}
+    Returns a dict: {1: ("A", 1), 2: ("A", 2), ..., 327: ("S2", 28)}
+    Local subject IDs may be non-sequential (gaps from excluded participants).
     """
     subject_map = {}
     global_idx = 1
-    for study, (n_subjects, *_) in _STUDIES.items():
-        for local_idx in range(1, n_subjects + 1):
+    for study, (local_ids, *_) in _STUDIES.items():
+        for local_idx in local_ids:
             subject_map[global_idx] = (study, local_idx)
             global_idx += 1
     return subject_map
@@ -167,7 +214,7 @@ class Mainsah2025(BaseDataset):
     Brain-Computer Interface dataset curated from 20 visual P300 speller
     studies conducted at Duke University and East Tennessee State University.
 
-    The dataset includes 326 participants across 20 studies (A through S2),
+    The dataset includes 327 participants across 20 studies (A through S2),
     including 47 participants with ALS (studies B, F, L, N). EEG was recorded
     using g.tec g.USBamp amplifiers at 256 Hz.
 
@@ -198,7 +245,7 @@ class Mainsah2025(BaseDataset):
     Parameters
     ----------
     subjects : list of int, optional
-        List of subject numbers to load (1 to 326). If None, all subjects.
+        List of subject numbers to load (1 to 327). If None, all subjects.
     sessions : list, optional
         List of sessions to load. If None, all sessions.
 
@@ -472,7 +519,7 @@ class Mainsah2025(BaseDataset):
         Parameters
         ----------
         subject : int
-            The subject number (1 to 326).
+            The subject number (1 to 327).
         path : None | str
             Location of where to look for the data storing location.
         force_update : bool
@@ -520,7 +567,7 @@ class Mainsah2025(BaseDataset):
         Parameters
         ----------
         subject : int
-            The global subject number (1 to 326).
+            The global subject number (1 to 327).
 
         Returns
         -------
