@@ -422,6 +422,7 @@ div.frontpage-gallery .card-img-overlay {
   --ds-radius: 14px;
   --ds-font-heading: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
   --ds-font-body: "Source Sans 3", "Avenir Next", "Segoe UI", sans-serif;
+  --ds-font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 html[data-theme="dark"] {
@@ -872,7 +873,7 @@ html[data-theme="dark"] .admonition-experimental-protocol > .admonition-title {
   top: 0.78rem;
   right: 1.02rem;
   font-size: 0.9rem;
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-weight: 700;
   padding: 0.08rem 0.28rem;
   border-radius: 7px;
@@ -1031,7 +1032,7 @@ html[data-theme="dark"] .ds-card {
 }
 
 .ds-pv-metrics strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.8rem;
   color: var(--ds-accent-strong);
 }
@@ -1143,7 +1144,7 @@ html[data-theme="dark"] .ds-overview-teaser {
 }
 
 .ds-overview-teaser code {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.78rem;
   padding: 0.1em 0.3em;
   border-radius: 3px;
@@ -1347,7 +1348,7 @@ html[data-theme="dark"] .ds-overview-teaser {
   padding: 0.9rem 1rem;
   background: transparent;
   font-size: 0.85rem;
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   line-height: 1.55;
   overflow-x: auto;
   border-radius: 0;
@@ -1469,7 +1470,7 @@ html[data-theme="dark"] .ds-benchmark-note {
 }
 
 .ds-benchmark-context li strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.79rem;
   color: var(--ds-accent-strong);
 }
@@ -1653,7 +1654,7 @@ html[data-theme="dark"] .ds-citation-impact {
 }
 
 .ds-hed-bar-row strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.73rem;
   color: var(--ds-accent-strong);
 }
@@ -1715,7 +1716,7 @@ html[data-theme="dark"] .ds-citation-impact {
   border-top: 1px dashed var(--ds-accent-soft);
   font-size: 0.69rem;
   line-height: 1.35;
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   color: var(--pst-color-text-base);
   background: transparent;
   white-space: pre-wrap;
@@ -1729,7 +1730,7 @@ html[data-theme="dark"] .ds-citation-impact {
 }
 
 .ds-hed-event-name {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.72rem;
   color: var(--pst-color-text-muted);
 }
@@ -1808,7 +1809,7 @@ html[data-theme="dark"] .ds-viz-card {
 }
 
 .ds-channel-row strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--pst-color-text-base);

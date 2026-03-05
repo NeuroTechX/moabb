@@ -58,6 +58,9 @@ _BENCHMARK_CONTEXT_CACHE = {}
 _DOI_METADATA_CACHE = {}
 _DOI_CACHE_LOADED = False
 _DOI_RE = re.compile(r"^10\.\d{4,}/", re.IGNORECASE)
+_RST_INLINE_RE = re.compile(r"\*\*(.+?)\*\*|``(.+?)``|\*(.+?)\*")
+_RST_FOOTNOTE_RE = re.compile(r"\s*\[\d+\]_\.?")
+_RST_LIST_SPLIT_RE = re.compile(r"\s+- ")
 _DATASET_PAGEVIEWS_CACHE = None
 _DATASET_PAGEVIEWS_CACHE_SRC = None
 
@@ -945,12 +948,12 @@ def _rst_paragraph_to_html(text):
     and strips footnote references like [1]_.
     """
     # Strip reST footnote references
-    text = re.sub(r"\s*\[\d+\]_\.?", "", text)
+    text = _RST_FOOTNOTE_RE.sub("", text)
 
     # Check if this is a list block (lines starting with "- ")
     if " - " in text and text.lstrip().startswith("- "):
         # Split on " - " pattern that indicates list items
-        items = re.split(r"\s+- ", text)
+        items = _RST_LIST_SPLIT_RE.split(text)
         items = [it.strip() for it in items if it.strip()]
         formatted = []
         for item in items:
@@ -966,8 +969,7 @@ def _rst_inline_to_html(text):
     parts = []
     pos = 0
     # Match **bold**, *italic*, ``code`` — process in order of appearance
-    pattern = re.compile(r"\*\*(.+?)\*\*|``(.+?)``|\*(.+?)\*")
-    for m in pattern.finditer(text):
+    for m in _RST_INLINE_RE.finditer(text):
         # Escape text before this match
         parts.append(escape(text[pos : m.start()]))
         if m.group(1) is not None:
