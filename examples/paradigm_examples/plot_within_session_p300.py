@@ -22,7 +22,6 @@ We will use the P300 paradigm, which uses the AUC as metric.
 import warnings
 
 import matplotlib.pyplot as plt
-import seaborn as sns
 from mne.decoding import Vectorizer
 from pyriemann.estimation import Xdawn, XdawnCovariances
 from pyriemann.tangentspace import TangentSpace
@@ -30,6 +29,8 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
+import moabb.analysis.plotting as moabb_plt
+from moabb.analysis.chance_level import chance_by_chance
 from moabb.datasets import BNCI2014_009
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
@@ -95,23 +96,11 @@ results = evaluation.process(pipelines)
 # Plot Results
 # ----------------
 #
-# Here we plot the results to compare the two pipelines
+# Here we plot the results using the MOABB score plot with chance level
+# annotations. The P300 paradigm has 2 classes (Target / NonTarget) with
+# a theoretical chance level of 50%.
 
-fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
+chance_levels = chance_by_chance(results, alpha=[0.05, 0.01])
 
-sns.stripplot(
-    data=results,
-    y="score",
-    x="pipeline",
-    ax=ax,
-    jitter=True,
-    alpha=0.5,
-    zorder=1,
-    palette="Set1",
-)
-sns.pointplot(data=results, y="score", x="pipeline", ax=ax, palette="Set1")
-
-ax.set_ylabel("ROC AUC")
-ax.set_ylim(0.5, 1)
-
+fig, _ = moabb_plt.score_plot(results, chance_level=chance_levels)
 plt.show()

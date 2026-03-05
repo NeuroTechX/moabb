@@ -11,6 +11,13 @@ from dateutil import parser
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 from moabb.utils import _handle_deprecated_kwargs
 
@@ -127,6 +134,45 @@ class MartinezCagigal2023Checker(BaseDataset):
 
     .. versionadded:: 1.2.0
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            n_channels=16,
+            channel_types={"eeg": 16},
+        ),
+        participants=ParticipantMetadata(n_subjects=16),
+        experiment=ExperimentMetadata(paradigm="cvep"),
+        documentation=DocumentationMetadata(
+            doi="10.71569/7c67-v596",
+            associated_paper_doi="10.3389/fnhum.2023.1288438",
+            related_paper_dois=["10.1016/j.cmpb.2023.107357"],
+            publication_year=2023,
+            investigators=[
+                "Álvaro Fernández-Rodríguez",
+                "Víctor Martínez-Cagigal",
+                "Eduardo Santamaría-Vázquez",
+                "Ricardo Ron-Angevin",
+                "Roberto Hornero",
+            ],
+            senior_author="Roberto Hornero",
+            institution="University of Valladolid",
+            institution_department="Biomedical Engineering Group, ETSIT",
+            institution_address="Paseo de Belén, 15, 47011, Valladolid, Spain",
+            country="ES",
+            contact_info=["victor.martinez@gib.tel.uva.es"],
+            ethics_approval=[
+                "Approved by the local ethics committee; all participants provided informed consent"
+            ],
+            data_url="https://doi.org/10.71569/7c67-v596",
+            how_to_acknowledge=(
+                "Please cite: Fernández-Rodríguez et al. (2023). Influence of spatial "
+                "frequency in visual stimuli for cVEP-based BCIs: evaluation of performance "
+                "and user experience. Frontiers in Human Neuroscience, 17, 1288438. "
+                "https://doi.org/10.3389/fnhum.2023.1288438"
+            ),
+        ),
+    )
 
     def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"Conditions": "conditions"}

@@ -277,6 +277,15 @@ class Schirrmeister2017(BaseDataset):
                 "model interpretability",
                 "brain mapping",
             ],
+            acknowledgements=(
+                "Funded by BrainLinks-BrainTools Cluster of Excellence (DFG, EXC1086) "
+                "and the Federal Ministry of Education and Research (BMBF, Motor-BIC 13GW0053D)."
+            ),
+            how_to_acknowledge=(
+                "Please cite: Schirrmeister et al. (2017). Deep learning with convolutional "
+                "neural networks for EEG decoding and visualization. Human Brain Mapping, "
+                "38(11), 5391-5420. https://doi.org/10.1002/hbm.23730"
+            ),
             repository="GitHub",
             data_url="https://web.gin.g-node.org/robintibor/high-gamma-dataset/",
             license="CC-BY-4.0",

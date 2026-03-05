@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Dict, Type
 
 import mne
 import mne_bids
+import pandas as pd
 from numpy import load as np_load
 from numpy import save as np_save
 
@@ -643,7 +644,7 @@ def _build_dataset_description_kwargs(dataset):
     return kwargs
 
 
-def _update_participants_tsv(root, subject, metadata):
+def _update_participants_tsv(root, subject, metadata, raw=None):
     """Patch ``participants.tsv`` with demographic data from metadata.
 
     Adds ``age`` and ``group`` columns. Updates the ``participants.json``
@@ -677,6 +678,11 @@ def _update_participants_tsv(root, subject, metadata):
     elif participants.age_mean is not None:
         age = participants.age_mean
 
+    # Fallback: check raw for age (stored by dataset adapters)
+    if age == "n/a" and raw is not None:
+        if hasattr(raw, "_moabb_subject_age"):
+            age = raw._moabb_subject_age
+
     # Determine group (clinical_population takes priority over health_status)
     group = "n/a"
     if participants.clinical_population:
@@ -688,6 +694,15 @@ def _update_participants_tsv(root, subject, metadata):
     sex = "n/a"
     if participants.sexes and subject_idx < len(participants.sexes):
         sex = participants.sexes[subject_idx]
+
+    # Fallback: check raw.info["subject_info"] for sex
+    if sex == "n/a" and raw is not None:
+        si = raw.info.get("subject_info") or {}
+        sex_code = si.get("sex", 0)
+        if sex_code == 1:
+            sex = "male"
+        elif sex_code == 2:
+            sex = "female"
 
     # Determine per-subject handedness
     hand = "n/a"
@@ -2398,6 +2413,11 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 'Encountered data in "double" format',
                 RuntimeWarning,
             )
+            # Save annotation extras before write_raw_bids (which may
+            # strip them).  We patch events.tsv afterwards.
+            ann_extras = getattr(raw.annotations, "extras", None)
+            has_extras = ann_extras is not None and any(ann_extras)
+
             mne_bids.write_raw_bids(
                 raw,
                 bids_path,
@@ -2407,6 +2427,26 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 overwrite=False,
                 verbose=self.verbose,
             )
+
+            # Append per-event metadata from annotation extras (e.g.
+            # triallength for Stieger2021) as extra columns in events.tsv.
+            if has_extras:
+                events_path = bids_path.copy().update(suffix="events", extension=".tsv")
+                events_fpath = events_path.fpath
+                if events_fpath.exists():
+                    df = pd.read_csv(str(events_fpath), sep="\t")
+                    extras_df = pd.DataFrame(ann_extras)
+                    if len(extras_df) == len(df):
+                        for col in extras_df.columns:
+                            df[col] = extras_df[col]
+                        df.to_csv(str(events_fpath), sep="\t", index=False, na_rep="n/a")
+                    else:
+                        log.warning(
+                            "Annotation extras length (%d) does not match "
+                            "events.tsv rows (%d); skipping extras.",
+                            len(extras_df),
+                            len(df),
+                        )
 
         # Post-write enrichment: update EEG sidecar with metadata fields
         if metadata is not None:
@@ -2426,7 +2466,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                         json.dump(sc, f, indent="\t")
 
             # Patch participants.tsv with demographic data
-            _update_participants_tsv(bids_path.root, self.subject, metadata)
+            _update_participants_tsv(bids_path.root, self.subject, metadata, raw=raw)
 
             # Patch electrodes.tsv with material and type
             _update_electrodes_tsv(bids_path, metadata)

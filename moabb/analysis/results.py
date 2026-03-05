@@ -137,12 +137,12 @@ class Results:
             else:
                 return res
 
-        col_names = ["score", "time", "samples"]
+        col_names = ["score", "time", "samples", "samples_test", "n_classes"]
         if _carbonfootprint:
-            n_cols = 4
+            n_cols = 6
             col_names.append("carbon_emission")
         else:
-            n_cols = 3
+            n_cols = 5
 
         with _open_lock_hdf5(self.filepath, "r+") as f:
             for name, data_dict in results.items():
@@ -188,6 +188,8 @@ class Results:
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
+                # Backward compat: existing dataset may have fewer columns
+                n_existing = dset["data"].shape[1]
                 for d in dlist:
                     # add id and scores to group
                     length = len(dset["id"]) + 1
@@ -202,7 +204,13 @@ class Results:
                             f"were specified in the evaluation, but results"
                             f" contain only these keys: {d.keys()}."
                         ) from None
-                    cols = [d["score"], d["time"], d["n_samples"]]
+                    cols = [
+                        d["score"],
+                        d["time"],
+                        d["n_samples"],
+                        d.get("n_samples_test", np.nan),
+                        d.get("n_classes", np.nan),
+                    ]
                     if _carbonfootprint:
                         # Always add carbon_emission column if codecarbon is available
                         if "carbon_emission" in d:
@@ -221,12 +229,8 @@ class Results:
                                 d.get("codecarbon_task_name", "")
                             )
 
-                    dset["data"][-1, :] = np.asarray(
-                        [
-                            *cols,
-                            *add_cols,
-                        ]
-                    )
+                    all_cols = np.asarray([*cols, *add_cols])
+                    dset["data"][-1, :] = all_cols[:n_existing]
 
     def to_dataframe(self, pipelines=None, process_pipeline=None):
         df_list = []
@@ -266,7 +270,11 @@ class Results:
                         ).astype(str)
                     df_list.append(df)
 
-        return pd.concat(df_list, ignore_index=True)
+        result = pd.concat(df_list, ignore_index=True)
+        for col in ("samples_test", "n_classes"):
+            if col not in result.columns:
+                result[col] = np.nan
+        return result
 
     def not_yet_computed(self, pipelines, dataset, subj, process_pipeline):
         """Check if a results is missing.

@@ -201,11 +201,16 @@ class Liu2020BETA(BaseDataset):
         n_classes = len(self.event_id)
 
         fname = self.data_path(subject)
-        mat = loadmat(fname, squeeze_me=True)
+        mat = loadmat(fname)  # no squeeze for reliable struct access
 
         # Struct: data.EEG shape [64, 750, 4, 40] (ch, time, blocks, targets)
         raw_data = mat["data"]
-        eeg = raw_data["EEG"].item()
+        eeg = raw_data["EEG"][0, 0]
+
+        # Extract per-subject demographics from suppl_info
+        suppl = raw_data["suppl_info"][0, 0]
+        age = int(round(float(suppl["age"][0, 0].flat[0])))
+        gender = str(suppl["gender"][0, 0].flat[0])
 
         # Transpose to [targets, blocks, channels, time] then reshape
         data = np.transpose(eeg, axes=(3, 2, 0, 1))
@@ -215,6 +220,16 @@ class Liu2020BETA(BaseDataset):
         raw = build_raw_from_epochs(
             data, TSINGHUA_64CH_NAMES, 250, event_ids, "standard_1005"
         )
+
+        # Set subject_info for BIDS export (sex, his_id are MNE-supported keys)
+        _sex_map = {"male": 1, "female": 2}
+        raw.info["subject_info"] = {
+            "sex": _sex_map.get(gender.lower(), 0),
+            "his_id": str(subject),
+        }
+        # Store age separately (MNE SubjectInfo doesn't support custom keys)
+        raw._moabb_subject_age = age
+
         return {"0": {"0": raw}}
 
     def data_path(

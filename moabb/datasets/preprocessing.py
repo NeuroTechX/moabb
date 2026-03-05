@@ -504,6 +504,21 @@ class SetRawAnnotations(FixedTransformer):
         offset = int(self.interval[0] * raw.info["sfreq"])
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         has_annotation_extras = False
+
+        # Check for annotation extras before events extraction potentially
+        # destroys the original annotations.  This works regardless of
+        # whether a stim channel is present.
+        orig_extras = (
+            getattr(raw.annotations, "extras", None) if raw.annotations else None
+        )
+        if orig_extras is not None and any(orig_extras):
+            has_annotation_extras = True
+            sfreq = raw.info["sfreq"]
+            extras_by_sample = {}
+            for ann, extra in zip(raw.annotations, orig_extras):
+                sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
+                extras_by_sample[sample] = extra
+
         if len(stim_channels) == 0:
             if raw.annotations is None:
                 log.warning(
@@ -514,16 +529,6 @@ class SetRawAnnotations(FixedTransformer):
                 raise ValueError(
                     "When no stim channel is present, event_id values must be integers (not lists)."
                 )
-            # Build lookup of extras by sample position before events extraction
-            # destroys the original annotations
-            orig_extras = getattr(raw.annotations, "extras", None)
-            if orig_extras is not None and any(orig_extras):
-                has_annotation_extras = True
-                sfreq = raw.info["sfreq"]
-                extras_by_sample = {}
-                for ann, extra in zip(raw.annotations, orig_extras):
-                    sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
-                    extras_by_sample[sample] = extra
 
             events, _ = mne.events_from_annotations(
                 raw, event_id=self.event_id, verbose=False

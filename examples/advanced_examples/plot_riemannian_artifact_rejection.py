@@ -107,6 +107,15 @@ warnings.filterwarnings("ignore", category=RuntimeWarning, module="pyriemann")
 
 moabb.set_log_level("info")
 
+
+def predict_clean_mask(model, covariances):
+    """Return clean-epoch mask across pyRiemann label encodings."""
+    labels = np.asarray(model.predict(covariances))
+    if np.issubdtype(labels.dtype, np.number) and np.any(labels < 0):
+        return labels > 0
+    return labels.astype(bool)
+
+
 ##############################################################################
 # Load Dataset and Visualize Data
 # --------------------------------
@@ -171,7 +180,7 @@ print(f"Channels: {epochs.ch_names}")
 # **Limitation:** As the number of channels increases, the distance
 # becomes an average over many sensor contributions. Artifacts affecting
 # only a few channels may not produce a large enough distance to be
-# detected [3]_. This motivates the Potato Field.
+# detected [2]_. This motivates the Potato Field.
 
 ##############################################################################
 # Visualizing the Riemannian Potato
@@ -179,7 +188,7 @@ print(f"Channels: {epochs.ch_names}")
 #
 # We compute covariance matrices and fit a Riemannian Potato to illustrate
 # how z-scores separate clean from artifacted epochs. This visualization
-# is inspired by Figure 1 and Figure 2 of [3]_.
+# is inspired by Figure 2 of [3]_.
 
 data = epochs.get_data()
 covs = Covariances(estimator="lwf").transform(data)
@@ -192,7 +201,7 @@ covs = Covariances(estimator="lwf").transform(data)
 potato = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
 potato.fit(covs)
 z_scores = potato.transform(covs)
-is_clean = potato.predict(covs).astype(bool)
+is_clean = predict_clean_mask(potato, covs)
 
 print(f"RP detected {(~is_clean).sum()}/{len(covs)} artifact epochs")
 
@@ -235,103 +244,170 @@ plt.show()
 # This visualization is inspired by Figure 1 of [2]_ (see also
 # `pyRiemann's example <https://pyriemann.readthedocs.io/en/latest/auto_examples/artifacts/plot_detect_riemannian_potato_EEG.html>`_). We project the
 # covariance matrices onto a 2D plane defined by two selected channels
-# (FCz and Cz) and display the z-score isocontours. The characteristic
+# (Oz and C4) and display the z-score isocontours. The characteristic
 # "potato" shape arises from the non-linearity of the Riemannian
 # manifold. Clean epochs cluster inside the potato, while artifacts
 # fall outside.
 
-# Select two central channels for 2D visualization
-ch_idx_fcz = epochs.ch_names.index("FCz")
-ch_idx_cz = epochs.ch_names.index("Cz")
-covs_2d = covs[:, [ch_idx_fcz, ch_idx_cz], :][:, :, [ch_idx_fcz, ch_idx_cz]]
+# Select two channels with clearer spread for this 2D visualization
+ch_name_x = "Oz"
+ch_name_y = "C4"
+ch_idx_x = epochs.ch_names.index(ch_name_x)
+ch_idx_y = epochs.ch_names.index(ch_name_y)
+covs_2d = covs[:, [ch_idx_x, ch_idx_y], :][:, :, [ch_idx_x, ch_idx_y]]
 
-potato_2d = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
-potato_2d.fit(covs_2d)
+# Offline calibration on early epochs, following pyRiemann's potato example.
+n_calib_2d = min(40, len(covs_2d))
+z_threshold_2d = 3.0
+potato_2d = Potato(
+    metric=dict(mean="riemann", distance="riemann"),
+    threshold=z_threshold_2d,
+)
+potato_2d.fit(covs_2d[:n_calib_2d])
 z_2d = potato_2d.transform(covs_2d)
-is_clean_2d = potato_2d.predict(covs_2d).astype(bool)
+is_clean_2d = predict_clean_mask(potato_2d, covs_2d)
 barycenter_2d = potato_2d.covmean_
 
-# Extract the (0,0) and (1,1) diagonal entries for plotting
-x_vals = covs_2d[:, 0, 0]  # variance of FCz
-y_vals = covs_2d[:, 1, 1]  # variance of Cz
+# Extract the (0,0) and (1,1) diagonal entries for plotting.
+# Scale to uV^2 for more readable axis values.
+cov_scale = 1e12
+x_vals = covs_2d[:, 0, 0] * cov_scale
+y_vals = covs_2d[:, 1, 1] * cov_scale
 
-fig, ax = plt.subplots(figsize=(7, 6), facecolor="white")
+# Compare Riemannian and Euclidean potatoes on the same calibration set.
+potato_2d_euclid = Potato(
+    metric=dict(mean="euclid", distance="euclid"),
+    threshold=z_threshold_2d,
+)
+potato_2d_euclid.fit(covs_2d[:n_calib_2d])
 
-# Create a grid and compute z-scores for isocontours
-x_grid = np.linspace(x_vals.min() * 0.8, x_vals.max() * 1.1, 80)
-y_grid = np.linspace(y_vals.min() * 0.8, y_vals.max() * 1.1, 80)
+calib_x = x_vals[:n_calib_2d]
+calib_y = y_vals[:n_calib_2d]
+x_p01, x_p99 = np.percentile(calib_x, [1, 99])
+y_p01, y_p99 = np.percentile(calib_y, [1, 99])
+x_pad = 0.35 * max(x_p99 - x_p01, 1e-12)
+y_pad = 0.35 * max(y_p99 - y_p01, 1e-12)
+x_grid = np.linspace(x_p01 - x_pad, x_p99 + x_pad, 140)
+y_grid = np.linspace(y_p01 - y_pad, y_p99 + y_pad, 140)
 xx, yy = np.meshgrid(x_grid, y_grid)
-# Build 2x2 SPD matrices from diagonal entries using the barycenter's
-# off-diagonal as a reference
-off_diag = barycenter_2d[0, 1]
-grid_covs = np.zeros((len(x_grid) * len(y_grid), 2, 2))
-grid_covs[:, 0, 0] = xx.ravel()
-grid_covs[:, 1, 1] = yy.ravel()
-grid_covs[:, 0, 1] = off_diag
-grid_covs[:, 1, 0] = off_diag
 
-# Only compute z-scores for valid SPD matrices (positive determinant)
-det = grid_covs[:, 0, 0] * grid_covs[:, 1, 1] - off_diag**2
-valid = det > 0
-z_grid = np.full(len(grid_covs), np.nan)
-if valid.sum() > 0:
-    z_grid[valid] = potato_2d.transform(grid_covs[valid])
 
-z_map = z_grid.reshape(xx.shape)
-contour = ax.contourf(xx, yy, z_map, levels=20, cmap="coolwarm", alpha=0.4)
-ax.contour(
-    xx,
-    yy,
-    z_map,
-    levels=[3],
-    colors=["#C44E52"],
-    linewidths=2,
-    linestyles="--",
-)
-plt.colorbar(contour, ax=ax, label="z-score")
+def make_z_map(model):
+    """Compute z-score map on a diagonal covariance grid."""
+    off_diag = model.covmean_[0, 1]
+    grid_covs = np.zeros((len(x_grid) * len(y_grid), 2, 2))
+    grid_covs[:, 0, 0] = xx.ravel() / cov_scale
+    grid_covs[:, 1, 1] = yy.ravel() / cov_scale
+    grid_covs[:, 0, 1] = off_diag
+    grid_covs[:, 1, 0] = off_diag
 
-# Plot epochs
-ax.scatter(
-    x_vals[is_clean_2d],
-    y_vals[is_clean_2d],
-    c="#4C72B0",
-    s=10,
-    alpha=0.4,
-    label="Clean",
-)
-ax.scatter(
-    x_vals[~is_clean_2d],
-    y_vals[~is_clean_2d],
-    c="#C44E52",
-    s=30,
-    marker="x",
-    label="Artifact",
-    zorder=5,
-)
-ax.scatter(
-    barycenter_2d[0, 0],
-    barycenter_2d[1, 1],
-    c="black",
-    s=100,
-    marker="+",
-    linewidths=2,
-    label="Barycenter",
-    zorder=5,
-)
+    det = grid_covs[:, 0, 0] * grid_covs[:, 1, 1] - off_diag**2
+    valid = det > 0
+    z_grid = np.full(len(grid_covs), np.nan)
+    if valid.sum() > 0:
+        z_grid[valid] = model.transform(grid_covs[valid])
+    return np.ma.masked_invalid(z_grid.reshape(xx.shape))
 
-ax.set_xlabel("Variance of FCz")
-ax.set_ylabel("Variance of Cz")
-ax.set_title(
-    "2D projection of the Riemannian Potato\n"
-    "(dashed red line = z=3 isocontour, the 'potato' boundary)"
+
+z_map_riemann = make_z_map(potato_2d)
+z_map_euclid = make_z_map(potato_2d_euclid)
+z_abs_max = np.nanmax(
+    np.abs(
+        np.hstack(
+            [z_map_riemann.compressed(), z_map_euclid.compressed(), [z_threshold_2d]]
+        )
+    )
 )
-ax.legend(loc="upper right")
+z_levels = np.linspace(-z_abs_max, z_abs_max, 18)
+
+fig, axes = plt.subplots(1, 2, figsize=(13, 5), facecolor="white")
+plot_specs = [
+    (axes[0], potato_2d, z_map_riemann, "Riemannian", "Z-score of Riemannian distance"),
+    (
+        axes[1],
+        potato_2d_euclid,
+        z_map_euclid,
+        "Euclidean",
+        "Z-score of Euclidean distance",
+    ),
+]
+
+for ax, model, z_map, title_name, cbar_label in plot_specs:
+    contour = ax.contourf(xx, yy, z_map, levels=z_levels, cmap="RdYlBu_r", alpha=0.55)
+    ax.contour(xx, yy, z_map, levels=[z_threshold_2d], colors=["black"], linewidths=1.8)
+
+    # Classify points in the same projected space as the contour:
+    # keep per-epoch diagonal entries and fix off-diagonal to model barycenter.
+    off_diag = model.covmean_[0, 1]
+    covs_2d_projected = covs_2d.copy()
+    covs_2d_projected[:, 0, 1] = off_diag
+    covs_2d_projected[:, 1, 0] = off_diag
+    det_points = covs_2d_projected[:, 0, 0] * covs_2d_projected[:, 1, 1] - off_diag**2
+    valid_points = det_points > 0
+    is_clean_full = np.zeros(len(covs_2d_projected), dtype=bool)
+    if valid_points.sum() > 0:
+        is_clean_full[valid_points] = predict_clean_mask(
+            model, covs_2d_projected[valid_points]
+        )
+    is_calib = np.zeros(len(covs_2d), dtype=bool)
+    is_calib[:n_calib_2d] = True
+    is_clean_calib = is_calib & is_clean_full
+    is_artifact_calib = is_calib & ~is_clean_full
+    is_artifact_eval = ~is_calib & ~is_clean_full
+
+    ax.scatter(
+        x_vals[is_clean_calib],
+        y_vals[is_clean_calib],
+        c="blue",
+        s=34,
+        label="Calibration clean",
+        zorder=4,
+    )
+    ax.scatter(
+        x_vals[is_artifact_calib],
+        y_vals[is_artifact_calib],
+        c="red",
+        s=48,
+        label="Calibration artifact",
+        zorder=5,
+    )
+    ax.scatter(
+        x_vals[is_artifact_eval],
+        y_vals[is_artifact_eval],
+        c="red",
+        s=24,
+        alpha=0.65,
+        marker="x",
+        linewidths=1.2,
+        label="Artifact (outside calibration)",
+        zorder=5,
+    )
+    ax.scatter(
+        model.covmean_[0, 0] * cov_scale,
+        model.covmean_[1, 1] * cov_scale,
+        c="black",
+        s=120,
+        marker="o",
+        label="Barycenter",
+        zorder=5,
+    )
+
+    ax.set_title(f"2D projection of {title_name} potato")
+    ax.set_xlabel(f"Cov({ch_name_x},{ch_name_x}) [uV^2]")
+    ax.set_ylabel(f"Cov({ch_name_y},{ch_name_y}) [uV^2]")
+    ax.set_xlim(x_grid.min(), x_grid.max())
+    ax.set_ylim(y_grid.min(), y_grid.max())
+    ax.grid(alpha=0.2, linestyle=":")
+    ax.legend(loc="upper right")
+    plt.colorbar(contour, ax=ax, label=cbar_label)
+
+fig.suptitle(f"Offline calibration of potatoes (first {n_calib_2d} epochs)", fontsize=18)
 plt.tight_layout()
 plt.show()
 
 ##############################################################################
 # The z-score distribution shows how the potato separates clean data
-# from outliers. Clean epochs cluster near z=0 while artifact epochs
+# from outliers. Clean epochs have low z-scores while artifact epochs
 # have high z-scores, beyond the threshold.
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4), facecolor="white")
@@ -382,9 +458,9 @@ plt.show()
 #
 #     q = -2 \sum_{j=1}^{J} \log(p_j)
 #
-# Under the null hypothesis (no artifact), :math:`q` follows a
-# :math:`\chi^2` distribution with :math:`2J` degrees of freedom, yielding
-# a combined p-value: :math:`p = 1 - F_{\chi^2(2J)}(q)`.
+# In practice, per-potato p-values are dependent, so we use the combined
+# score as a practical summary of deviancy from the clean-data barycenters
+# and apply an empirical rejection threshold.
 #
 # The iRPF method [3]_ further introduces **Liptak's combination**:
 #
@@ -436,11 +512,6 @@ plt.show()
 # - **General artifacts**: broader channel sets, wide frequency bands,
 #   Riemannian distance.
 #
-# Note that pyriemann's ``PotatoField`` uses a **single metric** for all
-# potatoes, which is appropriate for the standard RPF [2]_. Per-potato
-# distance metrics (e.g., Euclidean for ocular, Riemannian for general)
-# are an iRPF [3]_ enhancement implemented with individual ``Potato``
-# instances.
 #
 # For the BNCI2014-009 dataset (16 channels, no EOG,
 # bandpass 1-24 Hz applied by the P300 paradigm), we adapt
@@ -598,6 +669,13 @@ def compute_potato_covariances(epochs, config):
     return cov_list
 
 
+def min_fisher_stouffer(probas, axis=0):
+    """Combine p-values as min(Fisher, Stouffer)."""
+    _, fisher_p = combine_pvalues(probas, method="fisher", axis=axis)
+    _, stouffer_p = combine_pvalues(probas, method="stouffer", axis=axis)
+    return np.minimum(fisher_p, stouffer_p)
+
+
 # Compute covariance matrices for each potato
 cov_list = compute_potato_covariances(epochs, POTATO_FIELD_CONFIG)
 
@@ -744,7 +822,7 @@ def riemannian_potato_rejection(epochs):
     covs = Covariances(estimator="lwf").transform(data)
     potato = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
     potato.fit(covs)
-    is_clean = potato.predict(covs).astype(bool)
+    is_clean = predict_clean_mask(potato, covs)
 
     n_rejected = n_before - is_clean.sum()
     print(f"  RP: rejected {n_rejected}/{n_before} epochs")
@@ -795,7 +873,7 @@ def riemannian_potato_field_rejection(epochs):
         p_threshold=0.01,
     )
     rpf.fit(cov_list)
-    is_clean = rpf.predict(cov_list).astype(bool)
+    is_clean = predict_clean_mask(rpf, cov_list)
 
     n_rejected = n_before - is_clean.sum()
     print(f"  RPF: rejected {n_rejected}/{n_before} epochs")
@@ -997,10 +1075,8 @@ def improved_rpf_rejection(epochs):
     epochs that may not be detected by Riemannian analysis alone.
 
     **Potato field with per-potato metrics** (Section 2.4.4):
-    Fits individual ``Potato`` instances with per-potato distance metrics
-    (an iRPF enhancement over the single metric used by ``PotatoField``).
-    Per-potato p-values are combined using both Fisher's and Stouffer's
-    (Liptak) methods, and the minimum is used as the final SQI.
+    Uses ``PotatoField`` with per-potato distance metrics and a
+    custom combination callable implementing ``min(Fisher, Stouffer)``.
 
     Both mechanisms operate on the original data independently, and their
     rejections are combined via union. This parallel approach avoids the
@@ -1031,28 +1107,15 @@ def improved_rpf_rejection(epochs):
 
     # Potato field with per-potato metrics (on all data, in parallel)
     cov_list = compute_potato_covariances(epochs, valid_config)
-
-    # Each potato uses its own metric for both mean and distance
-    # (a string metric like "euclid" applies to both; see Potato docstring).
-    p_values_list = []
-    for cov, cfg in zip(cov_list, valid_config):
-        p = Potato(metric=cfg["metric"], threshold=3)
-        p.fit(cov)
-        z = p.transform(cov)
-        p_values_list.append(1 - norm.cdf(z))
-
-    # iRPF combination strategy (Section 2.4.4 of the paper):
-    # 1. Fisher's combination across potatoes
-    # 2. Stouffer's (Liptak) combination across potatoes
-    # 3. Take the minimum of both combined p-values per epoch
-    p_matrix = np.array(p_values_list)
-    p_matrix = np.clip(p_matrix, 1e-10, 1.0)
-
-    _, fisher_p = combine_pvalues(p_matrix, method="fisher", axis=0)
-    _, stouffer_p = combine_pvalues(p_matrix, method="stouffer", axis=0)
-
-    combined_p = np.minimum(fisher_p, stouffer_p)
-    is_clean_rpf = combined_p >= 0.01
+    irpf = PotatoField(
+        n_potatoes=len(valid_config),
+        metric=[cfg["metric"] for cfg in valid_config],
+        z_threshold=3,
+        p_threshold=0.01,
+        method_combination=min_fisher_stouffer,
+    )
+    irpf.fit(cov_list)
+    is_clean_rpf = predict_clean_mask(irpf, cov_list)
 
     # Union of both rejection mechanisms
     is_clean = is_clean_amplitude & is_clean_rpf
@@ -1287,22 +1350,17 @@ plt.show()
 rpf_combined_p = rpf_vis.predict_proba(cov_list)
 
 # iRPF: per-potato metrics with min(Fisher, Stouffer) combination
-# (This compares the Riemannian stages only. In the full iRPF pipeline,
-# GFRMS amplitude rejection provides additional complementary detection.)
-# Per-potato metrics: each potato uses its own metric (string applies to
-# both mean and distance; "euclid" for ocular, "riemann" for the rest).
-irpf_p_values = []
-for cov, cfg in zip(cov_list, POTATO_FIELD_CONFIG):
-    p = Potato(metric=cfg["metric"], threshold=3)
-    p.fit(cov)
-    z = p.transform(cov)
-    irpf_p_values.append(1 - norm.cdf(z))
-
-irpf_p_matrix = np.array(irpf_p_values)
-irpf_p_matrix = np.clip(irpf_p_matrix, 1e-10, 1.0)
-_, fisher_p_viz = combine_pvalues(irpf_p_matrix, method="fisher", axis=0)
-_, stouffer_p_viz = combine_pvalues(irpf_p_matrix, method="stouffer", axis=0)
-irpf_combined_p = np.minimum(fisher_p_viz, stouffer_p_viz)
+# (Riemannian stage only; GFRMS provides additional complementary detection
+# in the full iRPF pipeline).
+irpf_vis = PotatoField(
+    n_potatoes=len(POTATO_FIELD_CONFIG),
+    metric=[cfg["metric"] for cfg in POTATO_FIELD_CONFIG],
+    z_threshold=3,
+    p_threshold=0.01,
+    method_combination=min_fisher_stouffer,
+)
+irpf_vis.fit(cov_list)
+irpf_combined_p = irpf_vis.predict_proba(cov_list)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="white")
 
@@ -1354,16 +1412,16 @@ plt.show()
 #    epochs that Riemannian analysis might miss. The adaptive thresholds
 #    use the golden ratio (1.618) following the Julia RAR implementation.
 #
-# 2. **Per-potato distance metrics**: the iRPF uses individual ``Potato``
-#    instances with metrics tailored to each artifact type (e.g.,
-#    Euclidean for ocular, Riemannian for general), unlike pyriemann's
-#    ``PotatoField`` which uses a single metric for all potatoes.
+# 2. **Per-potato distance metrics**: the iRPF uses metrics tailored to
+#    each artifact type (e.g., Euclidean for ocular, Riemannian for
+#    general).
 #
 # 3. **Multiple combination functions** (Section 2.4.4): per-potato
 #    p-values are combined using both Fisher's and Stouffer's (Liptak)
-#    methods, and the minimum is used as the final SQI. Fisher is more
-#    sensitive to a single extreme outlier, while Stouffer is more
-#    sensitive to many moderate departures.
+#    methods, and the minimum is used as the final SQI, implemented with
+#    ``PotatoField(method_combination=...)``. Fisher is more sensitive to
+#    a single extreme outlier, while Stouffer is more sensitive to many
+#    moderate departures.
 #
 # **Parallel vs sequential rejection:** In this tutorial, the GFRMS and
 # Riemannian potato field stages are applied **in parallel** on the full

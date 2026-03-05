@@ -39,7 +39,7 @@ dependencies = [
     "h5py>=3.10.0",
     "matplotlib>=3.6.2",
     "seaborn>=0.12.1",
-    "pyriemann>=0.9",
+    "pyriemann @ git+https://github.com/pyRiemann/pyRiemann.git@master",
     "PyYAML>=6.0",
     "pooch>=1.6.0",
     "requests>=2.28.1",

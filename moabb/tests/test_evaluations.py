@@ -91,7 +91,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_compound_dataset(self):
         ch1 = ["C3", "Cz", "Fz"]
@@ -126,7 +126,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_eval_grid_search(self):
         # Test grid search
@@ -145,7 +145,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_eval_grid_search_optuna(self):
         if not optuna_available:
@@ -172,7 +172,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
@@ -264,7 +264,7 @@ class TestWithinSessLearningCurve:
             )
         ]
         keys = results[0].keys()
-        assert len(keys) == 10  # 8 + 2 new for learning curve
+        assert len(keys) == 12  # 10 + 2 new for learning curve
         assert "permutation" in keys
         assert "data_size" in keys
 
