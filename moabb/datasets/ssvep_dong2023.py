@@ -33,7 +33,7 @@ class Dong2023(BaseDataset):
     Dataset from [1]_.
 
     This dataset contains 8-channel EEG recordings from 59 healthy adolescent
-    volunteers (38 males, 21 females, aged 10-16, mean age 12.3) from the
+    volunteers (37 males, 22 females, aged 10-16, mean age 12.4) from the
     Suzhou Junior Competition of BCI Olympics 2022. Subjects performed a
     40-target SSVEP-BCI task using joint frequency and phase modulation (JFPM).
 
@@ -72,10 +72,30 @@ class Dong2023(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=59,
             health_status="healthy",
-            gender={"male": 38, "female": 21},
-            age_mean=12.3,
+            gender={"male": 37, "female": 22},
+            age_mean=12.4,
             age_min=10,
             age_max=16,
+            # fmt: off
+            ages=[
+                15, 11, 13, 13, 13, 12, 12, 11, 13, 11, 11, 16, 11, 12, 13,
+                12, 14, 11, 11, 11, 12, 13, 10, 12, 11, 11, 13, 14, 12, 13,
+                13, 11, 12, 13, 13, 15, 14, 13, 14, 11, 12, 11, 13, 13, 14,
+                11, 11, 13, 14, 14, 11, 14, 14, 10, 12, 11, 11, 13, 12,
+            ],
+            sexes=[
+                "male", "female", "male", "female", "male", "male", "male",
+                "male", "female", "female", "male", "female", "male", "female",
+                "male", "female", "male", "male", "male", "female", "male",
+                "male", "female", "male", "male", "male", "male", "female",
+                "female", "male", "male", "female", "female", "male", "male",
+                "female", "male", "male", "female", "male", "male", "male",
+                "male", "male", "male", "female", "male", "male", "female",
+                "male", "male", "female", "male", "female", "male", "female",
+                "female", "female", "male",
+            ],
+            handedness_list=["right"] * 59,
+            # fmt: on
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
