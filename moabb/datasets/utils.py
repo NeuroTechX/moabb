@@ -453,6 +453,7 @@ def build_raw_from_epochs(
     event_ids,
     montage_name,
     *,
+    ch_types=None,
     scale=1e-6,
     buffer_samples=50,
     onset_sample=0,
@@ -471,6 +472,9 @@ def build_raw_from_epochs(
         Integer event code for each trial.
     montage_name : str
         Name of a standard MNE montage (e.g. "standard_1005", "biosemi32").
+    ch_types : list of str | None
+        Channel types for each signal channel in ``ch_names``. If None, all
+        channels are treated as ``"eeg"``.
     scale : float
         Scale factor to convert data to Volts (default 1e-6 for microvolts).
     buffer_samples : int
@@ -498,6 +502,17 @@ def build_raw_from_epochs(
     if len(ch_names) != n_channels:
         raise ValueError(
             f"ch_names length ({len(ch_names)}) must match n_channels ({n_channels})."
+        )
+
+    if ch_types is None:
+        ch_types = ["eeg"] * n_channels
+    if isinstance(ch_types, str):
+        raise ValueError(
+            "ch_types must be a sequence of channel types, not a single string."
+        )
+    if len(ch_types) != n_channels:
+        raise ValueError(
+            f"ch_types length ({len(ch_types)}) must match n_channels ({n_channels})."
         )
 
     event_ids = np.asarray(event_ids)
@@ -541,8 +556,8 @@ def build_raw_from_epochs(
     continuous = combined.transpose(1, 0, 2).reshape(n_total_ch, -1)
 
     ch_names_full = list(ch_names) + ["stim"]
-    ch_types = ["eeg"] * n_channels + ["stim"]
-    info = create_info(ch_names_full, sfreq, ch_types)
+    ch_types_full = list(ch_types) + ["stim"]
+    info = create_info(ch_names_full, sfreq, ch_types_full)
     raw = RawArray(data=continuous, info=info, verbose=False)
     montage = make_standard_montage(montage_name)
     raw.set_montage(montage, on_missing="ignore")

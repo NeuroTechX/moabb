@@ -249,6 +249,7 @@ class Kim2025BetaRange(BaseDataset):
 
         # Normalize channel names to match MNE standard_1005
         ch_names = _normalize_ch_names(ch_names_raw)
+        ch_types = _infer_ch_types(ch_names)
         event_ids = np.arange(1, n_classes + 1)
 
         sessions = {}
@@ -261,6 +262,7 @@ class Kim2025BetaRange(BaseDataset):
                 srate,
                 event_ids,
                 "standard_1005",
+                ch_types=ch_types,
                 onset_sample=onset_sample,
             )
             sessions[str(block_idx)] = {"0": raw}
@@ -293,3 +295,14 @@ def _normalize_ch_names(ch_names):
         "POZ": "POz",
     }
     return [mapping.get(ch, ch) for ch in ch_names]
+
+
+def _infer_ch_types(ch_names):
+    """Infer channel types (31 EEG + 2 mastoid misc channels)."""
+    mastoid_aliases = {"M1", "M2", "A1", "A2", "TP9", "TP10"}
+    ch_types = ["misc" if ch.upper() in mastoid_aliases else "eeg" for ch in ch_names]
+    if ch_types.count("misc") != 2 and len(ch_types) >= 2:
+        # Fall back to the dataset convention where the last two channels are mastoids.
+        ch_types = ["eeg"] * len(ch_names)
+        ch_types[-2:] = ["misc", "misc"]
+    return ch_types

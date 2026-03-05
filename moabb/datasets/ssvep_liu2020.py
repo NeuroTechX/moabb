@@ -101,7 +101,7 @@ class Liu2020BETA(BaseDataset):
             age_min=9,
             age_max=64,
             age_std=7.97,
-            bci_experience="experienced",
+            bci_experience="mixed",
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",

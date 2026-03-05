@@ -4,6 +4,7 @@ Chen et al. (2017), PLOS ONE.
 DOI: 10.1371/journal.pone.0178385
 """
 
+import importlib
 import logging
 import zipfile
 from pathlib import Path
@@ -225,7 +226,7 @@ class Chen2017SingleFlicker(BaseDataset):
         Channels 1:33 (A1-A32) are extracted as EEG.
         """
         try:
-            import pyxdf
+            pyxdf = importlib.import_module("pyxdf")
         except ImportError as exc:
             raise ImportError(
                 "The 'pyxdf' package is required to load XDF training data for "
