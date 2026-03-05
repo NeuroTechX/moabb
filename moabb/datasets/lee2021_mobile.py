@@ -91,6 +91,8 @@ class Lee2021Mobile(BaseDataset):
             health_status="healthy",
             gender={"male": 14, "female": 10},
             age_mean=24.5,
+            age_min=19,
+            age_max=32,
             age_std=2.9,
             # Per-subject demographics from BIDS participants.tsv
             ages=[
@@ -137,7 +139,7 @@ class Lee2021Mobile(BaseDataset):
                 "female",
                 "female",
                 "male",
-                "male",
+                "female",
                 "male",
                 "male",
                 "male",
@@ -399,6 +401,8 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             health_status="healthy",
             gender={"male": 14, "female": 10},
             age_mean=24.5,
+            age_min=19,
+            age_max=32,
             age_std=2.9,
             ages=[
                 28,
@@ -444,7 +448,7 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
                 "female",
                 "female",
                 "male",
-                "male",
+                "female",
                 "male",
                 "male",
                 "male",

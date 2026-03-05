@@ -122,7 +122,7 @@ class Liu2022EldBETA(BaseDataset):
     Dataset from [1]_.
 
     The eldBETA database contains 64-channel EEG recordings from 100 elderly
-    participants (33 males, 67 females, aged 52-81, mean age 63.17) performing
+    participants (33 males, 67 females, aged 51-81, mean age 63.17) performing
     a 9-target SSVEP-BCI task. Stimuli used joint frequency and phase
     modulation (JFPM) with 9 targets in a 3x3 matrix. Frequencies ranged
     from 8.0 to 12.0 Hz (0.5 Hz step).
@@ -169,7 +169,7 @@ class Liu2022EldBETA(BaseDataset):
             health_status="healthy",
             gender={"male": 33, "female": 67},
             age_mean=63.17,
-            age_min=52,
+            age_min=51,
             age_max=81,
             age_std=6.05,
             # Per-subject demographics from BIDS participants.tsv

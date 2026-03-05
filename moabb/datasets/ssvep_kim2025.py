@@ -137,6 +137,27 @@ class Kim2025BetaRange(BaseDataset):
             age_max=35,
             age_std=3.34,
             bci_experience="3 of 40 had prior SSVEP-BCI experience",
+            # Per-subject sex from questionnaire_en.xlsx; S24 inferred as
+            # female from paper total (25M/15F).
+            # fmt: off
+            sexes=[
+                "male", "male", "male", "female", "male", "female", "male",
+                "male", "male", "male", "male", "male", "male", "female",
+                "male", "female", "female", "male", "male", "female", "male",
+                "male", "female", "female", "female", "female", "female",
+                "male", "female", "male", "female", "male", "male", "male",
+                "male", "male", "male", "female", "female", "male",
+            ],
+            # Per-subject handedness from questionnaire_en.xlsx; S24 unknown.
+            handedness_list=[
+                "right", "right", "right", "right", "right", "right", "right",
+                "right", "right", "right", "right", "right", "right", "right",
+                "right", "right", "right", "right", "left", "right", "right",
+                "right", "right", None, "right", "right", "right", "right",
+                "right", "right", "right", "right", "left", "right", "right",
+                "left", "right", "right", "right", "left",
+            ],
+            # fmt: on
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
