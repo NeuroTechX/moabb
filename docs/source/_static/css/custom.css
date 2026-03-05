@@ -1082,6 +1082,158 @@ html[data-theme="dark"] .ds-views-spark-area {
   }
 }
 
+/* --- Overview teaser card --- */
+
+.ds-overview-teaser {
+  margin: 0.5rem 0 0.75rem 0;
+  padding: 0.65rem 0.78rem;
+  border-radius: 10px;
+  border: 1px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.06);
+}
+
+html[data-theme="dark"] .ds-overview-teaser {
+  background: rgba(75, 163, 215, 0.1);
+}
+
+.ds-overview-title {
+  margin: 0 0 0.3rem 0;
+  font-family: var(--ds-font-heading);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
+}
+
+.ds-overview-text {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--pst-color-text-base);
+}
+
+.ds-overview-list {
+  list-style: none;
+  margin: 0 0 0.4rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.ds-overview-list li {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--pst-color-text-base);
+  padding-left: 1rem;
+  position: relative;
+}
+
+.ds-overview-list li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--ds-accent);
+  font-weight: 600;
+}
+
+.ds-overview-teaser strong {
+  font-weight: 650;
+  color: var(--pst-color-text-base);
+}
+
+.ds-overview-teaser code {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  background: rgba(15, 93, 143, 0.08);
+}
+
+.ds-overview-full {
+  display: none;
+  margin-top: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--ds-accent-soft);
+}
+
+.ds-expanded .ds-overview-full {
+  display: block;
+}
+
+.ds-overview-full p {
+  margin: 0 0 0.45rem 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--pst-color-text-base);
+}
+
+.ds-overview-refs {
+  margin-top: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-overview-refs summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.74rem;
+  color: var(--ds-accent);
+}
+
+.ds-overview-refs p {
+  font-size: 0.76rem;
+  margin: 0.2rem 0;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-overview-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.35rem;
+}
+
+.ds-overview-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--ds-font-heading);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ds-accent);
+  letter-spacing: 0.02em;
+}
+
+.ds-overview-toggle:hover {
+  text-decoration: underline;
+}
+
+.ds-overview-toggle:focus-visible {
+  outline: 2px solid var(--ds-accent);
+  outline-offset: 2px;
+}
+
+.ds-overview-tab-link {
+  font-size: 0.74rem;
+  color: var(--pst-color-text-muted);
+  text-decoration: none;
+}
+
+.ds-overview-tab-link:hover {
+  color: var(--ds-accent);
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .ds-overview-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
+
 .ds-class-line {
   margin: 0 0 0.85rem 0;
   font-size: 0.83rem;

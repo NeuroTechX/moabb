@@ -21,7 +21,7 @@ You can use this `class <https://moabb.neurotechx.com/docs/generated/moabb.datas
 
 See also the `Wiki <https://github.com/NeuroTechX/moabb/wiki>`__ for supplementary
 detail on datasets (class name, size, licence, etc.)
-Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials, PapersWithCode leaderboard
+Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials
 
 Columns definitions:
     - **Dataset** is the name of the dataset.
@@ -33,8 +33,6 @@ Columns definitions:
     - **Freq** is the sampling frequency of the raw data.
     - **#Session** is the number of sessions per subject. Different sessions are often recorded on different days.
     - **#Runs** is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
-    - **PapersWithCode leaderboard** is the link to the dataset on the PapersWithCode leaderboard.
-
 **Datasets overview:**
 
 A visual overview of all datasets can be generated using the functions :func:`moabb.datasets.utils.plot_datasets_grid`
