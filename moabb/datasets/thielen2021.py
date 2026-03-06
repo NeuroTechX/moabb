@@ -331,9 +331,7 @@ class Thielen2021(BaseDataset):
                 duration=[0.0] * len(trial_onsets_sec),
                 description=["_trial_meta"] * len(trial_onsets_sec),
             )
-            trial_annotations.extras = [
-                {"trial_id": int(lbl)} for lbl in trial_labels
-            ]
+            trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in trial_labels]
             raw.set_annotations(raw.annotations + trial_annotations)
 
             # Create stim channel with trial information (i.e., symbols)

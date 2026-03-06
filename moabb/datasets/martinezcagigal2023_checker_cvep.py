@@ -385,9 +385,7 @@ class MartinezCagigal2023Checker(BaseDataset):
             duration=[0.0] * len(trial_onsets_sec),
             description=["_trial_meta"] * len(trial_onsets_sec),
         )
-        trial_annotations.extras = [
-            {"trial_id": int(lbl)} for lbl in trial_labels
-        ]
+        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in trial_labels]
         raw_data.set_annotations(raw_data.annotations + trial_annotations)
 
         # The stim_trial channel is kept for backward compat with paradigm code.

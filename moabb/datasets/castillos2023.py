@@ -135,9 +135,7 @@ class BaseCastillos2023(BaseDataset):
             duration=[0.0] * len(trial_onsets_sec),
             description=["_trial_meta"] * len(trial_onsets_sec),
         )
-        trial_annotations.extras = [
-            {"trial_id": int(lbl)} for lbl in labels
-        ]
+        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in labels]
         raw.set_annotations(raw.annotations + trial_annotations)
 
         # Create stim channel with trial information (i.e., symbols)
