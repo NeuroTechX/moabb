@@ -2166,6 +2166,19 @@ table.autosummary td:nth-child(2) {
   color: var(--pst-color-text-base);
 }
 
+/* Responsive: stack autosummary rows on narrow screens */
+@media (max-width: 768px) {
+  table.autosummary {
+    table-layout: auto;
+  }
+  table.autosummary col:first-child {
+    width: auto;
+  }
+  table.autosummary td:first-child {
+    word-break: break-all;
+  }
+}
+
 /* --- 5. Benchmark admonition code block (API page only) --- */
 #api-and-main-concepts .admonition .highlight {
   max-width: 68rem;
