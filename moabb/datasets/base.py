@@ -63,7 +63,6 @@ def get_summary_table(paradigm: str, dir_name: str | None = None):
         header=0,
         index_col="Dataset",
         skipinitialspace=True,
-        dtype={"PapersWithCode leaderboard": str},
     )
     return df
 
@@ -265,13 +264,9 @@ def _transfer_unit(key: str, value: str):
 
 
 def format_row(row: pd.Series, horizontal: bool = True):
-    pwc_key = "PapersWithCode leaderboard"
     tab_prefix = " " * 8
     tab_sep = "="
     row = row[~row.isna()]
-    pwc_link = row.get(pwc_key, None)
-    if pwc_link is not None:
-        row = row.drop(pwc_key)
 
     def to_int(x):
         try:
@@ -306,9 +301,6 @@ def format_row(row: pd.Series, horizontal: bool = True):
     rows_str = "\n".join([f"{tab_prefix}{' '.join(row)}" for row in rows])
     # add the header:
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
-    # add the PapersWithCode link if it exists:
-    if pwc_link is not None:
-        out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
     return out, row
 
 
@@ -979,8 +971,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             saving.  Default is ``False``.
         format : str
             The file format for the raw EEG data.  Supported values are
-            ``"EDF"`` (default), ``"BrainVision"``, ``"BDF"``, and
-            ``"EEGLAB"``.
+            ``"EDF"`` (default), ``"BrainVision"``, and ``"EEGLAB"``.
         verbose : str | None
             Verbosity level forwarded to MNE/MNE-BIDS.
 

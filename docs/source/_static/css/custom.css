@@ -422,6 +422,7 @@ div.frontpage-gallery .card-img-overlay {
   --ds-radius: 14px;
   --ds-font-heading: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
   --ds-font-body: "Source Sans 3", "Avenir Next", "Segoe UI", sans-serif;
+  --ds-font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 html[data-theme="dark"] {
@@ -872,7 +873,7 @@ html[data-theme="dark"] .admonition-experimental-protocol > .admonition-title {
   top: 0.78rem;
   right: 1.02rem;
   font-size: 0.9rem;
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-weight: 700;
   padding: 0.08rem 0.28rem;
   border-radius: 7px;
@@ -1001,76 +1002,60 @@ html[data-theme="dark"] .ds-card {
   margin-bottom: 0.74rem;
 }
 
-.ds-views-line {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 0.3rem 0.9rem;
-  margin: 0 0 0.72rem 0;
-  font-size: 0.8rem;
-  line-height: 1.42;
-  color: var(--pst-color-text-base);
-  padding: 0.33rem 0.5rem;
-  border-radius: 8px;
-  background: rgba(15, 93, 143, 0.06);
-  border: 1px dashed var(--ds-accent-soft);
+/* --- Page Views row inside Citation & Impact card --- */
+
+.ds-citation-impact li.ds-pv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-top: 0.25rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--ds-accent-soft);
 }
 
-.ds-views-main {
+.ds-pv-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.4rem 0.7rem;
+}
+
+.ds-pv-body {
   min-width: 0;
 }
 
-.ds-views-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.4rem;
-  margin-bottom: 0.2rem;
+.ds-pv-metrics {
+  font-size: 0.8rem;
+  line-height: 1.38;
+  white-space: nowrap;
 }
 
-.ds-views-label {
-  display: inline-block;
-  font-family: var(--ds-font-heading);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--ds-accent);
-  font-weight: 700;
-}
-
-.ds-views-updated {
-  font-size: 0.72rem;
-  color: var(--pst-color-text-muted);
-}
-
-.ds-views-metrics {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.2rem;
-  margin-bottom: 0.12rem;
-}
-
-.ds-views-line strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+.ds-pv-metrics strong {
+  font-family: var(--ds-font-mono);
   font-size: 0.8rem;
   color: var(--ds-accent-strong);
 }
 
-.ds-views-rank {
-  font-size: 0.74rem;
+.ds-pv-rank {
+  font-size: 0.73rem;
   color: var(--pst-color-text-muted);
+  line-height: 1.35;
 }
 
-.ds-views-spark-wrap {
-  justify-self: end;
-  align-self: end;
+.ds-pv-updated {
+  font-size: 0.68rem;
+  color: var(--pst-color-text-muted);
+  opacity: 0.75;
 }
 
-.ds-views-spark {
+.ds-pv-spark {
+  flex-shrink: 0;
+}
+
+.ds-pv-spark svg.ds-views-spark {
   display: block;
-  width: 180px;
-  max-width: 100%;
+  width: 140px;
   height: 30px;
 }
 
@@ -1084,25 +1069,169 @@ html[data-theme="dark"] .ds-card {
   stroke-width: 1.7;
 }
 
-html[data-theme="dark"] .ds-views-line {
-  background: rgba(75, 163, 215, 0.12);
-}
-
 html[data-theme="dark"] .ds-views-spark-area {
   fill: rgba(75, 163, 215, 0.18);
 }
 
 @media (max-width: 700px) {
-  .ds-views-line {
+  .ds-pv-detail {
     grid-template-columns: 1fr;
   }
 
-  .ds-views-spark-wrap {
-    justify-self: start;
+  .ds-pv-spark svg.ds-views-spark {
+    width: 120px;
   }
+}
 
-  .ds-views-spark {
-    width: 160px;
+/* --- Overview teaser card --- */
+
+.ds-overview-teaser {
+  margin: 0.5rem 0 0.75rem 0;
+  padding: 0.65rem 0.78rem;
+  border-radius: 10px;
+  border: 1px solid var(--ds-accent-soft);
+  background: rgba(15, 93, 143, 0.06);
+}
+
+html[data-theme="dark"] .ds-overview-teaser {
+  background: rgba(75, 163, 215, 0.1);
+}
+
+.ds-overview-title {
+  margin: 0 0 0.3rem 0;
+  font-family: var(--ds-font-heading);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ds-accent);
+  font-weight: 700;
+}
+
+.ds-overview-text {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--pst-color-text-base);
+}
+
+.ds-overview-list {
+  list-style: none;
+  margin: 0 0 0.4rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.ds-overview-list li {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--pst-color-text-base);
+  padding-left: 1rem;
+  position: relative;
+}
+
+.ds-overview-list li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--ds-accent);
+  font-weight: 600;
+}
+
+.ds-overview-teaser strong {
+  font-weight: 650;
+  color: var(--pst-color-text-base);
+}
+
+.ds-overview-teaser code {
+  font-family: var(--ds-font-mono);
+  font-size: 0.78rem;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  background: rgba(15, 93, 143, 0.08);
+}
+
+.ds-overview-full {
+  display: none;
+  margin-top: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--ds-accent-soft);
+}
+
+.ds-expanded .ds-overview-full {
+  display: block;
+}
+
+.ds-overview-full p {
+  margin: 0 0 0.45rem 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--pst-color-text-base);
+}
+
+.ds-overview-refs {
+  margin-top: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-overview-refs summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.74rem;
+  color: var(--ds-accent);
+}
+
+.ds-overview-refs p {
+  font-size: 0.76rem;
+  margin: 0.2rem 0;
+  color: var(--pst-color-text-muted);
+}
+
+.ds-overview-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.35rem;
+}
+
+.ds-overview-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--ds-font-heading);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ds-accent);
+  letter-spacing: 0.02em;
+}
+
+.ds-overview-toggle:hover {
+  text-decoration: underline;
+}
+
+.ds-overview-toggle:focus-visible {
+  outline: 2px solid var(--ds-accent);
+  outline-offset: 2px;
+}
+
+.ds-overview-tab-link {
+  font-size: 0.74rem;
+  color: var(--pst-color-text-muted);
+  text-decoration: none;
+}
+
+.ds-overview-tab-link:hover {
+  color: var(--ds-accent);
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .ds-overview-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
   }
 }
 
@@ -1182,7 +1311,7 @@ html[data-theme="dark"] .ds-views-spark-area {
   box-shadow: 0 0 0 2px var(--ds-accent-soft);
 }
 
-/* Quickstart code collapsible */
+/* Quickstart code panel */
 .ds-quickstart {
   margin-top: 0.78rem;
   border: 1px solid var(--ds-accent-soft);
@@ -1191,27 +1320,8 @@ html[data-theme="dark"] .ds-views-spark-area {
   background: rgba(15, 93, 143, 0.06);
 }
 
-.ds-quickstart[open] {
+.ds-quickstart:not([hidden]) {
   border-color: var(--ds-accent);
-}
-
-.ds-quickstart-summary {
-  display: block;
-  padding: 0.4rem 0.78rem;
-  margin: 0;
-  font-family: var(--ds-font-heading);
-  font-size: 0.74rem;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--ds-accent);
-  font-weight: 700;
-  cursor: pointer;
-  border: 0;
-}
-
-.ds-quickstart-summary:focus-visible {
-  outline: 2px solid var(--ds-accent, #0f5d8f);
-  outline-offset: -2px;
 }
 
 .ds-quickstart-code {
@@ -1219,7 +1329,7 @@ html[data-theme="dark"] .ds-views-spark-area {
   padding: 0.9rem 1rem;
   background: transparent;
   font-size: 0.85rem;
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   line-height: 1.55;
   overflow-x: auto;
   border-radius: 0;
@@ -1341,7 +1451,7 @@ html[data-theme="dark"] .ds-benchmark-note {
 }
 
 .ds-benchmark-context li strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.79rem;
   color: var(--ds-accent-strong);
 }
@@ -1525,7 +1635,7 @@ html[data-theme="dark"] .ds-citation-impact {
 }
 
 .ds-hed-bar-row strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.73rem;
   color: var(--ds-accent-strong);
 }
@@ -1587,7 +1697,7 @@ html[data-theme="dark"] .ds-citation-impact {
   border-top: 1px dashed var(--ds-accent-soft);
   font-size: 0.69rem;
   line-height: 1.35;
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   color: var(--pst-color-text-base);
   background: transparent;
   white-space: pre-wrap;
@@ -1601,7 +1711,7 @@ html[data-theme="dark"] .ds-citation-impact {
 }
 
 .ds-hed-event-name {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.72rem;
   color: var(--pst-color-text-muted);
 }
@@ -1680,7 +1790,7 @@ html[data-theme="dark"] .ds-viz-card {
 }
 
 .ds-channel-row strong {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--ds-font-mono);
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--pst-color-text-base);
@@ -2054,6 +2164,19 @@ table.autosummary td:first-child a:hover code {
 }
 table.autosummary td:nth-child(2) {
   color: var(--pst-color-text-base);
+}
+
+/* Responsive: stack autosummary rows on narrow screens */
+@media (max-width: 768px) {
+  table.autosummary {
+    table-layout: auto;
+  }
+  table.autosummary col:first-child {
+    width: auto;
+  }
+  table.autosummary td:first-child {
+    word-break: break-all;
+  }
 }
 
 /* --- 5. Benchmark admonition code block (API page only) --- */

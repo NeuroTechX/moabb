@@ -58,6 +58,9 @@ _BENCHMARK_CONTEXT_CACHE = {}
 _DOI_METADATA_CACHE = {}
 _DOI_CACHE_LOADED = False
 _DOI_RE = re.compile(r"^10\.\d{4,}/", re.IGNORECASE)
+_RST_INLINE_RE = re.compile(r"\*\*(.+?)\*\*|``(.+?)``|\*(.+?)\*")
+_RST_FOOTNOTE_RE = re.compile(r"\s*\[\d+\]_\.?")
+_RST_LIST_SPLIT_RE = re.compile(r"\s+- ")
 _DATASET_PAGEVIEWS_CACHE = None
 _DATASET_PAGEVIEWS_CACHE_SRC = None
 
@@ -216,6 +219,12 @@ def _normalize_doi(value):
         if text.lower().startswith(prefix):
             return text[len(prefix) :]
     return text
+
+
+def _dataset_dom_id(prefix, cls_name):
+    """Return a stable DOM id fragment for a dataset class."""
+    slug = re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
+    return f"{prefix}-{slug}"
 
 
 def _is_likely_doi(value):
@@ -723,20 +732,21 @@ def _make_benchmark_context_html(cls_name, info):
     )
 
 
-def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
-    """Build a compact citation and impact block."""
+def _make_citation_impact_html(
+    info,
+    benchmark_ctx,
+    *,
+    live_citations=True,
+    pageview_counts=None,
+    pageview_rank=None,
+    pageview_meta=None,
+):
+    """Build a compact citation, impact, and visibility block."""
     code = str(info.get("code") or "")
     paper_doi = _normalize_doi(info.get("paper_doi") or info.get("doi"))
     dataset_doi = _normalize_doi(info.get("dataset_doi") or info.get("doi"))
     if not code and not paper_doi and not dataset_doi:
         return ""
-
-    pwc_slug = code.lower().replace("_", "-") if code else ""
-    pwc_url = (
-        f"https://paperswithcode.com/dataset/{quote(pwc_slug)}-moabb-1"
-        if pwc_slug
-        else ""
-    )
 
     items = []
     script_html = ""
@@ -829,25 +839,286 @@ def _make_citation_impact_html(info, benchmark_ctx, *, live_citations=True):
             f'<li><span>Data DOI</span><a href="{data_doi_href}" '
             f'target="_blank" rel="noopener">{escape(dataset_doi)}</a></li>'
         )
-    if pwc_url:
-        items.append(
-            f'<li><span>PapersWithCode</span><a href="{pwc_url}" target="_blank" '
-            f'rel="noopener">Dataset page</a></li>'
-        )
     if benchmark_ctx and benchmark_ctx.get("n_tables"):
         items.append(
             f'<li><span>MOABB tables</span><strong>{benchmark_ctx["n_tables"]} (WithinSession)</strong></li>'
         )
+    # --- Page Views row (single rich entry in the same list) ---
+    if isinstance(pageview_counts, dict) and any(
+        key in pageview_counts for key in ("last30", "all_time", "weekly_12")
+    ):
+        last30 = pageview_counts.get("last30")
+        all_time = pageview_counts.get("all_time")
+        updated_str = _format_updated_utc((pageview_meta or {}).get("generated_at_utc"))
+
+        # Rank line
+        if (
+            isinstance(pageview_rank, dict)
+            and pageview_rank.get("rank")
+            and pageview_rank.get("total")
+        ):
+            rank_line = (
+                f'<div class="ds-pv-rank">#{int(pageview_rank["rank"])} of '
+                f'{int(pageview_rank["total"])} · Top {int(pageview_rank.get("top_percent", 0))}% most viewed</div>'
+            )
+        else:
+            rank_line = '<div class="ds-pv-rank">Ranking: n/a</div>'
+
+        # Sparkline
+        sparkline_cell = ""
+        weekly = pageview_counts.get("weekly_12")
+        if weekly:
+            sparkline_cell = (
+                f'<div class="ds-pv-spark" aria-label="Page views trend (last 12 weeks)">'
+                f"{_sparkline_svg(weekly)}</div>"
+            )
+
+        # Compose the rich right-hand value
+        pv_value = (
+            f'<div class="ds-pv-detail">'
+            f'<div class="ds-pv-body">'
+            f'<div class="ds-pv-metrics">'
+            f"30d: <strong>{_format_count(last30)}</strong>"
+            f' <span class="ds-provenance-sep">·</span> '
+            f"all-time: <strong>{_format_count(all_time)}</strong>"
+            f"</div>"
+            f"{rank_line}"
+            f'<div class="ds-pv-updated">Updated: {updated_str}</div>'
+            f"</div>"
+            f"{sparkline_cell}"
+            f"</div>"
+        )
+        items.append(f'<li class="ds-pv-row"><span>Page Views</span>{pv_value}</li>')
+
     if not items:
         return ""
 
     list_html = "\n      ".join(items)
     return (
         '<div class="ds-citation-impact">'
-        '<p class="ds-citation-title">Citation & Impact</p>'
+        '<p class="ds-citation-title">Citation &amp; Impact</p>'
         f"<ul>{list_html}</ul>"
         f"{script_html}"
         "</div>"
+    )
+
+
+def _extract_description_text(lines):
+    """Extract plain description lines from docstring, skipping admonitions/directives."""
+
+    def _skip_directive_block(start_idx):
+        directive_indent = len(lines[start_idx]) - len(lines[start_idx].lstrip())
+        i = start_idx + 1
+        while i < len(lines):
+            if lines[i].strip() == "":
+                i += 1
+                continue
+            line_indent = len(lines[i]) - len(lines[i].lstrip())
+            if line_indent > directive_indent:
+                i += 1
+                continue
+            break
+        return i
+
+    desc = []
+    i = 0
+    while i < len(lines):
+        stripped = lines[i].strip()
+        # Skip admonition blocks (directive + indented body)
+        if stripped.startswith(".. admonition::"):
+            i = _skip_directive_block(i)
+            continue
+        # Stop at rubrics and version directives
+        if stripped.startswith(".. rubric::"):
+            break
+        if stripped.startswith(
+            (".. versionadded::", ".. versionchanged::", ".. deprecated::")
+        ):
+            break
+        if stripped.startswith(".. "):
+            i = _skip_directive_block(i)
+            continue
+        # Stop at underline-style "references" or "References" header
+        if (
+            stripped.lower() in ("references", "references:")
+            and i + 1 < len(lines)
+            and set(lines[i + 1].strip()) <= {"-", "=", "~"}
+            and lines[i + 1].strip()
+        ):
+            break
+        desc.append(stripped)
+        i += 1
+    # Strip leading/trailing blanks
+    while desc and not desc[0]:
+        desc.pop(0)
+    while desc and not desc[-1]:
+        desc.pop()
+    return desc
+
+
+def _rst_paragraph_to_html(text):
+    """Convert a paragraph of reST-like text to simple HTML.
+
+    Handles: **bold**, *italic*, ``code``, list items (- prefix),
+    and strips footnote references like [1]_.
+    """
+    # Strip reST footnote references
+    text = _RST_FOOTNOTE_RE.sub("", text)
+
+    # Check if this is a list block (lines starting with "- ")
+    if " - " in text and text.lstrip().startswith("- "):
+        # Split on " - " pattern that indicates list items
+        items = _RST_LIST_SPLIT_RE.split(text)
+        items = [it.strip() for it in items if it.strip()]
+        formatted = []
+        for item in items:
+            item = _rst_inline_to_html(item)
+            formatted.append(f"<li>{item}</li>")
+        return f'<ul class="ds-overview-list">{"".join(formatted)}</ul>'
+
+    return f"<p>{_rst_inline_to_html(text)}</p>"
+
+
+def _rst_inline_to_html(text):
+    """Convert reST inline markup to HTML, escaping the rest."""
+    parts = []
+    pos = 0
+    # Match **bold**, *italic*, ``code`` — process in order of appearance
+    for m in _RST_INLINE_RE.finditer(text):
+        # Escape text before this match
+        parts.append(escape(text[pos : m.start()]))
+        if m.group(1) is not None:
+            parts.append(f"<strong>{escape(m.group(1))}</strong>")
+        elif m.group(2) is not None:
+            parts.append(f"<code>{escape(m.group(2))}</code>")
+        elif m.group(3) is not None:
+            parts.append(f"<em>{escape(m.group(3))}</em>")
+        pos = m.end()
+    parts.append(escape(text[pos:]))
+    return "".join(parts)
+
+
+def _make_overview_teaser_html(description_lines, cls_name):
+    """Build a collapsible overview teaser panel with key facts."""
+    if not description_lines:
+        return ""
+
+    # --- Parse all paragraphs and references ---
+    all_paragraphs = []
+    current = []
+    ref_lines = []
+    in_refs = False
+    for line in description_lines:
+        if re.match(r"^\.\.\s+rubric::\s*References", line):
+            in_refs = True
+            continue
+        if in_refs:
+            ref_lines.append(line)
+            continue
+        if not line:
+            if current:
+                all_paragraphs.append(" ".join(current))
+                current = []
+        else:
+            # If this line starts a list item and we have non-list content
+            # buffered, flush the buffer first
+            if line.startswith("- ") and current and not current[0].startswith("- "):
+                all_paragraphs.append(" ".join(current))
+                current = []
+            current.append(line)
+    if current:
+        all_paragraphs.append(" ".join(current))
+
+    all_paragraphs = [p.strip() for p in all_paragraphs if p.strip()]
+
+    if not all_paragraphs:
+        return ""
+
+    # --- Split into teaser (visible) vs overflow (hidden) ---
+    # Show enough paragraphs to fill ~10-15 lines (~800 chars)
+    TEASER_CHAR_LIMIT = 800
+    teaser_paragraphs = []
+    overflow_paragraphs = []
+    char_count = 0
+    for i, p in enumerate(all_paragraphs):
+        if char_count < TEASER_CHAR_LIMIT or i == 0:
+            teaser_paragraphs.append(p)
+            char_count += len(p)
+        else:
+            overflow_paragraphs.append(p)
+
+    # --- Build overflow HTML (hidden by default) ---
+    full_html_parts = []
+    for p in overflow_paragraphs:
+        full_html_parts.append(_rst_paragraph_to_html(p))
+
+    # References (collapsed inside expanded)
+    ref_html = ""
+    ref_text = [r for r in ref_lines if r.strip()]
+    if ref_text:
+        ref_content = "".join(f"<p>{_rst_inline_to_html(r)}</p>" for r in ref_text)
+        ref_html = (
+            '<details class="ds-overview-refs">'
+            "<summary>References</summary>"
+            f"{ref_content}"
+            "</details>"
+        )
+
+    full_section = ""
+    if full_html_parts or ref_html:
+        full_content = "\n".join(full_html_parts)
+        full_section = (
+            f'<div class="ds-overview-full">' f"{full_content}" f"{ref_html}" f"</div>"
+        )
+
+    # --- Compose component ---
+    overview_id = _dataset_dom_id("ds-overview", cls_name)
+
+    teaser_parts = []
+    for p in teaser_paragraphs:
+        html = _rst_paragraph_to_html(p)
+        # Add class to <p> and <ul> elements for consistent styling
+        html = html.replace("<p>", '<p class="ds-overview-text">', 1)
+        html = html.replace(
+            '<ul class="ds-overview-list">',
+            '<ul class="ds-overview-list ds-overview-text">',
+            1,
+        )
+        teaser_parts.append(html)
+    teaser_html = "".join(teaser_parts)
+
+    # Only show expand controls if there's overflow content
+    has_overflow = bool(full_section)
+
+    toggle_btn = ""
+    if has_overflow:
+        toggle_btn = (
+            f'<button class="ds-overview-toggle" type="button" '
+            f'aria-expanded="false" aria-controls="{overview_id}" '
+            f"onclick=\"var el=this.closest('.ds-overview-teaser');"
+            f"el.classList.toggle('ds-expanded');"
+            f"var exp=el.classList.contains('ds-expanded');"
+            f"this.setAttribute('aria-expanded',exp?'true':'false');"
+            f"this.textContent=exp?'Show less ▴':'Show more ▾';\">"
+            f"Show more ▾</button>"
+        )
+
+    return (
+        f'<div class="ds-overview-teaser">'
+        f'<p class="ds-overview-title">Overview</p>'
+        f"{teaser_html}"
+        f"{full_section}"
+        f'<div class="ds-overview-actions">'
+        f"{toggle_btn}"
+        f'<a class="ds-overview-tab-link" href="#{overview_id}" '
+        f'onclick="event.preventDefault();'
+        f"var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');"
+        f"if(tab){{tab.click();}}"
+        f"var target=document.getElementById('{overview_id}');"
+        f"if(target){{target.scrollIntoView({{behavior:'smooth',block:'start'}});}}"
+        f'">Open in Overview tab →</a>'
+        f"</div>"
+        f"</div>"
     )
 
 
@@ -1260,6 +1531,7 @@ def _make_header_html(
     pageview_counts=None,
     pageview_rank=None,
     pageview_meta=None,
+    description_lines=None,
 ):
     """Build the enhanced dataset card HTML (Layer 1)."""
     paradigm = info.get("paradigm") or "unknown"
@@ -1277,9 +1549,8 @@ def _make_header_html(
     default_subject = info.get("default_subject", 1)
     subject_literal = repr(default_subject)
     code = info.get("code")
-    quickstart_id = (
-        "ds-quickstart-" + re.sub(r"[^a-zA-Z0-9_-]+", "-", cls_name).strip("-").lower()
-    )
+    quickstart_id = _dataset_dom_id("ds-quickstart", cls_name)
+    quickstart_btn_id = _dataset_dom_id("ds-quickstart-btn", cls_name)
     source_html = ""
     if source_url:
         source_html = (
@@ -1367,49 +1638,15 @@ def _make_header_html(
             )
 
     chips_html = "\n      ".join(chips)
-    last30 = (
-        pageview_counts.get("last30")
-        if isinstance(pageview_counts, dict) and "last30" in pageview_counts
-        else None
-    )
-    all_time = (
-        pageview_counts.get("all_time")
-        if isinstance(pageview_counts, dict) and "all_time" in pageview_counts
-        else None
-    )
-    views_html = (
-        '<div class="ds-views-line" title="Google Analytics 4 page views">'
-        '<div class="ds-views-main">'
-        '<div class="ds-views-head"><span class="ds-views-label">Page Views</span>'
-        f'<span class="ds-views-updated">Updated: {_format_updated_utc((pageview_meta or {}).get("generated_at_utc"))}</span>'
-        "</div>"
-        '<div class="ds-views-metrics">'
-        f"<span>30d: <strong>{_format_count(last30)}</strong></span>"
-        '<span class="ds-provenance-sep">·</span>'
-        f"<span>all-time: <strong>{_format_count(all_time)}</strong></span>"
-        "</div>"
-        '<div class="ds-views-rank">'
-        + (
-            f"#{int((pageview_rank or {}).get('rank'))} of {int((pageview_rank or {}).get('total'))} "
-            f"· Top {int((pageview_rank or {}).get('top_percent'))}% most viewed"
-            if isinstance(pageview_rank, dict)
-            and pageview_rank.get("rank")
-            and pageview_rank.get("total")
-            else "Ranking: n/a"
-        )
-        + "</div>"
-        "</div>"
-        + (
-            f'<div class="ds-views-spark-wrap">{_sparkline_svg((pageview_counts or {}).get("weekly_12"))}</div>'
-            if isinstance(pageview_counts, dict)
-            else ""
-        )
-        + "</div>"
-    )
     benchmark_html = _make_benchmark_context_html(cls_name, info)
     benchmark_ctx = _get_benchmark_context(cls_name)
     citation_html = _make_citation_impact_html(
-        info, benchmark_ctx, live_citations=live_citations
+        info,
+        benchmark_ctx,
+        live_citations=live_citations,
+        pageview_counts=pageview_counts,
+        pageview_rank=pageview_rank,
+        pageview_meta=pageview_meta,
     )
     compare_anchor_map = {
         "imagery": "motor-imagery",
@@ -1437,14 +1674,17 @@ def _make_header_html(
 
     # --- Action buttons ---
     actions = []
-    # Quickstart button toggles details panel
+    # Quickstart button toggles the code panel
     actions.append(
         (
-            f'<button class="ds-btn ds-btn-primary ds-btn-toggle" type="button" '
+            f'<button id="{quickstart_btn_id}" class="ds-btn ds-btn-primary ds-btn-toggle" type="button" '
             f'aria-controls="{quickstart_id}" aria-expanded="false" '
             f"onclick=\"var el=document.getElementById('{quickstart_id}');"
-            "if(el){el.open=!el.open;"
-            "this.setAttribute('aria-expanded',el.open?'true':'false');}\">"
+            "if(el){var expanded=this.getAttribute('aria-expanded')==='true';"
+            "var next=!expanded;"
+            "this.setAttribute('aria-expanded',next?'true':'false');"
+            "el.hidden=!next;"
+            "el.setAttribute('aria-hidden',next?'false':'true');}\">"
             "Quickstart"
             "</button>"
         )
@@ -1472,10 +1712,10 @@ def _make_header_html(
     )
     hl_code = _highlight_python(quickstart_code)
     quickstart = (
-        f'<details id="{quickstart_id}" class="ds-quickstart">\n'
-        f'  <summary class="ds-quickstart-summary">Toggle quickstart code</summary>\n'
+        f'<div id="{quickstart_id}" class="ds-quickstart" role="region" '
+        f'aria-labelledby="{quickstart_btn_id}" aria-hidden="true" hidden>\n'
         f'  <div class="ds-quickstart-code">{hl_code}</div>\n'
-        f"</details>"
+        f"</div>"
     )
 
     # --- Alt name (paper description) ---
@@ -1486,6 +1726,9 @@ def _make_header_html(
 
     # --- Author provenance ---
     provenance_html = _make_provenance_html(info)
+
+    # --- Overview teaser ---
+    overview_teaser = _make_overview_teaser_html(description_lines or [], cls_name)
 
     return f"""\
 <div class="ds-card" role="region" aria-label="{cls_name} dataset overview">
@@ -1500,11 +1743,11 @@ def _make_header_html(
   <div class="ds-stats">
       {chips_html}
   </div>
-  {views_html}
   {class_line}
   <div class="ds-actions">
       {actions_html}
   </div>
+  {overview_teaser}
   {quickstart}
   {benchmark_html}
   {citation_html}
@@ -1726,8 +1969,6 @@ def _restructure_docstring_lines(lines, cls_name, default_subject=1):
     description_lines = []
     reference_lines = []
     notes_lines = []
-    pwc_lines = []  # PapersWithCode link
-
     current_bucket = "description"
     in_admonition = False
     admonition_indent = 0
@@ -1736,12 +1977,6 @@ def _restructure_docstring_lines(lines, cls_name, default_subject=1):
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
-
-        # Detect PapersWithCode link at top
-        if stripped.startswith("**PapersWithCode leaderboard:**"):
-            pwc_lines.append(line)
-            i += 1
-            continue
 
         # Detect admonition starts (metadata cards + feedback)
         if stripped.startswith(".. admonition::"):
@@ -1887,14 +2122,16 @@ def _restructure_docstring_lines(lines, cls_name, default_subject=1):
     # Tab-set directive
     new_lines.append("")
     new_lines.append(".. tab-set::")
+    new_lines.append("   :class: ds-doc-tabs")
     new_lines.append("")
 
     # --- Tab: Overview ---
     new_lines.append("   .. tab-item:: Overview")
     new_lines.append("")
-    if pwc_lines:
-        new_lines.extend(_reindent(pwc_lines, TAB_INDENT))
-        new_lines.append("")
+    new_lines.append(
+        " " * TAB_INDENT + f".. _{_dataset_dom_id('ds-overview', cls_name)}:"
+    )
+    new_lines.append("")
     if description_lines:
         new_lines.extend(_reindent(description_lines, TAB_INDENT))
         new_lines.append("")
@@ -1997,6 +2234,9 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
     info = _get_dataset_info(obj)
     source_url = _get_dataset_source_url(obj)
 
+    # --- Extract description lines for teaser (before restructuring) ---
+    desc_lines = _extract_description_text(lines)
+
     # --- Layer 1: Enhanced card (inserted at top) ---
     top_block = []
     if info:
@@ -2012,6 +2252,7 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
             pageview_counts=pageview_counts,
             pageview_rank=pageview_rank,
             pageview_meta=pageview_meta,
+            description_lines=desc_lines,
         )
         top_block.append(".. raw:: html")
         top_block.append("")
@@ -2059,10 +2300,10 @@ def source_read_add_inherited(app, docname, source):
         ":html_theme.sidebar_secondary.remove:\n\n" + source[0]
     )
 
-    # Add :inherited-members: after :members:
+    # Add :inherited-members: and :show-inheritance: after :members:
     source[0] = source[0].replace(
         "   :members:\n",
-        "   :members:\n   :inherited-members:\n",
+        "   :members:\n   :inherited-members:\n   :show-inheritance:\n",
     )
 
     # Add __init__ to :special-members: so the constructor is documented

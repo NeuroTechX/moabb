@@ -2488,7 +2488,6 @@ class BIDSInterfaceBase(abc.ABC):
 _FORMAT_EXTENSION_MAP = {
     "EDF": ".edf",
     "BrainVision": ".vhdr",
-    "BDF": ".bdf",
     "EEGLAB": ".set",
 }
 
