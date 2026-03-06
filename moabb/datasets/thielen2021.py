@@ -322,6 +322,20 @@ class Thielen2021(BaseDataset):
             idx = np.concatenate(([0], 1 + np.where(cond)[0]))
             trial_onsets = events[idx, 0]
 
+            # Add trial-level annotations so trial identity survives BIDS export.
+            # SetRawAnnotations transfers extras by sample position to the
+            # first bit event of each trial, appearing as columns in events.tsv.
+            trial_onsets_sec = trial_onsets / raw.info["sfreq"]
+            trial_annotations = mne.Annotations(
+                onset=trial_onsets_sec,
+                duration=[0.0] * len(trial_onsets_sec),
+                description=["_trial_meta"] * len(trial_onsets_sec),
+            )
+            trial_annotations.extras = [
+                {"trial_id": int(lbl)} for lbl in trial_labels
+            ]
+            raw.set_annotations(raw.annotations + trial_annotations)
+
             # Create stim channel with trial information (i.e., symbols)
             # Specifically: 200 = symbol-0, 201 = symbol-1, 202 = symbol-2, etc.
             raw = add_stim_channel_trial(raw, trial_onsets, trial_labels, offset=200)
