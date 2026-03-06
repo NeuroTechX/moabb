@@ -132,6 +132,7 @@ Bugs
 - Fix ``doi`` field in ``dataset_description.json`` to use BIDS-required ``doi:<value>`` format by adding the ``doi:`` prefix when missing (by `Bruno Aristimunha`_)
 - Fix ``write_raw_bids`` overwrite error for multi-session datasets by detecting when a subject already exists in ``participants.tsv`` and setting ``overwrite=True`` for subsequent sessions (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Ofner2017` generic channel names (``eeg-0`` .. ``eeg-60``) in subject 1 execution GDF files by mapping them to correct 10-20 montage labels (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.Wang2021Combined` segfault during BIDS conversion by switching from ``mne.io.read_raw_ant`` to ``mne.io.read_raw_cnt``, avoiding a crash in the ANT reader's C library (libEep) on macOS (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
