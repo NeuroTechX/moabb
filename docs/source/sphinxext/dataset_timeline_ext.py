@@ -2300,10 +2300,10 @@ def source_read_add_inherited(app, docname, source):
         ":html_theme.sidebar_secondary.remove:\n\n" + source[0]
     )
 
-    # Add :inherited-members: after :members:
+    # Add :inherited-members: and :show-inheritance: after :members:
     source[0] = source[0].replace(
         "   :members:\n",
-        "   :members:\n   :inherited-members:\n",
+        "   :members:\n   :inherited-members:\n   :show-inheritance:\n",
     )
 
     # Add __init__ to :special-members: so the constructor is documented

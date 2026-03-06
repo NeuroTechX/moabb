@@ -191,8 +191,8 @@ sphinx_gallery_conf = {
 }
 
 
-autodoc_default_options = {"inherited-members": False}
-autodoc_default_flags = {"inherited-members": None}
+autodoc_default_options = {}
+autodoc_default_flags = {}
 autosummary_generate = True
 
 numpydoc_show_class_members = False
