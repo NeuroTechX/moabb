@@ -58,16 +58,26 @@ log = logging.getLogger(__name__)
 
 import mne_bids.dig as _mne_bids_dig  # noqa: E402
 
+
 _orig_write_dig_bids = _mne_bids_dig._write_dig_bids
 
 
 def _write_dig_bids_with_electrodes_json(
-    bids_path, raw, montage=None, acpc_aligned=False,
-    electrodes_tsv_task=False, overwrite=False,
+    bids_path,
+    raw,
+    montage=None,
+    acpc_aligned=False,
+    electrodes_tsv_task=False,
+    overwrite=False,
 ):
     """Wrap mne_bids _write_dig_bids to also create electrodes.json sidecar."""
     _orig_write_dig_bids(
-        bids_path, raw, montage, acpc_aligned, electrodes_tsv_task, overwrite,
+        bids_path,
+        raw,
+        montage,
+        acpc_aligned,
+        electrodes_tsv_task,
+        overwrite,
     )
     # Create electrodes.json sidecar next to every electrodes.tsv that was
     # written.  The filenames include the space entity (e.g. space-CapTrak),
@@ -87,6 +97,8 @@ def _write_dig_bids_with_electrodes_json(
 # Apply patch so write_raw_bids() creates electrodes.json automatically.
 _mne_bids_dig._write_dig_bids = _write_dig_bids_with_electrodes_json
 import mne_bids.write as _mne_bids_write  # noqa: E402
+
+
 _mne_bids_write._write_dig_bids = _write_dig_bids_with_electrodes_json
 
 # ---------------------------------------------------------------------------
@@ -624,9 +636,7 @@ def _build_sidecar_enrichment(metadata):
         if isinstance(acq.filters, dict):
             # BIDS requires nested structure: {"FilterName": {"key": "value"}}
             # If the dict is flat (no nested dicts), wrap it under a filter name.
-            if acq.filters and not any(
-                isinstance(v, dict) for v in acq.filters.values()
-            ):
+            if acq.filters and not any(isinstance(v, dict) for v in acq.filters.values()):
                 entries["HardwareFilters"] = {"HardwareFilter": acq.filters}
             else:
                 entries["HardwareFilters"] = acq.filters
@@ -2590,10 +2600,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             if _participants_tsv.exists():
                 _sub_id = f"sub-{bids_path.subject}"
                 with open(_participants_tsv) as _f:
-                    _overwrite = any(
-                        line.split("\t")[0] == _sub_id
-                        for line in _f
-                    )
+                    _overwrite = any(line.split("\t")[0] == _sub_id for line in _f)
 
             mne_bids.write_raw_bids(
                 raw,
