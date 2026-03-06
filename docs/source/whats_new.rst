@@ -125,6 +125,11 @@ Bugs
   :class:`moabb.pipelines.classification.SSVEP_itCCA`, and
   :class:`moabb.pipelines.classification.SSVEP_eCCA` now return predictions in the same label space as ``classes_`` and align ``predict_proba`` columns with ``classes_`` order. :class:`moabb.pipelines.classification.SSVEP_CCA` and :class:`moabb.pipelines.classification.SSVEP_eCCA` now infer frequencies robustly from epochs metadata (with ``freq_map`` override), and :class:`moabb.pipelines.classification.SSVEP_eCCA` now uses the corrected 4-feature filter assignments with updated reference/citation alignment (by `Bruno Aristimunha`_)
 - Add documentation note to :class:`moabb.datasets.PhysionetMI` that subject 88 was recorded at 128 Hz instead of 160 Hz, which causes errors when loaded alongside other subjects (:gh:`538` by `Bruno Aristimunha`_)
+- Fix BIDS validator compliance: monkey-patch ``mne_bids`` to generate ``electrodes.json`` sidecar with ``SpatialReference`` key required by BIDS validator v2.4.0 when ``space-CapTrak`` entity is present (by `Bruno Aristimunha`_)
+- Fix ``HardwareFilters`` BIDS sidecar format: wrap flat filter dicts in the required nested structure ``{"FilterName": {"key": "value"}}`` instead of writing a flat dict, and wrap string filters similarly (by `Bruno Aristimunha`_)
+- Fix ``doi`` field in ``dataset_description.json`` to use BIDS-required ``doi:<value>`` format by adding the ``doi:`` prefix when missing (by `Bruno Aristimunha`_)
+- Fix ``write_raw_bids`` overwrite error for multi-session datasets by detecting when a subject already exists in ``participants.tsv`` and setting ``overwrite=True`` for subsequent sessions (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.Ofner2017` generic channel names (``eeg-0`` .. ``eeg-60``) in subject 1 execution GDF files by mapping them to correct 10-20 montage labels (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
