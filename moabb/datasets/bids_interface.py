@@ -2319,7 +2319,16 @@ class BIDSInterfaceBase(abc.ABC):
                 description=self.desc,
                 check=False,
             )
-            session_path.rm(safe_remove=False)
+            try:
+                session_path.rm(safe_remove=False)
+            except RuntimeError:
+                session_dir = (
+                    Path(self.root)
+                    / f"sub-{subject_moabb_to_bids(self.subject)}"
+                    / f"ses-{session}"
+                )
+                if session_dir.is_dir():
+                    shutil.rmtree(session_dir)
         log.info("Finished erasing cache of %s.", repr(self))
 
     def load(self, preload=False):
