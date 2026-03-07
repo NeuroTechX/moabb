@@ -416,6 +416,8 @@ class Kojima2024B(BaseDataset):
         task="all",
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
     ):
         self.n_channels = 64
 
@@ -441,6 +443,7 @@ class Kojima2024B(BaseDataset):
             doi="10.7910/DVN/1UJDV6",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _block_rep(self, task, run):

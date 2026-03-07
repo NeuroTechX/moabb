@@ -291,7 +291,14 @@ class PhysionetMI(BaseDataset):
     )
 
     def __init__(
-        self, imagined=True, executed=False, subjects=None, sessions=None, **kwargs
+        self,
+        imagined=True,
+        executed=False,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        **kwargs,
     ):
         deprecated_renames = {"Imagined": "imagined", "Executed": "executed"}
         resolved = _handle_deprecated_kwargs(
@@ -312,6 +319,7 @@ class PhysionetMI(BaseDataset):
             doi="10.1109/TBME.2004.827072",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
         self.events = dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1)
         self.imagined = imagined

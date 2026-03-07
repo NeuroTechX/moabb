@@ -214,6 +214,8 @@ class Lee2021Mobile(BaseDataset):
         paradigm,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
     ):
         if paradigm.lower() == "ssvep":
             code_suffix = "SSVEP"
@@ -244,6 +246,7 @@ class Lee2021Mobile(BaseDataset):
             doi="10.1038/s41597-021-01094-4",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

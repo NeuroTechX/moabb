@@ -8,6 +8,8 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
 
+from moabb.datasets._channel_pick import pick_channels_for_modalities
+
 
 # Handle different scikit-learn versions for _VisualBlock import
 # sklearn >= 1.6 moved _VisualBlock to sklearn.utils._repr_html.estimator
@@ -736,6 +738,7 @@ class RawToEpochs(FixedTransformer):
         baseline: Tuple[float, float],
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
+        return_all_modalities=False,
     ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
@@ -745,6 +748,7 @@ class RawToEpochs(FixedTransformer):
         self.baseline = baseline
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
+        self.return_all_modalities = return_all_modalities
 
     def transform(self, X, y=None):
         raw = X["raw"]
@@ -755,7 +759,7 @@ class RawToEpochs(FixedTransformer):
             raise ValueError("raw must be a mne.io.BaseRaw")
 
         if self.channels is None:
-            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+            picks = pick_channels_for_modalities(raw.info, self.return_all_modalities)
         else:
             available_channels = raw.info["ch_names"]
             if self.interpolate_missing_channels:

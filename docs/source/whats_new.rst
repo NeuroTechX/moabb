@@ -61,6 +61,7 @@ Enhancements
 - Add license chip with official Creative Commons SVG icons to dataset documentation pages, showing license type with inline icons and links to license deeds (:gh:`1015` by `Bruno Aristimunha`_)
 - Add adjusted chance levels, distribution plot, and restyle analysis plots with colorblind-friendly palette (:gh:`1019` by `Bruno Aristimunha`_)
 - Enrich documentation metadata for Hinss2021, ErpCore2021 (all 7 variants), Schirrmeister2017, MartinezCagigal2023 (Checker + Pary), and Rodrigues2017 with investigators, institution, country, ethics approval, funding, contact info, acknowledgements, and citation instructions extracted from published papers. All 83 datasets now have ``investigators`` populated (:gh:`1017` by `Bruno Aristimunha`_)
+- Add ``return_all_modalities`` keyword-only parameter to :class:`moabb.datasets.base.BaseDataset` and 30+ multi-modal dataset subclasses, allowing users to retain non-EEG channels (EOG, EMG, ECG, misc) when loading data. Accepts ``True`` (all non-stim channels), or a ``dict`` of :func:`mne.pick_types` keyword arguments for fine-grained control (e.g. ``dict(eeg=True, eog=True)``). The setting is respected through the preprocessing pipeline (:class:`moabb.datasets.preprocessing.RawToEpochs`) and BIDS conversion so non-EEG channels survive epoching and export. Add shared ``pick_channels_for_modalities()`` helper to :mod:`moabb.datasets.utils` (:gh:`966`, :gh:`1030` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -133,6 +134,10 @@ Bugs
 - Fix ``write_raw_bids`` overwrite error for multi-session datasets by detecting when a subject already exists in ``participants.tsv`` and setting ``overwrite=True`` for subsequent sessions (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Ofner2017` generic channel names (``eeg-0`` .. ``eeg-60``) in subject 1 execution GDF files by mapping them to correct 10-20 montage labels (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Wang2021Combined` segfault during BIDS conversion by switching from ``mne.io.read_raw_ant`` to ``mne.io.read_raw_cnt``, avoiding a crash in the ANT reader's C library (libEep) on macOS (by `Bruno Aristimunha`_)
+- Fix brittle channel picking in :class:`moabb.datasets.bids_interface.BIDSInterfaceRawEDF` that enumerated every MNE channel type keyword; replaced with stim-exclusion approach (:gh:`1030` by `Bruno Aristimunha`_)
+- Fix ``set_montage`` crash in :class:`moabb.datasets.Thielen2015` when ``return_all_modalities=True`` by retyping ANA/EXG channels to ``misc`` (:gh:`1030` by `Bruno Aristimunha`_)
+- Fix duplicate stim channels and dead CPz reference channel in :class:`moabb.datasets.Liu2024` when ``return_all_modalities=True`` (:gh:`1030` by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.preprocessing.RawToEpochs` silently stripping all non-EEG channels regardless of ``return_all_modalities`` setting (:gh:`1030` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~

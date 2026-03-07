@@ -275,6 +275,8 @@ class Sosulski2019(BaseDataset):
         interval=None,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
         **kwargs,
     ):
         deprecated_renames = {
@@ -321,6 +323,7 @@ class Sosulski2019(BaseDataset):
             doi="10.6094/UNIFR/154576",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     @staticmethod

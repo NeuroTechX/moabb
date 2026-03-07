@@ -459,7 +459,7 @@ class BNCI2014_001(MNEBNCI):
         runs_per_session=6,
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -470,6 +470,7 @@ class BNCI2014_001(MNEBNCI):
             doi="10.3389/fnins.2012.00055",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -939,7 +940,7 @@ class BNCI2014_004(MNEBNCI):
         methodology="Subjects performed kinesthetic motor imagery of left or right hand movements. Two screening sessions (01T, 02T) without feedback: 6 runs x 20 trials = 120 trials per session. Three feedback sessions (03T, 04E, 05E) with smiley feedback: 4 runs x 40 trials (20 per class) = 160 trials per session. Screening trials: fixation cross + beep at t=0, arrow cue at ~t=2 for 1.25s, imagery for 4s, break. Feedback trials: smiley at t=0, beep at t=2, cue from t=3 to t=7.5 with continuous smiley feedback. Three bipolar EEG channels (C3, Cz, C4) plus three monopolar EOG channels recorded at 250 Hz with 0.5-100 Hz bandpass and 50 Hz notch filter. EEG ground at Fz, EOG reference at left mastoid. Amplifier: g.tec. Software: rtsBCI (MATLAB/Simulink).",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
@@ -950,6 +951,7 @@ class BNCI2014_004(MNEBNCI):
             doi="10.1109/TNSRE.2007.906956",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 

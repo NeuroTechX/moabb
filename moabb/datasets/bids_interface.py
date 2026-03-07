@@ -33,6 +33,7 @@ from numpy import save as np_save
 import moabb
 from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
+from moabb.datasets._channel_pick import pick_channels_for_modalities
 
 
 if TYPE_CHECKING:
@@ -2556,7 +2557,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # Otherwise, the montage would still have the stim channel
         # which is dropped by mne_bids.write_raw_bids:
-        picks = mne.pick_types(info=raw.info, eeg=True, stim=False)
+        picks = pick_channels_for_modalities(raw.info, self.dataset.return_all_modalities)
         raw.pick(picks)
 
         # By using the same anonymization `daysback` number we can
@@ -2589,23 +2590,13 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             ann_extras = getattr(raw.annotations, "extras", None)
             has_extras = ann_extras is not None and any(ann_extras)
 
-            # Use overwrite=True when the participant already exists in
-            # participants.tsv (i.e. a previous session/run for the same
-            # subject has already been written in this conversion).
-            _participants_tsv = Path(bids_path.root) / "participants.tsv"
-            _overwrite = False
-            if _participants_tsv.exists():
-                _sub_id = f"sub-{bids_path.subject}"
-                with open(_participants_tsv) as _f:
-                    _overwrite = any(line.split("\t")[0] == _sub_id for line in _f)
-
             mne_bids.write_raw_bids(
                 raw,
                 bids_path,
                 format=self._format,
                 allow_preload=True,
                 montage=raw.get_montage(),
-                overwrite=_overwrite,
+                overwrite=True,
                 verbose=self.verbose,
             )
 
