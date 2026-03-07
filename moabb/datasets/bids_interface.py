@@ -33,6 +33,7 @@ from numpy import save as np_save
 import moabb
 from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
+from moabb.datasets._channel_pick import pick_channels_for_modalities
 
 
 if TYPE_CHECKING:
@@ -2489,8 +2490,6 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # Otherwise, the montage would still have the stim channel
         # which is dropped by mne_bids.write_raw_bids:
-        from moabb.datasets.utils import pick_channels_for_modalities
-
         picks = pick_channels_for_modalities(raw.info, self.dataset.return_all_modalities)
         raw.pick(picks)
 
