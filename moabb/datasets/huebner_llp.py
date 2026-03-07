@@ -387,6 +387,8 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
         use_blocks_as_sessions=True,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
     ):
         llp_speller_paper_doi = "10.1371/journal.pone.0175856"
         super().__init__(
@@ -400,6 +402,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             use_blocks_as_sessions=use_blocks_as_sessions,
             subjects=subjects,
             sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -632,6 +635,8 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         use_blocks_as_sessions=True,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
     ):
         mix_speller_paper_doi = "10.1109/MCI.2018.2807039"
         super().__init__(
@@ -645,6 +650,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             use_blocks_as_sessions=use_blocks_as_sessions,
             subjects=subjects,
             sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
