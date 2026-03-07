@@ -2529,7 +2529,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 format=self._format,
                 allow_preload=True,
                 montage=raw.get_montage(),
-                overwrite=False,
+                overwrite=True,
                 verbose=self.verbose,
             )
 
