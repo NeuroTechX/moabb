@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 112
+        "total": 121
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -1312,5 +1312,85 @@
         ],
         "year": 2024,
         "doi": "10.7910/DVN/MQOVEY"
+    },
+    "10.1038/sdata.2018.211": {
+        "title": "A large electroencephalographic motor imagery dataset for electroencephalographic brain computer interfaces",
+        "authors": [
+            "Murat Kaya",
+            "Mustafa Kemal Binli",
+            "Erkan Ozbay",
+            "Hilmi Yanar",
+            "Yuriy Mishchenko"
+        ]
+    },
+    "10.6084/m9.figshare.c.3917698.v1": {
+        "title": "A large electroencephalographic motor imagery dataset for electroencephalographic brain computer interfaces (dataset)",
+        "authors": [
+            "Murat Kaya",
+            "Mustafa Kemal Binli",
+            "Erkan Ozbay",
+            "Hilmi Yanar",
+            "Yuriy Mishchenko"
+        ]
+    },
+    "10.1093/pnasnexus/pgae076": {
+        "title": "Transfer learning promotes acquisition of individual BCI skills",
+        "authors": [
+            "Satyam Kumar",
+            "Hussein Alawieh",
+            "Frigyes Samuel Racz",
+            "Rawan Fakhreddine",
+            "Jose del R. Millan"
+        ]
+    },
+    "10.5281/zenodo.10694880": {
+        "title": "Transfer learning promotes acquisition of individual BCI skills (dataset)",
+        "authors": [
+            "Satyam Kumar",
+            "Hussein Alawieh",
+            "Frigyes Samuel Racz",
+            "Rawan Fakhreddine",
+            "Jose del R. Millan"
+        ]
+    },
+    "10.1371/journal.pone.0121262": {
+        "title": "Improving the Performance of an EEG-Based Motor Imagery Brain Computer Interface Using Task Evoked Changes in Pupil Diameter",
+        "authors": [
+            "David Rozado",
+            "Andreas Duenser",
+            "Ben Howell"
+        ]
+    },
+    "10.7910/DVN/28932": {
+        "title": "EEG plus pupillometry during motor imagery (dataset)",
+        "authors": [
+            "David Rozado",
+            "Andreas Duenser",
+            "Ben Howell"
+        ]
+    },
+    "10.3389/fnins.2020.566147": {
+        "title": "Brain-Computer Interfacing Under Distraction: An Evaluation Study",
+        "authors": [
+            "Stephanie Brandl",
+            "Benjamin Blankertz",
+            "Tobias Dahne"
+        ]
+    },
+    "10.1038/s41597-020-0535-2": {
+        "title": "Multi-channel EEG recording during motor imagery of different joints from the same limb",
+        "authors": [
+            "Xuelin Ma",
+            "Shuang Qiu",
+            "Huiguang He"
+        ]
+    },
+    "10.7910/DVN/RBN3XG": {
+        "title": "Multi-channel EEG recording during motor imagery of different joints from the same limb (dataset)",
+        "authors": [
+            "Xuelin Ma",
+            "Shuang Qiu",
+            "Huiguang He"
+        ]
     }
 }
