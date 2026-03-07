@@ -261,7 +261,7 @@ class Thielen2021(BaseDataset):
         methodology="The study compared four training regimes: (1) e-train: traditional ERP template-matching with data from all classes, (2) n-train: encoding model (reconvolution) with data from all n classes, (3) 1-train: encoding model with data from only one class while generating templates for all sequences, (4) 0-train: zero-training encoding model requiring no calibration data. Offline experiment: 30 participants completed 5 blocks of 20 trials each (100 trials total), with 31.5 s trials using a 4×5 calculator grid (n=20 symbols). Stimuli were luminance-modulated pseudo-random Gold codes (126-bit sequences, 2.1 s duration) presented on an iPad Pro at 60 Hz. Online experiment: 11 participants (9 analyzed) used a keyboard layout (n=29 symbols) with dynamic stopping rule for spelling tasks. EEG recorded at 512 Hz from 8 electrodes, preprocessed with 2-30 Hz Butterworth filtering and downsampled to 120 Hz. Classification used template-matching with reconvolution encoding model that decomposes responses to sequences into linear sums of individual event responses.",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 30 + 1)),
             sessions_per_subject=1,
@@ -272,6 +272,7 @@ class Thielen2021(BaseDataset):
             doi="10.34973/9txv-z787",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

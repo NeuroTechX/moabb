@@ -525,12 +525,13 @@ class Dreyer2023A(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(1, 61)),
             sub_id="A",
             subjects=subjects,
             sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -617,12 +618,13 @@ class Dreyer2023B(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(61, 82)),
             sub_id="B",
             subjects=subjects,
             sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -705,12 +707,13 @@ class Dreyer2023C(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(82, 88)),
             sub_id="C",
             subjects=subjects,
             sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -796,9 +799,10 @@ class Dreyer2023(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(1, 88)),
             subjects=subjects,
             sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
