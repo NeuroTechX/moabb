@@ -62,23 +62,12 @@ import mne_bids.dig as _mne_bids_dig  # noqa: E402
 _orig_write_dig_bids = _mne_bids_dig._write_dig_bids
 
 
-def _write_dig_bids_with_electrodes_json(
-    bids_path,
-    raw,
-    montage=None,
-    acpc_aligned=False,
-    electrodes_tsv_task=False,
-    overwrite=False,
-):
+def _write_dig_bids_with_electrodes_json(*args, **kwargs):
     """Wrap mne_bids _write_dig_bids to also create electrodes.json sidecar."""
-    _orig_write_dig_bids(
-        bids_path,
-        raw,
-        montage,
-        acpc_aligned,
-        electrodes_tsv_task,
-        overwrite,
-    )
+    _orig_write_dig_bids(*args, **kwargs)
+    # Extract what we need for the electrodes.json sidecar
+    bids_path = args[0]
+    overwrite = kwargs.get("overwrite", False)
     # Create electrodes.json sidecar next to every electrodes.tsv that was
     # written.  The filenames include the space entity (e.g. space-CapTrak),
     # so we glob for them.
