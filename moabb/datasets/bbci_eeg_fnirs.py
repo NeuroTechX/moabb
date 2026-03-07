@@ -107,6 +107,8 @@ class BaseShin2017(BaseDataset):
         accept=False,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
         **kwargs,
     ):
         deprecated_renames = {
@@ -152,6 +154,7 @@ class BaseShin2017(BaseDataset):
             doi="10.1109/TNSRE.2016.2628057",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
         if fnirs:

@@ -43,6 +43,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         use_blocks_as_sessions=True,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
         **kwargs,
     ):
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
@@ -56,6 +58,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             subjects=(np.arange(n_subjects) + 1).tolist(),
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
             **kwargs,
         )
 

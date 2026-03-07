@@ -312,6 +312,7 @@ class Liu2024(BaseDataset):
         instr_events=False,
         subjects=None,
         sessions=None,
+        *,
         return_all_modalities=False,
         **kwargs,
     ):
@@ -507,9 +508,8 @@ class Liu2024(BaseDataset):
                 file_path_list, verbose=False, infer_types=True, stim_channel=""
             )
 
-        # Dropping reference channels with constant values
-        if not self.return_all_modalities:
-            raw = raw.drop_channels(["CPz"])
+        # Always drop reference channel (constant zeros, not a useful modality)
+        raw = raw.drop_channels(["CPz"])
 
         # Renaming channels accurately
         raw.rename_channels({"HEOR": "VEOR", "": "STI"})
@@ -548,6 +548,9 @@ class Liu2024(BaseDataset):
             # Removing the stimulus channels
             if not self.return_all_modalities:
                 raw = raw.pick(["eeg", "eog"])
+            else:
+                # Drop original STI; stim_channels_with_selected_ids adds a clean one
+                raw = raw.drop_channels(["STI"])
             # Setting the montage
             raw = raw.set_montage(montage, verbose=False)
         # Loading dataset

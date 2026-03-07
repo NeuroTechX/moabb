@@ -42,6 +42,8 @@ class Lee2019(BaseDataset):
         resting_state=False,
         sessions=None,
         subjects=None,
+        *,
+        return_all_modalities=False,
         **kwargs,
     ):
         deprecated_renames = {
@@ -106,6 +108,7 @@ class Lee2019(BaseDataset):
             doi="10.5524/100542",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
         self.code_suffix = code_suffix
         self.train_run = train_run

@@ -611,7 +611,7 @@ class BNCI2015_001(MNEBNCI):
         file_format="gdf",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=2,
@@ -622,6 +622,7 @@ class BNCI2015_001(MNEBNCI):
             doi="10.1109/tnsre.2012.2189584",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -2267,7 +2268,7 @@ class BNCI2015_009(MNEBNCI):
         file_format="gdf",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 22)),
             sessions_per_subject=1,
@@ -2278,6 +2279,7 @@ class BNCI2015_009(MNEBNCI):
             doi="10.3389/fnins.2011.00112",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

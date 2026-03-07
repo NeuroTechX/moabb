@@ -240,7 +240,15 @@ class _Dreyer2023Base(BaseDataset):
         methodology="Participants performed a Graz protocol MI-BCI task with 6 runs (2 calibration runs with sham feedback, 4 online training runs with real feedback). Each run consisted of 40 trials (20 per MI-task) with 8s trial duration. Trial structure: green cross (t=0s), acoustic signal (t=2s), red arrow cue (t=3s, 1.25s duration), continuous visual feedback (t=4.25s, 3.75s duration), inter-trial interval (1.5-3.5s). Signal processing used participant-specific Most Discriminant Frequency Band (MDFB) selection (5-35 Hz range), fifth-order Butterworth filtering, Common Spatial Pattern (CSP) with 3 pairs of spatial filters, and Linear Discriminant Analysis (LDA) classifier trained on calibration data. Participants completed 6 questionnaires assessing demographics, personality (16PF5), cognitive traits, spatial abilities (Mental Rotation test), learning style (ILS), and pre/post-experiment states (NeXT questionnaire).",
     )
 
-    def __init__(self, all_subjects, sub_id="", subjects=None, sessions=None):
+    def __init__(
+        self,
+        all_subjects,
+        sub_id="",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
 
         self.sub_id = sub_id
 
@@ -257,6 +265,7 @@ class _Dreyer2023Base(BaseDataset):
             doi="10.1038/s41597-023-02445-z",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

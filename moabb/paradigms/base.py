@@ -653,6 +653,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                         baseline=baseline,
                         channels=self.channels,
                         interpolate_missing_channels=self.interpolate_missing_channels,
+                        return_all_modalities=dataset.return_all_modalities,
                     ),
                 ),
             )

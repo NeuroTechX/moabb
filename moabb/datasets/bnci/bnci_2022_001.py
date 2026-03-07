@@ -654,7 +654,7 @@ class BNCI2022_001(BNCIBaseDataset):
         methodology="The study compared two conditions for difficulty regulation during a simulated drone piloting task: (1) EEG-based automatic difficulty adjustment using real-time decoding of perceived difficulty, and (2) Manual self-paced adjustment where subjects pressed a button when they found the level easy. Each subject participated in one offline session (for building subject-specific decoders) and two online sessions (each containing both EEG and Manual conditions in counterbalanced order). The task involved piloting a drone through circular waypoints with 16 difficulty levels defined by waypoint radius. Features were extracted using Thomson's multitaper algorithm with 2-second sliding windows, and classification used generalized linear models with elastic net regularization followed by LDA. The study evaluated both decoding accuracy and behavioral outcomes (task scores, skill curves, learning patterns).",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 14)),
             sessions_per_subject=1,
@@ -672,4 +672,5 @@ class BNCI2022_001(BNCIBaseDataset):
             base_url=BNCI_URL,
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )

@@ -338,7 +338,14 @@ class Ofner2017(BaseDataset):
     )
 
     def __init__(
-        self, imagined=True, executed=True, subjects=None, sessions=None, **kwargs
+        self,
+        imagined=True,
+        executed=True,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        **kwargs,
     ):
         deprecated_renames = {"Imagined": "imagined", "Executed": "executed"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Ofner2017")
@@ -368,6 +375,7 @@ class Ofner2017(BaseDataset):
             doi="10.1371/journal.pone.0182578",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

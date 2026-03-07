@@ -600,6 +600,11 @@ class BaseDataset(metaclass=MetaclassDataset):
         Defines what sort of dataset this is
 
     doi: DOI for dataset, optional (for now)
+
+    return_all_modalities : bool, optional
+        If True, non-EEG channels (e.g., EOG, EMG, ECG) are retained in the
+        raw data returned by :meth:`get_data`. By default (False), only EEG
+        channels are returned, preserving backward compatibility.
     """
 
     _summary_table: dict[str, Any]

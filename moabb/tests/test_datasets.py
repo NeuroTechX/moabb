@@ -1370,6 +1370,37 @@ class TestDatasetMetadata:
         )
 
 
+class TestReturnAllModalities:
+    """Tests for the return_all_modalities parameter."""
+
+    def test_default_false(self):
+        """Verify return_all_modalities defaults to False."""
+        dataset = FakeDataset()
+        assert dataset.return_all_modalities is False
+
+    def test_set_true(self):
+        """Verify return_all_modalities can be set to True."""
+        dataset = FakeDataset(return_all_modalities=True)
+        assert dataset.return_all_modalities is True
+
+    def test_keyword_only(self):
+        """Verify return_all_modalities must be passed as keyword argument."""
+        sig = inspect.signature(FakeDataset)
+        param = sig.parameters["return_all_modalities"]
+        assert param.kind == inspect.Parameter.KEYWORD_ONLY
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_keyword_only_all_datasets(self, dataset_class):
+        """Verify return_all_modalities is keyword-only in all datasets."""
+        sig = inspect.signature(dataset_class)
+        if "return_all_modalities" not in sig.parameters:
+            pytest.skip(f"{dataset_class.__name__} does not have return_all_modalities")
+        param = sig.parameters["return_all_modalities"]
+        assert (
+            param.kind == inspect.Parameter.KEYWORD_ONLY
+        ), f"{dataset_class.__name__}: return_all_modalities should be keyword-only"
+
+
 def _make_dataset(dataset_cls, **extra_kwargs):
     """Instantiate a dataset, handling special constructor args like accept."""
     kwargs = dict(extra_kwargs)

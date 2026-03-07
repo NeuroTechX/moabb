@@ -34,6 +34,14 @@ dataset_list = []
 dataset_dict = {}
 
 
+def pick_channels_for_modalities(info, return_all_modalities=False):
+    """Pick channel indices: all non-stim if *return_all_modalities*, else EEG only."""
+    if return_all_modalities:
+        stim_picks = set(mne.pick_types(info=info, stim=True))
+        return [i for i in range(len(info.ch_names)) if i not in stim_picks]
+    return mne.pick_types(info=info, eeg=True, stim=False)
+
+
 def _init_dataset():
     # Recompute dataset registries on each call to avoid duplicate accumulation
     # from repeated initialization in long-lived test sessions.
@@ -143,7 +151,7 @@ def dataset_search(  # noqa: C901
                 s1 = d.get_data([1])[1]
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
-                if not getattr(d, "return_all_modalities", False):
+                if not d.return_all_modalities:
                     raw.pick_types(eeg=True)
                 if channels <= set(raw.info["ch_names"]):
                     out_data.append(d)
@@ -166,7 +174,7 @@ def find_intersecting_channels(datasets, verbose=False):
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
-        if not getattr(d, "return_all_modalities", False):
+        if not d.return_all_modalities:
             raw.pick_types(eeg=True)
         processed = []
         for ch in raw.info["ch_names"]:
