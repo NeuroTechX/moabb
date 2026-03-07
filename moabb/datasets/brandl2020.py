@@ -61,7 +61,7 @@ _BITSTREAM_UUIDS = {
 # Distraction condition names (runs 2-7 map to conditions 1-6)
 _CONDITION_NAMES = {
     1: "clean",
-    2: "eyes_closed",
+    2: "eyesclosed",
     3: "news",
     4: "numbers",
     5: "flicker",
@@ -258,7 +258,7 @@ class Brandl2020(BaseDataset):
             tasks=[
                 "calibration",
                 "clean",
-                "eyes_closed",
+                "eyesclosed",
                 "news",
                 "numbers",
                 "flicker",
@@ -408,7 +408,7 @@ class Brandl2020(BaseDataset):
         Returns
         -------
         dict
-            ``{"0": {"0calibration": raw, "1clean": raw, "2eyes_closed": raw,
+            ``{"0": {"0calibration": raw, "1clean": raw, "2eyesclosed": raw,
             "3news": raw, "4numbers": raw, "5flicker": raw,
             "6stimulation": raw}}``
         """

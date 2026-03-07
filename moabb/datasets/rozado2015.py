@@ -101,9 +101,9 @@ class Rozado2015(BaseDataset):
     BCI (left hand grasping vs. rest) augmented with pupil diameter
     measurements.
 
-    Each subject performed 1 session of 3 blocks with 25 trials each.
-    Block 1 served as familiarisation. Blocks 2 and 3 (50 trials, ~25 per
-    class) were used for analysis. All 3 blocks are loaded as separate runs.
+    Each subject performed 1 session with 2 experiments of 25 trials each
+    (50 trials total, ~25 per class). Each experiment is loaded as a
+    separate run.
 
     Trial structure (12 s total):
 
@@ -193,11 +193,11 @@ class Rozado2015(BaseDataset):
             imagery_duration_s=6.0,
         ),
         data_structure=DataStructureMetadata(
-            n_blocks=3,
+            n_blocks=2,
             block_duration_s=300.0,
             trials_context=(
-                "3 blocks of 25 trials each. Block 1 is familiarisation. "
-                "Blocks 2-3 (50 trials) used for analysis."
+                "2 experiments of 25 trials each (50 trials total per "
+                "subject). Each experiment is stored as one XDF file."
             ),
         ),
         bci_application=BCIApplicationMetadata(
@@ -211,7 +211,7 @@ class Rozado2015(BaseDataset):
         ),
         file_format="XDF",
         sessions_per_subject=1,
-        runs_per_session=3,
+        runs_per_session=2,
     )
 
     # BioSemi 32-channel layout + stim channel
@@ -227,7 +227,7 @@ class Rozado2015(BaseDataset):
     _events = {"left_hand": 1, "rest": 2}
 
     # Marker strings in XDF files -> event IDs
-    _MARKER_MAP = {"Left": 1, "Nothing": 2}
+    _MARKER_MAP = {"left": 1, "nothing": 2}
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
@@ -245,8 +245,8 @@ class Rozado2015(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for one subject.
 
-        Each XDF file corresponds to one block (run). The three blocks
-        are returned as runs "0", "1", "2" within session "0".
+        Each XDF file corresponds to one experiment (run). The two
+        experiments are returned as runs "0" and "1" within session "0".
         """
         xdf_files = self.data_path(subject)
         runs = {}
@@ -259,7 +259,7 @@ class Rozado2015(BaseDataset):
 
         XDF files contain multiple streams. We extract:
         - The EEG stream (type='EEG', 32 channels, ~512 Hz)
-        - The marker stream (type='Markers') with "Left", "Nothing", "Stop"
+        - The marker stream (type='Markers') with "left", "nothing", etc.
 
         Events are placed on a stim channel aligned to EEG timestamps.
         """
@@ -384,32 +384,22 @@ class Rozado2015(BaseDataset):
     def _find_subject_xdf(data_dir, subject):
         """Find XDF files for a subject under data_dir.
 
-        XDF files are named like ``userN_blockM.xdf`` where N is the user
-        number and M is the block number.
+        The RAR archives extract to a directory tree like::
+
+            extracted/<archive_id>/<subject>/exp1/experiment.xdf
+            extracted/<archive_id>/<subject>/exp2/experiment.xdf
+
+        Each subject has two experiment directories (exp1 and exp2).
         """
         if not data_dir.is_dir():
             return []
 
-        # Search recursively for XDF files matching the subject
-        patterns = [
-            f"user{subject}_block*.xdf",
-            f"user{subject}_*.xdf",
-            f"User{subject}_block*.xdf",
-            f"User{subject}_*.xdf",
-        ]
-        # Also try zero-padded variants
-        patterns.extend(
-            [
-                f"user{subject:02d}_block*.xdf",
-                f"user{subject:02d}_*.xdf",
-                f"User{subject:02d}_block*.xdf",
-                f"User{subject:02d}_*.xdf",
-            ]
-        )
+        # Primary pattern: extracted/<archive_id>/<subject>/exp*/experiment.xdf
+        xdf_files = sorted(data_dir.rglob(f"{subject}/exp*/experiment.xdf"))
 
-        xdf_files = []
-        for pattern in patterns:
-            xdf_files.extend(data_dir.rglob(pattern))
+        if not xdf_files:
+            # Fallback: try zero-padded subject number
+            xdf_files = sorted(data_dir.rglob(f"{subject:02d}/exp*/experiment.xdf"))
 
         # Deduplicate and sort
         xdf_files = sorted(set(xdf_files))

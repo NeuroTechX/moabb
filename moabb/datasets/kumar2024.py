@@ -303,6 +303,11 @@ class Kumar2024(BaseDataset):
         ),
     )
 
+    # Map MOABB subject IDs (1-18) to the actual subject numbers in the ZIP.
+    # GR group: subjects 1-9 (MOABB 1-9), PAR group: subjects 11-19 (MOABB 10-18)
+    _MOABB_TO_RAW = {i: i for i in range(1, 10)}
+    _MOABB_TO_RAW.update({i: i + 1 for i in range(10, 19)})  # 10->11, ..., 18->19
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 19)),
@@ -346,12 +351,14 @@ class Kumar2024(BaseDataset):
 
         sign = self.code
         zip_path = Path(dl.data_dl(ZENODO_URL, sign, path, force_update, verbose))
-        extract_dir = zip_path.parent / "Online_Offline_Race"
+        # The ZIP extracts Offline/, Online/, Race/ directly into the parent dir
+        extract_dir = zip_path.parent
 
-        if not extract_dir.is_dir():
+        # Check if already extracted by looking for the Offline directory
+        if not (extract_dir / "Offline").is_dir():
             log.info("Extracting %s ...", zip_path.name)
             with zipfile.ZipFile(zip_path, "r") as zf:
-                zf.extractall(zip_path.parent)
+                zf.extractall(extract_dir)
 
         return extract_dir
 
@@ -361,7 +368,7 @@ class Kumar2024(BaseDataset):
         Parameters
         ----------
         subject : int
-            Subject number (1-18).
+            Subject number (1-18, MOABB convention).
 
         Returns
         -------
@@ -369,29 +376,48 @@ class Kumar2024(BaseDataset):
             ``{session_str: {run_str: Raw}}`` with only bar-feedback runs.
         """
         extract_dir = self.data_path(subject)
+        raw_subj = self._MOABB_TO_RAW[subject]
 
-        # Discover subject folder -- handle common naming patterns:
-        #   S01, S1, sub01, sub1, Subject01, etc.
-        subject_dir = self._find_subject_dir(extract_dir, subject)
-        if subject_dir is None:
-            raise FileNotFoundError(
-                f"Could not find directory for subject {subject} under {extract_dir}"
-            )
+        # Determine which group directory to look in
+        group = "GR" if raw_subj <= 9 else "PAR"
 
-        # Discover session directories inside the subject folder.
-        # Expected: session 1 = offline, sessions 2-6 = online
-        session_dirs = self._find_session_dirs(subject_dir)
+        # --- Session 1: Offline ---
+        # Offline dir naming: Subject_01_Offline or Subject_11_Offline
+        offline_subj_name = f"Subject_{raw_subj:02d}_Offline"
+        offline_subj_dir = extract_dir / "Offline" / group / offline_subj_name
+
+        # Offline session directory: Subject_01_Session_001_Offline
+        # PAR subjects may use 3-digit padding: Subject_011_Session_001_Offline
+        offline_sess_dir = self._find_session_subdir(
+            offline_subj_dir, raw_subj, 1, "Offline"
+        )
 
         sessions = {}
-        for sess_idx, sess_path in sorted(session_dirs.items()):
-            runs = self._load_bar_runs(sess_path, sess_idx)
+        if offline_sess_dir is not None and offline_sess_dir.is_dir():
+            runs = self._load_bar_runs_from_dir(offline_sess_dir)
             if runs:
-                sessions[str(sess_idx)] = runs
+                sessions["0"] = runs
+
+        # --- Sessions 2-6: Online ---
+        # Online dir naming may differ: Subject_01_Online or Subject_011_Online
+        online_subj_dir = self._find_online_subject_dir(
+            extract_dir / "Online" / group, raw_subj
+        )
+
+        if online_subj_dir is not None and online_subj_dir.is_dir():
+            for sess_num in range(2, 7):
+                sess_dir = self._find_session_subdir(
+                    online_subj_dir, raw_subj, sess_num, "Online"
+                )
+                if sess_dir is not None and sess_dir.is_dir():
+                    runs = self._load_bar_runs_from_dir(sess_dir)
+                    if runs:
+                        sessions[str(sess_num - 1)] = runs
 
         if not sessions:
             raise FileNotFoundError(
                 f"No bar-feedback GDF files found for subject {subject} "
-                f"under {subject_dir}"
+                f"(raw ID {raw_subj}) under {extract_dir}"
             )
 
         return sessions
@@ -401,230 +427,99 @@ class Kumar2024(BaseDataset):
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _find_subject_dir(root, subject):
-        """Locate the folder for a given subject under *root*.
+    def _find_online_subject_dir(online_group_dir, raw_subj):
+        """Locate the subject directory under Online/<group>/.
 
-        Tries several common naming patterns (case-insensitive) to be robust
-        to the actual ZIP layout.
+        Handles inconsistent zero-padding: Subject_01_Online vs Subject_011_Online.
         """
-        patterns = [
-            f"S{subject:02d}",
-            f"S{subject}",
-            f"sub-{subject:02d}",
-            f"sub{subject:02d}",
-            f"Subject{subject:02d}",
-            f"Subject{subject}",
-        ]
-        # First, check direct children of root
-        for child in sorted(root.iterdir()):
-            if child.is_dir() and child.name in patterns:
-                return child
-        # Try case-insensitive matching
-        for child in sorted(root.iterdir()):
-            if child.is_dir() and child.name.lower() in [p.lower() for p in patterns]:
-                return child
-        # If root has a single subdirectory, recurse one level
-        subdirs = [d for d in root.iterdir() if d.is_dir()]
-        if len(subdirs) == 1:
-            return Kumar2024._find_subject_dir(subdirs[0], subject)
-        # Try all subdirectories (e.g., the ZIP nests under Online_Offline_Race/)
-        for sd in subdirs:
-            result = Kumar2024._find_subject_dir_shallow(sd, subject)
-            if result is not None:
-                return result
+        if not online_group_dir.is_dir():
+            return None
+        # Try common patterns
+        for pattern in [
+            f"Subject_{raw_subj:02d}_Online",
+            f"Subject_{raw_subj:03d}_Online",
+            f"Subject_{raw_subj}_Online",
+        ]:
+            candidate = online_group_dir / pattern
+            if candidate.is_dir():
+                return candidate
+        # Fallback: search by prefix
+        for child in sorted(online_group_dir.iterdir()):
+            if child.is_dir():
+                m = re.match(r"Subject_0*(\d+)_Online", child.name)
+                if m and int(m.group(1)) == raw_subj:
+                    return child
         return None
 
     @staticmethod
-    def _find_subject_dir_shallow(root, subject):
-        """Non-recursive single-level check for subject directory."""
-        patterns = [
-            f"S{subject:02d}",
-            f"S{subject}",
-            f"sub-{subject:02d}",
-            f"sub{subject:02d}",
-            f"Subject{subject:02d}",
-            f"Subject{subject}",
-        ]
-        for child in sorted(root.iterdir()):
-            if child.is_dir() and child.name.lower() in [p.lower() for p in patterns]:
-                return child
+    def _find_session_subdir(parent_dir, raw_subj, sess_num, suffix):
+        """Locate a session subdirectory under a subject directory.
+
+        Handles naming like:
+        - Subject_01_Session_001_Offline
+        - Subject_011_Session_002_Online
+        """
+        if parent_dir is None or not parent_dir.is_dir():
+            return None
+        # Try common patterns
+        for subj_fmt in [f"{raw_subj:02d}", f"{raw_subj:03d}", str(raw_subj)]:
+            pattern = f"Subject_{subj_fmt}_Session_{sess_num:03d}_{suffix}"
+            candidate = parent_dir / pattern
+            if candidate.is_dir():
+                return candidate
+        # Fallback: search for session number in directory names
+        for child in sorted(parent_dir.iterdir()):
+            if child.is_dir():
+                m = re.search(r"Session_0*(\d+)", child.name)
+                if m and int(m.group(1)) == sess_num:
+                    return child
         return None
 
-    @staticmethod
-    def _find_session_dirs(subject_dir):
-        """Discover session directories.
-
-        Returns a dict mapping 0-based session index to Path.
-        Handles multiple conventions:
-        - Subdirectories named Offline, Online1..Online5
-        - Subdirectories named Session1..Session6, ses-01..ses-06
-        - GDF files directly in the subject folder (single-session fallback)
-        - Separate Offline/ and Online/ directories
-        """
-        children = sorted([d for d in subject_dir.iterdir() if d.is_dir()])
-        child_names_lower = {d.name.lower(): d for d in children}
-
-        sessions = {}
-
-        # Pattern 1: Offline + Online1..Online5 (or online_1, etc.)
-        offline_dir = child_names_lower.get("offline")
-        if offline_dir is not None:
-            sessions[0] = offline_dir
-            for i in range(1, 6):
-                for key in [f"online{i}", f"online_{i}", f"online{i:02d}"]:
-                    d = child_names_lower.get(key)
-                    if d is not None:
-                        sessions[i] = d
-                        break
-            if sessions:
-                return sessions
-
-        # Pattern 2: Session1..Session6 or ses-01..ses-06
-        for i in range(6):
-            for key in [
-                f"session{i + 1}",
-                f"session{i + 1:02d}",
-                f"ses-{i + 1:02d}",
-                f"ses{i + 1:02d}",
-            ]:
-                d = child_names_lower.get(key)
-                if d is not None:
-                    sessions[i] = d
-                    break
-        if sessions:
-            return sessions
-
-        # Pattern 3: numbered directories (1, 2, ..., 6 or 01, 02, ..., 06)
-        for i in range(6):
-            for key in [str(i + 1), f"{i + 1:02d}"]:
-                d = child_names_lower.get(key)
-                if d is not None:
-                    sessions[i] = d
-                    break
-        if sessions:
-            return sessions
-
-        # Pattern 4: All GDF files directly in subject_dir
-        gdf_files = sorted(subject_dir.glob("*.gdf"))
-        if not gdf_files:
-            gdf_files = sorted(subject_dir.glob("*.GDF"))
-        if gdf_files:
-            # Single flat directory -- organize into a pseudo-session map
-            # based on file naming convention.
-            return Kumar2024._organize_flat_gdfs(gdf_files)
-
-        # Pattern 5: arbitrary subdirectories with GDF files
-        for child in children:
-            gdfs = sorted(child.glob("*.gdf")) + sorted(child.glob("*.GDF"))
-            if gdfs:
-                sessions[len(sessions)] = child
-        return sessions
-
-    @staticmethod
-    def _organize_flat_gdfs(gdf_files):
-        """Group flat GDF files into sessions by naming convention.
-
-        Expects names like ``offline_run1.gdf``, ``online1_run1.gdf``, or
-        ``run01.gdf``, ``run05.gdf``, etc.
-        """
-        sessions = {}
-        # Try to detect Offline/Online naming in filenames
-        offline_files = []
-        online_buckets = {}
-        unmatched = []
-
-        for f in gdf_files:
-            name = f.stem.lower()
-            if "race" in name:
-                continue  # skip race files
-            if "offline" in name:
-                offline_files.append(f)
-            elif "online" in name:
-                # Extract online session number
-                m = re.search(r"online[_\s]*(\d+)", name)
-                if m:
-                    idx = int(m.group(1))
-                    online_buckets.setdefault(idx, []).append(f)
-                else:
-                    online_buckets.setdefault(1, []).append(f)
-            else:
-                unmatched.append(f)
-
-        if offline_files:
-            sessions[0] = offline_files
-        for idx in sorted(online_buckets):
-            sessions[idx] = online_buckets[idx]
-
-        if not sessions and unmatched:
-            # Fall back: group by order
-            sessions[0] = unmatched
-
-        # Convert list-of-files to a sentinel Path for _load_bar_runs
-        # We store as dict mapping sess_idx -> list(Path)
-        return sessions
-
-    def _load_bar_runs(self, sess_path_or_files, sess_idx):
-        """Load bar-feedback GDF files from a session directory.
+    def _load_bar_runs_from_dir(self, sess_dir):
+        """Load all GDF files from a session directory as bar-feedback runs.
 
         Parameters
         ----------
-        sess_path_or_files : Path or list[Path]
-            Either a directory or a list of GDF file paths.
-        sess_idx : int
-            0-based session index (used to skip race files).
+        sess_dir : Path
+            Directory containing GDF files for one session.
 
         Returns
         -------
         dict
             ``{run_str: Raw}``
         """
-        if isinstance(sess_path_or_files, list):
-            gdf_files = sorted(sess_path_or_files)
-        else:
-            gdf_files = sorted(sess_path_or_files.glob("*.gdf"))
-            if not gdf_files:
-                gdf_files = sorted(sess_path_or_files.glob("*.GDF"))
+        gdf_files = sorted(sess_dir.glob("*.gdf"))
+        if not gdf_files:
+            gdf_files = sorted(sess_dir.glob("*.GDF"))
 
-        # Filter out race files
-        bar_files = [f for f in gdf_files if "race" not in f.stem.lower()]
-
-        if not bar_files:
+        if not gdf_files:
             return {}
 
         montage = make_standard_montage("standard_1020")
         runs = {}
-        for run_idx, gdf_path in enumerate(bar_files):
+        for run_idx, gdf_path in enumerate(gdf_files):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 raw = mne.io.read_raw_gdf(str(gdf_path), preload=True, verbose=False)
 
-            # Pick only EEG channels (first 22 in file), drop EOG
-            if not self.return_all_modalities:
-                # Keep only the 22 EEG channels
-                eeg_picks = raw.ch_names[:22]
-                raw.pick(eeg_picks)
+            # The file has 26 channels: 22 EEG + 3 EOG (sens1-3) + Status
+            # Pick only the 22 EEG channels, drop EOG and Status
+            eeg_picks = raw.ch_names[:22]
+            raw.pick(eeg_picks)
 
-            # Rename channels to standard 10-10 names
-            n_eeg = min(len(raw.ch_names), 22)
+            # Rename channels to standard 10-10 names (file has uppercase:
+            # FZ->Fz, CZ->Cz, PZ->Pz, POZ->POz)
             rename_map = {}
-            for i in range(n_eeg):
-                if raw.ch_names[i] != _EEG_CHANNELS[i]:
-                    rename_map[raw.ch_names[i]] = _EEG_CHANNELS[i]
+            for i, ch in enumerate(raw.ch_names):
+                if ch != _EEG_CHANNELS[i]:
+                    rename_map[ch] = _EEG_CHANNELS[i]
             if rename_map:
                 raw.rename_channels(rename_map)
-
-            # Set channel types for any remaining EOG channels
-            for ch in raw.ch_names:
-                if ch not in _EEG_CHANNELS:
-                    try:
-                        raw.set_channel_types({ch: "eog"})
-                    except (ValueError, KeyError):
-                        pass
 
             # Set montage
             raw.set_montage(montage, on_missing="ignore")
 
-            # Map GDF annotations: 769 -> left_hand, 770 -> right_hand
+            # Map GDF event annotations: 769 -> left_hand, 770 -> right_hand
             raw.annotations.rename({"769": "left_hand", "770": "right_hand"})
 
             runs[str(run_idx)] = raw
