@@ -5,11 +5,13 @@ DOI: 10.1371/journal.pone.0174161
 """
 
 import logging
+import os
+import re
 import zipfile
 from pathlib import Path
 
+import mne
 import numpy as np
-from scipy.io import loadmat
 
 from . import download as dl
 from .base import BaseDataset
@@ -25,12 +27,24 @@ from .metadata.schema import (
     PreprocessingMetadata,
     Tags,
 )
-from .utils import build_raw_from_epochs, safe_extract_zip
+from .utils import safe_extract_zip
 
 
 log = logging.getLogger(__name__)
 
-DRYAD_BASE_URL = "https://datadryad.org/stash/downloads/file_stream/"
+DRYAD_API_URL = "https://datadryad.org/api/v2/files/{file_id}/download"
+DRYAD_TOKEN_URL = "https://datadryad.org/oauth/token"
+
+# BCI2000 StimulusCode -> event name mapping.
+# From the BCI2000 header: stimulus1=Rest, stimulus2=Wrist, stimulus3=Elbow,
+# stimulus4=Reach-Hold the Glass.
+_STIM_CODE_TO_EVENT = {
+    1: "rest",
+    2: "right_hand",
+    3: "right_elbow_flexion",
+}
+# StimulusCode 4 (Reach-Hold the Glass) is excluded from the default event
+# mapping because the paper analyses only three classes.
 
 # Mapping of (subject, session) -> Dryad file_stream ID.
 # Obtained from the Dryad API v2 for doi:10.5061/dryad.6qs86.
@@ -51,6 +65,12 @@ _FILE_IDS = {
 }
 # fmt: on
 
+# Number of EEG channels in the GSN-HydroCel-32 net (excluding Cz reference).
+_N_EEG = 32
+
+# Channel gain (µV per raw ADC unit) from the BCI2000 header.
+_GAIN_UV = 0.0238419
+
 
 class Tavakolan2017(BaseDataset):
     """Motor imagery dataset for three imaginary states of the same upper extremity.
@@ -65,14 +85,25 @@ class Tavakolan2017(BaseDataset):
     EEG was recorded at 1000 Hz using a 32-channel EGI Geodesic Sensor Net
     (GES 400 series amplifier) with Cz as the online reference.  Each subject
     completed 4 sessions on separate days, with 20 trials per class per session
-    (60 trials total per session).
+    (80 trials total per session, 4 classes).
 
     Each trial consisted of a 3 s visual cue (during which the subject
-    performed the imagery) followed by a 5-7 s rest interval.  The imagery
+    performed the imagery) followed by a 4-6 s rest interval.  The imagery
     interval [0, 3] s after cue onset is used for analysis.
 
     The data is stored on the Dryad Digital Repository [2]_ as ZIP archives
-    (one per subject-session) containing MATLAB ``.mat`` files.
+    (one per subject-session) containing BCI2000 ``.DAT`` files.
+
+    .. note::
+        Downloading requires Dryad API credentials.  Set the environment
+        variables ``DRYAD_CLIENT_ID`` and ``DRYAD_CLIENT_SECRET`` before
+        calling ``get_data()``.  You can obtain them by creating a free
+        account at https://datadryad.org.
+
+    .. note::
+        Reading BCI2000 ``.DAT`` files requires the ``BCI2kReader`` package::
+
+            pip install BCI2kReader
 
     Notes
     -----
@@ -80,11 +111,14 @@ class Tavakolan2017(BaseDataset):
     naming convention (E1-E32 plus Cz reference).  The ``GSN-HydroCel-32``
     montage from MNE is applied.
 
-    The three classes map to:
+    The raw BCI2000 files contain 280 source channels; only the first 32 are
+    EEG.  Channels are scaled from raw ADC units to volts using the gain
+    from the BCI2000 header (0.0238419 µV per count).
 
-    - ``rest``: relaxation without movement or imagery
-    - ``right_hand``: MI-GRASP -- imagining opening and closing fingers
-    - ``right_elbow_flexion``: MI-ELBOW -- imagining forearm up/down movement
+    The BCI2000 files actually contain four stimulus classes (Rest, Wrist,
+    Elbow, Reach-Hold the Glass) with StimulusCodes 1-4.  Following the
+    paper's analysis of three classes, only codes 1-3 are mapped to events
+    by default.
 
     References
     ----------
@@ -154,7 +188,9 @@ class Tavakolan2017(BaseDataset):
             ],
             senior_author="Carlo Menon",
             institution="Simon Fraser University",
-            institution_department="MENRVA Research Group, School of Mechatronic Systems Engineering",
+            institution_department=(
+                "MENRVA Research Group, School of Mechatronic Systems Engineering"
+            ),
             country="CA",
             data_url="https://datadryad.org/stash/dataset/doi:10.5061/dryad.6qs86",
             repository="Dryad",
@@ -172,7 +208,7 @@ class Tavakolan2017(BaseDataset):
             ],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="epoched",
+            data_state="continuous",
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -182,8 +218,12 @@ class Tavakolan2017(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=2880,
-            trials_context=("12 subjects x 4 sessions x 60 trials (20 per class)"),
-            n_trials_per_class={"rest": 20, "right_hand": 20, "right_elbow_flexion": 20},
+            trials_context="12 subjects x 4 sessions x 60 trials (20 per class)",
+            n_trials_per_class={
+                "rest": 20,
+                "right_hand": 20,
+                "right_elbow_flexion": 20,
+            },
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],
@@ -196,7 +236,7 @@ class Tavakolan2017(BaseDataset):
         ),
         sessions_per_subject=4,
         runs_per_session=1,
-        file_format="MAT",
+        file_format="BCI2000",
     )
 
     _events = {
@@ -221,231 +261,122 @@ class Tavakolan2017(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject across all sessions.
 
-        Each session is stored as a separate ZIP/MAT file on Dryad.  The .mat
-        file contains three matrices named ``rest``, ``grasp``, and ``elbow``,
-        each with shape ``(n_channels, n_samples, n_trials)`` where
-        ``n_channels`` is 32 and ``n_trials`` is 20 per class.
-
-        If the variable names differ from this expectation, the loader falls
-        back to iterating over available keys and using shape heuristics to
-        identify the data.
+        Each session is stored as a separate ZIP file on Dryad containing a
+        single BCI2000 ``.DAT`` file.  The first 32 channels are EEG
+        (GSN-HydroCel-32 net).  Events are extracted from the ``StimulusCode``
+        state variable.
         """
         sessions = {}
         for ses_idx in range(1, 5):
-            mat_path = self.data_path(subject, session=ses_idx)
-            mat = loadmat(
-                mat_path,
-                squeeze_me=True,
-                struct_as_record=False,
-                verify_compressed_data_integrity=False,
-            )
-
-            # Try known variable names first, then fall back to heuristic
-            epoch_data, event_ids = self._extract_trials(mat, subject, ses_idx)
-
-            if epoch_data is None:
-                raise ValueError(
-                    f"Could not parse .mat file for subject {subject}, "
-                    f"session {ses_idx}. Available keys: "
-                    f"{[k for k in mat.keys() if not k.startswith('__')]}"
-                )
-
-            raw = build_raw_from_epochs(
-                epoch_data,
-                self._get_ch_names(epoch_data.shape[1]),
-                1000,
-                event_ids,
-                "GSN-HydroCel-32",
-            )
+            dat_path = self.data_path(subject, session=ses_idx)
+            raw = self._read_bci2000_dat(dat_path)
             sessions[str(ses_idx - 1)] = {"0": raw}
-
         return sessions
 
-    def _extract_trials(self, mat, subject, session):
-        """Extract trial data and event labels from the loaded .mat dict.
+    def _read_bci2000_dat(self, dat_path):
+        """Read a BCI2000 .DAT file and return an MNE Raw object."""
+        try:
+            from BCI2kReader.BCI2kReader import BCI2kReader
+        except ImportError:
+            raise ImportError(
+                "BCI2kReader is required for Tavakolan2017.  "
+                "Install it with: pip install BCI2kReader"
+            )
 
-        Returns
-        -------
-        data : ndarray, shape (n_trials, n_channels, n_samples) or None
-        event_ids : ndarray, shape (n_trials,) or None
+        reader = BCI2kReader(dat_path)
+        sfreq = reader.samplingrate
+
+        # Extract first 32 EEG channels and scale to volts
+        n_eeg = min(_N_EEG, reader.signals.shape[0])
+
+        # Parse gain from the BCI2000 header
+        gain_uv = _GAIN_UV
+        if "SourceChGain" in reader.parameters:
+            gain_str = reader.parameters["SourceChGain"][0]
+            m = re.match(r"([0-9.eE+-]+)", gain_str)
+            if m:
+                gain_uv = float(m.group(1))
+
+        data = reader.signals[:n_eeg].astype(np.float64) * gain_uv * 1e-6  # -> V
+
+        # Channel names
+        ch_names = [f"E{i}" for i in range(1, n_eeg + 1)]
+        info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types="eeg")
+        raw = mne.io.RawArray(data, info, verbose=False)
+
+        # Set montage
+        montage = mne.channels.make_standard_montage("GSN-HydroCel-32")
+        raw.set_montage(montage, match_case=False, on_missing="warn")
+
+        # Extract events from StimulusCode
+        stim = reader.states["StimulusCode"].flatten()
+        transitions = np.where(np.diff(stim) != 0)[0] + 1
+        for onset_idx in transitions:
+            code = int(stim[onset_idx])
+            if code in _STIM_CODE_TO_EVENT:
+                onset_sec = onset_idx / sfreq
+                raw.annotations.append(onset_sec, 3.0, _STIM_CODE_TO_EVENT[code])
+
+        return raw
+
+    @staticmethod
+    def _get_dryad_token():
+        """Obtain an OAuth Bearer token from Dryad.
+
+        Requires ``DRYAD_CLIENT_ID`` and ``DRYAD_CLIENT_SECRET`` environment
+        variables to be set (obtainable from https://datadryad.org).
         """
-        # Strategy 1: named variables "rest", "grasp"/"mi_grasp", "elbow"/"mi_elbow"
-        rest_keys = ["rest", "Rest", "REST", "mi_rest"]
-        grasp_keys = ["grasp", "Grasp", "GRASP", "mi_grasp", "MI_Grasp", "miGrasp"]
-        elbow_keys = ["elbow", "Elbow", "ELBOW", "mi_elbow", "MI_Elbow", "miElbow"]
+        import requests
 
-        rest_data = self._find_var(mat, rest_keys)
-        grasp_data = self._find_var(mat, grasp_keys)
-        elbow_data = self._find_var(mat, elbow_keys)
-
-        if rest_data is not None and grasp_data is not None and elbow_data is not None:
-            return self._combine_classes(rest_data, grasp_data, elbow_data)
-
-        # Strategy 2: look for a struct with fields containing the data
-        for key in mat:
-            if key.startswith("__"):
-                continue
-            val = mat[key]
-            if hasattr(val, "dtype") and val.dtype.names is not None:
-                # Structured array -- try to find rest/grasp/elbow fields
-                rest_data = self._find_struct_field(val, rest_keys)
-                grasp_data = self._find_struct_field(val, grasp_keys)
-                elbow_data = self._find_struct_field(val, elbow_keys)
-                if (
-                    rest_data is not None
-                    and grasp_data is not None
-                    and elbow_data is not None
-                ):
-                    return self._combine_classes(rest_data, grasp_data, elbow_data)
-
-        # Strategy 3: look for a single 4D array (n_channels, n_samples, n_trials, n_classes)
-        # or (n_classes, n_channels, n_samples, n_trials)
-        for key in mat:
-            if key.startswith("__"):
-                continue
-            val = mat[key]
-            if isinstance(val, np.ndarray) and val.ndim == 4:
-                # Try to identify the class dimension
-                shape = val.shape
-                # If one dimension is exactly 3 (n_classes)
-                if shape[-1] == 3:
-                    # (n_channels, n_samples, n_trials, 3)
-                    rest_data = val[:, :, :, 0]
-                    grasp_data = val[:, :, :, 1]
-                    elbow_data = val[:, :, :, 2]
-                    return self._combine_classes(rest_data, grasp_data, elbow_data)
-                elif shape[0] == 3:
-                    # (3, n_channels, n_samples, n_trials)
-                    rest_data = val[0, :, :, :]
-                    grasp_data = val[1, :, :, :]
-                    elbow_data = val[2, :, :, :]
-                    return self._combine_classes(rest_data, grasp_data, elbow_data)
-
-        # Strategy 4: look for a "data" key with a "label"/"labels" key
-        data_key = self._find_key(mat, ["data", "Data", "DATA", "eeg", "EEG"])
-        label_key = self._find_key(
-            mat,
-            [
-                "label",
-                "labels",
-                "Label",
-                "Labels",
-                "LABEL",
-                "LABELS",
-                "class",
-                "Class",
-                "CLASS",
-                "classes",
-                "Classes",
-            ],
+        client_id = os.environ.get("DRYAD_CLIENT_ID", "")
+        client_secret = os.environ.get("DRYAD_CLIENT_SECRET", "")
+        if not client_id or not client_secret:
+            raise EnvironmentError(
+                "Dryad API credentials are required.  Set the DRYAD_CLIENT_ID "
+                "and DRYAD_CLIENT_SECRET environment variables.  You can obtain "
+                "them from https://datadryad.org by creating an account."
+            )
+        resp = requests.post(
+            DRYAD_TOKEN_URL,
+            data={
+                "grant_type": "client_credentials",
+                "client_id": client_id,
+                "client_secret": client_secret,
+            },
+            timeout=30,
         )
-        if data_key is not None and label_key is not None:
-            data_val = mat[data_key]
-            labels = mat[label_key].ravel()
-            if isinstance(data_val, np.ndarray) and data_val.ndim == 3:
-                # Could be (n_trials, n_channels, n_samples) or
-                # (n_channels, n_samples, n_trials)
-                if data_val.shape[0] == len(labels):
-                    # (n_trials, n_channels, n_samples)
-                    epoch_data = data_val
-                elif data_val.shape[2] == len(labels):
-                    # (n_channels, n_samples, n_trials) -> transpose
-                    epoch_data = data_val.transpose(2, 0, 1)
-                else:
-                    return None, None
+        resp.raise_for_status()
+        return resp.json()["access_token"]
 
-                # Map labels to our event codes
-                unique_labels = np.unique(labels)
-                if len(unique_labels) == 3:
-                    label_map = {
-                        unique_labels[0]: 1,  # rest
-                        unique_labels[1]: 2,  # grasp
-                        unique_labels[2]: 3,  # elbow
-                    }
-                    event_ids = np.array([label_map[lab] for lab in labels])
-                    return epoch_data, event_ids
+    def _download_dryad_file(self, file_id, dest_dir, subject, session):
+        """Download a file from Dryad using OAuth authentication.
 
-        return None, None
-
-    @staticmethod
-    def _find_var(mat, candidate_keys):
-        """Return the first matching ndarray from mat, or None."""
-        for k in candidate_keys:
-            if k in mat and isinstance(mat[k], np.ndarray):
-                return mat[k]
-        return None
-
-    @staticmethod
-    def _find_struct_field(struct_arr, candidate_keys):
-        """Return the first matching field from a structured array."""
-        if struct_arr.dtype.names is None:
-            return None
-        for k in candidate_keys:
-            if k in struct_arr.dtype.names:
-                val = struct_arr[k]
-                if hasattr(val, "item"):
-                    val = val.item()
-                if isinstance(val, np.ndarray):
-                    return val
-        return None
-
-    @staticmethod
-    def _find_key(mat, candidate_keys):
-        """Return the first matching key from mat, or None."""
-        for k in candidate_keys:
-            if k in mat:
-                return k
-        return None
-
-    @staticmethod
-    def _combine_classes(rest_data, grasp_data, elbow_data):
-        """Combine three class arrays into (n_trials, n_channels, n_samples).
-
-        Each input array can be:
-        - (n_channels, n_samples, n_trials) -- standard EGI export
-        - (n_trials, n_channels, n_samples) -- already in epoch format
+        Returns the path to the downloaded ZIP file.
         """
-        arrays = []
-        event_ids = []
-        for class_data, event_code in [
-            (rest_data, 1),
-            (grasp_data, 2),
-            (elbow_data, 3),
-        ]:
-            if class_data.ndim == 3:
-                # Determine orientation: if dim0 < dim2, likely
-                # (n_channels, n_samples, n_trials) -> transpose to
-                # (n_trials, n_channels, n_samples)
-                if class_data.shape[0] < class_data.shape[2]:
-                    # Ambiguous if n_channels == n_trials, use n_channels heuristic
-                    class_data = class_data.transpose(2, 0, 1)
-                elif class_data.shape[0] > class_data.shape[2]:
-                    # Already (n_trials, n_channels, n_samples) -- keep as is
-                    pass
-                else:
-                    # Same first and last dim -- assume (ch, samples, trials)
-                    class_data = class_data.transpose(2, 0, 1)
+        import requests
 
-                n_trials = class_data.shape[0]
-                arrays.append(class_data)
-                event_ids.extend([event_code] * n_trials)
-            elif class_data.ndim == 2:
-                # Single trial: (n_channels, n_samples)
-                arrays.append(class_data[np.newaxis, :, :])
-                event_ids.append(event_code)
+        zip_path = dest_dir / f"P{subject:02d}_Se{session:02d}.zip"
+        if zip_path.exists():
+            return str(zip_path)
 
-        epoch_data = np.concatenate(arrays, axis=0)
-        return epoch_data, np.array(event_ids)
+        token = self._get_dryad_token()
+        url = DRYAD_API_URL.format(file_id=file_id)
+        log.info("Downloading %s from Dryad ...", url)
 
-    @staticmethod
-    def _get_ch_names(n_channels):
-        """Return channel names for the EGI GSN-HydroCel net.
+        resp = requests.get(
+            url,
+            headers={"Authorization": f"Bearer {token}"},
+            stream=True,
+            timeout=600,
+        )
+        resp.raise_for_status()
 
-        The GSN-HydroCel-32 montage in MNE uses channel names E1-E32 plus
-        Cz (the reference).  Since Cz is the online reference and typically
-        not included in the data, we use E1 through E{n_channels}.
-        """
-        return [f"E{i}" for i in range(1, n_channels + 1)]
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        with open(zip_path, "wb") as fh:
+            for chunk in resp.iter_content(chunk_size=8192):
+                fh.write(chunk)
+
+        return str(zip_path)
 
     def data_path(
         self,
@@ -456,7 +387,7 @@ class Tavakolan2017(BaseDataset):
         verbose=None,
         session=None,
     ):
-        """Return local path to the .mat file for a given subject and session.
+        """Return local path to the .DAT file for a given subject and session.
 
         Parameters
         ----------
@@ -475,8 +406,8 @@ class Tavakolan2017(BaseDataset):
 
         Returns
         -------
-        mat_path : str
-            Path to the extracted .mat file.
+        dat_path : str
+            Path to the extracted BCI2000 .DAT file.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -490,33 +421,33 @@ class Tavakolan2017(BaseDataset):
         subj_dir = data_dir / f"P{subject:02d}"
         subj_dir.mkdir(parents=True, exist_ok=True)
 
-        # Check if a .mat file already exists for this session
-        mat_files = list(subj_dir.glob(f"*Se{session:02d}*.mat")) + list(
-            subj_dir.glob(f"*Session{session:02d}*.mat")
+        # Check if a .DAT file already exists for this session
+        dat_files = list(subj_dir.glob(f"*Se{session:02d}*.DAT")) + list(
+            subj_dir.glob(f"*Session{session:02d}*.DAT")
         )
-        if mat_files and not force_update:
-            return str(mat_files[0])
+        if dat_files and not force_update:
+            return str(dat_files[0])
 
-        # Download the ZIP from Dryad
+        # Download the ZIP from Dryad using OAuth API
         file_id = _FILE_IDS[(subject, session)]
-        url = f"{DRYAD_BASE_URL}{file_id}"
-        zip_path = dl.data_dl(url, sign, path, force_update, verbose)
+        zip_path = self._download_dryad_file(file_id, subj_dir, subject, session)
 
-        # Extract .mat files from the ZIP
+        # Extract .DAT files from the ZIP
         with zipfile.ZipFile(zip_path, "r") as zf:
-            mat_members = [
+            dat_members = [
                 m
                 for m in zf.infolist()
-                if m.filename.endswith(".mat") and not m.filename.startswith("__MACOSX")
+                if m.filename.upper().endswith(".DAT")
+                and not m.filename.startswith("__MACOSX")
             ]
-            safe_extract_zip(zf, subj_dir, members=mat_members)
+            safe_extract_zip(zf, subj_dir, members=dat_members)
 
-        # Find the extracted .mat file
-        mat_files = list(subj_dir.glob("**/*.mat"))
-        if not mat_files:
+        # Find the extracted .DAT file
+        dat_files = list(subj_dir.glob("**/*.DAT"))
+        if not dat_files:
             raise FileNotFoundError(
-                f"No .mat file found after extracting ZIP for subject "
+                f"No .DAT file found after extracting ZIP for subject "
                 f"{subject}, session {session}"
             )
 
-        return str(mat_files[0]) if len(mat_files) == 1 else str(sorted(mat_files)[0])
+        return str(dat_files[0]) if len(dat_files) == 1 else str(sorted(dat_files)[0])

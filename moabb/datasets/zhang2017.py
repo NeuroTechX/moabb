@@ -97,18 +97,16 @@ def _read_bci2000_file(fpath):
         )
 
     reader = BCI2kReader(str(fpath))
-    signals = reader.signals  # (n_samples, n_channels)
+    signals = reader.signals  # (n_channels, n_samples)
     states = reader.states
     sfreq = reader.samplingrate
     parameters = reader.parameters
-    reader.close()
 
-    # BCI2kReader returns signals as (n_samples, n_channels) -> transpose
-    signals = np.asarray(signals).T  # (n_channels, n_samples)
+    signals = np.asarray(signals)  # (n_channels, n_samples)
 
-    # Convert states dict values to numpy arrays
+    # Convert states to a plain dict of 1D arrays
     state_dict = {}
-    for key in states.dtype.names:
+    for key in states:
         state_dict[key] = np.asarray(states[key]).ravel()
 
     return signals, state_dict, float(sfreq), parameters
@@ -131,35 +129,24 @@ def _bci2000_to_raw(fpath, event_mapping):
     signals, states, sfreq, parameters = _read_bci2000_file(fpath)
     n_channels, n_samples = signals.shape
 
-    # Build channel names - EGI uses numbered electrodes
-    # BCI2000 with EGI typically names channels Ch1..ChN or numbered.
-    # We use E1..E32 + Cz to match the GSN-HydroCel-32 montage.
-    if n_channels == 32:
-        ch_names = [f"E{i}" for i in range(1, 33)]
-    elif n_channels == 33:
-        # 32 EGI channels + Cz reference (if included)
-        ch_names = [f"E{i}" for i in range(1, 33)] + ["Cz"]
-    else:
-        # Fallback: generic channel names
-        ch_names = [f"EEG{i:03d}" for i in range(1, n_channels + 1)]
-        log.warning(
-            "Unexpected number of channels (%d) for subject. "
-            "Using generic channel names.",
-            n_channels,
-        )
-
-    ch_types = ["eeg"] * len(ch_names)
+    # Use all source channels — the BCI2000 files contain only the
+    # transmitted EEG channels (17 in this dataset).
+    ch_names = [f"EEG{i:03d}" for i in range(1, n_channels + 1)]
+    ch_types = ["eeg"] * n_channels
     info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types)
 
-    # Scale to Volts (BCI2000 data is typically in microvolts)
-    raw = mne.io.RawArray(signals * 1e-6, info, verbose=False)
+    # Parse gain from BCI2000 header and scale to Volts
+    gain_uv = 0.0238419  # default EGI gain in µV/count
+    if "SourceChGain" in parameters:
+        import re
 
-    # Set montage
-    try:
-        montage = mne.channels.make_standard_montage("GSN-HydroCel-32")
-        raw.set_montage(montage, on_missing="ignore")
-    except Exception:
-        log.warning("Could not set GSN-HydroCel-32 montage.")
+        m = re.match(r"([0-9.eE+-]+)", parameters["SourceChGain"][0])
+        if m:
+            gain_uv = float(m.group(1))
+
+    raw = mne.io.RawArray(
+        signals.astype(np.float64) * gain_uv * 1e-6, info, verbose=False
+    )
 
     # Extract event annotations from StimulusCode state variable
     stim_key = None
@@ -257,9 +244,9 @@ class Zhang2017(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=32,
-            channel_types={"eeg": 32},
-            montage="GSN-HydroCel-32",
+            n_channels=17,
+            channel_types={"eeg": 17},
+            montage=None,
             hardware="EGI Geodesic Net Amps 400 series (N400)",
             sensor_type="Ag/AgCl sponge",
             reference="Cz",

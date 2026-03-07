@@ -5,7 +5,6 @@ https://doi.org/10.1038/s41597-022-01647-1
 
 import logging
 import os
-import zipfile
 from pathlib import Path
 
 import mne
@@ -444,8 +443,18 @@ class Ma2022(BaseDataset):
         log.info("Extracting edf_files.zip (password-protected) to %s", edf_dir)
         edf_dir.mkdir(parents=True, exist_ok=True)
 
-        with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(edf_dir, pwd=password.encode("utf-8"))
+        # The ZIP uses AES encryption (compression method 99) which requires
+        # pyzipper rather than the built-in zipfile module.
+        try:
+            import pyzipper
+
+            with pyzipper.AESZipFile(zip_path, "r") as zf:
+                zf.extractall(edf_dir, pwd=password.encode("utf-8"))
+        except ImportError:
+            raise ImportError(
+                "pyzipper is required to extract AES-encrypted ZIP files. "
+                "Install it with: pip install pyzipper"
+            )
 
         # Mark extraction as complete
         marker.touch()
