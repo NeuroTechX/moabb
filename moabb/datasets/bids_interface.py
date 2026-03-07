@@ -2489,7 +2489,15 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # Otherwise, the montage would still have the stim channel
         # which is dropped by mne_bids.write_raw_bids:
-        picks = mne.pick_types(info=raw.info, eeg=True, stim=False)
+        if getattr(self.dataset, "return_all_modalities", False):
+            # Pick all channels except stim
+            picks = mne.pick_types(info=raw.info, meg=True, eeg=True, stim=False, eog=True, ecg=True, emg=True, ref_meg=False, misc=True, resp=True, chpi=True, exci=True, ias=True, syst=True, seeg=True, dipole=True, gof=True, bio=True, ecog=True, fnirs=True, csd=True, dbs=True, temperature=True, gsr=True, eyegaze=True, pupil=True)
+            if len(picks) == 0:
+                # Fallback if pick_types with all kwargs returns empty or we miss something
+                stim_picks = mne.pick_types(info=raw.info, stim=True)
+                picks = [i for i in range(len(raw.ch_names)) if i not in stim_picks]
+        else:
+            picks = mne.pick_types(info=raw.info, eeg=True, stim=False)
         raw.pick(picks)
 
         # By using the same anonymization `daysback` number we can

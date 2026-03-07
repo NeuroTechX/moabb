@@ -143,7 +143,8 @@ def dataset_search(  # noqa: C901
                 s1 = d.get_data([1])[1]
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
-                raw.pick_types(eeg=True)
+                if not getattr(d, "return_all_modalities", False):
+                    raw.pick_types(eeg=True)
                 if channels <= set(raw.info["ch_names"]):
                     out_data.append(d)
             else:
@@ -165,7 +166,8 @@ def find_intersecting_channels(datasets, verbose=False):
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
-        raw.pick_types(eeg=True)
+        if not getattr(d, "return_all_modalities", False):
+            raw.pick_types(eeg=True)
         processed = []
         for ch in raw.info["ch_names"]:
             ch = ch.upper()

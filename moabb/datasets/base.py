@@ -617,6 +617,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         *,
         selected_subjects=None,
         selected_sessions=None,
+        return_all_modalities=False,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -637,6 +638,8 @@ class BaseDataset(metaclass=MetaclassDataset):
                 f"of its code {code!r}. "
                 "See moabb.datasets.base.is_abbrev for more information."
             )
+
+        self.return_all_modalities = return_all_modalities
 
         self._all_subjects = list(subjects)
         if selected_subjects is not None:
@@ -1426,6 +1429,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        return_all_modalities=False,
     ):
         self.bids_root = bids_root
         self.path_search_params = path_search_params
@@ -1461,6 +1465,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
             paradigm,
             doi,
             unit_factor,
+            return_all_modalities=return_all_modalities,
         )
 
     def _download_subject(self, subject, path, force_update, update_path, verbose):
