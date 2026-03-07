@@ -601,10 +601,14 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     doi: DOI for dataset, optional (for now)
 
-    return_all_modalities : bool, optional
-        If True, non-EEG channels (e.g., EOG, EMG, ECG) are retained in the
-        raw data returned by :meth:`get_data`. By default (False), only EEG
-        channels are returned, preserving backward compatibility.
+    return_all_modalities : bool | dict, optional
+        Controls which channel types are retained when data is picked:
+
+        - ``False`` (default): only EEG channels are kept.
+        - ``True``: all channels except stim are kept.
+        - ``dict``: keyword arguments forwarded to :func:`mne.pick_types`,
+          e.g. ``dict(eeg=True, eog=True)`` keeps EEG and EOG channels.
+          ``stim`` is always forced to ``False``.
     """
 
     _summary_table: dict[str, Any]

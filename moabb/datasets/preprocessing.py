@@ -738,7 +738,7 @@ class RawToEpochs(FixedTransformer):
         baseline: Tuple[float, float],
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
-        return_all_modalities: bool = False,
+        return_all_modalities=False,
     ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
