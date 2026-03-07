@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 106
+        "total": 112
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -158,6 +158,19 @@
         ],
         "year": 2022,
         "doi": "10.1038/s41597-022-01372-9"
+    },
+    "10.1038/s41597-022-01647-1": {
+        "title": "A large EEG dataset for studying cross-session variability in motor imagery brain-computer interface",
+        "authors": [
+            "Jun Ma",
+            "Banghua Yang",
+            "Wenzheng Qiu",
+            "Yunzhe Li",
+            "Shouwei Gao",
+            "Xinxing Xia"
+        ],
+        "year": 2022,
+        "doi": "10.1038/s41597-022-01647-1"
     },
     "10.1038/s41597-022-01898-y": {
         "title": "Open multi-session and multi-task EEG cognitive Dataset for passive brain-computer Interface Applications",
@@ -596,6 +609,17 @@
         "year": 2016,
         "doi": "10.1371/journal.pone.0162657"
     },
+    "10.1371/journal.pone.0174161": {
+        "title": "Classifying three imaginary states of the same upper extremity using time-domain features",
+        "authors": [
+            "Mojgan Tavakolan",
+            "Zack Frehlick",
+            "Xinyi Yong",
+            "Carlo Menon"
+        ],
+        "year": 2017,
+        "doi": "10.1371/journal.pone.0174161"
+    },
     "10.1371/journal.pone.0175856": {
         "title": "Learning from label proportions in brain-computer interfaces: Online unsupervised learning with guarantees",
         "authors": [
@@ -631,6 +655,16 @@
         ],
         "year": 2017,
         "doi": "10.1371/journal.pone.0182578"
+    },
+    "10.1371/journal.pone.0188293": {
+        "title": "Evaluating the versatility of EEG models generated from motor imagery tasks: An exploratory investigation on upper-limb elbow-centered motor imagery tasks",
+        "authors": [
+            "Xiaogang Zhang",
+            "Xinyi Yong",
+            "Carlo Menon"
+        ],
+        "year": 2017,
+        "doi": "10.1371/journal.pone.0188293"
     },
     "10.1371/journal.pone.0303565": {
         "title": "An auditory brain-computer interface based on selective attention to multiple tone streams",
@@ -902,6 +936,17 @@
         "year": 2025,
         "doi": "10.48550/arXiv.2510.10169"
     },
+    "10.5061/dryad.6qs86": {
+        "title": "Data from: Classifying three imaginary states of the same upper extremity using time-domain features",
+        "authors": [
+            "Mojgan Tavakolan",
+            "Zack Frehlick",
+            "Xinyi Yong",
+            "Carlo Menon"
+        ],
+        "year": 2018,
+        "doi": "10.5061/dryad.6qs86"
+    },
     "10.5281/zenodo.1494163": {
         "title": "Brain Invaders Adaptive versus Non-Adaptive P300 Brain-Computer Interface dataset",
         "authors": [
@@ -1162,6 +1207,19 @@
         "year": 2022,
         "doi": "10.6084/m9.figshare.18032669"
     },
+    "10.6084/m9.figshare.19228725": {
+        "title": "SHU Multi-session Dataset",
+        "authors": [
+            "Jun Ma",
+            "Banghua Yang",
+            "Wenzheng Qiu",
+            "Yunzhe Li",
+            "Shouwei Gao",
+            "Xinxing Xia"
+        ],
+        "year": 2022,
+        "doi": "10.6084/m9.figshare.19228725"
+    },
     "10.6084/m9.figshare.2061654": {
         "title": "three-class motor imagery EEG data.zip",
         "authors": [
@@ -1194,6 +1252,16 @@
         ],
         "year": 2025,
         "doi": "10.6084/m9.figshare.28806815.v2"
+    },
+    "10.6084/m9.figshare.5579461.v1": {
+        "title": "Evaluating the versatility of EEG models generated from motor imagery tasks: an exploratory investigation on upper-limb elbow-centered motor imagery tasks",
+        "authors": [
+            "Xin Zhang",
+            "Carlo Menon",
+            ""
+        ],
+        "year": 2017,
+        "doi": "10.6084/m9.figshare.5579461.v1"
     },
     "10.6094/UNIFR/154576": {
         "title": "Electroencephalogram signals recorded from 13 healthy subjects during an auditory oddball paradigm under different stimulus onset asynchrony conditions",

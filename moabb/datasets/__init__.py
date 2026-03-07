@@ -84,6 +84,7 @@ from .kojima2024b import Kojima2024B
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .lee2021_mobile import Lee2021Mobile_ERP, Lee2021Mobile_SSVEP
 from .liu2024 import Liu2024
+from .ma2022 import Ma2022
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import MunichMI  # noqa: F401
@@ -107,11 +108,13 @@ from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
 from .ssvep_wang2021 import Wang2021Combined
 from .stieger2021 import Stieger2021
+from .tavakolan2017 import Tavakolan2017
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .upper_limb import Ofner2017
 from .utils import _init_dataset, dataset_dict
 from .Weibo2014 import Weibo2014
+from .zhang2017 import Zhang2017
 from .Zhou2016 import Zhou2016
 
 
