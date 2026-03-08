@@ -280,17 +280,17 @@ class Yang2025(BaseDataset):
         zip_path = basepath / "WBCIC_SHU_Motor_Imagery_dataset.zip"
         if not zip_path.exists() and not existing:
             log.info("Downloading Yang2025 dataset (65.6 GB) from Figshare...")
-            dl.data_dl(
+            dl_path = dl.data_dl(
                 _ZIP_URL,
                 "Yang2025",
                 path=str(basepath),
                 force_update=force_update,
                 verbose=verbose,
             )
-            # Find the downloaded zip
-            for candidate in basepath.rglob("*.zip"):
-                zip_path = candidate
-                break
+            # Rename downloaded file to expected location.
+            dl_path = Path(dl_path)
+            if dl_path != zip_path:
+                dl_path.rename(zip_path)
 
         # Extract if needed
         if zip_path.exists() and not existing:

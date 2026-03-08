@@ -199,25 +199,20 @@ class HefmiIch2025(BaseDataset):
         if subject not in manifest:
             raise FileNotFoundError(f"No EEG epoch files found for subject {subject}")
 
+        import requests
+
         sessions = {}
         for sess_idx, (file_id, file_name) in enumerate(manifest[subject]):
             mat_path = base / file_name
             if not mat_path.exists():
-                # Download this specific file.
+                # Download this specific file directly from Figshare.
                 url = f"https://ndownloader.figshare.com/files/{file_id}"
-                dl.data_dl(
-                    url,
-                    "HefmiIch2025",
-                    path=str(base),
-                    force_update=False,
-                )
-                # The downloaded file may have a different name.
-                # Try to find it.
-                if not mat_path.exists():
-                    for candidate in base.glob("*.mat"):
-                        if str(file_id) in str(candidate):
-                            candidate.rename(mat_path)
-                            break
+                log.info("Downloading %s (%s) ...", file_name, url)
+                resp = requests.get(url, stream=True, timeout=120)
+                resp.raise_for_status()
+                with open(mat_path, "wb") as fout:
+                    for chunk in resp.iter_content(chunk_size=65536):
+                        fout.write(chunk)
 
             if not mat_path.exists():
                 log.warning("Missing %s for subject %d", file_name, subject)
@@ -333,10 +328,12 @@ class HefmiIch2025(BaseDataset):
             return _MANIFEST
 
         # Filter to EEG epoch files (~42 MB each).
+        # The dataset has both EEG (~42 MB) and fNIRS (~28 MB) epoch files.
+        # Use size > 40 MB to select EEG only (all EEG files are 40.9-43.3 MB).
         eeg_files = [
             (f["id"], f["name"], f["size"])
             for f in files
-            if f["name"].endswith("_epo.mat") and f["size"] > 35_000_000
+            if f["name"].endswith("_epo.mat") and f["size"] > 40_000_000
         ]
         eeg_files.sort(key=lambda x: x[0])  # Sort by file ID.
 
@@ -348,8 +345,9 @@ class HefmiIch2025(BaseDataset):
                 subj_idx += 1
             if subj_idx not in manifest:
                 manifest[subj_idx] = []
-            # Store with a unique local filename.
-            local_name = f"sub{subj_idx:02d}_{name}"
+            # Use sequential session index for unique local filenames.
+            sess_num = len(manifest[subj_idx]) + 1
+            local_name = f"sub{subj_idx:02d}_{sess_num}_epo.mat"
             manifest[subj_idx].append((file_id, local_name))
 
         # Save manifest for future use.

@@ -323,22 +323,20 @@ class Forenzo2024(BaseDataset):
         url = f"{_FIGSHARE_BASE}{file_id}"
         zip_name = f"S{subject:02d}.zip"
 
-        log.info("Downloading Forenzo2024 subject %d (~3-7 GB)...", subject)
-        dl.data_dl(
-            url,
-            "Forenzo2024",
-            path=str(basepath),
-            force_update=force_update,
-            verbose=verbose,
-        )
-
-        # Find and extract the ZIP
         zip_path = basepath / zip_name
         if not zip_path.exists():
-            for candidate in basepath.glob("*.zip"):
-                if candidate.stat().st_size > 1e8:
-                    zip_path = candidate
-                    break
+            log.info("Downloading Forenzo2024 subject %d (~3-7 GB)...", subject)
+            dl_path = dl.data_dl(
+                url,
+                "Forenzo2024",
+                path=str(basepath),
+                force_update=force_update,
+                verbose=verbose,
+            )
+            # Rename downloaded file to expected location.
+            dl_path = Path(dl_path)
+            if dl_path != zip_path:
+                dl_path.rename(zip_path)
 
         if zip_path.exists() and not subj_dir.exists():
             subj_dir.mkdir(parents=True, exist_ok=True)

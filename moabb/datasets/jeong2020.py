@@ -353,13 +353,17 @@ class Jeong2020(BaseDataset):
                     dest = basepath / f"{fname}{ext}"
                     if not dest.exists():
                         try:
-                            dl.data_dl(
+                            dl_path = dl.data_dl(
                                 url,
                                 "Jeong2020",
                                 path=str(basepath),
                                 force_update=force_update,
                                 verbose=verbose,
                             )
+                            # Rename to expected location.
+                            dl_path = Path(dl_path)
+                            if dl_path != dest:
+                                dl_path.rename(dest)
                         except Exception as e:
                             log.warning("Download failed for %s: %s", url, e)
 

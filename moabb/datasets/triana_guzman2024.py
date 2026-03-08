@@ -29,14 +29,12 @@ from .utils import stim_channels_with_selected_ids
 
 log = logging.getLogger(__name__)
 
-# OpenNeuro dataset ID and version.
+# OpenNeuro dataset ID.
 _OPENNEURO_ID = "ds005342"
-_OPENNEURO_VERSION = "1.0.3"
 
 # S3 base URL for direct download (no auth needed for OpenNeuro).
-_S3_BASE = (
-    f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}" f"/v:{_OPENNEURO_VERSION}"
-)
+# No version prefix — OpenNeuro serves latest version at the bare path.
+_S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
 
 # Event codes from events.tsv value column.
 # 1 = MotorImageryA (sitting, imagine stand-up)
@@ -244,18 +242,21 @@ class TrianaGuzman2024(BaseDataset):
             f"{subj_str}/eeg/{subj_str}_task-sitstand_channels.tsv",
         ]
 
+        import requests as _requests
+
         for rel_path in files_to_download:
             url = f"{_S3_BASE}/{rel_path}"
             local_path = basepath / rel_path
             local_path.parent.mkdir(parents=True, exist_ok=True)
             if not local_path.exists() or force_update:
                 log.info("Downloading %s ...", rel_path)
-                dl.data_dl(
-                    url,
-                    "TrianaGuzman2024",
-                    path=str(local_path.parent),
-                    force_update=force_update,
-                    verbose=verbose,
-                )
+                resp = _requests.get(url, stream=True, timeout=120)
+                if resp.status_code == 404:
+                    log.warning("Not found: %s (skipping)", url)
+                    continue
+                resp.raise_for_status()
+                with open(local_path, "wb") as fout:
+                    for chunk in resp.iter_content(chunk_size=8192):
+                        fout.write(chunk)
 
         return str(set_file)

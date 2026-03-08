@@ -307,18 +307,17 @@ class Forenzo2023(BaseDataset):
 
         if not zip_path.exists():
             log.info("Downloading Forenzo2023 subject %d (~3.8 GB)...", subject)
-            dl.data_dl(
+            dl_path = dl.data_dl(
                 url,
                 "Forenzo2023",
                 path=str(basepath),
                 force_update=force_update,
                 verbose=verbose,
             )
-            # Find downloaded file
-            for candidate in basepath.glob("*.zip"):
-                if candidate.stat().st_size > 1e8:
-                    zip_path = candidate
-                    break
+            # Rename downloaded file to expected location.
+            dl_path = Path(dl_path)
+            if dl_path != zip_path:
+                dl_path.rename(zip_path)
 
         # Extract
         if zip_path.exists() and not subj_dir.exists():

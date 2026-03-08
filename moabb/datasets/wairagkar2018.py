@@ -295,9 +295,23 @@ class Wairagkar2018(BaseDataset):
         if mat_file.exists():
             return str(mat_file)
 
+        # Check if mat files exist in a subfolder (e.g. from prior download).
+        for mat in basepath.rglob(f"Participant{subject}.mat"):
+            if mat != mat_file:
+                mat.rename(mat_file)
+                break
+
+        if mat_file.exists():
+            return str(mat_file)
+
         # Download and extract the single ZIP containing all subjects.
-        zip_path = basepath / "EEG_finger_tapping_data.zip"
-        if not zip_path.exists():
+        # Find the zip: it may be at various locations after dl.data_dl.
+        zip_path = None
+        for candidate in basepath.rglob("EEG_finger_tapping_data.zip"):
+            zip_path = candidate
+            break
+
+        if zip_path is None:
             dl.data_dl(
                 _ZIP_URL,
                 "Wairagkar2018",
@@ -305,24 +319,20 @@ class Wairagkar2018(BaseDataset):
                 force_update=force_update,
                 verbose=verbose,
             )
-            # dl.data_dl returns the download path; find the zip.
-            # The file may be downloaded to the basepath or to path.
-            for candidate in [
-                basepath / "EEG_finger_tapping_data.zip",
-                Path(path) / "EEG_finger_tapping_data.zip",
-            ]:
-                if candidate.exists():
-                    zip_path = candidate
-                    break
+            # Find the downloaded zip.
+            for candidate in basepath.rglob("EEG_finger_tapping_data.zip"):
+                zip_path = candidate
+                break
 
         # Extract all .mat files from the ZIP.
-        if zip_path.exists() and not mat_file.exists():
+        if zip_path is not None and zip_path.exists() and not mat_file.exists():
             safe_extract_zip(str(zip_path), str(basepath))
-            # Files may be in a subfolder; move them up if needed.
-            for mat in basepath.rglob("Participant*.mat"):
-                dest = basepath / mat.name
-                if mat != dest:
-                    mat.rename(dest)
+
+        # Move mat files from subfolders to basepath.
+        for mat in basepath.rglob("Participant*.mat"):
+            dest = basepath / mat.name
+            if mat != dest:
+                mat.rename(dest)
 
         if not mat_file.exists():
             raise FileNotFoundError(
