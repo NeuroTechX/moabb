@@ -65,6 +65,7 @@ from .castillos2023 import (
     CastillosCVEP40,
     CastillosCVEP100,
 )
+from .chang2025 import Chang2025
 from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .erpcore2021 import (
@@ -80,6 +81,8 @@ from .fake import FakeDataset, FakeVirtualRealityDataset
 from .forenzo2023 import Forenzo2023
 from .forenzo2024 import Forenzo2024
 from .gigadb import Cho2017
+from .guttmann_flury2025 import GuttmannFlury2025
+from .hefmi_ich2025 import HefmiIch2025
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
 from .jeong2020 import Jeong2020
@@ -119,6 +122,7 @@ from .stieger2021 import Stieger2021
 from .tavakolan2017 import Tavakolan2017
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
+from .triana_guzman2024 import TrianaGuzman2024
 from .upper_limb import Ofner2017
 from .utils import _init_dataset, dataset_dict
 from .wairagkar2018 import Wairagkar2018
