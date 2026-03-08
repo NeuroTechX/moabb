@@ -77,9 +77,12 @@ from .erpcore2021 import (
     ErpCore2021_P3,
 )
 from .fake import FakeDataset, FakeVirtualRealityDataset
+from .forenzo2023 import Forenzo2023
+from .forenzo2024 import Forenzo2024
 from .gigadb import Cho2017
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
+from .jeong2020 import Jeong2020
 from .kaya2018 import Kaya2018
 from .kojima2024a import Kojima2024A
 from .kojima2024b import Kojima2024B
@@ -118,9 +121,13 @@ from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .upper_limb import Ofner2017
 from .utils import _init_dataset, dataset_dict
+from .wairagkar2018 import Wairagkar2018
 from .Weibo2014 import Weibo2014
+from .wu2020 import Wu2020
+from .yang2025 import Yang2025
 from .zhang2017 import Zhang2017
 from .Zhou2016 import Zhou2016
+from .zhou2020 import Zhou2020
 
 
 # Call this last in order to make sure the dataset list, dict are populated with
