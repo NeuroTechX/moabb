@@ -19,7 +19,7 @@
   </p>
   <p>
     <a href="https://doi.org/10.5281/zenodo.10034223"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10034223.svg" alt="DOI"></a>
-    <a href="https://github.com/NeuroTechX/moabb/actions?query=branch%3Adevelop"><img src="https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg?branch=develop" alt="Build Status"></a>
+    <a href="https://github.com/NeuroTechX/moabb/actions/workflows/test.yml?query=branch%3Adevelop"><img src="https://github.com/NeuroTechX/moabb/actions/workflows/test.yml/badge.svg?branch=develop" alt="Build Status"></a>
     <a href="https://pypi.org/project/moabb/"><img src="https://img.shields.io/pypi/v/moabb?color=blue&style=flat-square" alt="PyPI"></a>
     <a href="https://pypi.org/project/moabb/"><img src="https://img.shields.io/pypi/v/moabb?label=version&color=orange&style=flat-square" alt="Version"></a>
     <a href="https://pypi.org/project/moabb/"><img src="https://img.shields.io/pypi/pyversions/moabb?style=flat-square" alt="Python versions"></a>
