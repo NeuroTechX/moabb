@@ -129,9 +129,11 @@ from .wairagkar2018 import Wairagkar2018
 from .Weibo2014 import Weibo2014
 from .wu2020 import Wu2020
 from .yang2025 import Yang2025
+from .yi2025 import Yi2025
 from .zhang2017 import Zhang2017
 from .Zhou2016 import Zhou2016
 from .zhou2020 import Zhou2020
+from .zuo2025 import Zuo2025
 
 
 # Call this last in order to make sure the dataset list, dict are populated with
