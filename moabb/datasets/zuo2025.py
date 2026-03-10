@@ -451,9 +451,16 @@ class Zuo2025(BaseDataset):
             if label in _RAW_EVENT_MAP and int(event_ch[i - 1]) != label:
                 stim[0, i] = _RAW_EVENT_MAP[label]
 
+        # Apply Common Average Reference (CAR) to match the paper's
+        # preprocessing. The shared extraction files have CAR applied;
+        # without it, central/posterior channels lose spatial
+        # discriminability for lower-limb MI.
+        eeg_data = eeg_data.astype(np.float64)
+        eeg_data = eeg_data - eeg_data.mean(axis=0, keepdims=True)
+
         # Scale to volts (data is in microvolts).
         if np.abs(eeg_data).max() > 1e-3:
-            eeg_data = eeg_data.astype(np.float64) * 1e-6
+            eeg_data = eeg_data * 1e-6
 
         ch_types = ["eeg"] * 30 + ["stim"]
         info = mne.create_info(

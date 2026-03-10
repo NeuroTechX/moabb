@@ -519,6 +519,10 @@ class Kumar2024(BaseDataset):
             # Set montage
             raw.set_montage(montage, on_missing="ignore")
 
+            # GDF headers have malformed physical_min/max; data is in
+            # microvolts but MNE reads it as volts.  Scale EEG channels.
+            raw._data[:22] *= 1e-6
+
             # Map GDF event annotations: 769 -> left_hand, 770 -> right_hand
             raw.annotations.rename({"769": "left_hand", "770": "right_hand"})
 

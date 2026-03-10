@@ -183,7 +183,7 @@ class HefmiIch2025(BaseDataset):
             sessions_per_subject=3,
             events=dict(_EVENTS),
             code="HefmiIch2025",
-            interval=[0, 4],
+            interval=[0, 10],
             paradigm="imagery",
             doi="10.1038/s41597-025-06100-7",
             selected_subjects=subjects,
@@ -254,23 +254,27 @@ class HefmiIch2025(BaseDataset):
         )
 
         # Reconstruct continuous data by concatenating epochs with buffer.
+        # Epoch structure (from MakeDatasetFromRaw.m):
+        #   0-10s pre-cue rest | 10-12s cue | 12-22s MI | 22-37.2s rest
+        # MI onset is at 12s into each epoch.
+        mi_onset = int(12 * fs)
         buffer_samples = int(0.5 * fs)  # 0.5s gap between epochs
-        total_samples = n_trials * (n_samples + buffer_samples)
+        total_samples = 1 + n_trials * (n_samples + buffer_samples)
         data = np.zeros((n_ch, total_samples))
         stim = np.zeros((1, total_samples))
 
         for t in range(n_trials):
-            start = t * (n_samples + buffer_samples)
+            start = 1 + t * (n_samples + buffer_samples)
             epoch = X[:, :, t].T  # (channels, samples)
 
             # Demean each epoch.
             epoch = epoch - epoch.mean(axis=1, keepdims=True)
             data[:, start : start + n_samples] = epoch
 
-            # Set event at epoch onset.
+            # Set event at MI onset (12s into the epoch).
             # y: 0=left, 1=right -> MOABB: 1=left, 2=right
             event_code = int(y[t]) + 1 if t < len(y) else 1
-            stim[0, start] = event_code
+            stim[0, start + mi_onset] = event_code
 
         # Scale to volts if data appears to be in microvolts.
         if np.abs(data).max() > 1e-3:
