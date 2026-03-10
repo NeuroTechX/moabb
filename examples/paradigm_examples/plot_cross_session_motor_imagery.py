@@ -26,7 +26,6 @@ session.
 # License: BSD (3-clause)
 
 import matplotlib.pyplot as plt
-import seaborn as sns
 from mne.decoding import CSP
 from pyriemann.estimation import Covariances
 from pyriemann.tangentspace import TangentSpace
@@ -35,6 +34,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
+import moabb.analysis.plotting as moabb_plt
+from moabb.analysis.chance_level import chance_by_chance
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import LeftRightImagery
@@ -92,36 +93,20 @@ print(results.head())
 # Plot Results
 # ----------------
 #
-# Here we plot the results. We first make a pointplot with the average
-# performance of each pipeline across session and subjects.
-# The second plot is a paired scatter plot. Each point representing the score
-# of a single session. An algorithm will outperform another is most of the
-# points are in its quadrant.
+# Here we plot the results using the MOABB plotting utilities with chance
+# level annotations. The ``score_plot`` visualizes all the data with one
+# score per subject for every dataset and pipeline. The ``paired_plot``
+# compares two algorithms head-to-head.
 
-fig, axes = plt.subplots(1, 2, figsize=[8, 4], sharey=True)
+chance_levels = chance_by_chance(results, alpha=[0.05, 0.01])
 
-sns.stripplot(
-    data=results,
-    y="score",
-    x="pipeline",
-    ax=axes[0],
-    jitter=True,
-    alpha=0.5,
-    zorder=1,
-    palette="Set1",
-)
-sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], palette="Set1")
+fig, _ = moabb_plt.score_plot(results, chance_level=chance_levels)
+plt.show()
 
-axes[0].set_ylabel("ROC AUC")
-axes[0].set_ylim(0.5, 1)
+###############################################################################
+# The paired plot compares CSP+LDA versus RG+LR. Each point represents the
+# score of a single session. An algorithm outperforms the other when most
+# points fall in its quadrant.
 
-paired = results.pivot_table(
-    values="score", columns="pipeline", index=["subject", "session"]
-)
-paired = paired.reset_index()
-
-sns.regplot(data=paired, y="RG+LR", x="CSP+LDA", ax=axes[1], fit_reg=False)
-axes[1].plot([0, 1], [0, 1], ls="--", c="k")
-axes[1].set_xlim(0.5, 1)
-
+fig = moabb_plt.paired_plot(results, "CSP+LDA", "RG+LR", chance_level=chance_levels)
 plt.show()

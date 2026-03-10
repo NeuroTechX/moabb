@@ -5,6 +5,7 @@ from time import perf_counter
 from uuid import uuid4
 from warnings import warn
 
+import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
@@ -327,6 +328,8 @@ class BaseEvaluation(ABC):
             duration,
             **metadata,
         )
+        res["n_samples_test"] = len(y_test)
+        res["n_classes"] = len(np.unique(y_test))
         try:
             return _score_and_update(res, scorer, model, X_test, y_test)
         except ValueError as err:
@@ -402,6 +405,8 @@ class BaseEvaluation(ABC):
             "n_samples": n_samples,
             "n_channels": n_channels,
             "pipeline": pipeline,
+            "n_samples_test": 0,
+            "n_classes": 0,
         }
         for col in self.additional_columns:
             if col not in res:

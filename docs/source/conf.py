@@ -59,14 +59,13 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.ifconfig",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.imgmath",
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
-    "sphinx.ext.mathjax",
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
+    "dataset_timeline_ext",
     "myst_parser",
     "numpydoc",
     "sphinx_favicon",
@@ -77,6 +76,13 @@ extensions = [
 _build_sitemap = os.environ.get("MOABB_BUILD_SITEMAP", "1").strip().lower()
 if _build_sitemap in {"0", "false", "no"}:
     extensions = [ext for ext in extensions if ext != "sphinx_sitemap"]
+
+# Dataset card extension settings.
+# SVG auto-generation is on by default so stimulus protocol plots render in
+# the published docs; disable via env var if needed for faster local builds.
+dataset_card_generate_svgs = os.environ.get(
+    "MOABB_DATASET_CARD_GENERATE_SVGS", "1"
+).strip().lower() in {"1", "true", "yes"}
 
 
 def linkcode_resolve(domain, info):  # noqa: C901
@@ -185,8 +191,8 @@ sphinx_gallery_conf = {
 }
 
 
-autodoc_default_options = {"inherited-members": False}
-autodoc_default_flags = {"inherited-members": None}
+autodoc_default_options = {}
+autodoc_default_flags = {}
 autosummary_generate = True
 
 numpydoc_show_class_members = False
@@ -304,6 +310,7 @@ html_css_files = [
 html_js_files = [
     "https://code.jquery.com/jquery-3.7.1.min.js",
     "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js",
+    "js/section-nav-hierarchy.js",
 ]
 
 # If true, links to the reST sources are added to the pages.

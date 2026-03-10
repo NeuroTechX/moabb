@@ -24,6 +24,11 @@ from moabb.evaluations.utils import _save_model_cv as save_model_cv
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
+def _identity(x):
+    """Identity function (replaces lambda to avoid MOABB hash warnings)."""
+    return x
+
+
 try:
     from codecarbon import EmissionsTracker  # noqa
 
@@ -86,7 +91,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_compound_dataset(self):
         ch1 = ["C3", "Cz", "Fz"]
@@ -121,7 +126,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_eval_grid_search(self):
         # Test grid search
@@ -140,7 +145,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_eval_grid_search_optuna(self):
         if not optuna_available:
@@ -167,7 +172,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
@@ -224,7 +229,7 @@ class TestWithinSess:
 
         results0 = self.eval.process(pipelines0)
         results1 = self.eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)
@@ -259,7 +264,7 @@ class TestWithinSessLearningCurve:
             )
         ]
         keys = results[0].keys()
-        assert len(keys) == 10  # 8 + 2 new for learning curve
+        assert len(keys) == 12  # 10 + 2 new for learning curve
         assert "permutation" in keys
         assert "data_size" in keys
 
@@ -398,7 +403,7 @@ class TestWithinSessLearningCurve:
 
         results0 = learning_curve_eval.process(pipelines0)
         results1 = learning_curve_eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+            pipelines0, postprocess_pipeline=FunctionTransformer(_identity)
         )
         results2 = learning_curve_eval.process(pipelines1, postprocess_pipeline=cov)
         np.testing.assert_allclose(results0.score, results1.score)
@@ -453,7 +458,7 @@ class Test_CrossSess(TestWithinSess):
         assert "requires at least 2 sessions" in error_msg
 
 
-class UtilEvaluation:
+class TestUtilEvaluation:
     def test_save_model_cv(self):
         model = Dummy()
         save_path = "test_save_path"
@@ -499,7 +504,7 @@ class UtilEvaluation:
             import torch
             from skorch import NeuralNetClassifier
         except ImportError:
-            self.skipTest("skorch library not available")
+            pytest.skip("skorch library not available")
 
         step = NeuralNetClassifier(module=torch.nn.Linear(10, 2))
         step.initialize()

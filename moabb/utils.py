@@ -10,6 +10,7 @@ import os.path as osp
 import random
 import re
 import sys
+import warnings
 from typing import TYPE_CHECKING
 
 import filelock
@@ -26,6 +27,41 @@ if TYPE_CHECKING:
     from moabb.paradigms.base import BaseProcessing
 
 log = logging.getLogger(__name__)
+
+
+def _handle_deprecated_kwargs(kwargs, renames, class_name):
+    """Handle deprecated PascalCase kwargs, returning resolved values.
+
+    Parameters
+    ----------
+    kwargs : dict
+        The **kwargs from the constructor.
+    renames : dict
+        Mapping of old PascalCase names to new snake_case names.
+    class_name : str
+        The class name for the warning message.
+
+    Returns
+    -------
+    resolved : dict
+        Mapping of new snake_case names to values from deprecated kwargs.
+    """
+    resolved = {}
+    for old_name, new_name in renames.items():
+        if old_name in kwargs:
+            warnings.warn(
+                f"Parameter '{old_name}' is deprecated and will be removed in "
+                f"version 2.0. Use '{new_name}' instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            resolved[new_name] = kwargs.pop(old_name)
+    if kwargs:
+        raise TypeError(
+            f"{class_name}.__init__() got unexpected keyword arguments: "
+            f"{list(kwargs.keys())}"
+        )
+    return resolved
 
 
 def _set_random_seed(seed: int) -> None:
@@ -197,12 +233,8 @@ aliases_list = []  # list of tuples containing (old name, new name, expire versi
 
 def update_docstring_list(doc, section, msg):
     header = rf"{section}[ ]*\n[ ]*[\-]+[ ]*\n"
-    if section not in doc:
-        doc = doc + f"\n\n    {section}\n    {'-' * len(section)}\n"
     if re.search(rf"[ ]*{header}", doc) is None:
-        raise ValueError(
-            f"Incorrect formatting of section {section!r} in docstring {doc!r}"
-        )
+        doc = doc + f"\n\n    {section}\n    {'-' * len(section)}\n"
     doc = re.sub(rf"([ ]*)({header})", rf"\g<1>\g<2>\n\g<1>{msg}\n", doc)
     return doc
 

@@ -144,6 +144,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     meta_ = metadata[ix].reset_index(drop=True)
                     acc = list()
                     durations = []
+                    test_sizes = []
                     nchan = self._get_nchan(X)
 
                     if _carbonfootprint:
@@ -198,6 +199,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         else:
                             score = scorer(cvclf, X_[test], y_[test])
                             acc.append(score)
+                            test_sizes.append(len(test))
 
                     if _carbonfootprint:
                         tracker.stop()
@@ -213,6 +215,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                             nchan,
                             avg_duration,
                         )
+                        res["n_samples_test"] = (
+                            int(np.mean(test_sizes)) if test_sizes else 0
+                        )
+                        res["n_classes"] = len(np.unique(y_cv))
                         _update_result_with_scores(res, _average_scores(acc))
                         if _carbonfootprint:
                             self._attach_emissions(res, emissions, task_name)

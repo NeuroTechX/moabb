@@ -11,7 +11,15 @@ from dateutil import parser
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.utils import _handle_deprecated_kwargs
 
 
 MARTINEZCAGIGAL2023_CHECKER_URL = "https://uvadoc.uva.es/handle/10324/70973"
@@ -127,7 +135,52 @@ class MartinezCagigal2023Checker(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
-    def __init__(self, conditions=ALL_CONDITIONS):
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            n_channels=16,
+            channel_types={"eeg": 16},
+        ),
+        participants=ParticipantMetadata(n_subjects=16),
+        experiment=ExperimentMetadata(paradigm="cvep"),
+        documentation=DocumentationMetadata(
+            doi="10.71569/7c67-v596",
+            associated_paper_doi="10.3389/fnhum.2023.1288438",
+            related_paper_dois=["10.1016/j.cmpb.2023.107357"],
+            publication_year=2023,
+            investigators=[
+                "Álvaro Fernández-Rodríguez",
+                "Víctor Martínez-Cagigal",
+                "Eduardo Santamaría-Vázquez",
+                "Ricardo Ron-Angevin",
+                "Roberto Hornero",
+            ],
+            senior_author="Roberto Hornero",
+            institution="University of Valladolid",
+            institution_department="Biomedical Engineering Group, ETSIT",
+            institution_address="Paseo de Belén, 15, 47011, Valladolid, Spain",
+            country="ES",
+            contact_info=["victor.martinez@gib.tel.uva.es"],
+            ethics_approval=[
+                "Approved by the local ethics committee; all participants provided informed consent"
+            ],
+            data_url="https://doi.org/10.71569/7c67-v596",
+            how_to_acknowledge=(
+                "Please cite: Fernández-Rodríguez et al. (2023). Influence of spatial "
+                "frequency in visual stimuli for cVEP-based BCIs: evaluation of performance "
+                "and user experience. Frontiers in Human Neuroscience, 17, 1288438. "
+                "https://doi.org/10.3389/fnhum.2023.1288438"
+            ),
+        ),
+    )
+
+    def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"Conditions": "conditions"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "MartinezCagigal2023Checker"
+        )
+        conditions = resolved.get("conditions", conditions)
+
         # Validate conditions
         for cond in conditions:
             if cond not in ALL_CONDITIONS:
@@ -145,6 +198,8 @@ class MartinezCagigal2023Checker(BaseDataset):
             interval=(0, 1),  # Don't use this, it depends on the condition
             paradigm="cvep",
             doi="https://doi.org/10.71569/7c67-v596",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -321,7 +376,19 @@ class MartinezCagigal2023Checker(BaseDataset):
             first_trial_onsets.append(trial_onsets_samples[first_onset_idx])
         first_trial_onsets = np.array(first_trial_onsets)
 
-        # Add trial-level stimulus channel (offset=200)
+        # Add trial-level annotations so trial identity survives BIDS export.
+        # SetRawAnnotations transfers extras by sample position to the first
+        # bit event of each trial, which then appear as columns in events.tsv.
+        trial_onsets_sec = first_trial_onsets / sampling_freq
+        trial_annotations = mne.Annotations(
+            onset=trial_onsets_sec,
+            duration=[0.0] * len(trial_onsets_sec),
+            description=["_trial_meta"] * len(trial_onsets_sec),
+        )
+        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in trial_labels]
+        raw_data.set_annotations(raw_data.annotations + trial_annotations)
+
+        # The stim_trial channel is kept for backward compat with paradigm code.
         raw_data = add_stim_channel_trial(
             raw_data, first_trial_onsets, trial_labels, offset=200
         )

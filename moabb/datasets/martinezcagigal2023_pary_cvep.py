@@ -11,7 +11,15 @@ from dateutil import parser
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.utils import _handle_deprecated_kwargs
 
 
 MARTINEZCAGIGAL2023_PARY_URL = "https://uvadoc.uva.es/handle/10324/70945"
@@ -134,8 +142,8 @@ class MartinezCagigal2023Pary(BaseDataset):
     .. [2] Martínez-Cagigal, V., Thielen, J., Santamaría-Vázquez, E.,
        Pérez-Velasco, S., Desain, P., & Hornero, R. (2021).
        Brain-computer interfaces based on code-modulated visual evoked
-       potentials (c-VEP): A literature review. *Journal of Neural Engineering,
-       18*(6), 061002. https://doi.org/10.1088/1741-2552/ac38cf
+       potentials (c-VEP): A literature review. *Journal of Neural Engineering*,
+       18(6), 061002. https://doi.org/10.1088/1741-2552/ac38cf
 
     .. [3] Martínez-Cagigal, V. (2025). Dataset: Non-binary m-sequences for
        more comfortable brain-computer interfaces based on c-VEPs.
@@ -157,7 +165,63 @@ class MartinezCagigal2023Pary(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
-    def __init__(self, conditions=ALL_CONDITIONS):
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            n_channels=16,
+            channel_types={"eeg": 16},
+        ),
+        participants=ParticipantMetadata(n_subjects=16),
+        experiment=ExperimentMetadata(paradigm="cvep"),
+        documentation=DocumentationMetadata(
+            doi="10.71569/025s-eq10",
+            associated_paper_doi="10.1016/j.eswa.2023.120815",
+            related_paper_dois=[
+                "10.1088/1741-2552/ac38cf",
+                "10.1016/j.cmpb.2023.107357",
+            ],
+            publication_year=2023,
+            investigators=[
+                "Víctor Martínez-Cagigal",
+                "Eduardo Santamaría-Vázquez",
+                "Sergio Pérez-Velasco",
+                "Diego Marcos-Martínez",
+                "Selene Moreno-Calderón",
+                "Roberto Hornero",
+            ],
+            senior_author="Roberto Hornero",
+            institution="University of Valladolid",
+            institution_department="Biomedical Engineering Group, ETSIT",
+            institution_address="Paseo de Belén, 15, 47011, Valladolid, Spain",
+            country="ES",
+            contact_info=["victor.martinez@gib.tel.uva.es"],
+            ethics_approval=[
+                "Approved by the local ethics committee; all participants provided informed consent"
+            ],
+            funding=[
+                "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00)",
+                "CIBER-BBN through Instituto de Salud Carlos III",
+            ],
+            acknowledgements=(
+                "This study was partially funded by Ministerio de Ciencia e Innovación/Agencia "
+                "Estatal de Investigación and ERDF, and CIBER-BBN through Instituto de Salud Carlos III."
+            ),
+            data_url="https://doi.org/10.71569/025s-eq10",
+            how_to_acknowledge=(
+                "Please cite: Martínez-Cagigal et al. (2023). Non-binary m-sequences for more "
+                "comfortable brain-computer interfaces based on c-VEPs. Expert Systems With "
+                "Applications, 232, 120815. https://doi.org/10.1016/j.eswa.2023.120815"
+            ),
+        ),
+    )
+
+    def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
+        deprecated_renames = {"Conditions": "conditions"}
+        resolved = _handle_deprecated_kwargs(
+            kwargs, deprecated_renames, "MartinezCagigal2023Pary"
+        )
+        conditions = resolved.get("conditions", conditions)
+
         # Validate conditions
         for cond in conditions:
             if cond not in ALL_CONDITIONS:
@@ -175,6 +239,8 @@ class MartinezCagigal2023Pary(BaseDataset):
             interval=(0, 1),  # Don't use this, it depends on the condition
             paradigm="cvep",
             doi="https://doi.org/10.71569/025s-eq10",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):
@@ -351,7 +417,19 @@ class MartinezCagigal2023Pary(BaseDataset):
             first_trial_onsets.append(trial_onsets_samples[first_onset_idx])
         first_trial_onsets = np.array(first_trial_onsets)
 
-        # Add trial-level stimulus channel (offset=200)
+        # Add trial-level annotations so trial identity survives BIDS export.
+        # SetRawAnnotations transfers extras by sample position to the first
+        # bit event of each trial, which then appear as columns in events.tsv.
+        trial_onsets_sec = first_trial_onsets / sampling_freq
+        trial_annotations = mne.Annotations(
+            onset=trial_onsets_sec,
+            duration=[0.0] * len(trial_onsets_sec),
+            description=["_trial_meta"] * len(trial_onsets_sec),
+        )
+        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in trial_labels]
+        raw_data.set_annotations(raw_data.annotations + trial_annotations)
+
+        # The stim_trial channel is kept for backward compat with paradigm code.
         raw_data = add_stim_channel_trial(
             raw_data, first_trial_onsets, trial_labels, offset=200
         )

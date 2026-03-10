@@ -11,6 +11,7 @@ from sklearn.model_selection import (
     StratifiedKFold,
     StratifiedShuffleSplit,
 )
+from sklearn.model_selection._split import GroupsConsumerMixin
 from sklearn.utils import check_random_state
 
 
@@ -340,6 +341,9 @@ class CrossSessionSplitter(BaseCrossValidator):
         if "shuffle" in params:
             self._cv_kwargs["shuffle"] = shuffle
 
+        # Detect whether the cv_class uses the groups parameter
+        self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+
     def get_n_splits(self, metadata):
         """
         Return the number of splits for the cross-validation.
@@ -369,9 +373,10 @@ class CrossSessionSplitter(BaseCrossValidator):
                 continue  # Skip subjects with only one session
 
             splitter = self.cv_class(**self._cv_kwargs)
-            n_splits += splitter.get_n_splits(
-                subject_metadata, groups=subject_metadata["session"]
-            )
+            get_n_splits_kwargs = {"X": subject_metadata}
+            if self._cv_uses_groups:
+                get_n_splits_kwargs["groups"] = subject_metadata["session"]
+            n_splits += splitter.get_n_splits(**get_n_splits_kwargs)
         return n_splits
 
     def split(self, y, metadata):
@@ -411,11 +416,14 @@ class CrossSessionSplitter(BaseCrossValidator):
             splitter = self.cv_class(**cv_kwargs)
             self._current_splitter = splitter
 
-            # Yield the splits for a given subject
-            for train_session_idx, test_session_idx in splitter.split(
-                X=subject_indices, y=y_subject, groups=subject_metadata["session"]
-            ):
-                # returning the index
+            # Only pass groups to cv_classes that actually use them
+            # (detected via GroupsConsumerMixin). This avoids the
+            # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
+            split_kwargs = {"X": subject_indices, "y": y_subject}
+            if self._cv_uses_groups:
+                split_kwargs["groups"] = subject_metadata["session"]
+
+            for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
                 yield subject_indices[train_session_idx], subject_indices[
                     test_session_idx
                 ]
@@ -475,6 +483,9 @@ class CrossSubjectSplitter(BaseCrossValidator):
         if "random_state" in params:
             self._cv_kwargs["random_state"] = random_state
 
+        # Detect whether the cv_class uses the groups parameter
+        self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+
     def get_n_splits(self, metadata):
         """
         Return the number of splits for the cross-validation.
@@ -496,7 +507,10 @@ class CrossSubjectSplitter(BaseCrossValidator):
         """
 
         splitter = self.cv_class(**self._cv_kwargs)
-        n_splits = splitter.get_n_splits(metadata.index, groups=metadata["subject"])
+        get_n_splits_kwargs = {"X": metadata.index}
+        if self._cv_uses_groups:
+            get_n_splits_kwargs["groups"] = metadata["subject"]
+        n_splits = splitter.get_n_splits(**get_n_splits_kwargs)
         return n_splits
 
     def split(self, y, metadata):
@@ -508,15 +522,18 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # Store reference to the current inner splitter for metadata access
         self._current_splitter = splitter
 
-        # Yield the splits for the entire dataset
-        for train_session_idx, test_session_idx in splitter.split(
-            X=all_index, y=y, groups=metadata["subject"]
-        ):
-            # returning the index
+        # Only pass groups to cv_classes that actually use them
+        # (detected via GroupsConsumerMixin). This avoids the
+        # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
+        split_kwargs = {"X": all_index, "y": y}
+        if self._cv_uses_groups:
+            split_kwargs["groups"] = metadata["subject"]
+
+        for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
             yield all_index[train_session_idx], all_index[test_session_idx]
 
 
-class LearningCurveSplitter(BaseCrossValidator):
+class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
     """Learning curve splitter following sklearn CV interface.
 
     This splitter creates train/test splits for learning curve evaluation,

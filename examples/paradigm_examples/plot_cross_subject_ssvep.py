@@ -21,13 +21,14 @@ import warnings
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 from pyriemann.estimation import Covariances
 from pyriemann.tangentspace import TangentSpace
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
+import moabb.analysis.plotting as moabb_plt
+from moabb.analysis.chance_level import chance_by_chance
 from moabb.datasets import Kalunga2016
 from moabb.evaluations import CrossSubjectEvaluation
 from moabb.paradigms import SSVEP, FilterBankSSVEP
@@ -42,16 +43,14 @@ moabb.set_log_level("info")
 # Loading Dataset
 # ---------------
 #
-# We will load the data from the first 2 subjects of the ``SSVEP_Exo`` dataset
-# and compare two algorithms on this set. One of the algorithms could only
+# We will load the data from all 12 subjects of the ``SSVEP_Exo`` dataset
+# and compare four algorithms on this set. One of the algorithms could only
 # process class associated with a stimulation frequency, we will thus drop
 # the resting class. As the resting class is the last defined class, picking
 # the first three classes (out of four) allows to focus only on the stimulation
 # frequency.
 
-n_subject = 2
 dataset = Kalunga2016()
-dataset.subject_list = dataset.subject_list[:n_subject]
 interval = dataset.interval
 
 ###############################################################################
@@ -74,9 +73,9 @@ paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)
 
 ###############################################################################
 # Classes are defined by the frequency of the stimulation, here we use
-# the first two frequencies of the dataset, 13 and 17 Hz.
+# the first three frequencies of the dataset, 13, 17, and 21 Hz.
 # The evaluation function uses a LabelEncoder, transforming them
-# to 0 and 1
+# to 0, 1, and 2.
 
 freqs = paradigm.used_events(dataset)
 
@@ -121,7 +120,7 @@ pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA())
 # will not run again the evaluation unless a parameter has changed. Results can
 # be overwritten if necessary.
 
-overwrite = False  # set to True if we want to overwrite cached results
+overwrite = True  # set to True if we want to overwrite cached results
 
 evaluation = CrossSubjectEvaluation(
     paradigm=paradigm, datasets=dataset, overwrite=overwrite
@@ -161,20 +160,11 @@ results = pd.concat([results, results_fb, results_TRCA, results_MSET_CCA])
 # Plot Results
 # ----------------
 #
-# Here we display the results as stripplot, with a pointplot for error bar.
+# Here we display the results using the MOABB score plot with chance level
+# annotations. The 3-class SSVEP paradigm has a theoretical chance level
+# of 33.3%.
 
-fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
-sns.stripplot(
-    data=results,
-    y="score",
-    x="pipeline",
-    ax=ax,
-    jitter=True,
-    alpha=0.5,
-    zorder=1,
-    palette="Set1",
-)
-sns.pointplot(data=results, y="score", x="pipeline", ax=ax, palette="Set1")
-ax.set_ylabel("Accuracy")
-ax.set_ylim(0.1, 0.6)
+chance_levels = chance_by_chance(results, alpha=[0.05, 0.01])
+
+fig, _ = moabb_plt.score_plot(results, chance_level=chance_levels)
 plt.show()

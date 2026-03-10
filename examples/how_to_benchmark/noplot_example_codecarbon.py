@@ -222,8 +222,7 @@ fig2 = codecarbon_plot(
 #  - Plot 3: Accuracy vs emissions scatter (find the best balance)
 #
 # **Best for:** Complete sustainability analysis and informed decision-making
-# **Use case:** Selecting the best pipeline considering both performance
-#              and environmental impact
+# **Use case:** Selecting the best pipeline considering both performance and environmental impact
 
 fig3 = codecarbon_plot(
     results,
@@ -241,6 +240,7 @@ print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 # Below are additional configuration examples for different use cases:
 #
 # **Example 2: Process-level tracking with custom tracking interval**
+#
 # .. code-block:: python
 #
 #     codecarbon_config = {
@@ -251,6 +251,7 @@ print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 #     }
 #
 # **Example 3: GPU tracking with specific IDs**
+#
 # .. code-block:: python
 #
 #     codecarbon_config = {
@@ -260,6 +261,7 @@ print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 #     }
 #
 # **Example 4: Real-time carbon intensity data with Electricity Maps API**
+#
 # .. code-block:: python
 #
 #     codecarbon_config = {
@@ -270,6 +272,7 @@ print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 #     }
 #
 # **Example 5: API-based tracking and reporting**
+#
 # .. code-block:: python
 #
 #     codecarbon_config = {
@@ -280,6 +283,7 @@ print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 #     }
 #
 # **Example 6: Prometheus metrics export**
+#
 # .. code-block:: python
 #
 #     codecarbon_config = {
@@ -289,6 +293,7 @@ print("Mode 3 created: Complete analysis with Pareto frontier visualization")
 #     }
 #
 # **Example 7: Custom data center with manual power specifications**
+#
 # .. code-block:: python
 #
 #     codecarbon_config = {

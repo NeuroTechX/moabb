@@ -126,7 +126,7 @@ def minmax_raw(raw):
 
 process_pipeline = paradigm.make_process_pipelines(dataset)[0]
 
-process_pipeline.steps.insert(2, (StepType.RAW, FunctionTransformer(minmax_raw)))
+process_pipeline.insert_step(StepType.RAW, FunctionTransformer(minmax_raw), index=2)
 
 
 ##############################################################################

@@ -16,7 +16,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -92,50 +91,70 @@ class Rodrigues2017(BaseDataset):
             sampling_rate=512.0,
             n_channels=16,
             channel_types={"eeg": 16},
-            montage="10-10",
-            hardware="g.tec",
+            montage="standard_1010",
+            hardware="g.tec g.USBamp",
             sensor_type="wet electrodes",
             reference="right earlobe",
-            software="OpenVibe",
+            software="OpenViBE",
             filters="no digital filter",
             sensors=[
-                "FC5",
-                "FC3",
-                "FC1",
-                "FCz",
-                "FC2",
-                "FC4",
-                "FC6",
-                "C3",
-                "C1",
                 "Cz",
-                "C2",
-                "C4",
-                "CP3",
-                "CPz",
-                "CP4",
+                "Fc5",
+                "Fc6",
+                "Fp1",
+                "Fp2",
+                "Fz",
+                "O1",
+                "O2",
+                "Oz",
+                "P3",
+                "P4",
+                "P7",
+                "P8",
                 "Pz",
+                "T7",
+                "T8",
             ],
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=20,
+            n_subjects=19,
             health_status="healthy",
             gender={"female": 7, "male": 13},
             age_mean=25.8,
         ),
         experiment=ExperimentMetadata(
+            events={"closed": 1, "open": 2},
             paradigm="rstate",
-            n_classes=1,
-            class_labels=["rest"],
+            n_classes=2,
+            class_labels=["closed", "open"],
             trial_duration=10,
             study_design="Subjects alternated between keeping eyes closed (condition 1) and eyes open (condition 2) while EEG was recorded",
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.2348891",
+            associated_paper_doi="hal-02086581",
+            publication_year=2018,
+            investigators=[
+                "Grégoire Cattan",
+                "Pedro Luiz Coelho Rodrigues",
+                "Marco Congedo",
+            ],
+            senior_author="Marco Congedo",
+            institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
+            institution_department="GIPSA-lab",
+            institution_address="11 rue des Mathématiques, Grenoble Campus BP46, F-38402, France",
+            country="FR",
+            contact_info=["pedro-luiz.coelho-rodrigues@grenoble-inp.fr"],
+            ethics_approval=["All participants provided written informed consent"],
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2348891",
             license="CC-BY-4.0",
+            how_to_acknowledge=(
+                "Please cite: Cattan, Rodrigues & Congedo (2018). "
+                "EEG Alpha Waves Dataset. GIPSA-lab Research Report. "
+                "https://hal.science/hal-02086581"
+            ),
         ),
         tags=Tags(
             pathology=["Healthy"],
@@ -145,17 +164,17 @@ class Rodrigues2017(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
-            artifact_methods=["ICA"],
-            re_reference="car",
+            artifact_methods=None,
+            re_reference=None,
         ),
         signal_processing=SignalProcessingMetadata(
             feature_extraction=["ERS"],
-            frequency_bands=FrequencyBands(
-                alpha=[8, 13],
-            ),
+            frequency_bands={
+                "alpha": [8, 12],
+            },
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["vr_ar", "communication"],
+            applications=None,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="rstate",
@@ -166,7 +185,7 @@ class Rodrigues2017(BaseDataset):
         data_processed=False,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         subject_list = list(range(1, 6 + 1)) + list(range(8, 20 + 1))
         super().__init__(
             subjects=subject_list,
@@ -176,6 +195,8 @@ class Rodrigues2017(BaseDataset):
             interval=[0, 10],
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2348892",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def _get_single_subject_data(self, subject):

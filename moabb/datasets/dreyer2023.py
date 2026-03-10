@@ -22,8 +22,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -47,23 +45,227 @@ class _Dreyer2023Base(BaseDataset):
     Should not be instantiated.
     """
 
-    def __init__(self, subjects, sub_id=""):
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=512.0,
+            n_channels=27,
+            channel_types={"eeg": 27, "emg": 2, "eog": 3},
+            montage="10-20",
+            hardware="g.USBAmp (g.tec, Austria)",
+            sensor_type="active electrodes",
+            reference="left earlobe",
+            ground="FPz",
+            software="OpenViBE 2.1.0 (Dataset A) / OpenViBE 2.2.0 (Dataset B and C)",
+            filters="none (raw signals recorded without hardware filters)",
+            line_freq=50.0,
+            sensors=[
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6",
+                "CP1",
+                "CP2",
+                "CP3",
+                "CP4",
+                "CP5",
+                "CP6",
+                "CPz",
+                "Cz",
+                "EMGd",
+                "EMGg",
+                "EOG1",
+                "EOG2",
+                "EOG3",
+                "F3",
+                "F4",
+                "FC1",
+                "FC2",
+                "FC3",
+                "FC4",
+                "FC5",
+                "FC6",
+                "FCz",
+                "Fz",
+                "P3",
+                "P4",
+                "Pz",
+            ],
+            cap_manufacturer="g.tec",
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=3,
+                eog_type=["horizontal", "vertical"],
+                has_emg=True,
+                emg_channels=2,
+                other_physiological=["gsr"],
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=87,
+            health_status="healthy",
+            gender={"female": 41, "male": 46},
+            age_mean=29.0,
+            age_min=19,
+            age_max=59,
+            bci_experience="naive",
+            handedness="right",
+            species="human",
+        ),
+        experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2},
+            paradigm="imagery",
+            n_classes=2,
+            class_labels=["right_hand", "left_hand"],
+            trial_duration=8.0,
+            study_design="Graz protocol",
+            feedback_type="continuous visual",
+            stimulus_type="blue bar varying in length",
+            stimulus_modalities=["visual", "auditory"],
+            primary_modality="visual",
+            mode="online",
+            synchronicity="cue-based",
+            has_training_test_split=True,
+            instructions="Participants were encouraged to perform kinesthetic imagination and leave them free to choose their mental imagery strategy. Participants were instructed to try to find the best strategy so that the system would show the longest possible feedback bar. Only positive feedback was provided.",
+            tasks=["right_hand_MI", "left_hand_MI", "resting_state"],
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1038/s41597-023-02445-z",
+            associated_paper_doi="10.1038/s41597-023-02445-z",
+            description="A large EEG database with users' profile information for motor imagery brain-computer interface research. Contains electroencephalographic signals from 87 human participants, collected during a single day of brain-computer interface (BCI) experiments, organized into 3 datasets (A, B, and C) that were all recorded using the same protocol: right and left hand motor imagery (MI).",
+            investigators=[
+                "Pauline Dreyer",
+                "Aline Roc",
+                "Léa Pillette",
+                "Sébastien Rimbert",
+                "Fabien Lotte",
+            ],
+            senior_author="Fabien Lotte",
+            contact_info=["fabien.lotte@inria.fr"],
+            institution="Centre Inria de l'université de Bordeaux",
+            institution_address="Talence, 33405, France",
+            institution_department="LaBRI (Univ. Bordeaux/CNRS/Bordeaux INP)",
+            country="FR",
+            repository="Zenodo",
+            data_url="https://doi.org/10.5281/zenodo.8089820",
+            publication_year=2023,
+            funding=[
+                "European Research Council (ERC Starting Grant project BrainConquest, grant ERC-2016-STG-714567)",
+            ],
+            ethics_approval=[
+                "Inria's ethics committee, the COERLE (Approval number: 2018-13)"
+            ],
+            keywords=[
+                "motor imagery",
+                "brain-computer interface",
+                "EEG",
+                "BCI illiteracy",
+                "user training",
+                "personality profile",
+                "cognitive traits",
+                "user profile",
+            ],
+            license="CC-BY-4.0",
+        ),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor Imagery"],
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw",
+            preprocessing_applied=False,
+            filter_type="Butterworth",
+            filter_order=5,
+            bandpass=[5.0, 35.0],
+            artifact_methods=["visual inspection"],
+            re_reference="Laplacian (C3, C4 for feature extraction)",
+            notes="The raw signals were recorded without any hardware filters. For online processing, a fifth-order Butterworth filter was applied in a participant-specific discriminant frequency band in the range of 5 Hz to 35 Hz with 0.5 Hz large bins. Impedance could not be measured with active electrodes; EEG signals were visually checked and regularly re-checked to ensure good signal quality.",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=["CSP", "Bandpower"],
+            spatial_filters=["CSP", "Laplacian"],
+            frequency_bands={
+                "analyzed_range": [5.0, 35.0],
+                "alpha": [8.0, 13.0],
+                "mu": [8.0, 13.0],
+                "beta": [13.0, 30.0],
+            },
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_session"],
+            cv_method="calibration-feedback",
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=[
+                "rehabilitation",
+                "assistive_technology",
+                "neurofeedback",
+                "user_training",
+            ],
+            environment="laboratory",
+            online_feedback=True,
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+            imagery_tasks=["right_hand", "left_hand"],
+            cue_duration_s=1.25,
+            imagery_duration_s=3.75,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=240,
+            trials_context="per subject (120 per class)",
+            n_trials_per_class={"right_hand": 120, "left_hand": 120},
+            n_blocks=6,
+            block_duration_s=420.0,
+        ),
+        file_format="GDF",
+        data_processed=False,
+        sessions_per_subject=1,
+        runs_per_session=6,
+        sessions=["calibration", "online_training"],
+        contributing_labs=["Inria Bordeaux"],
+        n_contributing_labs=1,
+        performance={
+            "accuracy_percent": 63.35,
+            "mean_accuracy_std": 17.36,
+            "mean_accuracy_R3": 63.14,
+            "mean_accuracy_R4": 64.82,
+            "chance_level_individual": 58.7,
+            "chance_level_database": 51.0,
+        },
+        abstract="We present and share a large database containing electroencephalographic signals from 87 human participants, collected during a single day of brain-computer interface (BCI) experiments, organized into 3 datasets (A, B, and C) that were all recorded using the same protocol: right and left hand motor imagery (MI). Each session contains 240 trials (120 per class), which represents more than 20,800 trials, or approximately 70 hours of recording time. It includes the performance of the associated BCI users, detailed information about the demographics, personality profile as well as some cognitive traits and the experimental instructions and codes (executed in the open-source platform OpenViBE). Such database could prove useful for various studies, including but not limited to: (1) studying the relationships between BCI users' profiles and their BCI performances, (2) studying how EEG signals properties varies for different users' profiles and MI tasks, (3) using the large number of participants to design cross-user BCI machine learning algorithms or (4) incorporating users' profile information into the design of EEG signal classification algorithms.",
+        methodology="Participants performed a Graz protocol MI-BCI task with 6 runs (2 calibration runs with sham feedback, 4 online training runs with real feedback). Each run consisted of 40 trials (20 per MI-task) with 8s trial duration. Trial structure: green cross (t=0s), acoustic signal (t=2s), red arrow cue (t=3s, 1.25s duration), continuous visual feedback (t=4.25s, 3.75s duration), inter-trial interval (1.5-3.5s). Signal processing used participant-specific Most Discriminant Frequency Band (MDFB) selection (5-35 Hz range), fifth-order Butterworth filtering, Common Spatial Pattern (CSP) with 3 pairs of spatial filters, and Linear Discriminant Analysis (LDA) classifier trained on calibration data. Participants completed 6 questionnaires assessing demographics, personality (16PF5), cognitive traits, spatial abilities (Mental Rotation test), learning style (ILS), and pre/post-experiment states (NeXT questionnaire).",
+    )
+
+    def __init__(
+        self,
+        all_subjects,
+        sub_id="",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
 
         self.sub_id = sub_id
 
         if sub_id is None:
             self.sub_id = ""
 
-        self.subject_list = subjects
-
         super().__init__(
-            self.subject_list,
+            all_subjects,
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
             code="Dreyer2023" + self.sub_id,
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1038/s41597-023-02445-z",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):
@@ -323,133 +525,14 @@ class Dreyer2023A(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256,
-            n_channels=5,
-            channel_types={"eeg": 5},
-            montage="10-20",
-            hardware="g.tec",
-            sensor_type="active electrodes",
-            reference="left earlobe",
-            software="OpenViBE 2.1.0",
-            filters="none (raw signals recorded without hardware filters)",
-            sensors=[
-                "Fz",
-                "FCz",
-                "Cz",
-                "CPz",
-                "Pz",
-                "C1",
-                "C3",
-                "C5",
-                "C2",
-                "C4",
-                "C6",
-                "F4",
-                "FC2",
-                "FC4",
-                "FC6",
-                "CP2",
-                "CP4",
-                "CP6",
-                "P4",
-                "F3",
-                "FC1",
-                "FC3",
-                "FC5",
-                "CP1",
-                "CP3",
-                "CP5",
-                "P3",
-            ],
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=3,
-                eog_type=["horizontal", "vertical"],
-                has_emg=True,
-                emg_channels=2,
-                other_physiological=["gsr"],
-            ),
-        ),
-        participants=ParticipantMetadata(
-            n_subjects=7,
-            health_status="healthy",
-            gender={"female": 3, "male": 3},
-            age_mean=39.0,
-            age_min=19,
-            age_max=59,
-            bci_experience="naive",
-        ),
-        experiment=ExperimentMetadata(
-            paradigm="imagery",
-            n_classes=3,
-            class_labels=["right_hand", "left_hand", "feet"],
-            trial_duration=6.0,
-            study_design="MI",
-            feedback_type="visual",
-            stimulus_type="cursor_feedback",
-            stimulus_modalities=["visual"],
-            primary_modality="visual",
-            mode="both",
-        ),
-        documentation=DocumentationMetadata(
-            doi="10.1038/s41597-023-02445-z",
-            repository="Zenodo",
-            data_url="https://doi.org/10.5281/zenodo.8089820",
-            funding=[
-                "European \nResearch Council",
-                "grant ERC-2016- ERC-2016-",
-                "grant ANR-15-CE23-0013-01 ANR-15-CE23-0013-01",
-            ],
-            license="CC-BY-4.0",
-        ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
-        preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
-            filter_details=FilterDetails(
-                filter_type="Butterworth",
-            ),
-            artifact_methods=["ICA"],
-            re_reference="car",
-        ),
-        signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA"],
-            feature_extraction=["CSP", "Bandpower"],
-            frequency_bands=FrequencyBands(
-                alpha=[8, 13],
-            ),
-        ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=["cross_subject"],
-        ),
-        bci_application=BCIApplicationMetadata(
-            applications=[
-                "prosthetic",
-                "gaming",
-                "vr_ar",
-                "communication",
-                "neurofeedback",
-            ],
-        ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
-        ),
-        data_structure=DataStructureMetadata(
-            n_trials=800,
-            trials_context="total",
-        ),
-        file_format="GDF",
-        data_processed=False,
-    )
-
-    def __init__(self):
-        super().__init__(subjects=list(range(1, 61)), sub_id="A")
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
+        super().__init__(
+            all_subjects=list(range(1, 61)),
+            sub_id="A",
+            subjects=subjects,
+            sessions=sessions,
+            return_all_modalities=return_all_modalities,
+        )
 
 
 class Dreyer2023B(_Dreyer2023Base):
@@ -535,8 +618,14 @@ class Dreyer2023B(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    def __init__(self):
-        super().__init__(subjects=list(range(61, 82)), sub_id="B")
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
+        super().__init__(
+            all_subjects=list(range(61, 82)),
+            sub_id="B",
+            subjects=subjects,
+            sessions=sessions,
+            return_all_modalities=return_all_modalities,
+        )
 
 
 class Dreyer2023C(_Dreyer2023Base):
@@ -618,8 +707,14 @@ class Dreyer2023C(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    def __init__(self):
-        super().__init__(subjects=list(range(82, 88)), sub_id="C")
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
+        super().__init__(
+            all_subjects=list(range(82, 88)),
+            sub_id="C",
+            subjects=subjects,
+            sessions=sessions,
+            return_all_modalities=return_all_modalities,
+        )
 
 
 class Dreyer2023(_Dreyer2023Base):
@@ -704,96 +799,10 @@ class Dreyer2023(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
-            n_channels=27,
-            channel_types={"eeg": 27, "eog": 3, "emg": 2},
-            sensors=[
-                "Fz",
-                "FCz",
-                "Cz",
-                "CPz",
-                "Pz",
-                "C1",
-                "C3",
-                "C5",
-                "C2",
-                "C4",
-                "C6",
-                "EOG1",
-                "EOG2",
-                "EOG3",
-                "EMGg",
-                "EMGd",
-                "F4",
-                "FC2",
-                "FC4",
-                "FC6",
-                "CP2",
-                "CP4",
-                "CP6",
-                "P4",
-                "F3",
-                "FC1",
-                "FC3",
-                "FC5",
-                "CP1",
-                "CP3",
-                "CP5",
-                "P3",
-            ],
-            hardware="g.USBAmp (g.tec)",
-            reference="left earlobe",
-            software="OpenViBE 2.1.0/2.2.0",
-            montage="standard_1020",
-            line_freq=50.0,
-            sensor_type="active electrodes",
-        ),
-        participants=ParticipantMetadata(
-            n_subjects=87,
-            health_status="healthy",
-            age_mean=29.0,
-            age_std=9.3,
-            age_min=19.0,
-            age_max=59.0,
-            gender={"female": 5, "male": 5},
-        ),
-        experiment=ExperimentMetadata(
-            paradigm="imagery",
-            task_type="left_right_hand",
-            n_classes=2,
-            trials_per_class={"left_hand": 120, "right_hand": 120},
-            trial_duration=5.0,
-            tasks=["rest", "feet", "left_hand", "right_hand"],
-            feedback_type="visual",
-        ),
-        documentation=DocumentationMetadata(
-            doi="10.1038/s41597-023-02445-z",
-            description="Large EEG database with user profiles for MI BCI research",
-            investigators=[
-                "P. Dreyer",
-                "A. Roc",
-                "L. Pillette",
-                "S. Rimbert",
-                "F. Lotte",
-            ],
-            institution="Inria Bordeaux",
-            country="FR",
-            repository="Zenodo",
-            data_url="https://doi.org/10.5281/zenodo.8089820",
-            license="CC-BY-4.0",
-            publication_year=2023,
-            funding=[
-                "grant ANR-15-CE23-0013-01 ANR-15-CE23-0013-01",
-                "grant ERC-2016- ERC-2016-",
-            ],
-        ),
-        sessions_per_subject=1,
-        runs_per_session=6,
-        tags=Tags(pathology=["healthy"], modality=["motor"], type=["bci"]),
-        data_processed=True,
-    )
-
-    def __init__(self):
-        super().__init__(subjects=list(range(1, 88)))
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
+        super().__init__(
+            all_subjects=list(range(1, 88)),
+            subjects=subjects,
+            sessions=sessions,
+            return_all_modalities=return_all_modalities,
+        )

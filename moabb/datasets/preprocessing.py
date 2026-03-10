@@ -8,6 +8,8 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
 
+from moabb.datasets._channel_pick import pick_channels_for_modalities
+
 
 # Handle different scikit-learn versions for _VisualBlock import
 # sklearn >= 1.6 moved _VisualBlock to sklearn.utils._repr_html.estimator
@@ -37,6 +39,125 @@ class FixedPipeline(Pipeline):
     def __sklearn_is_fitted__(self):
         """Return True to indicate this pipeline is always considered fitted."""
         return True
+
+    def find_steps(self, step_type):
+        """Return ``(index, transformer)`` tuples for all steps matching *step_type*.
+
+        Parameters
+        ----------
+        step_type : StepType
+            The step type to search for.
+
+        Returns
+        -------
+        list of (int, transformer)
+            Matching steps. Empty list if none found.
+        """
+        return [
+            (i, transformer)
+            for i, (st, transformer) in enumerate(self.steps)
+            if st == step_type
+        ]
+
+    def insert_step(self, step_type, transformer, *, after=None, before=None, index=None):
+        """Insert a new step into the pipeline.
+
+        Exactly one of *after*, *before*, or *index* must be given.
+
+        Parameters
+        ----------
+        step_type : StepType
+            The type tag for the new step.
+        transformer : estimator
+            The transformer to insert.
+        after : StepType, optional
+            Insert after the **last** step of this type.
+        before : StepType, optional
+            Insert before the **first** step of this type.
+        index : int, optional
+            Insert at this position (same semantics as ``list.insert``).
+
+        Returns
+        -------
+        self
+            For chaining.
+
+        Raises
+        ------
+        ValueError
+            If zero or more than one positioning argument is given, or if
+            the referenced *after*/*before* StepType is not found.
+        """
+        n_pos = sum(x is not None for x in (after, before, index))
+        if n_pos != 1:
+            raise ValueError(
+                "Exactly one of 'after', 'before', or 'index' must be given."
+            )
+
+        if after is not None:
+            matches = self.find_steps(after)
+            if not matches:
+                raise ValueError(f"No steps of type {after!r} found in pipeline.")
+            pos = matches[-1][0] + 1
+        elif before is not None:
+            matches = self.find_steps(before)
+            if not matches:
+                raise ValueError(f"No steps of type {before!r} found in pipeline.")
+            pos = matches[0][0]
+        else:
+            pos = index
+
+        self.steps.insert(pos, (step_type, transformer))
+        return self
+
+    def remove_step(self, *, index=None, step_type=None):
+        """Remove one or more steps from the pipeline.
+
+        Exactly one of *index* or *step_type* must be given.
+
+        Parameters
+        ----------
+        index : int, optional
+            Remove the step at this position.
+        step_type : StepType, optional
+            Remove **all** steps of this type.
+
+        Returns
+        -------
+        self
+            For chaining.
+
+        Raises
+        ------
+        ValueError
+            If zero or more than one argument is given, if the referenced
+            *step_type* is not found, or if removal would empty the pipeline.
+        """
+        n_pos = sum(x is not None for x in (index, step_type))
+        if n_pos != 1:
+            raise ValueError("Exactly one of 'index' or 'step_type' must be given.")
+
+        if step_type is not None:
+            matches = self.find_steps(step_type)
+            if not matches:
+                raise ValueError(f"No steps of type {step_type!r} found in pipeline.")
+            if len(matches) == len(self.steps):
+                raise ValueError("Cannot remove all steps from the pipeline.")
+            for i, _ in reversed(matches):
+                del self.steps[i]
+        else:
+            if len(self.steps) == 1:
+                raise ValueError("Cannot remove all steps from the pipeline.")
+            if not isinstance(index, int):
+                raise ValueError(f"'index' must be an int, got {type(index).__name__}.")
+            n_steps = len(self.steps)
+            if not -n_steps <= index < n_steps:
+                raise ValueError(
+                    f"'index' {index} out of range for pipeline with {n_steps} steps."
+                )
+            del self.steps[index]
+
+        return self
 
 
 def make_fixed_pipeline(*steps, memory=None, verbose=False):
@@ -385,6 +506,21 @@ class SetRawAnnotations(FixedTransformer):
         offset = int(self.interval[0] * raw.info["sfreq"])
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         has_annotation_extras = False
+
+        # Check for annotation extras before events extraction potentially
+        # destroys the original annotations.  This works regardless of
+        # whether a stim channel is present.
+        orig_extras = (
+            getattr(raw.annotations, "extras", None) if raw.annotations else None
+        )
+        if orig_extras is not None and any(orig_extras):
+            has_annotation_extras = True
+            sfreq = raw.info["sfreq"]
+            extras_by_sample = {}
+            for ann, extra in zip(raw.annotations, orig_extras):
+                sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
+                extras_by_sample[sample] = extra
+
         if len(stim_channels) == 0:
             if raw.annotations is None:
                 log.warning(
@@ -395,16 +531,6 @@ class SetRawAnnotations(FixedTransformer):
                 raise ValueError(
                     "When no stim channel is present, event_id values must be integers (not lists)."
                 )
-            # Build lookup of extras by sample position before events extraction
-            # destroys the original annotations
-            orig_extras = getattr(raw.annotations, "extras", None)
-            if orig_extras is not None and any(orig_extras):
-                has_annotation_extras = True
-                sfreq = raw.info["sfreq"]
-                extras_by_sample = {}
-                for ann, extra in zip(raw.annotations, orig_extras):
-                    sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
-                    extras_by_sample[sample] = extra
 
             events, _ = mne.events_from_annotations(
                 raw, event_id=self.event_id, verbose=False
@@ -612,6 +738,7 @@ class RawToEpochs(FixedTransformer):
         baseline: Tuple[float, float],
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
+        return_all_modalities=False,
     ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
@@ -621,6 +748,7 @@ class RawToEpochs(FixedTransformer):
         self.baseline = baseline
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
+        self.return_all_modalities = return_all_modalities
 
     def transform(self, X, y=None):
         raw = X["raw"]
@@ -631,13 +759,18 @@ class RawToEpochs(FixedTransformer):
             raise ValueError("raw must be a mne.io.BaseRaw")
 
         if self.channels is None:
-            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+            picks = pick_channels_for_modalities(raw.info, self.return_all_modalities)
         else:
             available_channels = raw.info["ch_names"]
             if self.interpolate_missing_channels:
                 missing_channels = list(set(self.channels).difference(available_channels))
 
-                # add missing channels (contains only zeros by default)
+                # Remove montage before adding channels to avoid
+                # "Location for this channel is unknown" warning,
+                # then re-apply it after.
+                existing_montage = raw.get_montage()
+                raw.set_montage(None)
+
                 try:
                     raw.add_reference_channels(missing_channels)
                 except IndexError:
@@ -649,8 +782,13 @@ class RawToEpochs(FixedTransformer):
                     )
                     # and disable the montage
                     raw.info.pop("dig")
+                    existing_montage = None
                     # run again with montage disabled
                     raw.add_reference_channels(missing_channels)
+
+                # Re-apply montage so channels that exist in it get positions
+                if existing_montage is not None:
+                    raw.set_montage(existing_montage, on_missing="ignore")
 
                 # Trick: mark these channels as bad
                 raw.info["bads"].extend(missing_channels)

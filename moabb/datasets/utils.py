@@ -5,6 +5,9 @@ from __future__ import annotations
 import abc
 import inspect
 import logging
+import stat
+import tarfile
+import zipfile
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -12,6 +15,7 @@ import mne
 import mne_bids
 import numpy as np
 from mne import create_info
+from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 import moabb.datasets as db
@@ -20,6 +24,7 @@ from moabb.analysis.plotting import (
     dataset_bubble_plot,
     get_dataset_area,
 )
+from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
 
@@ -139,7 +144,8 @@ def dataset_search(  # noqa: C901
                 s1 = d.get_data([1])[1]
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
-                raw.pick_types(eeg=True)
+                picks = pick_channels_for_modalities(raw.info, d.return_all_modalities)
+                raw.pick(picks)
                 if channels <= set(raw.info["ch_names"]):
                     out_data.append(d)
             else:
@@ -161,7 +167,8 @@ def find_intersecting_channels(datasets, verbose=False):
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
-        raw.pick_types(eeg=True)
+        picks = pick_channels_for_modalities(raw.info, d.return_all_modalities)
+        raw.pick(picks)
         processed = []
         for ch in raw.info["ch_names"]:
             ch = ch.upper()
@@ -381,6 +388,183 @@ def bids_metainfo(bids_path: Path) -> dict:
         json_data[uid]["fpath"] = str(path.fpath)
 
     return json_data
+
+
+FIGSHARE_DL_URL = "https://ndownloader.figshare.com/files/"
+
+# Tsinghua/Neuroscan 64-channel layout used by Wang2016, Liu2020BETA,
+# Liu2022EldBETA, and Han2024Fatigue. Includes non-standard CB1/CB2 channels.
+# fmt: off
+TSINGHUA_64CH_NAMES = [
+    "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6",
+    "F8", "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8", "T7", "C5",
+    "C3", "C1", "Cz", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1", "CPz",
+    "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6",
+    "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
+    "CB2",
+]
+# fmt: on
+
+
+def _validate_member_destination(dest_dir: Path, member_name: str):
+    """Ensure archive member extraction stays within destination directory."""
+    target = (dest_dir / member_name).resolve()
+    try:
+        target.relative_to(dest_dir)
+    except ValueError as exc:
+        raise ValueError(
+            f"Unsafe archive member path {member_name!r} escapes {dest_dir}."
+        ) from exc
+    return target
+
+
+def safe_extract_zip(zf: zipfile.ZipFile, dest_dir: Path, members=None):
+    """Safely extract a ZIP archive into ``dest_dir`` (path traversal protected)."""
+    dest_dir = Path(dest_dir).resolve()
+    selected = members if members is not None else zf.infolist()
+
+    for member in selected:
+        info = member if isinstance(member, zipfile.ZipInfo) else zf.getinfo(member)
+        _validate_member_destination(dest_dir, info.filename)
+        # Reject symlink entries when present in UNIX mode bits.
+        mode = info.external_attr >> 16
+        if mode and stat.S_ISLNK(mode):
+            raise ValueError(
+                f"Unsafe ZIP member {info.filename!r}: symbolic links are not allowed."
+            )
+
+    zf.extractall(dest_dir, members=selected)
+
+
+def safe_extract_tar(tf: tarfile.TarFile, dest_dir: Path, members=None):
+    """Safely extract a TAR archive into ``dest_dir`` (path traversal protected)."""
+    dest_dir = Path(dest_dir).resolve()
+    selected = members if members is not None else tf.getmembers()
+
+    for member in selected:
+        _validate_member_destination(dest_dir, member.name)
+        if member.issym() or member.islnk():
+            raise ValueError(f"Unsafe TAR member {member.name!r}: links are not allowed.")
+
+    tf.extractall(dest_dir, members=selected)
+
+
+def build_raw_from_epochs(
+    data,
+    ch_names,
+    sfreq,
+    event_ids,
+    montage_name,
+    *,
+    ch_types=None,
+    scale=1e-6,
+    buffer_samples=50,
+    onset_sample=0,
+):
+    """Convert (n_trials, n_channels, n_samples) epoched data to continuous Raw.
+
+    Parameters
+    ----------
+    data : ndarray, shape (n_trials, n_channels, n_samples)
+        Epoched EEG data (in original units, e.g. microvolts).
+    ch_names : list of str
+        EEG channel names (without "stim").
+    sfreq : float
+        Sampling frequency in Hz.
+    event_ids : ndarray, shape (n_trials,)
+        Integer event code for each trial.
+    montage_name : str
+        Name of a standard MNE montage (e.g. "standard_1005", "biosemi32").
+    ch_types : list of str | None
+        Channel types for each signal channel in ``ch_names``. If None, all
+        channels are treated as ``"eeg"``.
+    scale : float
+        Scale factor to convert data to Volts (default 1e-6 for microvolts).
+    buffer_samples : int
+        Number of zero-padding samples between trials (default 50).
+    onset_sample : int
+        Sample index within each epoch to place the event marker (default 0).
+
+    Returns
+    -------
+    raw : mne.io.RawArray
+        Continuous raw data with EEG + stim channels.
+    """
+    data = np.asarray(data)
+    if data.ndim != 3:
+        raise ValueError(
+            "data must have shape (n_trials, n_channels, n_samples), "
+            f"got array with shape {data.shape}."
+        )
+    n_trials, n_channels, n_samples = data.shape
+
+    if isinstance(ch_names, str):
+        raise ValueError(
+            "ch_names must be a sequence of channel names, not a single string."
+        )
+    if len(ch_names) != n_channels:
+        raise ValueError(
+            f"ch_names length ({len(ch_names)}) must match n_channels ({n_channels})."
+        )
+
+    if ch_types is None:
+        ch_types = ["eeg"] * n_channels
+    if isinstance(ch_types, str):
+        raise ValueError(
+            "ch_types must be a sequence of channel types, not a single string."
+        )
+    if len(ch_types) != n_channels:
+        raise ValueError(
+            f"ch_types length ({len(ch_types)}) must match n_channels ({n_channels})."
+        )
+
+    event_ids = np.asarray(event_ids)
+    if event_ids.ndim != 1:
+        raise ValueError(
+            "event_ids must be a 1D array-like of length n_trials; "
+            f"got shape {event_ids.shape}."
+        )
+    if len(event_ids) != n_trials:
+        raise ValueError(
+            f"event_ids length ({len(event_ids)}) must match n_trials ({n_trials})."
+        )
+
+    if isinstance(onset_sample, bool) or not isinstance(onset_sample, (int, np.integer)):
+        raise ValueError(
+            f"onset_sample must be an integer in [0, {n_samples - 1}], got "
+            f"{onset_sample!r} ({type(onset_sample).__name__})."
+        )
+    if onset_sample < 0 or onset_sample >= n_samples:
+        raise ValueError(
+            f"onset_sample ({onset_sample}) must be between 0 and {n_samples - 1}."
+        )
+
+    # De-mean and scale each trial in-place (callers pass freshly created arrays)
+    data = data - data.mean(axis=2, keepdims=True)
+    data *= scale
+
+    # Build stim channel
+    stim = np.zeros((n_trials, 1, n_samples))
+    stim[:, 0, onset_sample] = event_ids
+
+    # Combine EEG + stim, add zero-padding buffers
+    combined = np.concatenate([data, stim], axis=1)
+    n_total_ch = n_channels + 1
+
+    if buffer_samples > 0:
+        buff = np.zeros((n_trials, n_total_ch, buffer_samples))
+        combined = np.concatenate([buff, combined, buff], axis=2)
+
+    # Flatten trials into continuous data: (n_trials, n_ch, n_time) -> (n_ch, n_trials*n_time)
+    continuous = combined.transpose(1, 0, 2).reshape(n_total_ch, -1)
+
+    ch_names_full = list(ch_names) + ["stim"]
+    ch_types_full = list(ch_types) + ["stim"]
+    info = create_info(ch_names_full, sfreq, ch_types_full)
+    raw = RawArray(data=continuous, info=info, verbose=False)
+    montage = make_standard_montage(montage_name)
+    raw.set_montage(montage, on_missing="ignore")
+    return raw
 
 
 class _BubbleChart:

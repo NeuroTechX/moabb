@@ -39,7 +39,7 @@ dependencies = [
     "h5py>=3.10.0",
     "matplotlib>=3.6.2",
     "seaborn>=0.12.1",
-    "pyriemann>=0.9",
+    "pyriemann @ git+https://github.com/pyRiemann/pyRiemann.git@master",
     "PyYAML>=6.0",
     "pooch>=1.6.0",
     "requests>=2.28.1",
@@ -53,6 +53,7 @@ dependencies = [
     "pytest>=8.3.5",
     "mne-bids>=0.17",
     "scikit-learn>=1.6",
+    "pybv>=0.7.3",
     "pycountry>=24.6.1",
     "docstring-inheritance>=2.0.0",
 ]
@@ -66,6 +67,7 @@ documentation = "https://moabb.neurotechx.com/docs/index.html"
 carbonemission = ["codecarbon>=2.1.4"]
 deeplearning = ["braindecode>=0.8.1"]
 optuna = ["optuna>=3.6.1", "optuna-integration>=3.6.0"]
+xdf = ["pyxdf>=1.16.4"]
 tests = [
     "pytest>=8.3.5",
     "pytest-cov>=5.0.0",
@@ -94,6 +96,7 @@ all = [
     "moabb[carbonemission]",
     "moabb[deeplearning]",
     "moabb[optuna]",
+    "moabb[xdf]",
     "moabb[tests]",
     "moabb[docs]",
 ]
@@ -126,4 +129,5 @@ python_files = [
 ]
 markers = [
     "network: tests that require network access (CrossRef/DataCite APIs)",
+    "download: tests that require downloading dataset files",
 ]
