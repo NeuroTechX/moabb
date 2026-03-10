@@ -24,6 +24,7 @@ from moabb.analysis.plotting import (
     dataset_bubble_plot,
     get_dataset_area,
 )
+from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
 
@@ -143,7 +144,8 @@ def dataset_search(  # noqa: C901
                 s1 = d.get_data([1])[1]
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
-                raw.pick_types(eeg=True)
+                picks = pick_channels_for_modalities(raw.info, d.return_all_modalities)
+                raw.pick(picks)
                 if channels <= set(raw.info["ch_names"]):
                     out_data.append(d)
             else:
@@ -165,7 +167,8 @@ def find_intersecting_channels(datasets, verbose=False):
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
-        raw.pick_types(eeg=True)
+        picks = pick_channels_for_modalities(raw.info, d.return_all_modalities)
+        raw.pick(picks)
         processed = []
         for ch in raw.info["ch_names"]:
             ch = ch.upper()

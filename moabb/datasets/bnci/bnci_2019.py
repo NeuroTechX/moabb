@@ -365,7 +365,7 @@ class BNCI2019_001(BaseDataset):
 
     _MOVEMENT_RUNS = [3, 4, 5, 6, 7, 10, 11, 12, 13]
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
@@ -376,6 +376,7 @@ class BNCI2019_001(BaseDataset):
             doi="10.1038/s41598-019-43594-9",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

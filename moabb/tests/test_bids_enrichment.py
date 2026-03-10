@@ -513,7 +513,7 @@ class TestBuildSidecarEnrichment:
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
         entries = _build_sidecar_enrichment(metadata)
-        assert entries["HardwareFilters"] == "0.1-100 Hz bandpass"
+        assert entries["HardwareFilters"] == {"HardwareFilter": "0.1-100 Hz bandpass"}
 
     def test_acq_filters_fallback_dict(self):
         """acq.filters dict used as HardwareFilters when prep filters are absent."""
@@ -528,7 +528,7 @@ class TestBuildSidecarEnrichment:
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
         entries = _build_sidecar_enrichment(metadata)
-        assert entries["HardwareFilters"] == {"bandpass": [0.1, 100]}
+        assert entries["HardwareFilters"] == {"HardwareFilter": {"bandpass": [0.1, 100]}}
 
     def test_acq_filters_not_used_when_prep_filters_present(self):
         """prep filters take priority over acq.filters."""
@@ -787,7 +787,7 @@ class TestBuildDatasetDescriptionKwargs:
         assert kwargs["source_datasets"][0]["URL"] == "https://example.com/data"
         assert "https://example.com/data" in kwargs["references_and_links"]
         assert "10.5678/paper" in kwargs["references_and_links"]
-        assert kwargs["doi"] == "10.9999/dataset"
+        assert kwargs["doi"] == "doi:10.9999/dataset"
 
     def test_partial_documentation(self):
         metadata = DatasetMetadata(

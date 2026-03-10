@@ -1370,6 +1370,70 @@ class TestDatasetMetadata:
         )
 
 
+class TestReturnAllModalities:
+    """Tests for the return_all_modalities parameter."""
+
+    def test_default_false(self):
+        """Verify return_all_modalities defaults to False."""
+        dataset = FakeDataset()
+        assert dataset.return_all_modalities is False
+
+    def test_set_true(self):
+        """Verify return_all_modalities can be set to True."""
+        dataset = FakeDataset(return_all_modalities=True)
+        assert dataset.return_all_modalities is True
+
+    def test_set_dict(self):
+        """Verify return_all_modalities accepts a dict of channel types."""
+        ch_dict = dict(eeg=True, eog=True)
+        dataset = FakeDataset(return_all_modalities=ch_dict)
+        assert dataset.return_all_modalities == ch_dict
+
+    def test_keyword_only(self):
+        """Verify return_all_modalities must be passed as keyword argument."""
+        sig = inspect.signature(FakeDataset)
+        param = sig.parameters["return_all_modalities"]
+        assert param.kind == inspect.Parameter.KEYWORD_ONLY
+
+    def test_pick_channels_dict(self):
+        """Verify pick_channels_for_modalities works with a dict."""
+        import mne
+
+        from moabb.datasets._channel_pick import pick_channels_for_modalities
+
+        info = mne.create_info(
+            ["C3", "C4", "EOG1", "EMG1", "STI"],
+            256,
+            ["eeg", "eeg", "eog", "emg", "stim"],
+        )
+        # False → EEG only
+        picks_false = pick_channels_for_modalities(info, False)
+        assert list(picks_false) == [0, 1]
+        # True → all except stim
+        picks_true = pick_channels_for_modalities(info, True)
+        assert list(picks_true) == [0, 1, 2, 3]
+        # dict(eeg=True, eog=True) → EEG + EOG
+        picks_dict = pick_channels_for_modalities(info, dict(eeg=True, eog=True))
+        assert list(picks_dict) == [0, 1, 2]
+        # dict(eog=True) → EOG only
+        picks_eog = pick_channels_for_modalities(info, dict(eog=True))
+        assert list(picks_eog) == [2]
+        # dict with stim=True should still exclude stim
+        picks_no_stim = pick_channels_for_modalities(info, dict(eeg=True, stim=True))
+        assert list(picks_no_stim) == [0, 1]
+
+    @pytest.mark.parametrize("dataset_class", dataset_list)
+    def test_keyword_only_all_datasets(self, dataset_class):
+        """Verify return_all_modalities is keyword-only in all datasets."""
+        sig = inspect.signature(dataset_class)
+        if "return_all_modalities" not in sig.parameters:
+            pytest.skip(f"{dataset_class.__name__} does not have return_all_modalities")
+        param = sig.parameters["return_all_modalities"]
+        assert (
+            param.kind == inspect.Parameter.KEYWORD_ONLY
+        ), f"{dataset_class.__name__}: return_all_modalities should be keyword-only"
+
+
 def _make_dataset(dataset_cls, **extra_kwargs):
     """Instantiate a dataset, handling special constructor args like accept."""
     kwargs = dict(extra_kwargs)

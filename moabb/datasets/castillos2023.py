@@ -126,6 +126,18 @@ class BaseCastillos2023(BaseDataset):
         )
         onset, onset_0 = self._onset_annotations(frame_taken, y_window, onset_code, 1, 60)
 
+        # Add trial-level annotations so trial identity survives BIDS export.
+        # SetRawAnnotations transfers extras by sample position to the first
+        # bit event of each trial, which then appear as columns in events.tsv.
+        trial_onsets_sec = onset_code / raw.info["sfreq"]
+        trial_annotations = mne.Annotations(
+            onset=trial_onsets_sec,
+            duration=[0.0] * len(trial_onsets_sec),
+            description=["_trial_meta"] * len(trial_onsets_sec),
+        )
+        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in labels]
+        raw.set_annotations(raw.annotations + trial_annotations)
+
         # Create stim channel with trial information (i.e., symbols)
         # Specifically: 200 = symbol-0, 201 = symbol-1, 202 = symbol-2, etc.
         raw = add_stim_channel_trial(raw, onset_code, labels, offset=200)

@@ -312,6 +312,8 @@ class Liu2024(BaseDataset):
         instr_events=False,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
         **kwargs,
     ):
         deprecated_renames = {
@@ -343,6 +345,7 @@ class Liu2024(BaseDataset):
             doi="10.1038/s41597-023-02787-8",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def data_path(
@@ -505,7 +508,7 @@ class Liu2024(BaseDataset):
                 file_path_list, verbose=False, infer_types=True, stim_channel=""
             )
 
-        # Dropping reference channels with constant values
+        # Always drop reference channel (constant zeros, not a useful modality)
         raw = raw.drop_channels(["CPz"])
 
         # Renaming channels accurately
@@ -543,7 +546,11 @@ class Liu2024(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             # Removing the stimulus channels
-            raw = raw.pick(["eeg", "eog"])
+            if not self.return_all_modalities:
+                raw = raw.pick(["eeg", "eog"])
+            else:
+                # Drop original STI; stim_channels_with_selected_ids adds a clean one
+                raw = raw.drop_channels(["STI"])
             # Setting the montage
             raw = raw.set_montage(montage, verbose=False)
         # Loading dataset

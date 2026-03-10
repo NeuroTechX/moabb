@@ -33,6 +33,7 @@ from numpy import save as np_save
 import moabb
 from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
+from moabb.datasets._channel_pick import pick_channels_for_modalities
 
 
 if TYPE_CHECKING:
@@ -41,6 +42,56 @@ if TYPE_CHECKING:
     from moabb.datasets.base import BaseDataset
 
 log = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Monkey-patch mne_bids to produce BIDS-compliant output by default.
+#
+# BIDS validator v2.4.0 requires a SpatialReference key in the JSON sidecar
+# for *_electrodes.tsv (when a ``space`` entity is present, e.g.
+# space-CapTrak).  mne_bids does not create this sidecar, so we wrap
+# ``_write_dig_bids`` to produce the missing ``*_electrodes.json`` file.
+#
+# For standard scalp EEG, electrode positions are in CapTrak coordinates
+# (defined by nasion, LPA, RPA landmarks on the individual's head).  There
+# is no external template image, so SpatialReference is ``"n/a"``.
+# ---------------------------------------------------------------------------
+
+import mne_bids.dig as _mne_bids_dig  # noqa: E402
+
+
+_orig_write_dig_bids = _mne_bids_dig._write_dig_bids
+
+
+def _write_dig_bids_with_electrodes_json(*args, **kwargs):
+    """Wrap mne_bids _write_dig_bids to also create electrodes.json sidecar."""
+    _orig_write_dig_bids(*args, **kwargs)
+    # Extract what we need for the electrodes.json sidecar
+    bids_path = args[0]
+    overwrite = kwargs.get("overwrite", False)
+    # Create electrodes.json sidecar next to every electrodes.tsv that was
+    # written.  The filenames include the space entity (e.g. space-CapTrak),
+    # so we glob for them.
+    sub_dir = Path(bids_path.root) / f"sub-{bids_path.subject}"
+    if bids_path.session is not None:
+        sub_dir = sub_dir / f"ses-{bids_path.session}"
+    eeg_dir = sub_dir / bids_path.datatype
+    if eeg_dir.is_dir():
+        for elec_tsv in eeg_dir.glob("*_electrodes.tsv"):
+            elec_json = elec_tsv.with_suffix(".json")
+            if not elec_json.exists() or overwrite:
+                with open(elec_json, "w") as f:
+                    json.dump({"SpatialReference": "n/a"}, f, indent="\t")
+
+
+# Apply patch so write_raw_bids() creates electrodes.json automatically.
+_mne_bids_dig._write_dig_bids = _write_dig_bids_with_electrodes_json
+import mne_bids.write as _mne_bids_write  # noqa: E402
+
+
+_mne_bids_write._write_dig_bids = _write_dig_bids_with_electrodes_json
+
+# ---------------------------------------------------------------------------
 
 # Known amplifier manufacturer lookup for splitting hardware into
 # Manufacturer + ManufacturersModelName
@@ -573,11 +624,16 @@ def _build_sidecar_enrichment(metadata):
     # HardwareFilters fallback: use acq.filters when prep filters are absent
     if "HardwareFilters" not in entries and acq and acq.filters:
         if isinstance(acq.filters, dict):
-            entries["HardwareFilters"] = acq.filters
+            # BIDS requires nested structure: {"FilterName": {"key": "value"}}
+            # If the dict is flat (no nested dicts), wrap it under a filter name.
+            if acq.filters and not any(isinstance(v, dict) for v in acq.filters.values()):
+                entries["HardwareFilters"] = {"HardwareFilter": acq.filters}
+            else:
+                entries["HardwareFilters"] = acq.filters
         else:
-            entries["HardwareFilters"] = str(acq.filters)
+            entries["HardwareFilters"] = {"HardwareFilter": str(acq.filters)}
 
-    # HardwareFilters (RECOMMENDED) — set to "n/a" when not described
+    # HardwareFilters (RECOMMENDED) — "n/a" when not described
     entries.setdefault("HardwareFilters", "n/a")
 
     # SoftwareFilters — build from preprocessing_steps if available
@@ -756,9 +812,12 @@ def _build_dataset_description_kwargs(dataset):
         if refs:
             kwargs["references_and_links"] = refs
 
-        # doi
+        # doi — BIDS requires the format "doi:<value>"
         if doc.doi:
-            kwargs["doi"] = doc.doi
+            doi_val = doc.doi
+            if not doi_val.startswith("doi:"):
+                doi_val = f"doi:{doi_val}"
+            kwargs["doi"] = doi_val
 
         # acknowledgements
         if doc.acknowledgements:
@@ -2250,7 +2309,16 @@ class BIDSInterfaceBase(abc.ABC):
                 description=self.desc,
                 check=False,
             )
-            session_path.rm(safe_remove=False)
+            try:
+                session_path.rm(safe_remove=False)
+            except RuntimeError:
+                session_dir = (
+                    Path(self.root)
+                    / f"sub-{subject_moabb_to_bids(self.subject)}"
+                    / f"ses-{session}"
+                )
+                if session_dir.is_dir():
+                    shutil.rmtree(session_dir)
         log.info("Finished erasing cache of %s.", repr(self))
 
     def load(self, preload=False):
@@ -2489,7 +2557,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # Otherwise, the montage would still have the stim channel
         # which is dropped by mne_bids.write_raw_bids:
-        picks = mne.pick_types(info=raw.info, eeg=True, stim=False)
+        picks = pick_channels_for_modalities(raw.info, self.dataset.return_all_modalities)
         raw.pick(picks)
 
         # By using the same anonymization `daysback` number we can
@@ -2505,7 +2573,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         # Suppress mne_bids informational warnings about format conversion.
         # "Converting data files to EDF format" — we explicitly request the
         # format via self._format, so this is expected.
-        # "Encountered data in double format" — mne_bids internally handles
+        # "Encountered data in "double" format" — mne_bids internally handles
         # the float64->float32 downcast for EDF; we cannot pre-convert because
         # MNE Epochs.save() requires float64 data.
         with warnings.catch_warnings():
@@ -2528,7 +2596,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 format=self._format,
                 allow_preload=True,
                 montage=raw.get_montage(),
-                overwrite=False,
+                overwrite=True,
                 verbose=self.verbose,
             )
 
@@ -2574,6 +2642,9 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
             # Patch electrodes.tsv with material and type
             _update_electrodes_tsv(bids_path, metadata)
+
+        # SpatialReference in electrodes.json sidecars is handled by the
+        # monkey-patched _write_dig_bids function at module level.
 
         # Enrich events.json sidecar with HED annotations and stimulus info
         hed_tags = _build_hed_sidecar_annotations(self.dataset)

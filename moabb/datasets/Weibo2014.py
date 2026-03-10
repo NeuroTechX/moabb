@@ -346,7 +346,7 @@ class Weibo2014(BaseDataset):
         file_format="MAT",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
@@ -366,6 +366,7 @@ class Weibo2014(BaseDataset):
             doi="10.1371/journal.pone.0114853",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

@@ -376,7 +376,19 @@ class MartinezCagigal2023Checker(BaseDataset):
             first_trial_onsets.append(trial_onsets_samples[first_onset_idx])
         first_trial_onsets = np.array(first_trial_onsets)
 
-        # Add trial-level stimulus channel (offset=200)
+        # Add trial-level annotations so trial identity survives BIDS export.
+        # SetRawAnnotations transfers extras by sample position to the first
+        # bit event of each trial, which then appear as columns in events.tsv.
+        trial_onsets_sec = first_trial_onsets / sampling_freq
+        trial_annotations = mne.Annotations(
+            onset=trial_onsets_sec,
+            duration=[0.0] * len(trial_onsets_sec),
+            description=["_trial_meta"] * len(trial_onsets_sec),
+        )
+        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in trial_labels]
+        raw_data.set_annotations(raw_data.annotations + trial_annotations)
+
+        # The stim_trial channel is kept for backward compat with paradigm code.
         raw_data = add_stim_channel_trial(
             raw_data, first_trial_onsets, trial_labels, offset=200
         )

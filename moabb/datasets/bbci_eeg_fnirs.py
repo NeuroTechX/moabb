@@ -107,6 +107,8 @@ class BaseShin2017(BaseDataset):
         accept=False,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
         **kwargs,
     ):
         deprecated_renames = {
@@ -152,6 +154,7 @@ class BaseShin2017(BaseDataset):
             doi="10.1109/TNSRE.2016.2628057",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
         if fnirs:
@@ -520,7 +523,15 @@ class Shin2017A(BaseShin2017):
         methodology="Twenty-nine right-handed and one left-handed healthy subjects participated in motor imagery and mental arithmetic tasks. EEG data was recorded at 1000 Hz using 30 active electrodes with a BrainAmp amplifier, referenced to linked mastoids. NIRS data was collected at 12.5 Hz using NIRScout with 14 sources and 16 detectors resulting in 36 channels. Three sessions were conducted for each paradigm (MI and MA). Each session included 20 trials with 10s task periods and 15-17s rest periods. For MI, subjects performed kinesthetic hand gripping imagery at 1 Hz pace. Visual instructions included arrows for MI and arithmetic problems for MA. Motion artifacts from eye/head movements were also recorded. Signal processing included CSP for spatial filtering, log-variance features, and shrinkage LDA classifier with 10x5-fold cross-validation.",
     )
 
-    def __init__(self, accept=False, subjects=None, sessions=None, **kwargs):
+    def __init__(
+        self,
+        accept=False,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        **kwargs,
+    ):
         deprecated_renames = {"Accept": "accept"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Shin2017A")
         accept = resolved.get("accept", accept)
@@ -532,6 +543,7 @@ class Shin2017A(BaseShin2017):
             accept=accept,
             subjects=subjects,
             sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -833,7 +845,15 @@ class Shin2017B(BaseShin2017):
         methodology="Thirty subjects performed 6 sessions alternating between motor imagery (dataset A: left/right hand) and mental arithmetic (dataset B: MA vs rest). Each session: 20 trials with 2s cue, 10s task, 15-17s rest. EEG recorded at 1000 Hz with 30 channels, downsampled to 200 Hz. Preprocessing: CAR, 0.5-50 Hz bandpass (4th order Chebyshev II), ICA-based EOG rejection. Feature extraction: CSP with log-variance of first/last 3 components using 3s moving window (1s step). Classification: shrinkage LDA with 10x5-fold CV. Hybrid analysis combines EEG and NIRS outputs using meta-classifier.",
     )
 
-    def __init__(self, accept=False, subjects=None, sessions=None, **kwargs):
+    def __init__(
+        self,
+        accept=False,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        **kwargs,
+    ):
         deprecated_renames = {"Accept": "accept"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Shin2017B")
         accept = resolved.get("accept", accept)
@@ -845,4 +865,5 @@ class Shin2017B(BaseShin2017):
             subjects=subjects,
             sessions=sessions,
             accept=accept,
+            return_all_modalities=return_all_modalities,
         )
