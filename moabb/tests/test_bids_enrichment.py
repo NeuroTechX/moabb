@@ -1427,11 +1427,14 @@ class TestBuildHedSidecarAnnotations:
         hed = _build_hed_sidecar_annotations(ds)
         assert "left_hand" in hed
         assert "Imagine" in hed["left_hand"]
-        assert "Experimental-stimulus" in hed["left_hand"]
+        assert "Agent-action" in hed["left_hand"]
+        assert "Visual-presentation" in hed["left_hand"]
         assert "right_hand" in hed
-        assert "Experimental-stimulus" in hed["right_hand"]
+        assert "Agent-action" in hed["right_hand"]
+        assert "Visual-presentation" in hed["right_hand"]
         assert "feet" in hed
-        assert "Experimental-stimulus" in hed["feet"]
+        assert "Agent-action" in hed["feet"]
+        assert "Visual-presentation" in hed["feet"]
 
     def test_p300_default_tags(self):
         ds = self._make_dataset("p300", {"Target": 2, "NonTarget": 1})
@@ -1592,26 +1595,26 @@ class TestBuildHedSidecarAnnotations:
         )
         hed = _build_hed_sidecar_annotations(ds)
         # Each mental task must be distinguishable via Label qualifier
-        assert (
-            hed["math"]
-            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/math))"
+        assert hed["math"] == (
+            "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+            "(Agent-action, (Imagine, Think, (Label/math)))"
         )
-        assert (
-            hed["letter"]
-            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/letter))"
+        assert hed["letter"] == (
+            "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+            "(Agent-action, (Imagine, Think, (Label/letter)))"
         )
-        assert (
-            hed["rotation"]
-            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/rotation))"
+        assert hed["rotation"] == (
+            "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+            "(Agent-action, (Imagine, Think, (Label/rotation)))"
         )
-        assert (
-            hed["subtraction"]
-            == "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/subtraction))"
+        assert hed["subtraction"] == (
+            "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+            "(Agent-action, (Imagine, Think, (Label/subtraction)))"
         )
         assert "Count" in hed["count"]
-        assert "Experimental-stimulus" in hed["count"]
+        assert "Agent-action" in hed["count"]
         assert "Rest" in hed["baseline"]
-        assert "Experimental-stimulus" in hed["baseline"]
+        assert "Visual-presentation" in hed["baseline"]
 
     def test_label_fallback_sanitizes_dots(self):
         """Label fallback sanitizes dots for HED nameClass compliance."""
@@ -1658,7 +1661,12 @@ class TestUpdateEventsJsonWithHed:
     def test_adds_hed_to_trial_type(self, tmp_path):
         content = {"trial_type": {"Description": "Event type."}}
         bp, json_path = self._make_bids_path(tmp_path, content)
-        hed_tags = {"left_hand": "Sensory-event, Cue, (Imagine, (Move, Hand))"}
+        hed_tags = {
+            "left_hand": (
+                "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                "(Agent-action, (Imagine, (Move, (Left, Hand))))"
+            )
+        }
         _update_events_json_sidecar(bp, hed_tags, None)
 
         with open(json_path) as f:
@@ -1769,8 +1777,8 @@ class TestExtractReferencesFromDocstring:
 
 class TestSplitHedTopLevel:
     def test_flat_tags(self):
-        result = _split_hed_top_level("Sensory-event, Cue, Rest")
-        assert result == ["Sensory-event", "Cue", "Rest"]
+        result = _split_hed_top_level("Experiment-structure, Rest")
+        assert result == ["Experiment-structure", "Rest"]
 
     def test_single_group(self):
         result = _split_hed_top_level("Sensory-event, (Imagine, (Move, Hand))")
@@ -1864,13 +1872,13 @@ class TestRenderHedTree:
     def test_nested_tree(self):
         nodes = [
             ("Sensory-event", []),
-            ("Cue", []),
+            ("Visual-presentation", []),
             ("Imagine", [("Move", [("Right, Hand", [])])]),
         ]
         lines = _render_hed_tree(nodes)
         assert len(lines) == 5
         assert "├─ Sensory-event" in lines[0]
-        assert "├─ Cue" in lines[1]
+        assert "├─ Visual-presentation" in lines[1]
         assert "└─ Imagine" in lines[2]
         assert "└─ Move" in lines[3]
         assert "└─ Right, Hand" in lines[4]
@@ -1930,7 +1938,8 @@ class TestReadmeHedSection:
         ds = self._make_dataset()
         readme = _build_readme(ds)
         assert "Sensory-event" in readme
-        assert "Imagine" in readme
+        assert "Agent-action" in readme
+        assert "Visual-presentation" in readme
 
     def test_hed_schema_link(self):
         ds = self._make_dataset()
