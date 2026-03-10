@@ -65,6 +65,8 @@ class FakeDataset(BaseDataset):
         annotations=False,
         subjects=None,
         sessions=None,
+        *,
+        return_all_modalities=False,
         **kwargs,
     ):
         deprecated_renames = {
@@ -129,6 +131,7 @@ class FakeDataset(BaseDataset):
             paradigm=paradigm,
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
         key = "MNE_DATASETS_{:s}_PATH".format(self.code.upper())
         temp_dir = get_config(key)

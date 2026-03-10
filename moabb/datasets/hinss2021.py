@@ -166,6 +166,38 @@ class Hinss2021(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-022-01898-y",
+            publication_year=2023,
+            investigators=[
+                "Marcel F. Hinss",
+                "Emilie S. Jahanpour",
+                "Bertille Somon",
+                "Lou Pluchon",
+                "Frédéric Dehais",
+                "Raphaëlle N. Roy",
+            ],
+            senior_author="Raphaëlle N. Roy",
+            institution="ISAE-SUPAERO, Université de Toulouse",
+            institution_department="Department of Information Processing and Systems",
+            institution_address="Toulouse, France",
+            country="FR",
+            contact_info=["marcel.hinss@isae-supaero.fr"],
+            ethics_approval=[
+                "Comité d'Éthique de la Recherche (CER), Université de Toulouse (CER number 2021-342)"
+            ],
+            funding=[
+                "ERASMUS program",
+                "ANITI (Artificial and Natural Intelligence Toulouse Institute)",
+            ],
+            acknowledgements=(
+                "This research was supported in part by the ERASMUS program "
+                "(which funded Mr Hinss' internship), and by ANITI (Artificial "
+                "and Natural Intelligence Toulouse Institute), Toulouse, France."
+            ),
+            how_to_acknowledge=(
+                "Please cite: Hinss et al. (2023). Open multi-session and multi-task "
+                "EEG cognitive dataset for passive brain-computer interface applications. "
+                "Scientific Data, 10, 85. https://doi.org/10.1038/s41597-022-01898-y"
+            ),
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.6874128",
             license="CC-BY-SA-4.0",

@@ -8,6 +8,8 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
 
+from moabb.datasets._channel_pick import pick_channels_for_modalities
+
 
 # Handle different scikit-learn versions for _VisualBlock import
 # sklearn >= 1.6 moved _VisualBlock to sklearn.utils._repr_html.estimator
@@ -504,6 +506,21 @@ class SetRawAnnotations(FixedTransformer):
         offset = int(self.interval[0] * raw.info["sfreq"])
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         has_annotation_extras = False
+
+        # Check for annotation extras before events extraction potentially
+        # destroys the original annotations.  This works regardless of
+        # whether a stim channel is present.
+        orig_extras = (
+            getattr(raw.annotations, "extras", None) if raw.annotations else None
+        )
+        if orig_extras is not None and any(orig_extras):
+            has_annotation_extras = True
+            sfreq = raw.info["sfreq"]
+            extras_by_sample = {}
+            for ann, extra in zip(raw.annotations, orig_extras):
+                sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
+                extras_by_sample[sample] = extra
+
         if len(stim_channels) == 0:
             if raw.annotations is None:
                 log.warning(
@@ -514,16 +531,6 @@ class SetRawAnnotations(FixedTransformer):
                 raise ValueError(
                     "When no stim channel is present, event_id values must be integers (not lists)."
                 )
-            # Build lookup of extras by sample position before events extraction
-            # destroys the original annotations
-            orig_extras = getattr(raw.annotations, "extras", None)
-            if orig_extras is not None and any(orig_extras):
-                has_annotation_extras = True
-                sfreq = raw.info["sfreq"]
-                extras_by_sample = {}
-                for ann, extra in zip(raw.annotations, orig_extras):
-                    sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
-                    extras_by_sample[sample] = extra
 
             events, _ = mne.events_from_annotations(
                 raw, event_id=self.event_id, verbose=False
@@ -731,6 +738,7 @@ class RawToEpochs(FixedTransformer):
         baseline: Tuple[float, float],
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
+        return_all_modalities=False,
     ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
@@ -740,6 +748,7 @@ class RawToEpochs(FixedTransformer):
         self.baseline = baseline
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
+        self.return_all_modalities = return_all_modalities
 
     def transform(self, X, y=None):
         raw = X["raw"]
@@ -750,7 +759,7 @@ class RawToEpochs(FixedTransformer):
             raise ValueError("raw must be a mne.io.BaseRaw")
 
         if self.channels is None:
-            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+            picks = pick_channels_for_modalities(raw.info, self.return_all_modalities)
         else:
             available_channels = raw.info["ch_names"]
             if self.interpolate_missing_channels:

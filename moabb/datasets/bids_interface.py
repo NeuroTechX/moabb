@@ -26,12 +26,14 @@ from typing import TYPE_CHECKING, Dict, Type
 
 import mne
 import mne_bids
+import pandas as pd
 from numpy import load as np_load
 from numpy import save as np_save
 
 import moabb
 from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
+from moabb.datasets._channel_pick import pick_channels_for_modalities
 
 
 if TYPE_CHECKING:
@@ -40,6 +42,56 @@ if TYPE_CHECKING:
     from moabb.datasets.base import BaseDataset
 
 log = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Monkey-patch mne_bids to produce BIDS-compliant output by default.
+#
+# BIDS validator v2.4.0 requires a SpatialReference key in the JSON sidecar
+# for *_electrodes.tsv (when a ``space`` entity is present, e.g.
+# space-CapTrak).  mne_bids does not create this sidecar, so we wrap
+# ``_write_dig_bids`` to produce the missing ``*_electrodes.json`` file.
+#
+# For standard scalp EEG, electrode positions are in CapTrak coordinates
+# (defined by nasion, LPA, RPA landmarks on the individual's head).  There
+# is no external template image, so SpatialReference is ``"n/a"``.
+# ---------------------------------------------------------------------------
+
+import mne_bids.dig as _mne_bids_dig  # noqa: E402
+
+
+_orig_write_dig_bids = _mne_bids_dig._write_dig_bids
+
+
+def _write_dig_bids_with_electrodes_json(*args, **kwargs):
+    """Wrap mne_bids _write_dig_bids to also create electrodes.json sidecar."""
+    _orig_write_dig_bids(*args, **kwargs)
+    # Extract what we need for the electrodes.json sidecar
+    bids_path = args[0]
+    overwrite = kwargs.get("overwrite", False)
+    # Create electrodes.json sidecar next to every electrodes.tsv that was
+    # written.  The filenames include the space entity (e.g. space-CapTrak),
+    # so we glob for them.
+    sub_dir = Path(bids_path.root) / f"sub-{bids_path.subject}"
+    if bids_path.session is not None:
+        sub_dir = sub_dir / f"ses-{bids_path.session}"
+    eeg_dir = sub_dir / bids_path.datatype
+    if eeg_dir.is_dir():
+        for elec_tsv in eeg_dir.glob("*_electrodes.tsv"):
+            elec_json = elec_tsv.with_suffix(".json")
+            if not elec_json.exists() or overwrite:
+                with open(elec_json, "w") as f:
+                    json.dump({"SpatialReference": "n/a"}, f, indent="\t")
+
+
+# Apply patch so write_raw_bids() creates electrodes.json automatically.
+_mne_bids_dig._write_dig_bids = _write_dig_bids_with_electrodes_json
+import mne_bids.write as _mne_bids_write  # noqa: E402
+
+
+_mne_bids_write._write_dig_bids = _write_dig_bids_with_electrodes_json
+
+# ---------------------------------------------------------------------------
 
 # Known amplifier manufacturer lookup for splitting hardware into
 # Manufacturer + ManufacturersModelName
@@ -81,6 +133,145 @@ def _split_manufacturer(hardware):
     return hardware, hardware
 
 
+_SEX_LABEL_TO_CODE = {"male": 1, "female": 2}
+_SEX_CODE_TO_LABEL = {v: k for k, v in _SEX_LABEL_TO_CODE.items()}
+_HAND_LABEL_TO_CODE = {"right": 1, "left": 2, "ambidextrous": 3}
+_HAND_CODE_TO_LABEL = {v: k for k, v in _HAND_LABEL_TO_CODE.items()}
+
+
+def _is_missing_participant_value(value):
+    """Return True when a participant value should be treated as unknown."""
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"", "n/a", "na", "none", "unknown", "null"}
+    return False
+
+
+def _get_subject_list_value(values, subject_idx):
+    """Return per-subject value from list-like metadata fields."""
+    if values is None or subject_idx >= len(values):
+        return None
+    value = values[subject_idx]
+    if _is_missing_participant_value(value):
+        return None
+    return value
+
+
+def _normalize_sex_value(value):
+    """Normalize sex values to BIDS labels ('male'/'female')."""
+    if _is_missing_participant_value(value) or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)) and int(value) in _SEX_CODE_TO_LABEL:
+        return _SEX_CODE_TO_LABEL[int(value)]
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        mapping = {
+            "male": "male",
+            "m": "male",
+            "man": "male",
+            "1": "male",
+            "female": "female",
+            "f": "female",
+            "woman": "female",
+            "2": "female",
+        }
+        return mapping.get(normalized)
+    return None
+
+
+def _normalize_hand_value(value):
+    """Normalize handedness values to BIDS labels."""
+    if _is_missing_participant_value(value) or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)) and int(value) in _HAND_CODE_TO_LABEL:
+        return _HAND_CODE_TO_LABEL[int(value)]
+    if isinstance(value, str):
+        normalized = value.strip().lower().replace("_", " ").replace("-", " ")
+        mapping = {
+            "right": "right",
+            "r": "right",
+            "right handed": "right",
+            "rh": "right",
+            "left": "left",
+            "l": "left",
+            "left handed": "left",
+            "lh": "left",
+            "ambidextrous": "ambidextrous",
+            "ambi": "ambidextrous",
+            "both": "ambidextrous",
+            "mixed": "ambidextrous",
+            "3": "ambidextrous",
+            "1": "right",
+            "2": "left",
+        }
+        return mapping.get(normalized)
+    return None
+
+
+def _resolve_subject_age(participants, subject_idx, raw=None):
+    """Resolve age with priority: per-subject list -> raw -> aggregate mean -> n/a."""
+    age = _get_subject_list_value(participants.ages, subject_idx)
+    if age is not None:
+        return age
+
+    if raw is not None and hasattr(raw, "_moabb_subject_age"):
+        raw_age = getattr(raw, "_moabb_subject_age")
+        if not _is_missing_participant_value(raw_age):
+            return raw_age
+
+    if participants.age_mean is not None:
+        return participants.age_mean
+    return "n/a"
+
+
+def _resolve_subject_sex(participants, subject_idx, raw=None):
+    """Resolve sex with priority: per-subject list -> raw subject_info -> n/a."""
+    sex = _normalize_sex_value(_get_subject_list_value(participants.sexes, subject_idx))
+    if sex is not None:
+        return sex
+
+    if raw is not None:
+        subject_info = raw.info.get("subject_info") or {}
+        sex = _normalize_sex_value(subject_info.get("sex"))
+        if sex is not None:
+            return sex
+    return "n/a"
+
+
+def _resolve_subject_hand(participants, subject_idx, raw=None):
+    """Resolve hand with robust fallback: list -> raw -> aggregate -> n/a."""
+    hand = _normalize_hand_value(
+        _get_subject_list_value(participants.handedness_list, subject_idx)
+    )
+    if hand is not None:
+        return hand
+
+    if raw is not None:
+        subject_info = raw.info.get("subject_info") or {}
+        hand = _normalize_hand_value(subject_info.get("hand"))
+        if hand is not None:
+            return hand
+
+    if isinstance(participants.handedness, dict):
+        counts = {"right": 0, "left": 0, "ambidextrous": 0}
+        for label, count in participants.handedness.items():
+            normalized = _normalize_hand_value(label)
+            if normalized in counts and isinstance(count, (int, float)):
+                counts[normalized] += count
+        total = sum(counts.values())
+        if total > 0:
+            for label, count in counts.items():
+                if count == total:
+                    return label
+    elif isinstance(participants.handedness, str):
+        hand = _normalize_hand_value(participants.handedness)
+        if hand is not None:
+            return hand
+
+    return "n/a"
+
+
 def _enrich_raw_info_from_metadata(raw, metadata, subject):
     """Set ``raw.info`` fields from dataset metadata before ``write_raw_bids``.
 
@@ -111,15 +302,11 @@ def _enrich_raw_info_from_metadata(raw, metadata, subject):
     subject_info = raw.info.get("subject_info") or {}
     subject_idx = subject - 1  # MOABB subjects are 1-based
 
-    # Sex: BIDS uses FHIR codes (0=unknown, 1=male, 2=female)
-    # Per-subject list takes priority over aggregate gender dict
-    _SEX_MAP = {"male": 1, "female": 2}
-    if (
-        participants.sexes
-        and subject_idx < len(participants.sexes)
-        and participants.sexes[subject_idx] is not None
-    ):
-        subject_info["sex"] = _SEX_MAP.get(participants.sexes[subject_idx].lower(), 0)
+    # Sex: BIDS uses FHIR codes (0=unknown, 1=male, 2=female).
+    # Per-subject list takes priority over aggregate gender dict.
+    sex = _normalize_sex_value(_get_subject_list_value(participants.sexes, subject_idx))
+    if sex is not None:
+        subject_info["sex"] = _SEX_LABEL_TO_CODE[sex]
     elif participants.gender:
         # Fallback: only set if the population is homogeneous (all one gender)
         total = sum(participants.gender.values())
@@ -131,17 +318,13 @@ def _enrich_raw_info_from_metadata(raw, metadata, subject):
     if (participants.gender or participants.sexes) and "his_id" not in subject_info:
         subject_info.setdefault("his_id", str(subject))
 
-    # Handedness: BIDS uses 1=right, 2=left, 3=ambidextrous
-    # Per-subject list takes priority over aggregate handedness
-    _HAND_MAP = {"right": 1, "left": 2, "ambidextrous": 3}
-    if (
-        participants.handedness_list
-        and subject_idx < len(participants.handedness_list)
-        and participants.handedness_list[subject_idx] is not None
-    ):
-        subject_info["hand"] = _HAND_MAP.get(
-            participants.handedness_list[subject_idx].lower(), 0
-        )
+    # Handedness: BIDS uses 1=right, 2=left, 3=ambidextrous.
+    # Per-subject list takes priority over aggregate handedness.
+    hand = _normalize_hand_value(
+        _get_subject_list_value(participants.handedness_list, subject_idx)
+    )
+    if hand is not None:
+        subject_info["hand"] = _HAND_LABEL_TO_CODE[hand]
     elif isinstance(participants.handedness, dict):
         total = sum(participants.handedness.values())
         if participants.handedness.get("right", 0) == total:
@@ -441,11 +624,16 @@ def _build_sidecar_enrichment(metadata):
     # HardwareFilters fallback: use acq.filters when prep filters are absent
     if "HardwareFilters" not in entries and acq and acq.filters:
         if isinstance(acq.filters, dict):
-            entries["HardwareFilters"] = acq.filters
+            # BIDS requires nested structure: {"FilterName": {"key": "value"}}
+            # If the dict is flat (no nested dicts), wrap it under a filter name.
+            if acq.filters and not any(isinstance(v, dict) for v in acq.filters.values()):
+                entries["HardwareFilters"] = {"HardwareFilter": acq.filters}
+            else:
+                entries["HardwareFilters"] = acq.filters
         else:
-            entries["HardwareFilters"] = str(acq.filters)
+            entries["HardwareFilters"] = {"HardwareFilter": str(acq.filters)}
 
-    # HardwareFilters (RECOMMENDED) — set to "n/a" when not described
+    # HardwareFilters (RECOMMENDED) — "n/a" when not described
     entries.setdefault("HardwareFilters", "n/a")
 
     # SoftwareFilters — build from preprocessing_steps if available
@@ -624,9 +812,12 @@ def _build_dataset_description_kwargs(dataset):
         if refs:
             kwargs["references_and_links"] = refs
 
-        # doi
+        # doi — BIDS requires the format "doi:<value>"
         if doc.doi:
-            kwargs["doi"] = doc.doi
+            doi_val = doc.doi
+            if not doi_val.startswith("doi:"):
+                doi_val = f"doi:{doi_val}"
+            kwargs["doi"] = doi_val
 
         # acknowledgements
         if doc.acknowledgements:
@@ -643,7 +834,7 @@ def _build_dataset_description_kwargs(dataset):
     return kwargs
 
 
-def _update_participants_tsv(root, subject, metadata):
+def _update_participants_tsv(root, subject, metadata, raw=None):
     """Patch ``participants.tsv`` with demographic data from metadata.
 
     Adds ``age`` and ``group`` columns. Updates the ``participants.json``
@@ -669,13 +860,8 @@ def _update_participants_tsv(root, subject, metadata):
     if not tsv_path.exists():
         return
 
-    # Determine age for this subject
-    age = "n/a"
     subject_idx = subject - 1  # MOABB subjects are 1-based
-    if participants.ages and subject_idx < len(participants.ages):
-        age = participants.ages[subject_idx]
-    elif participants.age_mean is not None:
-        age = participants.age_mean
+    age = _resolve_subject_age(participants, subject_idx, raw=raw)
 
     # Determine group (clinical_population takes priority over health_status)
     group = "n/a"
@@ -684,15 +870,8 @@ def _update_participants_tsv(root, subject, metadata):
     elif participants.health_status:
         group = participants.health_status
 
-    # Determine per-subject sex
-    sex = "n/a"
-    if participants.sexes and subject_idx < len(participants.sexes):
-        sex = participants.sexes[subject_idx]
-
-    # Determine per-subject handedness
-    hand = "n/a"
-    if participants.handedness_list and subject_idx < len(participants.handedness_list):
-        hand = participants.handedness_list[subject_idx]
+    sex = _resolve_subject_sex(participants, subject_idx, raw=raw)
+    hand = _resolve_subject_hand(participants, subject_idx, raw=raw)
 
     # BCI experience
     bci_experience = "n/a"
@@ -2130,7 +2309,16 @@ class BIDSInterfaceBase(abc.ABC):
                 description=self.desc,
                 check=False,
             )
-            session_path.rm(safe_remove=False)
+            try:
+                session_path.rm(safe_remove=False)
+            except RuntimeError:
+                session_dir = (
+                    Path(self.root)
+                    / f"sub-{subject_moabb_to_bids(self.subject)}"
+                    / f"ses-{session}"
+                )
+                if session_dir.is_dir():
+                    shutil.rmtree(session_dir)
         log.info("Finished erasing cache of %s.", repr(self))
 
     def load(self, preload=False):
@@ -2299,7 +2487,6 @@ class BIDSInterfaceBase(abc.ABC):
 _FORMAT_EXTENSION_MAP = {
     "EDF": ".edf",
     "BrainVision": ".vhdr",
-    "BDF": ".bdf",
     "EEGLAB": ".set",
 }
 
@@ -2370,7 +2557,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # Otherwise, the montage would still have the stim channel
         # which is dropped by mne_bids.write_raw_bids:
-        picks = mne.pick_types(info=raw.info, eeg=True, stim=False)
+        picks = pick_channels_for_modalities(raw.info, self.dataset.return_all_modalities)
         raw.pick(picks)
 
         # By using the same anonymization `daysback` number we can
@@ -2386,7 +2573,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         # Suppress mne_bids informational warnings about format conversion.
         # "Converting data files to EDF format" — we explicitly request the
         # format via self._format, so this is expected.
-        # "Encountered data in double format" — mne_bids internally handles
+        # "Encountered data in "double" format" — mne_bids internally handles
         # the float64->float32 downcast for EDF; we cannot pre-convert because
         # MNE Epochs.save() requires float64 data.
         with warnings.catch_warnings():
@@ -2398,15 +2585,40 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 'Encountered data in "double" format',
                 RuntimeWarning,
             )
+            # Save annotation extras before write_raw_bids (which may
+            # strip them).  We patch events.tsv afterwards.
+            ann_extras = getattr(raw.annotations, "extras", None)
+            has_extras = ann_extras is not None and any(ann_extras)
+
             mne_bids.write_raw_bids(
                 raw,
                 bids_path,
                 format=self._format,
                 allow_preload=True,
                 montage=raw.get_montage(),
-                overwrite=False,
+                overwrite=True,
                 verbose=self.verbose,
             )
+
+            # Append per-event metadata from annotation extras (e.g.
+            # triallength for Stieger2021) as extra columns in events.tsv.
+            if has_extras:
+                events_path = bids_path.copy().update(suffix="events", extension=".tsv")
+                events_fpath = events_path.fpath
+                if events_fpath.exists():
+                    df = pd.read_csv(str(events_fpath), sep="\t")
+                    extras_df = pd.DataFrame(ann_extras)
+                    if len(extras_df) == len(df):
+                        for col in extras_df.columns:
+                            df[col] = extras_df[col]
+                        df.to_csv(str(events_fpath), sep="\t", index=False, na_rep="n/a")
+                    else:
+                        log.warning(
+                            "Annotation extras length (%d) does not match "
+                            "events.tsv rows (%d); skipping extras.",
+                            len(extras_df),
+                            len(df),
+                        )
 
         # Post-write enrichment: update EEG sidecar with metadata fields
         if metadata is not None:
@@ -2426,10 +2638,13 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                         json.dump(sc, f, indent="\t")
 
             # Patch participants.tsv with demographic data
-            _update_participants_tsv(bids_path.root, self.subject, metadata)
+            _update_participants_tsv(bids_path.root, self.subject, metadata, raw=raw)
 
             # Patch electrodes.tsv with material and type
             _update_electrodes_tsv(bids_path, metadata)
+
+        # SpatialReference in electrodes.json sidecars is handled by the
+        # monkey-patched _write_dig_bids function at module level.
 
         # Enrich events.json sidecar with HED annotations and stimulus info
         hed_tags = _build_hed_sidecar_annotations(self.dataset)

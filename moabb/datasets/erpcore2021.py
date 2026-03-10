@@ -115,7 +115,9 @@ class ErpCore2021(BaseDataset):
     {_docstring_tail}
     """
 
-    def __init__(self, task, subjects=None, sessions=None, **kwargs):
+    def __init__(
+        self, task, subjects=None, sessions=None, *, return_all_modalities=False, **kwargs
+    ):
         deprecated_renames = {"Task": "task"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "ErpCore2021")
         task = resolved.get("task", task)
@@ -156,6 +158,7 @@ class ErpCore2021(BaseDataset):
             doi="10.1016/j.neuroimage.2020.117465",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

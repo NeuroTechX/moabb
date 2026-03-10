@@ -139,12 +139,12 @@ class Results:
             else:
                 return res
 
-        col_names = ["score", "time", "samples"]
+        col_names = ["score", "time", "samples", "samples_test", "n_classes"]
         if _carbonfootprint:
-            n_cols = 4
+            n_cols = 6
             col_names.append("carbon_emission")
         else:
-            n_cols = 3
+            n_cols = 5
 
         with _open_lock_hdf5(self.filepath, "r+") as f:
             for name, data_dict in results.items():
@@ -190,6 +190,8 @@ class Results:
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
+                # Backward compat: existing dataset may have fewer columns
+                n_existing = dset["data"].shape[1]
                 n_new = len(dlist)
                 old_len = len(dset["id"])
                 new_len = old_len + n_new
@@ -211,7 +213,13 @@ class Results:
                             f"were specified in the evaluation, but results"
                             f" contain only these keys: {d.keys()}."
                         ) from None
-                    cols = [d["score"], d["time"], d["n_samples"]]
+                    cols = [
+                        d["score"],
+                        d["time"],
+                        d["n_samples"],
+                        d.get("n_samples_test", np.nan),
+                        d.get("n_classes", np.nan),
+                    ]
                     if _carbonfootprint:
                         # Always add carbon_emission column if codecarbon is available
                         if "carbon_emission" in d:
@@ -229,12 +237,8 @@ class Results:
                                 d.get("codecarbon_task_name", "")
                             )
 
-                    dset["data"][row, :] = np.asarray(
-                        [
-                            *cols,
-                            *add_cols,
-                        ]
-                    )
+                    all_cols = np.asarray([*cols, *add_cols])
+                    dset["data"][row, :] = all_cols[:n_existing]
 
     @staticmethod
     def _to_dataframe_from_file(f, digests=None):
@@ -264,7 +268,11 @@ class Results:
 
         if not df_list:
             return pd.DataFrame()
-        return pd.concat(df_list, ignore_index=True)
+        result = pd.concat(df_list, ignore_index=True)
+        for col in ("samples_test", "n_classes"):
+            if col not in result.columns:
+                result[col] = np.nan
+        return result
 
     def to_dataframe(self, pipelines=None, process_pipeline=None):
         # get the list of pipeline hash

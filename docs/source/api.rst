@@ -123,6 +123,7 @@ ERP/P300 Datasets
     RomaniBF2025ERP
     Kojima2024A
     Kojima2024B
+    Lee2021Mobile_ERP
 
 --------------
 SSVEP Datasets
@@ -139,6 +140,14 @@ SSVEP Datasets
     MAMEM2
     MAMEM3
     Lee2019_SSVEP
+    Chen2017SingleFlicker
+    Dong2023
+    Han2024Fatigue
+    Kim2025BetaRange
+    Lee2021Mobile_SSVEP
+    Liu2020BETA
+    Liu2022EldBETA
+    Wang2021Combined
 
 --------------
 c-VEP Datasets

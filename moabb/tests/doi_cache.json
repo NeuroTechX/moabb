@@ -1,4 +1,7 @@
 {
+    "_metadata": {
+        "total": 107
+    },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
         "authors": [
@@ -38,6 +41,20 @@
         "year": 2013,
         "doi": "10.1016/j.clinph.2012.12.050"
     },
+    "10.1016/j.cmpb.2023.107357": {
+        "title": "MEDUSA\u00a9: A novel Python-based software ecosystem to accelerate brain-computer interface and cognitive neuroscience research",
+        "authors": [
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Diego Marcos-Mart\u00ednez",
+            "V\u00edctor Rodr\u00edguez-Gonz\u00e1lez",
+            "Sergio P\u00e9rez-Velasco",
+            "Selene Moreno-Calder\u00f3n",
+            "Roberto Hornero"
+        ],
+        "year": 2023,
+        "doi": "10.1016/j.cmpb.2023.107357"
+    },
     "10.1016/j.compbiomed.2024.109132": {
         "title": "Handwritten character classification from EEG through continuous kinematic decoding",
         "authors": [
@@ -46,6 +63,19 @@
         ],
         "year": 2024,
         "doi": "10.1016/j.compbiomed.2024.109132"
+    },
+    "10.1016/j.eswa.2023.120815": {
+        "title": "Non-binary m-sequences for more comfortable brain\u2013computer interfaces based on c-VEPs",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "Sergio P\u00e9rez-Velasco",
+            "Diego Marcos-Mart\u00ednez",
+            "Selene Moreno-Calder\u00f3n",
+            "Roberto Hornero"
+        ],
+        "year": 2023,
+        "doi": "10.1016/j.eswa.2023.120815"
     },
     "10.1016/j.jneumeth.2007.03.005": {
         "title": "An efficient P300-based brain\u2013computer interface for disabled subjects",
@@ -107,6 +137,28 @@
         "year": 2021,
         "doi": "10.1038/s41597-021-00883-1"
     },
+    "10.1038/s41597-021-01094-4": {
+        "title": "Mobile BCI dataset of scalp- and ear-EEGs with ERP and SSVEP paradigms while standing, walking, and running",
+        "authors": [
+            "Young-Eun Lee",
+            "Gi-Hwan Shin",
+            "Minji Lee",
+            "Seong-Whan Lee"
+        ],
+        "year": 2021,
+        "doi": "10.1038/s41597-021-01094-4"
+    },
+    "10.1038/s41597-022-01372-9": {
+        "title": "eldBETA: A Large Eldercare-oriented Benchmark Database of SSVEP-BCI for the Aging Population",
+        "authors": [
+            "Bingchuan Liu",
+            "Yijun Wang",
+            "Xiaorong Gao",
+            "Xiaogang Chen"
+        ],
+        "year": 2022,
+        "doi": "10.1038/s41597-022-01372-9"
+    },
     "10.1038/s41597-022-01898-y": {
         "title": "Open multi-session and multi-task EEG cognitive Dataset for passive brain-computer Interface Applications",
         "authors": [
@@ -151,6 +203,17 @@
         "year": 2024,
         "doi": "10.1038/s41597-023-02787-8"
     },
+    "10.1038/s41597-025-06032-2": {
+        "title": "A 40-Class SSVEP Speller Dataset: Beta Range Stimulation for Low-Fatigue BCI Applications",
+        "authors": [
+            "Heegyu Kim",
+            "Kyungho Won",
+            "Minkyu Ahn",
+            "Sung Chan Jun"
+        ],
+        "year": 2025,
+        "doi": "10.1038/s41597-025-06032-2"
+    },
     "10.1038/s41598-019-43594-9": {
         "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
         "authors": [
@@ -186,6 +249,19 @@
         ],
         "year": 2021,
         "doi": "10.1088/1741-2552/abecef"
+    },
+    "10.1088/1741-2552/ac38cf": {
+        "title": "Brain\u2013computer interfaces based on code-modulated visual evoked potentials (c-VEP): a literature review",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Jordy Thielen",
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "Sergio P\u00e9rez-Velasco",
+            "Peter Desain",
+            "Roberto Hornero"
+        ],
+        "year": 2021,
+        "doi": "10.1088/1741-2552/ac38cf"
     },
     "10.1088/1741-2552/ac689f": {
         "title": "Continuous 2D trajectory decoding from attempted movement: across-session performance in able-bodied and feasibility in a spinal cord injured participant",
@@ -410,6 +486,18 @@
         "year": 2017,
         "doi": "10.1109/TNSRE.2016.2628057"
     },
+    "10.1109/TNSRE.2024.3380635": {
+        "title": "Enhancing SSVEP-BCI Performance Under Fatigue State Using Dynamic Stopping Strategy",
+        "authors": [
+            "Yuheng Han",
+            "Yufeng Ke",
+            "Ruiyan Wang",
+            "Tao Wang",
+            "Dong Ming"
+        ],
+        "year": 2024,
+        "doi": "10.1109/TNSRE.2024.3380635"
+    },
     "10.1109/tnsre.2012.2189584": {
         "title": "Autocalibration and Recurrent Adaptation: Towards a Plug and Play Online ERD-BCI",
         "authors": [
@@ -421,6 +509,19 @@
         ],
         "year": 2012,
         "doi": "10.1109/tnsre.2012.2189584"
+    },
+    "10.1111/ejn.15030": {
+        "title": "Single stimulus location for two inputs: A combined brain\u2013computer interface based on Steady\u2010State Visual Evoked Potential (SSVEP)",
+        "authors": [
+            "Lu Wang",
+            "Zhenhao Zhang",
+            "Dan Han",
+            "Zhijun Zhang",
+            "Zhifang Liu",
+            "Wei Liu"
+        ],
+        "year": 2020,
+        "doi": "10.1111/ejn.15030"
     },
     "10.13026/0byy-ry86": {
         "title": "bigP3BCI: An Open, Diverse and Machine Learning Ready P300-based Brain-Computer Interface Dataset",
@@ -518,6 +619,18 @@
         "year": 2017,
         "doi": "10.1371/journal.pone.0175856"
     },
+    "10.1371/journal.pone.0178385": {
+        "title": "Application of a single-flicker online SSVEP BCI for spatial navigation",
+        "authors": [
+            "Jingjing Chen",
+            "Dan Zhang",
+            "Andreas K. Engel",
+            "Qin Gong",
+            "Alexander Maye"
+        ],
+        "year": 2017,
+        "doi": "10.1371/journal.pone.0178385"
+    },
     "10.1371/journal.pone.0182578": {
         "title": "Upper limb movements can be decoded from the time-domain of low-frequency EEG",
         "authors": [
@@ -560,6 +673,15 @@
         "year": 2018,
         "doi": "10.2312/vriphys.20181064"
     },
+    "10.26599/BSA.2023.9050020": {
+        "title": "A large database towards user-friendly SSVEP-based BCI",
+        "authors": [
+            "Yue Dong",
+            "Sen Tian"
+        ],
+        "year": 2023,
+        "doi": "10.26599/BSA.2023.9050020"
+    },
     "10.3217/978-3-85125-378-8-61": {
         "title": "Motor Imagery Brain-Computer Interfaces: Random Forests Vs Regularized Lda - Non-Linear Beats Linear",
         "authors": [
@@ -585,6 +707,18 @@
         ],
         "year": 2013,
         "doi": "10.3389/fnhum.2013.00732"
+    },
+    "10.3389/fnhum.2023.1288438": {
+        "title": "Influence of spatial frequency in visual stimuli for cVEP-based BCIs: evaluation of performance and user experience",
+        "authors": [
+            "\u00c1lvaro Fern\u00e1ndez-Rodr\u00edguez",
+            "V\u00edctor Mart\u00ednez-Cagigal",
+            "Eduardo Santamar\u00eda-V\u00e1zquez",
+            "Ricardo Ron-Angevin",
+            "Roberto Hornero"
+        ],
+        "year": 2023,
+        "doi": "10.3389/fnhum.2023.1288438"
     },
     "10.3389/fnhum.2024.1461960": {
         "title": "Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing",
@@ -638,6 +772,18 @@
         "year": 2012,
         "doi": "10.3389/fnins.2012.00055"
     },
+    "10.3389/fnins.2020.00627": {
+        "title": "BETA: A Large Benchmark Database Toward SSVEP-BCI Application",
+        "authors": [
+            "Bingchuan Liu",
+            "Xiaoshan Huang",
+            "Yijun Wang",
+            "Xiaogang Chen",
+            "Xiaorong Gao"
+        ],
+        "year": 2020,
+        "doi": "10.3389/fnins.2020.00627"
+    },
     "10.3389/fnins.2020.00849": {
         "title": "Analyzing and Decoding Natural Reach-and-Grasp Actions Using Gel, Water and Dry EEG Systems",
         "authors": [
@@ -682,6 +828,14 @@
         ],
         "year": 17,
         "doi": "10.34973/9txv-z787"
+    },
+    "10.35376/10324/70945": {
+        "title": "Dataset: Non-binary m-sequences for more comfortable brain\u2013computer interfaces based on c-VEPs",
+        "authors": [
+            "V\u00edctor Mart\u00ednez Cagigal"
+        ],
+        "year": 2024,
+        "doi": "10.35376/10324/70945"
     },
     "10.48550/arXiv.1602.00904": {
         "title": "Comparative evaluation of state-of-the-art algorithms for SSVEP-based BCIs",
@@ -964,18 +1118,6 @@
         "year": 2012,
         "doi": "10.5281/zenodo.806022"
     },
-    "10.5281/zenodo.8089820": {
-        "title": "A large EEG database with users' profile information for motor imagery Brain-Computer Interface research",
-        "authors": [
-            "",
-            "",
-            "Rimbert S\u00e9bastien",
-            "",
-            "Lotte Fabien"
-        ],
-        "year": 2023,
-        "doi": "10.5281/zenodo.8089820"
-    },
     "10.5281/zenodo.8255618": {
         "title": "4-class code-VEP EEG data",
         "authors": [
@@ -1011,14 +1153,6 @@
         "year": 2019,
         "doi": "10.5524/100542"
     },
-    "10.6084/m9.figshare.13123148": {
-        "title": "Human EEG Dataset for Brain-Computer Interface and Meditation",
-        "authors": [
-            "James Stieger"
-        ],
-        "year": 2021,
-        "doi": "10.6084/m9.figshare.13123148"
-    },
     "10.6084/m9.figshare.13123148.v1": {
         "title": "Human EEG Dataset for Brain-Computer Interface and Meditation",
         "authors": [
@@ -1026,6 +1160,17 @@
         ],
         "year": 2021,
         "doi": "10.6084/m9.figshare.13123148.v1"
+    },
+    "10.6084/m9.figshare.18032669": {
+        "title": "eldBETA: A Large Eldercare-oriented Benchmark Database of SSVEP-BCI for the Aging Population",
+        "authors": [
+            "Bingchuan Liu",
+            "Yijun Wang",
+            "Xiaorong Gao",
+            "Xiaogang Chen"
+        ],
+        "year": 2022,
+        "doi": "10.6084/m9.figshare.18032669"
     },
     "10.6084/m9.figshare.2061654": {
         "title": "three-class motor imagery EEG data.zip",
@@ -1052,6 +1197,14 @@
         "year": 2023,
         "doi": "10.6084/m9.figshare.21679035.v5"
     },
+    "10.6084/m9.figshare.28806815.v2": {
+        "title": "SSVEP 40class dataset",
+        "authors": [
+            "Heegyu Kim"
+        ],
+        "year": 2025,
+        "doi": "10.6084/m9.figshare.28806815.v2"
+    },
     "10.6094/UNIFR/154576": {
         "title": "Electroencephalogram signals recorded from 13 healthy subjects during an auditory oddball paradigm under different stimulus onset asynchrony conditions",
         "authors": [
@@ -1060,6 +1213,22 @@
         ],
         "year": 2019,
         "doi": "10.6094/UNIFR/154576"
+    },
+    "10.71569/025s-eq10": {
+        "title": "Dataset: Non-binary m-sequences for more comfortable brain\u2013computer interfaces based on c-VEPs",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal"
+        ],
+        "year": 2024,
+        "doi": "10.71569/025s-eq10"
+    },
+    "10.71569/7c67-v596": {
+        "title": "Dataset: Influence of spatial frequency in visual stimuli for cVEP-based BCIs: evaluation of performance and user experience",
+        "authors": [
+            "V\u00edctor Mart\u00ednez-Cagigal"
+        ],
+        "year": 2023,
+        "doi": "10.71569/7c67-v596"
     },
     "10.7910/DVN/1UJDV6": {
         "title": "Replication Data for: Four-class ASME BCI: investigation of the feasibility and comparison of two strategies for multiclassing",
@@ -1085,8 +1254,5 @@
         ],
         "year": 2024,
         "doi": "10.7910/DVN/MQOVEY"
-    },
-    "_metadata": {
-        "total": 91
     }
 }

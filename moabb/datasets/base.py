@@ -63,7 +63,6 @@ def get_summary_table(paradigm: str, dir_name: str | None = None):
         header=0,
         index_col="Dataset",
         skipinitialspace=True,
-        dtype={"PapersWithCode leaderboard": str},
     )
     return df
 
@@ -265,13 +264,9 @@ def _transfer_unit(key: str, value: str):
 
 
 def format_row(row: pd.Series, horizontal: bool = True):
-    pwc_key = "PapersWithCode leaderboard"
     tab_prefix = " " * 8
     tab_sep = "="
     row = row[~row.isna()]
-    pwc_link = row.get(pwc_key, None)
-    if pwc_link is not None:
-        row = row.drop(pwc_key)
 
     def to_int(x):
         try:
@@ -306,9 +301,6 @@ def format_row(row: pd.Series, horizontal: bool = True):
     rows_str = "\n".join([f"{tab_prefix}{' '.join(row)}" for row in rows])
     # add the header:
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
-    # add the PapersWithCode link if it exists:
-    if pwc_link is not None:
-        out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
     return out, row
 
 
@@ -608,6 +600,15 @@ class BaseDataset(metaclass=MetaclassDataset):
         Defines what sort of dataset this is
 
     doi: DOI for dataset, optional (for now)
+
+    return_all_modalities : bool | dict, optional
+        Controls which channel types are retained when data is picked:
+
+        - ``False`` (default): only EEG channels are kept.
+        - ``True``: all channels except stim are kept.
+        - ``dict``: keyword arguments forwarded to :func:`mne.pick_types`,
+          e.g. ``dict(eeg=True, eog=True)`` keeps EEG and EOG channels.
+          ``stim`` is always forced to ``False``.
     """
 
     _summary_table: dict[str, Any]
@@ -625,6 +626,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         *,
         selected_subjects=None,
         selected_sessions=None,
+        return_all_modalities=False,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -645,6 +647,8 @@ class BaseDataset(metaclass=MetaclassDataset):
                 f"of its code {code!r}. "
                 "See moabb.datasets.base.is_abbrev for more information."
             )
+
+        self.return_all_modalities = return_all_modalities
 
         self._all_subjects = list(subjects)
         if selected_subjects is not None:
@@ -979,8 +983,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             saving.  Default is ``False``.
         format : str
             The file format for the raw EEG data.  Supported values are
-            ``"EDF"`` (default), ``"BrainVision"``, ``"BDF"``, and
-            ``"EEGLAB"``.
+            ``"EDF"`` (default), ``"BrainVision"``, and ``"EEGLAB"``.
         verbose : str | None
             Verbosity level forwarded to MNE/MNE-BIDS.
 
@@ -1435,6 +1438,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        return_all_modalities=False,
     ):
         self.bids_root = bids_root
         self.path_search_params = path_search_params
@@ -1470,6 +1474,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
             paradigm,
             doi,
             unit_factor,
+            return_all_modalities=return_all_modalities,
         )
 
     def _download_subject(self, subject, path, force_update, update_path, verbose):

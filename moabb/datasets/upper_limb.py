@@ -338,7 +338,14 @@ class Ofner2017(BaseDataset):
     )
 
     def __init__(
-        self, imagined=True, executed=True, subjects=None, sessions=None, **kwargs
+        self,
+        imagined=True,
+        executed=True,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        **kwargs,
     ):
         deprecated_renames = {"Imagined": "imagined", "Executed": "executed"}
         resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "Ofner2017")
@@ -368,6 +375,7 @@ class Ofner2017(BaseDataset):
             doi="10.1371/journal.pone.0182578",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):
@@ -387,11 +395,80 @@ class Ofner2017(BaseDataset):
 
             eog = ["eog-l", "eog-m", "eog-r"]
             montage = make_standard_montage("standard_1005")
+            # Correct channel names for subject 1 execution files where GDF
+            # stores generic "eeg-0".."eeg-60" instead of 10-20 labels.
+            _correct_eeg_names = [
+                "F3",
+                "F1",
+                "Fz",
+                "F2",
+                "F4",
+                "FFC5h",
+                "FFC3h",
+                "FFC1h",
+                "FFC2h",
+                "FFC4h",
+                "FFC6h",
+                "FC5",
+                "FC3",
+                "FC1",
+                "FCz",
+                "FC2",
+                "FC4",
+                "FC6",
+                "FTT7h",
+                "FCC5h",
+                "FCC3h",
+                "FCC1h",
+                "FCC2h",
+                "FCC4h",
+                "FCC6h",
+                "FTT8h",
+                "C5",
+                "C3",
+                "C1",
+                "Cz",
+                "C2",
+                "C4",
+                "C6",
+                "TTP7h",
+                "CCP5h",
+                "CCP3h",
+                "CCP1h",
+                "CCP2h",
+                "CCP4h",
+                "CCP6h",
+                "TTP8h",
+                "CP5",
+                "CP3",
+                "CP1",
+                "CPz",
+                "CP2",
+                "CP4",
+                "CP6",
+                "CPP5h",
+                "CPP3h",
+                "CPP1h",
+                "CPP2h",
+                "CPP4h",
+                "CPP6h",
+                "P3",
+                "P1",
+                "Pz",
+                "P2",
+                "P4",
+                "PPO1h",
+                "PPO2h",
+            ]
             data = {}
             for ii, path in enumerate(paths):
                 raw = read_raw_gdf(
                     path, eog=eog, misc=range(64, 96), preload=True, verbose="ERROR"
                 )
+                # Fix generic channel names if present
+                generic = [ch for ch in raw.ch_names if ch.startswith("eeg-")]
+                if generic and len(generic) == len(_correct_eeg_names):
+                    raw.rename_channels(dict(zip(generic, _correct_eeg_names)))
                 raw = raw.set_montage(montage)
 
                 # there is nan in the data

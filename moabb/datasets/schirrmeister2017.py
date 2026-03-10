@@ -277,6 +277,15 @@ class Schirrmeister2017(BaseDataset):
                 "model interpretability",
                 "brain mapping",
             ],
+            acknowledgements=(
+                "Funded by BrainLinks-BrainTools Cluster of Excellence (DFG, EXC1086) "
+                "and the Federal Ministry of Education and Research (BMBF, Motor-BIC 13GW0053D)."
+            ),
+            how_to_acknowledge=(
+                "Please cite: Schirrmeister et al. (2017). Deep learning with convolutional "
+                "neural networks for EEG decoding and visualization. Human Brain Mapping, "
+                "38(11), 5391-5420. https://doi.org/10.1002/hbm.23730"
+            ),
             repository="GitHub",
             data_url="https://web.gin.g-node.org/robintibor/high-gamma-dataset/",
             license="CC-BY-4.0",
@@ -347,7 +356,7 @@ class Schirrmeister2017(BaseDataset):
         methodology="End-to-end deep learning approach comparing shallow ConvNets, deep ConvNets, and ResNets against FBCSP baseline. Evaluated design choices including batch normalization, exponential linear units, dropout, and cropped training strategies. Novel visualization techniques developed to understand learned features and verify that ConvNets use spectral power modulations in task-relevant frequency bands.",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
@@ -358,6 +367,7 @@ class Schirrmeister2017(BaseDataset):
             doi="10.1002/hbm.23730",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def data_path(
@@ -405,12 +415,14 @@ class Schirrmeister2017(BaseDataset):
             for path in self.data_path(subject)
         ]
 
-        # Select only EEG sensors (remove EOG, EMG),
+        # Select only EEG sensors (remove EOG, EMG) if return_all_modalities is False,
         # and also set montage for visualizations
         montage = make_standard_montage("standard_1005")
-        train_raw, test_raw = [
-            raw.pick_types(eeg=True).set_montage(montage) for raw in (train_raw, test_raw)
-        ]
+        for raw in (train_raw, test_raw):
+            if not self.return_all_modalities:
+                raw.pick_types(eeg=True)
+            raw.set_montage(montage, on_missing="warn")
+
         sessions = {
             "0": {"0train": train_raw, "1test": test_raw},
         }

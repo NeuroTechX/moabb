@@ -411,6 +411,9 @@ class DocumentationMetadata:
         Contact information (EEGDash field).
     associated_paper_doi : str, optional
         DOI for associated publication (EEGDash field).
+    related_paper_dois : List[str], optional
+        DOIs for secondary references cited in the docstring (e.g., software
+        tools, review papers) that are not the primary dataset or paper DOI.
     funding : List[str], optional
         Funding sources (EEGDash field).
     institution_address : str, optional
@@ -440,6 +443,7 @@ class DocumentationMetadata:
     senior_author: Optional[str] = None
     contact_info: Optional[List[str]] = None
     associated_paper_doi: Optional[str] = None
+    related_paper_dois: Optional[List[str]] = None
     funding: Optional[List[str]] = None
     # BIDS fields
     institution_address: Optional[str] = None

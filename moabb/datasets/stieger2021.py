@@ -325,8 +325,32 @@ class Stieger2021(BaseDataset):
     )
 
     def __init__(
-        self, interval=[0, 3], sessions=None, fix_bads=True, subjects=None, **kwargs
+        self,
+        interval=[0, 3],
+        sessions=None,
+        fix_bads=True,
+        subjects=None,
+        **kwargs,  # noqa: B006
     ):
+        """Initialize Stieger2021 dataset.
+
+        Parameters
+        ----------
+        interval : list of float, default=[0, 3]
+            Epoch interval ``[tmin, tmax]`` in seconds relative to stimulus
+            onset.  Because trials in this dataset have variable lengths
+            (roughly 0.04 s to 6 s), epochs whose trial is shorter than
+            ``tmax`` are automatically rejected.  Use
+            :meth:`get_trial_info` to inspect per-subject trial-length
+            distributions and :meth:`suggest_interval` to pick an interval
+            that retains a desired fraction of trials.
+        sessions : list of int or None
+            Sessions to load.
+        fix_bads : bool
+            If True, bad channels are interpolated.
+        subjects : list of int or None
+            Subjects to load.
+        """
         deprecated_renames = {
             "Interval": "interval",
             "Sessions": "sessions",
@@ -401,6 +425,21 @@ class Stieger2021(BaseDataset):
                 spath.append(fpath)
         return spath
 
+    @staticmethod
+    def _parse_session(filepath):
+        """Extract the integer session number from a Stieger2021 filename."""
+        return int(os.path.basename(filepath).split("_")[2].split(".")[0])
+
+    @staticmethod
+    def _load_container(filepath):
+        """Load the BCI container from a Stieger2021 .mat file."""
+        return loadmat(
+            file_name=filepath,
+            squeeze_me=True,
+            struct_as_record=False,
+            verify_compressed_data_integrity=False,
+        )["BCI"]
+
     def _get_single_subject_data(self, subject):
         file_path = self.data_path(subject)
 
@@ -408,18 +447,13 @@ class Stieger2021(BaseDataset):
 
         for file in file_path:
 
-            session = int(os.path.basename(file).split("_")[2].split(".")[0])
+            session = self._parse_session(file)
 
             if self.sessions is not None:
                 if session not in set(self.sessions):
                     continue
 
-            container = loadmat(
-                file_name=file,
-                squeeze_me=True,
-                struct_as_record=False,
-                verify_compressed_data_integrity=False,
-            )["BCI"]
+            container = self._load_container(file)
 
             srate = container.SRATE
 
@@ -438,35 +472,49 @@ class Stieger2021(BaseDataset):
 
             X_flat = []
             stim_flat = []
+            accepted_triallengths = []
+            rejected_lengths = []
             for i in range(container.data.shape[0]):
                 x = container.data[i][channel_mask, :]
-                y = container.TrialData[i].targetnumber
+                td = container.TrialData[i]
                 stim = np.zeros_like(container.time[i])
-                if (  # check if the trial is artifact-free and long enough
-                    container.TrialData[i].artifact == 0
-                    and (container.TrialData[i].triallength + 2) > self.interval[1]
-                ):
-                    # this should be the cue time-point
-                    assert (
-                        container.time[i][2 * srate] == 0
-                    ), "This should be the cue time-point"
-                    stim[2 * srate] = y
+                if td.artifact == 0:
+                    if td.triallength >= self.interval[1]:
+                        # this should be the cue time-point
+                        assert (
+                            container.time[i][2 * srate] == 0
+                        ), "This should be the cue time-point"
+                        stim[2 * srate] = td.targetnumber
+                        accepted_triallengths.append(float(td.triallength))
+                    else:
+                        rejected_lengths.append(td.triallength)
                 X_flat.append(x)
                 stim_flat.append(stim[None, :])
 
             X_flat = np.concatenate(X_flat, axis=1)
             stim_flat = np.concatenate(stim_flat, axis=1)
 
-            p_keep = np.flatnonzero(stim_flat).shape[0] / container.data.shape[0]
+            n_total = container.data.shape[0]
+            n_accepted = len(accepted_triallengths)
+            p_keep = n_accepted / n_total
 
             message = (
-                "The trial length of this dataset is dynamic."
+                "The trial length of this dataset is dynamic. "
                 f"For the specified interval [{self.interval[0]}, {self.interval[1]}], "
                 f"{(1 - p_keep) * 100:.0f}% of the epochs of record {subject}/"
                 f"{session} (subject/session) were rejected (artifact or"
-                " too short) ."
+                " too short)."
             )
+            if rejected_lengths:
+                message += (
+                    f" Rejected-for-length trials had durations in "
+                    f"[{min(rejected_lengths):.2f}, {max(rejected_lengths):.2f}] s."
+                )
             if p_keep < 0.5:
+                message += (
+                    " Consider using suggest_interval() to find an interval"
+                    " that retains more trials."
+                )
                 LOGGER.warning(message)
             else:
                 LOGGER.info(message)
@@ -476,6 +524,25 @@ class Stieger2021(BaseDataset):
             info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=srate)
             raw = mne.io.RawArray(data=eeg_data, info=info, verbose=False)
             raw.set_montage(montage)
+
+            # Attach triallength as annotation extras so it flows through
+            # to BIDS events.tsv during conversion.
+            events_arr = mne.find_events(raw, shortest_event=0, verbose=False)
+            if len(events_arr) > 0:
+                event_desc = {v: k for k, v in self.event_id.items()}
+                annotations = mne.annotations_from_events(
+                    events_arr,
+                    raw.info["sfreq"],
+                    event_desc,
+                    first_samp=raw.first_samp,
+                    verbose=False,
+                )
+                assert len(annotations) == len(accepted_triallengths), (
+                    f"Mismatch: {len(annotations)} annotations but "
+                    f"{len(accepted_triallengths)} trial lengths."
+                )
+                annotations.extras = [{"triallength": tl} for tl in accepted_triallengths]
+                raw.set_annotations(annotations)
             if isinstance(container.chaninfo.noisechan, int):
                 badchanidxs = [container.chaninfo.noisechan]
             elif isinstance(container.chaninfo.noisechan, np.ndarray):
@@ -509,3 +576,118 @@ class Stieger2021(BaseDataset):
 
             subject_data[str(session)] = {"0": raw}
         return subject_data
+
+    def get_trial_info(self, subjects=None):
+        """Return trial-length metadata for the requested subjects.
+
+        Loads only the ``TrialData`` metadata from the ``.mat`` files
+        (without building full MNE Raw objects) and summarises trial
+        durations for artifact-free trials.
+
+        Parameters
+        ----------
+        subjects : list of int or None
+            Subjects to query.  Defaults to all selected subjects
+            (``self.subject_list``).
+
+        Returns
+        -------
+        info : dict
+            Nested dict ``{subject_id: {session_id: {...}}}`` where each
+            innermost dict contains:
+
+            - ``triallengths`` : np.ndarray – lengths of artifact-free trials
+            - ``n_total`` : int – total number of trials
+            - ``n_artifact_free`` : int – trials without artifacts
+            - ``min`` : float – shortest artifact-free trial
+            - ``max`` : float – longest artifact-free trial
+            - ``median`` : float – median artifact-free trial length
+        """
+        if subjects is None:
+            subjects = self.subject_list
+
+        info = {}
+        for subject in subjects:
+            file_paths = self.data_path(subject)
+            subject_info = {}
+            for file in file_paths:
+                session = self._parse_session(file)
+                if self.sessions is not None and session not in set(self.sessions):
+                    continue
+
+                container = self._load_container(file)
+
+                n_total = container.data.shape[0]
+                lengths = []
+                for i in range(n_total):
+                    td = container.TrialData[i]
+                    if td.artifact == 0:
+                        lengths.append(float(td.triallength))
+
+                lengths = np.array(lengths)
+                subject_info[session] = {
+                    "triallengths": lengths,
+                    "n_total": n_total,
+                    "n_artifact_free": len(lengths),
+                    "min": float(lengths.min()) if len(lengths) > 0 else np.nan,
+                    "max": float(lengths.max()) if len(lengths) > 0 else np.nan,
+                    "median": float(np.median(lengths)) if len(lengths) > 0 else np.nan,
+                }
+            info[subject] = subject_info
+        return info
+
+    def suggest_interval(self, subjects=None, keep_ratio=1.0):
+        """Suggest an epoch interval that retains a given fraction of trials.
+
+        Parameters
+        ----------
+        subjects : list of int or None
+            Subjects to consider.  Defaults to all selected subjects.
+        keep_ratio : float
+            Fraction of artifact-free trials to retain (between 0 and 1).
+            For example, ``keep_ratio=0.95`` returns an interval whose
+            ``tmax`` equals the 5th percentile of trial lengths, so that
+            at least 95 % of artifact-free trials are long enough.
+
+        Returns
+        -------
+        interval : list of float
+            ``[tmin, tmax]`` where ``tmin`` is the current
+            ``self.interval[0]`` and ``tmax`` is chosen to satisfy
+            ``keep_ratio``.
+
+        Examples
+        --------
+        >>> ds = Stieger2021(subjects=[1, 2, 3])
+        >>> ds.suggest_interval(keep_ratio=0.95)  # doctest: +SKIP
+        [0, 2.1]
+        """
+        if not 0 < keep_ratio <= 1.0:
+            raise ValueError("keep_ratio must be in (0, 1].")
+
+        info = self.get_trial_info(subjects=subjects)
+
+        lengths_list = [
+            sess_info["triallengths"]
+            for subj_info in info.values()
+            for sess_info in subj_info.values()
+            if len(sess_info["triallengths"]) > 0
+        ]
+
+        if len(lengths_list) == 0:
+            raise ValueError("No artifact-free trials found for the requested subjects.")
+
+        all_lengths = np.concatenate(lengths_list)
+        # The quantile at (1 - keep_ratio) gives the tmax that keeps
+        # at least keep_ratio fraction of trials.
+        tmax = float(np.quantile(all_lengths, 1 - keep_ratio))
+
+        tmin = self.interval[0]
+        if tmax <= tmin:
+            raise ValueError(
+                f"Cannot satisfy keep_ratio={keep_ratio}: the resulting tmax "
+                f"({tmax:.3f} s) is not greater than tmin ({tmin} s). "
+                "Try a smaller keep_ratio."
+            )
+
+        return [tmin, tmax]
