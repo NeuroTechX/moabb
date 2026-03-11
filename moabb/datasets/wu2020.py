@@ -2,10 +2,11 @@
 
 Wu, Zhang, Fu, Cheung, and Chan (2020), Journal of Neural Engineering.
 DOI: 10.1088/1741-2552/abc1b6
-Data DOI: 10.21227/j7rq-2p11
+Data DOI (original): 10.21227/j7rq-2p11
 """
 
 import logging
+import zipfile
 from pathlib import Path
 
 import mne
@@ -23,29 +24,14 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+from .utils import safe_extract_zip
 
 
 log = logging.getLogger(__name__)
 
-# IEEE DataPort open-access dataset.
-# Requires free IEEE DataPort account for download.
-_DATA_URL = (
-    "https://ieee-dataport.org/open-access/"
-    "ear-eeg-recording-brain-computer-interface-motor-task"
-)
-
-# EEG channel groups.
-_SCALP_CH_NAMES = [
-    "Cz",
-    "C1",
-    "C2",
-    "C3",
-    "C4",
-    "C5",
-    "C6",
-    "T7",
-    "T8",
-]
+# Zenodo re-hosted data (originally from IEEE DataPort DOI: 10.21227/j7rq-2p11).
+_ZENODO_RECORD = "18961128"
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 # fmt: off
 # Left/Right: Front, Back, Outer-Upper, Outer-Down (ear canal positions)
@@ -56,8 +42,6 @@ _EVENTS = {
     "left_hand": 1,
     "right_hand": 2,
 }
-
-_SFREQ = 1000.0
 
 
 class Wu2020(BaseDataset):
@@ -72,18 +56,17 @@ class Wu2020(BaseDataset):
     It contains data recorded on 6 subjects with a combination of
     standard scalp EEG and custom in-ear EEG electrodes. The scalp
     cap provides 122 channels, and 8 additional ear channels (4 per ear)
-    are recorded simultaneously via custom earpieces.
-
-    For MOABB, only the motor-relevant scalp channels and ear channels
-    are used by default.
+    are recorded simultaneously via custom earpieces. There is also one
+    unknown misc channel ("10") and one Trigger channel, for 132 total.
 
     Two conditions were recorded:
 
-    - **left_hand**: left hand fist clench
-    - **right_hand**: right hand fist clench
+    - **left_hand**: left hand fist clench (event code 1)
+    - **right_hand**: right hand fist clench (event code 2)
 
-    Subjects 1-5 have 160 trials (10 blocks x 16 trials), subject 6
-    has 80 trials (5 blocks x 16 trials).
+    Trial counts vary per subject (80-240 left/right trials, 1114 total).
+    Subjects have 1-4 recording blocks (Curry .dat files) each treated
+    as a separate run.
 
     References
     ----------
@@ -96,8 +79,8 @@ class Wu2020(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=130,
-            channel_types={"eeg": 130},
+            n_channels=132,
+            channel_types={"eeg": 122, "misc": 10},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",
             sensor_type="Ag/AgCl",
@@ -144,7 +127,8 @@ class Wu2020(BaseDataset):
             ],
             institution="City University of Hong Kong",
             country="HK",
-            data_url=_DATA_URL,
+            repository="Zenodo",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2020,
             license="CC-BY-4.0",
         ),
@@ -160,8 +144,8 @@ class Wu2020(BaseDataset):
             imagery_tasks=["left_hand", "right_hand"],
         ),
         data_structure=DataStructureMetadata(
-            n_trials=880,
-            trials_context=("5 subjects x 160 trials + 1 subject x 80 trials = 880"),
+            n_trials=1114,
+            trials_context=("S1: 240, S2: 160, S3: 160, S4: 80, S5: 234, S6: 240 = 1114"),
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
@@ -196,11 +180,8 @@ class Wu2020(BaseDataset):
                     subj_dir = candidate
                     break
 
-        # Find the .dat file (Curry format)
-        dat_files = sorted(subj_dir.glob("*.dat"))
-        if not dat_files:
-            dat_files = sorted(subj_dir.rglob("*.dat"))
-
+        # Find .dat files (case-insensitive, some subjects use Motor*.dat)
+        dat_files = sorted(f for f in subj_dir.iterdir() if f.suffix.lower() == ".dat")
         if not dat_files:
             raise FileNotFoundError(
                 f"No .dat files found for subject {subject} in {subj_dir}"
@@ -210,12 +191,20 @@ class Wu2020(BaseDataset):
         for run_idx, dat_file in enumerate(dat_files):
             raw = mne.io.read_raw_curry(str(dat_file), preload=True, verbose=False)
 
-            # Extract events from annotations
-            events, event_id = mne.events_from_annotations(raw, verbose=False)
+            # Filter annotations to only left_hand (1) and right_hand (2).
+            # Some files contain extra codes (800000, 800001, Impedance Check).
+            desired = {"1": 1, "2": 2}
+            events, _ = mne.events_from_annotations(raw, event_id=desired, verbose=False)
 
-            # Map event codes: 1 -> left_hand, 2 -> right_hand
-            # The exact mapping needs verification from actual data.
-            raw.set_annotations(raw.annotations)
+            # Replace annotations with only the left/right events.
+            event_desc = {1: "left_hand", 2: "right_hand"}
+            annot = mne.annotations_from_events(
+                events=events,
+                event_desc=event_desc,
+                sfreq=raw.info["sfreq"],
+                orig_time=raw.info["meas_date"],
+            )
+            raw.set_annotations(annot)
 
             runs[str(run_idx)] = raw
 
@@ -227,22 +216,35 @@ class Wu2020(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path = dl.get_dataset_path("Wu2020", path)
-        basepath = Path(path) / "MNE-wu2020-data"
-        basepath.mkdir(parents=True, exist_ok=True)
+        sign = self.code
+        data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
+        subj_dir = data_dir / f"subject{subject}"
 
-        subj_dir = basepath / f"subject{subject}"
-        if subj_dir.exists() and list(subj_dir.glob("*.dat")):
-            return str(basepath)
+        # Return cached files if already extracted
+        if subj_dir.is_dir() and not force_update:
+            dat_files = [f for f in subj_dir.iterdir() if f.suffix.lower() == ".dat"]
+            if dat_files:
+                return str(data_dir)
 
-        # IEEE DataPort requires manual download.
-        log.warning(
-            "Wu2020 data must be downloaded manually from IEEE DataPort: "
-            "%s "
-            "Download subject%d.zip and extract to: %s",
-            _DATA_URL,
-            subject,
-            basepath,
-        )
+        # Download per-subject ZIP from Zenodo
+        zip_name = f"subject{subject}.zip"
+        url = f"{_ZENODO_BASE}/{zip_name}"
+        dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
 
-        return str(basepath)
+        # Rename to .zip if needed
+        zip_path = dl_path.with_suffix(".zip")
+        if dl_path != zip_path:
+            dl_path.rename(zip_path)
+
+        # Extract Curry files into data directory
+        # ZIP contains subject{N}/ folder, so extract into data_dir
+        data_dir.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(zip_path) as zf:
+            safe_extract_zip(zf, data_dir)
+
+        dat_files = [f for f in subj_dir.iterdir() if f.suffix.lower() == ".dat"]
+        if not dat_files:
+            raise FileNotFoundError(
+                f"No .dat files found for subject {subject} in {subj_dir}"
+            )
+        return str(data_dir)
