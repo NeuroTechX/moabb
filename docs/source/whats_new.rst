@@ -138,6 +138,7 @@ Bugs
 - Fix ``set_montage`` crash in :class:`moabb.datasets.Thielen2015` when ``return_all_modalities=True`` by retyping ANA/EXG channels to ``misc`` (:gh:`1030` by `Bruno Aristimunha`_)
 - Fix duplicate stim channels and dead CPz reference channel in :class:`moabb.datasets.Liu2024` when ``return_all_modalities=True`` (:gh:`1030` by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.preprocessing.RawToEpochs` silently stripping all non-EEG channels regardless of ``return_all_modalities`` setting (:gh:`1030` by `Bruno Aristimunha`_)
+- Fix HED annotation semantics for Motor Imagery events per expert review: decompose each MI event into separate ``(Sensory-event, Experimental-stimulus, Visual-presentation)`` and ``(Agent-action, ...)`` top-level groups per HED Rules 2b/2e/2f, remove conflated ``Cue`` + ``Experimental-stimulus`` roles, fix SSVEP ``rest`` tag to ``Experiment-structure``, and extract shared ``_MI_SENSORY`` constant to reduce tag duplication (:gh:`1035` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
