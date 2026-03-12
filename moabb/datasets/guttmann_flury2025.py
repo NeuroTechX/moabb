@@ -6,6 +6,7 @@ Data DOI: 10.7303/syn64005218
 """
 
 import logging
+import zipfile
 from pathlib import Path
 
 import mne
@@ -24,13 +25,14 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from .utils import stim_channels_with_selected_ids
+from .utils import safe_extract_zip, stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
 
-# Synapse project ID for programmatic download.
-_SYNAPSE_PROJECT = "syn64005218"
+# Zenodo record for the MI paradigm.
+_ZENODO_RECORD = "PLACEHOLDER"
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 # Event mapping for the MI paradigm.
 _EVENTS = {
@@ -52,42 +54,51 @@ _CH_NAMES = [
 ]
 # fmt: on
 
-# Sessions per subject (variable: 1-3 sessions).
-# Subjects with <3 sessions: S08,S10,S16,S17,S18,S21,S22,S23,S24,S25,
-# S26,S27,S28,S29 have 1 session; S19,S30 have 2 sessions.
+# Corrected sessions per subject (verified from Order Paradigms.csv).
 _SESSIONS_PER_SUBJECT = {
-    1: 3,
+    1: 1,
     2: 3,
     3: 3,
     4: 3,
     5: 3,
-    6: 3,
+    6: 1,
     7: 3,
-    8: 1,
+    8: 3,
     9: 3,
-    10: 1,
-    11: 3,
+    10: 2,
+    11: 1,
     12: 3,
     13: 3,
     14: 3,
     15: 3,
-    16: 1,
-    17: 1,
-    18: 1,
-    19: 2,
-    20: 3,
+    16: 3,
+    17: 3,
+    18: 3,
+    19: 1,
+    20: 1,
     21: 1,
     22: 1,
-    23: 1,
+    23: 3,
     24: 1,
-    25: 1,
+    25: 2,
     26: 1,
     27: 1,
     28: 1,
     29: 1,
-    30: 2,
-    31: 3,
+    30: 1,
+    31: 1,
 }
+
+# MI recordings with "bis" suffix (repeated due to technical issues).
+_MI_BIS = {(8, 1), (9, 1), (17, 1)}
+
+
+def _mi_bdf_name(subject, session):
+    """Return the BDF filename for a given MI recording."""
+    code = f"MI{subject:02d}{session}"
+    if (subject, session) in _MI_BIS:
+        code += "bis"
+    return f"{code}.bdf"
 
 
 class GuttmannFlury2025(BaseDataset):
@@ -105,10 +116,8 @@ class GuttmannFlury2025(BaseDataset):
     Each MI session has 40 trials (20 left, 20 right). Trial
     structure: 2 s fixation + 4 s imagery + 1-1.5 s rest.
 
-    **Note**: This dataset is hosted on Synapse and requires a free
-    Synapse account with an auth token. Set the environment variable
-    ``SYNAPSE_AUTH_TOKEN`` before downloading. Create a token at
-    https://www.synapse.org/#!PersonalAccessTokens:
+    The data is hosted on Zenodo (re-hosted from Synapse with EEG
+    converted from CSV to BDF format).
 
     References
     ----------
@@ -121,8 +130,8 @@ class GuttmannFlury2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
-            channel_types={"eeg": 62, "eog": 1, "emg": 2},
+            n_channels=66,
+            channel_types={"eeg": 64, "eog": 1, "stim": 1},
             montage="standard_1005",
             hardware="Neuroscan Quik-Cap 65-ch, SynAmps2",
             sensor_type="Ag/AgCl",
@@ -136,7 +145,7 @@ class GuttmannFlury2025(BaseDataset):
             n_subjects=31,
             health_status="healthy",
             gender={"female": 11, "male": 20},
-            age_mean=29.0,
+            age_mean=28.3,
             age_min=20.0,
             age_max=57.0,
             species="human",
@@ -168,7 +177,7 @@ class GuttmannFlury2025(BaseDataset):
             ],
             institution="Shanghai Jiao Tong University",
             country="CN",
-            data_url="https://www.synapse.org/Synapse:syn64005218",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2025,
             license="CC0",
         ),
@@ -194,7 +203,7 @@ class GuttmannFlury2025(BaseDataset):
             environment="laboratory",
         ),
         data_processed=False,
-        file_format="CNT (Neuroscan)",
+        file_format="BDF",
     )
 
     def __init__(self, subjects=None, sessions=None):
@@ -218,98 +227,116 @@ class GuttmannFlury2025(BaseDataset):
         sessions = {}
 
         for sess_idx in range(1, n_sess + 1):
-            cnt_name = f"MI-S-{subject:02d}-Sess-{sess_idx}.cnt"
-            cnt_path = base / cnt_name
+            bdf_name = _mi_bdf_name(subject, sess_idx)
+            sess_dir = base / f"Sess{sess_idx:02d}"
+            bdf_path = sess_dir / bdf_name
 
-            if not cnt_path.exists():
-                # Try alternative locations.
-                candidates = list(base.rglob(f"*MI*S*{subject:02d}*Sess*{sess_idx}*.cnt"))
+            if not bdf_path.exists():
+                # Try finding BDF in base directory or alternative paths.
+                candidates = list(base.rglob(f"MI{subject:02d}{sess_idx}*.bdf"))
                 if candidates:
-                    cnt_path = candidates[0]
+                    bdf_path = candidates[0]
                 else:
-                    log.warning("Missing %s", cnt_name)
+                    log.warning("Missing %s", bdf_name)
                     continue
 
             try:
-                raw = mne.io.read_raw_cnt(str(cnt_path), preload=True, verbose="ERROR")
+                raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
 
-                # Map annotation descriptions to MOABB event names.
-                desc = raw.annotations.description.astype(np.dtype("<15U"))
-                desc[desc == "Left"] = "left_hand"
-                desc[desc == "Right"] = "right_hand"
-                raw.annotations.description = desc
+                # Find events from the STIM channel (Trig).
+                stim_ch = "Trig"
+                if stim_ch not in raw.ch_names:
+                    # Fall back to last channel
+                    stim_ch = raw.ch_names[-1]
+
+                events = mne.find_events(raw, stim_channel=stim_ch, verbose="ERROR")
+
+                # Create annotations from events.
+                event_id_inv = {v: k for k, v in _EVENTS.items()}
+                annot_onset = []
+                annot_dur = []
+                annot_desc = []
+                for ev in events:
+                    code = int(ev[2])
+                    if code in event_id_inv:
+                        annot_onset.append(ev[0] / raw.info["sfreq"])
+                        annot_dur.append(0.0)
+                        annot_desc.append(event_id_inv[code])
+
+                if annot_onset:
+                    annotations = mne.Annotations(
+                        onset=np.array(annot_onset),
+                        duration=np.array(annot_dur),
+                        description=annot_desc,
+                    )
+                    raw.set_annotations(annotations)
+                else:
+                    log.warning("No MI events (codes 1/2) in %s", bdf_path.name)
 
                 raw = stim_channels_with_selected_ids(raw, self.event_id)
                 sessions[str(sess_idx - 1)] = {"0": raw}
+
             except Exception as e:
-                log.warning("Failed to load %s: %s", cnt_path.name, e)
+                log.warning("Failed to load %s: %s", bdf_path.name, e)
 
         if not sessions:
             raise FileNotFoundError(f"No MI data for subject {subject} in {base}")
         return sessions
 
     def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+        self,
+        subject,
+        path=None,
+        force_update=False,
+        update_path=None,
+        verbose=None,
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path = dl.get_dataset_path("GuttmannFlury2025", path)
+        if _ZENODO_RECORD == "PLACEHOLDER":
+            raise NotImplementedError(
+                "GuttmannFlury2025 Zenodo record ID not yet set. "
+                "Data must be uploaded to Zenodo first."
+            )
+
+        sign = "GuttmannFlury2025"
+        path = dl.get_dataset_path(sign, path)
         basepath = Path(path) / "MNE-guttmannflury2025-data"
-        basepath.mkdir(parents=True, exist_ok=True)
+        subj_dir = basepath / f"S{subject:02d}"
 
-        # Check if MI CNT files already exist.
-        cnt_pattern = f"MI-S-{subject:02d}-Sess-*.cnt"
-        existing = list(basepath.rglob(cnt_pattern))
-        if existing and not force_update:
-            return str(basepath)
-
-        # Download from Synapse (requires synapseclient + auth token).
-        try:
-            import synapseclient  # noqa: F401
-        except ImportError:
-            raise ImportError(
-                "The synapseclient package is required to download "
-                "the GuttmannFlury2025 dataset. Install it with:\n"
-                "  pip install synapseclient\n"
-                "Then set SYNAPSE_AUTH_TOKEN environment variable."
-            )
-
-        import os
-
-        token = os.environ.get("SYNAPSE_AUTH_TOKEN")
-        if not token:
-            raise RuntimeError(
-                "SYNAPSE_AUTH_TOKEN environment variable not set. "
-                "Create a Personal Access Token at "
-                "https://www.synapse.org/#!PersonalAccessTokens: "
-                "and set it as SYNAPSE_AUTH_TOKEN."
-            )
-
-        syn = synapseclient.login(authToken=token, silent=True)
-
-        # Get project children to find MI files for this subject.
-        log.info(
-            "Downloading GuttmannFlury2025 MI data for subject %d from Synapse...",
-            subject,
-        )
-
-        # Walk the Synapse project to find MI CNT files.
-        # The exact folder structure on Synapse is TBD; search by filename.
+        # Check if BDF files already exist for this subject.
         n_sess = _SESSIONS_PER_SUBJECT.get(subject, 1)
+        all_exist = True
         for sess_idx in range(1, n_sess + 1):
-            cnt_name = f"MI-S-{subject:02d}-Sess-{sess_idx}.cnt"
-            target = basepath / cnt_name
-            if target.exists() and not force_update:
-                continue
+            bdf_name = _mi_bdf_name(subject, sess_idx)
+            sess_dir = subj_dir / f"Sess{sess_idx:02d}"
+            if not (sess_dir / bdf_name).exists():
+                all_exist = False
+                break
 
-            try:
-                # Query Synapse for the file by name.
-                results = syn.findEntityId(cnt_name, parent=_SYNAPSE_PROJECT)
-                if results:
-                    syn.get(results, downloadLocation=str(basepath))
-                    log.info("Downloaded %s", cnt_name)
-            except Exception as e:
-                log.warning("Could not download %s: %s", cnt_name, e)
+        if all_exist and not force_update:
+            return str(subj_dir)
 
-        return str(basepath)
+        # Download per-subject ZIP from Zenodo.
+        zip_name = f"S{subject:02d}.zip"
+        url = f"{_ZENODO_BASE}/{zip_name}"
+        dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+
+        # The downloaded file might be in a nested path; find it.
+        if dl_path.is_dir():
+            zip_candidates = list(dl_path.rglob(zip_name))
+            if zip_candidates:
+                dl_path = zip_candidates[0]
+            else:
+                raise FileNotFoundError(
+                    f"Downloaded {zip_name} but could not locate ZIP in {dl_path}"
+                )
+
+        # Extract ZIP to subject directory.
+        subj_dir.mkdir(parents=True, exist_ok=True)
+        log.info("Extracting %s to %s", zip_name, subj_dir)
+        with zipfile.ZipFile(str(dl_path)) as zf:
+            safe_extract_zip(zf, subj_dir)
+
+        return str(subj_dir)

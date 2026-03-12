@@ -6,6 +6,7 @@ Data DOI: 10.21227/f1c7-7x89
 """
 
 import logging
+import zipfile
 from pathlib import Path
 
 import mne
@@ -24,19 +25,15 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+from .utils import safe_extract_zip
 
 
 log = logging.getLogger(__name__)
 
-# IEEE DataPort download URLs for the 9 ZIP archives.
-# These are direct download links from the open-access dataset page.
-_BASE_URL = "https://ieee-dataport.org/open-access/eeg-dataset-7-day-motor-imagery-bci"
-
-# The dataset is organized in 9 ZIP files:
-# S1-S2.zip through S11-S12.zip (S-subjects) and A1-A4.zip, A5-A8.zip
-# We'll use the Figshare mirror or IEEE DataPort direct links.
-# NOTE: IEEE DataPort may require a free login for download.
-# The URLs will need to be verified - using placeholder pattern.
+# Zenodo re-hosted data (originally from IEEE DataPort DOI: 10.21227/f1c7-7x89).
+# Replace RECORD_ID after uploading to Zenodo.
+_ZENODO_RECORD = "PLACEHOLDER"  # TODO: replace after Zenodo upload
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 # Two subject groups with different channel counts:
 # S-subjects (1-12): 41 channels
@@ -156,7 +153,8 @@ class Zhou2020(BaseDataset):
             investigators=["Qing Zhou"],
             institution="Zhejiang University",
             country="CN",
-            data_url="https://ieee-dataport.org/open-access/eeg-dataset-7-day-motor-imagery-bci",
+            repository="Zenodo",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2021,
             license="CC-BY-4.0",
         ),
@@ -199,9 +197,10 @@ class Zhou2020(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
-        base = Path(self.data_path(subject))
+        data_dir = Path(self.data_path(subject))
+        subj_dir = data_dir / f"S{subject:02d}"
 
-        # Determine subject naming: S1-S12 or A1-A8
+        # Determine original prefix for NPZ file naming
         if subject <= 12:
             prefix = f"S{subject}"
         else:
@@ -213,9 +212,7 @@ class Zhou2020(BaseDataset):
             runs = {}
 
             for run_idx in range(6):
-                # Try to find NPZ files with various naming patterns.
-                # Common patterns: {prefix}_session{N}_run{M}.npz
-                npz_file = self._find_npz(base, prefix, sess_idx, run_idx)
+                npz_file = self._find_npz(subj_dir, prefix, sess_idx, run_idx)
                 if npz_file is None:
                     log.warning(
                         "Missing data: %s session %d run %d",
@@ -234,14 +231,13 @@ class Zhou2020(BaseDataset):
 
         if not sessions:
             raise FileNotFoundError(
-                f"No data found for subject {subject} ({prefix}) in {base}"
+                f"No data found for subject {subject} ({prefix}) in {subj_dir}"
             )
         return sessions
 
-    def _find_npz(self, base, prefix, sess_idx, run_idx):
+    def _find_npz(self, subj_dir, prefix, sess_idx, run_idx):
         """Find an NPZ file for a given subject/session/run."""
-        # The exact naming convention needs to be verified from actual data.
-        # Try common patterns.
+        # Try common naming patterns
         patterns = [
             f"{prefix}_s{sess_idx + 1}_r{run_idx + 1}.npz",
             f"{prefix}_session{sess_idx + 1}_run{run_idx + 1}.npz",
@@ -249,13 +245,18 @@ class Zhou2020(BaseDataset):
             f"{prefix}_{sess_idx + 1}_{run_idx + 1}.npz",
         ]
         for pat in patterns:
-            fpath = base / pat
+            fpath = subj_dir / pat
             if fpath.exists():
                 return fpath
 
-        # Fallback: search for any NPZ matching the prefix
-        all_npz = sorted(base.glob(f"{prefix}*.npz"))
+        # Fallback: index into sorted NPZ files for this prefix
+        all_npz = sorted(subj_dir.glob(f"{prefix}*.npz"))
         expected_idx = sess_idx * 6 + run_idx
+        if expected_idx < len(all_npz):
+            return all_npz[expected_idx]
+
+        # Last resort: index into all NPZ files in the directory
+        all_npz = sorted(subj_dir.glob("*.npz"))
         if expected_idx < len(all_npz):
             return all_npz[expected_idx]
 
@@ -338,28 +339,28 @@ class Zhou2020(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path = dl.get_dataset_path("Zhou2020", path)
-        basepath = Path(path) / "MNE-zhou2020-data"
-        basepath.mkdir(parents=True, exist_ok=True)
-
-        if subject <= 12:
-            prefix = f"S{subject}"
-        else:
-            prefix = f"A{subject - 12}"
+        sign = self.code
+        data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
+        subj_dir = data_dir / f"S{subject:02d}"
 
         # Check if subject data already exists
-        existing = list(basepath.glob(f"{prefix}*.npz"))
-        if existing:
-            return str(basepath)
+        npz_files = sorted(subj_dir.glob("*.npz")) if subj_dir.is_dir() else []
+        if npz_files and not force_update:
+            return str(data_dir)
 
-        # Download the appropriate ZIP from IEEE DataPort.
-        # NOTE: IEEE DataPort may require manual download.
-        log.warning(
-            "Zhou2020 data must be downloaded manually from IEEE DataPort: "
-            "https://ieee-dataport.org/open-access/eeg-dataset-7-day-motor-imagery-bci "
-            "Download the ZIP file(s) for subject %s and extract to: %s",
-            prefix,
-            basepath,
-        )
+        # Download per-subject ZIP from Zenodo
+        zip_name = f"S{subject:02d}.zip"
+        url = f"{_ZENODO_BASE}/{zip_name}"
+        zip_path = dl.data_dl(url, sign, path, force_update, verbose)
 
-        return str(basepath)
+        # Extract NPZ files into subject directory
+        subj_dir.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(zip_path) as zf:
+            safe_extract_zip(zf, subj_dir)
+
+        npz_files = sorted(subj_dir.glob("*.npz"))
+        if not npz_files:
+            raise FileNotFoundError(
+                f"No .npz files found for subject {subject} in {subj_dir}"
+            )
+        return str(data_dir)

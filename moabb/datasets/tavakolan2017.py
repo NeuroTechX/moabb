@@ -2,10 +2,10 @@
 
 Tavakolan, Frehlick, Yong, and Menon (2017), PLOS ONE.
 DOI: 10.1371/journal.pone.0174161
+Data DOI (original): 10.5061/dryad.6qs86
 """
 
 import logging
-import os
 import re
 import zipfile
 from pathlib import Path
@@ -32,8 +32,9 @@ from .utils import safe_extract_zip
 
 log = logging.getLogger(__name__)
 
-DRYAD_API_URL = "https://datadryad.org/api/v2/files/{file_id}/download"
-DRYAD_TOKEN_URL = "https://datadryad.org/oauth/token"
+# Zenodo re-hosted data (originally from Dryad DOI: 10.5061/dryad.6qs86).
+_ZENODO_RECORD = "18967205"
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 # BCI2000 StimulusCode -> event name mapping.
 # From the BCI2000 header: stimulus1=Rest, stimulus2=Wrist, stimulus3=Elbow,
@@ -45,25 +46,6 @@ _STIM_CODE_TO_EVENT = {
 }
 # StimulusCode 4 (Reach-Hold the Glass) is excluded from the default event
 # mapping because the paper analyses only three classes.
-
-# Mapping of (subject, session) -> Dryad file_stream ID.
-# Obtained from the Dryad API v2 for doi:10.5061/dryad.6qs86.
-# fmt: off
-_FILE_IDS = {
-    (1, 1): 13762, (1, 2): 13764, (1, 3): 13766, (1, 4): 13768,
-    (2, 1): 13770, (2, 2): 13792, (2, 3): 13814, (2, 4): 13836,
-    (3, 1): 13772, (3, 2): 13794, (3, 3): 13816, (3, 4): 13838,
-    (4, 1): 13774, (4, 2): 13796, (4, 3): 13818, (4, 4): 13840,
-    (5, 1): 13776, (5, 2): 13798, (5, 3): 13820, (5, 4): 13842,
-    (6, 1): 13778, (6, 2): 13800, (6, 3): 13822, (6, 4): 13844,
-    (7, 1): 13780, (7, 2): 13802, (7, 3): 13824, (7, 4): 13846,
-    (8, 1): 13782, (8, 2): 13804, (8, 3): 13826, (8, 4): 13848,
-    (9, 1): 13784, (9, 2): 13806, (9, 3): 13828, (9, 4): 13850,
-    (10, 1): 13786, (10, 2): 13808, (10, 3): 13830, (10, 4): 13852,
-    (11, 1): 13788, (11, 2): 13810, (11, 3): 13832, (11, 4): 13854,
-    (12, 1): 13790, (12, 2): 13812, (12, 3): 13834, (12, 4): 13856,
-}
-# fmt: on
 
 # Number of EEG channels in the GSN-HydroCel-32 net (excluding Cz reference).
 _N_EEG = 32
@@ -91,14 +73,8 @@ class Tavakolan2017(BaseDataset):
     performed the imagery) followed by a 4-6 s rest interval.  The imagery
     interval [0, 3] s after cue onset is used for analysis.
 
-    The data is stored on the Dryad Digital Repository [2]_ as ZIP archives
-    (one per subject-session) containing BCI2000 ``.DAT`` files.
-
-    .. note::
-        Downloading requires Dryad API credentials.  Set the environment
-        variables ``DRYAD_CLIENT_ID`` and ``DRYAD_CLIENT_SECRET`` before
-        calling ``get_data()``.  You can obtain them by creating a free
-        account at https://datadryad.org.
+    The data was originally deposited on the Dryad Digital Repository [2]_
+    and has been re-hosted on Zenodo for direct programmatic access.
 
     .. note::
         Reading BCI2000 ``.DAT`` files requires the ``BCI2kReader`` package::
@@ -192,8 +168,8 @@ class Tavakolan2017(BaseDataset):
                 "MENRVA Research Group, School of Mechatronic Systems Engineering"
             ),
             country="CA",
-            data_url="https://datadryad.org/stash/dataset/doi:10.5061/dryad.6qs86",
-            repository="Dryad",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Zenodo",
             license="CC0-1.0",
             publication_year=2017,
             ethics_approval=["Simon Fraser University Office of Research Ethics"],
@@ -261,15 +237,25 @@ class Tavakolan2017(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject across all sessions.
 
-        Each session is stored as a separate ZIP file on Dryad containing a
-        single BCI2000 ``.DAT`` file.  The first 32 channels are EEG
-        (GSN-HydroCel-32 net).  Events are extracted from the ``StimulusCode``
-        state variable.
+        Each session is stored as a session ZIP inside the per-subject ZIP
+        on Zenodo, containing a single BCI2000 ``.DAT`` file.  The first 32
+        channels are EEG (GSN-HydroCel-32 net).  Events are extracted from
+        the ``StimulusCode`` state variable.
         """
+        # Ensure all sessions are downloaded and extracted
+        self.data_path(subject)
+
+        sign = self.code
+        data_dir = Path(dl.get_dataset_path(sign, None)) / f"MNE-{sign.lower()}-data"
+        subj_dir = data_dir / f"P{subject:02d}"
+
         sessions = {}
         for ses_idx in range(1, 5):
-            dat_path = self.data_path(subject, session=ses_idx)
-            raw = self._read_bci2000_dat(dat_path)
+            dat_files = sorted(subj_dir.glob(f"*Se{ses_idx:02d}*.DAT"))
+            if not dat_files:
+                log.warning("Missing .DAT for subject %d session %d", subject, ses_idx)
+                continue
+            raw = self._read_bci2000_dat(str(dat_files[0]))
             sessions[str(ses_idx - 1)] = {"0": raw}
         return sessions
 
@@ -319,75 +305,14 @@ class Tavakolan2017(BaseDataset):
 
         return raw
 
-    @staticmethod
-    def _get_dryad_token():
-        """Obtain an OAuth Bearer token from Dryad.
-
-        Requires ``DRYAD_CLIENT_ID`` and ``DRYAD_CLIENT_SECRET`` environment
-        variables to be set (obtainable from https://datadryad.org).
-        """
-        import requests
-
-        client_id = os.environ.get("DRYAD_CLIENT_ID", "")
-        client_secret = os.environ.get("DRYAD_CLIENT_SECRET", "")
-        if not client_id or not client_secret:
-            raise EnvironmentError(
-                "Dryad API credentials are required.  Set the DRYAD_CLIENT_ID "
-                "and DRYAD_CLIENT_SECRET environment variables.  You can obtain "
-                "them from https://datadryad.org by creating an account."
-            )
-        resp = requests.post(
-            DRYAD_TOKEN_URL,
-            data={
-                "grant_type": "client_credentials",
-                "client_id": client_id,
-                "client_secret": client_secret,
-            },
-            timeout=30,
-        )
-        resp.raise_for_status()
-        return resp.json()["access_token"]
-
-    def _download_dryad_file(self, file_id, dest_dir, subject, session):
-        """Download a file from Dryad using OAuth authentication.
-
-        Returns the path to the downloaded ZIP file.
-        """
-        import requests
-
-        zip_path = dest_dir / f"P{subject:02d}_Se{session:02d}.zip"
-        if zip_path.exists():
-            return str(zip_path)
-
-        token = self._get_dryad_token()
-        url = DRYAD_API_URL.format(file_id=file_id)
-        log.info("Downloading %s from Dryad ...", url)
-
-        resp = requests.get(
-            url,
-            headers={"Authorization": f"Bearer {token}"},
-            stream=True,
-            timeout=600,
-        )
-        resp.raise_for_status()
-
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        with open(zip_path, "wb") as fh:
-            for chunk in resp.iter_content(chunk_size=8192):
-                fh.write(chunk)
-
-        return str(zip_path)
-
     def data_path(
-        self,
-        subject,
-        path=None,
-        force_update=False,
-        update_path=None,
-        verbose=None,
-        session=None,
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return local path to the .DAT file for a given subject and session.
+        """Return local path to the subject directory containing .DAT files.
+
+        Downloads the per-subject ZIP from Zenodo if not already present,
+        then extracts the nested session ZIPs to obtain the BCI2000 .DAT
+        files.
 
         Parameters
         ----------
@@ -401,53 +326,65 @@ class Tavakolan2017(BaseDataset):
             Unused, kept for API compatibility.
         verbose : bool | None
             Verbosity level.
-        session : int | None
-            Session number (1-4).  If None, downloads session 1.
 
         Returns
         -------
-        dat_path : str
-            Path to the extracted BCI2000 .DAT file.
+        data_dir : str
+            Path to the dataset root directory.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-        if session is None:
-            session = 1
-        if session not in (1, 2, 3, 4):
-            raise ValueError(f"Invalid session number: {session}")
 
         sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
         subj_dir = data_dir / f"P{subject:02d}"
+
+        # Check if .DAT files already exist for all 4 sessions
+        dat_files = sorted(subj_dir.glob("*.DAT")) if subj_dir.is_dir() else []
+        if len(dat_files) >= 4 and not force_update:
+            return str(data_dir)
+
+        # Download per-subject ZIP from Zenodo
+        zip_name = f"P{subject:02d}.zip"
+        url = f"{_ZENODO_BASE}/{zip_name}"
+        dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+
+        # Rename to .zip if needed (dl.data_dl may strip extension)
+        zip_path = dl_path.with_suffix(".zip")
+        if dl_path != zip_path:
+            dl_path.rename(zip_path)
+
+        # Extract session ZIPs from the per-subject ZIP
         subj_dir.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(zip_path) as zf:
+            safe_extract_zip(zf, subj_dir)
 
-        # Check if a .DAT file already exists for this session
-        dat_files = list(subj_dir.glob(f"*Se{session:02d}*.DAT")) + list(
-            subj_dir.glob(f"*Session{session:02d}*.DAT")
-        )
-        if dat_files and not force_update:
-            return str(dat_files[0])
+        # Each session ZIP (P{NN}_Se{NN}.zip) contains a BCI2000 .DAT file.
+        # Extract the .DAT from each session ZIP.
+        for ses_zip in sorted(subj_dir.glob("P*_Se*.zip")):
+            with zipfile.ZipFile(ses_zip) as szf:
+                dat_members = [
+                    m
+                    for m in szf.infolist()
+                    if m.filename.upper().endswith(".DAT")
+                    and not m.filename.startswith("__MACOSX")
+                ]
+                safe_extract_zip(szf, subj_dir, members=dat_members)
 
-        # Download the ZIP from Dryad using OAuth API
-        file_id = _FILE_IDS[(subject, session)]
-        zip_path = self._download_dryad_file(file_id, subj_dir, subject, session)
+        # Verify extraction
+        dat_files = sorted(subj_dir.glob("*.DAT"))
+        if not dat_files:
+            # .DAT files might be in subdirectories — flatten them
+            for dat in subj_dir.rglob("*.DAT"):
+                if dat.parent != subj_dir:
+                    import shutil
 
-        # Extract .DAT files from the ZIP
-        with zipfile.ZipFile(zip_path, "r") as zf:
-            dat_members = [
-                m
-                for m in zf.infolist()
-                if m.filename.upper().endswith(".DAT")
-                and not m.filename.startswith("__MACOSX")
-            ]
-            safe_extract_zip(zf, subj_dir, members=dat_members)
+                    shutil.move(str(dat), str(subj_dir / dat.name))
+            dat_files = sorted(subj_dir.glob("*.DAT"))
 
-        # Find the extracted .DAT file
-        dat_files = list(subj_dir.glob("**/*.DAT"))
         if not dat_files:
             raise FileNotFoundError(
-                f"No .DAT file found after extracting ZIP for subject "
-                f"{subject}, session {session}"
+                f"No .DAT files found for subject {subject} in {subj_dir}"
             )
 
-        return str(dat_files[0]) if len(dat_files) == 1 else str(sorted(dat_files)[0])
+        return str(data_dir)
