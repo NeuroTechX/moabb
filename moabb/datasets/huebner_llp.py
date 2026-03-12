@@ -75,8 +75,10 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         vhdr_file_patter_match = re.match(run_file_pattern, vhdr_file_name)
 
         if not vhdr_file_patter_match:
-            # TODO: raise a wild exception?
-            logger.info(vhdr_file_path)
+            raise ValueError(
+                f"filename '{vhdr_file_name}' does not match expected pattern "
+                f"'{run_file_pattern}'"
+            )  # was a TODO, now properly raises instead of crashing on None.group()
 
         session_name = "0"
         block_idx = vhdr_file_patter_match.group(1)

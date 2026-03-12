@@ -1140,8 +1140,10 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
         else:
             raise ValueError("insignificant pval {}".format(pval))
 
-    assert alg1 in stats_df.pipe1.unique()
-    assert alg2 in stats_df.pipe1.unique()
+    if alg1 not in stats_df.pipe1.unique():  # was assert, now raises properly
+        raise ValueError(f"algorithm '{alg1}' not found in stats_df")
+    if alg2 not in stats_df.pipe1.unique():  # was assert
+        raise ValueError(f"algorithm '{alg2}' not found in stats_df")
     df_fw = stats_df.loc[(stats_df.pipe1 == alg1) & (stats_df.pipe2 == alg2)]
     df_fw = df_fw.sort_values(by="pipe1")
     df_bk = stats_df.loc[(stats_df.pipe1 == alg2) & (stats_df.pipe2 == alg1)]

@@ -81,13 +81,24 @@ class Results:
         from moabb.evaluations.base import BaseEvaluation
         from moabb.paradigms.base import BaseParadigm
 
-        assert issubclass(evaluation_class, BaseEvaluation)
-        assert issubclass(paradigm_class, BaseParadigm)
+        if not issubclass(
+            evaluation_class, BaseEvaluation
+        ):  # was assert, raises properly
+            raise TypeError(
+                f"evaluation_class must be a subclass of BaseEvaluation, "
+                f"got {evaluation_class}"
+            )
+        if not issubclass(paradigm_class, BaseParadigm):  # was assert
+            raise TypeError(
+                f"paradigm_class must be a subclass of BaseParadigm, "
+                f"got {paradigm_class}"
+            )
 
         if additional_columns is None:
             self.additional_columns = []
         else:
-            assert all([isinstance(ac, str) for ac in additional_columns])
+            if not all([isinstance(ac, str) for ac in additional_columns]):  # was assert
+                raise TypeError("all additional_columns must be strings")
             self.additional_columns = additional_columns
 
         if hdf5_path is None:

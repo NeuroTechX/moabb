@@ -56,7 +56,10 @@ class BaseSSVEP(BaseParadigm):
                 + " from all possible events"
             )
         else:
-            assert n_classes <= len(self.events), "More classes than events specified"
+            if n_classes > len(self.events):  # was assert, now raises properly
+                raise ValueError(
+                    f"n_classes ({n_classes}) exceeds number of events ({len(self.events)})"
+                )
 
     def is_valid(self, dataset):
         """Check if dataset is valid for the SSVEP paradigm."""

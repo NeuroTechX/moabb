@@ -104,7 +104,11 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep", "cvep", None]
+    if paradigm not in ["imagery", "p300", "ssvep", "cvep", None]:  # was assert
+        raise ValueError(
+            f"paradigm must be one of 'imagery', 'p300', 'ssvep', 'cvep', or None, "
+            f"got '{paradigm}'"
+        )
 
     for type_d in dataset_list:
         if type_d.__name__ in deprecated_names:
