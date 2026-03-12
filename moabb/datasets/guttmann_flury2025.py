@@ -336,7 +336,7 @@ def _load_raw_with_stim_events(bdf_path, event_id):
 # ---------------------------------------------------------------------------
 
 
-class GuttmannFlury2025(BaseDataset):
+class GuttmannFlury2025_MI(BaseDataset):
     """Eye-BCI multimodal MI/ME dataset from Guttmann-Flury et al 2025.
 
     Dataset from the article *Dataset combining EEG, eye-tracking,
@@ -430,7 +430,7 @@ class GuttmannFlury2025(BaseDataset):
             subjects=list(range(1, 32)),
             sessions_per_subject=3,
             events=dict(_MI_ME_EVENTS),
-            code="GuttmannFlury2025",
+            code="GuttmannFlury2025-MI",
             interval=[0, 4],
             paradigm="imagery",
             doi=_DOI,

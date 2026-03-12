@@ -83,7 +83,7 @@ from .forenzo2024 import Forenzo2024
 from .gao2026 import Gao2026
 from .gigadb import Cho2017
 from .guttmann_flury2025 import (
-    GuttmannFlury2025,
+    GuttmannFlury2025_MI,
     GuttmannFlury2025_P300,
     GuttmannFlury2025_SSVEP,
 )
