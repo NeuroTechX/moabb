@@ -82,6 +82,7 @@ Requirements
 - Allows CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (:gh:`866` by `Ethan Davis`_).
 - Added ``filelock`` as a core dependency to fix missing import errors in utils (:gh:`959` by `Mateusz Naklicki`_).
 - Temporarily track ``pyriemann`` from GitHub source (``master``) to use new ``PotatoField`` capabilities introduced in pyRiemann PR #423 (:gh:`1011` by `Bruno Aristimunha`_)
+- Add type hints to :class:`moabb.evaluations.base.BaseEvaluation` and all concrete evaluation classes (:gh:`732` by `Sarthak Tayal`_)
 
 Bugs
 ~~~~
@@ -108,6 +109,10 @@ Bugs
 - Fix copytree FileExistsError in BrainInvaders2013a download by adding dirs_exist_ok=True (by `Bruno Aristimunha`_)
 - Ensure optional additional scoring columns in evaluation results (:gh:`957` by `Ethan Davis`_)
 - Fix pandas ``ArrowStringArray`` shuffle warning by converting ``.unique()`` results to numpy arrays in splitters, avoiding issues with newer pandas versions (:gh:`963` by `Bruno Aristimunha`_)
+- Fix crash in :class:`moabb.datasets.Huebner2022` when regex match on vhdr filenames returns ``None`` (:gh:`1036` by `Sarthak Tayal`_)
+- Replace production ``assert`` statements with proper ``ValueError`` / ``TypeError`` exceptions across analysis, pipelines, paradigms, and datasets modules (:gh:`1036` by `Sarthak Tayal`_)
+- Fix silent pipeline name collision in :func:`moabb.pipelines.utils.create_pipeline_from_config` by raising ``ValueError`` on duplicate names (:gh:`1036` by `Sarthak Tayal`_)
+- Replace bare ``print()`` calls with proper logging in :class:`moabb.datasets.MartinezCagigal2023Checker` (:gh:`1036` by `Sarthak Tayal`_)
 - ``LearningCurveSplitter`` now skips training splits that collapse to a single class (e.g., with very small ``data_size``) and emits a ``RuntimeWarning`` instead of producing NaN results (:gh:`963` by `Bruno Aristimunha`_)
 - Fix double µV-to-V conversion in BNCI2003-004 and BNCI2015-006: data loaded in microvolts was labeled as volts without unit conversion, causing a second scaling during EDF export via ``mne_bids`` (by `Bruno Aristimunha`_)
 - Fix ``Beetl2021_A`` and ``Beetl2021_B`` 403 Forbidden errors by skipping Figshare API calls when data already exists locally, and fix double-nested zip extraction directory structure (:gh:`969` by `Bruno Aristimunha`_)
@@ -814,3 +819,4 @@ API changes
 .. _Matthias Dold: https://github.com/matthiasdold
 .. _Davoud Hajhassani: https://github.com/Davoud-Hajhassani
 .. _Katelyn Begany: https://github.com/kbegany
+.. _Sarthak Tayal: https://github.com/tayal-sarthak
