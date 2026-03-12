@@ -31,15 +31,15 @@ from .utils import safe_extract_zip
 log = logging.getLogger(__name__)
 
 # Zenodo re-hosted data (originally from IEEE DataPort DOI: 10.21227/f1c7-7x89).
-# Replace RECORD_ID after uploading to Zenodo.
-_ZENODO_RECORD = "PLACEHOLDER"  # TODO: replace after Zenodo upload
+_ZENODO_RECORD = "18988317"
 _ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 # Two subject groups with different channel counts:
-# S-subjects (1-12): 41 channels
-# A-subjects (13-20): 26 channels
+# S-subjects (1-12): 41 EEG + 4 EOG + 1 trigger = 46 channels
+# A-subjects (13-20): 26 EEG + 2 EOG + 1 trigger = 29 channels
 # We map A1-A8 -> subjects 13-20 for consistent MOABB numbering.
 
+# 26 EEG channel names used by A-subjects (also the analysis subset in paper).
 _26CH_NAMES = [
     "F3",
     "F1",
@@ -69,13 +69,25 @@ _26CH_NAMES = [
     "CP6",
 ]
 
-# Event mapping: 4 classes
+# GDF/BioSig event codes in MarkOnSignal → MOABB event names.
+_GDF_EVENT_MAP = {
+    769: "left_hand",  # 0x0301 — class 1 (left arrow)
+    770: "right_hand",  # 0x0302 — class 2 (right arrow)
+    771: "feet",  # 0x0303 — class 3 (down arrow)
+    780: "rest",  # 0x030C — class 12 (up arrow = idle)
+}
+
+# MOABB event_id mapping (integer codes for stim channel).
 _EVENTS = {
     "left_hand": 1,
     "right_hand": 2,
     "feet": 3,
     "rest": 4,
 }
+
+# Channel counts per subject group (EEG only, excluding EOG and trigger).
+_S_N_EEG = 41  # S-subjects (1-12)
+_A_N_EEG = 26  # A-subjects (13-20)
 
 _SFREQ = 500.0
 
@@ -88,24 +100,27 @@ class Zhou2020(BaseDataset):
 
     It contains data recorded on 20 subjects over 7 sessions (one session
     every ~2 days over 2 weeks) with no feedback training. Two groups of
-    subjects were recorded:
+    subjects were recorded with a 64-channel Neuroscan SynAmps2 system
+    at 500 Hz:
 
-    - **S-subjects** (subjects 1-12): 41 EEG channels
-    - **A-subjects** (subjects 13-20): 26 EEG channels
+    - **S-subjects** (subjects 1-12): 41 EEG + 4 EOG channels
+    - **A-subjects** (subjects 13-20): 26 EEG + 2 EOG channels
 
     Four MI classes were recorded: left hand, right hand, both feet, and
-    idle/rest. Each session contains 6 runs of 40 trials each (10 per
-    class), giving 240 trials per session and 1680 trials per subject.
+    idle/rest. Each session contains ~6 runs of 40 trials each (10 per
+    class), giving ~240 trials per session and ~1680 trials per subject.
 
-    The data is stored in NPZ (NumPy compressed) format with preprocessed
-    EEG signals (band-pass 0.5-100 Hz, 50 Hz notch).
+    The data is stored as Neuroscan NSsignal NPZ files with continuous
+    recordings (band-pass 0.5-100 Hz, 50 Hz notch). Events are encoded
+    using GDF/BioSig codes: 769 (left), 770 (right), 771 (feet), 780 (rest).
 
     References
     ----------
-    .. [1] Zhou, Q., Yang, L., Wang, Q., et al. (2021). Relative Power
-           Correlates With the Decoding Performance of Motor Imagery Both
-           Across Time and Subjects. Frontiers in Human Neuroscience, 15,
-           701091. https://doi.org/10.3389/fnhum.2021.701091
+    .. [1] Zhou, Q., Lin, J., Yao, L., Wang, Y., Han, Y., Xu, K. (2021).
+           Relative Power Correlates With the Decoding Performance of Motor
+           Imagery Both Across Time and Subjects. Frontiers in Human
+           Neuroscience, 15, 701091.
+           https://doi.org/10.3389/fnhum.2021.701091
     """
 
     METADATA = DatasetMetadata(
@@ -150,7 +165,14 @@ class Zhou2020(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnhum.2021.701091",
-            investigators=["Qing Zhou"],
+            investigators=[
+                "Qing Zhou",
+                "Jiafan Lin",
+                "Lin Yao",
+                "Yueming Wang",
+                "Yan Han",
+                "Kedi Xu",
+            ],
             institution="Zhejiang University",
             country="CN",
             repository="Zenodo",
@@ -200,141 +222,92 @@ class Zhou2020(BaseDataset):
         data_dir = Path(self.data_path(subject))
         subj_dir = data_dir / f"S{subject:02d}"
 
-        # Determine original prefix for NPZ file naming
+        # Determine EEG channel count and names for this subject group.
         if subject <= 12:
-            prefix = f"S{subject}"
+            n_eeg = _S_N_EEG
+            ch_names = [f"EEG{i + 1}" for i in range(n_eeg)]
         else:
-            prefix = f"A{subject - 12}"
+            n_eeg = _A_N_EEG
+            ch_names = list(_26CH_NAMES)
 
         sessions = {}
-        for sess_idx in range(7):
+        session_dirs = sorted(d for d in subj_dir.iterdir() if d.is_dir())
+
+        for sess_idx, sess_dir in enumerate(session_dirs):
             sess_key = str(sess_idx)
             runs = {}
 
-            for run_idx in range(6):
-                npz_file = self._find_npz(subj_dir, prefix, sess_idx, run_idx)
-                if npz_file is None:
-                    log.warning(
-                        "Missing data: %s session %d run %d",
-                        prefix,
-                        sess_idx + 1,
-                        run_idx + 1,
-                    )
-                    continue
-
-                npz = np.load(npz_file, allow_pickle=True)
-                raw = self._npz_to_raw(npz, subject)
-                runs[str(run_idx)] = raw
+            npz_files = sorted(sess_dir.glob("*.npz"))
+            for run_idx, npz_file in enumerate(npz_files):
+                try:
+                    raw = self._npz_to_raw(npz_file, n_eeg, ch_names)
+                    runs[str(run_idx)] = raw
+                except Exception as e:
+                    log.warning("Failed to load %s: %s", npz_file.name, e)
 
             if runs:
                 sessions[sess_key] = runs
 
         if not sessions:
-            raise FileNotFoundError(
-                f"No data found for subject {subject} ({prefix}) in {subj_dir}"
-            )
+            raise FileNotFoundError(f"No data found for subject {subject} in {subj_dir}")
         return sessions
 
-    def _find_npz(self, subj_dir, prefix, sess_idx, run_idx):
-        """Find an NPZ file for a given subject/session/run."""
-        # Try common naming patterns
-        patterns = [
-            f"{prefix}_s{sess_idx + 1}_r{run_idx + 1}.npz",
-            f"{prefix}_session{sess_idx + 1}_run{run_idx + 1}.npz",
-            f"{prefix}_S{sess_idx + 1}_R{run_idx + 1}.npz",
-            f"{prefix}_{sess_idx + 1}_{run_idx + 1}.npz",
-        ]
-        for pat in patterns:
-            fpath = subj_dir / pat
-            if fpath.exists():
-                return fpath
+    def _npz_to_raw(self, npz_path, n_eeg, ch_names):
+        """Convert an NSsignal NPZ file to MNE Raw.
 
-        # Fallback: index into sorted NPZ files for this prefix
-        all_npz = sorted(subj_dir.glob(f"{prefix}*.npz"))
-        expected_idx = sess_idx * 6 + run_idx
-        if expected_idx < len(all_npz):
-            return all_npz[expected_idx]
+        Parameters
+        ----------
+        npz_path : Path
+            Path to the .npz file.
+        n_eeg : int
+            Number of EEG channels (41 for S-subjects, 26 for A-subjects).
+        ch_names : list of str
+            EEG channel names.
+        """
+        npz = np.load(npz_path, allow_pickle=True)
+        signal = npz["signal"]  # (n_samples, n_channels_total)
+        mos = npz["MarkOnSignal"]  # (n_events, 2): [sample, code]
+        sfreq = float(npz["SampleRate"][0])
 
-        # Last resort: index into all NPZ files in the directory
-        all_npz = sorted(subj_dir.glob("*.npz"))
-        if expected_idx < len(all_npz):
-            return all_npz[expected_idx]
+        # Extract only the EEG channels (first n_eeg columns).
+        eeg_data = signal[:, :n_eeg].T  # (n_eeg, n_samples)
 
-        return None
+        # Scale from microvolts to volts for MNE.
+        if np.abs(eeg_data).max() > 1e-3:
+            eeg_data = eeg_data * 1e-6
 
-    def _npz_to_raw(self, npz, subject):
-        """Convert a loaded NPZ archive to MNE Raw."""
-        # NPZ expected keys: 'data' (trials x channels x samples),
-        # 'labels' (trial labels)
-        # The exact keys need verification from actual data.
-        data_key = None
-        label_key = None
-        for k in npz.files:
-            kl = k.lower()
-            if "data" in kl or "eeg" in kl or "x" == kl:
-                data_key = k
-            elif "label" in kl or "y" == kl:
-                label_key = k
+        # Build stim channel from MarkOnSignal events.
+        stim = np.zeros((1, eeg_data.shape[1]))
+        for sample_idx, gdf_code in mos:
+            event_name = _GDF_EVENT_MAP.get(int(gdf_code))
+            if event_name is not None and 0 <= sample_idx < stim.shape[1]:
+                stim[0, int(sample_idx)] = _EVENTS[event_name]
 
-        if data_key is None:
-            # Try first two arrays
-            keys = list(npz.files)
-            data_key = keys[0]
-            label_key = keys[1] if len(keys) > 1 else None
+        # Create MNE Raw.
+        all_data = np.concatenate([eeg_data, stim], axis=0)
+        ch_types = ["eeg"] * n_eeg + ["stim"]
+        ch_names_full = list(ch_names) + ["STI"]
+        info = mne.create_info(
+            ch_names=ch_names_full,
+            ch_types=ch_types,
+            sfreq=sfreq,
+        )
+        raw = mne.io.RawArray(data=all_data, info=info, verbose=False)
 
-        trial_data = npz[data_key]  # (n_trials, n_channels, n_samples)
-        labels = npz[label_key].ravel() if label_key else np.ones(trial_data.shape[0])
-
-        n_trials, n_ch, n_samples = trial_data.shape
-
-        # Determine channel names based on subject group
-        if subject <= 12:
-            # S-subjects: 41 channels - read from data
-            ch_names = [f"EEG{i + 1}" for i in range(n_ch)]
-        else:
-            # A-subjects: 26 channels
-            if n_ch == len(_26CH_NAMES):
-                ch_names = list(_26CH_NAMES)
-            else:
-                ch_names = [f"EEG{i + 1}" for i in range(n_ch)]
-
-        ch_types = ["eeg"] * n_ch + ["stim"]
-        ch_names_full = ch_names + ["STI"]
-        info = mne.create_info(ch_names=ch_names_full, ch_types=ch_types, sfreq=_SFREQ)
-
-        # Concatenate trials with stim channel and buffers
-        buffer_samples = 50
-        segments = []
-        for t in range(n_trials):
-            trial = trial_data[t]  # (n_ch, n_samples)
-            trial = trial - trial.mean(axis=1, keepdims=True)
-
-            # Scale to volts if in microvolts
-            if np.abs(trial).max() > 1e-3:
-                trial = trial * 1e-6
-
-            stim = np.zeros((1, n_samples))
-            stim[0, 0] = labels[t]
-
-            block = np.concatenate([trial, stim], axis=0)
-            buf = np.zeros((block.shape[0], buffer_samples))
-            segments.extend([buf, block, buf])
-
-        continuous = np.concatenate(segments, axis=1)
-        raw = mne.io.RawArray(data=continuous, info=info, verbose=False)
-
-        # Set montage if channel names are standard
+        # Set montage for A-subjects (standard channel names).
         if ch_names[0] != "EEG1":
-            try:
-                montage = mne.channels.make_standard_montage("standard_1005")
-                raw.set_montage(montage, on_missing="warn")
-            except Exception:
-                pass
+            montage = mne.channels.make_standard_montage("standard_1005")
+            raw.set_montage(montage, on_missing="warn")
 
         return raw
 
     def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+        self,
+        subject,
+        path=None,
+        force_update=False,
+        update_path=None,
+        verbose=None,
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -343,23 +316,23 @@ class Zhou2020(BaseDataset):
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
         subj_dir = data_dir / f"S{subject:02d}"
 
-        # Check if subject data already exists
-        npz_files = sorted(subj_dir.glob("*.npz")) if subj_dir.is_dir() else []
-        if npz_files and not force_update:
-            return str(data_dir)
+        # Check if subject data already exists (session dirs with NPZs).
+        if subj_dir.is_dir():
+            has_data = any(subj_dir.rglob("*.npz"))
+            if has_data and not force_update:
+                return str(data_dir)
 
-        # Download per-subject ZIP from Zenodo
+        # Download per-subject ZIP from Zenodo.
         zip_name = f"S{subject:02d}.zip"
         url = f"{_ZENODO_BASE}/{zip_name}"
         zip_path = dl.data_dl(url, sign, path, force_update, verbose)
 
-        # Extract NPZ files into subject directory
+        # Extract into subject directory (preserves session_N/run_NN.npz).
         subj_dir.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(zip_path) as zf:
             safe_extract_zip(zf, subj_dir)
 
-        npz_files = sorted(subj_dir.glob("*.npz"))
-        if not npz_files:
+        if not any(subj_dir.rglob("*.npz")):
             raise FileNotFoundError(
                 f"No .npz files found for subject {subject} in {subj_dir}"
             )
