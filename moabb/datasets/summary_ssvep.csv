@@ -14,3 +14,4 @@ Lee2021Mobile_SSVEP,24,32,3,20,5.0,500,4-5
 Chen2017SingleFlicker,12,32,4,varies,3.5,512/2048,2
 Wang2021Combined,8,32,4,varies,5.0,1000,1
 Han2024Fatigue,24,64,32,6-24,2.0,1000,2
+GuttmannFlury2025_SSVEP,31,66,4,12,5.0,1000,1-3

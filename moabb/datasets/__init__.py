@@ -82,7 +82,11 @@ from .forenzo2023 import Forenzo2023
 from .forenzo2024 import Forenzo2024
 from .gao2026 import Gao2026
 from .gigadb import Cho2017
-from .guttmann_flury2025 import GuttmannFlury2025
+from .guttmann_flury2025 import (
+    GuttmannFlury2025,
+    GuttmannFlury2025_P300,
+    GuttmannFlury2025_SSVEP,
+)
 from .hefmi_ich2025 import HefmiIch2025
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
