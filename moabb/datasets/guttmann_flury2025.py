@@ -33,11 +33,11 @@ log = logging.getLogger(__name__)
 
 # Zenodo records per paradigm.
 _ZENODO_RECORDS = {
-    "MI": "PLACEHOLDER",
-    "ME": "PLACEHOLDER",
-    "SSVEP": "PLACEHOLDER",
-    "P3004L": "PLACEHOLDER",
-    "P3005L": "PLACEHOLDER",
+    "MI": "18970793",
+    "ME": "18971758",
+    "SSVEP": "18978288",
+    "P3004L": "18980192",
+    "P3005L": "18982867",
 }
 
 _DOI = "10.1038/s41597-025-04861-9"
