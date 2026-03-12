@@ -101,6 +101,28 @@ from .liu2024 import Liu2024
 from .liu2025 import Liu2025
 from .ma2020 import Ma2020
 from .ma2022 import Ma2022
+from .mainsah2025 import (
+    Mainsah2025_A,
+    Mainsah2025_B,
+    Mainsah2025_C,
+    Mainsah2025_D,
+    Mainsah2025_E,
+    Mainsah2025_F,
+    Mainsah2025_G,
+    Mainsah2025_H,
+    Mainsah2025_I,
+    Mainsah2025_J,
+    Mainsah2025_K,
+    Mainsah2025_L,
+    Mainsah2025_M,
+    Mainsah2025_N,
+    Mainsah2025_O,
+    Mainsah2025_P,
+    Mainsah2025_Q,
+    Mainsah2025_R,
+    Mainsah2025_S1,
+    Mainsah2025_S2,
+)
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import MunichMI  # noqa: F401
