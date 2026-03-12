@@ -56,3 +56,14 @@ Mainsah2025_Q,36,32,varies NT / T,1.0,256,1
 Mainsah2025_R,20,32,varies NT / T,1.0,256,2
 Mainsah2025_S1,10,32,varies NT / T,1.0,256,1
 Mainsah2025_S2,24,32,varies NT / T,1.0,256,1
+Chailloux2020,19,8,varies NT / T,1.0,256,3
+Lee2024_TV,30,31,varies NT / T,1.0,500,1
+Lee2024_DL,15,31,varies NT / T,1.0,500,1
+Lee2024_EL,15,31,varies NT / T,1.0,500,1
+Lee2024_BS,14,31,varies NT / T,1.0,500,1
+Lee2024_AC,10,25,varies NT / T,1.0,500,1
+Zheng2020,14,62,168 T / 4032 NT,1.0,1000,2
+Zhang2025,15,57,varies T / NT,1.0,1000,4
+Kaneshiro2015,10,124,5184 (6 classes),0.496,62.5,1
+Simoes2020,15,8,varies NT / T,1.0,250,7
+Speier2017,10,32,~1200 per run,1.0,256,2

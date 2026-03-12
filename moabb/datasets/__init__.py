@@ -65,6 +65,7 @@ from .castillos2023 import (
     CastillosCVEP40,
     CastillosCVEP100,
 )
+from .chailloux2020 import Chailloux2020
 from .chang2025 import Chang2025
 from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
@@ -91,12 +92,14 @@ from .hefmi_ich2025 import HefmiIch2025
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
 from .jeong2020 import Jeong2020
+from .kaneshiro2015 import Kaneshiro2015
 from .kaya2018 import Kaya2018
 from .kojima2024a import Kojima2024A
 from .kojima2024b import Kojima2024B
 from .kumar2024 import Kumar2024
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .lee2021_mobile import Lee2021Mobile_ERP, Lee2021Mobile_SSVEP
+from .lee2024 import Lee2024_AC, Lee2024_BS, Lee2024_DL, Lee2024_EL, Lee2024_TV
 from .liu2024 import Liu2024
 from .liu2025 import Liu2025
 from .ma2020 import Ma2020
@@ -133,7 +136,9 @@ from .physionet_mi import PhysionetMI
 from .romani_bf2025_erp import RomaniBF2025ERP
 from .rozado2015 import Rozado2015
 from .schirrmeister2017 import Schirrmeister2017
+from .simoes2020 import Simoes2020
 from .sosulski2019 import Sosulski2019
+from .speier2017 import Speier2017
 from .ssvep_chen2017 import Chen2017SingleFlicker
 from .ssvep_dong2023 import Dong2023
 from .ssvep_exo import SSVEPExo  # noqa: F401
@@ -159,6 +164,8 @@ from .wu2020 import Wu2020
 from .yang2025 import Yang2025
 from .yi2025 import Yi2025
 from .zhang2017 import Zhang2017
+from .zhang2025 import Zhang2025
+from .zheng2020 import Zheng2020
 from .Zhou2016 import Zhou2016
 from .zhou2020 import Zhou2020
 from .zuo2025 import Zuo2025
