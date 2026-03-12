@@ -1,4 +1,4 @@
-"""Eye-BCI multimodal dataset (MI paradigm).
+"""Eye-BCI multimodal dataset (MI + ME paradigms).
 
 Guttmann-Flury, Sheng, and Zhu (2025), Scientific Data.
 DOI: 10.1038/s41597-025-04861-9
@@ -30,11 +30,13 @@ from .utils import safe_extract_zip, stim_channels_with_selected_ids
 
 log = logging.getLogger(__name__)
 
-# Zenodo record for the MI paradigm.
-_ZENODO_RECORD = "PLACEHOLDER"
-_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
+# Zenodo records for MI and ME paradigms.
+_ZENODO_RECORDS = {
+    "MI": "PLACEHOLDER",
+    "ME": "PLACEHOLDER",
+}
 
-# Event mapping for the MI paradigm.
+# Event mapping shared by MI and ME paradigms.
 _EVENTS = {
     "left_hand": 1,
     "right_hand": 2,
@@ -89,20 +91,44 @@ _SESSIONS_PER_SUBJECT = {
     31: 1,
 }
 
-# MI recordings with "bis" suffix (repeated due to technical issues).
-_MI_BIS = {(8, 1), (9, 1), (17, 1)}
+# Recordings with "bis" suffix (repeated due to technical issues).
+_BIS_MAP = {
+    "MI": {(8, 1), (9, 1), (17, 1)},
+    "ME": {
+        (4, 1),
+        (5, 2),
+        (6, 1),
+        (7, 2),
+        (8, 1),
+        (8, 2),
+        (10, 2),
+        (13, 1),
+        (14, 2),
+        (22, 1),
+    },
+}
 
 
-def _mi_bdf_name(subject, session):
-    """Return the BDF filename for a given MI recording."""
-    code = f"MI{subject:02d}{session}"
-    if (subject, session) in _MI_BIS:
+def _bdf_name(paradigm, subject, session):
+    """Return the BDF filename for a given recording.
+
+    Parameters
+    ----------
+    paradigm : str
+        "MI" or "ME".
+    subject : int
+        Subject number (1-31).
+    session : int
+        Session number (1-based).
+    """
+    code = f"{paradigm}{subject:02d}{session}"
+    if (subject, session) in _BIS_MAP.get(paradigm, set()):
         code += "bis"
     return f"{code}.bdf"
 
 
 class GuttmannFlury2025(BaseDataset):
-    """Eye-BCI multimodal MI dataset from Guttmann-Flury et al 2025.
+    """Eye-BCI multimodal MI/ME dataset from Guttmann-Flury et al 2025.
 
     Dataset from the article *Dataset combining EEG, eye-tracking,
     and high-speed video for ocular activity analysis across BCI
@@ -110,14 +136,27 @@ class GuttmannFlury2025(BaseDataset):
 
     It contains EEG data from 31 subjects recorded with a 62-channel
     Neuroscan Quik-Cap + SynAmps2 at 1000 Hz. Four paradigms were
-    tested (MI, ME, SSVEP, P300). This adapter loads only the
-    **Motor Imagery** paradigm (2-class: left/right hand grasping).
+    tested (MI, ME, SSVEP, P300). This adapter loads the **Motor
+    Imagery** and/or **Motor Execution** paradigms (2-class: left/right
+    hand grasping), following the same pattern as
+    :class:`moabb.datasets.PhysionetMI`.
 
-    Each MI session has 40 trials (20 left, 20 right). Trial
-    structure: 2 s fixation + 4 s imagery + 1-1.5 s rest.
+    Each MI/ME session has 40 trials (20 left, 20 right). Trial
+    structure: 2 s fixation + 4 s imagery/execution + 1-1.5 s rest.
 
     The data is hosted on Zenodo (re-hosted from Synapse with EEG
     converted from CSV to BDF format).
+
+    Parameters
+    ----------
+    imagined : bool (default True)
+        If True, load motor imagery (MI) runs.
+    executed : bool (default False)
+        If True, load motor execution (ME) runs.
+    subjects : list of int | None
+        List of subject numbers to load. Default loads all 31.
+    sessions : list of int | None
+        List of session numbers to load. Default loads all.
 
     References
     ----------
@@ -158,7 +197,7 @@ class GuttmannFlury2025(BaseDataset):
             trial_duration=7.5,
             study_design=(
                 "Multi-paradigm BCI (MI/ME/SSVEP/P300). "
-                "MI: 2-class hand grasping imagery, 40 trials/session, "
+                "MI and ME: 2-class hand grasping, 40 trials/session, "
                 "up to 3 sessions per subject."
             ),
             feedback_type="none",
@@ -177,7 +216,6 @@ class GuttmannFlury2025(BaseDataset):
             ],
             institution="Shanghai Jiao Tong University",
             country="CN",
-            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2025,
             license="CC0",
         ),
@@ -196,7 +234,7 @@ class GuttmannFlury2025(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=2520,
-            trials_context="63 sessions x 40 trials = 2520",
+            trials_context="63 sessions x 40 trials = 2520 (MI only, default)",
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
@@ -206,7 +244,10 @@ class GuttmannFlury2025(BaseDataset):
         file_format="BDF",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, imagined=True, executed=False, subjects=None, sessions=None):
+        if not imagined and not executed:
+            raise ValueError("At least one of `imagined` or `executed` must be True.")
+
         super().__init__(
             subjects=list(range(1, 32)),
             sessions_per_subject=3,
@@ -218,100 +259,129 @@ class GuttmannFlury2025(BaseDataset):
             selected_subjects=subjects,
             selected_sessions=sessions,
         )
+        self.imagined = imagined
+        self.executed = executed
+
+    @property
+    def _paradigms(self):
+        """Return list of paradigm codes to load."""
+        paradigms = []
+        if self.imagined:
+            paradigms.append("MI")
+        if self.executed:
+            paradigms.append("ME")
+        return paradigms
+
+    def _load_raw(self, bdf_path):
+        """Load a BDF file and add event annotations."""
+        raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
+
+        # Find events from the STIM channel (Trig).
+        stim_ch = "Trig"
+        if stim_ch not in raw.ch_names:
+            stim_ch = raw.ch_names[-1]
+
+        events = mne.find_events(raw, stim_channel=stim_ch, verbose="ERROR")
+
+        # Create annotations from events.
+        event_id_inv = {v: k for k, v in _EVENTS.items()}
+        annot_onset = []
+        annot_dur = []
+        annot_desc = []
+        for ev in events:
+            code = int(ev[2])
+            if code in event_id_inv:
+                annot_onset.append(ev[0] / raw.info["sfreq"])
+                annot_dur.append(0.0)
+                annot_desc.append(event_id_inv[code])
+
+        if annot_onset:
+            annotations = mne.Annotations(
+                onset=np.array(annot_onset),
+                duration=np.array(annot_dur),
+                description=annot_desc,
+            )
+            raw.set_annotations(annotations)
+        else:
+            log.warning("No events (codes 1/2) in %s", bdf_path.name)
+
+        return stim_channels_with_selected_ids(raw, self.event_id)
 
     def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        base = Path(self.data_path(subject))
+        """Return data for a single subject.
 
-        n_sess = _SESSIONS_PER_SUBJECT.get(subject, 1)
+        When both ``imagined`` and ``executed`` are True, MI and ME
+        recordings are returned as separate runs within each session
+        (run "0" for MI, run "1" for ME).
+        """
+        paradigms = self._paradigms
         sessions = {}
 
-        for sess_idx in range(1, n_sess + 1):
-            bdf_name = _mi_bdf_name(subject, sess_idx)
-            sess_dir = base / f"Sess{sess_idx:02d}"
-            bdf_path = sess_dir / bdf_name
+        for paradigm in paradigms:
+            base = Path(self._data_path_for_paradigm(subject, paradigm))
+            n_sess = _SESSIONS_PER_SUBJECT.get(subject, 1)
 
-            if not bdf_path.exists():
-                # Try finding BDF in base directory or alternative paths.
-                candidates = list(base.rglob(f"MI{subject:02d}{sess_idx}*.bdf"))
-                if candidates:
-                    bdf_path = candidates[0]
-                else:
-                    log.warning("Missing %s", bdf_name)
+            for sess_idx in range(1, n_sess + 1):
+                name = _bdf_name(paradigm, subject, sess_idx)
+                sess_dir = base / f"Sess{sess_idx:02d}"
+                bdf_path = sess_dir / name
+
+                if not bdf_path.exists():
+                    candidates = list(
+                        base.rglob(f"{paradigm}{subject:02d}{sess_idx}*.bdf")
+                    )
+                    if candidates:
+                        bdf_path = candidates[0]
+                    else:
+                        log.warning("Missing %s", name)
+                        continue
+
+                try:
+                    raw = self._load_raw(bdf_path)
+                except Exception as e:
+                    log.warning("Failed to load %s: %s", bdf_path.name, e)
                     continue
 
-            try:
-                raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
+                sess_key = str(sess_idx - 1)
+                if sess_key not in sessions:
+                    sessions[sess_key] = {}
 
-                # Find events from the STIM channel (Trig).
-                stim_ch = "Trig"
-                if stim_ch not in raw.ch_names:
-                    # Fall back to last channel
-                    stim_ch = raw.ch_names[-1]
-
-                events = mne.find_events(raw, stim_channel=stim_ch, verbose="ERROR")
-
-                # Create annotations from events.
-                event_id_inv = {v: k for k, v in _EVENTS.items()}
-                annot_onset = []
-                annot_dur = []
-                annot_desc = []
-                for ev in events:
-                    code = int(ev[2])
-                    if code in event_id_inv:
-                        annot_onset.append(ev[0] / raw.info["sfreq"])
-                        annot_dur.append(0.0)
-                        annot_desc.append(event_id_inv[code])
-
-                if annot_onset:
-                    annotations = mne.Annotations(
-                        onset=np.array(annot_onset),
-                        duration=np.array(annot_dur),
-                        description=annot_desc,
-                    )
-                    raw.set_annotations(annotations)
-                else:
-                    log.warning("No MI events (codes 1/2) in %s", bdf_path.name)
-
-                raw = stim_channels_with_selected_ids(raw, self.event_id)
-                sessions[str(sess_idx - 1)] = {"0": raw}
-
-            except Exception as e:
-                log.warning("Failed to load %s: %s", bdf_path.name, e)
+                # MI → run "0", ME → run "1" (or "0" if MI not loaded).
+                run_idx = len(sessions[sess_key])
+                sessions[sess_key][str(run_idx)] = raw
 
         if not sessions:
-            raise FileNotFoundError(f"No MI data for subject {subject} in {base}")
+            raise FileNotFoundError(f"No MI/ME data for subject {subject}")
         return sessions
 
-    def data_path(
+    def _data_path_for_paradigm(
         self,
         subject,
+        paradigm,
         path=None,
         force_update=False,
-        update_path=None,
         verbose=None,
     ):
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
-
-        if _ZENODO_RECORD == "PLACEHOLDER":
+        """Download and return the subject directory for one paradigm."""
+        record_id = _ZENODO_RECORDS[paradigm]
+        if record_id == "PLACEHOLDER":
             raise NotImplementedError(
-                "GuttmannFlury2025 Zenodo record ID not yet set. "
+                f"GuttmannFlury2025 {paradigm} Zenodo record ID not yet set. "
                 "Data must be uploaded to Zenodo first."
             )
 
         sign = "GuttmannFlury2025"
         path = dl.get_dataset_path(sign, path)
         basepath = Path(path) / "MNE-guttmannflury2025-data"
-        subj_dir = basepath / f"S{subject:02d}"
+        subj_dir = basepath / paradigm / f"S{subject:02d}"
 
         # Check if BDF files already exist for this subject.
         n_sess = _SESSIONS_PER_SUBJECT.get(subject, 1)
         all_exist = True
         for sess_idx in range(1, n_sess + 1):
-            bdf_name = _mi_bdf_name(subject, sess_idx)
+            name = _bdf_name(paradigm, subject, sess_idx)
             sess_dir = subj_dir / f"Sess{sess_idx:02d}"
-            if not (sess_dir / bdf_name).exists():
+            if not (sess_dir / name).exists():
                 all_exist = False
                 break
 
@@ -319,8 +389,9 @@ class GuttmannFlury2025(BaseDataset):
             return str(subj_dir)
 
         # Download per-subject ZIP from Zenodo.
+        zenodo_base = f"https://zenodo.org/records/{record_id}/files"
         zip_name = f"S{subject:02d}.zip"
-        url = f"{_ZENODO_BASE}/{zip_name}"
+        url = f"{zenodo_base}/{zip_name}"
         dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
 
         # The downloaded file might be in a nested path; find it.
@@ -335,8 +406,28 @@ class GuttmannFlury2025(BaseDataset):
 
         # Extract ZIP to subject directory.
         subj_dir.mkdir(parents=True, exist_ok=True)
-        log.info("Extracting %s to %s", zip_name, subj_dir)
+        log.info("Extracting %s (%s) to %s", zip_name, paradigm, subj_dir)
         with zipfile.ZipFile(str(dl_path)) as zf:
             safe_extract_zip(zf, subj_dir)
 
         return str(subj_dir)
+
+    def data_path(
+        self,
+        subject,
+        path=None,
+        force_update=False,
+        update_path=None,
+        verbose=None,
+    ):
+        if subject not in self.subject_list:
+            raise ValueError("Invalid subject number")
+
+        # Download all needed paradigms, return the first one's path.
+        paths = []
+        for paradigm in self._paradigms:
+            p = self._data_path_for_paradigm(
+                subject, paradigm, path, force_update, verbose
+            )
+            paths.append(p)
+        return paths[0]
