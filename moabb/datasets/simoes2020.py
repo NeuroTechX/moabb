@@ -37,8 +37,8 @@ _SIGN = "simoes2020"
 _CH_NAMES = ["C3", "Cz", "C4", "CPz", "P3", "Pz", "P4", "POz"]
 
 # Zenodo re-hosted record (per-subject ZIPs).
-_ZENODO_RECORD = None  # Set after upload
-_ZENODO_BASE = None  # Will be set to "https://zenodo.org/records/{id}/files"
+_ZENODO_RECORD = "19005186"
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 
 class Simoes2020(BaseDataset):
@@ -121,7 +121,7 @@ class Simoes2020(BaseDataset):
             institution="University of Coimbra",
             country="PT",
             publication_year=2020,
-            data_url="https://www.kaggle.com/datasets/disbeat/bciaut-p300",
+            data_url="https://zenodo.org/records/19005186",
             license="CC-BY-4.0",
         ),
         sessions_per_subject=7,
