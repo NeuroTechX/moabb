@@ -119,6 +119,23 @@ class Zhou2016(BaseBIDSDataset):
             primary_modality="visual",
             mode="offline",
             instructions="Subject sat in comfortable armchair facing computer screen. Trial started with short beep (1s preparation), followed by red arrow pointing randomly to three directions (left, right, or bottom) lasting 5s, then black screen for 4s. Subject instructed to immediately perform imagination tasks of left hand, right hand or foot movement according to cue direction, and relax during black screen.",
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+                "feet": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Downward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, Foot))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0162657",

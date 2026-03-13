@@ -343,7 +343,7 @@ class BNCI2014_001(MNEBNCI):
             trial_duration=4.0,
             study_design="Two-class motor imagery (selected from left hand, right hand, and foot) with asynchronous/continuous control periods",
             feedback_type="none",
-            stimulus_type="visual_cue",
+            stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="multisensory",
             synchronicity="asynchronous",
@@ -355,6 +355,28 @@ class BNCI2014_001(MNEBNCI):
                 "no_control": 0,
             },
             instructions="Subjects instructed to perform motor imagery during cued periods",
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+                "feet": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Downward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, Foot))"
+                ),
+                "tongue": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Upward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, Tongue))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2012.00055",
@@ -834,7 +856,18 @@ class BNCI2014_004(MNEBNCI):
             cog_atlas_id=None,
             cog_po_id=None,
             stimulus_presentation=None,
-            hed_tags=None,
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2007.906956",

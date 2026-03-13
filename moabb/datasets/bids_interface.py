@@ -349,114 +349,150 @@ _PARADIGM_COG_ATLAS = {
 
 # Paradigm-level HED tag mappings for events.json sidecar enrichment.
 # Maps (paradigm, event_name) → HED tag string using HED schema 8.4.0.
+
+# Shared sensory prefix for MI events where the specific visual stimulus is
+# unknown — datasets that use arrows or other cues override via hed_tags
+# in their ExperimentMetadata.
+_MI_SENSORY = "(Sensory-event, Experimental-stimulus, Visual-presentation)"
+
 _PARADIGM_HED_TAGS = {
     # ── Motor Imagery ──
+    # Each MI stimulus event decomposes into two top-level groups per HED
+    # annotation semantics (Rules 2b/2e/2f):
+    #   1. Sensory-event — what the participant sees (generic here; datasets
+    #      with known cue types override via ExperimentMetadata.hed_tags).
+    #   2. (Agent-action, (Imagine, Move, ...)) — what the participant does.
     "imagery": {
-        # Common MI events
-        "left_hand": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, (Left, Hand)))",
-        "right_hand": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, (Right, Hand)))",
-        "feet": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Foot))",
-        "tongue": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Tongue))",
-        "both_hand": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Hand))",
-        "hands": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Move, Hand))",
-        "rest": "Sensory-event, Experimental-stimulus, Cue, Rest",
+        # Common MI events — generic sensory prefix (no arrow assumption)
+        "left_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, (Left, Hand)))",
+        "right_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, (Right, Hand)))",
+        "feet": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Foot))",
+        "tongue": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Tongue))",
+        "both_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Hand))",
+        "hands": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Hand))",
+        "rest": "Sensory-event, Experimental-stimulus, Visual-presentation, Rest",
         "right_hand_right_foot": (
-            "Sensory-event, Experimental-stimulus, Cue, "
-            "(Imagine, (Move, (Right, Hand)), (Move, (Right, Foot)))"
+            f"{_MI_SENSORY}, "
+            "(Agent-action, (Imagine, Move, (Right, Hand)), "
+            "(Imagine, Move, (Right, Foot)))"
         ),
-        "palmar_grasp": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Grasp, Hand))",
-        "lateral_grasp": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Grasp, Hand, (Label/lateral)))",
+        "palmar_grasp": f"{_MI_SENSORY}, (Agent-action, (Imagine, Grasp, Hand))",
+        "lateral_grasp": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Grasp, Hand, (Label/lateral)))"
+        ),
         # Weibo2014 — compound limb motor imagery
         "left_hand_right_foot": (
-            "Sensory-event, Experimental-stimulus, Cue, "
-            "(Imagine, (Move, (Left, Hand)), (Move, (Right, Foot)))"
+            f"{_MI_SENSORY}, "
+            "(Agent-action, (Imagine, Move, (Left, Hand)), "
+            "(Imagine, Move, (Right, Foot)))"
         ),
         "right_hand_left_foot": (
-            "Sensory-event, Experimental-stimulus, Cue, "
-            "(Imagine, (Move, (Right, Hand)), (Move, (Left, Foot)))"
+            f"{_MI_SENSORY}, "
+            "(Agent-action, (Imagine, Move, (Right, Hand)), "
+            "(Imagine, Move, (Left, Foot)))"
         ),
         # Ofner2017 — upper limb motor imagery
-        "right_elbow_flexion": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Flex, (Right, Elbow)))",
-        "right_elbow_extension": (
-            "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Stretch, (Right, Elbow)))"
+        "right_elbow_flexion": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Flex, (Right, Elbow)))"
         ),
-        "right_supination": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, (Right, Forearm), (Label/supination)))",
-        "right_pronation": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, (Right, Forearm), (Label/pronation)))",
-        "right_hand_close": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Close, (Right, Hand)))",
-        "right_hand_open": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Open, (Right, Hand)))",
+        "right_elbow_extension": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Stretch, (Right, Elbow)))"
+        ),
+        "right_supination": (
+            f"{_MI_SENSORY}, "
+            "(Agent-action, (Imagine, Turn, (Right, Forearm), (Label/supination)))"
+        ),
+        "right_pronation": (
+            f"{_MI_SENSORY}, "
+            "(Agent-action, (Imagine, Turn, (Right, Forearm), (Label/pronation)))"
+        ),
+        "right_hand_close": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Close, (Right, Hand)))"
+        ),
+        "right_hand_open": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Open, (Right, Hand)))"
+        ),
         # BNCI2019_001 — motor imagery without laterality prefix
-        "hand_open": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Open, Hand))",
-        "pronation": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, Forearm, (Label/pronation)))",
-        "supination": "Sensory-event, Experimental-stimulus, Cue, (Imagine, (Turn, Forearm, (Label/supination)))",
+        "hand_open": f"{_MI_SENSORY}, (Agent-action, (Imagine, Open, Hand))",
+        "pronation": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Turn, Forearm, (Label/pronation)))"
+        ),
+        "supination": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Turn, Forearm, (Label/supination)))"
+        ),
         # BNCI2015_004 — mental/cognitive tasks
-        "math": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/math))",
-        "letter": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/letter))",
-        "rotation": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/rotation))",
-        "count": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Count)",
-        "baseline": "Sensory-event, Experimental-stimulus, Cue, Rest",
+        "math": f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/math)))",
+        "letter": f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/letter)))",
+        "rotation": f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/rotation)))",
+        "count": f"{_MI_SENSORY}, (Agent-action, (Imagine, Count))",
+        "baseline": "Sensory-event, Experimental-stimulus, Visual-presentation, Rest",
         # Shin2017B — mental arithmetic
-        "subtraction": "Sensory-event, Experimental-stimulus, Cue, (Imagine, Think, (Label/subtraction))",
+        "subtraction": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/subtraction)))"
+        ),
         # BNCI2024_001 — handwritten character writing
-        "letter_a": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/a))",
-        "letter_d": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/d))",
-        "letter_e": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/e))",
-        "letter_f": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/f))",
-        "letter_j": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/j))",
-        "letter_n": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/n))",
-        "letter_o": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/o))",
-        "letter_s": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/s))",
-        "letter_t": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/t))",
-        "letter_v": "Sensory-event, Experimental-stimulus, Cue, (Write, Hand, (Label/v))",
+        "letter_a": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/a)))",
+        "letter_d": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/d)))",
+        "letter_e": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/e)))",
+        "letter_f": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/f)))",
+        "letter_j": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/j)))",
+        "letter_n": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/n)))",
+        "letter_o": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/o)))",
+        "letter_s": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/s)))",
+        "letter_t": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/t)))",
+        "letter_v": f"{_MI_SENSORY}, (Agent-action, (Write, Hand, (Label/v)))",
         # BNCI2022_001 — drone piloting / waypoint events
         "trajectory_start": "Experiment-structure, (Label/trajectory_start)",
         "waypoint_hit": "Experiment-structure, (Label/waypoint_hit)",
         "waypoint_miss": "Experiment-structure, (Label/waypoint_miss)",
         "trajectory_end": "Experiment-structure, (Label/trajectory_end)",
         # BNCI2025_001 — discrete reaching (direction × speed × distance)
-        "up_slow_near": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/slow), (Label/near))",
-        "up_slow_far": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/slow), (Label/far))",
-        "up_fast_near": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/fast), (Label/near))",
-        "up_fast_far": "Sensory-event, Experimental-stimulus, Cue, (Reach, Upward, (Label/fast), (Label/far))",
+        "up_slow_near": f"{_MI_SENSORY}, (Agent-action, (Reach, Upward, (Label/slow), (Label/near)))",
+        "up_slow_far": f"{_MI_SENSORY}, (Agent-action, (Reach, Upward, (Label/slow), (Label/far)))",
+        "up_fast_near": f"{_MI_SENSORY}, (Agent-action, (Reach, Upward, (Label/fast), (Label/near)))",
+        "up_fast_far": f"{_MI_SENSORY}, (Agent-action, (Reach, Upward, (Label/fast), (Label/far)))",
         "down_slow_near": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/slow), (Label/near))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Downward, (Label/slow), (Label/near)))"
         ),
         "down_slow_far": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/slow), (Label/far))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Downward, (Label/slow), (Label/far)))"
         ),
         "down_fast_near": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/fast), (Label/near))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Downward, (Label/fast), (Label/near)))"
         ),
         "down_fast_far": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Downward, (Label/fast), (Label/far))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Downward, (Label/fast), (Label/far)))"
         ),
         "left_slow_near": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/slow), (Label/near))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Left, (Label/slow), (Label/near)))"
         ),
         "left_slow_far": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/slow), (Label/far))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Left, (Label/slow), (Label/far)))"
         ),
         "left_fast_near": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/fast), (Label/near))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Left, (Label/fast), (Label/near)))"
         ),
         "left_fast_far": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Left, (Label/fast), (Label/far))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Left, (Label/fast), (Label/far)))"
         ),
         "right_slow_near": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/slow), (Label/near))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Right, (Label/slow), (Label/near)))"
         ),
         "right_slow_far": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/slow), (Label/far))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Right, (Label/slow), (Label/far)))"
         ),
         "right_fast_near": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/fast), (Label/near))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Right, (Label/fast), (Label/near)))"
         ),
         "right_fast_far": (
-            "Sensory-event, Experimental-stimulus, Cue, (Reach, Right, (Label/fast), (Label/far))"
+            f"{_MI_SENSORY}, (Agent-action, (Reach, Right, (Label/fast), (Label/far)))"
         ),
         # BNCI2025_002 — continuous 2D trajectory tracking
         "snakerun": "Experiment-structure, (Label/snakerun)",
         "freerun": "Experiment-structure, (Label/freerun)",
         "eyerun": "Experiment-structure, (Label/eyerun)",
+        # Cue event for datasets that expose it separately
+        "cue": "Sensory-event, Cue, (Auditory-presentation, Tone), (Visual-presentation, Cross)",
     },
     # ── P300 / Oddball ──
     "p300": {
@@ -1110,7 +1146,7 @@ def _build_hed_sidecar_annotations(dataset):
         for name in event_names:
             if name not in hed:
                 if name == "rest":
-                    hed[name] = "Sensory-event, Cue, Rest"
+                    hed[name] = "Experiment-structure, Rest"
                 else:
                     safe_freq = name.replace(".", "_")
                     hed[name] = (
