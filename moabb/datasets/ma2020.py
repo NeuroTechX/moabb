@@ -14,6 +14,7 @@ from .metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -21,6 +22,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import build_raw_from_epochs
@@ -270,10 +272,24 @@ class Ma2020(BaseDataset):
                 "40 trials/session (20 hand + 20 elbow)"
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["FBCSP+SVM"],
+            feature_extraction=["FBCSP"],
+            frequency_bands={
+                "alpha": [8.0, 13.0],
+                "beta": [20.0, 25.0],
+            },
+            spatial_filters=["CAR", "FBCSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             environment="laboratory",
             online_feedback=False,
-            applications=["motor rehabilitation"],
+            applications=["motor_rehabilitation", "prosthetic_control"],
         ),
         tags=Tags(
             pathology=["healthy"],

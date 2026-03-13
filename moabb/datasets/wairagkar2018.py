@@ -17,6 +17,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -24,6 +25,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -203,9 +205,26 @@ class Wairagkar2018(BaseDataset):
                 "subject 2 with 105 trials (35 per condition)"
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=["autocorrelation_relaxation_time", "ERD"],
+            frequency_bands={
+                "broadband": [0.5, 30.0],
+                "mu": [8.0, 13.0],
+                "beta": [13.0, 30.0],
+                "low": [0.5, 8.0],
+            },
+            spatial_filters=["bipolar_montage"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10x10-fold",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=True,
         file_format="MAT",

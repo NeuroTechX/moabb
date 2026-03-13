@@ -16,12 +16,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -147,9 +149,19 @@ class Wu2020(BaseDataset):
             n_trials=1114,
             trials_context=("S1: 240, S2: 160, S3: 160, S4: 80, S5: 234, S6: 240 = 1114"),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["EEGNet"],
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="Curry",

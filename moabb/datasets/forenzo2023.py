@@ -18,12 +18,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -170,9 +172,21 @@ class Forenzo2023(BaseDataset):
             n_trials=1875,
             trials_context="25 subjects x 5 sessions x 3 MI runs x 5 trials",
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["linear_classifier"],
+            feature_extraction=["AR_spectral_estimation", "alpha_bandpower"],
+            frequency_bands={
+                "alpha": [8.0, 13.0],
+            },
+            spatial_filters=["Laplacian"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
+            applications=["cursor_control"],
             environment="laboratory",
+            online_feedback=True,
         ),
         data_processed=False,
         file_format="MAT",

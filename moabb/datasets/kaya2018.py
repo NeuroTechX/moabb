@@ -15,6 +15,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -22,6 +23,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -208,6 +210,19 @@ class Kaya2018(BaseDataset):
         data_structure=DataStructureMetadata(
             trials_context="Variable number of trials per session; "
             "1s cue + 1.5-2.5s ITI",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SVM"],
+            feature_extraction=["fourier_transform_amplitudes"],
+            frequency_bands={
+                "low_pass": [0.0, 5.0],
+            },
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="repeated_random_split",
+            cv_folds=5,
+            evaluation_type=["within_subject"],
         ),
         bci_application=BCIApplicationMetadata(
             environment="lab",

@@ -12,6 +12,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -19,6 +20,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import FIGSHARE_DL_URL, build_raw_from_epochs
@@ -206,9 +208,24 @@ class Kim2025BetaRange(BaseDataset):
             n_blocks=6,
             n_trials=240,
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CCA", "FBCCA", "ITCCA", "TRCA", "EEGNet"],
+            feature_extraction=["CCA", "FBCCA", "TRCA"],
+            frequency_bands={
+                "stimulus_range": [14.0, 22.0],
+                "analysis": [13.0, 89.0],
+            },
+            spatial_filters=["CCA", "TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-subject-out",
+            cv_folds=6,
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             environment="lab",
-            online_feedback=False,
+            online_feedback=None,
+            applications=["speller"],
         ),
         tags=Tags(
             pathology=["healthy"],

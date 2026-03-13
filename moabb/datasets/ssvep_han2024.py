@@ -15,6 +15,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -22,6 +23,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs, safe_extract_zip
@@ -162,6 +164,15 @@ class Han2024Fatigue(BaseDataset):
             n_blocks=60,
             n_trials="960 per frequency band (16 targets x 60 blocks)",
             trials_context="6 training + 24 fatigue blocks per frequency condition",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["TRCA"],
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=["TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=None,
         ),
         bci_application=BCIApplicationMetadata(
             environment="lab",

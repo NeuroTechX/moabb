@@ -17,12 +17,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -196,9 +198,23 @@ class Zhou2020(BaseDataset):
             n_trials=33600,
             trials_context=("20 subjects x 7 sessions x 6 runs x 40 trials = 33600"),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SVM"],
+            feature_extraction=["CSP"],
+            frequency_bands={
+                "classification": [8.0, 30.0],
+            },
+            spatial_filters=["CSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold",
+            cv_folds=10,
+            evaluation_type=["within_session"],
+        ),
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
+            applications=["research"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=True,
         file_format="NPZ",

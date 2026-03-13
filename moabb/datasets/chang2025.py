@@ -17,12 +17,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import stim_channels_with_selected_ids
@@ -177,9 +179,24 @@ class Chang2025(BaseDataset):
                 "28 subjects x 4 MI sessions x 3 classes x 40 trials = 13440"
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CSP+SVM", "FBCSP+SVM"],
+            feature_extraction=["CSP", "FBCSP"],
+            frequency_bands={
+                "alpha": [8.0, 13.0],
+                "FBCSP_range": [4.0, 28.0],
+            },
+            spatial_filters=["CSP", "FBCSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
-            applications=["rehabilitation", "motor_control"],
+            applications=["rehabilitation"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="SET (EEGLAB)",

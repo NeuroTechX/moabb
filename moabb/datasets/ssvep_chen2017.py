@@ -20,11 +20,13 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -147,9 +149,21 @@ class Chen2017SingleFlicker(BaseDataset):
             detected_paradigm="ssvep",
             stimulus_frequencies_hz=[15.0],
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=["CCA"],
+            frequency_bands={
+                "bandpass": [1.0, 80.0],
+            },
+            spatial_filters=["CCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             environment="lab",
             online_feedback=True,
+            applications=["spatial_navigation"],
         ),
         tags=Tags(
             pathology=["healthy"],

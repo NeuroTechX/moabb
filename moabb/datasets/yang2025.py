@@ -16,12 +16,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -172,9 +174,23 @@ class Yang2025(BaseDataset):
                 "11 subjects x 3 sessions x 300 trials (3C) = 39600"
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CSP+SVM", "FBCSP+SVM", "EEGNet", "deepConvNet", "FBCNet"],
+            feature_extraction=["CSP", "FBCSP"],
+            frequency_bands={
+                "bandpass": [0.5, 40.0],
+            },
+            spatial_filters=["CSP", "FBCSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold",
+            cv_folds=10,
+            evaluation_type=["within_session"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="BDF",

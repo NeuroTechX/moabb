@@ -25,11 +25,13 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -483,8 +485,20 @@ def _make_study_metadata(study):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=None,
+            feature_extraction=["P300_ERP_detection"],
+            frequency_bands=None,
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="calibration-then-test",
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["speller"],
+            environment="laboratory",
+            online_feedback=True,
         ),
         tags=Tags(
             modality=["visual"],

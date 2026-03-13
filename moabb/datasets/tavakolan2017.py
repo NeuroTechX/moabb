@@ -18,6 +18,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -25,6 +26,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -201,9 +203,27 @@ class Tavakolan2017(BaseDataset):
                 "right_elbow_flexion": 20,
             },
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SVM-RBF"],
+            feature_extraction=[
+                "autoregressive_coefficients",
+                "waveform_length",
+                "root_mean_square",
+            ],
+            frequency_bands={
+                "bandpass": [6.0, 35.0],
+            },
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10x10-fold",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],
             environment="laboratory",
+            online_feedback=False,
         ),
         tags=Tags(
             pathology=["Healthy"],

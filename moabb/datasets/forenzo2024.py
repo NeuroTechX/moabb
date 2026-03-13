@@ -17,12 +17,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -180,9 +182,21 @@ class Forenzo2024(BaseDataset):
                 "14 subjects x 4 sessions x 13 runs x 5 trials"
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["AR_linear_decoder", "EEGNet", "PointNet"],
+            feature_extraction=["AR_spectral_estimation", "deep_learning"],
+            frequency_bands={
+                "alpha_mu": [8.0, 13.0],
+            },
+            spatial_filters=["Laplacian", "CAR"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
+            applications=["cursor_control"],
             environment="laboratory",
+            online_feedback=True,
         ),
         data_processed=False,
         file_format="MAT (v7.3/HDF5)",

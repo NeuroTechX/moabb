@@ -17,12 +17,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -171,9 +173,23 @@ class HefmiIch2025(BaseDataset):
             n_trials=3330,
             trials_context=("37 subjects x ~3 sessions x 30 trials = ~3330"),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CSP+SVM", "FBCSP+SVM", "EEGBaseNet", "TF+SVM"],
+            feature_extraction=["CSP", "FBCSP", "time-frequency features"],
+            frequency_bands={
+                "preprocessing": [0.5, 30.0],
+            },
+            spatial_filters=["CSP", "FBCSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation"],
             environment="clinical",
+            online_feedback=False,
         ),
         data_processed=True,
         file_format="MAT (pre-epoched)",

@@ -18,12 +18,15 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -136,6 +139,23 @@ class Simoes2020(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials="1600 train + 400*K test per session (K=3-10)",
             trials_context="per_session",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["EEGNet", "LDA", "SVM", "MLP"],
+            feature_extraction=["temporal_features", "deep_learning"],
+            frequency_bands={
+                "bandpass": [2.0, 30.0],
+            },
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="calibration_vs_online",
+            evaluation_type=["within_subject", "cross_session", "cross_subject"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["joint_attention_training"],
+            environment="clinical",
+            online_feedback=True,
         ),
         data_processed=True,
         file_format="MATLAB (epoched)",

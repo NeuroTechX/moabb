@@ -12,6 +12,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -19,6 +20,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import build_raw_from_epochs
@@ -133,6 +135,17 @@ class Dong2023(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=4,
             n_trials=160,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["FBCCA", "eTRCA", "msTRCA"],
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=["CCA", "TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-block-out",
+            cv_folds=4,
+            evaluation_type=["within_subject"],
         ),
         bci_application=BCIApplicationMetadata(
             environment="non-shielded",

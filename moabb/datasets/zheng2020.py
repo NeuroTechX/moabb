@@ -17,12 +17,15 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -169,6 +172,23 @@ class Zheng2020(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials={"target": 168, "nontarget": 4032},
             trials_context="per subject across both sessions",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["HDCA"],
+            feature_extraction=["SIM", "CSP", "TRCA", "PCA"],
+            frequency_bands={
+                "bandpass": [2.0, 30.0],
+            },
+            spatial_filters=["SIM", "CSP", "PCA", "CAR", "TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="holdout",
+            evaluation_type=["within_subject", "cross_session"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["target_image_detection", "collaborative_BCI"],
+            environment="laboratory",
+            online_feedback=True,
         ),
         data_processed=False,
         file_format="MATLAB",

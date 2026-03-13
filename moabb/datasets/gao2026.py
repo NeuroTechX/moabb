@@ -17,12 +17,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -230,9 +232,22 @@ class Gao2026(BaseDataset):
                 "2 subjects x 1 session x 400 trials = 16800"
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["EEGNet", "CSP+KNN"],
+            feature_extraction=["CSP", "deep_learning"],
+            frequency_bands={
+                "bandpass": [5.0, 30.0],
+            },
+            spatial_filters=["CSP", "CAR"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="train-test split",
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
-            applications=["communication"],
+            applications=["human_machine_interaction"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="BDF",
