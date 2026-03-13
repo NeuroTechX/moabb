@@ -173,11 +173,9 @@ class Simoes2020(BaseDataset):
 
             runs = {}
             for phase in ["Train", "Test"]:
-                mat_file = ses_dir / phase / "trainData.mat"
-                targets_file = ses_dir / phase / "trainTargets.txt"
-                if phase == "Test":
-                    mat_file = ses_dir / phase / "testData.mat"
-                    targets_file = ses_dir / phase / "testTargets.txt"
+                prefix = phase.lower()
+                mat_file = ses_dir / phase / f"{prefix}Data.mat"
+                targets_file = ses_dir / phase / f"{prefix}Targets.txt"
 
                 if not mat_file.exists() or not targets_file.exists():
                     continue
@@ -187,7 +185,7 @@ class Simoes2020(BaseDataset):
                     if raw is not None:
                         runs[str(len(runs))] = raw
                 except Exception:
-                    log.warning("Failed to load %s, skipping.", mat_file)
+                    log.warning("Failed to load %s, skipping.", mat_file, exc_info=True)
 
             if runs:
                 sessions[str(ses_idx - 1)] = runs
@@ -213,8 +211,17 @@ class Simoes2020(BaseDataset):
             return None
 
         # Shape: (n_channels, n_samples_per_epoch, n_trials).
-        epochs = data[mat_key].astype(np.float64)
+        epochs = data[mat_key].astype(np.float64, copy=False)
         n_ch, n_time, n_trials = epochs.shape
+
+        if n_ch != len(_CH_NAMES):
+            log.warning(
+                "Expected %d channels, got %d in %s",
+                len(_CH_NAMES),
+                n_ch,
+                mat_path,
+            )
+            return None
 
         # Load target labels.
         targets = np.loadtxt(str(targets_path), dtype=int).ravel()
@@ -224,15 +231,17 @@ class Simoes2020(BaseDataset):
             epochs = epochs[:, :, :n_trials]
             targets = targets[:n_trials]
 
-        # Scale to Volts (data is in uV).
-        epochs = epochs * 1e-6
+        # Scale to Volts (data is in uV), in-place to save memory.
+        epochs *= 1e-6
 
         sfreq = 250.0
         buffer_samples = max(1, int(sfreq * 0.05))  # 50 ms buffer
         total_len = n_trials * (n_time + buffer_samples)
 
-        continuous = np.zeros((n_ch, total_len))
-        stim = np.zeros(total_len)
+        # Pre-allocate combined array (EEG + stim) to avoid extra copy.
+        all_data = np.zeros((n_ch + 1, total_len))
+        continuous = all_data[:n_ch]
+        stim = all_data[n_ch]
 
         # Skip first 50 samples (baseline, -200 ms) for event placement.
         # Event at sample 50 within each epoch (stimulus onset at 0 ms).
@@ -247,8 +256,6 @@ class Simoes2020(BaseDataset):
 
         ch_names = list(_CH_NAMES) + ["STI"]
         ch_types = ["eeg"] * n_ch + ["stim"]
-        all_data = np.vstack([continuous, stim[np.newaxis]])
-
         info = mne.create_info(ch_names, sfreq, ch_types)
         raw = mne.io.RawArray(all_data, info, verbose=False)
         raw.set_montage("standard_1020", on_missing="warn")
@@ -270,7 +277,7 @@ class Simoes2020(BaseDataset):
             cache_path = Path(kagglehub.dataset_download("disbeat/bciaut-p300"))
             if cache_path.exists():
                 return cache_path
-        except (ImportError, Exception):
+        except Exception:
             pass
 
         return base

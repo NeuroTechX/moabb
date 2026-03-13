@@ -1,4 +1,4 @@
-"""Benchmark new MI datasets using MOABB's evaluation framework.
+"""Benchmark all new MI datasets using MOABB's evaluation framework.
 
 Uses WithinSessionEvaluation with Tangent Space + LR pipeline
 on subject 1 of each dataset, with adjusted chance levels.
@@ -17,14 +17,24 @@ from moabb.analysis.chance_level import chance_by_chance
 from moabb.datasets import (
     Brandl2020,
     Chang2025,
+    Forenzo2023,
+    Forenzo2024,
+    GuttmannFlury2025_MI,
     HefmiIch2025,
+    Jeong2020,
     Kaya2018,
     Kumar2024,
     Ma2020,
+    Ma2022,
     Rozado2015,
+    Tavakolan2017,
+    TrianaGuzman2024,
     Wairagkar2018,
+    Wu2020,
+    Yang2025,
     Yi2025,
     Zhang2017,
+    Zhou2020,
     Zuo2025,
 )
 from moabb.evaluations import WithinSessionEvaluation
@@ -34,16 +44,26 @@ from moabb.paradigms import MotorImagery
 warnings.filterwarnings("ignore")
 
 DATASETS = [
-    Kaya2018,
-    Zhang2017,
-    Rozado2015,
-    Kumar2024,
     Brandl2020,
-    Ma2020,
-    Wairagkar2018,
     Chang2025,
+    Forenzo2023,
+    Forenzo2024,
+    GuttmannFlury2025_MI,
     HefmiIch2025,
+    Jeong2020,
+    Kaya2018,
+    Kumar2024,
+    Ma2020,
+    Ma2022,
+    Rozado2015,
+    Tavakolan2017,
+    TrianaGuzman2024,
+    Wairagkar2018,
+    Wu2020,
+    Yang2025,
     Yi2025,
+    Zhang2017,
+    Zhou2020,
     Zuo2025,
 ]
 

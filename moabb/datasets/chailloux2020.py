@@ -248,6 +248,11 @@ class Chailloux2020(BaseDataset):
 
         for sample, _, eid in events:
             desc = id_to_desc.get(eid, "")
+            # BrainVision annotations are prefixed with "trigger/" by MNE
+            # (e.g. "trigger/201" instead of "201").  Strip the prefix so
+            # the numeric matching logic below works correctly.
+            if "/" in desc:
+                desc = desc.split("/")[-1]
             # Target marker: "10X" where X is the target symbol.
             if desc.startswith("10") and len(desc) == 3 and desc[2:].isdigit():
                 current_target = desc[2:]

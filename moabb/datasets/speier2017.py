@@ -45,86 +45,86 @@ _CH_NAMES = [
 # Conditions: FF (Famous Faces), Inv (Inverting)
 # Runs: 1, 2, 3 (training, copy-mode), Online (free-mode, no labels)
 _FILE_IDS = {
-    "Subject_1_FF1.dat": 3024088,
-    "Subject_1_FF2.dat": 3024089,
-    "Subject_1_FF3.dat": 3024090,
-    "Subject_1_FFOnline.dat": 3024091,
-    "Subject_1_Inv1.dat": 3024092,
-    "Subject_1_Inv2.dat": 3024093,
-    "Subject_1_Inv3.dat": 3024094,
-    "Subject_1_InvOnline.dat": 3024095,
-    "Subject_2_FF1.dat": 3024096,
-    "Subject_2_FF2.dat": 3024097,
-    "Subject_2_FF3.dat": 3024098,
-    "Subject_2_FFOnline.dat": 3024099,
-    "Subject_2_Inv1.dat": 3024100,
-    "Subject_2_Inv2.dat": 3024101,
-    "Subject_2_Inv3.dat": 3024102,
-    "Subject_2_InvOnline.dat": 3024103,
-    "Subject_3_FF1.dat": 3024104,
-    "Subject_3_FF2.dat": 3024105,
-    "Subject_3_FF3.dat": 3024106,
-    "Subject_3_FFOnline.dat": 3024107,
-    "Subject_3_Inv1.dat": 3024108,
-    "Subject_3_Inv2.dat": 3024109,
-    "Subject_3_Inv3.dat": 3024110,
-    "Subject_3_InvOnline.dat": 3024111,
-    "Subject_4_FF1.dat": 3024112,
-    "Subject_4_FF2.dat": 3024113,
-    "Subject_4_FF3.dat": 3024114,
-    "Subject_4_FFOnline.dat": 3024115,
-    "Subject_4_Inv1.dat": 3024116,
-    "Subject_4_Inv2.dat": 3024117,
-    "Subject_4_Inv3.dat": 3024118,
-    "Subject_4_InvOnline.dat": 3024119,
-    "Subject_5_FF1.dat": 3024120,
-    "Subject_5_FF2.dat": 3024121,
-    "Subject_5_FF3.dat": 3024122,
-    "Subject_5_FFOnline.dat": 3024123,
-    "Subject_5_Inv1.dat": 3024124,
-    "Subject_5_Inv2.dat": 3024125,
-    "Subject_5_Inv3.dat": 3024126,
-    "Subject_5_InvOnline.dat": 3024127,
-    "Subject_6_FF1.dat": 3024128,
-    "Subject_6_FF2.dat": 3024129,
-    "Subject_6_FF3.dat": 3024130,
-    "Subject_6_FFOnline.dat": 3024131,
-    "Subject_6_Inv1.dat": 3024132,
-    "Subject_6_Inv2.dat": 3024133,
-    "Subject_6_Inv3.dat": 3024134,
-    "Subject_6_InvOnline.dat": 3024135,
-    "Subject_7_FF1.dat": 3024136,
-    "Subject_7_FF2.dat": 3024137,
-    "Subject_7_FF3.dat": 3024138,
-    "Subject_7_FFOnline.dat": 3024139,
-    "Subject_7_Inv1.dat": 3024140,
-    "Subject_7_Inv2.dat": 3024141,
-    "Subject_7_Inv3.dat": 3024142,
-    "Subject_7_InvOnline.dat": 3024143,
-    "Subject_8_FF1.dat": 3024144,
-    "Subject_8_FF2.dat": 3024145,
-    "Subject_8_FF3.dat": 3024146,
-    "Subject_8_FFOnline.dat": 3024147,
-    "Subject_8_Inv1.dat": 3024148,
-    "Subject_8_Inv2.dat": 3024149,
-    "Subject_8_Inv3.dat": 3024150,
-    "Subject_8_InvOnline.dat": 3024151,
-    "Subject_9_FF1.dat": 3024152,
-    "Subject_9_FF2.dat": 3024153,
-    "Subject_9_FF3.dat": 3024154,
-    "Subject_9_FFOnline.dat": 3024155,
-    "Subject_9_Inv1.dat": 3024156,
-    "Subject_9_Inv2.dat": 3024157,
-    "Subject_9_Inv3.dat": 3024158,
-    "Subject_9_InvOnline.dat": 3024159,
-    "Subject_10_FF1.dat": 3024160,
-    "Subject_10_FF2.dat": 3024161,
-    "Subject_10_FF3.dat": 3024162,
-    "Subject_10_FFOnline.dat": 3024163,
-    "Subject_10_Inv1.dat": 3024164,
-    "Subject_10_Inv2.dat": 3024165,
-    "Subject_10_Inv3.dat": 3024166,
-    "Subject_10_InvOnline.dat": 3024167,
+    "Subject_1_FF1.dat": 2863666,
+    "Subject_1_FF2.dat": 2863665,
+    "Subject_1_FF3.dat": 2863667,
+    "Subject_1_FFOnline.dat": 2863668,
+    "Subject_1_Inv1.dat": 2863133,
+    "Subject_1_Inv2.dat": 2863134,
+    "Subject_1_Inv3.dat": 2863135,
+    "Subject_1_InvOnline.dat": 2863136,
+    "Subject_2_FF1.dat": 2863671,
+    "Subject_2_FF2.dat": 2863669,
+    "Subject_2_FF3.dat": 2863670,
+    "Subject_2_FFOnline.dat": 2863672,
+    "Subject_2_Inv1.dat": 2863675,
+    "Subject_2_Inv2.dat": 2863673,
+    "Subject_2_Inv3.dat": 2863674,
+    "Subject_2_InvOnline.dat": 2863676,
+    "Subject_3_FF1.dat": 2863677,
+    "Subject_3_FF2.dat": 2863679,
+    "Subject_3_FF3.dat": 2863678,
+    "Subject_3_FFOnline.dat": 2863680,
+    "Subject_3_Inv1.dat": 2863683,
+    "Subject_3_Inv2.dat": 2863681,
+    "Subject_3_Inv3.dat": 2863682,
+    "Subject_3_InvOnline.dat": 2863684,
+    "Subject_4_FF1.dat": 2863690,
+    "Subject_4_FF2.dat": 2863689,
+    "Subject_4_FF3.dat": 2863691,
+    "Subject_4_FFOnline.dat": 2863692,
+    "Subject_4_Inv1.dat": 2863685,
+    "Subject_4_Inv2.dat": 2863686,
+    "Subject_4_Inv3.dat": 2863687,
+    "Subject_4_InvOnline.dat": 2863688,
+    "Subject_5_FF1.dat": 2863697,
+    "Subject_5_FF2.dat": 2863698,
+    "Subject_5_FF3.dat": 2863699,
+    "Subject_5_FFOnline.dat": 2863700,
+    "Subject_5_Inv1.dat": 2863695,
+    "Subject_5_Inv2.dat": 2863693,
+    "Subject_5_Inv3.dat": 2863694,
+    "Subject_5_InvOnline.dat": 2863696,
+    "Subject_6_FF1.dat": 2864035,
+    "Subject_6_FF2.dat": 2864034,
+    "Subject_6_FF3.dat": 2864036,
+    "Subject_6_FFOnline.dat": 2864037,
+    "Subject_6_Inv1.dat": 2863702,
+    "Subject_6_Inv2.dat": 2863703,
+    "Subject_6_Inv3.dat": 2863701,
+    "Subject_6_InvOnline.dat": 2864033,
+    "Subject_7_FF1.dat": 2864042,
+    "Subject_7_FF2.dat": 2864043,
+    "Subject_7_FF3.dat": 2864044,
+    "Subject_7_FFOnline.dat": 2864046,
+    "Subject_7_Inv1.dat": 2864039,
+    "Subject_7_Inv2.dat": 2864040,
+    "Subject_7_Inv3.dat": 2864038,
+    "Subject_7_InvOnline.dat": 2864041,
+    "Subject_8_FF1.dat": 2864051,
+    "Subject_8_FF2.dat": 2864053,
+    "Subject_8_FF3.dat": 2864052,
+    "Subject_8_FFOnline.dat": 2864054,
+    "Subject_8_Inv1.dat": 2864047,
+    "Subject_8_Inv2.dat": 2864048,
+    "Subject_8_Inv3.dat": 2864049,
+    "Subject_8_InvOnline.dat": 2864050,
+    "Subject_9_FF1.dat": 2864059,
+    "Subject_9_FF2.dat": 2864061,
+    "Subject_9_FF3.dat": 2864060,
+    "Subject_9_FFOnline.dat": 2864062,
+    "Subject_9_Inv1.dat": 2864055,
+    "Subject_9_Inv2.dat": 2864057,
+    "Subject_9_Inv3.dat": 2864056,
+    "Subject_9_InvOnline.dat": 2864058,
+    "Subject_10_FF1.dat": 2864063,
+    "Subject_10_FF2.dat": 2864064,
+    "Subject_10_FF3.dat": 2864065,
+    "Subject_10_FFOnline.dat": 2864066,
+    "Subject_10_Inv1.dat": 2864067,
+    "Subject_10_Inv2.dat": 2864068,
+    "Subject_10_Inv3.dat": 2864069,
+    "Subject_10_InvOnline.dat": 2864070,
 }
 
 
@@ -170,13 +170,13 @@ def _read_bci2000(filepath):
             if line.startswith("[") and in_states:
                 break
             if in_states and line:
-                # Format: StateName Length StartBit ByteOffset DefaultValue
+                # Format: Name Length DefaultValue BytePosition BitPosition
                 sparts = line.split()
-                if len(sparts) >= 4:
+                if len(sparts) >= 5:
                     name = sparts[0]
                     length = int(sparts[1])
-                    start_bit = int(sparts[2])
                     byte_offset = int(sparts[3])
+                    start_bit = int(sparts[4])
                     state_defs[name] = (length, start_bit, byte_offset)
 
         # Read binary data.
@@ -393,17 +393,21 @@ class Speier2017(BaseDataset):
         n_ch, n_samples = signals.shape
         sfreq = 256.0
 
-        # Build stim channel from StimulusCode transitions + StimulusType.
-        stim_code = states.get("StimulusCode", np.zeros(n_samples))
+        # Build stim channel from StimulusBegin rising edges + StimulusType.
+        # StimulusBegin marks the actual stimulus display onset (0→1 transition).
+        # StimulusType indicates target (1) vs non-target (0).
+        # NOTE: The "Res" variants (StimulusCodeRes, StimulusTypeRes) are delayed
+        # result states (~208 samples / 812ms after the actual stimulus) and must
+        # NOT be used for event timing.
+        stim_begin = states.get("StimulusBegin", np.zeros(n_samples))
         stim_type = states.get("StimulusType", np.zeros(n_samples))
 
         stim = np.zeros(n_samples)
 
         if not online:
-            # Detect flash onsets: StimulusCode transitions from 0 to non-zero.
-            prev = np.concatenate([[0], stim_code[:-1]])
-            onsets = (prev == 0) & (stim_code > 0)
-            onset_idx = np.where(onsets)[0]
+            # Detect flash onsets: StimulusBegin transitions from 0 to 1.
+            prev = np.concatenate([[0], stim_begin[:-1]])
+            onset_idx = np.where((stim_begin == 1) & (prev == 0))[0]
 
             for idx in onset_idx:
                 if stim_type[idx] == 1:
