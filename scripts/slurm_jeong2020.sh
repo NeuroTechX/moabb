@@ -6,9 +6,9 @@
 #SBATCH --time=1-00:00:00
 #SBATCH --output=/home/tau/baristim/jeong2020_%j.log
 
-# Jeong2020: Download 227 GB tarball, resample 2500->1000 Hz,
-# keep ALL channels (EEG + EMG + EOG), both MI and realMove.
-# Expected output: ~50 GB in 25 per-subject ZIPs.
+# Jeong2020: Download per-subject files via s5cmd from Wasabi S3,
+# resample 2500->1000 Hz, keep ALL channels (EEG + EMG + EOG),
+# both MI and realMove. Expected output: ~50 GB in 25 per-subject ZIPs.
 
 set -euo pipefail
 
