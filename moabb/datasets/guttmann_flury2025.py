@@ -506,6 +506,48 @@ class GuttmannFlury2025_MI(BaseDataset):
         return paths[0]
 
 
+class GuttmannFlury2025_ME(BaseDataset):
+    """Eye-BCI Motor Execution dataset from Guttmann-Flury et al 2025.
+
+    Same paradigm as :class:`GuttmannFlury2025_MI` but loads Motor
+    Execution recordings (real hand grasping) instead of Motor Imagery.
+
+    See :class:`GuttmannFlury2025_MI` for full documentation.
+    """
+
+    METADATA = GuttmannFlury2025_MI.METADATA
+
+    def __init__(self, subjects=None, sessions=None):
+        super().__init__(
+            subjects=list(range(1, 32)),
+            sessions_per_subject=3,
+            events=dict(_MI_ME_EVENTS),
+            code="GuttmannFlury2025-ME",
+            interval=[0, 4],
+            paradigm="imagery",
+            doi=_DOI,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+        )
+        self.imagined = False
+        self.executed = True
+
+    @property
+    def _paradigms(self):
+        return ["ME"]
+
+    _get_single_subject_data = GuttmannFlury2025_MI._get_single_subject_data
+
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        if subject not in self.subject_list:
+            raise ValueError("Invalid subject number")
+        return _data_path_for_paradigm(
+            "ME", subject, self.code, path, force_update, verbose
+        )
+
+
 # ---------------------------------------------------------------------------
 # SSVEP adapter
 # ---------------------------------------------------------------------------
