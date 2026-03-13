@@ -2,10 +2,12 @@
 
 Simoes, Borra, Santamaria-Vazquez, et al. (2020), Frontiers in Neuroscience.
 DOI: 10.3389/fnins.2020.568104
-Data: https://www.kaggle.com/datasets/disbeat/bciaut-p300
+Original data: https://www.kaggle.com/datasets/disbeat/bciaut-p300
+Re-hosted: Zenodo (per-subject ZIPs for programmatic access)
 """
 
 import logging
+import zipfile
 from pathlib import Path
 
 import mne
@@ -31,8 +33,12 @@ log = logging.getLogger(__name__)
 _DOI = "10.3389/fnins.2020.568104"
 _SIGN = "simoes2020"
 
-# 8 EEG channels.
+# 8 EEG channels (central + parietal).
 _CH_NAMES = ["C3", "Cz", "C4", "CPz", "P3", "Pz", "P4", "POz"]
+
+# Zenodo re-hosted record (per-subject ZIPs).
+_ZENODO_RECORD = None  # Set after upload
+_ZENODO_BASE = None  # Will be set to "https://zenodo.org/records/{id}/files"
 
 
 class Simoes2020(BaseDataset):
@@ -43,26 +49,22 @@ class Simoes2020(BaseDataset):
     **Dataset Description**
 
     Fifteen subjects with autism spectrum disorder (ASD) performed
-    a P300-based BCI task across 7 sessions. EEG was recorded at
-    250 Hz from 8 channels (C3, Cz, C4, CPz, P3, Pz, P4, POz)
-    using a g.Nautilus system.
+    a P300-based BCI joint-attention training task across 7 sessions
+    (105 total sessions). EEG was recorded at 250 Hz from 8 channels
+    (C3, Cz, C4, CPz, P3, Pz, P4, POz) using a g.Nautilus wireless
+    amplifier (g.tec).
 
-    The data is pre-epoched (8 channels x 300 samples x N trials).
-    Each epoch spans -200 to +1000 ms relative to stimulus onset.
-    Target/NonTarget labels are provided in text files.
+    The BCI used a virtual environment with 8 objects. One object per
+    block was the target; the 8 objects flashed in rapid succession
+    (10 runs per block in training, 3-10 in testing). Each flash
+    produces a P300 response if it is the target object.
 
-    **Data must be downloaded manually** from Kaggle (requires
-    account): https://www.kaggle.com/datasets/disbeat/bciaut-p300
+    Data is pre-epoched: (8 channels x 350 samples x N trials).
+    Each epoch spans -200 to +1200 ms relative to stimulus onset
+    (1400 ms total at 250 Hz = 350 samples).
 
-    After downloading, extract the archive and set the path::
-
-        # Option 1: Set MNE data path
-        mne.set_config('MNE_DATA', '/path/to/data')
-        # Then place data in: /path/to/data/MNE-simoes2020-data/BCIAUT_P300/
-
-        # Option 2: Use kagglehub (if installed)
-        import kagglehub
-        kagglehub.dataset_download("disbeat/bciaut-p300")
+    - Training: 1600 epochs per session (8 objects x 10 runs x 20 blocks)
+    - Testing: 400 x K epochs per session (K = runs_per_block, 3-10)
 
     References
     ----------
@@ -79,7 +81,7 @@ class Simoes2020(BaseDataset):
             n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1020",
-            hardware="g.Nautilus (g.tec)",
+            hardware="g.Nautilus (g.tec, wireless)",
             reference="right ear",
             ground="AFz",
             sensors=list(_CH_NAMES),
@@ -96,10 +98,11 @@ class Simoes2020(BaseDataset):
             paradigm="p300",
             n_classes=2,
             class_labels=["Target", "NonTarget"],
-            trial_duration=1.0,
+            trial_duration=1.2,
             study_design=(
-                "P300 BCI in virtual environment; 8 flashing objects; "
-                "15 ASD subjects across 7 sessions"
+                "P300 BCI joint-attention training in virtual environment; "
+                "8 flashing objects; 15 ASD subjects across 7 sessions "
+                "(clinical trial NCT02445625)"
             ),
             feedback_type="visual",
             stimulus_type="object flash",
@@ -129,11 +132,9 @@ class Simoes2020(BaseDataset):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            soa_ms=300.0,
-            isi_ms=200.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials="~1600 training + varies testing per session",
+            n_trials="1600 train + 400*K test per session (K=3-10)",
             trials_context="per_session",
         ),
         data_processed=True,
@@ -146,7 +147,7 @@ class Simoes2020(BaseDataset):
             sessions_per_subject=7,
             events={"Target": 2, "NonTarget": 1},
             code="Simoes2020",
-            interval=[0, 1],
+            interval=[0, 1.2],
             paradigm="p300",
             doi=_DOI,
             selected_subjects=subjects,
@@ -155,19 +156,12 @@ class Simoes2020(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return {session: {run: Raw}}."""
-        base = self._find_data_path()
-        subj_dir = base / f"SBJ{subject:02d}"
-
-        if not subj_dir.exists():
-            raise FileNotFoundError(
-                f"Data not found at {subj_dir}. Please download the dataset "
-                "from https://www.kaggle.com/datasets/disbeat/bciaut-p300 "
-                f"and extract to {base}"
-            )
+        self.data_path(subject)
+        base = self._subject_base(subject)
 
         sessions = {}
         for ses_idx in range(1, 8):
-            ses_dir = subj_dir / f"S{ses_idx:02d}"
+            ses_dir = base / f"S{ses_idx:02d}"
             if not ses_dir.exists():
                 continue
 
@@ -194,10 +188,15 @@ class Simoes2020(BaseDataset):
 
     @staticmethod
     def _load_epoched(mat_path, targets_path):
-        """Load epoched .mat and reconstruct continuous Raw."""
+        """Load epoched .mat and reconstruct continuous Raw.
+
+        Data shape: (8 channels, 350 samples, N trials).
+        Epoch window: -200 to +1200 ms at 250 Hz.
+        Stimulus onset is at sample 50 (200 ms into the epoch).
+        """
         data = loadmat(str(mat_path))
 
-        # Find the data variable (could be 'data', 'trainData', etc.).
+        # Find the 3D data variable.
         mat_key = None
         for key in data:
             if not key.startswith("_"):
@@ -223,29 +222,27 @@ class Simoes2020(BaseDataset):
             )
             return None
 
-        # Load target labels.
+        # Load target labels (1 = target flash, 0 = non-target flash).
         targets = np.loadtxt(str(targets_path), dtype=int).ravel()
         if len(targets) != n_trials:
-            # Truncate to match.
             n_trials = min(n_trials, len(targets))
             epochs = epochs[:, :, :n_trials]
             targets = targets[:n_trials]
 
-        # Scale to Volts (data is in uV), in-place to save memory.
+        # Scale to Volts (data is in uV).
         epochs *= 1e-6
 
         sfreq = 250.0
-        buffer_samples = max(1, int(sfreq * 0.05))  # 50 ms buffer
+        buffer_samples = max(1, int(sfreq * 0.05))  # 50 ms gap between epochs
         total_len = n_trials * (n_time + buffer_samples)
 
-        # Pre-allocate combined array (EEG + stim) to avoid extra copy.
+        # Pre-allocate EEG + stim channel.
         all_data = np.zeros((n_ch + 1, total_len))
         continuous = all_data[:n_ch]
         stim = all_data[n_ch]
 
-        # Skip first 50 samples (baseline, -200 ms) for event placement.
-        # Event at sample 50 within each epoch (stimulus onset at 0 ms).
-        onset_offset = int(sfreq * 0.2)  # 200 ms = 50 samples
+        # Baseline is 200 ms = 50 samples. Event at stimulus onset (sample 50).
+        onset_offset = int(sfreq * 0.2)
 
         for i in range(n_trials):
             start = i * (n_time + buffer_samples)
@@ -262,25 +259,10 @@ class Simoes2020(BaseDataset):
 
         return raw
 
-    def _find_data_path(self):
-        """Find the BCIAUT_P300 directory."""
+    def _subject_base(self, subject):
+        """Return the subject directory path."""
         path = dl.get_dataset_path(_SIGN, None)
-        base = Path(path) / f"MNE-{_SIGN}-data" / "BCIAUT_P300"
-
-        if base.exists():
-            return base
-
-        # Try kagglehub cache.
-        try:
-            import kagglehub
-
-            cache_path = Path(kagglehub.dataset_download("disbeat/bciaut-p300"))
-            if cache_path.exists():
-                return cache_path
-        except Exception:
-            pass
-
-        return base
+        return Path(path) / f"MNE-{_SIGN}-data" / "BCIAUT_P300" / f"SBJ{subject:02d}"
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -288,14 +270,49 @@ class Simoes2020(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = self._find_data_path()
-        subj_dir = base / f"SBJ{subject:02d}"
+        base = self._subject_base(subject)
 
-        if not subj_dir.exists():
+        # If data already exists locally, return it.
+        if base.exists() and not force_update:
+            return str(base)
+
+        # Try Zenodo download (per-subject ZIP).
+        if _ZENODO_BASE is not None:
+            subj_str = f"SBJ{subject:02d}"
+            url = f"{_ZENODO_BASE}/{subj_str}.zip"
+            zip_path = dl.data_dl(url, _SIGN, path=path)
+            zip_path = Path(zip_path)
+            # Handle nested path from data_dl
+            if zip_path.name != f"{subj_str}.zip":
+                expected = zip_path.parent / f"{subj_str}.zip"
+                if not expected.exists() and zip_path.exists():
+                    zip_path.rename(expected)
+                zip_path = expected
+
+            if zip_path.exists():
+                parent = base.parent
+                parent.mkdir(parents=True, exist_ok=True)
+                with zipfile.ZipFile(str(zip_path), "r") as zf:
+                    zf.extractall(str(parent))
+                if base.exists():
+                    return str(base)
+
+        # Fallback: try kagglehub.
+        try:
+            import kagglehub
+
+            cache_path = Path(kagglehub.dataset_download("disbeat/bciaut-p300"))
+            subj_dir = cache_path / f"SBJ{subject:02d}"
+            if subj_dir.exists():
+                return str(subj_dir)
+        except Exception:
+            pass
+
+        if not base.exists():
             raise FileNotFoundError(
-                f"Data not found at {subj_dir}. Please download manually from "
+                f"Data not found at {base}. Download manually from "
                 "https://www.kaggle.com/datasets/disbeat/bciaut-p300 "
-                "and extract the archive. See the class docstring for details."
+                "and extract to the MNE data directory."
             )
 
-        return str(subj_dir)
+        return str(base)
