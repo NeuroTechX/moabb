@@ -168,7 +168,7 @@ class Rozado2015(BaseDataset):
             investigators=[
                 "David Rozado",
                 "Andreas Duenser",
-                "Bob Gruen",
+                "Ben Howell",
             ],
             senior_author="David Rozado",
             institution="CSIRO",

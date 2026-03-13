@@ -143,9 +143,11 @@ class TrianaGuzman2024(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.3389/fninf.2022.961089",
             investigators=[
-                "Natalia Triana-Guzman",
-                "Alvaro D. Orjuela-Canon",
+                "Nayid Triana-Guzman",
+                "Alvaro D. Orjuela-Cañon",
                 "Andres L. Jutinico",
+                "Omar Mendoza-Montoya",
+                "Javier M. Antelis",
             ],
             institution="Universidad del Rosario",
             country="CO",

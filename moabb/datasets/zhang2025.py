@@ -134,8 +134,11 @@ class Zhang2025(BaseDataset):
             doi=_DOI,
             investigators=[
                 "Yufeng Zhang",
+                "Hongxin Zhang",
+                "Yixuan Li",
                 "Yijun Wang",
                 "Xiaorong Gao",
+                "Chen Yang",
             ],
             institution="Tsinghua University",
             country="CN",

@@ -268,8 +268,8 @@ class Brandl2020(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2020.566147",
             publication_year=2020,
-            investigators=["Stephanie Brandl", "Benjamin Blankertz"],
-            senior_author="Benjamin Blankertz",
+            investigators=["Stephanie Brandl", "Benjamin Blankertz", "Tobias Dahne"],
+            senior_author="Tobias Dahne",
             institution="Technische Universitaet Berlin",
             institution_department="Department of Neurotechnology",
             country="DE",

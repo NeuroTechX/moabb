@@ -166,7 +166,16 @@ class Yi2025(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-025-05286-0",
-            investigators=["Weibo Yi", "Jiaming Chen", "Dan Wang"],
+            investigators=[
+                "Weibo Yi",
+                "Jiaming Chen",
+                "Dan Wang",
+                "Xinkang Hu",
+                "Meng Xu",
+                "Fangda Li",
+                "Shuhan Wu",
+                "Jin Qian",
+            ],
             institution="China University of Mining and Technology",
             country="CN",
             data_url="https://figshare.com/articles/dataset/Data/24123303",
