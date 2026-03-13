@@ -259,10 +259,10 @@ class Simoes2020(BaseDataset):
 
         return raw
 
-    def _subject_base(self, subject):
+    def _subject_base(self, subject, path=None):
         """Return the subject directory path."""
-        path = dl.get_dataset_path(_SIGN, None)
-        return Path(path) / f"MNE-{_SIGN}-data" / "BCIAUT_P300" / f"SBJ{subject:02d}"
+        base_path = dl.get_dataset_path(_SIGN, path)
+        return Path(base_path) / f"MNE-{_SIGN}-data" / "BCIAUT_P300" / f"SBJ{subject:02d}"
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -270,7 +270,7 @@ class Simoes2020(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = self._subject_base(subject)
+        base = self._subject_base(subject, path=path)
 
         # If data already exists locally, return it.
         if base.exists() and not force_update:
