@@ -1664,7 +1664,7 @@ class TestUpdateEventsJsonWithHed:
         hed_tags = {
             "left_hand": (
                 "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                "(Agent-action, (Imagine, (Move, (Left, Hand))))"
+                "(Agent-action, (Imagine, Move, (Left, Hand)))"
             )
         }
         _update_events_json_sidecar(bp, hed_tags, None)
@@ -1721,6 +1721,43 @@ class TestUpdateEventsJsonWithHed:
             sidecar = json.load(f)
         # Should not have added HED key
         assert "HED" not in sidecar.get("trial_type", {})
+
+
+class TestArrowCueOverrideViaMetadata:
+    """Verify that per-dataset hed_tags in metadata override paradigm defaults."""
+
+    def test_arrow_cue_override_via_metadata(self):
+        """Datasets with arrow cues should override generic MI defaults."""
+        arrow_left = (
+            "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+            "(Leftward, Arrow)), "
+            "(Agent-action, (Imagine, Move, (Left, Hand)))"
+        )
+        arrow_right = (
+            "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+            "(Rightward, Arrow)), "
+            "(Agent-action, (Imagine, Move, (Right, Hand)))"
+        )
+        # Create a mock dataset with metadata containing hed_tags overrides
+        experiment = MagicMock()
+        experiment.hed_tags = {
+            "left_hand": arrow_left,
+            "right_hand": arrow_right,
+        }
+        metadata = MagicMock()
+        metadata.experiment = experiment
+
+        dataset = MagicMock()
+        dataset.paradigm = "imagery"
+        dataset.event_id = {"left_hand": 1, "right_hand": 2}
+        dataset.metadata = metadata
+
+        hed = _build_hed_sidecar_annotations(dataset)
+        # Per-dataset arrow tags must take priority over generic paradigm defaults
+        assert hed["left_hand"] == arrow_left
+        assert hed["right_hand"] == arrow_right
+        assert "Arrow" in hed["left_hand"]
+        assert "Arrow" in hed["right_hand"]
 
 
 # ============================================================

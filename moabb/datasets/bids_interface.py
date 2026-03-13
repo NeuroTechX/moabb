@@ -350,74 +350,82 @@ _PARADIGM_COG_ATLAS = {
 # Paradigm-level HED tag mappings for events.json sidecar enrichment.
 # Maps (paradigm, event_name) → HED tag string using HED schema 8.4.0.
 
-# Shared sensory prefix for MI events — the visual cue the participant sees.
+# Shared sensory prefix for MI events where the specific visual stimulus is
+# unknown — datasets that use arrows or other cues override via hed_tags
+# in their ExperimentMetadata.
 _MI_SENSORY = "(Sensory-event, Experimental-stimulus, Visual-presentation)"
 
 _PARADIGM_HED_TAGS = {
     # ── Motor Imagery ──
     # Each MI stimulus event decomposes into two top-level groups per HED
     # annotation semantics (Rules 2b/2e/2f):
-    #   1. _MI_SENSORY — what the participant sees on screen.
-    #   2. (Agent-action, (Imagine, ...)) — what the participant does.
+    #   1. Sensory-event — what the participant sees (generic here; datasets
+    #      with known cue types override via ExperimentMetadata.hed_tags).
+    #   2. (Agent-action, (Imagine, Move, ...)) — what the participant does.
     "imagery": {
-        # Common MI events
-        "left_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Move, (Left, Hand))))",
-        "right_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Move, (Right, Hand))))",
-        "feet": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Move, Foot)))",
-        "tongue": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Move, Tongue)))",
-        "both_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Move, Hand)))",
-        "hands": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Move, Hand)))",
-        "rest": f"{_MI_SENSORY}, Rest",
+        # Common MI events — generic sensory prefix (no arrow assumption)
+        "left_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, (Left, Hand)))",
+        "right_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, (Right, Hand)))",
+        "feet": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Foot))",
+        "tongue": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Tongue))",
+        "both_hand": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Hand))",
+        "hands": f"{_MI_SENSORY}, (Agent-action, (Imagine, Move, Hand))",
+        "rest": "Sensory-event, Experimental-stimulus, Visual-presentation, Rest",
         "right_hand_right_foot": (
             f"{_MI_SENSORY}, "
-            "(Agent-action, (Imagine, (Move, (Right, Hand)), (Move, (Right, Foot))))"
+            "(Agent-action, (Imagine, Move, (Right, Hand)), "
+            "(Imagine, Move, (Right, Foot)))"
         ),
-        "palmar_grasp": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Grasp, Hand)))",
+        "palmar_grasp": f"{_MI_SENSORY}, (Agent-action, (Imagine, Grasp, Hand))",
         "lateral_grasp": (
-            f"{_MI_SENSORY}, (Agent-action, (Imagine, (Grasp, Hand, (Label/lateral))))"
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Grasp, Hand, (Label/lateral)))"
         ),
         # Weibo2014 — compound limb motor imagery
         "left_hand_right_foot": (
             f"{_MI_SENSORY}, "
-            "(Agent-action, (Imagine, (Move, (Left, Hand)), (Move, (Right, Foot))))"
+            "(Agent-action, (Imagine, Move, (Left, Hand)), "
+            "(Imagine, Move, (Right, Foot)))"
         ),
         "right_hand_left_foot": (
             f"{_MI_SENSORY}, "
-            "(Agent-action, (Imagine, (Move, (Right, Hand)), (Move, (Left, Foot))))"
+            "(Agent-action, (Imagine, Move, (Right, Hand)), "
+            "(Imagine, Move, (Left, Foot)))"
         ),
         # Ofner2017 — upper limb motor imagery
-        "right_elbow_flexion": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Flex, (Right, Elbow))))",
+        "right_elbow_flexion": (
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Flex, (Right, Elbow)))"
+        ),
         "right_elbow_extension": (
-            f"{_MI_SENSORY}, (Agent-action, (Imagine, (Stretch, (Right, Elbow))))"
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Stretch, (Right, Elbow)))"
         ),
         "right_supination": (
             f"{_MI_SENSORY}, "
-            "(Agent-action, (Imagine, (Turn, (Right, Forearm), (Label/supination))))"
+            "(Agent-action, (Imagine, Turn, (Right, Forearm), (Label/supination)))"
         ),
         "right_pronation": (
             f"{_MI_SENSORY}, "
-            "(Agent-action, (Imagine, (Turn, (Right, Forearm), (Label/pronation))))"
+            "(Agent-action, (Imagine, Turn, (Right, Forearm), (Label/pronation)))"
         ),
         "right_hand_close": (
-            f"{_MI_SENSORY}, (Agent-action, (Imagine, (Close, (Right, Hand))))"
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Close, (Right, Hand)))"
         ),
         "right_hand_open": (
-            f"{_MI_SENSORY}, (Agent-action, (Imagine, (Open, (Right, Hand))))"
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Open, (Right, Hand)))"
         ),
         # BNCI2019_001 — motor imagery without laterality prefix
-        "hand_open": f"{_MI_SENSORY}, (Agent-action, (Imagine, (Open, Hand)))",
+        "hand_open": f"{_MI_SENSORY}, (Agent-action, (Imagine, Open, Hand))",
         "pronation": (
-            f"{_MI_SENSORY}, (Agent-action, (Imagine, (Turn, Forearm, (Label/pronation))))"
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Turn, Forearm, (Label/pronation)))"
         ),
         "supination": (
-            f"{_MI_SENSORY}, (Agent-action, (Imagine, (Turn, Forearm, (Label/supination))))"
+            f"{_MI_SENSORY}, (Agent-action, (Imagine, Turn, Forearm, (Label/supination)))"
         ),
         # BNCI2015_004 — mental/cognitive tasks
         "math": f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/math)))",
         "letter": f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/letter)))",
         "rotation": f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/rotation)))",
         "count": f"{_MI_SENSORY}, (Agent-action, (Imagine, Count))",
-        "baseline": f"{_MI_SENSORY}, Rest",
+        "baseline": "Sensory-event, Experimental-stimulus, Visual-presentation, Rest",
         # Shin2017B — mental arithmetic
         "subtraction": (
             f"{_MI_SENSORY}, (Agent-action, (Imagine, Think, (Label/subtraction)))"

@@ -430,6 +430,18 @@ class Lee2019_MI(Lee2019):
             synchronicity="synchronous",
             instructions="Subjects performed the imagery task of grasping with the appropriate hand for 4 s when the right or left arrow appeared as a visual cue. First 3 s of each trial began with a black fixation cross to prepare subjects for the MI task. After each task, the screen remained blank for 6 s (± 1.5 s).",
             tasks=["MI"],
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1093/gigascience/giz002",

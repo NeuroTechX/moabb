@@ -405,6 +405,18 @@ class Shin2017A(BaseShin2017):
             synchronicity="cued",
             mode="offline",
             instructions="Subjects were instructed to perform kinesthetic MI (i.e., to imagine the opening and closing their hands as they were grabbing a ball) to ensure that actual MI, not visual MI, was performed. Subjects were asked to imagine hand gripping (opening and closing their hands) with a 1 Hz pace.",
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2016.2628057",
