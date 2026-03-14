@@ -37,6 +37,14 @@ try:
 except ImportError:
     _carbonfootprint = False
 
+
+def _expected_result_key_count(extra_columns=0):
+    """Return expected number of result-dict keys for this environment."""
+    base_keys = 10  # includes n_samples_test and n_classes
+    carbon_keys = 2 if _carbonfootprint else 0
+    return base_keys + carbon_keys + extra_columns
+
+
 pipelines = OrderedDict()
 pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=12)
@@ -118,7 +126,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
+        assert len(results[0].keys()) == _expected_result_key_count()
 
     def test_compound_dataset(self):
         ch1 = ["C3", "Cz", "Fz"]
@@ -153,7 +161,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
+        assert len(results[0].keys()) == _expected_result_key_count()
 
     def test_eval_grid_search(self):
         # Test grid search
@@ -172,7 +180,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
+        assert len(results[0].keys()) == _expected_result_key_count()
 
     def test_eval_grid_search_optuna(self):
         if not optuna_available:
@@ -199,7 +207,7 @@ class TestWithinSess:
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
         # We should have 9 columns in the results data frame
-        assert len(results[0].keys()) == (11 if _carbonfootprint else 10)
+        assert len(results[0].keys()) == _expected_result_key_count()
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
@@ -291,7 +299,7 @@ class TestWithinSessLearningCurve:
             )
         ]
         keys = results[0].keys()
-        assert len(keys) == 12  # 10 + 2 new for learning curve
+        assert len(keys) == _expected_result_key_count(extra_columns=2)
         assert "permutation" in keys
         assert "data_size" in keys
 
@@ -446,44 +454,6 @@ class TestWithinSubj(TestWithinSess):
             save_model=True,
             optuna=False,
         )
-
-    def _assert_legacy_evaluate_disabled(self, param_grid=None):
-        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        with pytest.raises(
-            RuntimeError, match="WithinSubjectEvaluation legacy evaluate\\(\\) path"
-        ):
-            list(
-                self.eval.evaluate(
-                    dataset,
-                    pipelines,
-                    param_grid=param_grid,
-                    process_pipeline=process_pipeline,
-                )
-            )
-
-    def test_eval_results(self):
-        self._assert_legacy_evaluate_disabled()
-
-    def test_compound_dataset(self):
-        self._assert_legacy_evaluate_disabled()
-
-    def test_eval_grid_search(self):
-        self._assert_legacy_evaluate_disabled(
-            param_grid={"C": {"csp__metric": ["euclid", "riemann"]}}
-        )
-
-    def test_eval_grid_search_optuna(self):
-        if not optuna_available:
-            pytest.skip("Optuna is not available")
-        self.eval.optuna = True
-        self._assert_legacy_evaluate_disabled(
-            param_grid={"C": {"csp__metric": ["euclid", "riemann"]}}
-        )
-        self.eval.optuna = False
-
-    def test_within_session_evaluation_save_model(self):
-        self.eval.process(pipelines)
-        super().test_within_session_evaluation_save_model()
 
 
 class Test_CrossSubj(TestWithinSess):
@@ -1004,22 +974,8 @@ class TestParallelLegacyEquivalence:
         self._compare_parallel_vs_legacy(ev.CrossSubjectEvaluation, tmp_path)
 
     def test_within_subject_equivalence(self, tmp_path):
-        """WithinSubject legacy path is intentionally disabled."""
-        paradigm = FakeImageryParadigm()
-        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=12)
-        eval_legacy = ev.WithinSubjectEvaluation(
-            paradigm=paradigm,
-            datasets=[ds],
-            random_state=42,
-            overwrite=True,
-            hdf5_path=str(tmp_path / "legacy"),
-        )
-        with pytest.raises(
-            RuntimeError, match="WithinSubjectEvaluation legacy evaluate\\(\\) path"
-        ):
-            eval_legacy._process_legacy(
-                pipelines, param_grid=None, postprocess_pipeline=None
-            )
+        """WithinSubject parallel matches legacy scores."""
+        self._compare_parallel_vs_legacy(ev.WithinSubjectEvaluation, tmp_path)
 
 
 class TestAggregateFoldResults:

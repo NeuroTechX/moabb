@@ -223,7 +223,9 @@ def _evaluate_fold(
             "subject": subject,
             "session": group_session,
             "n_samples": len(train_idx),
+            "n_samples_test": len(group_y),
             "n_samples_total": len(train_idx) + len(test_idx),
+            "n_classes": len(np.unique(group_y)),
             "n_channels": nchan,
             "pipeline": pipeline_name,
             "is_error": is_error,
@@ -707,6 +709,103 @@ class BaseEvaluation(ABC):
                 )
         return tasks
 
+    def _evaluate_parallel_dataset(
+        self,
+        dataset,
+        pipelines,
+        param_grid,
+        process_pipeline,
+        postprocess_pipeline=None,
+        work_plan=None,
+    ):
+        """Evaluate one dataset through the splitter-based parallel path.
+
+        Parameters
+        ----------
+        dataset : BaseDataset
+            Dataset to evaluate.
+        pipelines : dict
+            Pipeline mapping passed by the caller.
+        param_grid : dict | None
+            Optional hyperparameter search grids.
+        process_pipeline : Pipeline
+            Preprocessing pipeline already built for this dataset.
+        postprocess_pipeline : Pipeline | None
+            Optional fixed postprocessing pipeline.
+        work_plan : dict | None
+            Optional mapping ``subject -> {pipeline_name: pipeline}``.
+            When ``None``, the work plan is computed from cached results.
+
+        Returns
+        -------
+        list of dict
+            Result dictionaries matching :meth:`evaluate`.
+        """
+        dataset_splitter = self._create_splitter()
+        if dataset_splitter is None:
+            raise RuntimeError(
+                f"{self.__class__.__name__} does not define a splitter-backed "
+                "parallel evaluation path."
+            )
+        self.cv = dataset_splitter
+
+        if work_plan is None:
+            work_plan = {}
+            for subject in dataset.subject_list:
+                run_pipes = self.results.not_yet_computed(
+                    pipelines, dataset, subject, process_pipeline
+                )
+                if run_pipes:
+                    work_plan[subject] = run_pipes
+
+        if not work_plan:
+            return []
+
+        subjects_to_load = (
+            dataset.subject_list if self._needs_all_subjects else list(work_plan.keys())
+        )
+        run_pipes = {
+            name: pipe
+            for subject_pipelines in work_plan.values()
+            for name, pipe in subject_pipelines.items()
+        }
+        X, y, metadata = self._load_data(
+            dataset,
+            run_pipes,
+            process_pipeline,
+            postprocess_pipeline,
+            subjects=subjects_to_load,
+        )
+
+        tasks = self._build_task_list(
+            dataset,
+            X,
+            y,
+            metadata,
+            dataset_splitter,
+            work_plan,
+            pipelines,
+            param_grid,
+        )
+        if not tasks:
+            return []
+
+        # X, y, metadata passed as positional args for joblib auto-mmap.
+        fold_results = Parallel(n_jobs=self.n_jobs)(
+            delayed(_evaluate_fold)(X, y, metadata, **task) for task in tasks
+        )
+        all_results = list(chain.from_iterable(fold_results))
+
+        if self._aggregate_folds and not hasattr(
+            getattr(dataset_splitter, "cv_class", None), "get_metadata"
+        ):
+            all_results = self._aggregate_fold_results(all_results)
+
+        for res in all_results:
+            res.pop("n_samples_total", None)
+            res.pop("is_error", None)
+        return all_results
+
     @staticmethod
     def _aggregate_fold_results(fold_results):
         """Aggregate per-fold results into averaged results.
@@ -729,7 +828,11 @@ class BaseEvaluation(ABC):
         df = pd.DataFrame(fold_results)
         group_keys = ["subject", "session", "pipeline"]
         score_cols = [c for c in df.columns if c == "score" or c.startswith("score_")]
-        agg_cols = score_cols + ["time"]
+        agg_ops = {col: "mean" for col in score_cols + ["time"]}
+        if "n_samples_test" in df.columns:
+            agg_ops["n_samples_test"] = "mean"
+        if "n_classes" in df.columns:
+            agg_ops["n_classes"] = "max"
 
         # Error folds may lack score_* columns; fill with their "score" fallback
         for col in score_cols:
@@ -739,19 +842,24 @@ class BaseEvaluation(ABC):
         has_carbon = "carbon_emission" in df.columns
 
         grouped = df.groupby(group_keys, sort=False)
-        agg_df = grouped[agg_cols].mean()
+        agg_df = grouped.agg(agg_ops)
 
         results = []
         for key, sub_df in grouped:
             template = sub_df.iloc[0].to_dict()
             template["n_samples"] = template.get("n_samples_total", template["n_samples"])
-            for col in agg_cols:
-                template[col] = agg_df.loc[key, col]
+            for col in agg_ops:
+                value = agg_df.loc[key, col]
+                if col in {"n_samples_test", "n_classes"} and pd.notna(value):
+                    value = int(value)
+                template[col] = value
             if has_carbon:
                 template["carbon_emission"] = sub_df["carbon_emission"].sum()
+                template["codecarbon_task_name"] = ""
             template.pop("n_samples_total", None)
             template.pop("is_error", None)
-            template.pop("codecarbon_task_name", None)
+            if not has_carbon:
+                template.pop("codecarbon_task_name", None)
             results.append(template)
         return results
 
@@ -860,9 +968,6 @@ class BaseEvaluation(ABC):
             if not self.is_valid(dataset):
                 continue
 
-            # Recreate splitter per dataset to avoid RNG state drift
-            dataset_splitter = self._create_splitter()
-
             process_pipeline = self.paradigm.make_process_pipelines(
                 dataset,
                 return_epochs=self.return_epochs,
@@ -889,35 +994,15 @@ class BaseEvaluation(ABC):
                 )
                 work_plan = {subj: dict(pipelines) for subj in dataset.subject_list}
 
-            subjects_to_load = (
-                dataset.subject_list
-                if self._needs_all_subjects
-                else list(work_plan.keys())
+            all_results = self._evaluate_parallel_dataset(
+                dataset=dataset,
+                pipelines=pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+                postprocess_pipeline=postprocess_pipeline,
+                work_plan=work_plan,
             )
-            X, y, metadata = self._load_data(
-                dataset,
-                {
-                    name: pipe
-                    for subj_pipes in work_plan.values()
-                    for name, pipe in subj_pipes.items()
-                },
-                process_pipeline,
-                postprocess_pipeline,
-                subjects=subjects_to_load,
-            )
-
-            tasks = self._build_task_list(
-                dataset,
-                X,
-                y,
-                metadata,
-                dataset_splitter,
-                work_plan,
-                pipelines,
-                param_grid,
-            )
-
-            if not tasks:
+            if not all_results:
                 res_per_db.append(
                     self.results.to_dataframe(
                         pipelines=pipelines, process_pipeline=process_pipeline
@@ -925,22 +1010,7 @@ class BaseEvaluation(ABC):
                 )
                 continue
 
-            # X, y, metadata passed as positional args for joblib auto-mmap
-            fold_results = Parallel(n_jobs=self.n_jobs)(
-                delayed(_evaluate_fold)(X, y, metadata, **task) for task in tasks
-            )
-
-            all_results = list(chain.from_iterable(fold_results))
-
-            # WithinSession aggregates folds unless using LearningCurve
-            if self._aggregate_folds and not hasattr(
-                getattr(dataset_splitter, "cv_class", None), "get_metadata"
-            ):
-                all_results = self._aggregate_fold_results(all_results)
-
             for res in all_results:
-                res.pop("n_samples_total", None)
-                res.pop("is_error", None)
                 self._log_result(res)
             self._push_results_batch(all_results, pipelines, process_pipeline)
 

@@ -652,9 +652,18 @@ class WithinSubjectEvaluation(BaseEvaluation):
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
     ):
-        raise RuntimeError(
-            "WithinSubjectEvaluation legacy evaluate() path has been removed. "
-            "Use WithinSubjectEvaluation.process() with the splitter-based path."
+        if not self.is_valid(dataset):
+            reason = self._get_incompatibility_reason(dataset)
+            raise AssertionError(
+                f"Dataset '{dataset.code}' is not appropriate for "
+                f"{self.__class__.__name__}: {reason}"
+            )
+        yield from self._evaluate_parallel_dataset(
+            dataset=dataset,
+            pipelines=pipelines,
+            param_grid=param_grid,
+            process_pipeline=process_pipeline,
+            postprocess_pipeline=postprocess_pipeline,
         )
 
     def is_valid(self, dataset):
