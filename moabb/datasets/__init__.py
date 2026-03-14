@@ -103,7 +103,6 @@ from .lee2024 import Lee2024_AC, Lee2024_BS, Lee2024_DL, Lee2024_EL, Lee2024_TV
 from .liu2024 import Liu2024
 from .liu2025 import Liu2025
 from .ma2020 import Ma2020
-from .ma2022 import Ma2022
 from .mainsah2025 import (
     Mainsah2025_A,
     Mainsah2025_B,
@@ -181,6 +180,7 @@ _init_dataset()
 
 _REMOVED_DATASETS = {
     "DemonsP300": "DemonsP300 has been removed due to unresolved data issues.",
+    "Ma2022": "Ma2022 has been removed because it requires a password (not FAIR-compliant).",
 }
 
 

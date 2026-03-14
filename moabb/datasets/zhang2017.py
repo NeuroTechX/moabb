@@ -5,8 +5,6 @@ DOI: 10.1371/journal.pone.0188293
 """
 
 import logging
-import shutil
-import subprocess
 from pathlib import Path
 
 import mne
@@ -28,53 +26,12 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import extract_rar
 
 
 log = logging.getLogger(__name__)
 
 _FIGSHARE_URL = "https://ndownloader.figshare.com/files/9700792"
-
-
-def _find_rar_tool():
-    """Return the command list for extracting RAR archives, or raise."""
-    for tool, args in [
-        ("unrar", ["unrar", "x", "-o+"]),
-        ("unar", ["unar", "-f", "-o"]),
-        ("7z", ["7z", "x", "-y", "-o"]),
-    ]:
-        if shutil.which(tool) is not None:
-            return tool, args
-    raise RuntimeError(
-        "No RAR extraction tool found. Install one of: unrar, unar, or 7z. "
-        "For example: 'brew install unar' (macOS) or 'apt install unrar' (Linux)."
-    )
-
-
-def _extract_rar(rar_path, dest_dir):
-    """Extract a RAR archive into *dest_dir* using an available system tool."""
-    dest_dir = Path(dest_dir)
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    rar_path = str(rar_path)
-
-    tool, base_args = _find_rar_tool()
-
-    if tool == "unrar":
-        # unrar x -o+ archive.rar dest/
-        cmd = base_args + [rar_path, str(dest_dir) + "/"]
-    elif tool == "unar":
-        # unar -f -o dest/ archive.rar
-        cmd = base_args + [str(dest_dir), rar_path]
-    elif tool == "7z":
-        # 7z x -y -oDEST archive.rar
-        cmd = base_args[:-1] + [base_args[-1] + str(dest_dir), rar_path]
-
-    log.info("Extracting RAR with: %s", " ".join(cmd))
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"RAR extraction failed (exit {result.returncode}):\n"
-            f"stdout: {result.stdout}\nstderr: {result.stderr}"
-        )
 
 
 def _read_bci2000_file(fpath):
@@ -501,7 +458,7 @@ class Zhang2017(BaseDataset):
         rar_path = Path(dl.data_dl(_FIGSHARE_URL, sign, path, force_update, verbose))
 
         # Extract RAR
-        _extract_rar(rar_path, extract_dir)
+        extract_rar(rar_path, extract_dir)
 
         # Find subject files
         dat_files = self._find_subject_files(extract_dir, subject_id)

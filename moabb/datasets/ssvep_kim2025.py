@@ -266,7 +266,9 @@ class Kim2025BetaRange(BaseDataset):
         onset_sample = int(round(2.0 * srate))  # sample 2048
 
         # Normalize channel names to match MNE standard_1005
-        ch_names = _normalize_ch_names(ch_names_raw)
+        # Normalize uppercase midline channels to MNE mixed-case convention
+        _midline_fix = {"CZ": "Cz", "PZ": "Pz", "OZ": "Oz", "CPZ": "CPz", "POZ": "POz"}
+        ch_names = [_midline_fix.get(ch, ch) for ch in ch_names_raw]
         ch_types = _infer_ch_types(ch_names)
         event_ids = np.arange(1, n_classes + 1)
 
@@ -295,24 +297,6 @@ class Kim2025BetaRange(BaseDataset):
         file_id = _SSVEP_FILE_IDS[subject]
         url = f"{FIGSHARE_DL_URL}{file_id}"
         return dl.data_dl(url, self.code, path, force_update, verbose)
-
-
-def _normalize_ch_names(ch_names):
-    """Normalize channel names from .mat file to match MNE conventions.
-
-    The .mat files use uppercase midline names (e.g. 'CZ', 'POZ', 'PZ',
-    'CPZ', 'OZ') which must be converted to mixed case ('Cz', 'POz',
-    'Pz', 'CPz', 'Oz') for MNE standard_1005 montage compatibility.
-    """
-    # Map uppercase midline channels to MNE mixed-case convention
-    mapping = {
-        "CZ": "Cz",
-        "PZ": "Pz",
-        "OZ": "Oz",
-        "CPZ": "CPz",
-        "POZ": "POz",
-    }
-    return [mapping.get(ch, ch) for ch in ch_names]
 
 
 def _infer_ch_types(ch_names):

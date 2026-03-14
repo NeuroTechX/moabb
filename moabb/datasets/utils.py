@@ -5,7 +5,9 @@ from __future__ import annotations
 import abc
 import inspect
 import logging
+import shutil
 import stat
+import subprocess
 import tarfile
 import zipfile
 from pathlib import Path
@@ -606,6 +608,43 @@ def download_and_extract_subject_zip(
     extract_dir.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(zip_path) as zf:
         safe_extract_zip(zf, extract_dir)
+
+
+def extract_rar(rar_path, dest_dir):
+    """Extract a RAR archive using available system tools.
+
+    Tries ``unrar``, ``unar``, and ``7z`` in order.
+
+    Parameters
+    ----------
+    rar_path : str or Path
+        Path to the RAR archive.
+    dest_dir : str or Path
+        Directory to extract files into.
+    """
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    rar_path = str(rar_path)
+
+    for tool, cmd_fn in [
+        ("unrar", lambda d, r: ["unrar", "x", "-o+", r, str(d) + "/"]),
+        ("unar", lambda d, r: ["unar", "-f", "-o", str(d), r]),
+        ("7z", lambda d, r: ["7z", "x", "-y", f"-o{d}", r]),
+    ]:
+        if shutil.which(tool) is not None:
+            cmd = cmd_fn(dest_dir, rar_path)
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode != 0:
+                raise RuntimeError(
+                    f"RAR extraction failed with {tool} "
+                    f"(exit {result.returncode}):\n{result.stderr}"
+                )
+            return
+
+    raise RuntimeError(
+        "No RAR extraction tool found. Install one of: unrar, unar, or 7z. "
+        "For example: 'brew install unar' (macOS) or 'apt install unrar' (Linux)."
+    )
 
 
 class _BubbleChart:

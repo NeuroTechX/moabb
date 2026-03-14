@@ -177,7 +177,12 @@ class Simoes2020(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return {session: {run: Raw}}."""
         self.data_path(subject)
-        base = self._subject_base(subject)
+        base = (
+            Path(dl.get_dataset_path(_SIGN, None))
+            / f"MNE-{_SIGN}-data"
+            / "BCIAUT_P300"
+            / f"SBJ{subject:02d}"
+        )
 
         sessions = {}
         for ses_idx in range(1, 8):
@@ -279,18 +284,18 @@ class Simoes2020(BaseDataset):
 
         return raw
 
-    def _subject_base(self, subject, path=None):
-        """Return the subject directory path."""
-        base_path = dl.get_dataset_path(_SIGN, path)
-        return Path(base_path) / f"MNE-{_SIGN}-data" / "BCIAUT_P300" / f"SBJ{subject:02d}"
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = self._subject_base(subject, path=path)
+        base = (
+            Path(dl.get_dataset_path(_SIGN, path))
+            / f"MNE-{_SIGN}-data"
+            / "BCIAUT_P300"
+            / f"SBJ{subject:02d}"
+        )
 
         if base.exists() and not force_update:
             return str(base)

@@ -32,14 +32,6 @@ from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs, safe_extract_tar
 BETA_URL = "http://bci.med.tsinghua.edu.cn/upload/liubingchuan/"
 
 
-def _get_tar_name(subject):
-    """Return the tar.gz filename that contains the given subject."""
-    # Files are grouped in batches of 10: S1-S10, S11-S20, ..., S61-S70
-    start = ((subject - 1) // 10) * 10 + 1
-    end = start + 9
-    return f"S{start}-S{end}.tar.gz"
-
-
 class Liu2020BETA(BaseDataset):
     """BETA SSVEP benchmark dataset.
 
@@ -262,7 +254,8 @@ class Liu2020BETA(BaseDataset):
             return str(mat_file)
 
         # Download the tar.gz archive containing this subject
-        tar_name = _get_tar_name(subject)
+        start = ((subject - 1) // 10) * 10 + 1
+        tar_name = f"S{start}-S{start + 9}.tar.gz"
         url = BETA_URL + tar_name
         tar_path = dl.data_dl(url, sign, path, force_update, verbose)
 

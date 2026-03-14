@@ -7,7 +7,6 @@ Data DOI: 10.7910/DVN/28932
 
 import importlib
 import logging
-import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -30,6 +29,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import extract_rar
 
 
 log = logging.getLogger(__name__)
@@ -48,48 +48,6 @@ for _s in range(1, 16):
     _SUBJECT_TO_RAR[_s] = "userdata1.rar"
 for _s in range(16, 31):
     _SUBJECT_TO_RAR[_s] = "userdata2.rar"
-
-
-def _extract_rar(rar_path, dest_dir):
-    """Extract a RAR archive using available system tools.
-
-    Tries ``unar``, ``unrar``, and ``7z`` in order. Raises RuntimeError
-    if none of them are available.
-
-    Parameters
-    ----------
-    rar_path : str or Path
-        Path to the RAR archive.
-    dest_dir : str or Path
-        Directory to extract files into.
-    """
-    rar_path = str(rar_path)
-    dest_dir = str(dest_dir)
-
-    # Try unar (macOS, Homebrew)
-    for cmd in [
-        ["unar", "-o", dest_dir, "-f", rar_path],
-        ["unrar", "x", "-o+", rar_path, dest_dir + "/"],
-        ["7z", "x", f"-o{dest_dir}", "-y", rar_path],
-    ]:
-        try:
-            subprocess.run(
-                cmd,
-                check=True,
-                capture_output=True,
-            )
-            return
-        except FileNotFoundError:
-            continue
-        except subprocess.CalledProcessError as exc:
-            raise RuntimeError(
-                f"RAR extraction failed with {cmd[0]}: {exc.stderr.decode()}"
-            ) from exc
-
-    raise RuntimeError(
-        "No RAR extraction tool found. Install one of: "
-        "unar (brew install unar), unrar, or p7zip (7z)."
-    )
 
 
 class Rozado2015(BaseDataset):
@@ -385,7 +343,7 @@ class Rozado2015(BaseDataset):
         extract_dir = data_dir / "extracted"
         extract_dir.mkdir(parents=True, exist_ok=True)
         log.info("Extracting %s to %s", rar_name, extract_dir)
-        _extract_rar(rar_path, extract_dir)
+        extract_rar(rar_path, extract_dir)
 
         xdf_files = self._find_subject_xdf(data_dir, subject)
         if not xdf_files:

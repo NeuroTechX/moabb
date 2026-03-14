@@ -250,7 +250,7 @@ class Zheng2020(BaseDataset):
 
                 all_data = np.vstack([eeg, stim[np.newaxis]])
 
-                ch_names = self._channel_names() + ["STI"]
+                ch_names = [_CH_FIX.get(ch, ch) for ch in _CH_NAMES] + ["STI"]
                 ch_types = ["eeg"] * 62 + ["stim"]
                 info = mne.create_info(ch_names, 1000.0, ch_types)
                 raw = mne.io.RawArray(all_data, info, verbose=False)
@@ -262,11 +262,6 @@ class Zheng2020(BaseDataset):
                 sessions[str(ses_idx - 1)] = runs
 
         return sessions
-
-    @staticmethod
-    def _channel_names():
-        """Return 62 channel names with standard_1020 case."""
-        return [_CH_FIX.get(ch, ch) for ch in _CH_NAMES]
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
