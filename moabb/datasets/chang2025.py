@@ -108,7 +108,7 @@ class Chang2025(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
             n_channels=59,
-            channel_types={"eeg": 59, "eog": 4, "ecg": 2},
+            channel_types={"eeg": 59},
             montage="standard_1005",
             hardware="Neuracle BRK-NSW 2.0",
             sensor_type="Ag/AgCl",

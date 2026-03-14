@@ -24,6 +24,7 @@ from moabb.datasets.bids_interface import (
     _FORMAT_EXTENSION_MAP,
     StepType,
     _BIDSInterfaceRawEDFNoDesc,
+    _enrich_raw_info_from_metadata,
     _interface_map,
     get_bids_root,
 )
@@ -1076,6 +1077,12 @@ class BaseDataset(metaclass=MetaclassDataset):
             if len(cached_steps) == 0:  # last option: we don't use cache
                 sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
+                # Enrich raw.info from METADATA (sex, hand, age, line_freq)
+                metadata = getattr(self, "METADATA", None)
+                if metadata is not None:
+                    for runs in sessions_data.values():
+                        for raw in runs.values():
+                            _enrich_raw_info_from_metadata(raw, metadata, subject)
             else:
                 cache_type = cached_steps[-1][0]
                 interface = _interface_map[cache_type](

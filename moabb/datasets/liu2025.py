@@ -208,19 +208,19 @@ class Liu2025(BaseDataset):
 
     def __init__(self, sessions=None, subjects=None, selected_sessions=None):
         if sessions is None:
-            self._selected_sessions = ["pre"]
+            _sel_sessions = ["pre"]
         elif isinstance(sessions, str):
-            self._selected_sessions = [sessions]
+            _sel_sessions = [sessions]
         else:
-            self._selected_sessions = list(sessions)
+            _sel_sessions = list(sessions)
 
-        for s in self._selected_sessions:
+        for s in _sel_sessions:
             if s not in _ALL_SESSIONS:
                 raise ValueError(f"session must be one of {_ALL_SESSIONS}, got {s!r}")
 
         super().__init__(
             subjects=list(range(1, 28)),
-            sessions_per_subject=len(self._selected_sessions),
+            sessions_per_subject=len(_sel_sessions),
             events=dict(_EVENTS),
             code="Liu2025",
             interval=[0, 5],
@@ -229,6 +229,8 @@ class Liu2025(BaseDataset):
             selected_subjects=subjects,
             selected_sessions=selected_sessions,
         )
+        # Set after super().__init__() to avoid being overwritten by base class
+        self._selected_sessions = _sel_sessions
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""

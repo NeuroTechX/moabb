@@ -5,14 +5,16 @@ DOI: 10.3389/fninf.2022.961089
 Data DOI: 10.18112/openneuro.ds005342.v1.0.3
 """
 
+import json
 import logging
+import re
 from pathlib import Path
 
-import mne
 import numpy as np
+import requests
 
-from . import download as dl
-from .base import BaseDataset
+from .base import BaseBIDSDataset
+from .download import get_dataset_path
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -35,7 +37,6 @@ log = logging.getLogger(__name__)
 _OPENNEURO_ID = "ds005342"
 
 # S3 base URL for direct download (no auth needed for OpenNeuro).
-# No version prefix — OpenNeuro serves latest version at the bare path.
 _S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
 
 # Event codes from events.tsv value column.
@@ -59,8 +60,29 @@ _CH_NAMES = [
 ]
 # fmt: on
 
+# Mapping from numeric event values (in .set annotations) to descriptive names.
+_VALUE_TO_NAME = {
+    "1": "imagery_sit_to_stand",
+    "2": "idle_sitting",
+    "3": "imagery_stand_to_sit",
+    "4": "idle_standing",
+}
 
-class TrianaGuzman2024(BaseDataset):
+# Minimal BIDS dataset_description.json for mne_bids compatibility.
+_DATASET_DESCRIPTION = {
+    "Name": "TrianaGuzman2024 — Sit-Stand Motor Imagery",
+    "BIDSVersion": "1.6.0",
+    "License": "CC0",
+    "Authors": [
+        "Nayid Triana-Guzman",
+        "Alvaro D. Orjuela-Cañon",
+        "Andres L. Jutinico",
+    ],
+    "DatasetDOI": "10.18112/openneuro.ds005342.v1.0.3",
+}
+
+
+class TrianaGuzman2024(BaseBIDSDataset):
     """Sit-stand motor imagery dataset from Triana-Guzman et al 2022.
 
     Dataset from the article *Decoding EEG Rhythms Offline and Online
@@ -121,9 +143,29 @@ class TrianaGuzman2024(BaseDataset):
             age_min=19.0,
             age_max=29.0,
             age_mean=22.4,
-            handedness="mixed (29 right, 3 left)",
+            handedness={"right": 29, "left": 3},
             bci_experience="naive",
             species="human",
+            # fmt: off
+            ages=[
+                22, 27, 21, 22, 26, 21, 27, 20, 20, 22, 22, 19, 20, 22, 28, 23,
+                24, 22, 24, 22, 21, 25, 22, 29, 24, 25, 23, 19, 22, 22, 23, 27,
+            ],
+            sexes=[
+                "female", "female", "female", "male", "male", "male", "male",
+                "female", "female", "male", "male", "female", "male", "female",
+                "male", "male", "male", "female", "female", "female", "female",
+                "female", "male", "male", "female", "female", "female", "female",
+                "male", "male", "male", "male",
+            ],
+            handedness_list=[
+                "right", "right", "right", "right", "right", "right", "right",
+                "right", "right", "right", "right", "left", "right", "right",
+                "right", "right", "right", "right", "right", "left", "right",
+                "right", "right", "right", "right", "right", "right", "right",
+                "right", "left", "right", "right",
+            ],
+            # fmt: on
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -197,7 +239,7 @@ class TrianaGuzman2024(BaseDataset):
             online_feedback=True,
         ),
         data_processed=False,
-        file_format="SET (EEGLAB)",
+        file_format="SET (EEGLAB, BIDS)",
     )
 
     def __init__(self, use_all_events=True, subjects=None, sessions=None):
@@ -222,42 +264,79 @@ class TrianaGuzman2024(BaseDataset):
         )
         self.use_all_events = use_all_events
 
+    def _get_path_search_params(self, subject):
+        """Override to use zero-padded subject numbers (sub-001, not sub-1)."""
+        out = {"extensions": [".set"]}
+        if subject is not None:
+            out["subjects"] = f"{subject:03d}"
+        return out
+
     def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        set_path = self.data_path(subject)
-        raw = mne.io.read_raw_eeglab(set_path, preload=True, verbose="ERROR")
+        """Load BIDS data and remap numeric event annotations."""
+        data = super()._get_single_subject_data(subject)
 
-        # Map numeric string annotations to descriptive names.
-        desc = raw.annotations.description.astype(np.dtype("<21U"))
-        desc[desc == "1"] = "imagery_sit_to_stand"
-        desc[desc == "2"] = "idle_sitting"
-        desc[desc == "3"] = "imagery_stand_to_sit"
-        desc[desc == "4"] = "idle_standing"
-        raw.annotations.description = desc
+        # Remap numeric annotation descriptions to descriptive event names
+        # and add a stim channel for MOABB paradigm compatibility.
+        result = {}
+        for sess_key, session_runs in data.items():
+            runs = {}
+            for run_key, raw in session_runs.items():
+                desc = raw.annotations.description.astype(np.dtype("<25U"))
+                for code, name in _VALUE_TO_NAME.items():
+                    desc[desc == code] = name
+                raw.annotations.description = desc
+                runs[run_key] = stim_channels_with_selected_ids(raw, self.event_id)
+            result[sess_key] = runs
 
-        raw = stim_channels_with_selected_ids(raw, self.event_id)
-        return {"0": {"0": raw}}
+        return result
 
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
+    def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
+        """Download BIDS data from OpenNeuro S3 and return the BIDS root path."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path = dl.get_dataset_path("TrianaGuzman2024", path)
-        basepath = Path(path) / "MNE-trianaguzman2024-data"
-        basepath.mkdir(parents=True, exist_ok=True)
+        bids_root = Path(get_dataset_path("TrianaGuzman2024", path))
+        bids_root = bids_root / "MNE-trianaguzman2024-data"
+        bids_root.mkdir(parents=True, exist_ok=True)
 
         subj_str = f"sub-{subject:03d}"
-        subj_dir = basepath / subj_str / "eeg"
-
+        subj_dir = bids_root / subj_str / "eeg"
         set_file = subj_dir / f"{subj_str}_task-sitstand_eeg.set"
+
         if set_file.exists() and not force_update:
-            return str(set_file)
+            self._ensure_dataset_description(bids_root)
+            return str(bids_root)
 
-        # Download from OpenNeuro S3 (no auth required).
-        subj_dir.mkdir(parents=True, exist_ok=True)
+        self._download_subject_s3(bids_root, subj_str, force_update)
+        self._ensure_dataset_description(bids_root)
+        self._fix_events_tsv_decimals(subj_dir)
 
+        return str(bids_root)
+
+    @staticmethod
+    def _fix_events_tsv_decimals(eeg_dir):
+        """Fix European-locale decimal separators (commas → dots) in events.tsv."""
+        for events_file in Path(eeg_dir).glob("*_events.tsv"):
+            text = events_file.read_text()
+            if "," not in text:
+                continue
+            # Replace commas used as decimal separators in numeric fields
+            # (e.g. "5,004" → "5.004"), but not TSV column separators.
+            fixed = re.sub(r"(\d),(\d)", r"\1.\2", text)
+            if fixed != text:
+                events_file.write_text(fixed)
+
+    @staticmethod
+    def _ensure_dataset_description(bids_root):
+        """Create a minimal dataset_description.json if missing."""
+        dd_path = bids_root / "dataset_description.json"
+        if not dd_path.exists():
+            with open(dd_path, "w") as f:
+                json.dump(_DATASET_DESCRIPTION, f, indent=2)
+
+    @staticmethod
+    def _download_subject_s3(bids_root, subj_str, force_update):
+        """Fallback: download per-subject files directly from OpenNeuro S3."""
         files_to_download = [
             f"{subj_str}/eeg/{subj_str}_task-sitstand_eeg.set",
             f"{subj_str}/eeg/{subj_str}_task-sitstand_events.tsv",
@@ -265,15 +344,13 @@ class TrianaGuzman2024(BaseDataset):
             f"{subj_str}/eeg/{subj_str}_task-sitstand_channels.tsv",
         ]
 
-        import requests as _requests
-
         for rel_path in files_to_download:
             url = f"{_S3_BASE}/{rel_path}"
-            local_path = basepath / rel_path
+            local_path = bids_root / rel_path
             local_path.parent.mkdir(parents=True, exist_ok=True)
             if not local_path.exists() or force_update:
                 log.info("Downloading %s ...", rel_path)
-                resp = _requests.get(url, stream=True, timeout=120)
+                resp = requests.get(url, stream=True, timeout=120)
                 if resp.status_code == 404:
                     log.warning("Not found: %s (skipping)", url)
                     continue
@@ -281,5 +358,3 @@ class TrianaGuzman2024(BaseDataset):
                 with open(local_path, "wb") as fout:
                     for chunk in resp.iter_content(chunk_size=8192):
                         fout.write(chunk)
-
-        return str(set_file)

@@ -94,6 +94,11 @@ class Simoes2020(BaseDataset):
             n_subjects=15,
             health_status="patients",
             clinical_population="autism spectrum disorder (ASD)",
+            gender={"male": 15},
+            age_mean=22.17,
+            age_std=5.5,
+            age_min=16,
+            age_max=38,
             species="human",
         ),
         experiment=ExperimentMetadata(

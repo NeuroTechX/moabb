@@ -66,6 +66,11 @@ _EXPERIMENT_CONFIGS = {
         "zero_pad": True,
         "has_training": True,
         "training_combined": False,
+        "demographics": {
+            "gender": {"male": 23, "female": 7},
+            "age_mean": 21.63,
+            "age_std": 2.31,
+        },
     },
     "DL": {
         "dir_name": "Doorlock",
@@ -76,6 +81,11 @@ _EXPERIMENT_CONFIGS = {
         "zero_pad": True,
         "has_training": True,
         "training_combined": True,
+        "demographics": {
+            "gender": {"male": 12, "female": 3},
+            "age_mean": 22.87,
+            "age_std": 2.07,
+        },
     },
     "EL": {
         "dir_name": "ElectricLight",
@@ -86,6 +96,11 @@ _EXPERIMENT_CONFIGS = {
         "zero_pad": True,
         "has_training": True,
         "training_combined": True,
+        "demographics": {
+            "gender": {"male": 10, "female": 5},
+            "age_mean": 22.13,
+            "age_std": 2.20,
+        },
     },
     "BS": {
         "dir_name": "BluetoothSpeaker",
@@ -96,6 +111,11 @@ _EXPERIMENT_CONFIGS = {
         "zero_pad": True,
         "has_training": False,
         "training_combined": False,
+        "demographics": {
+            "gender": {"male": 9, "female": 5},
+            "age_mean": 22.64,
+            "age_std": 3.08,
+        },
     },
     "AC": {
         "dir_name": "AirConditioner",
@@ -106,6 +126,11 @@ _EXPERIMENT_CONFIGS = {
         "zero_pad": False,
         "has_training": True,
         "training_combined": True,
+        "demographics": {
+            "gender": {"male": 6, "female": 4},
+            "age_mean": 22.40,
+            "age_std": 2.59,
+        },
     },
 }
 
@@ -129,6 +154,7 @@ def _make_metadata(experiment):
             n_subjects=config["n_subjects"],
             health_status="healthy",
             species="human",
+            **config.get("demographics", {}),
         ),
         experiment=ExperimentMetadata(
             events={"Target": 2, "NonTarget": 1},

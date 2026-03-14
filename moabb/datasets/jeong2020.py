@@ -347,7 +347,10 @@ class Jeong2020(BaseDataset):
 
         new_annotations = []
         for ann in raw.annotations:
+            # MNE BrainVision reader adds "Stimulus/" prefix
             desc = ann["description"].strip()
+            if desc.startswith("Stimulus/"):
+                desc = desc[len("Stimulus/") :].strip()
             if desc in marker_map:
                 new_annotations.append((ann["onset"], ann["duration"], marker_map[desc]))
 

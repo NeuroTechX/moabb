@@ -273,11 +273,12 @@ def _resolve_subject_hand(participants, subject_idx, raw=None):
 
 
 def _enrich_raw_info_from_metadata(raw, metadata, subject):
-    """Set ``raw.info`` fields from dataset metadata before ``write_raw_bids``.
+    """Set ``raw.info`` fields from dataset metadata.
 
-    Enriches ``subject_info`` (sex, hand) and ``line_freq`` so that
-    ``mne_bids.write_raw_bids`` auto-generates richer sidecars and
-    ``participants.tsv`` entries.
+    Enriches ``subject_info`` (sex, hand, his_id), ``line_freq``, and
+    ``_moabb_subject_age`` so that downstream consumers (paradigms,
+    evaluations, BIDS export) always have rich per-subject information
+    available directly on the Raw object.
 
     Parameters
     ----------
@@ -304,42 +305,54 @@ def _enrich_raw_info_from_metadata(raw, metadata, subject):
 
     # Sex: BIDS uses FHIR codes (0=unknown, 1=male, 2=female).
     # Per-subject list takes priority over aggregate gender dict.
-    sex = _normalize_sex_value(_get_subject_list_value(participants.sexes, subject_idx))
-    if sex is not None:
-        subject_info["sex"] = _SEX_LABEL_TO_CODE[sex]
-    elif participants.gender:
-        # Fallback: only set if the population is homogeneous (all one gender)
-        total = sum(participants.gender.values())
-        if participants.gender.get("male", 0) == total:
-            subject_info["sex"] = 1
-        elif participants.gender.get("female", 0) == total:
-            subject_info["sex"] = 2
+    # Treat sex=0 (unknown, e.g. GDF sentinel) as absent so METADATA can override.
+    if subject_info.get("sex", 0) == 0:
+        sex = _normalize_sex_value(
+            _get_subject_list_value(participants.sexes, subject_idx)
+        )
+        if sex is not None:
+            subject_info["sex"] = _SEX_LABEL_TO_CODE[sex]
+        elif participants.gender:
+            total = sum(participants.gender.values())
+            if participants.gender.get("male", 0) == total:
+                subject_info["sex"] = 1
+            elif participants.gender.get("female", 0) == total:
+                subject_info["sex"] = 2
 
-    if (participants.gender or participants.sexes) and "his_id" not in subject_info:
-        subject_info.setdefault("his_id", str(subject))
+    # Treat empty his_id (e.g. GDF sentinel "") as absent so METADATA can set it.
+    if (participants.gender or participants.sexes) and not subject_info.get("his_id"):
+        subject_info["his_id"] = str(subject)
 
     # Handedness: BIDS uses 1=right, 2=left, 3=ambidextrous.
     # Per-subject list takes priority over aggregate handedness.
-    hand = _normalize_hand_value(
-        _get_subject_list_value(participants.handedness_list, subject_idx)
-    )
-    if hand is not None:
-        subject_info["hand"] = _HAND_LABEL_TO_CODE[hand]
-    elif isinstance(participants.handedness, dict):
-        total = sum(participants.handedness.values())
-        if participants.handedness.get("right", 0) == total:
-            subject_info["hand"] = 1
-        elif participants.handedness.get("left", 0) == total:
-            subject_info["hand"] = 2
-    elif isinstance(participants.handedness, str):
-        h = participants.handedness.lower()
-        if "right" in h and "left" not in h:
-            subject_info["hand"] = 1
-        elif "left" in h and "right" not in h:
-            subject_info["hand"] = 2
+    # Treat hand=0 (unknown, e.g. GDF sentinel) as absent so METADATA can override.
+    if subject_info.get("hand", 0) == 0:
+        hand = _normalize_hand_value(
+            _get_subject_list_value(participants.handedness_list, subject_idx)
+        )
+        if hand is not None:
+            subject_info["hand"] = _HAND_LABEL_TO_CODE[hand]
+        elif isinstance(participants.handedness, dict):
+            total = sum(participants.handedness.values())
+            if participants.handedness.get("right", 0) == total:
+                subject_info["hand"] = 1
+            elif participants.handedness.get("left", 0) == total:
+                subject_info["hand"] = 2
+        elif isinstance(participants.handedness, str):
+            h = participants.handedness.lower()
+            if "right" in h and "left" not in h:
+                subject_info["hand"] = 1
+            elif "left" in h and "right" not in h:
+                subject_info["hand"] = 2
 
     if subject_info:
         raw.info["subject_info"] = subject_info
+
+    # Age: store as custom attribute for BIDS export and downstream use.
+    if not hasattr(raw, "_moabb_subject_age"):
+        age = _get_subject_list_value(participants.ages, subject_idx)
+        if age is not None:
+            raw._moabb_subject_age = age
 
 
 _PARADIGM_COG_ATLAS = {

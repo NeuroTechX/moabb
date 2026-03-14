@@ -91,7 +91,7 @@ class Kaneshiro2015(BaseDataset):
             gender={"female": 3, "male": 7},
             age_min=21,
             age_max=57,
-            handedness={"right": 10},
+            handedness={"right": 9, "left": 1},
             species="human",
         ),
         experiment=ExperimentMetadata(
