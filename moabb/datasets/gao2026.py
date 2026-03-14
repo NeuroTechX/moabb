@@ -1,6 +1,6 @@
 """Visual imagery EEG dataset.
 
-Gao, Liu, Li, Huang, Wang, Zhao, Li, and Fu (2026), Scientific Data.
+Gao, Liu, Li, Huang, Wang, Xu, Zhao, Li, and Fu (2026), Scientific Data.
 DOI: 10.1038/s41597-025-06512-5
 Data DOI: 10.6084/m9.figshare.30227503.v1
 """
@@ -145,8 +145,8 @@ class Gao2026(BaseDataset):
 
     References
     ----------
-    .. [1] Gao, J., Liu, Y., Li, Z., Huang, K., Wang, F., Zhao, L.,
-           Li, T., & Fu, Y. (2026). An EEG Dataset for Visual
+    .. [1] Gao, J., Liu, Y., Li, Z., Huang, K., Wang, F., Xu, J.,
+           Zhao, L., Li, T., & Fu, Y. (2026). An EEG Dataset for Visual
            Imagery-Based Brain-Computer Interface. Scientific Data.
            https://doi.org/10.1038/s41597-025-06512-5
 
@@ -171,10 +171,10 @@ class Gao2026(BaseDataset):
             n_subjects=22,
             health_status="healthy",
             gender={"male": 17, "female": 5},
-            age_mean=21.3,
+            age_mean=None,
             age_min=20.0,
             age_max=23.0,
-            handedness="mixed",
+            handedness=None,
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -202,6 +202,7 @@ class Gao2026(BaseDataset):
                 "Zhengshuang Li",
                 "Kaixin Huang",
                 "Fan Wang",
+                "Jiaping Xu",
                 "Lei Zhao",
                 "Tianwen Li",
                 "Yunfa Fu",
@@ -211,7 +212,7 @@ class Gao2026(BaseDataset):
             repository="Figshare",
             data_url="https://doi.org/10.6084/m9.figshare.30227503.v1",
             publication_year=2026,
-            license="CC-BY-4.0",
+            license="CC-BY-NC-ND-4.0",
         ),
         sessions_per_subject=2,
         runs_per_session=3,

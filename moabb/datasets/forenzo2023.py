@@ -135,7 +135,7 @@ class Forenzo2023(BaseDataset):
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
-            trial_duration=60.0,
+            trial_duration=6.0,
             study_design=(
                 "5-session BCI study with motor imagery (MI), "
                 "overt spatial attention (OSA), and combined (MIOSA) tasks"
@@ -149,7 +149,15 @@ class Forenzo2023(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TBME.2023.3298957",
-            investigators=["Dylan Forenzo", "Bin He"],
+            investigators=[
+                "Dylan Forenzo",
+                "Yixuan Liu",
+                "Jeehyun Kim",
+                "Yidan Ding",
+                "Taehyung Yoon",
+                "Bin He",
+            ],
+            institution_department="Department of Biomedical Engineering",
             institution="Carnegie Mellon University",
             country="US",
             data_url="https://kilthub.cmu.edu/articles/dataset/23677098",
@@ -166,7 +174,7 @@ class Forenzo2023(BaseDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand"],
-            imagery_duration_s=60.0,
+            imagery_duration_s=6.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=1875,

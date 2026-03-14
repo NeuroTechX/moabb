@@ -201,7 +201,7 @@ class Kumar2024(BaseDataset):
             repository="Zenodo",
             data_url="https://zenodo.org/records/10694880",
             publication_year=2024,
-            funding=[],
+            funding=["Coleman Fung Foundation", "Sinclair Foundation"],
             ethics_approval=["The University of Texas at Austin (Protocol 2020-03-0073)"],
             keywords=[
                 "motor imagery",
@@ -216,7 +216,7 @@ class Kumar2024(BaseDataset):
             license="CC-BY-4.0",
         ),
         sessions_per_subject=6,
-        runs_per_session=4,
+        runs_per_session=3,
         tags=Tags(
             pathology=["Healthy"],
             modality=["Motor"],

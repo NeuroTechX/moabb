@@ -272,7 +272,7 @@ class Zhang2017(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0188293",
             investigators=[
-                "Xiaogang Zhang",
+                "Xin Zhang",
                 "Xinyi Yong",
                 "Carlo Menon",
             ],

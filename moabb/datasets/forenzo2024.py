@@ -165,7 +165,7 @@ class Forenzo2024(BaseDataset):
             license="CC-BY-4.0",
         ),
         sessions_per_subject=8,
-        runs_per_session=13,
+        runs_per_session=12,
         tags=Tags(
             pathology=["Healthy"],
             modality=["Motor"],
@@ -177,10 +177,10 @@ class Forenzo2024(BaseDataset):
             imagery_duration_s=60.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=9100,
+            n_trials=10080,
             trials_context=(
-                "14 subjects x 8 sessions x 13 runs x 5 trials + "
-                "14 subjects x 4 sessions x 13 runs x 5 trials"
+                "14 subjects x 8 sessions x 12 runs x 5 trials + "
+                "14 subjects x 4 sessions x 12 runs x 5 trials"
             ),
         ),
         signal_processing=SignalProcessingMetadata(

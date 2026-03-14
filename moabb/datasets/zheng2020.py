@@ -134,7 +134,7 @@ class Zheng2020(BaseDataset):
                 "RSVP target detection (human vs non-human images); "
                 "14 subjects in 7 pairs, synchronized EEG recording"
             ),
-            feedback_type="none",
+            feedback_type="visual",
             stimulus_type="RSVP images",
             stimulus_modalities=["visual"],
             primary_modality="visual",

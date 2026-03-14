@@ -112,7 +112,7 @@ class Wu2020(BaseDataset):
             ),
             feedback_type="none",
             stimulus_type="arrow cues",
-            stimulus_modalities=["visual"],
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",

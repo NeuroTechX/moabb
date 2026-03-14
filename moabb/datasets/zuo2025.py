@@ -289,10 +289,11 @@ class Zuo2025(BaseDataset):
             n_channels=30,
             channel_types={"eeg": 30},
             hardware="ZhenTec EEG system",
-            reference="Cz",
+            reference="CPz",
+            ground="FPz",
             sensors=list(_CH_NAMES),
             line_freq=50.0,
-            montage="standard_1020",
+            montage="standard_1005",
         ),
         participants=ParticipantMetadata(
             n_subjects=30,
@@ -301,6 +302,7 @@ class Zuo2025(BaseDataset):
             age_min=24,
             age_max=45,
             health_status="knee pain patients",
+            clinical_population="knee_pain",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -499,7 +501,7 @@ class Zuo2025(BaseDataset):
         full_data = np.concatenate([eeg_data, stim], axis=0)
         raw = mne.io.RawArray(data=full_data, info=info, verbose=False)
 
-        montage = mne.channels.make_standard_montage("standard_1020")
+        montage = mne.channels.make_standard_montage("standard_1005")
         raw.set_montage(montage, on_missing="ignore")
 
         return raw

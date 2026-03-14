@@ -167,7 +167,8 @@ class Tavakolan2017(BaseDataset):
             senior_author="Carlo Menon",
             institution="Simon Fraser University",
             institution_department=(
-                "MENRVA Research Group, School of Mechatronic Systems Engineering"
+                "MENRVA Research Group, Schools of Mechatronic Systems Engineering"
+                " and Engineering Science"
             ),
             country="CA",
             data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",

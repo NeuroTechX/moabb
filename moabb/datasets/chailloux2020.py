@@ -89,7 +89,7 @@ class Chailloux2020(BaseDataset):
             montage="standard_1020",
             hardware="g.USBamp (g.tec)",
             sensor_type="g.SCARABEO (passive)",
-            reference="right mastoid (M2)",
+            reference="right earlobe",
             ground="AFz",
             sensors=list(_CH_NAMES),
             line_freq=60.0,
@@ -141,7 +141,7 @@ class Chailloux2020(BaseDataset):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            isi_ms=150.0,
+            isi_ms=75.0,
             soa_ms=150.0,
         ),
         data_structure=DataStructureMetadata(

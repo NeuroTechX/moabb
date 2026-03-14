@@ -296,6 +296,7 @@ class Speier2017(BaseDataset):
             doi=_DOI,
             investigators=[
                 "William Speier",
+                "Corey Arnold",
                 "Aniket Deshpande",
                 "Nader Pouratian",
             ],
@@ -316,7 +317,7 @@ class Speier2017(BaseDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
             soa_ms=125.0,
-            isi_ms=62.5,
+            isi_ms=25.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials="~1200 flashes per training run (10 chars x 10 seq x 12)",

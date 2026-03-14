@@ -91,6 +91,7 @@ class Kaneshiro2015(BaseDataset):
             gender={"female": 3, "male": 7},
             age_min=21,
             age_max=57,
+            handedness={"right": 10},
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -114,7 +115,7 @@ class Kaneshiro2015(BaseDataset):
             investigators=[
                 "Blair Kaneshiro",
                 "Marcos Perreau Guimaraes",
-                "Hyun-Seung Kim",
+                "Hyung-Suk Kim",
                 "Anthony M. Norcia",
                 "Patrick Suppes",
             ],

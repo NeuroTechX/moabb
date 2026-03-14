@@ -111,7 +111,7 @@ class Liu2025(BaseDataset):
             montage="standard_1020",
             hardware="NeuSen W (Neuracle, Inc.)",
             sensor_type="Ag/AgCl",
-            filters={},
+            filters={"notch": 50.0},
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -124,6 +124,7 @@ class Liu2025(BaseDataset):
             sexes=_SEXES,
             handedness="mixed",
             species="human",
+            clinical_population="stroke",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -160,7 +161,7 @@ class Liu2025(BaseDataset):
             country="CN",
             data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2025,
-            license="CC-BY-4.0",
+            license="CC-BY-NC-ND-4.0",
         ),
         sessions_per_subject=3,
         runs_per_session=4,

@@ -143,8 +143,11 @@ class Zhou2020(BaseDataset):
             health_status="healthy",
             gender={"female": 9, "male": 11},
             age_mean=23.2,
+            age_min=21,
+            age_max=27,
+            age_std=1.47,
             handedness="right-handed",
-            bci_experience="naive",
+            bci_experience="mixed",
             species="human",
         ),
         experiment=ExperimentMetadata(

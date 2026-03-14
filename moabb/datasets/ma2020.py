@@ -208,7 +208,7 @@ class Ma2020(BaseDataset):
                 "Xuelin Ma",
                 "Shuang Qiu",
                 "Changde Du",
-                "Jiezhen Xing",
+                "Junfeng Xing",
                 "Huiguang He",
             ],
             senior_author="Huiguang He",
@@ -216,7 +216,7 @@ class Ma2020(BaseDataset):
             country="CN",
             repository="Harvard Dataverse",
             data_url="https://doi.org/10.7910/DVN/RBN3XG",
-            license="CC0 1.0",
+            license="CC-BY-4.0",
             publication_year=2020,
             institution_department="Institute of Automation",
             ethics_approval=[

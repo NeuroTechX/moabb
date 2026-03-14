@@ -202,11 +202,9 @@ class Brandl2020(BaseDataset):
             n_subjects=16,
             gender={"female": 6, "male": 10},
             age_mean=26.3,
-            age_min=22,
-            age_max=30,
             health_status="healthy",
             species="homo sapiens",
-            bci_experience="naive",
+            bci_experience="mostly naive (3/16 had prior BCI experience)",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -244,8 +242,8 @@ class Brandl2020(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2020.566147",
             publication_year=2020,
-            investigators=["Stephanie Brandl", "Benjamin Blankertz", "Tobias Dahne"],
-            senior_author="Tobias Dahne",
+            investigators=["Stephanie Brandl", "Benjamin Blankertz"],
+            senior_author="Benjamin Blankertz",
             institution="Technische Universitaet Berlin",
             institution_department="Department of Neurotechnology",
             country="DE",
@@ -265,10 +263,7 @@ class Brandl2020(BaseDataset):
                 "BCI",
             ],
             funding=[
-                "Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) "
-                "under Germany's Excellence Strategy -- EXC 2002/1 'Science of "
-                "Intelligence' -- project number 390523135",
-                "BrainLinks-BrainTools Cluster of Excellence (DFG grant EXC1086)",
+                "BMBF/BIFOLD (01IS18025A, 01IS18037A)",
             ],
             how_to_acknowledge=(
                 "Please cite: Brandl, S. and Blankertz, B. (2020). Motor Imagery "

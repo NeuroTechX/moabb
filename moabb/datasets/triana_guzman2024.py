@@ -122,6 +122,7 @@ class TrianaGuzman2024(BaseDataset):
             age_max=29.0,
             age_mean=22.4,
             handedness="mixed (29 right, 3 left)",
+            bci_experience="naive",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -151,7 +152,7 @@ class TrianaGuzman2024(BaseDataset):
                 "Omar Mendoza-Montoya",
                 "Javier M. Antelis",
             ],
-            institution="Universidad del Rosario",
+            institution="Universidad Antonio Nariño",
             country="CO",
             data_url="https://openneuro.org/datasets/ds005342",
             publication_year=2022,
