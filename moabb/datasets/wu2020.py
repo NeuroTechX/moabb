@@ -6,7 +6,6 @@ Data DOI (original): 10.21227/j7rq-2p11
 """
 
 import logging
-import zipfile
 from pathlib import Path
 
 import mne
@@ -26,7 +25,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import safe_extract_zip
+from .utils import download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -238,24 +237,11 @@ class Wu2020(BaseDataset):
             if dat_files:
                 return str(data_dir)
 
-        # Download per-subject ZIP from Zenodo
-        zip_name = f"subject{subject}.zip"
-        url = f"{_ZENODO_BASE}/{zip_name}"
-        dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+        # Download per-subject ZIP from Zenodo and extract.
+        url = f"{_ZENODO_BASE}/subject{subject}.zip"
+        download_and_extract_subject_zip(url, sign, data_dir, path, force_update, verbose)
 
-        # Rename to .zip if needed
-        zip_path = dl_path.with_suffix(".zip")
-        if dl_path != zip_path:
-            dl_path.rename(zip_path)
-
-        # Extract Curry files into data directory
-        # ZIP contains subject{N}/ folder, so extract into data_dir
-        data_dir.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(zip_path) as zf:
-            safe_extract_zip(zf, data_dir)
-
-        dat_files = [f for f in subj_dir.iterdir() if f.suffix.lower() == ".dat"]
-        if not dat_files:
+        if not any(f.suffix.lower() == ".dat" for f in subj_dir.iterdir()):
             raise FileNotFoundError(
                 f"No .dat files found for subject {subject} in {subj_dir}"
             )

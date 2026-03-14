@@ -558,13 +558,51 @@ def build_raw_from_epochs(
     # Flatten trials into continuous data: (n_trials, n_ch, n_time) -> (n_ch, n_trials*n_time)
     continuous = combined.transpose(1, 0, 2).reshape(n_total_ch, -1)
 
-    ch_names_full = list(ch_names) + ["stim"]
+    ch_names_full = list(ch_names) + ["STI"]
     ch_types_full = list(ch_types) + ["stim"]
     info = create_info(ch_names_full, sfreq, ch_types_full)
     raw = RawArray(data=continuous, info=info, verbose=False)
     montage = make_standard_montage(montage_name)
     raw.set_montage(montage, on_missing="ignore")
     return raw
+
+
+def download_and_extract_subject_zip(
+    url, sign, extract_dir, path=None, force_update=False, verbose=None
+):
+    """Download a per-subject ZIP and safely extract it.
+
+    Handles the common pattern: ``dl.data_dl()`` → rename to ``.zip`` →
+    ``safe_extract_zip()``.
+
+    Parameters
+    ----------
+    url : str
+        Direct download URL for the ZIP file.
+    sign : str
+        Dataset code passed to :func:`dl.data_dl` (e.g., ``"Wu2020"``).
+    extract_dir : Path | str
+        Directory to extract ZIP contents into.
+    path : str | None
+        Download path passed to :func:`dl.data_dl`.
+    force_update : bool
+        Force re-download even if file exists locally.
+    verbose : bool | None
+        Verbosity level.
+    """
+    from . import download as dl
+
+    dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+
+    # Rename to .zip if dl.data_dl() stripped the extension.
+    zip_path = dl_path.with_suffix(".zip")
+    if dl_path != zip_path:
+        dl_path.rename(zip_path)
+
+    extract_dir = Path(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path) as zf:
+        safe_extract_zip(zf, extract_dir)
 
 
 class _BubbleChart:

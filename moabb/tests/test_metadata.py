@@ -778,7 +778,7 @@ class TestBuildRawFromEpochsValidation:
             buffer_samples=0,
         )
 
-        stim = raw.get_data(picks=[raw.ch_names.index("stim")])[0]
+        stim = raw.get_data(picks=[raw.ch_names.index("STI")])[0]
         assert raw.info["nchan"] == 4
         assert np.where(stim > 0)[0].tolist() == [1, 5]
         assert stim[1] == 1

@@ -8,7 +8,6 @@ Data DOI: 10.6084/m9.figshare.28955456.v4
 import logging
 from pathlib import Path
 
-import mne
 import numpy as np
 from scipy.io import loadmat
 
@@ -27,6 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import build_raw_from_epochs
 
 
 log = logging.getLogger(__name__)
@@ -284,44 +284,22 @@ class HefmiIch2025(BaseDataset):
             else [f"EEG{i + 1}" for i in range(n_ch)]
         )
 
-        # Reconstruct continuous data by concatenating epochs with buffer.
-        # Epoch structure (from MakeDatasetFromRaw.m):
-        #   0-10s pre-cue rest | 10-12s cue | 12-22s MI | 22-37.2s rest
-        # MI onset is at 12s into each epoch.
-        mi_onset = int(12 * fs)
-        buffer_samples = int(0.5 * fs)  # 0.5s gap between epochs
-        total_samples = 1 + n_trials * (n_samples + buffer_samples)
-        data = np.zeros((n_ch, total_samples))
-        stim = np.zeros((1, total_samples))
+        # Transpose from (samples, channels, trials) to (trials, channels, samples).
+        epochs = X.transpose(2, 1, 0)
 
-        for t in range(n_trials):
-            start = 1 + t * (n_samples + buffer_samples)
-            epoch = X[:, :, t].T  # (channels, samples)
+        # y: 0=left, 1=right -> MOABB: 1=left, 2=right
+        event_ids = y.astype(int) + 1
 
-            # Demean each epoch.
-            epoch = epoch - epoch.mean(axis=1, keepdims=True)
-            data[:, start : start + n_samples] = epoch
-
-            # Set event at MI onset (12s into the epoch).
-            # y: 0=left, 1=right -> MOABB: 1=left, 2=right
-            event_code = int(y[t]) + 1 if t < len(y) else 1
-            stim[0, start + mi_onset] = event_code
-
-        # Scale to volts if data appears to be in microvolts.
-        if np.abs(data).max() > 1e-3:
-            data = data * 1e-6
-
-        # Create Raw.
-        ch_types = ["eeg"] * n_ch + ["stim"]
-        info = mne.create_info(
-            ch_names=ch_names + ["STI"],
-            ch_types=ch_types,
-            sfreq=fs,
+        # MI onset is at 12s into each epoch (from MakeDatasetFromRaw.m).
+        return build_raw_from_epochs(
+            epochs,
+            ch_names,
+            fs,
+            event_ids,
+            "standard_1005",
+            buffer_samples=int(0.5 * fs),
+            onset_sample=int(12 * fs),
         )
-        full_data = np.concatenate([data, stim], axis=0)
-        raw = mne.io.RawArray(data=full_data, info=info, verbose=False)
-
-        return raw
 
     def _get_manifest(self, basepath):
         """Build subject-to-file mapping from Figshare API."""

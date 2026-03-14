@@ -7,7 +7,6 @@ Re-hosted: Zenodo (per-subject ZIPs for programmatic access)
 """
 
 import logging
-import zipfile
 from pathlib import Path
 
 import mne
@@ -29,6 +28,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -292,47 +292,18 @@ class Simoes2020(BaseDataset):
 
         base = self._subject_base(subject, path=path)
 
-        # If data already exists locally, return it.
         if base.exists() and not force_update:
             return str(base)
 
-        # Try Zenodo download (per-subject ZIP).
-        if _ZENODO_BASE is not None:
-            subj_str = f"SBJ{subject:02d}"
-            url = f"{_ZENODO_BASE}/{subj_str}.zip"
-            zip_path = dl.data_dl(url, _SIGN, path=path)
-            zip_path = Path(zip_path)
-            # Handle nested path from data_dl
-            if zip_path.name != f"{subj_str}.zip":
-                expected = zip_path.parent / f"{subj_str}.zip"
-                if not expected.exists() and zip_path.exists():
-                    zip_path.rename(expected)
-                zip_path = expected
-
-            if zip_path.exists():
-                parent = base.parent
-                parent.mkdir(parents=True, exist_ok=True)
-                with zipfile.ZipFile(str(zip_path), "r") as zf:
-                    zf.extractall(str(parent))
-                if base.exists():
-                    return str(base)
-
-        # Fallback: try kagglehub.
-        try:
-            import kagglehub
-
-            cache_path = Path(kagglehub.dataset_download("disbeat/bciaut-p300"))
-            subj_dir = cache_path / f"SBJ{subject:02d}"
-            if subj_dir.exists():
-                return str(subj_dir)
-        except Exception:
-            pass
+        # Download per-subject ZIP from Zenodo and extract.
+        url = f"{_ZENODO_BASE}/SBJ{subject:02d}.zip"
+        parent = base.parent
+        download_and_extract_subject_zip(url, _SIGN, parent, path, force_update, verbose)
 
         if not base.exists():
             raise FileNotFoundError(
-                f"Data not found at {base}. Download manually from "
-                "https://www.kaggle.com/datasets/disbeat/bciaut-p300 "
-                "and extract to the MNE data directory."
+                f"Data not found at {base}. Check the Zenodo record "
+                f"https://zenodo.org/records/{_ZENODO_RECORD}"
             )
 
         return str(base)

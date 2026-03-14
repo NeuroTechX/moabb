@@ -6,7 +6,6 @@ Data DOI: 10.6084/m9.figshare.30227503.v1
 """
 
 import logging
-import zipfile
 from pathlib import Path
 
 import mne
@@ -27,7 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import safe_extract_zip
+from .utils import download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -368,22 +367,12 @@ class Gao2026(BaseDataset):
             if bdf_files:
                 return str(data_dir)
 
-        # Download per-subject ZIP from Figshare.
+        # Download per-subject ZIP from Figshare and extract.
         file_id = _FIGSHARE_FILE_IDS[subject]
         url = f"https://ndownloader.figshare.com/files/{file_id}"
-        dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+        download_and_extract_subject_zip(url, sign, data_dir, path, force_update, verbose)
 
-        # Rename to .zip if needed.
-        zip_path = dl_path.with_suffix(".zip")
-        if dl_path != zip_path:
-            dl_path.rename(zip_path)
-
-        # Extract into data directory.
-        with zipfile.ZipFile(zip_path) as zf:
-            safe_extract_zip(zf, data_dir)
-
-        bdf_files = list(subj_dir.rglob("*.bdf"))
-        if not bdf_files:
+        if not list(subj_dir.rglob("*.bdf")):
             raise FileNotFoundError(
                 f"No BDF files found for subject {subject} in {subj_dir}"
             )

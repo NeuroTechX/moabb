@@ -6,7 +6,6 @@ Data DOI: 10.21227/f1c7-7x89
 """
 
 import logging
-import zipfile
 from pathlib import Path
 
 import mne
@@ -27,7 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import safe_extract_zip
+from .utils import download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -338,15 +337,9 @@ class Zhou2020(BaseDataset):
             if has_data and not force_update:
                 return str(data_dir)
 
-        # Download per-subject ZIP from Zenodo.
-        zip_name = f"S{subject:02d}.zip"
-        url = f"{_ZENODO_BASE}/{zip_name}"
-        zip_path = dl.data_dl(url, sign, path, force_update, verbose)
-
-        # Extract into subject directory (preserves session_N/run_NN.npz).
-        subj_dir.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(zip_path) as zf:
-            safe_extract_zip(zf, subj_dir)
+        # Download per-subject ZIP from Zenodo and extract.
+        url = f"{_ZENODO_BASE}/S{subject:02d}.zip"
+        download_and_extract_subject_zip(url, sign, subj_dir, path, force_update, verbose)
 
         if not any(subj_dir.rglob("*.npz")):
             raise FileNotFoundError(

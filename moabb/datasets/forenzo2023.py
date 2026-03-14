@@ -6,7 +6,6 @@ Data DOI: 10.1184/R1/23677098
 """
 
 import logging
-import zipfile
 from pathlib import Path
 
 import mne
@@ -28,6 +27,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -302,41 +302,19 @@ class Forenzo2023(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path = dl.get_dataset_path("Forenzo2023", path)
-        basepath = Path(path) / "MNE-forenzo2023-data"
-        basepath.mkdir(parents=True, exist_ok=True)
+        sign = "Forenzo2023"
+        data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
+        subj_dir = data_dir / f"Subject{subject:02d}"
 
-        subj_dir = basepath / f"Subject{subject:02d}"
         if subj_dir.exists() and list(subj_dir.glob("*.mat")):
-            return str(basepath)
+            return str(data_dir)
 
-        # Download per-subject ZIP from KiltHub.
+        # Download per-subject ZIP from KiltHub and extract.
         file_id = _FILE_IDS.get(subject)
         if file_id is None:
             raise ValueError(f"No download URL for subject {subject}")
 
         url = f"{_FIGSHARE_BASE}{file_id}"
-        zip_name = f"Subject{subject:02d}.zip"
-        zip_path = basepath / zip_name
+        download_and_extract_subject_zip(url, sign, subj_dir, path, force_update, verbose)
 
-        if not zip_path.exists():
-            log.info("Downloading Forenzo2023 subject %d (~3.8 GB)...", subject)
-            dl_path = dl.data_dl(
-                url,
-                "Forenzo2023",
-                path=str(basepath),
-                force_update=force_update,
-                verbose=verbose,
-            )
-            # Rename downloaded file to expected location.
-            dl_path = Path(dl_path)
-            if dl_path != zip_path:
-                dl_path.rename(zip_path)
-
-        # Extract
-        if zip_path.exists() and not subj_dir.exists():
-            subj_dir.mkdir(parents=True, exist_ok=True)
-            with zipfile.ZipFile(str(zip_path), "r") as zf:
-                zf.extractall(str(subj_dir))
-
-        return str(basepath)
+        return str(data_dir)

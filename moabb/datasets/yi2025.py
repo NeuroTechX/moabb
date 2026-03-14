@@ -8,8 +8,6 @@ Data DOI: 10.6084/m9.figshare.24123303.v3
 import logging
 from pathlib import Path
 
-import mne
-import numpy as np
 from scipy.io import loadmat
 
 from . import download as dl
@@ -28,6 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import build_raw_from_epochs
 
 
 log = logging.getLogger(__name__)
@@ -279,43 +278,24 @@ class Yi2025(BaseDataset):
         if data.ndim != 3:
             raise ValueError(f"Expected 3D array, got shape {data.shape}")
 
-        n_trials, n_ch, n_samples = data.shape
-
+        n_ch = data.shape[1]
         ch_names = (
             list(_CH_NAMES[:n_ch])
             if n_ch <= len(_CH_NAMES)
             else [f"EEG{i + 1}" for i in range(n_ch)]
         )
 
-        # Reconstruct continuous data by concatenating epochs with buffer.
-        # Start with a 1-sample offset so first event is detectable by
-        # MNE's find_events (which needs a 0->non-zero transition).
-        buffer_samples = int(0.5 * _SFREQ)
-        total_samples = 1 + n_trials * (n_samples + buffer_samples)
-        eeg_data = np.zeros((n_ch, total_samples))
-        stim = np.zeros((1, total_samples))
-
-        for t in range(n_trials):
-            start = 1 + t * (n_samples + buffer_samples)
-            epoch = data[t, :, :]  # (channels, samples)
-            epoch = epoch - epoch.mean(axis=1, keepdims=True)
-            eeg_data[:, start : start + n_samples] = epoch
-            stim[0, start] = int(labels[t])
-
-        # Scale to volts if data appears to be in microvolts.
-        if np.abs(eeg_data).max() > 1e-3:
-            eeg_data = eeg_data * 1e-6
-
-        ch_types = ["eeg"] * n_ch + ["stim"]
-        info = mne.create_info(
-            ch_names=ch_names + ["STI"],
-            ch_types=ch_types,
-            sfreq=_SFREQ,
+        # Data is pre-processed (bandpass 4-40 Hz, CAR, downsampled) and
+        # already in volts (max ~0.87 V), so no additional scaling needed.
+        raw = build_raw_from_epochs(
+            data,
+            ch_names,
+            _SFREQ,
+            labels.astype(int),
+            "standard_1005",
+            scale=1.0,
+            buffer_samples=int(0.5 * _SFREQ),
+            onset_sample=0,
         )
-        full_data = np.concatenate([eeg_data, stim], axis=0)
-        raw = mne.io.RawArray(data=full_data, info=info, verbose=False)
-
-        montage = mne.channels.make_standard_montage("standard_1005")
-        raw.set_montage(montage, on_missing="ignore")
 
         return {"0": {"0": raw}}

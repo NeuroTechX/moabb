@@ -6,7 +6,6 @@ Data DOI: 10.6084/m9.figshare.27130299
 """
 
 import logging
-import zipfile
 from pathlib import Path
 
 import mne
@@ -27,7 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import safe_extract_zip, stim_channels_with_selected_ids
+from .utils import download_and_extract_subject_zip, stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
@@ -309,43 +308,14 @@ class Liu2025(BaseDataset):
             raise ValueError(f"Invalid subject {subject}, must be in {self.subject_list}")
 
         sign = "Liu2025"
-        path = dl.get_dataset_path(sign, path)
-        basepath = Path(path) / "MNE-liu2025-data"
-        basepath.mkdir(parents=True, exist_ok=True)
+        data_dir = Path(dl.get_dataset_path(sign, path)) / "MNE-liu2025-data"
+        subj_dir = data_dir / f"sub-{subject:02d}"
 
-        subj_name = f"sub-{subject:02d}"
-        subj_dir = basepath / subj_name
+        if subj_dir.exists() and list(subj_dir.rglob("*.vhdr")) and not force_update:
+            return str(data_dir)
 
-        # Check if BIDS files already exist.
-        if subj_dir.exists() and list(subj_dir.rglob("*.vhdr")):
-            if not force_update:
-                return str(basepath)
+        # Download per-subject ZIP from Zenodo and extract.
+        url = f"https://zenodo.org/records/{_ZENODO_RECORD}/files/sub-{subject:02d}.zip"
+        download_and_extract_subject_zip(url, sign, data_dir, path, force_update, verbose)
 
-        # Download per-subject ZIP from Zenodo.
-        zenodo_base = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
-        zip_name = f"{subj_name}.zip"
-        url = f"{zenodo_base}/{zip_name}"
-
-        log.info("Downloading Liu2025 %s ...", zip_name)
-        dl_path = Path(
-            dl.data_dl(
-                url, sign, path=str(basepath), force_update=force_update, verbose=verbose
-            )
-        )
-
-        # Locate the downloaded ZIP.
-        if dl_path.is_dir():
-            candidates = list(dl_path.rglob(zip_name))
-            if candidates:
-                dl_path = candidates[0]
-            else:
-                raise FileNotFoundError(
-                    f"Downloaded {zip_name} but could not locate it in " f"{dl_path}"
-                )
-
-        # Extract ZIP.
-        log.info("Extracting %s ...", zip_name)
-        with zipfile.ZipFile(str(dl_path)) as zf:
-            safe_extract_zip(zf, basepath)
-
-        return str(basepath)
+        return str(data_dir)

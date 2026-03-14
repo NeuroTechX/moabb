@@ -29,7 +29,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import safe_extract_zip
+from .utils import download_and_extract_subject_zip, safe_extract_zip
 
 
 log = logging.getLogger(__name__)
@@ -364,20 +364,9 @@ class Tavakolan2017(BaseDataset):
         if len(dat_files) >= 4 and not force_update:
             return str(data_dir)
 
-        # Download per-subject ZIP from Zenodo
-        zip_name = f"P{subject:02d}.zip"
-        url = f"{_ZENODO_BASE}/{zip_name}"
-        dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
-
-        # Rename to .zip if needed (dl.data_dl may strip extension)
-        zip_path = dl_path.with_suffix(".zip")
-        if dl_path != zip_path:
-            dl_path.rename(zip_path)
-
-        # Extract session ZIPs from the per-subject ZIP
-        subj_dir.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(zip_path) as zf:
-            safe_extract_zip(zf, subj_dir)
+        # Download per-subject ZIP from Zenodo and extract session ZIPs.
+        url = f"{_ZENODO_BASE}/P{subject:02d}.zip"
+        download_and_extract_subject_zip(url, sign, subj_dir, path, force_update, verbose)
 
         # Each session ZIP (P{NN}_Se{NN}.zip) contains a BCI2000 .DAT file.
         # Extract the .DAT from each session ZIP.
