@@ -211,7 +211,7 @@ _DOCUMENTATION = DocumentationMetadata(
     repository="PhysioNet",
     data_url="https://physionet.org/content/bigp3bci/1.0.0/",
     publication_year=2025,
-    license="PhysioNet Restricted Health Data License 1.5.0",
+    license="CC-BY-4.0",
 )
 
 
