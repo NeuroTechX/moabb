@@ -6,6 +6,7 @@ Data DOI: 10.5524/100788
 """
 
 import logging
+import zipfile
 from pathlib import Path
 
 import mne
@@ -29,8 +30,38 @@ from .metadata.schema import (
 
 log = logging.getLogger(__name__)
 
-# GigaDB Wasabi S3 base URL for dataset 100788.
-_S3_BASE = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100788"
+# Zenodo records (resampled 2500→1000 Hz, per-subject ZIPs).
+# 5 records, 5 subjects each.
+_ZENODO_RECORDS = {
+    1: "19021436",
+    2: "19021436",
+    3: "19021436",
+    4: "19021436",
+    5: "19021436",
+    6: "19021439",
+    7: "19021439",
+    8: "19021439",
+    9: "19021439",
+    10: "19021439",
+    11: "19021438",
+    12: "19021438",
+    13: "19021438",
+    14: "19021438",
+    15: "19021438",
+    16: "19021435",
+    17: "19021435",
+    18: "19021435",
+    19: "19021435",
+    20: "19021435",
+    21: "19021437",
+    22: "19021437",
+    23: "19021437",
+    24: "19021437",
+    25: "19021437",
+}
+
+_SIGN = "Jeong2020"
+_DOI = "10.1093/gigascience/giaa098"
 
 # 60 EEG channel names (10-20 system, BrainProducts actiCap).
 # fmt: off
@@ -91,7 +122,7 @@ _ALL_EVENTS = {
     "twist_supination": 11,
 }
 
-_SFREQ = 2500.0
+_SFREQ = 1000.0  # Resampled from 2500 Hz
 
 
 class Jeong2020(BaseDataset):
@@ -117,7 +148,8 @@ class Jeong2020(BaseDataset):
     Total: 550 MI trials per session, 1650 per subject (3 sessions).
 
     File format is BrainVision (.vhdr/.eeg/.vmrk), natively supported
-    by MNE-Python. Data is hosted on GigaDB (Wasabi S3, CC0 license).
+    by MNE-Python. Data is re-hosted on Zenodo (resampled from 2500
+    to 1000 Hz, per-subject ZIPs). Original data on GigaDB (CC0).
 
     Parameters
     ----------
@@ -135,7 +167,7 @@ class Jeong2020(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=2500.0,
+            sampling_rate=1000.0,
             n_channels=60,
             channel_types={"eeg": 60, "eog": 4, "emg": 7},
             montage="standard_1005",
@@ -186,7 +218,7 @@ class Jeong2020(BaseDataset):
             ],
             institution="Korea University",
             country="KR",
-            data_url="https://gigadb.org/dataset/100788",
+            data_url="https://zenodo.org/records/19021436",
             publication_year=2020,
             license="CC0-1.0",
         ),
@@ -248,31 +280,16 @@ class Jeong2020(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         base = Path(self.data_path(subject))
-        subj_str = f"sub{subject:02d}"
+        subj_str = f"sub{subject}"
 
         sessions = {}
         for sess_idx in range(1, 4):
             sess_str = f"session{sess_idx}"
             runs = {}
 
-            # 3 task types per session
             for run_idx, task_type in enumerate(["reaching", "multigrasp", "twist"]):
-                # File naming: sub01_session1_reaching_MI.vhdr
-                vhdr_name = f"{subj_str}_{sess_str}_{task_type}_{self.condition}.vhdr"
+                vhdr_name = f"{sess_str}_{subj_str}_{task_type}_{self.condition}.vhdr"
                 vhdr_path = base / vhdr_name
-
-                if not vhdr_path.exists():
-                    # Try alternative paths
-                    vhdr_path = base / subj_str / vhdr_name
-                if not vhdr_path.exists():
-                    alt = list(base.rglob(f"*{task_type}*{self.condition}*.vhdr"))
-                    if alt:
-                        # Filter for correct session
-                        sess_matches = [f for f in alt if sess_str in str(f)]
-                        if sess_matches:
-                            vhdr_path = sess_matches[0]
-                        else:
-                            vhdr_path = alt[0]
 
                 if not vhdr_path.exists():
                     log.warning(
@@ -347,40 +364,30 @@ class Jeong2020(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path = dl.get_dataset_path("Jeong2020", path)
+        path = dl.get_dataset_path(_SIGN, path)
         basepath = Path(path) / "MNE-jeong2020-data"
+        subj_str = f"sub{subject}"
+        subj_dir = basepath / subj_str
+
+        # Check if already extracted.
+        if subj_dir.exists() and not force_update:
+            vhdrs = list(subj_dir.glob("*.vhdr"))
+            if vhdrs:
+                return str(subj_dir)
+
+        # Download per-subject ZIP from Zenodo.
+        record_id = _ZENODO_RECORDS[subject]
+        zenodo_base = f"https://zenodo.org/records/{record_id}/files"
+        zip_name = f"{subj_str}.zip"
+        url = f"{zenodo_base}/{zip_name}"
+
+        dl_path = Path(dl.data_dl(url, _SIGN, path, force_update, verbose))
+
+        # Extract ZIP.
         basepath.mkdir(parents=True, exist_ok=True)
+        subj_dir.mkdir(parents=True, exist_ok=True)
+        log.info("Extracting %s to %s", zip_name, subj_dir)
+        with zipfile.ZipFile(str(dl_path)) as zf:
+            zf.extractall(str(subj_dir))
 
-        subj_str = f"sub{subject:02d}"
-
-        # Check for existing data.
-        existing = list(basepath.rglob(f"*{subj_str}*{self.condition}*.vhdr"))
-        if existing:
-            return str(basepath)
-
-        # Download from GigaDB (Wasabi S3).
-        task_types = ["reaching", "multigrasp", "twist"]
-        for sess_idx in range(1, 4):
-            sess_str = f"session{sess_idx}"
-            for task_type in task_types:
-                fname = f"{subj_str}_{sess_str}_{task_type}_{self.condition}"
-                for ext in [".vhdr", ".eeg", ".vmrk"]:
-                    url = f"{_S3_BASE}/{fname}{ext}"
-                    dest = basepath / f"{fname}{ext}"
-                    if not dest.exists():
-                        try:
-                            dl_path = dl.data_dl(
-                                url,
-                                "Jeong2020",
-                                path=str(basepath),
-                                force_update=force_update,
-                                verbose=verbose,
-                            )
-                            # Rename to expected location.
-                            dl_path = Path(dl_path)
-                            if dl_path != dest:
-                                dl_path.rename(dest)
-                        except Exception as e:
-                            log.warning("Download failed for %s: %s", url, e)
-
-        return str(basepath)
+        return str(subj_dir)

@@ -180,7 +180,6 @@ _init_dataset()
 
 _REMOVED_DATASETS = {
     "DemonsP300": "DemonsP300 has been removed due to unresolved data issues.",
-    "Ma2022": "Ma2022 has been removed because it requires a password (not FAIR-compliant).",
 }
 
 
