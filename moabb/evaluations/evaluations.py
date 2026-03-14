@@ -1,6 +1,6 @@
 import logging
 from copy import deepcopy
-from typing import Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import numpy as np
 from sklearn.base import clone
@@ -18,6 +18,11 @@ from moabb.evaluations.splitters import (
     CrossSubjectSplitter,
     WithinSessionSplitter,
 )
+
+
+if TYPE_CHECKING:
+    from moabb.datasets.base import BaseDataset
+
 from moabb.evaluations.utils import (
     _average_scores,
     _create_scorer,
@@ -86,9 +91,9 @@ class WithinSessionEvaluation(BaseEvaluation):
     # flake8: noqa: C901
     def _evaluate(
         self,
-        dataset,
-        pipelines,
-        param_grid,
+        dataset: "BaseDataset",
+        pipelines: dict,
+        param_grid: Optional[dict],
         process_pipeline,
         postprocess_pipeline,
     ):
@@ -225,13 +230,18 @@ class WithinSessionEvaluation(BaseEvaluation):
                         yield res
 
     def evaluate(
-        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+        self,
+        dataset: "BaseDataset",
+        pipelines: dict,
+        param_grid: Optional[dict],
+        process_pipeline,
+        postprocess_pipeline=None,
     ):
         yield from self._evaluate(
             dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline
         )
 
-    def is_valid(self, dataset):
+    def is_valid(self, dataset: "BaseDataset") -> bool:
         return True
 
 
@@ -283,7 +293,12 @@ class CrossSessionEvaluation(BaseEvaluation):
 
     # flake8: noqa: C901
     def evaluate(
-        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+        self,
+        dataset: "BaseDataset",
+        pipelines: dict,
+        param_grid: Optional[dict],
+        process_pipeline,
+        postprocess_pipeline=None,
     ):
         if not self.is_valid(dataset):
             reason = self._get_incompatibility_reason(dataset)
@@ -378,7 +393,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 if _carbonfootprint:
                     tracker.stop()
 
-    def is_valid(self, dataset):
+    def is_valid(self, dataset: "BaseDataset") -> bool:
         return dataset.n_sessions > 1
 
     def _get_incompatibility_reason(self, dataset):
@@ -442,7 +457,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     # flake8: noqa: C901
     def evaluate(
-        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+        self,
+        dataset: "BaseDataset",
+        pipelines: dict,
+        param_grid: Optional[dict],
+        process_pipeline,
+        postprocess_pipeline=None,
     ):
         if not self.is_valid(dataset):
             reason = self._get_incompatibility_reason(dataset)
@@ -568,7 +588,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if _carbonfootprint:
             tracker.stop()
 
-    def is_valid(self, dataset):
+    def is_valid(self, dataset: "BaseDataset") -> bool:
         return len(dataset.subject_list) > 1
 
     def _get_incompatibility_reason(self, dataset):

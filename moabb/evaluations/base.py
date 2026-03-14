@@ -2,6 +2,7 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from time import perf_counter
+from typing import Optional, Union
 from uuid import uuid4
 from warnings import warn
 
@@ -11,7 +12,10 @@ from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 
 from moabb.analysis import Results
-from moabb.datasets.base import BaseDataset
+from moabb.datasets.base import (  # noqa: F401 - CacheConfig used in type hints
+    BaseDataset,
+    CacheConfig,
+)
 from moabb.evaluations.utils import (
     Emissions,
     _convert_sklearn_params_to_optuna,
@@ -111,27 +115,27 @@ class BaseEvaluation(ABC):
     @verbose
     def __init__(
         self,
-        paradigm,
-        datasets=None,
-        random_state=None,
-        n_jobs=1,
-        overwrite=False,
-        error_score="raise",
-        suffix="",
-        hdf5_path=None,
-        additional_columns=None,
-        return_epochs=False,
-        return_raws=False,
-        mne_labels=False,
-        n_splits=None,
-        cv_class=None,
-        cv_kwargs=None,
-        save_model=False,
-        cache_config=None,
-        optuna=False,
-        time_out=60 * 15,
-        verbose=None,
-        codecarbon_config=None,
+        paradigm: "BaseParadigm",
+        datasets: Optional[list["BaseDataset"]] = None,
+        random_state: Optional[int] = None,
+        n_jobs: int = 1,
+        overwrite: bool = False,
+        error_score: Union[str, float] = "raise",
+        suffix: str = "",
+        hdf5_path: Optional[str] = None,
+        additional_columns: Optional[list[str]] = None,
+        return_epochs: bool = False,
+        return_raws: bool = False,
+        mne_labels: bool = False,
+        n_splits: Optional[int] = None,
+        cv_class: Optional[type] = None,
+        cv_kwargs: Optional[dict] = None,
+        save_model: bool = False,
+        cache_config: Optional["CacheConfig"] = None,
+        optuna: bool = False,
+        time_out: int = 60 * 15,
+        verbose: Optional[Union[bool, str, int]] = None,
+        codecarbon_config: Optional[dict] = None,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -413,7 +417,12 @@ class BaseEvaluation(ABC):
                 res[col] = extra.get(col, math.nan)
         return res
 
-    def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
+    def process(
+        self,
+        pipelines: dict[str, BaseEstimator],
+        param_grid: Optional[dict[str, dict]] = None,
+        postprocess_pipeline: Optional[BaseEstimator] = None,
+    ) -> pd.DataFrame:
         """Runs all pipelines on all datasets.
 
         This function will apply all provided pipelines and return a dataframe
@@ -510,7 +519,12 @@ class BaseEvaluation(ABC):
 
     @abstractmethod
     def evaluate(
-        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+        self,
+        dataset: "BaseDataset",
+        pipelines: dict[str, BaseEstimator],
+        param_grid: Optional[dict],
+        process_pipeline: BaseEstimator,
+        postprocess_pipeline: Optional[BaseEstimator] = None,
     ):
         """Evaluate results on a single dataset.
 
@@ -529,7 +543,7 @@ class BaseEvaluation(ABC):
         pass
 
     @abstractmethod
-    def is_valid(self, dataset):
+    def is_valid(self, dataset: "BaseDataset") -> bool:
         """Verify the dataset is compatible with evaluation.
 
         This method is called to verify dataset given in the constructor

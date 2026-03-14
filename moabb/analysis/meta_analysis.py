@@ -55,8 +55,8 @@ def compute_pvals_wilcoxon(df, order=None):
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe"
-        assert set(order) == set(df.columns), errormsg
+        if set(order) != set(df.columns):  # was assert, now raises properly
+            raise ValueError("provided order does not have all columns of dataframe")
 
     out = np.zeros((len(df.columns), len(df.columns)))
     for i in range(len(order)):
@@ -170,8 +170,8 @@ def compute_pvals_perm(df, order=None, seed=None):
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe"
-        assert set(order) == set(df.columns), errormsg
+        if set(order) != set(df.columns):  # was assert, now raises properly
+            raise ValueError("provided order does not have all columns of dataframe")
     # reshape df into matrix (sub, k, k) of differences
     data = np.zeros((df.shape[0], len(order), len(order)))
     for i in range(len(order) - 1):
@@ -208,8 +208,8 @@ def compute_effect(df, order=None):
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe"
-        assert set(order) == set(df.columns), errormsg
+        if set(order) != set(df.columns):  # was assert, now raises properly
+            raise ValueError("provided order does not have all columns of dataframe")
 
     out = np.zeros((len(df.columns), len(df.columns)))
     for i, pipe1 in enumerate(order):

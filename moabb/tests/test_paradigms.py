@@ -567,7 +567,7 @@ class TestMotorImagery(unittest.TestCase):
         assert isinstance(epochs, BaseEpochs)
 
     def test_FilterBankMotorImagery_moreclassesthanevent(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             FilterBankMotorImagery(n_classes=3, events=["hands", "feet"])
 
     def test_FilterBankLeftRightImagery_paradigm(self):
@@ -922,7 +922,7 @@ class TestSSVEP:
             paradigm.get_data(dataset)
 
     def test_BaseSSVEP_moreclassesthanevent(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             BaseSSVEP(n_classes=3, events=["13.", "14."])
 
     def test_BaseSSVEP_droppedevent(self):
