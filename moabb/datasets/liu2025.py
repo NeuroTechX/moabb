@@ -307,8 +307,8 @@ class Liu2025(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject {subject}, must be in {self.subject_list}")
 
-        sign = "Liu2025"
-        data_dir = Path(dl.get_dataset_path(sign, path)) / "MNE-liu2025-data"
+        sign = self.code
+        data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
         subj_dir = data_dir / f"sub-{subject:02d}"
 
         if subj_dir.exists() and list(subj_dir.rglob("*.vhdr")) and not force_update:

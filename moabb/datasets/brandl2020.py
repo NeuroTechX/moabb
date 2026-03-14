@@ -6,11 +6,11 @@ DOI: 10.3389/fnins.2020.566147
 
 import logging
 
-import h5py
 import mne
 import numpy as np
 from mne.channels import make_standard_montage
 from mne.io import RawArray
+from pymatreader import read_mat
 
 from . import download as dl
 from .base import BaseDataset
@@ -67,30 +67,6 @@ _CONDITION_NAMES = {
     5: "flicker",
     6: "stimulation",
 }
-
-
-def _read_str_array(f, dataset):
-    """Read an array of strings from an HDF5 dataset of object references.
-
-    In MATLAB v7.3 HDF5 files, cell arrays of strings are stored as arrays
-    of object references. Each reference points to a uint16 dataset
-    containing the character codes.
-    """
-    refs = dataset[:]
-    result = []
-    for ref in refs.flat:
-        obj = f[ref]
-        chars = obj[:].flatten()
-        result.append("".join(chr(c) for c in chars))
-    return result
-
-
-def _read_scalar(dataset):
-    """Read a scalar value from an HDF5 dataset."""
-    val = dataset[()]
-    if hasattr(val, "flat"):
-        return val.flat[0]
-    return val
 
 
 class Brandl2020(BaseDataset):
@@ -394,11 +370,11 @@ class Brandl2020(BaseDataset):
         # Download subject data file
         subj_fname = f"pp{subject}.mat"
         url = _BITSTREAM_URL.format(filename=subj_fname)
-        paths.append(dl.data_dl(url, "BRANDL2020", path, force_update, verbose))
+        paths.append(dl.data_dl(url, "Brandl2020", path, force_update, verbose))
 
         # Download montage file (shared across subjects)
         url_mnt = _BITSTREAM_URL.format(filename="mnt.mat")
-        paths.append(dl.data_dl(url_mnt, "BRANDL2020", path, force_update, verbose))
+        paths.append(dl.data_dl(url_mnt, "Brandl2020", path, force_update, verbose))
 
         return paths
 
@@ -415,60 +391,51 @@ class Brandl2020(BaseDataset):
         file_paths = self.data_path(subject)
         subj_path = file_paths[0]
 
+        mat = read_mat(subj_path)
+
+        # cnt_orig is a 1x2 cell array (calibration, feedback).
+        # pymatreader resolves it to a list of dicts.
+        cnt_orig = mat["cnt_orig"]
+        mrk_orig = mat["mrk_orig"]
+
+        # Extract channel names and sfreq from first entry
+        cnt0 = cnt_orig[0]
+        ch_names = cnt0["clab"]
+        if isinstance(ch_names, str):
+            ch_names = [ch_names]
+        sfreq = float(np.asarray(cnt0["fs"]).flat[0])
+
+        # Standardize channel names for MNE compatibility
+        ch_names = [ch.replace("Z", "z").replace("FP", "Fp") for ch in ch_names]
+
         runs = {}
-        with h5py.File(subj_path, "r") as f:
-            # cnt_orig is a 1x2 cell array (calibration, feedback)
-            # In HDF5, MATLAB cell arrays are stored as datasets of
-            # object references
-            cnt_refs = f["cnt_orig"]
-            mrk_refs = f["mrk_orig"]
 
-            # --- Extract channel names from first cnt_orig entry ---
-            cnt0_ref = cnt_refs[0, 0]
-            cnt0 = f[cnt0_ref]
-            ch_names = _read_str_array(f, cnt0["clab"])
-            sfreq = _read_scalar(cnt0["fs"])
+        # --- Process calibration data (cnt_orig[0]) ---
+        calib_raw = self._process_segment(cnt_orig[0], mrk_orig[0], ch_names, sfreq)
+        runs["0calibration"] = calib_raw
 
-            # Standardize channel names for MNE compatibility
-            ch_names = [ch.replace("Z", "z").replace("FP", "Fp") for ch in ch_names]
-
-            # --- Process calibration data (cnt_orig{1}) ---
-            calib_raw = self._process_segment(
-                f, cnt_refs[0, 0], mrk_refs[0, 0], ch_names, sfreq
-            )
-            runs["0calibration"] = calib_raw
-
-            # --- Process feedback data (cnt_orig{2}) ---
-            # The feedback data is one concatenated recording of runs 2-7.
-            # We need to split by distraction condition using marker codes.
-            feedback_raw = self._process_segment(
-                f,
-                cnt_refs[1, 0],
-                mrk_refs[1, 0],
-                ch_names,
-                sfreq,
-                split_by_condition=True,
-            )
-            if isinstance(feedback_raw, dict):
-                runs.update(feedback_raw)
-            else:
-                runs["1feedback"] = feedback_raw
+        # --- Process feedback data (cnt_orig[1]) ---
+        # The feedback data is one concatenated recording of runs 2-7.
+        # We need to split by distraction condition using marker codes.
+        feedback_raw = self._process_segment(
+            cnt_orig[1], mrk_orig[1], ch_names, sfreq, split_by_condition=True
+        )
+        if isinstance(feedback_raw, dict):
+            runs.update(feedback_raw)
+        else:
+            runs["1feedback"] = feedback_raw
 
         return {"0": runs}
 
-    def _process_segment(
-        self, f, cnt_ref, mrk_ref, ch_names, sfreq, split_by_condition=False
-    ):
+    def _process_segment(self, cnt, mrk, ch_names, sfreq, split_by_condition=False):
         """Process one segment (calibration or feedback) of the data.
 
         Parameters
         ----------
-        f : h5py.File
-            Open HDF5 file handle.
-        cnt_ref : h5py reference
-            Reference to the cnt_orig entry.
-        mrk_ref : h5py reference
-            Reference to the mrk_orig entry.
+        cnt : dict
+            The cnt_orig entry (pymatreader dict with keys 'x', 'clab', 'fs').
+        mrk : dict
+            The mrk_orig entry (pymatreader dict with keys 'time', 'event').
         ch_names : list of str
             Channel names.
         sfreq : float
@@ -482,14 +449,9 @@ class Brandl2020(BaseDataset):
             If split_by_condition is False, returns a single Raw object.
             If True, returns a dict of {run_name: Raw} for each condition.
         """
-        cnt = f[cnt_ref]
-        mrk = f[mrk_ref]
-
-        # Data: MATLAB cnt.x is [n_samples x n_channels] (column-major).
-        # HDF5 stores in row-major order, so h5py reads it as
-        # [n_channels x n_samples]. We verify and transpose if needed
-        # to ensure shape is [n_channels, n_samples].
-        raw_data = cnt["x"][:]
+        # Data: ensure shape is [n_channels, n_samples].
+        # pymatreader returns MATLAB's [n_samples, n_channels] convention.
+        raw_data = np.asarray(cnt["x"])
         n_ch = len(ch_names)
         if raw_data.shape[0] == n_ch:
             data = raw_data  # already [n_channels, n_samples]
@@ -497,12 +459,8 @@ class Brandl2020(BaseDataset):
             data = raw_data.T  # transpose to [n_channels, n_samples]
 
         # Marker times (in ms) and event descriptions
-        mrk_time = mrk["time"][:].flatten()  # marker times in ms
-
-        # Get event descriptions (trigger codes)
-        # mrk.event.desc contains the trigger codes
-        event_group = mrk["event"]
-        desc = event_group["desc"][:].flatten().astype(int)
+        mrk_time = np.asarray(mrk["time"]).flatten()
+        desc = np.asarray(mrk["event"]["desc"]).flatten().astype(int)
 
         # Convert marker times from ms to samples
         mrk_samples = np.round(mrk_time / 1000.0 * sfreq).astype(int)
@@ -590,7 +548,7 @@ class Brandl2020(BaseDataset):
         # Combine EEG and stim channels
         full_data = np.vstack([data_volts, stim])
 
-        ch_names_full = list(ch_names) + ["stim"]
+        ch_names_full = list(ch_names) + ["STI"]
         ch_types = ["eeg"] * n_channels + ["stim"]
         info = mne.create_info(ch_names_full, sfreq, ch_types)
         raw = RawArray(data=full_data, info=info, verbose=False)

@@ -33,7 +33,7 @@ from .metadata.schema import (
 log = logging.getLogger(__name__)
 
 _DOI = "10.3389/fnins.2020.579469"
-_SIGN = "zheng2020rsvp"
+_SIGN = "Zheng2020"
 
 # Figshare file IDs for each group's zip.
 _GROUP_FILES = {

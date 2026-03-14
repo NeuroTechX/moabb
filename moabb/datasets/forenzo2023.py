@@ -302,7 +302,7 @@ class Forenzo2023(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        sign = "Forenzo2023"
+        sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
         subj_dir = data_dir / f"Subject{subject:02d}"
 

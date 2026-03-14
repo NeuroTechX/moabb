@@ -10,6 +10,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
+from pymatreader import read_mat
 
 from . import download as dl
 from .base import BaseDataset
@@ -262,31 +263,21 @@ class Forenzo2024(BaseDataset):
 
     def _load_hdf5_mat(self, mat_path):
         """Load a MATLAB v7.3 (HDF5) .mat file into MNE Raw."""
-        try:
-            import mat73
+        mat = read_mat(str(mat_path))
 
-            mat = mat73.loadmat(str(mat_path))
-        except ImportError:
-            import h5py
-
-            mat = {}
-            with h5py.File(str(mat_path), "r") as f:
-                eeg = f["eeg"]
-                mat["data"] = np.array(eeg["data"])
-                mat["times"] = np.array(eeg["times"]).ravel()
-                if "event" in eeg:
-                    mat["event"] = eeg["event"]
-
-        # Extract EEG data
+        # Extract EEG data from nested 'eeg' struct or top-level keys
         if "eeg" in mat and isinstance(mat["eeg"], dict):
-            eeg_struct = mat["eeg"]
-            data = np.array(eeg_struct["data"])
-            np.array(eeg_struct.get("times", [])).ravel()
+            data = np.asarray(mat["eeg"]["data"])
         else:
-            data = np.array(mat.get("data", mat.get("eeg")))
+            data = np.asarray(mat.get("data", mat.get("eeg")))
 
         if data.ndim == 1:
             data = data.reshape(1, -1)
+
+        # pymatreader returns MATLAB's (n_samples, n_channels); ensure
+        # shape is (n_channels, n_samples).
+        if data.shape[0] != len(_CH_NAMES) and data.shape[1] == len(_CH_NAMES):
+            data = data.T
 
         n_ch = data.shape[0]
 
@@ -321,7 +312,7 @@ class Forenzo2024(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        sign = "Forenzo2024"
+        sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
         subj_dir = data_dir / f"S{subject:02d}"
 

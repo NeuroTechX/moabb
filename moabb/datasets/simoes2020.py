@@ -34,7 +34,7 @@ from .utils import download_and_extract_subject_zip
 log = logging.getLogger(__name__)
 
 _DOI = "10.3389/fnins.2020.568104"
-_SIGN = "simoes2020"
+_SIGN = "Simoes2020"
 
 # 8 EEG channels (central + parietal).
 _CH_NAMES = ["C3", "Cz", "C4", "CPz", "P3", "Pz", "P4", "POz"]

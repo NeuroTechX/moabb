@@ -37,6 +37,7 @@ dependencies = [
     "mne>=1.10.0",
     "pandas>=1.5.2",
     "h5py>=3.10.0",
+    "pymatreader>=1.2.2",
     "matplotlib>=3.6.2",
     "seaborn>=0.12.1",
     "pyriemann @ git+https://github.com/pyRiemann/pyRiemann.git@master",

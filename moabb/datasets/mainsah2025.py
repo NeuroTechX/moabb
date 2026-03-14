@@ -41,7 +41,7 @@ log = logging.getLogger(__name__)
 _BASE_URL = "https://physionet.org/files/bigp3bci/1.0.0/"
 _MANIFEST_URL = _BASE_URL + "SHA256SUMS.txt"
 _DOI = "10.13026/0byy-ry86"
-_SIGN = "bigp3bci"
+_SIGN = "Mainsah2025"
 
 # Module-level manifest cache (parsed once, shared across instances)
 _manifest_cache = None

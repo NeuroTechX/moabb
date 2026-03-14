@@ -10,6 +10,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
+from pymatreader import read_mat
 
 from . import download as dl
 from .base import BaseDataset
@@ -31,7 +32,7 @@ from .metadata.schema import (
 log = logging.getLogger(__name__)
 
 _DOI = "10.1038/s41597-025-05378-x"
-_SIGN = "zhang2025rsvp"
+_SIGN = "Zhang2025"
 
 # Figshare file IDs for S1.mat through S15.mat.
 _FILE_IDS = {
@@ -201,67 +202,62 @@ class Zhang2025(BaseDataset):
         """Return {session: {run: Raw}}."""
         mat_path = self.data_path(subject)
 
-        import h5py
-
+        mat = read_mat(mat_path)
         sessions = {}
 
-        with h5py.File(mat_path, "r") as f:
-            for ses_idx, ses_key in enumerate(_SESSION_KEYS):
-                if ses_key not in f:
+        for ses_idx, ses_key in enumerate(_SESSION_KEYS):
+            if ses_key not in mat:
+                continue
+
+            # pymatreader resolves the cell array of blocks to a list.
+            ses_data = mat[ses_key]
+            if not isinstance(ses_data, list):
+                ses_data = [ses_data]
+
+            runs = {}
+            for block_idx, block in enumerate(ses_data):
+                block = np.asarray(block)
+                if block.ndim != 2:
                     continue
 
-                ses_data = f[ses_key]
+                # Rows 0-56: EEG, Row 57: trigger.
+                # pymatreader may return (n_samples, 58) — handle both.
+                if block.shape[0] == 58:
+                    eeg = block[:57, :].astype(np.float64)
+                    trig = block[57, :].astype(np.float64)
+                elif block.shape[1] == 58:
+                    eeg = block[:, :57].T.astype(np.float64)
+                    trig = block[:, 57].astype(np.float64)
+                else:
+                    log.warning(
+                        "Unexpected shape %s in %s/%s block %d",
+                        block.shape,
+                        ses_key,
+                        subject,
+                        block_idx,
+                    )
+                    continue
 
-                # ses_data is a 1D array of object references (cell array).
-                runs = {}
-                n_blocks = ses_data.shape[0] if ses_data.ndim >= 1 else 1
+                # Scale to Volts (data is in uV).
+                eeg = eeg * 1e-6
 
-                for block_idx in range(n_blocks):
-                    ref = ses_data[block_idx]
-                    if hasattr(ref, "__iter__"):
-                        ref = ref[0] if len(ref) > 0 else ref
-                    block = f[ref][()]  # (58, n_samples)
+                # Build stim channel.
+                # Per MATLAB code: trigger==1 -> non-target, trigger==2 -> target.
+                stim = np.zeros(eeg.shape[1])
+                stim[trig == 1] = 1  # NonTarget
+                stim[trig == 2] = 2  # Target
 
-                    if block.ndim != 2:
-                        continue
+                all_data = np.vstack([eeg, stim[np.newaxis]])
+                ch_names = list(_CH_NAMES) + ["STI"]
+                ch_types = ["eeg"] * 57 + ["stim"]
+                info = mne.create_info(ch_names, 1000.0, ch_types)
+                raw = mne.io.RawArray(all_data, info, verbose=False)
+                raw.set_montage("standard_1020", on_missing="warn")
 
-                    # Rows 0-56: EEG, Row 57: trigger.
-                    if block.shape[0] == 58:
-                        eeg = block[:57, :].astype(np.float64)
-                        trig = block[57, :].astype(np.float64)
-                    elif block.shape[1] == 58:
-                        eeg = block[:, :57].T.astype(np.float64)
-                        trig = block[:, 57].astype(np.float64)
-                    else:
-                        log.warning(
-                            "Unexpected shape %s in %s/%s block %d",
-                            block.shape,
-                            ses_key,
-                            subject,
-                            block_idx,
-                        )
-                        continue
+                runs[str(block_idx)] = raw
 
-                    # Scale to Volts (data is in uV).
-                    eeg = eeg * 1e-6
-
-                    # Build stim channel.
-                    # Per MATLAB code: trigger==1 -> non-target, trigger==2 -> target.
-                    stim = np.zeros(eeg.shape[1])
-                    stim[trig == 1] = 1  # NonTarget
-                    stim[trig == 2] = 2  # Target
-
-                    all_data = np.vstack([eeg, stim[np.newaxis]])
-                    ch_names = list(_CH_NAMES) + ["STI"]
-                    ch_types = ["eeg"] * 57 + ["stim"]
-                    info = mne.create_info(ch_names, 1000.0, ch_types)
-                    raw = mne.io.RawArray(all_data, info, verbose=False)
-                    raw.set_montage("standard_1020", on_missing="warn")
-
-                    runs[str(block_idx)] = raw
-
-                if runs:
-                    sessions[str(ses_idx)] = runs
+            if runs:
+                sessions[str(ses_idx)] = runs
 
         return sessions
 

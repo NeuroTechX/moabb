@@ -24,6 +24,7 @@ from moabb.analysis.plotting import (
     dataset_bubble_plot,
     get_dataset_area,
 )
+from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
@@ -594,8 +595,6 @@ def download_and_extract_subject_zip(
     verbose : bool | None
         Verbosity level.
     """
-    from . import download as dl
-
     dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
 
     # Rename to .zip if dl.data_dl() stripped the extension.

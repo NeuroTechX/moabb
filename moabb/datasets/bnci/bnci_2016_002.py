@@ -2,9 +2,10 @@
 
 from datetime import datetime, timezone
 
-import h5py
+import numpy as np
 from mne import Annotations
 from mne.utils import verbose
+from pymatreader import read_mat
 
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -48,12 +49,6 @@ _SUBJECT_VP_CODES = {
     14: "ii",
     15: "ja",
 }
-
-
-def _read_hdf5_string(f, ref):
-    """Read a string from HDF5 object reference."""
-    data = f[ref][:]
-    return "".join(chr(c) for c in data.flatten())
 
 
 @verbose
@@ -106,29 +101,21 @@ def _load_data_002_2016(
     if only_filenames:
         return [filename]
 
-    # Load HDF5 file (MATLAB v7.3 format)
-    with h5py.File(filename, "r") as f:
-        # Get sampling rate
-        sfreq = float(f["cnt"]["fs"][0, 0])
+    # Load HDF5 file (MATLAB v7.3 format) via pymatreader
+    mat = read_mat(filename)
 
-        # Get channel labels
-        clab_refs = f["cnt"]["clab"][:]
-        ch_names = []
-        for ref in clab_refs.flatten():
-            ch_names.append(_read_hdf5_string(f, ref))
-
-        # Get continuous data (channels x samples)
-        data = f["cnt"]["x"][:]
-
-        # Get class names
-        className_refs = f["mrk"]["className"][:]
-        class_names = []
-        for ref in className_refs.flatten():
-            class_names.append(_read_hdf5_string(f, ref))
-
-        # Get marker times (in samples) and labels
-        marker_times = f["mrk"]["time"][:].flatten()
-        marker_labels = f["mrk"]["y"][:]  # shape: (n_events, n_classes)
+    sfreq = float(np.asarray(mat["cnt"]["fs"]).flat[0])
+    ch_names = mat["cnt"]["clab"]
+    if isinstance(ch_names, str):
+        ch_names = [ch_names]
+    # pymatreader returns MATLAB's (n_samples, n_channels); transpose to
+    # (n_channels, n_samples) expected by MNE RawArray.
+    data = np.asarray(mat["cnt"]["x"]).T
+    class_names = mat["mrk"]["className"]
+    if isinstance(class_names, str):
+        class_names = [class_names]
+    marker_times = np.asarray(mat["mrk"]["time"]).flatten()
+    marker_labels = np.asarray(mat["mrk"]["y"])
 
     # Determine channel types based on channel names
     # 59 EEG + 2 EOG + 1 EMG + 7 other (gas, brake, wheel, distance, etc.)
