@@ -15,12 +15,15 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -160,6 +163,22 @@ class Zhang2025(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials="~160 target + ~6240 nontarget per session",
             trials_context="per session (4 blocks x 8 sequences x 200 images)",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["HDCA"],
+            feature_extraction=["HDCA"],
+            frequency_bands={
+                "ERP_dominant": [0.0, 10.0],
+            },
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_subject"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["identity_authentication", "target_detection"],
+            environment="laboratory",
+            online_feedback=None,
         ),
         data_processed=False,
         file_format="MATLAB (HDF5)",

@@ -17,12 +17,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -355,9 +357,24 @@ class Zuo2025(BaseDataset):
             n_trials_per_class={"left_leg": 250, "right_leg": 250},
             trials_context="5 sessions x 100 trials (50 left + 50 right)",
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CSP+LDA", "FBCSP+SVM", "EEGNet", "OTFWRGD"],
+            feature_extraction=["CSP", "FBCSP", "deep_learning", "Riemannian_geometry"],
+            frequency_bands={
+                "alpha_mu": [8.0, 15.0],
+                "beta": [15.0, 30.0],
+            },
+            spatial_filters=["CSP", "FBCSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation"],
             environment="clinical",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="MAT",

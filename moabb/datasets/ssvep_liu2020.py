@@ -15,6 +15,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -22,6 +23,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs, safe_extract_tar
@@ -156,6 +158,19 @@ class Liu2020BETA(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=4,
             n_trials=160,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["TRCA", "msTRCA", "FBCCA", "CCA"],
+            feature_extraction=["CCA", "TRCA", "FBCCA"],
+            frequency_bands={
+                "bandpass": [3.0, 100.0],
+            },
+            spatial_filters=["CCA", "TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-block-out",
+            cv_folds=4,
+            evaluation_type=["within_subject"],
         ),
         bci_application=BCIApplicationMetadata(
             environment="classroom",

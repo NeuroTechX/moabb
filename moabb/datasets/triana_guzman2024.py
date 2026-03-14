@@ -16,12 +16,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import stim_channels_with_selected_ids
@@ -171,9 +173,27 @@ class TrianaGuzman2024(BaseDataset):
             n_trials=7680,
             trials_context=("32 subjects x ~240 trials (offline, variable per subject)"),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["RLDA"],
+            feature_extraction=["FBCSP", "log-variance"],
+            frequency_bands={
+                "theta": [4.0, 8.0],
+                "alpha": [8.0, 12.0],
+                "low_beta": [12.0, 16.0],
+                "mid_beta": [16.0, 20.0],
+                "high_beta": [20.0, 30.0],
+            },
+            spatial_filters=["FBCSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],
             environment="laboratory",
+            online_feedback=True,
         ),
         data_processed=False,
         file_format="SET (EEGLAB)",

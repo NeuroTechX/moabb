@@ -15,12 +15,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -207,9 +209,23 @@ class Jeong2020(BaseDataset):
                 "150 grasping + 100 twisting)"
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CSP+RLDA"],
+            feature_extraction=["CSP"],
+            frequency_bands={
+                "mu_beta": [8.0, 30.0],
+            },
+            spatial_filters=["CSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10x10-fold",
+            cv_folds=10,
+            evaluation_type=["within_session"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "prosthetics"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="BrainVision",

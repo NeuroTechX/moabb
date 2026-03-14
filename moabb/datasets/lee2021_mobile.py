@@ -15,10 +15,12 @@ from .metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -183,9 +185,24 @@ class Lee2021Mobile(BaseDataset):
             ],
             keywords=["SSVEP", "ERP", "mobile BCI", "ear-EEG", "locomotion"],
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["rLDA", "CCA"],
+            feature_extraction=["power_over_time_intervals", "CCA"],
+            frequency_bands={
+                "delta": [0.5, 3.5],
+                "theta": [3.5, 7.5],
+                "alpha": [7.5, 12.5],
+                "beta": [12.5, 30.0],
+            },
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="holdout",
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
-            environment="mobile",
-            online_feedback=False,
+            applications=["mobile_BCI"],
+            environment="treadmill",
         ),
         tags=Tags(
             pathology=["healthy"],

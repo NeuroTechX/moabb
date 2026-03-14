@@ -18,12 +18,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip, stim_channels_with_selected_ids
@@ -414,9 +416,20 @@ class GuttmannFlury2025_MI(BaseDataset):
             n_trials=2520,
             trials_context="63 sessions x 40 trials = 2520 (MI only, default)",
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=None,
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method=None,
+            evaluation_type=None,
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="BDF",

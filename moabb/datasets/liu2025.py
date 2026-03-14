@@ -17,12 +17,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip, stim_channels_with_selected_ids
@@ -181,9 +183,24 @@ class Liu2025(BaseDataset):
                 "have 2 extra sessions (mises/miies)."
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CSP+SVM"],
+            feature_extraction=["CSP", "ERSP"],
+            frequency_bands={
+                "MI_features": [8.0, 25.0],
+                "preprocessing": [3.0, 35.0],
+            },
+            spatial_filters=["CSP", "CAR"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold",
+            cv_folds=10,
+            evaluation_type=["within_subject", "cross_session"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation", "gait"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="BrainVision (.vhdr/.vmrk/.eeg)",

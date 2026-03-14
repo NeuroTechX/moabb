@@ -20,12 +20,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -199,6 +201,19 @@ class Rozado2015(BaseDataset):
                 "2 experiments of 25 trials each (50 trials total per "
                 "subject). Each experiment is stored as one XDF file."
             ),
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=["CSP", "pupil_diameter"],
+            frequency_bands={
+                "bandpass": [8.0, 30.0],
+            },
+            spatial_filters=["CSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
         ),
         bci_application=BCIApplicationMetadata(
             environment="lab",

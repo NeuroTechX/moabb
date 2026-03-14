@@ -17,6 +17,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -24,6 +25,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -207,9 +209,25 @@ class Yi2025(BaseDataset):
             n_blocks=8,
             trials_context="8 blocks x 40 trials (5 per class x 8 classes)",
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["ShallowConvNet"],
+            feature_extraction=["ERSP"],
+            frequency_bands={
+                "alpha": [8.0, 13.0],
+                "beta": [13.0, 30.0],
+                "bandpass": [4.0, 40.0],
+            },
+            spatial_filters=["CAR"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation"],
             environment="laboratory",
+            online_feedback=False,
         ),
         data_processed=True,
         file_format="MAT (pre-epoched)",

@@ -14,12 +14,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -115,9 +117,18 @@ class Wang2021Combined(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=2,
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=None,
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=None,
+        ),
         bci_application=BCIApplicationMetadata(
             environment="lab",
-            online_feedback=False,
+            online_feedback=None,
         ),
         tags=Tags(
             pathology=["healthy"],

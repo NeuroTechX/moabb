@@ -17,6 +17,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -24,6 +25,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -368,9 +370,25 @@ class Zhang2017(BaseDataset):
                 "8 goal tasks). Total: 60 rest + 30 per MI task = 330."
             ),
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "DAL"],
+            feature_extraction=["bandpower", "CSP", "FBCSP"],
+            frequency_bands={
+                "bandpass": [6.0, 35.0],
+                "mu": [7.0, 13.0],
+                "beta": [13.0, 30.0],
+            },
+            spatial_filters=["CSP", "FBCSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5x5-fold",
+            cv_folds=5,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],
             environment="laboratory",
+            online_feedback=False,
         ),
         file_format="BCI2000",
     )
