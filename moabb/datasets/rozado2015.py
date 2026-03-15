@@ -205,7 +205,7 @@ class Rozado2015(BaseDataset):
     # Marker strings in XDF files -> event IDs
     _MARKER_MAP = {"left": 1, "nothing": 2}
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 31)),
             sessions_per_subject=1,
@@ -216,6 +216,7 @@ class Rozado2015(BaseDataset):
             doi="10.1371/journal.pone.0121262",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

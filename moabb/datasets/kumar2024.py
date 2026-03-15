@@ -308,7 +308,7 @@ class Kumar2024(BaseDataset):
     _MOABB_TO_RAW = {i: i for i in range(1, 10)}
     _MOABB_TO_RAW.update({i: i + 1 for i in range(10, 19)})  # 10->11, ..., 18->19
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 19)),
             sessions_per_subject=6,
@@ -319,6 +319,7 @@ class Kumar2024(BaseDataset):
             doi="10.1093/pnasnexus/pgae076",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def data_path(
@@ -503,25 +504,31 @@ class Kumar2024(BaseDataset):
                 raw = mne.io.read_raw_gdf(str(gdf_path), preload=True, verbose=False)
 
             # The file has 26 channels: 22 EEG + 3 EOG (sens1-3) + Status
-            # Pick only the 22 EEG channels, drop EOG and Status
-            eeg_picks = raw.ch_names[:22]
-            raw.pick(eeg_picks)
-
-            # Rename channels to standard 10-10 names (file has uppercase:
+            # Rename EEG channels to standard 10-10 names (file has uppercase:
             # FZ->Fz, CZ->Cz, PZ->Pz, POZ->POz)
             rename_map = {}
-            for i, ch in enumerate(raw.ch_names):
+            for i, ch in enumerate(raw.ch_names[:22]):
                 if ch != _EEG_CHANNELS[i]:
                     rename_map[ch] = _EEG_CHANNELS[i]
             if rename_map:
                 raw.rename_channels(rename_map)
+
+            # Set EOG channel types for sens1-3
+            eog_chs = {ch: "eog" for ch in raw.ch_names[22:] if ch.startswith("sens")}
+            if eog_chs:
+                raw.set_channel_types(eog_chs)
+
+            # Drop non-EEG channels only when return_all_modalities is False
+            if not self.return_all_modalities:
+                raw.pick(list(_EEG_CHANNELS))
 
             # Set montage
             raw.set_montage(montage, on_missing="ignore")
 
             # GDF headers have malformed physical_min/max; data is in
             # microvolts but MNE reads it as volts.  Scale EEG channels.
-            raw._data[:22] *= 1e-6
+            eeg_idx = mne.pick_types(raw.info, eeg=True)
+            raw._data[eeg_idx] *= 1e-6
 
             # Map GDF event annotations: 769 -> left_hand, 770 -> right_hand
             raw.annotations.rename({"769": "left_hand", "770": "right_hand"})

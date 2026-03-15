@@ -266,7 +266,14 @@ class Jeong2020(BaseDataset):
         file_format="BrainVision",
     )
 
-    def __init__(self, condition="MI", subjects=None, sessions=None):
+    def __init__(
+        self,
+        condition="MI",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         self.condition = condition
         super().__init__(
             subjects=list(range(1, 26)),
@@ -278,6 +285,7 @@ class Jeong2020(BaseDataset):
             doi="10.1093/gigascience/giaa098",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

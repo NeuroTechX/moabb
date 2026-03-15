@@ -242,7 +242,7 @@ class Tavakolan2017(BaseDataset):
         "right_elbow_flexion": 3,
     }
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=4,
@@ -253,6 +253,7 @@ class Tavakolan2017(BaseDataset):
             doi="10.1371/journal.pone.0174161",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

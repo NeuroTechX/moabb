@@ -242,7 +242,14 @@ class TrianaGuzman2024(BaseBIDSDataset):
         file_format="SET (EEGLAB, BIDS)",
     )
 
-    def __init__(self, use_all_events=True, subjects=None, sessions=None):
+    def __init__(
+        self,
+        use_all_events=True,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         if use_all_events:
             events = dict(_EVENTS)
         else:
@@ -261,6 +268,7 @@ class TrianaGuzman2024(BaseBIDSDataset):
             doi="10.3389/fninf.2022.961089",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
         self.use_all_events = use_all_events
 

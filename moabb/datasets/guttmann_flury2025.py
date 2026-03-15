@@ -524,7 +524,15 @@ class GuttmannFlury2025_MI(BaseDataset):
         file_format="BDF",
     )
 
-    def __init__(self, imagined=True, executed=False, subjects=None, sessions=None):
+    def __init__(
+        self,
+        imagined=True,
+        executed=False,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         if not imagined and not executed:
             raise ValueError("At least one of `imagined` or `executed` must be True.")
 
@@ -538,6 +546,7 @@ class GuttmannFlury2025_MI(BaseDataset):
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
         self.imagined = imagined
         self.executed = executed
@@ -619,7 +628,7 @@ class GuttmannFlury2025_ME(BaseDataset):
 
     METADATA = GuttmannFlury2025_MI.METADATA
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 32)),
             sessions_per_subject=3,
@@ -630,6 +639,7 @@ class GuttmannFlury2025_ME(BaseDataset):
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
         self.imagined = False
         self.executed = True
@@ -730,7 +740,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
         file_format="BDF",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 32)),
             sessions_per_subject=3,
@@ -741,6 +751,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _load_ssvep_raw(self, bdf_path):
@@ -900,7 +911,14 @@ class GuttmannFlury2025_P300(BaseDataset):
         file_format="BDF",
     )
 
-    def __init__(self, grid_size="4L", subjects=None, sessions=None):
+    def __init__(
+        self,
+        grid_size="4L",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         if grid_size not in ("4L", "5L"):
             raise ValueError(f"grid_size must be '4L' or '5L', got '{grid_size}'")
 
@@ -917,6 +935,7 @@ class GuttmannFlury2025_P300(BaseDataset):
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _load_p300_raw(self, bdf_path):

@@ -203,7 +203,7 @@ class Forenzo2024(BaseDataset):
         file_format="MAT (v7.3/HDF5)",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 29)),
             sessions_per_subject=8,
@@ -214,6 +214,7 @@ class Forenzo2024(BaseDataset):
             doi="10.1038/s41597-024-04090-6",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

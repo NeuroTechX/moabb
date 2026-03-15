@@ -231,7 +231,7 @@ class Yi2025(BaseDataset):
     # Annotation codes in raw .cnt -> MOABB event names.
     _ANNOT_MAP = {str(v): k for k, v in _EVENTS.items()}
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 19)),
             sessions_per_subject=1,
@@ -242,6 +242,7 @@ class Yi2025(BaseDataset):
             doi="10.1038/s41597-025-05286-0",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):
@@ -268,11 +269,13 @@ class Yi2025(BaseDataset):
                 {ch: _CH_RENAME[ch] for ch in raw.ch_names if ch in _CH_RENAME}
             )
 
-            # Set non-EEG channel types then drop them
+            # Set non-EEG channel types
             aux_present = {ch: t for ch, t in _AUX_CHANNELS.items() if ch in raw.ch_names}
             if aux_present:
                 raw.set_channel_types(aux_present)
-                raw.drop_channels(list(aux_present.keys()))
+                # Drop aux channels only when return_all_modalities is False
+                if not self.return_all_modalities:
+                    raw.drop_channels(list(aux_present.keys()))
 
             # Rename event annotations
             raw.annotations.rename(self._ANNOT_MAP)

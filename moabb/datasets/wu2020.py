@@ -166,7 +166,7 @@ class Wu2020(BaseDataset):
         file_format="Curry",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 7)),
             sessions_per_subject=1,
@@ -177,6 +177,7 @@ class Wu2020(BaseDataset):
             doi="10.1088/1741-2552/abc1b6",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

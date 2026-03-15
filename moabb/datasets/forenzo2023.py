@@ -201,7 +201,15 @@ class Forenzo2023(BaseDataset):
         file_format="MAT",
     )
 
-    def __init__(self, task="MI", axis="LR", subjects=None, sessions=None):
+    def __init__(
+        self,
+        task="MI",
+        axis="LR",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         self.task = task
         self.axis = axis
         super().__init__(
@@ -214,6 +222,7 @@ class Forenzo2023(BaseDataset):
             doi="10.1109/TBME.2023.3298957",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

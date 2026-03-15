@@ -204,7 +204,14 @@ class Chang2025(BaseDataset):
         file_format="SET (EEGLAB)",
     )
 
-    def __init__(self, paradigm_type="MI", subjects=None, sessions=None):
+    def __init__(
+        self,
+        paradigm_type="MI",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         self.paradigm_type = paradigm_type
 
         if paradigm_type not in _PARADIGM_SESSIONS:
@@ -231,6 +238,7 @@ class Chang2025(BaseDataset):
             doi="10.1038/s41597-025-06147-6",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

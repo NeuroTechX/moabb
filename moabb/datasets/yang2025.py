@@ -206,7 +206,14 @@ class Yang2025(BaseDataset):
         file_format="BDF",
     )
 
-    def __init__(self, paradigm_type="2C", subjects=None, sessions=None):
+    def __init__(
+        self,
+        paradigm_type="2C",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         self.paradigm_type = paradigm_type
 
         if paradigm_type == "2C":
@@ -228,6 +235,7 @@ class Yang2025(BaseDataset):
             doi="10.1038/s41597-025-04826-y",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     # Map evt.bdf annotation codes to MOABB event names.

@@ -197,7 +197,14 @@ class HefmiIch2025(BaseDataset):
         file_format="MAT (pre-epoched)",
     )
 
-    def __init__(self, group="all", subjects=None, sessions=None):
+    def __init__(
+        self,
+        group="all",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
         self.group = group
 
         if group == "healthy":
@@ -221,6 +228,7 @@ class HefmiIch2025(BaseDataset):
             doi="10.1038/s41597-025-06100-7",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):

@@ -296,7 +296,7 @@ class Ma2020(BaseDataset):
         ),
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 26)),
             sessions_per_subject=15,
@@ -307,6 +307,7 @@ class Ma2020(BaseDataset):
             doi="10.1038/s41597-020-0535-2",
             selected_subjects=subjects,
             selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     # Annotation codes in raw .cnt -> MOABB event names.
@@ -340,11 +341,13 @@ class Ma2020(BaseDataset):
                 {ch: _CH_RENAME[ch] for ch in raw.ch_names if ch in _CH_RENAME}
             )
 
-            # Set non-EEG channel types then drop them
+            # Set non-EEG channel types
             raw.set_channel_types(
                 {ch: t for ch, t in _AUX_TYPES.items() if ch in raw.ch_names}
             )
-            raw.drop_channels([ch for ch in _AUX_TYPES if ch in raw.ch_names])
+            # Drop aux channels only when return_all_modalities is False
+            if not self.return_all_modalities:
+                raw.drop_channels([ch for ch in _AUX_TYPES if ch in raw.ch_names])
 
             # Rename event annotations
             raw.annotations.rename(self._ANNOT_MAP)
