@@ -6,9 +6,10 @@ Data DOI: 10.6084/m9.figshare.24123303.v3
 """
 
 import logging
+import zipfile
 from pathlib import Path
 
-from scipy.io import loadmat
+import mne
 
 from . import download as dl
 from .base import BaseDataset
@@ -22,16 +23,12 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import build_raw_from_epochs
 
 
 log = logging.getLogger(__name__)
-
-_SFREQ = 250.0
 
 # Event codes for 8 multi-joint MI classes.
 _EVENTS = {
@@ -45,41 +42,46 @@ _EVENTS = {
     "shoulder_flex_ext": 8,
 }
 
-# 62 EEG channels (64-ch cap minus M1, M2, HEO, VEO, EKG, EMG).
+# 62 EEG channels (same as raw .cnt after dropping aux channels).
 # fmt: off
 _CH_NAMES = [
-    "FP1", "FPZ", "FP2", "AF3", "AF4",
-    "F7", "F5", "F3", "F1", "FZ", "F2", "F4", "F6", "F8",
-    "FT7", "FC5", "FC3", "FC1", "FCZ", "FC2", "FC4", "FC6", "FT8",
-    "T7", "C5", "C3", "C1", "CZ", "C2", "C4", "C6", "T8",
-    "TP7", "CP5", "CP3", "CP1", "CPZ", "CP2", "CP4", "CP6", "TP8",
-    "P7", "P5", "P3", "P1", "PZ", "P2", "P4", "P6", "P8",
-    "PO7", "PO5", "PO3", "POZ", "PO4", "PO6", "PO8",
-    "CB1", "O1", "OZ", "O2", "CB2",
+    "Fp1", "Fpz", "Fp2", "AF3", "AF4",
+    "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6", "F8",
+    "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8",
+    "T7", "C5", "C3", "C1", "Cz", "C2", "C4", "C6", "T8",
+    "TP7", "CP5", "CP3", "CP1", "CPz", "CP2", "CP4", "CP6", "TP8",
+    "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6", "P8",
+    "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8",
+    "CB1", "O1", "Oz", "O2", "CB2",
 ]
 # fmt: on
 
-# Per-subject Figshare file IDs (subjectN_data_label.mat, ~159 MB each).
-_FILE_IDS = {
-    1: 52690937,
-    2: 52690916,
-    3: 52690898,
-    4: 52690892,
-    5: 52690907,
-    6: 52690931,
-    7: 52690925,
-    8: 52690919,
-    9: 52690943,
-    10: 52690913,
-    11: 52690901,
-    12: 52690922,
-    13: 52690940,
-    14: 52690934,
-    15: 52690928,
-    16: 52690895,
-    17: 52690904,
-    18: 52690910,
+# Raw .cnt files use uppercase; these need case correction for standard_1005.
+_CH_RENAME = {
+    "FP1": "Fp1",
+    "FPZ": "Fpz",
+    "FP2": "Fp2",
+    "FZ": "Fz",
+    "FCZ": "FCz",
+    "CZ": "Cz",
+    "CPZ": "CPz",
+    "PZ": "Pz",
+    "POZ": "POz",
+    "OZ": "Oz",
 }
+
+# Non-EEG channels to set type on (then drop).
+_AUX_CHANNELS = {
+    "M1": "misc",
+    "M2": "misc",
+    "HEO": "eog",
+    "VEO": "eog",
+    "EKG": "ecg",
+    "EMG": "emg",
+}
+
+# Figshare download URL for the FineMI.zip archive containing raw .cnt files.
+_FINEMI_URL = "https://ndownloader.figshare.com/files/42320127"
 
 
 class Yi2025(BaseDataset):
@@ -89,9 +91,7 @@ class Yi2025(BaseDataset):
 
     This dataset contains EEG recordings from 18 healthy subjects
     performing 8-class motor imagery of different upper-limb joints.
-    Recorded with 64-channel Neuroscan SynAmps2 at 1000 Hz,
-    downsampled to 250 Hz. The pre-processed epoched data contains
-    62 EEG channels (excluding M1, M2, HEO, VEO, EKG, EMG).
+    Recorded with 64-channel Neuroscan SynAmps2 at 1000 Hz.
 
     The 8 MI classes correspond to multi-joint movements:
 
@@ -108,12 +108,14 @@ class Yi2025(BaseDataset):
     (5 per class), for 320 total trials. Trial structure: 2 s fixation,
     2 s cue, 4 s MI, 10-12 s rest.
 
-    The shared data is pre-processed (bandpass 4-40 Hz, CAR,
-    downsampled to 250 Hz) and epoched (0-4 s post-cue, 1000 samples).
+    Raw Neuroscan ``.cnt`` files are loaded from the ``FineMI.zip``
+    archive on Figshare (~14.2 GB). Auxiliary channels (M1, M2, HEO,
+    VEO, EKG, EMG) are dropped, leaving 62 EEG channels. Each block
+    is loaded as a separate run.
 
     .. note::
 
-       Each subject file is ~159 MB (total ~2.9 GB for 18 subjects).
+       The first download requires the full FineMI.zip (14.2 GB).
 
     References
     ----------
@@ -129,7 +131,7 @@ class Yi2025(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=250.0,
+            sampling_rate=1000.0,
             n_channels=62,
             channel_types={"eeg": 62},
             hardware="Neuroscan SynAmps2",
@@ -184,17 +186,11 @@ class Yi2025(BaseDataset):
             license="CC-BY-NC-ND-4.0",
         ),
         sessions_per_subject=1,
-        runs_per_session=1,
+        runs_per_session=8,
         tags=Tags(
             pathology=["Healthy"],
             modality=["Motor"],
             type=["Motor Imagery"],
-        ),
-        preprocessing=PreprocessingMetadata(
-            data_state="epoched",
-            preprocessing_applied=True,
-            highpass_hz=4.0,
-            lowpass_hz=40.0,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
@@ -228,9 +224,12 @@ class Yi2025(BaseDataset):
             environment="laboratory",
             online_feedback=False,
         ),
-        data_processed=True,
-        file_format="MAT (pre-epoched)",
+        data_processed=False,
+        file_format="CNT",
     )
+
+    # Annotation codes in raw .cnt -> MOABB event names.
+    _ANNOT_MAP = {str(v): k for k, v in _EVENTS.items()}
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
@@ -245,6 +244,43 @@ class Yi2025(BaseDataset):
             selected_sessions=sessions,
         )
 
+    def _get_single_subject_data(self, subject):
+        """Return data for a single subject from raw .cnt files.
+
+        Each subject has 8 block files loaded as separate runs within
+        a single session.
+        """
+        subj_dir = Path(self.data_path(subject))
+
+        # Find block .cnt files
+        cnt_files = sorted(subj_dir.glob("block*.cnt"))
+        if not cnt_files:
+            raise FileNotFoundError(
+                f"No block .cnt files found for subject {subject} in {subj_dir}"
+            )
+
+        runs = {}
+        for run_idx, cnt_path in enumerate(cnt_files):
+            raw = mne.io.read_raw_cnt(str(cnt_path), preload=True, verbose=False)
+
+            # Fix channel name case for standard_1005 montage
+            raw.rename_channels(
+                {ch: _CH_RENAME[ch] for ch in raw.ch_names if ch in _CH_RENAME}
+            )
+
+            # Set non-EEG channel types then drop them
+            aux_present = {ch: t for ch, t in _AUX_CHANNELS.items() if ch in raw.ch_names}
+            if aux_present:
+                raw.set_channel_types(aux_present)
+                raw.drop_channels(list(aux_present.keys()))
+
+            # Rename event annotations
+            raw.annotations.rename(self._ANNOT_MAP)
+
+            runs[str(run_idx)] = raw
+
+        return {"0": runs}
+
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -255,47 +291,33 @@ class Yi2025(BaseDataset):
         basepath = Path(path) / "MNE-yi2025-data"
         basepath.mkdir(parents=True, exist_ok=True)
 
-        mat_file = basepath / f"subject{subject}_data_label.mat"
-        if not mat_file.exists() or force_update:
-            file_id = _FILE_IDS[subject]
-            url = f"https://ndownloader.figshare.com/files/{file_id}"
-            dl_path = dl.data_dl(url, "Yi2025", path, force_update, verbose)
+        subj_dir = basepath / f"subject{subject}" / "EEG"
+
+        # Check if .cnt files already exist
+        if subj_dir.is_dir() and list(subj_dir.glob("block*.cnt")):
+            return str(subj_dir)
+
+        # Download and extract FineMI.zip
+        finemi_dir = basepath / "FineMI"
+        if not finemi_dir.is_dir():
+            log.info("Downloading Yi2025 FineMI.zip (14.2 GB) from Figshare...")
+            dl_path = dl.data_dl(_FINEMI_URL, "Yi2025", path, force_update, verbose)
             dl_path = Path(dl_path)
-            if dl_path != mat_file:
-                dl_path.rename(mat_file)
 
-        return [str(mat_file)]
+            # Rename to .zip if needed
+            zip_path = basepath / "FineMI.zip"
+            if dl_path != zip_path:
+                dl_path.rename(zip_path)
 
-    def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        file_paths = self.data_path(subject)
-        mat_path = file_paths[0]
+            log.info("Extracting FineMI.zip...")
+            with zipfile.ZipFile(str(zip_path), "r") as zf:
+                zf.extractall(str(basepath))
 
-        mat = loadmat(mat_path, squeeze_me=True)
-        data = mat["data"]  # (320, 62, 1000): trials x channels x samples
-        labels = mat["label"]  # (320,): class labels 1-8
+        # The .cnt files should now be at basepath/FineMI/subject{N}/EEG/
+        extracted_dir = finemi_dir / f"subject{subject}" / "EEG"
+        if not extracted_dir.is_dir():
+            raise FileNotFoundError(
+                f"Expected directory {extracted_dir} after extraction"
+            )
 
-        if data.ndim != 3:
-            raise ValueError(f"Expected 3D array, got shape {data.shape}")
-
-        n_ch = data.shape[1]
-        ch_names = (
-            list(_CH_NAMES[:n_ch])
-            if n_ch <= len(_CH_NAMES)
-            else [f"EEG{i + 1}" for i in range(n_ch)]
-        )
-
-        # Data is pre-processed (bandpass 4-40 Hz, CAR, downsampled) and
-        # already in volts (max ~0.87 V), so no additional scaling needed.
-        raw = build_raw_from_epochs(
-            data,
-            ch_names,
-            _SFREQ,
-            labels.astype(int),
-            "standard_1005",
-            scale=1.0,
-            buffer_samples=int(0.5 * _SFREQ),
-            onset_sample=0,
-        )
-
-        return {"0": {"0": raw}}
+        return str(extracted_dir)

@@ -4,9 +4,10 @@ Ma et al. (2020), Scientific Data.
 DOI: 10.1038/s41597-020-0535-2
 """
 
+import logging
 from pathlib import Path
 
-from scipy.io import loadmat
+import mne
 
 from . import download as dl
 from .base import BaseDataset
@@ -21,47 +22,49 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import build_raw_from_epochs
 
+
+log = logging.getLogger(__name__)
 
 _DATAVERSE_API = "https://dataverse.harvard.edu/api/access/datafile/"
 
-# Harvard Dataverse file IDs for sub-001..sub-025 derivative .mat files.
-# Extracted from the Dataverse API metadata for doi:10.7910/DVN/RBN3XG.
-_FILE_IDS = {
-    1: 3658080,
-    2: 3658081,
-    3: 3658082,
-    4: 3658090,
-    5: 3658086,
-    6: 3658089,
-    7: 3658091,
-    8: 3658087,
-    9: 3658085,
-    10: 3658088,
-    11: 3658111,
-    12: 3658103,
-    13: 3658100,
-    14: 3658107,
-    15: 3658104,
-    16: 3658101,
-    17: 3658105,
-    18: 3658108,
-    19: 3658102,
-    20: 3658109,
-    21: 3658110,
-    22: 3658106,
-    23: 3658099,
-    24: 3658078,
-    25: 3658079,
+# Harvard Dataverse file IDs for raw .cnt files in sourcedata/.
+# Each subject has 15 MI sessions (ses-01..ses-15).
+# Keyed by subject number; values are lists of 15 file IDs in session order.
+# fmt: off
+_CNT_FILE_IDS = {
+    1: [3658114, 3658115, 3658116, 3658118, 3658117, 3658123, 3658122, 3658126, 3658125, 3658124, 3658131, 3658130, 3658127, 3658128, 3658129],
+    2: [3658148, 3658151, 3658146, 3658156, 3658143, 3658144, 3658145, 3658157, 3658159, 3658147, 3658153, 3658150, 3658152, 3658154, 3658141],
+    3: [3658801, 3658804, 3658803, 3658805, 3658802, 3658807, 3658809, 3658808, 3658811, 3658810, 3658813, 3658812, 3658816, 3658814, 3658815],
+    4: [3658837, 3658833, 3658830, 3658836, 3658832, 3658835, 3658831, 3658834, 3658839, 3658841, 3658844, 3658838, 3658843, 3658840, 3658842],
+    5: [3659118, 3659119, 3659120, 3659115, 3659117, 3659114, 3659116, 3659113, 3659121, 3659125, 3659126, 3659123, 3659124, 3659127, 3659122],
+    6: [3659144, 3659138, 3659141, 3659139, 3659140, 3659142, 3659143, 3659137, 3659147, 3659149, 3659151, 3659150, 3659145, 3659146, 3659148],
+    7: [3659159, 3659158, 3659165, 3659161, 3659160, 3659163, 3659164, 3659162, 3659156, 3659157, 3659166, 3659172, 3659167, 3659171, 3659170],
+    8: [3659176, 3659175, 3659183, 3659181, 3659184, 3659180, 3659179, 3659182, 3659177, 3659178, 3659201, 3659195, 3659193, 3659194, 3659196],
+    9: [3659207, 3659208, 3659205, 3659202, 3659206, 3659210, 3659204, 3659211, 3659209, 3659203, 3659221, 3659219, 3659226, 3659222, 3659224],
+    10: [3659230, 3659227, 3659236, 3659231, 3659229, 3659235, 3659233, 3659234, 3659232, 3659228, 3659243, 3659239, 3659241, 3659238, 3659244],
+    11: [3659255, 3659251, 3659248, 3659252, 3659250, 3659254, 3659253, 3659247, 3659246, 3659249, 3659263, 3659260, 3659264, 3659265, 3659261],
+    12: [3659274, 3659268, 3659272, 3659270, 3659267, 3659271, 3659275, 3659269, 3659266, 3659273, 3659278, 3659279, 3659282, 3659284, 3659280],
+    13: [3659294, 3659291, 3659289, 3659295, 3659297, 3659288, 3659292, 3659290, 3659296, 3659293, 3659303, 3659300, 3659299, 3659305, 3659306],
+    14: [3659310, 3659314, 3659311, 3659317, 3659315, 3659313, 3659312, 3659309, 3659318, 3659316, 3659327, 3659322, 3659319, 3659320, 3659326],
+    15: [3659331, 3659340, 3659338, 3659336, 3659334, 3659333, 3659332, 3659335, 3659337, 3659339, 3659347, 3659344, 3659348, 3659342, 3659346],
+    16: [3659357, 3659354, 3659356, 3659359, 3659363, 3659361, 3659358, 3659360, 3659355, 3659362, 3659367, 3659370, 3659368, 3659364, 3659365],
+    17: [3659390, 3659389, 3659385, 3659387, 3659388, 3659386, 3659392, 3659393, 3659391, 3659394, 3659407, 3659409, 3659403, 3659410, 3659405],
+    18: [3659412, 3659415, 3659419, 3659416, 3659420, 3659414, 3659418, 3659411, 3659413, 3659417, 3659426, 3659423, 3659422, 3659428, 3659425],
+    19: [3659442, 3659436, 3659439, 3659435, 3659443, 3659437, 3659438, 3659441, 3659440, 3659444, 3659461, 3659457, 3659454, 3659460, 3659456],
+    20: [3659472, 3659468, 3659475, 3659469, 3659474, 3659473, 3659467, 3659470, 3659476, 3659471, 3659485, 3659484, 3659483, 3659478, 3659486],
+    21: [3659493, 3659487, 3659494, 3659491, 3659492, 3659488, 3659496, 3659495, 3659490, 3659489, 3659499, 3659621, 3659500, 3659507, 3659503],
+    22: [3659514, 3659517, 3659515, 3659511, 3659509, 3659518, 3659513, 3659510, 3659516, 3659512, 3659525, 3659528, 3659532, 3659530, 3659526],
+    23: [3659536, 3659539, 3659541, 3659542, 3659543, 3659540, 3659537, 3659538, 3659544, 3659535, 3659553, 3659550, 3659552, 3659548, 3659549],
+    24: [3659566, 3659561, 3659562, 3659569, 3659560, 3659567, 3659565, 3659563, 3659564, 3659568, 3659577, 3659573, 3659578, 3659576, 3659570],
+    25: [3659584, 3659580, 3659582, 3659588, 3659587, 3659583, 3659581, 3659586, 3659585, 3659579, 3659596, 3659592, 3659593, 3659595, 3659590],
 }
+# fmt: on
 
-# 62 EEG channels after removing HEO, M2, VEO, EMG1, EMG2 from the original
-# 67-channel recording.  Order matches the .mat derivatives.
+# 62 EEG channels (after the adapter drops HEO, M2, VEO from the raw 65-ch).
 # fmt: off
 MA2020_CH_NAMES = [
     "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz",
@@ -73,6 +76,23 @@ MA2020_CH_NAMES = [
     "O2", "CB2",
 ]
 # fmt: on
+
+# Raw .cnt files have uppercase names; 10 need case correction for standard_1005.
+_CH_RENAME = {
+    "FP1": "Fp1",
+    "FPZ": "Fpz",
+    "FP2": "Fp2",
+    "FZ": "Fz",
+    "FCZ": "FCz",
+    "CZ": "Cz",
+    "CPZ": "CPz",
+    "PZ": "Pz",
+    "POZ": "POz",
+    "OZ": "Oz",
+}
+
+# Non-EEG channels to set type on (then drop).
+_AUX_TYPES = {"HEO": "eog", "VEO": "eog", "M2": "misc"}
 
 # Per-subject demographics from participants.tsv (Harvard Dataverse BIDS layout).
 # (sex, age) tuples indexed by 1-based subject number.
@@ -126,20 +146,14 @@ class Ma2020(BaseDataset):
         - 3-7 s: motor imagery period (4 s, "Hand" or "Elbow" displayed)
         - 7-8 s: break
 
-    The derivative .mat files used here contain preprocessed and epoched data
-    at 200 Hz (62 EEG channels). Preprocessing included: removal of
-    non-EEG channels (HEO, M2, VEO, EMG1, EMG2), common average
-    re-referencing, 0.1-100 Hz bandpass filtering, baseline removal,
-    EOG artifact correction (SOBI), and downsampling to 200 Hz.
+    Raw Neuroscan ``.cnt`` files are loaded from the ``sourcedata/`` of the
+    BIDS archive on Harvard Dataverse (one file per session, ~87 MB each,
+    1000 Hz, 65 channels). Auxiliary channels (HEO, VEO, M2) are dropped.
 
-    Warnings
-    --------
-    This dataset includes channels 'CB1' and 'CB2' which are not part of
-    the standard 10-20 montage. They are treated as standard EEG channels
-    with ``on_missing="ignore"`` for montage setting.
+    .. note::
 
-    The data is downloaded from Harvard Dataverse. Each subject's .mat file
-    is approximately 190 MB (4.8 GB total for all 25 subjects).
+       Channels CB1 and CB2 (cerebellum) are not part of the standard
+       10-05 montage and are set with ``on_missing="ignore"``.
 
     References
     ----------
@@ -151,22 +165,22 @@ class Ma2020(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=200.0,
+            sampling_rate=1000.0,
             n_channels=62,
             channel_types={"eeg": 62},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",
             sensors=MA2020_CH_NAMES,
             line_freq=50.0,
-            reference="common average",
             ground="AFz",
             impedance_threshold_kohm=5,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-                eog_channels=0,
+                has_eog=True,
+                eog_channels=2,
+                eog_type=["horizontal", "vertical"],
                 has_emg=False,
                 emg_channels=0,
-                other_physiological=None,
+                other_physiological=["M2"],
             ),
         ),
         participants=ParticipantMetadata(
@@ -238,25 +252,8 @@ class Ma2020(BaseDataset):
         ),
         sessions_per_subject=15,
         runs_per_session=1,
-        data_processed=True,
-        file_format="MAT",
-        preprocessing=PreprocessingMetadata(
-            data_state="epoched",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "channel removal (HEO, M2, VEO, EMG1, EMG2)",
-                "common average re-reference",
-                "bandpass filter 0.1-100 Hz",
-                "baseline removal",
-                "EOG correction (SOBI)",
-                "downsampling to 200 Hz",
-            ],
-            highpass_hz=0.1,
-            lowpass_hz=100.0,
-            re_reference="common average",
-            downsampled_to_hz=200.0,
-            artifact_methods=["SOBI (EOG correction)"],
-        ),
+        data_processed=False,
+        file_format="CNT",
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
             imagery_tasks=["right_hand", "right_elbow"],
@@ -311,55 +308,59 @@ class Ma2020(BaseDataset):
             selected_sessions=sessions,
         )
 
+    # Annotation codes in raw .cnt -> MOABB event names.
+    _ANNOT_MAP = {"1": "right_hand", "2": "right_elbow"}
+
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
+        """Return data for a single subject from raw .cnt files.
 
-        Loads the derivative .mat file containing preprocessed epoched data
-        and reconstructs continuous Raw objects for each of the 15 MI sessions.
+        Each of the 15 MI sessions is a separate Neuroscan .cnt file with
+        40 embedded event annotations (20 hand + 20 elbow).
         """
-        fname = self.data_path(subject)
-        mat = loadmat(fname, squeeze_me=True)
+        subj_dir = Path(self.data_path(subject))
 
-        # task_data: (15, 40, 62, 800) = [sessions, trials, channels, samples]
-        # task_label: (15, 40) = event codes (1=hand, 2=elbow)
-        task_data = mat["task_data"]
-        task_label = mat["task_label"]
-
-        # Ensure shapes are correct (squeeze_me may remove singletons)
-        if task_label.ndim == 3:
-            task_label = task_label.squeeze(-1)
-
-        n_sessions = task_data.shape[0]
-
-        # Set subject demographics
         sex, age = _DEMOGRAPHICS.get(subject, (None, None))
         _sex_map = {"male": 1, "female": 2}
 
         sessions = {}
-        for sess_idx in range(n_sessions):
-            # (40, 62, 800)
-            epoch_data = task_data[sess_idx]
-            labels = task_label[sess_idx].astype(int)
+        for sess_idx in range(15):
+            cnt_name = (
+                f"sub-{subject:03d}_ses-{sess_idx + 1:02d}" f"_task-motorimagery_eeg.cnt"
+            )
+            cnt_path = subj_dir / cnt_name
+            if not cnt_path.exists():
+                log.warning("Missing %s", cnt_path)
+                continue
 
-            raw = build_raw_from_epochs(
-                epoch_data,
-                MA2020_CH_NAMES,
-                200,
-                labels,
-                "standard_1005",
+            raw = mne.io.read_raw_cnt(str(cnt_path), preload=True, verbose=False)
+
+            # Fix channel name case for standard_1005 montage
+            raw.rename_channels(
+                {ch: _CH_RENAME[ch] for ch in raw.ch_names if ch in _CH_RENAME}
             )
 
-            # Attach per-subject demographics
+            # Set non-EEG channel types then drop them
+            raw.set_channel_types(
+                {ch: t for ch, t in _AUX_TYPES.items() if ch in raw.ch_names}
+            )
+            raw.drop_channels([ch for ch in _AUX_TYPES if ch in raw.ch_names])
+
+            # Rename event annotations
+            raw.annotations.rename(self._ANNOT_MAP)
+
+            # Attach demographics
             if sex is not None:
                 raw.info["subject_info"] = {
                     "sex": _sex_map.get(sex, 0),
                     "his_id": str(subject),
                 }
-            if age is not None:
-                raw._moabb_subject_age = age
 
             sessions[str(sess_idx)] = {"0": raw}
 
+        if not sessions:
+            raise FileNotFoundError(
+                f"No .cnt files found for subject {subject} in {subj_dir}"
+            )
         return sessions
 
     def data_path(
@@ -370,21 +371,24 @@ class Ma2020(BaseDataset):
 
         sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
-        data_dir.mkdir(parents=True, exist_ok=True)
+        subj_dir = data_dir / f"sub-{subject:03d}"
+        subj_dir.mkdir(parents=True, exist_ok=True)
 
-        mat_file = data_dir / f"sub-{subject:03d}_task-motorimagery_eeg.mat"
-        if mat_file.exists() and not force_update:
-            return str(mat_file)
+        # Download each session's .cnt if not already present
+        file_ids = _CNT_FILE_IDS[subject]
+        for sess_idx, file_id in enumerate(file_ids):
+            cnt_name = (
+                f"sub-{subject:03d}_ses-{sess_idx + 1:02d}" f"_task-motorimagery_eeg.cnt"
+            )
+            cnt_path = subj_dir / cnt_name
+            if cnt_path.exists() and not force_update:
+                continue
 
-        # Download from Harvard Dataverse using the file ID
-        file_id = _FILE_IDS[subject]
-        url = f"{_DATAVERSE_API}{file_id}"
-        dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+            url = f"{_DATAVERSE_API}{file_id}"
+            dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+            if dl_path.resolve() != cnt_path.resolve():
+                import shutil
 
-        # Move the downloaded file to the canonical location
-        if dl_path.resolve() != mat_file.resolve():
-            import shutil
+                shutil.move(str(dl_path), str(cnt_path))
 
-            shutil.move(str(dl_path), str(mat_file))
-
-        return str(mat_file)
+        return str(subj_dir)
