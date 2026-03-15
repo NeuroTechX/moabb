@@ -115,6 +115,9 @@ analysis/*
 /test_context.yml
 res_test/
 
+# Local validation/utility scripts
+scripts/validation/
+
 # mac os x stuff
 *DS_store*
 
