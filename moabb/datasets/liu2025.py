@@ -218,6 +218,11 @@ class Liu2025(BaseDataset):
             if s not in _ALL_SESSIONS:
                 raise ValueError(f"session must be one of {_ALL_SESSIONS}, got {s!r}")
 
+        # Map original session labels to MOABB-compatible keys (must start
+        # with a digit to match ^[0-9]+[a-zA-Z0-9]*).
+        self._session_labels = _sel_sessions
+        moabb_keys = [f"{i}{s}" for i, s in enumerate(_sel_sessions)]
+
         super().__init__(
             subjects=list(range(1, 28)),
             sessions_per_subject=len(_sel_sessions),
@@ -229,8 +234,9 @@ class Liu2025(BaseDataset):
             selected_subjects=subjects,
             selected_sessions=selected_sessions,
         )
-        # Set after super().__init__() to avoid being overwritten by base class
-        self._selected_sessions = _sel_sessions
+        # Override _selected_sessions with MOABB-compatible keys so that
+        # get_data() session filtering matches keys from _get_single_subject_data.
+        self._selected_sessions = moabb_keys
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -243,7 +249,7 @@ class Liu2025(BaseDataset):
             available = _LONGITUDINAL_SESSIONS
 
         sessions = {}
-        for ses_label in self._selected_sessions:
+        for sess_idx, ses_label in enumerate(self._session_labels):
             if ses_label not in available:
                 log.info(
                     "Subject %d has no session '%s' (longitudinal group), " "skipping.",
@@ -290,7 +296,9 @@ class Liu2025(BaseDataset):
                     log.warning("Failed to load %s: %s", vhdr.name, e)
 
             if runs:
-                sessions[ses_label] = runs
+                # MOABB requires session keys matching ^[0-9]+[a-zA-Z0-9]*
+                sess_key = f"{sess_idx}{ses_label}"
+                sessions[sess_key] = runs
 
         if not sessions:
             raise FileNotFoundError(

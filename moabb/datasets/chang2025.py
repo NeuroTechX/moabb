@@ -6,6 +6,7 @@ Data DOI: 10.6084/m9.figshare.28831730.v2
 """
 
 import logging
+import re
 import zipfile
 from pathlib import Path
 
@@ -251,24 +252,23 @@ class Chang2025(BaseDataset):
             raise FileNotFoundError(f"No .set files for {orig_id} in {subj_dir}")
 
         # Filter files by paradigm type.
-        # File naming convention needs discovery from data.
-        # Try matching paradigm abbreviation in filename.
+        # File naming: {orig_id}_{prefix}{session_num}.set
+        # MI→"_MI\d+", ME→"_ME\d+", VR-MI→"_VR\d+",
+        # MT→"_Mirror_", SRG→"_Aux_", MG→"_Image_"
+        _PARADIGM_FILE_PATTERNS = {
+            "MI": re.compile(r"_MI\d+", re.IGNORECASE),
+            "ME": re.compile(r"_ME\d+", re.IGNORECASE),
+            "VR-MI": re.compile(r"_VR\d+", re.IGNORECASE),
+            "MT": re.compile(r"_Mirror_", re.IGNORECASE),
+            "SRG": re.compile(r"_Aux_", re.IGNORECASE),
+            "MG": re.compile(r"_Image_", re.IGNORECASE),
+        }
+
         paradigm_files = []
         pt = self.paradigm_type
+        pattern = _PARADIGM_FILE_PATTERNS[pt]
         for sf in set_files:
-            name_lower = sf.stem.lower()
-            # Match paradigm abbreviation in filename.
-            if pt == "VR-MI" and ("vr" in name_lower or "vrmi" in name_lower):
-                paradigm_files.append(sf)
-            elif pt == "MI" and "mi" in name_lower and "vr" not in name_lower:
-                paradigm_files.append(sf)
-            elif pt == "ME" and "me" in name_lower:
-                paradigm_files.append(sf)
-            elif pt == "MT" and "mt" in name_lower:
-                paradigm_files.append(sf)
-            elif pt == "SRG" and "srg" in name_lower:
-                paradigm_files.append(sf)
-            elif pt == "MG" and "mg" in name_lower and "sr" not in name_lower:
+            if pattern.search(sf.stem):
                 paradigm_files.append(sf)
 
         if not paradigm_files:

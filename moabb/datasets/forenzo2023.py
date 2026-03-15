@@ -10,7 +10,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from scipy.io import loadmat
+from pymatreader import read_mat
 
 from . import download as dl
 from .base import BaseDataset
@@ -229,9 +229,7 @@ class Forenzo2023(BaseDataset):
         # Group by session
         session_files = {}
         for mf in mat_files:
-            mat = loadmat(
-                str(mf), squeeze_me=True, variable_names=["task", "axis", "session"]
-            )
+            mat = read_mat(str(mf), variable_names=["task", "axis", "session"])
             file_task = str(mat.get("task", ""))
             file_axis = str(mat.get("axis", ""))
             file_sess = int(mat.get("session", 0))
@@ -254,7 +252,7 @@ class Forenzo2023(BaseDataset):
 
     def _load_mat_run(self, mat_path):
         """Load a single run .mat file into MNE Raw."""
-        mat = loadmat(str(mat_path), squeeze_me=True)
+        mat = read_mat(str(mat_path))
 
         data = mat["data"]  # (channels x timepoints)
         if data.ndim == 1:
@@ -263,7 +261,9 @@ class Forenzo2023(BaseDataset):
         # Get channel labels if available
         labels = mat.get("labels", None)
         if labels is not None:
-            if hasattr(labels, "tolist"):
+            if isinstance(labels, list):
+                ch_names = [str(ch).strip() for ch in labels]
+            elif hasattr(labels, "tolist"):
                 ch_names = [str(ch).strip() for ch in labels.tolist()]
             else:
                 ch_names = [str(labels)]
@@ -271,7 +271,7 @@ class Forenzo2023(BaseDataset):
             ch_names = [f"EEG{i + 1}" for i in range(data.shape[0])]
 
         # Get targets and events
-        targets = mat.get("targets", np.array([]))
+        targets = np.asarray(mat.get("targets", []))
         events_struct = mat.get("event", None)
 
         fs = float(mat.get("fs", _SFREQ))
@@ -286,11 +286,17 @@ class Forenzo2023(BaseDataset):
 
         # Build stim channel from events
         stim = np.zeros((1, data.shape[1]))
-        if events_struct is not None and hasattr(events_struct, "__len__"):
-            for i, ev in enumerate(
-                events_struct if hasattr(events_struct, "__iter__") else [events_struct]
-            ):
-                latency = int(getattr(ev, "latency", 0) * fs / 1000)
+        if events_struct is not None:
+            # pymatreader returns struct arrays as list of dicts
+            if isinstance(events_struct, dict):
+                events_struct = [events_struct]
+            elif not isinstance(events_struct, list):
+                events_struct = list(events_struct)
+            for i, ev in enumerate(events_struct):
+                if isinstance(ev, dict):
+                    latency = int(ev.get("latency", 0) * fs / 1000)
+                else:
+                    latency = int(getattr(ev, "latency", 0) * fs / 1000)
                 target = int(targets[i]) if i < len(targets) else 1
                 if 0 <= latency < data.shape[1]:
                     stim[0, latency] = target

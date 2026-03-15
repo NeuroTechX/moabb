@@ -5,8 +5,10 @@ DOI: 10.1038/s41597-025-04861-9
 Data DOI: 10.7303/syn64005218
 """
 
+import csv
 import json
 import logging
+import re
 import zipfile
 from pathlib import Path
 
@@ -294,6 +296,62 @@ def _load_annotations_json(bdf_path):
         with open(json_path) as f:
             return json.load(f)
     return None
+
+
+def _decode_p300_from_sync_csv(bdf_path):
+    """Decode P300 Target/NonTarget flash events from the sync CSV.
+
+    The sync CSV records frame-level cues from the E-Prime P300 speller:
+
+    - ``"Letter X in WORD"`` identifies the target letter for each trial.
+    - ``"SeqNN: A, B, C, ..."`` shows which 6 characters are highlighted
+      in each flash.  A flash is Target if the target letter is in the
+      group, NonTarget otherwise.
+
+    Returns a list of dicts ``{"onset": float, "description": str}``
+    suitable for writing as an annotations JSON, or *None* if the sync
+    CSV is missing.
+    """
+    stem = bdf_path.stem
+    csv_path = bdf_path.parent / f"{stem}_sync.csv"
+    if not csv_path.exists():
+        return None
+
+    # Parse sync CSV — only need Time and Cues columns.
+    times = []
+    cues = []
+    with open(csv_path, newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            cue = row.get("Cues", "").strip()
+            if cue:
+                times.append(float(row["Time"]))
+                cues.append(cue)
+
+    # Walk through cue transitions to extract flash events.
+    target_letter = None
+    records = []
+    _letter_re = re.compile(r"^Letter (.+) in (.+)$")
+    _flash_re = re.compile(r"^Seq\d+: (.+)$")
+
+    prev_cue = None
+    for t, cue in zip(times, cues):
+        if cue == prev_cue:
+            continue  # skip repeated frames
+        prev_cue = cue
+
+        m = _letter_re.match(cue)
+        if m:
+            target_letter = m.group(1)
+            continue
+
+        m = _flash_re.match(cue)
+        if m and target_letter is not None:
+            chars = [c.strip() for c in m.group(1).split(",")]
+            desc = "Target" if target_letter in chars else "NonTarget"
+            records.append({"onset": t, "description": desc})
+
+    return records if records else None
 
 
 def _load_raw_with_stim_events(bdf_path, event_id):
@@ -829,43 +887,52 @@ class GuttmannFlury2025_P300(BaseDataset):
         )
 
     def _load_p300_raw(self, bdf_path):
-        """Load P300 BDF and decode Target/NonTarget from annotations JSON."""
+        """Load P300 BDF and decode Target/NonTarget events.
+
+        Tries the annotations JSON first; if it contains MI-style labels
+        instead of proper Target/NonTarget events (known packaging bug),
+        falls back to decoding flash events from the sync CSV.
+        """
         raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
 
+        # Try annotations JSON first.
         ann_records = _load_annotations_json(bdf_path)
-        if ann_records is None:
-            log.warning(
-                "No annotations JSON for %s, events may be incomplete",
-                bdf_path.name,
-            )
-            return stim_channels_with_selected_ids(raw, self.event_id)
-
-        # Decode Target/NonTarget from annotations JSON.
-        # The JSON contains per-trial records with description field.
         annot_onset = []
         annot_dur = []
         annot_desc = []
-        for rec in ann_records:
-            desc = rec.get("description", "")
-            phase = rec.get("phase", "")
-            if phase in ("fixation", "rest"):
-                continue
-            # Map event descriptions to Target/NonTarget.
-            if desc in ("Target", "NonTarget"):
-                annot_onset.append(rec["onset"])
-                annot_dur.append(0.0)
-                annot_desc.append(desc)
-            elif desc.startswith("event_"):
-                # Trial-number-based events: use event_code from extras.
-                event_code = rec.get("event_code")
-                if event_code == 1:
+
+        if ann_records is not None:
+            for rec in ann_records:
+                desc = rec.get("description", "")
+                if desc in ("Target", "NonTarget"):
                     annot_onset.append(rec["onset"])
                     annot_dur.append(0.0)
-                    annot_desc.append("Target")
-                elif event_code == 2:
+                    annot_desc.append(desc)
+
+        # If no proper P300 events found, decode from sync CSV.
+        if not annot_onset:
+            sync_records = _decode_p300_from_sync_csv(bdf_path)
+            if sync_records:
+                for rec in sync_records:
                     annot_onset.append(rec["onset"])
                     annot_dur.append(0.0)
-                    annot_desc.append("NonTarget")
+                    annot_desc.append(rec["description"])
+                log.info(
+                    "Decoded %d P300 flash events from sync CSV for %s",
+                    len(annot_onset),
+                    bdf_path.name,
+                )
+
+                # Cache corrected annotations for future loads.
+                stem = bdf_path.stem
+                json_path = bdf_path.parent / f"{stem}_annotations.json"
+                try:
+                    with open(json_path, "w") as f:
+                        json.dump(sync_records, f, indent=2)
+                except OSError:
+                    pass  # read-only or full disk — not critical
+            else:
+                log.warning("No P300 events decoded for %s", bdf_path.name)
 
         if annot_onset:
             annotations = mne.Annotations(
@@ -874,8 +941,6 @@ class GuttmannFlury2025_P300(BaseDataset):
                 description=annot_desc,
             )
             raw.set_annotations(annotations)
-        else:
-            log.warning("No P300 events decoded from %s", bdf_path.name)
 
         return stim_channels_with_selected_ids(raw, self.event_id)
 
