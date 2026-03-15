@@ -129,7 +129,7 @@ class Yang2025(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            events={**_EVENTS_2C, "feet": 3},
+            events=dict(_EVENTS_2C),
             paradigm="imagery",
             n_classes=3,
             class_labels=["left_hand", "right_hand", "feet"],
@@ -274,6 +274,12 @@ class Yang2025(BaseDataset):
                 continue
 
             raw = mne.io.read_raw_bdf(str(data_bdf), preload=True, verbose=False)
+
+            # Neuracle BDF files use "nV" (nanovolts) as physical dimension,
+            # which MNE does not recognize — values are treated as Volts.
+            # Scale all signal channels from nV to V.
+            picks = mne.pick_types(raw.info, eeg=True, ecg=True, eog=True)
+            raw._data[picks] *= 1e-9
 
             # Set proper channel types for non-EEG channels
             type_mapping = {

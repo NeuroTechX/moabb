@@ -116,7 +116,7 @@ class Kim2025BetaRange(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=33,
+            n_channels=31,
             channel_types={"eeg": 31, "misc": 2},
             montage="standard_1005",
             hardware="BioSemi ActiveTwo",
@@ -163,6 +163,7 @@ class Kim2025BetaRange(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events=dict(_EVENTS),
             n_classes=40,
             trial_duration=5.0,
             stimulus_type="JFPM visual flicker",

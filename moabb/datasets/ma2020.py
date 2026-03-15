@@ -198,6 +198,7 @@ class Ma2020(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
+            events={"right_hand": 1, "right_elbow": 2},
             n_classes=2,
             class_labels=["right_hand", "right_elbow"],
             trial_duration=4.0,

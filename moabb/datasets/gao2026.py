@@ -291,6 +291,11 @@ class Gao2026(BaseDataset):
 
                 raw = mne.io.read_raw_bdf(str(bdf_file), preload=True, verbose=False)
 
+                # Neuracle BDF header has 16-bit digital min/max (-32768/32767)
+                # for 24-bit BDF data, making amplitudes 256x too large.
+                eeg_picks = mne.pick_types(raw.info, eeg=True)
+                raw._data[eeg_picks] /= 256
+
                 # Pick only EEG channels (drop Status).
                 raw.pick(["eeg"])
 

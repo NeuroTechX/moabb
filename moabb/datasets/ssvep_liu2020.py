@@ -31,6 +31,18 @@ from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs, safe_extract_tar
 
 BETA_URL = "http://bci.med.tsinghua.edu.cn/upload/liubingchuan/"
 
+# fmt: off
+# Frequencies follow the BETA keyboard layout (row-major reading of 5x8 grid),
+# starting from 8.6 Hz and wrapping around: 8.6, 8.8, ..., 15.8, 8.0, 8.2, 8.4
+_EVENTS = {
+    "8.6": 1, "8.8": 2, "9": 3, "9.2": 4, "9.4": 5, "9.6": 6, "9.8": 7, "10": 8,
+    "10.2": 9, "10.4": 10, "10.6": 11, "10.8": 12, "11": 13, "11.2": 14, "11.4": 15, "11.6": 16,
+    "11.8": 17, "12": 18, "12.2": 19, "12.4": 20, "12.6": 21, "12.8": 22, "13": 23, "13.2": 24,
+    "13.4": 25, "13.6": 26, "13.8": 27, "14": 28, "14.2": 29, "14.4": 30, "14.6": 31, "14.8": 32,
+    "15": 33, "15.2": 34, "15.4": 35, "15.6": 36, "15.8": 37, "8": 38, "8.2": 39, "8.4": 40,
+}
+# fmt: on
+
 
 class Liu2020BETA(BaseDataset):
     """BETA SSVEP benchmark dataset.
@@ -99,6 +111,7 @@ class Liu2020BETA(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events=dict(_EVENTS),
             n_classes=40,
             trial_duration=3.0,
             stimulus_type="JFPM visual flicker",
@@ -177,17 +190,7 @@ class Liu2020BETA(BaseDataset):
         file_format="MAT",
     )
 
-    # fmt: off
-    # Frequencies follow the BETA keyboard layout (row-major reading of 5x8 grid),
-    # starting from 8.6 Hz and wrapping around: 8.6, 8.8, ..., 15.8, 8.0, 8.2, 8.4
-    _events = {
-        "8.6": 1, "8.8": 2, "9": 3, "9.2": 4, "9.4": 5, "9.6": 6, "9.8": 7, "10": 8,
-        "10.2": 9, "10.4": 10, "10.6": 11, "10.8": 12, "11": 13, "11.2": 14, "11.4": 15, "11.6": 16,
-        "11.8": 17, "12": 18, "12.2": 19, "12.4": 20, "12.6": 21, "12.8": 22, "13": 23, "13.2": 24,
-        "13.4": 25, "13.6": 26, "13.8": 27, "14": 28, "14.2": 29, "14.4": 30, "14.6": 31, "14.8": 32,
-        "15": 33, "15.2": 34, "15.4": 35, "15.6": 36, "15.8": 37, "8": 38, "8.2": 39, "8.4": 40,
-    }
-    # fmt: on
+    _events = _EVENTS
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

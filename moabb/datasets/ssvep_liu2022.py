@@ -382,6 +382,7 @@ class Liu2022EldBETA(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events={freq: int(idx) for idx, freq in _TARGET_TO_FREQ.items()},
             n_classes=9,
             trial_duration=5.0,
             stimulus_type="JFPM visual flicker",

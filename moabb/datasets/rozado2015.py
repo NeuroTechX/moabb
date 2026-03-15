@@ -113,6 +113,7 @@ class Rozado2015(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
+            events={"left_hand": 1, "rest": 2},
             n_classes=2,
             trial_duration=6.0,
             stimulus_type="auditory cue",
@@ -129,8 +130,8 @@ class Rozado2015(BaseDataset):
             doi="10.1371/journal.pone.0121262",
             investigators=[
                 "David Rozado",
-                "Tom Duenser",
-                "Ben Gruen",
+                "Andreas Duenser",
+                "Ben Howell",
             ],
             senior_author="David Rozado",
             institution="CSIRO",
@@ -286,8 +287,8 @@ class Rozado2015(BaseDataset):
                 if 0 <= sample_idx < eeg_data.shape[1]:
                     stim[0, sample_idx] = self._MARKER_MAP[label]
 
-        # Scale to Volts (BioSemi data in microvolts) and build RawArray
-        data = np.concatenate([1e-6 * eeg_data, stim], axis=0)
+        # Scale to Volts: BioSemi raw 24-bit ADC counts, LSB = 31.25 nV
+        data = np.concatenate([31.25e-9 * eeg_data, stim], axis=0)
 
         ch_types = ["eeg"] * n_channels + ["stim"]
         ch_names_full = list(ch_names_used) + ["stim"]

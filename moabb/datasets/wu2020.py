@@ -80,7 +80,7 @@ class Wu2020(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=132,
+            n_channels=122,
             channel_types={"eeg": 122, "misc": 10},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",

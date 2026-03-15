@@ -69,8 +69,8 @@ class Wang2021Combined(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=32,
-            channel_types={"eeg": 32},
+            n_channels=31,
+            channel_types={"eeg": 31, "eog": 2},
             montage="standard_1005",
             hardware="eego mylab (ANT Neuro)",
             line_freq=50.0,
@@ -81,6 +81,7 @@ class Wang2021Combined(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events={"14.17": 1, "12.14": 2, "9.44": 3, "7.73": 4},
             n_classes=4,
             trial_duration=5.0,
             stimulus_type="overlapping SSVEP arrows (CRT 85 Hz)",

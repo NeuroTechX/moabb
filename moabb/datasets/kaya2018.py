@@ -165,6 +165,7 @@ class Kaya2018(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
+            events={"left_hand": 1, "right_hand": 2, "passive": 3},
             n_classes=3,
             class_labels=["left_hand", "right_hand", "passive"],
             trial_duration=1.0,

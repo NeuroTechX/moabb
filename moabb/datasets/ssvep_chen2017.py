@@ -82,7 +82,7 @@ class Chen2017SingleFlicker(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=2048.0,
+            sampling_rate=512.0,
             n_channels=32,
             channel_types={"eeg": 32},
             montage="biosemi32",
@@ -103,6 +103,7 @@ class Chen2017SingleFlicker(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events={"north": 1, "east": 2, "west": 3, "south": 4},
             n_classes=4,
             stimulus_type="single-flicker spatially coded",
             stimulus_modalities=["visual"],
