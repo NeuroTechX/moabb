@@ -6,6 +6,7 @@ Data DOI: 10.1184/R1/23677098
 """
 
 import logging
+import re
 from pathlib import Path
 
 import mne
@@ -226,13 +227,19 @@ class Forenzo2023(BaseDataset):
         # Find all .mat files matching this task and axis
         mat_files = sorted(subj_dir.rglob("*.mat"))
 
-        # Group by session
+        # Group by session — parse task, axis, session from filename.
+        # Pattern: Subject{NN}_Session{N}_{axis}_{task}_R{NN}.mat
+        _fname_re = re.compile(
+            r"Subject\d+_Session(\d+)_([A-Za-z0-9]+)_([A-Za-z0-9]+)_R\d+\.mat"
+        )
         session_files = {}
         for mf in mat_files:
-            mat = read_mat(str(mf), variable_names=["task", "axis", "session"])
-            file_task = str(mat.get("task", ""))
-            file_axis = str(mat.get("axis", ""))
-            file_sess = int(mat.get("session", 0))
+            m = _fname_re.match(mf.name)
+            if not m:
+                continue
+            file_sess = int(m.group(1))
+            file_axis = m.group(2)
+            file_task = m.group(3)
 
             if file_task == self.task and file_axis == self.axis:
                 session_files.setdefault(file_sess, []).append(mf)
@@ -254,12 +261,19 @@ class Forenzo2023(BaseDataset):
         """Load a single run .mat file into MNE Raw."""
         mat = read_mat(str(mat_path))
 
-        data = mat["data"]  # (channels x timepoints)
+        # pymatreader nests MATLAB structs: data is under mat["eeg"].
+        eeg = mat.get("eeg", mat)
+        if isinstance(eeg, dict):
+            d = eeg
+        else:
+            d = mat
+
+        data = np.asarray(d["data"])  # (channels x timepoints)
         if data.ndim == 1:
             data = data.reshape(1, -1)
 
         # Get channel labels if available
-        labels = mat.get("labels", None)
+        labels = d.get("labels", None)
         if labels is not None:
             if isinstance(labels, list):
                 ch_names = [str(ch).strip() for ch in labels]
@@ -270,11 +284,16 @@ class Forenzo2023(BaseDataset):
         else:
             ch_names = [f"EEG{i + 1}" for i in range(data.shape[0])]
 
-        # Get targets and events
-        targets = np.asarray(mat.get("targets", []))
-        events_struct = mat.get("event", None)
+        # Data may have extra channels (EOG/ref) beyond labelled EEG channels.
+        # Keep only the first len(ch_names) rows.
+        if data.shape[0] > len(ch_names):
+            data = data[: len(ch_names), :]
 
-        fs = float(mat.get("fs", _SFREQ))
+        # Get targets and events
+        targets = np.asarray(d.get("targets", []))
+        events_struct = d.get("event", None)
+
+        fs = float(d.get("fs", _SFREQ))
 
         # Build info
         ch_types = ["eeg"] * len(ch_names) + ["stim"]
@@ -287,19 +306,23 @@ class Forenzo2023(BaseDataset):
         # Build stim channel from events
         stim = np.zeros((1, data.shape[1]))
         if events_struct is not None:
-            # pymatreader returns struct arrays as list of dicts
-            if isinstance(events_struct, dict):
-                events_struct = [events_struct]
-            elif not isinstance(events_struct, list):
-                events_struct = list(events_struct)
-            for i, ev in enumerate(events_struct):
-                if isinstance(ev, dict):
-                    latency = int(ev.get("latency", 0) * fs / 1000)
-                else:
-                    latency = int(getattr(ev, "latency", 0) * fs / 1000)
-                target = int(targets[i]) if i < len(targets) else 1
-                if 0 <= latency < data.shape[1]:
-                    stim[0, latency] = target
+            # pymatreader returns MATLAB struct arrays as a single dict
+            # with parallel lists: {"type": [...], "latency": [...], ...}
+            if isinstance(events_struct, dict) and "latency" in events_struct:
+                latencies = events_struct["latency"]
+                if not isinstance(latencies, (list, np.ndarray)):
+                    latencies = [latencies]
+                for i, lat in enumerate(latencies):
+                    latency = int(float(lat))  # already in samples
+                    target = int(targets[i]) if i < len(targets) else 1
+                    if 0 <= latency < data.shape[1]:
+                        stim[0, latency] = target
+            elif isinstance(events_struct, list):
+                for i, ev in enumerate(events_struct):
+                    latency = int(float(ev.get("latency", 0)))
+                    target = int(targets[i]) if i < len(targets) else 1
+                    if 0 <= latency < data.shape[1]:
+                        stim[0, latency] = target
 
         # Scale to volts
         if np.abs(data).max() > 1e-3:

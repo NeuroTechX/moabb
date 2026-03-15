@@ -9,7 +9,8 @@ import logging
 import zipfile
 from pathlib import Path
 
-import mne
+import numpy as np
+from pymatreader import read_mat
 
 from . import download as dl
 from .base import BaseDataset
@@ -26,6 +27,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import build_raw_from_epochs
 
 
 log = logging.getLogger(__name__)
@@ -82,8 +84,19 @@ class Yang2025(BaseDataset):
 
     Trial timing: 1.5 s cue (video) + 4.0 s MI + 2.0 s rest = 7.5 s.
 
-    The data is in BDF format organized in an EEG-BIDS structure,
-    hosted on Figshare (65.6 GB single ZIP file, CC-BY 4.0).
+    The raw data is in Neuracle BDF format organized in an EEG-BIDS
+    structure, hosted on Figshare (65.6 GB single ZIP file, CC-BY 4.0).
+
+    .. warning::
+
+       The raw BDF event files (``evt.bdf``) are severely incomplete —
+       they contain only a few trial markers per session instead of the
+       expected 200 (2C) or 300 (3C). Reading the full event stream
+       requires the proprietary Neuracle MATLAB toolbox. This adapter
+       therefore loads from the **derivatives** ``.mat`` files provided
+       by the authors, which contain bandpass-filtered (0.5-40 Hz),
+       re-referenced, epoched data at 250 Hz (58 EEG channels, 4 s
+       per trial).
 
     Parameters
     ----------
@@ -195,8 +208,8 @@ class Yang2025(BaseDataset):
             environment="laboratory",
             online_feedback=False,
         ),
-        data_processed=False,
-        file_format="BDF",
+        data_processed=True,
+        file_format="MAT",
     )
 
     def __init__(self, paradigm_type="2C", subjects=None, sessions=None):
@@ -224,59 +237,84 @@ class Yang2025(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
-        base = Path(self.data_path(subject))
+        """Return data for a single subject from derivatives .mat files.
 
-        # BIDS structure: {paradigm}/sub-{NNN}/ses-{N}/eeg/
-        paradigm_dir = self.paradigm_type.lower()
+        The derivatives contain epoched data in .mat format with keys:
+        - ``data``: shape ``(n_channels, n_samples, n_trials)``
+        - ``labels``: shape ``(n_trials,)`` with 1=left, 2=right [, 3=feet]
+        """
+        base = Path(self.data_path(subject))
+        paradigm_dir = f"{self.paradigm_type} dataset_processeddata"
         subj_str = f"sub-{subject:03d}"
+
+        # Find the BIDS root (contains "derivatives" folder)
+        bids_root = None
+        for candidate in [base, *base.iterdir()]:
+            if candidate.is_dir() and (candidate / "derivatives").exists():
+                bids_root = candidate
+                break
+        if bids_root is None:
+            raise FileNotFoundError(f"No BIDS root with derivatives in {base}")
 
         sessions = {}
         for sess_idx in range(1, 4):
-            sess_str = f"ses-{sess_idx}"
+            sess_str = f"ses-{sess_idx:02d}"
 
-            # Find BDF file
-            bdf_pattern = f"*{subj_str}*{sess_str}*eeg*.bdf"
-            bdf_files = list(base.rglob(bdf_pattern))
+            # Search for the .mat file in derivatives
+            mat_path = None
+            # Standard: derivatives/{paradigm}/sub-NNN/ses-NN/eeg/*.mat
+            search_dir = (
+                bids_root / "derivatives" / paradigm_dir / subj_str / sess_str / "eeg"
+            )
+            if search_dir.exists():
+                mats = list(search_dir.glob("*.mat"))
+                if mats:
+                    mat_path = mats[0]
 
-            if not bdf_files:
-                # Try alternative patterns
-                search_dir = base / paradigm_dir / subj_str / sess_str / "eeg"
+            if mat_path is None:
+                # Try without eeg subdirectory
+                search_dir = (
+                    bids_root / "derivatives" / paradigm_dir / subj_str / sess_str
+                )
                 if search_dir.exists():
-                    bdf_files = list(search_dir.glob("*.bdf"))
+                    mats = list(search_dir.glob("*.mat"))
+                    if mats:
+                        mat_path = mats[0]
 
-            if not bdf_files:
-                # Broader search
-                bdf_files = list(base.rglob(f"*{subj_str}*ses*{sess_idx}*.bdf"))
+            if mat_path is None:
+                # Broadest: search recursively
+                deriv_dir = bids_root / "derivatives" / paradigm_dir / subj_str
+                if deriv_dir.exists():
+                    for m in deriv_dir.rglob("*.mat"):
+                        if sess_str in str(m) or f"ses-{sess_idx:d}" in str(m):
+                            mat_path = m
+                            break
 
-            if not bdf_files:
-                log.warning("Missing BDF for %s %s %s", paradigm_dir, subj_str, sess_str)
+            if mat_path is None:
+                log.warning("Missing .mat for %s %s %s", paradigm_dir, subj_str, sess_str)
                 continue
 
-            # Use the data BDF (not evt.bdf if separate)
-            data_bdf = None
-            for bf in bdf_files:
-                if "evt" not in bf.name.lower():
-                    data_bdf = bf
-                    break
-            if data_bdf is None:
-                data_bdf = bdf_files[0]
+            mat = read_mat(str(mat_path))
+            # data: (n_channels, n_samples, n_trials) -> (n_trials, n_channels, n_samples)
+            epoch_data = np.asarray(mat["data"]).transpose(2, 0, 1)
+            labels = np.asarray(mat["labels"], dtype=int)
 
-            raw = mne.io.read_raw_bdf(str(data_bdf), preload=True, verbose=False)
-
-            # Pick EEG channels and set montage.
-            eeg_picks = mne.pick_types(raw.info, eeg=True)
-            if len(eeg_picks) > 0:
-                try:
-                    montage = mne.channels.make_standard_montage("standard_1005")
-                    raw.set_montage(montage, on_missing="warn")
-                except Exception:
-                    pass
-
+            raw = build_raw_from_epochs(
+                data=epoch_data,
+                ch_names=list(_CH_NAMES_EEG)[: epoch_data.shape[1]],
+                sfreq=1000.0,
+                event_ids=labels,
+                montage_name="standard_1005",
+                scale=1e-6,
+                buffer_samples=100,
+                onset_sample=0,
+            )
             sessions[str(sess_idx - 1)] = {"0": raw}
 
         if not sessions:
-            raise FileNotFoundError(f"No BDF files found for {subj_str} in {base}")
+            raise FileNotFoundError(
+                f"No .mat files found for {subj_str} in {bids_root / 'derivatives'}"
+            )
         return sessions
 
     def data_path(
@@ -289,11 +327,17 @@ class Yang2025(BaseDataset):
         basepath = Path(path) / "MNE-yang2025-data"
         basepath.mkdir(parents=True, exist_ok=True)
 
-        # Check if data already exists
+        # Check if data already exists (derivatives .mat files)
         subj_str = f"sub-{subject:03d}"
-        existing = list(basepath.rglob(f"*{subj_str}*.bdf"))
+        existing = list(basepath.rglob(f"*{subj_str}*_eeg.mat"))
         if existing:
             return str(basepath)
+
+        # Also check extracted BDF files (older cache)
+        if not existing:
+            existing = list(basepath.rglob(f"*{subj_str}*.bdf"))
+            if existing:
+                return str(basepath)
 
         # Single 65.6 GB ZIP - check if already downloaded/extracted.
         zip_path = basepath / "WBCIC_SHU_Motor_Imagery_dataset.zip"

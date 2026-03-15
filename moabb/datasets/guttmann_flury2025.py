@@ -53,18 +53,19 @@ _MI_ME_EVENTS = {
 }
 
 # SSVEP: 4 frequencies at 4 spatial positions.
-# Direction → frequency mapping from the paper's paradigm description.
-_SSVEP_DIRECTION_TO_FREQ = {
-    "Up": "15.0",
-    "Down": "8.0",
-    "Left": "12.0",
-    "Right": "10.0",
-}
+# Actual frequencies from the E-Prime sync CSV: 10, 11, 12, 13 Hz.
 _SSVEP_EVENTS = {
-    "8.0": 1,
-    "10.0": 2,
+    "10.0": 1,
+    "11.0": 2,
     "12.0": 3,
-    "15.0": 4,
+    "13.0": 4,
+}
+# Direction → frequency mapping (retained for future annotation support).
+_SSVEP_DIRECTION_TO_FREQ = {
+    "Up": "13.0",
+    "Down": "10.0",
+    "Left": "12.0",
+    "Right": "11.0",
 }
 
 # P300 speller: Target vs NonTarget flash events.
@@ -296,6 +297,36 @@ def _load_annotations_json(bdf_path):
         with open(json_path) as f:
             return json.load(f)
     return None
+
+
+def _decode_ssvep_from_sync_csv(bdf_path):
+    """Decode SSVEP frequency events from the sync CSV.
+
+    The sync CSV has cues like "10 Hz", "11 Hz", "12 Hz", "13 Hz"
+    indicating which frequency was stimulated on each trial.
+    """
+    stem = bdf_path.stem
+    csv_path = bdf_path.parent / f"{stem}_sync.csv"
+    if not csv_path.exists():
+        return None
+
+    _hz_re = re.compile(r"^(\d+)\s*Hz$")
+    records = []
+    prev_cue = None
+    with open(csv_path, newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            cue = row.get("Cues", "").strip()
+            if not cue or cue == prev_cue:
+                continue
+            prev_cue = cue
+            m = _hz_re.match(cue)
+            if m:
+                freq = f"{int(m.group(1))}.0"
+                if freq in _SSVEP_EVENTS:
+                    records.append({"onset": float(row["Time"]), "description": freq})
+
+    return records if records else None
 
 
 def _decode_p300_from_sync_csv(bdf_path):
@@ -631,13 +662,13 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
     and high-speed video for ocular activity analysis across BCI
     paradigms* [1]_.
 
-    This adapter loads the **SSVEP** paradigm (4-class: 8, 10, 12,
-    15 Hz flickering stimuli). Each SSVEP session has 48 trials
-    (4 frequencies x 4 blocks x 3 repetitions). Trial structure:
-    1 s cue + 5 s flickering + 1 s rest.
+    This adapter loads the **SSVEP** paradigm (4-class: 10, 11, 12,
+    13 Hz flickering stimuli). Each SSVEP session has 40 trials
+    (4 frequencies x 10 repetitions). Trial structure:
+    fixation + stimulus + rest.
 
-    Event types are decoded from the ``_annotations.json`` sidecar
-    that maps each trial's arrow direction to a stimulation frequency.
+    Event types are decoded from the E-Prime sync CSV that records
+    the stimulation frequency for each trial.
 
     Parameters
     ----------
@@ -661,7 +692,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
             events=dict(_SSVEP_EVENTS),
             paradigm="ssvep",
             n_classes=4,
-            class_labels=["8.0", "10.0", "12.0", "15.0"],
+            class_labels=["10.0", "11.0", "12.0", "13.0"],
             trial_duration=7.0,
             study_design=(
                 "Multi-paradigm BCI (MI/ME/SSVEP/P300). "
@@ -713,33 +744,35 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
         )
 
     def _load_ssvep_raw(self, bdf_path):
-        """Load SSVEP BDF and decode frequency events from annotations JSON."""
+        """Load SSVEP BDF and decode frequency events from sync CSV."""
         raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
 
-        # Load annotations JSON sidecar for trial type decoding.
-        ann_records = _load_annotations_json(bdf_path)
-        if ann_records is None:
-            # Fall back to Trig channel trial numbers if no JSON.
-            log.warning(
-                "No annotations JSON for %s, events may be incomplete",
-                bdf_path.name,
-            )
-            return stim_channels_with_selected_ids(raw, self.event_id)
-
-        # Decode frequency labels from arrow direction in annotations.
         annot_onset = []
         annot_dur = []
         annot_desc = []
-        for rec in ann_records:
-            phase = rec.get("phase", "")
-            if phase == "fixation" or phase == "rest":
-                continue
-            arrow = rec.get("arrow", "")
-            freq_label = _SSVEP_DIRECTION_TO_FREQ.get(arrow)
-            if freq_label and freq_label in self.event_id:
-                annot_onset.append(rec["onset"])
-                annot_dur.append(0.0)
-                annot_desc.append(freq_label)
+
+        # Try annotations JSON first (arrow field).
+        ann_records = _load_annotations_json(bdf_path)
+        if ann_records is not None:
+            for rec in ann_records:
+                phase = rec.get("phase", "")
+                if phase == "fixation" or phase == "rest":
+                    continue
+                arrow = rec.get("arrow", "")
+                freq_label = _SSVEP_DIRECTION_TO_FREQ.get(arrow)
+                if freq_label and freq_label in self.event_id:
+                    annot_onset.append(rec["onset"])
+                    annot_dur.append(0.0)
+                    annot_desc.append(freq_label)
+
+        # Fall back to sync CSV if annotations had no frequency events.
+        if not annot_onset:
+            sync_records = _decode_ssvep_from_sync_csv(bdf_path)
+            if sync_records:
+                for rec in sync_records:
+                    annot_onset.append(rec["onset"])
+                    annot_dur.append(0.0)
+                    annot_desc.append(rec["description"])
 
         if annot_onset:
             annotations = mne.Annotations(

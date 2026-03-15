@@ -181,7 +181,7 @@ class Wang2021Combined(BaseDataset):
         for run_idx, cnt_path in enumerate(cnt_files):
             # read_raw_cnt is used instead of read_raw_ant because the ANT
             # reader's C library (libEep) segfaults on macOS.
-            raw = mne.io.read_raw_cnt(cnt_path, preload=False, verbose=False)
+            raw = mne.io.read_raw_cnt(cnt_path, preload=True, verbose=False)
 
             # Rename annotation descriptions from trigger codes to frequencies
             raw.annotations.rename(self._TRIGGER_MAP)
