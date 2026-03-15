@@ -80,6 +80,27 @@ Motor Imagery Datasets
     Liu2024
     Beetl2021_A
     Beetl2021_B
+    Brandl2020
+    Chang2025
+    Forenzo2023
+    Gao2026
+    GuttmannFlury2025_MI
+    HefmiIch2025
+    Jeong2020
+    Kaya2018
+    Kumar2024
+    Liu2025
+    Ma2020
+    Rozado2015
+    Tavakolan2017
+    TrianaGuzman2024
+    Wairagkar2018
+    Wu2020
+    Yang2025
+    Yi2025
+    Zhang2017
+    Zhou2020
+    Zuo2025
 
 -----------------
 ERP/P300 Datasets
@@ -124,6 +145,38 @@ ERP/P300 Datasets
     Kojima2024A
     Kojima2024B
     Lee2021Mobile_ERP
+    Chailloux2020
+    GuttmannFlury2025_P300
+    Kaneshiro2015
+    Lee2024_AC
+    Lee2024_BS
+    Lee2024_DL
+    Lee2024_EL
+    Lee2024_TV
+    Mainsah2025_A
+    Mainsah2025_B
+    Mainsah2025_C
+    Mainsah2025_D
+    Mainsah2025_E
+    Mainsah2025_F
+    Mainsah2025_G
+    Mainsah2025_H
+    Mainsah2025_I
+    Mainsah2025_J
+    Mainsah2025_K
+    Mainsah2025_L
+    Mainsah2025_M
+    Mainsah2025_N
+    Mainsah2025_O
+    Mainsah2025_P
+    Mainsah2025_Q
+    Mainsah2025_R
+    Mainsah2025_S1
+    Mainsah2025_S2
+    Simoes2020
+    Speier2017
+    Zhang2025
+    Zheng2020
 
 --------------
 SSVEP Datasets
@@ -148,6 +201,7 @@ SSVEP Datasets
     Liu2020BETA
     Liu2022EldBETA
     Wang2021Combined
+    GuttmannFlury2025_SSVEP
 
 --------------
 c-VEP Datasets
