@@ -12,6 +12,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -19,6 +20,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import FIGSHARE_DL_URL, build_raw_from_epochs
@@ -114,7 +116,7 @@ class Kim2025BetaRange(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=33,
+            n_channels=31,
             channel_types={"eeg": 31, "misc": 2},
             montage="standard_1005",
             hardware="BioSemi ActiveTwo",
@@ -161,6 +163,7 @@ class Kim2025BetaRange(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events=dict(_EVENTS),
             n_classes=40,
             trial_duration=5.0,
             stimulus_type="JFPM visual flicker",
@@ -206,9 +209,24 @@ class Kim2025BetaRange(BaseDataset):
             n_blocks=6,
             n_trials=240,
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CCA", "FBCCA", "ITCCA", "TRCA", "EEGNet"],
+            feature_extraction=["CCA", "FBCCA", "TRCA"],
+            frequency_bands={
+                "stimulus_range": [14.0, 22.0],
+                "analysis": [13.0, 89.0],
+            },
+            spatial_filters=["CCA", "TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-subject-out",
+            cv_folds=6,
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             environment="lab",
-            online_feedback=False,
+            online_feedback=None,
+            applications=["speller"],
         ),
         tags=Tags(
             pathology=["healthy"],
@@ -249,7 +267,9 @@ class Kim2025BetaRange(BaseDataset):
         onset_sample = int(round(2.0 * srate))  # sample 2048
 
         # Normalize channel names to match MNE standard_1005
-        ch_names = _normalize_ch_names(ch_names_raw)
+        # Normalize uppercase midline channels to MNE mixed-case convention
+        _midline_fix = {"CZ": "Cz", "PZ": "Pz", "OZ": "Oz", "CPZ": "CPz", "POZ": "POz"}
+        ch_names = [_midline_fix.get(ch, ch) for ch in ch_names_raw]
         ch_types = _infer_ch_types(ch_names)
         event_ids = np.arange(1, n_classes + 1)
 
@@ -278,24 +298,6 @@ class Kim2025BetaRange(BaseDataset):
         file_id = _SSVEP_FILE_IDS[subject]
         url = f"{FIGSHARE_DL_URL}{file_id}"
         return dl.data_dl(url, self.code, path, force_update, verbose)
-
-
-def _normalize_ch_names(ch_names):
-    """Normalize channel names from .mat file to match MNE conventions.
-
-    The .mat files use uppercase midline names (e.g. 'CZ', 'POZ', 'PZ',
-    'CPZ', 'OZ') which must be converted to mixed case ('Cz', 'POz',
-    'Pz', 'CPz', 'Oz') for MNE standard_1005 montage compatibility.
-    """
-    # Map uppercase midline channels to MNE mixed-case convention
-    mapping = {
-        "CZ": "Cz",
-        "PZ": "Pz",
-        "OZ": "Oz",
-        "CPZ": "CPz",
-        "POZ": "POz",
-    }
-    return [mapping.get(ch, ch) for ch in ch_names]
 
 
 def _infer_ch_types(ch_names):

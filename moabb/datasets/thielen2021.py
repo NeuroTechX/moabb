@@ -1,6 +1,6 @@
-import h5py
 import mne
 import numpy as np
+from pymatreader import read_mat
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
@@ -306,7 +306,7 @@ class Thielen2021(BaseDataset):
 
             # Labels at trial level (i.e., symbols)
             trial_labels = (
-                np.array(h5py.File(file_path_list[2 * i_b + 1], "r")["v"])
+                np.asarray(read_mat(file_path_list[2 * i_b + 1])["v"])
                 .astype("uint8")
                 .flatten()
                 - 1

@@ -5,7 +5,9 @@ from __future__ import annotations
 import abc
 import inspect
 import logging
+import shutil
 import stat
+import subprocess
 import tarfile
 import zipfile
 from pathlib import Path
@@ -24,6 +26,7 @@ from moabb.analysis.plotting import (
     dataset_bubble_plot,
     get_dataset_area,
 )
+from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
@@ -104,7 +107,11 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep", "cvep", None]
+    if paradigm not in ["imagery", "p300", "ssvep", "cvep", None]:  # was assert
+        raise ValueError(
+            f"paradigm must be one of 'imagery', 'p300', 'ssvep', 'cvep', or None, "
+            f"got '{paradigm}'"
+        )
 
     for type_d in dataset_list:
         if type_d.__name__ in deprecated_names:
@@ -558,13 +565,86 @@ def build_raw_from_epochs(
     # Flatten trials into continuous data: (n_trials, n_ch, n_time) -> (n_ch, n_trials*n_time)
     continuous = combined.transpose(1, 0, 2).reshape(n_total_ch, -1)
 
-    ch_names_full = list(ch_names) + ["stim"]
+    ch_names_full = list(ch_names) + ["STI"]
     ch_types_full = list(ch_types) + ["stim"]
     info = create_info(ch_names_full, sfreq, ch_types_full)
     raw = RawArray(data=continuous, info=info, verbose=False)
     montage = make_standard_montage(montage_name)
     raw.set_montage(montage, on_missing="ignore")
     return raw
+
+
+def download_and_extract_subject_zip(
+    url, sign, extract_dir, path=None, force_update=False, verbose=None
+):
+    """Download a per-subject ZIP and safely extract it.
+
+    Handles the common pattern: ``dl.data_dl()`` → rename to ``.zip`` →
+    ``safe_extract_zip()``.
+
+    Parameters
+    ----------
+    url : str
+        Direct download URL for the ZIP file.
+    sign : str
+        Dataset code passed to :func:`dl.data_dl` (e.g., ``"Wu2020"``).
+    extract_dir : Path | str
+        Directory to extract ZIP contents into.
+    path : str | None
+        Download path passed to :func:`dl.data_dl`.
+    force_update : bool
+        Force re-download even if file exists locally.
+    verbose : bool | None
+        Verbosity level.
+    """
+    dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+
+    # Rename to .zip if dl.data_dl() stripped the extension.
+    zip_path = dl_path.with_suffix(".zip")
+    if dl_path != zip_path:
+        dl_path.rename(zip_path)
+
+    extract_dir = Path(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path) as zf:
+        safe_extract_zip(zf, extract_dir)
+
+
+def extract_rar(rar_path, dest_dir):
+    """Extract a RAR archive using available system tools.
+
+    Tries ``unrar``, ``unar``, and ``7z`` in order.
+
+    Parameters
+    ----------
+    rar_path : str or Path
+        Path to the RAR archive.
+    dest_dir : str or Path
+        Directory to extract files into.
+    """
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    rar_path = str(rar_path)
+
+    for tool, cmd_fn in [
+        ("unrar", lambda d, r: ["unrar", "x", "-o+", r, str(d) + "/"]),
+        ("unar", lambda d, r: ["unar", "-f", "-o", str(d), r]),
+        ("7z", lambda d, r: ["7z", "x", "-y", f"-o{d}", r]),
+    ]:
+        if shutil.which(tool) is not None:
+            cmd = cmd_fn(dest_dir, rar_path)
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode != 0:
+                raise RuntimeError(
+                    f"RAR extraction failed with {tool} "
+                    f"(exit {result.returncode}):\n{result.stderr}"
+                )
+            return
+
+    raise RuntimeError(
+        "No RAR extraction tool found. Install one of: unrar, unar, or 7z. "
+        "For example: 'brew install unar' (macOS) or 'apt install unrar' (Linux)."
+    )
 
 
 class _BubbleChart:

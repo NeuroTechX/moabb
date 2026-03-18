@@ -58,12 +58,15 @@ from .braininvaders import (
     BI2015b,
     Cattan2019_VR,
 )
+from .brandl2020 import Brandl2020
 from .castillos2023 import (
     CastillosBurstVEP40,
     CastillosBurstVEP100,
     CastillosCVEP40,
     CastillosCVEP100,
 )
+from .chailloux2020 import Chailloux2020
+from .chang2025 import Chang2025
 from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .erpcore2021 import (
@@ -76,15 +79,51 @@ from .erpcore2021 import (
     ErpCore2021_P3,
 )
 from .fake import FakeDataset, FakeVirtualRealityDataset
+from .forenzo2023 import Forenzo2023
+from .gao2026 import Gao2026
 from .gigadb import Cho2017
+from .guttmann_flury2025 import (
+    GuttmannFlury2025_MI,
+    GuttmannFlury2025_P300,
+    GuttmannFlury2025_SSVEP,
+)
+from .hefmi_ich2025 import HefmiIch2025
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
+from .jeong2020 import Jeong2020
+from .kaneshiro2015 import Kaneshiro2015
+from .kaya2018 import Kaya2018
 from .kojima2024a import Kojima2024A
 from .kojima2024b import Kojima2024B
+from .kumar2024 import Kumar2024
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .lee2021_mobile import Lee2021Mobile_ERP, Lee2021Mobile_SSVEP
+from .lee2024 import Lee2024_AC, Lee2024_BS, Lee2024_DL, Lee2024_EL, Lee2024_TV
 from .liu2024 import Liu2024
-from .mainsah2025 import Mainsah2025
+from .liu2025 import Liu2025
+from .ma2020 import Ma2020
+from .mainsah2025 import (
+    Mainsah2025_A,
+    Mainsah2025_B,
+    Mainsah2025_C,
+    Mainsah2025_D,
+    Mainsah2025_E,
+    Mainsah2025_F,
+    Mainsah2025_G,
+    Mainsah2025_H,
+    Mainsah2025_I,
+    Mainsah2025_J,
+    Mainsah2025_K,
+    Mainsah2025_L,
+    Mainsah2025_M,
+    Mainsah2025_N,
+    Mainsah2025_O,
+    Mainsah2025_P,
+    Mainsah2025_Q,
+    Mainsah2025_R,
+    Mainsah2025_S1,
+    Mainsah2025_S2,
+)
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import MunichMI  # noqa: F401
@@ -93,8 +132,11 @@ from .phmd_ml import HeadMountedDisplay  # noqa: F401
 from .phmd_ml import Cattan2019_PHMD
 from .physionet_mi import PhysionetMI
 from .romani_bf2025_erp import RomaniBF2025ERP
+from .rozado2015 import Rozado2015
 from .schirrmeister2017 import Schirrmeister2017
+from .simoes2020 import Simoes2020
 from .sosulski2019 import Sosulski2019
+from .speier2017 import Speier2017
 from .ssvep_chen2017 import Chen2017SingleFlicker
 from .ssvep_dong2023 import Dong2023
 from .ssvep_exo import SSVEPExo  # noqa: F401
@@ -108,12 +150,23 @@ from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
 from .ssvep_wang2021 import Wang2021Combined
 from .stieger2021 import Stieger2021
+from .tavakolan2017 import Tavakolan2017
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
+from .triana_guzman2024 import TrianaGuzman2024
 from .upper_limb import Ofner2017
 from .utils import _init_dataset, dataset_dict
+from .wairagkar2018 import Wairagkar2018
 from .Weibo2014 import Weibo2014
+from .wu2020 import Wu2020
+from .yang2025 import Yang2025
+from .yi2025 import Yi2025
+from .zhang2017 import Zhang2017
+from .zhang2025 import Zhang2025
+from .zheng2020 import Zheng2020
 from .Zhou2016 import Zhou2016
+from .zhou2020 import Zhou2020
+from .zuo2025 import Zuo2025
 
 
 # Call this last in order to make sure the dataset list, dict are populated with
@@ -126,6 +179,11 @@ _init_dataset()
 
 _REMOVED_DATASETS = {
     "DemonsP300": "DemonsP300 has been removed due to unresolved data issues.",
+    "Forenzo2024": (
+        "Forenzo2024 has been removed because it is a continuous pursuit "
+        "regression task, not a discrete-trial motor imagery paradigm. "
+        "The .mat files contain no left/right trial labels."
+    ),
 }
 
 

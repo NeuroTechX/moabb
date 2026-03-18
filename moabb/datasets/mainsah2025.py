@@ -1,710 +1,653 @@
-"""Mainsah2025 BigP3BCI dataset.
+"""BigP3BCI dataset — the largest public P300 BCI dataset.
 
-# License: BSD (3-clause)
+Mainsah, Fleeting, Balmat, Sellers, & Collins (2025).
+PhysioNet DOI: 10.13026/0byy-ry86
+
+Contains ~267 subjects across 20 studies (A through S2), each with
+16 or 32 EEG channels sampled at 256 Hz. Studies use either a 6x6 or
+9x8 character grid. Some studies include ALS patients.
+
+Each study is exposed as a separate MOABB dataset class (e.g.,
+``Mainsah2025_A``, ``Mainsah2025_B``, ..., ``Mainsah2025_S2``).
 """
 
 import logging
 import re
 import warnings
+from functools import partialmethod
 from pathlib import Path
 
 import mne
 import numpy as np
-from mne.io import read_raw_edf
 
-from moabb.datasets import download as dl
-from moabb.datasets.base import BaseDataset
-from moabb.datasets.metadata.schema import (
+from . import download as dl
+from .base import BaseDataset
+from .metadata.schema import (
     AcquisitionMetadata,
-    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
-    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
 
 log = logging.getLogger(__name__)
 
-BASE_URL = "https://physionet.org/files/bigp3bci/1.0.0/"
+_BASE_URL = "https://physionet.org/files/bigp3bci/1.0.0/"
+_MANIFEST_URL = _BASE_URL + "SHA256SUMS.txt"
+_DOI = "10.13026/0byy-ry86"
+_SIGN = "Mainsah2025"
 
-# URL for the SHA256SUMS.txt file used as manifest
-_MANIFEST_URL = BASE_URL + "SHA256SUMS.txt"
+# Module-level manifest cache (parsed once, shared across instances)
+_manifest_cache = None
 
-# Studies and their metadata
-# Study letter -> (local_subject_ids, has_ALS, grid_size, site)
-# Local IDs are non-sequential in some studies (gaps from excluded participants)
-_STUDIES = {
-    "A": ([1, 2, 3, 4, 5, 6, 7, 9, 14, 15, 16, 17, 19], False, "9x8", "Duke"),
-    "B": (
-        [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21],
-        True,
-        "6x6",
-        "ETSU",
-    ),
-    "C": (
-        [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 22],
-        False,
-        "9x8",
-        "Duke",
-    ),
-    "D": (list(range(1, 18)), False, "9x8", "Duke"),
-    "E": (list(range(1, 9)), False, "9x8", "Duke"),
-    "F": ([3, 5, 6, 7, 8, 20, 21, 23, 24, 25], True, "9x8", "Mixed"),
-    "G": (list(range(1, 21)), False, "9x8", "Duke"),
-    "H": (list(range(1, 17)), False, "9x8", "Duke"),
-    "I": (list(range(1, 14)), False, "9x8", "Duke"),
-    "J": (list(range(1, 21)), False, "6x6", "ETSU"),
-    "K": ([1, 2, 3, 4, 9], False, "9x8", "Duke"),
-    "L": (list(range(1, 12)), True, "6x6", "ETSU"),
-    "M": (
-        [4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
-        False,
-        "9x8",
-        "Duke",
-    ),
-    "N": (list(range(1, 9)), True, "6x6", "ETSU"),
-    "O": (list(range(1, 19)), False, "9x8", "ETSU"),
-    "P": (list(range(1, 20)), False, "9x8", "ETSU"),
-    "Q": (list(range(1, 37)), False, "9x8", "ETSU"),
-    "R": (list(range(1, 21)), False, "9x8", "ETSU"),
-    "S1": (list(range(1, 11)), False, "9x8", "ETSU"),
-    "S2": (
-        [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17,
-            18,
-            19,
-            20,
-            21,
-            22,
-            25,
-            26,
-            27,
-            28,
-        ],
-        False,
-        "9x8",
-        "ETSU",
-    ),
+# fmt: off
+_STUDY_CONFIGS = {
+    "A": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 9, 14, 15, 16, 17, 19],
+        "n_sessions": 1,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "B": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21],
+        "n_sessions": 8,
+        "n_eeg": 16,
+        "grid": "6x6",
+        "has_als": True,
+    },
+    "C": {
+        "subjects": [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 22],
+        "n_sessions": 1,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "D": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+        "n_sessions": 1,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "E": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8],
+        "n_sessions": 1,
+        "n_eeg": 16,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "F": {
+        "subjects": [3, 5, 6, 7, 8, 20, 21, 23, 24, 25],
+        "n_sessions": 3,
+        "n_eeg": 16,
+        "grid": "9x8",
+        "has_als": True,
+    },
+    "G": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        "n_sessions": 1,
+        "n_eeg": 16,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "H": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "n_sessions": 1,
+        "n_eeg": 16,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "I": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        "n_sessions": 1,
+        "n_eeg": 16,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "J": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        "n_sessions": 1,
+        "n_eeg": 16,
+        "grid": "6x6",
+        "has_als": False,
+    },
+    "K": {
+        "subjects": [1, 2, 3, 4, 9],
+        "n_sessions": 2,
+        "n_eeg": 16,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "L": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        "n_sessions": 1,
+        "n_eeg": 16,
+        "grid": "6x6",
+        "has_als": True,
+    },
+    "M": {
+        "subjects": [4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
+        "n_sessions": 1,
+        "n_eeg": 16,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "N": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8],
+        "n_sessions": 2,
+        "n_eeg": 16,
+        "grid": "6x6",
+        "has_als": True,
+    },
+    "O": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        "n_sessions": 2,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "P": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        "n_sessions": 2,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "Q": {
+        "subjects": list(range(1, 37)),
+        "n_sessions": 3,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "R": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        "n_sessions": 2,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "S1": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "n_sessions": 1,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
+    "S2": {
+        "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 26, 27, 28],
+        "n_sessions": 1,
+        "n_eeg": 32,
+        "grid": "9x8",
+        "has_als": False,
+    },
 }
+# fmt: on
 
-# 16 EEG channels used in ETSU studies (subset of Duke's 32)
-_ETSU_CHANNELS = [
-    "F3",
-    "Fz",
-    "F4",
-    "T7",
-    "C3",
-    "Cz",
-    "C4",
-    "T8",
-    "CP3",
-    "CP4",
-    "P3",
-    "Pz",
-    "P4",
-    "PO7",
-    "PO8",
-    "Oz",
-]
-
-# 32 EEG channels used in Duke studies
-_DUKE_CHANNELS = _ETSU_CHANNELS + [
-    "FP1",
-    "FP2",
-    "F7",
-    "F8",
-    "FC5",
-    "FC1",
-    "FC2",
-    "FC6",
-    "CPz",
-    "P7",
-    "P5",
-    "PO3",
-    "POz",
-    "PO4",
-    "O1",
-    "O2",
-]
+# Shared documentation metadata
+_DOCUMENTATION = DocumentationMetadata(
+    doi=_DOI,
+    description=(
+        "BigP3BCI: the largest public P300 BCI dataset, containing EEG "
+        "recordings from ~267 subjects across 20 studies using 6x6 or 9x8 "
+        "character grids with various stimulus paradigms."
+    ),
+    investigators=[
+        "Boyla Mainsah",
+        "Chance Fleeting",
+        "Thomas Balmat",
+        "Eric Sellers",
+        "Leslie Collins",
+    ],
+    institution="Duke University; East Tennessee State University",
+    country="US",
+    repository="PhysioNet",
+    data_url="https://physionet.org/content/bigp3bci/1.0.0/",
+    publication_year=2025,
+    license="CC-BY-4.0",
+)
 
 
-def _build_subject_map():
-    """Build a mapping from global subject number to (study, local_subject_num).
+def _parse_manifest(manifest_path):
+    """Parse SHA256SUMS.txt into a nested dict of EDF file paths.
 
-    Returns a dict: {1: ("A", 1), 2: ("A", 2), ..., 327: ("S2", 28)}
-    Local subject IDs may be non-sequential (gaps from excluded participants).
+    Returns
+    -------
+    dict
+        ``{study: {subj_id: {session_int: [relative_paths]}}}``
     """
-    subject_map = {}
-    global_idx = 1
-    for study, (local_ids, *_) in _STUDIES.items():
-        for local_idx in local_ids:
-            subject_map[global_idx] = (study, local_idx)
-            global_idx += 1
-    return subject_map
+    result = {}
+    with open(manifest_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line.endswith(".edf"):
+                continue
+            parts = line.split(maxsplit=1)
+            if len(parts) < 2:
+                continue
+            path = parts[1]
+            m = re.match(
+                r"bigP3BCI-data/Study(\w+)/(\w+)/SE(\d+)/"
+                r"(Test|Train)/(\w+)/(.+\.edf)",
+                path,
+            )
+            if not m:
+                continue
+            study, subj_str, session_str = m.group(1), m.group(2), m.group(3)
+            session = int(session_str)
+
+            result.setdefault(study, {})
+            result[study].setdefault(subj_str, {})
+            result[study][subj_str].setdefault(session, [])
+            result[study][subj_str][session].append(path)
+
+    # Sort file lists for deterministic ordering
+    for study in result.values():
+        for subj in study.values():
+            for sess in subj:
+                subj[sess].sort()
+    return result
 
 
-_SUBJECT_MAP = _build_subject_map()
-_N_SUBJECTS = len(_SUBJECT_MAP)
-
-
-def _study_subject_id(study, local_num):
-    """Return the subject folder name, e.g., 'A_01' or 'S1_03'."""
-    return f"{study}_{local_num:02d}"
-
-
-def _parse_manifest(manifest_text):
-    """Parse SHA256SUMS.txt into a dict of {subject_id: [relative_paths]}.
-
-    The manifest has lines like:
-        <sha256hash>  bigP3BCI-data/StudyA/A_01/SE001/Train/CB/A_01_SE001_CB_Train01.edf
-
-    Returns a dict mapping subject_id (e.g., "A_01") to a list of relative
-    paths under bigP3BCI-data/ (e.g., "StudyA/A_01/SE001/Train/CB/A_01_...edf").
-    """
-    subject_files = {}
-    for line in manifest_text.strip().splitlines():
-        line = line.strip()
-        if not line or not line.endswith(".edf"):
-            continue
-        # Split hash and path
-        parts = line.split(None, 1)
-        if len(parts) != 2:
-            continue
-        fpath = parts[1].strip()
-        # Remove "bigP3BCI-data/" prefix if present
-        if fpath.startswith("bigP3BCI-data/"):
-            fpath = fpath[len("bigP3BCI-data/") :]
-
-        # Extract subject_id from path: Study{X}/{subject_id}/...
-        path_parts = fpath.split("/")
-        if len(path_parts) < 3:
-            continue
-        subject_id = path_parts[1]  # e.g., "A_01", "S1_03"
-        subject_files.setdefault(subject_id, []).append(fpath)
-
-    return subject_files
+def _get_manifest_path():
+    """Return local path for the cached manifest file."""
+    path = Path(dl.get_dataset_path(_SIGN, None))
+    root = path / f"MNE-{_SIGN}-data"
+    root.mkdir(parents=True, exist_ok=True)
+    return root / "SHA256SUMS.txt"
 
 
 class Mainsah2025(BaseDataset):
-    """BigP3BCI: P300-based BCI dataset from Mainsah et al. 2025.
+    """Base class for the BigP3BCI dataset by Mainsah et al. 2025.
 
-    **Dataset description**
+    BigP3BCI is the largest publicly available P300-based BCI dataset,
+    containing EEG data from approximately 267 participants across 20
+    studies (A through S2). Studies were conducted at Duke University
+    and East Tennessee State University using g.USBamp amplifiers with
+    either 16 or 32 active/passive EEG electrodes sampled at 256 Hz.
 
-    BigP3BCI [1]_ is a large, diverse, machine-learning-ready P300-based
-    Brain-Computer Interface dataset curated from 20 visual P300 speller
-    studies conducted at Duke University and East Tennessee State University.
+    Each study explores a different P300 speller paradigm variant
+    (checkerboard, row-column, dynamic, adaptive, etc.) with either
+    a 6x6 or 9x8 character grid. Studies L through R include
+    participants with ALS.
 
-    The dataset includes 327 participants across 20 studies (A through S2),
-    including 47 participants with ALS (studies B, F, L, N). EEG was recorded
-    using g.tec g.USBamp amplifiers at 256 Hz.
+    Each EDF+ file corresponds to one spelling block and contains:
+    - EEG channels (``EEG_<electrode>`` labels)
+    - Stimulus marker channels: ``StimulusBegin`` (0/1 onset flag),
+      ``StimulusType`` (0=NonTarget, 1=Target)
+    - Additional channels: ``StimulusCode``, ``SelectedTarget``,
+      ``SelectedRow``, ``SelectedColumn``, ``PhaseInSequence``,
+      ``CurrentTarget``
 
-    Studies used two grid layouts for the P300 speller:
+    Events are extracted from the ``StimulusBegin`` and ``StimulusType``
+    signal channels.
 
-    - 6x6 grid (36 characters): studies B, J, L, N
-    - 9x8 grid (72 characters): all other studies
-
-    Multiple stimulus paradigms were used across studies: Row-Column (RC),
-    Checkerboard (CB), Random (RD), Performance-Based (PB), Adaptive (AD),
-    and variants. Each recording includes calibration (training) and test
-    phases.
-
-    Duke studies used 32-channel caps with 0.1-60 Hz bandpass, while ETSU
-    studies used 16-channel caps with 0.5-30 Hz bandpass. The number of
-    EEG channels varies by study (16 or 32).
-
-    Data is in EDF+ format with IEEE P2731 BCI annotation channels encoding
-    stimulus events via ``StimulusType`` (0=non-target, 1=target) and
-    ``StimulusBegin`` (0=off, 1=on).
-
-    .. warning::
-        This dataset is 44.6 GB uncompressed. Files are downloaded
-        per-subject on demand from PhysioNet. A manifest file
-        (SHA256SUMS.txt, ~1.5 MB) is downloaded once on first use to
-        discover the file listing.
-
-    Parameters
-    ----------
-    subjects : list of int, optional
-        List of subject numbers to load (1 to 327). If None, all subjects.
-    sessions : list, optional
-        List of sessions to load. If None, all sessions.
+    This base class is not intended to be instantiated directly.
+    Use the study-specific subclasses (e.g., ``Mainsah2025_A``).
 
     References
     ----------
-    .. [1] Mainsah, B., Fleeting, C., Balmat, T., Sellers, E., & Collins, L.
-       (2025). bigP3BCI: An Open, Diverse and Machine Learning Ready
-       P300-based Brain-Computer Interface Dataset (version 1.0.0).
-       PhysioNet. https://doi.org/10.13026/0byy-ry86
+    .. [1] Mainsah BO, Fleeting CE, Balmat TJ, Sellers EW, Collins LM.
+       BigP3BCI: A large P300-based brain-computer interface dataset.
+       PhysioNet, 2025. DOI: https://doi.org/10.13026/0byy-ry86
     """
 
-    METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
-            n_channels=32,
-            channel_types={"eeg": 32},
-            sensors=_DUKE_CHANNELS,
-            sensor_type="eeg",
-            reference="right mastoid",
-            ground="left mastoid",
-            hardware="g.tec g.USBamp biosignal amplifiers",
-            software="BCI2000",
-            filters="0.1-60 Hz (Duke) / 0.5-30 Hz (ETSU)",
-            line_freq=60.0,
-            montage="standard_1020",
-            impedance_threshold_kohm=10.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-                eog_channels=0,
-                eog_type=None,
-                has_emg=False,
-                emg_channels=0,
-                other_physiological=None,
-            ),
-            cap_manufacturer="Electro-Cap International / g.tec",
-            cap_model=None,
-            electrode_type="passive gel / active dry (g.Sahara)",
-            electrode_material="Ag-AgCl",
-        ),
-        participants=ParticipantMetadata(
-            n_subjects=_N_SUBJECTS,
-            health_status="mixed",
-            gender=None,
-            age_mean=None,
-            age_std=None,
-            age_min=None,
-            age_max=None,
-            ages=None,
-            handedness=None,
-            clinical_population="ALS (studies B, F, L, N)",
-            bci_experience="mixed",
-            sexes=None,
-            handedness_list=None,
-            species="human",
-        ),
-        experiment=ExperimentMetadata(
-            paradigm="p300",
-            task_type="P300 speller",
-            events={"Target": 1, "NonTarget": 0},
-            n_classes=2,
-            class_labels=["Target", "NonTarget"],
-            trials_per_class=None,
-            trial_duration=None,
-            tasks=["copy spelling (calibration)", "free spelling (test)"],
-            study_design="within-subject",
-            study_domain="P300 speller BCI",
-            feedback_type="visual (test phase only)",
-            stimulus_type="visual",
-            stimulus_modalities=["visual"],
-            primary_modality="visual",
-            synchronicity="synchronous",
-            mode="online (test) / offline (calibration)",
-            has_training_test_split=True,
-            instructions=(
-                "Focus on target character while subsets of characters " "are illuminated"
-            ),
-            cog_atlas_id=None,
-            cog_po_id=None,
-            stimulus_presentation={
-                "software": "BCI2000",
-                "paradigms": "RC, CB, RD, PB, AD and variants",
-                "grids": "6x6 (36 chars) or 9x8 (72 chars)",
-            },
-            hed_tags=None,
-        ),
-        documentation=DocumentationMetadata(
-            doi="10.13026/0byy-ry86",
-            description=(
-                "BigP3BCI: An Open, Diverse and Machine Learning Ready "
-                "P300-based Brain-Computer Interface Dataset. 20 visual P300 "
-                "speller studies from Duke University and East Tennessee State "
-                "University, including able-bodied and ALS participants."
-            ),
-            investigators=[
-                "Boyla Mainsah",
-                "Chance Fleeting",
-                "Thomas Balmat",
-                "Eric Sellers",
-                "Leslie Collins",
-            ],
-            institution="Duke University / East Tennessee State University",
-            country="US",
-            repository="PhysioNet",
-            data_url="https://physionet.org/content/bigp3bci/1.0.0/",
-            license="CC-BY-4.0",
-            publication_year=2025,
-            senior_author="Leslie Collins",
-            contact_info=None,
-            associated_paper_doi=None,
-            funding=None,
-            institution_address=None,
-            institution_department=None,
-            ethics_approval=None,
-            acknowledgements=None,
-            how_to_acknowledge=(
-                "Please cite: Mainsah, B., Fleeting, C., Balmat, T., "
-                "Sellers, E., & Collins, L. (2025). bigP3BCI (version 1.0.0). "
-                "PhysioNet. https://doi.org/10.13026/0byy-ry86"
-            ),
-            keywords=[
-                "P300",
-                "BCI",
-                "speller",
-                "ERP",
-                "ALS",
-                "brain-computer interface",
-            ],
-        ),
-        sessions_per_subject=1,
-        runs_per_session=None,
-        sessions=None,
-        contributing_labs=["Duke University", "East Tennessee State University"],
-        n_contributing_labs=2,
-        data_processed=False,
-        file_format="EDF+",
-        external_links={
-            "source": "https://physionet.org/content/bigp3bci/1.0.0/",
-        },
-        tags=Tags(
-            pathology=["Healthy", "ALS"],
-            modality=["visual"],
-            type=["EEG", "P300", "BCI", "speller"],
-        ),
-        preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
-            preprocessing_steps=None,
-            highpass_hz=None,
-            lowpass_hz=None,
-            bandpass=None,
-            notch_hz=None,
-            filter_type=None,
-            filter_order=None,
-            artifact_methods=None,
-            re_reference=None,
-            downsampled_to_hz=None,
-            epoch_window=None,
-            notes=(
-                "Hardware bandpass differs by site: " "Duke 0.1-60 Hz, ETSU 0.5-30 Hz"
-            ),
-        ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            stimulus_frequencies_hz=None,
-            frequency_resolution_hz=None,
-            code_type=None,
-            code_length=None,
-            n_targets=None,
-            n_repetitions=None,
-            isi_ms=None,
-            soa_ms=None,
-            imagery_tasks=None,
-            cue_duration_s=None,
-            imagery_duration_s=None,
-        ),
-        bci_application=BCIApplicationMetadata(
-            applications=["speller", "communication"],
-            environment="laboratory",
-            online_feedback=True,
-        ),
-        data_structure=DataStructureMetadata(
-            n_trials=None,
-            n_trials_per_class=None,
-            n_blocks=None,
-            block_duration_s=None,
-            trials_context=(
-                "Each session has calibration (Train) and test (Test) phases "
-                "with variable number of conditions per study."
-            ),
-        ),
-    )
+    def __init__(self, study, subjects=None, sessions=None):
+        config = _STUDY_CONFIGS[study]
+        self._study = study
 
-    def __init__(self, subjects=None, sessions=None):
         super().__init__(
-            subjects=list(range(1, _N_SUBJECTS + 1)),
-            sessions_per_subject=1,
-            events=dict(Target=1, NonTarget=0),
-            code="Mainsah2025",
-            interval=[0, 0.8],
+            subjects=config["subjects"],
+            sessions_per_subject=config["n_sessions"],
+            events={"Target": 2, "NonTarget": 1},
+            code=f"Mainsah2025-{study}",
+            interval=[0, 1.0],
             paradigm="p300",
-            doi="10.13026/0byy-ry86",
+            doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
         )
-        self._manifest_cache = None
 
     @staticmethod
-    def _get_study_info(subject):
-        """Return (study_letter, local_subject_num) for a global subject number."""
-        return _SUBJECT_MAP[subject]
+    def _get_manifest():
+        """Download and parse the SHA256SUMS manifest (cached in memory)."""
+        global _manifest_cache
+        if _manifest_cache is None:
+            manifest_path = _get_manifest_path()
+            dl.download_if_missing(str(manifest_path), _MANIFEST_URL, warn_missing=False)
+            _manifest_cache = _parse_manifest(manifest_path)
+        return _manifest_cache
 
-    def _get_manifest(self, base_path):
-        """Download and parse the SHA256SUMS.txt manifest.
+    def _subject_str(self, subject):
+        """Convert integer subject ID to the dataset's string format."""
+        return f"{self._study}_{subject:02d}"
 
-        Returns a dict mapping subject_id to list of relative file paths.
-        The manifest is cached in memory after first load.
-        """
-        if self._manifest_cache is not None:
-            return self._manifest_cache
-
-        manifest_path = base_path / "SHA256SUMS.txt"
-        dl.download_if_missing(str(manifest_path), _MANIFEST_URL, warn_missing=False)
-
-        manifest_text = manifest_path.read_text(encoding="utf-8")
-        self._manifest_cache = _parse_manifest(manifest_text)
-        return self._manifest_cache
-
-    def _download_subject_files(self, subject, base_path, force_update=False):
-        """Download all EDF files for a subject using the manifest.
-
-        Uses SHA256SUMS.txt as a manifest to discover exact file paths,
-        then downloads each file individually from PhysioNet.
-        """
-        study, local_num = self._get_study_info(subject)
-        subject_id = _study_subject_id(study, local_num)
-
-        manifest = self._get_manifest(base_path)
-        file_list = manifest.get(subject_id, [])
-
-        if not file_list:
+    def _get_subject_manifest(self, subject):
+        """Return ``{session_int: [rel_paths]}`` for *subject*."""
+        manifest = self._get_manifest()
+        subj_str = self._subject_str(subject)
+        subj_manifest = manifest.get(self._study, {}).get(subj_str, {})
+        if not subj_manifest:
             raise FileNotFoundError(
-                f"No files found in manifest for subject {subject} "
-                f"(Study {study}, {subject_id}). "
-                "The manifest may be outdated; try force_update=True."
+                f"No EDF files found in manifest for study={self._study}, "
+                f"subject={subj_str}"
             )
-
-        downloaded_files = []
-
-        for relative_path in file_list:
-            url = BASE_URL + "bigP3BCI-data/" + relative_path
-            local_file = base_path / relative_path
-
-            if local_file.exists() and not force_update:
-                downloaded_files.append(local_file)
-                continue
-
-            try:
-                dl.download_if_missing(str(local_file), url, warn_missing=False)
-                if local_file.exists():
-                    downloaded_files.append(local_file)
-            except Exception as e:
-                log.warning("Failed to download %s: %s", relative_path, e)
-
-        return sorted(downloaded_files)
+        return subj_manifest
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the data paths of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number (1 to 327).
-        path : None | str
-            Location of where to look for the data storing location.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
+        """Download and return local paths for all EDF files of a subject.
 
         Returns
         -------
-        list of Path
-            Paths to the subject's EDF files.
+        list of str
+            Local file paths to the downloaded EDF files, sorted by
+            session then filename.
         """
         if subject not in self.subject_list:
             raise ValueError(
-                f"Invalid subject {subject}. "
-                f"Valid subjects: {self.subject_list[0]}-{self.subject_list[-1]}"
+                f"Invalid subject {subject} for study {self._study}. "
+                f"Valid: {self.subject_list}"
             )
 
-        sign = "BIGP3BCI"
-        base_path = Path(dl.get_dataset_path(sign, path)) / "MNE-bigp3bci-data"
+        subj_manifest = self._get_subject_manifest(subject)
+        base_path = Path(dl.get_dataset_path(_SIGN, path))
+        root = base_path / f"MNE-{_SIGN}-data"
 
-        # Check if files already exist locally
-        study, local_num = self._get_study_info(subject)
-        subject_id = _study_subject_id(study, local_num)
-        local_subject_path = base_path / f"Study{study}" / subject_id
-        existing_files = sorted(local_subject_path.rglob("*.edf"))
-        if existing_files and not force_update:
-            return existing_files
+        local_paths = []
+        for session in sorted(subj_manifest.keys()):
+            for rel_path in subj_manifest[session]:
+                local_file = root / rel_path
+                dl.download_if_missing(
+                    str(local_file), _BASE_URL + rel_path, warn_missing=False
+                )
+                local_paths.append(str(local_file))
 
-        # Download using manifest
-        downloaded = self._download_subject_files(subject, base_path, force_update)
-        if not downloaded:
-            raise FileNotFoundError(
-                f"No EDF files found for subject {subject} "
-                f"(Study {study}, {subject_id}). "
-                "Check your internet connection or PhysioNet availability."
-            )
-        return downloaded
+        return local_paths
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The global subject number (1 to 327).
+        """Load all EDF files for one subject and return session/run dict.
 
         Returns
         -------
         dict
-            Dictionary: {"session_id": {"run_id": mne.io.Raw}}
+            ``{session_str: {run_str: mne.io.Raw}}``
         """
-        file_paths = self.data_path(subject)
-        study, local_num = self._get_study_info(subject)
+        # Ensure all files are downloaded first
+        self.data_path(subject)
+
+        subj_manifest = self._get_subject_manifest(subject)
+        base_path = Path(dl.get_dataset_path(_SIGN, None))
+        root = base_path / f"MNE-{_SIGN}-data"
+
+        # Map actual session numbers to 0-indexed MOABB sessions
+        all_sessions = sorted(subj_manifest.keys())
 
         sessions = {}
-        run_counter = {}  # per-session counter for unique run indices
+        for sess_idx, sess_num in enumerate(all_sessions):
+            sess_key = str(sess_idx)
+            run_idx = 0
+            for rel_path in subj_manifest[sess_num]:
+                local_file = root / rel_path
+                try:
+                    raw = self._load_edf(str(local_file))
+                except Exception:
+                    log.warning("Failed to load %s, skipping.", local_file)
+                    continue
 
-        for fpath in file_paths:
-            fpath = Path(fpath)
-
-            # Parse session, paradigm, phase, and file number from filename
-            # Pattern: {subj_id}_SE{NNN}_{paradigm}_{Phase}{NN}.edf
-            # e.g., A_01_SE001_CB_Train01.edf or S1_03_SE002_CB_Test06.edf
-            match = re.search(
-                r"_SE(\d+)_([A-Za-z]+)_(Train|Test)(\d+)\.edf$",
-                fpath.name,
-                re.IGNORECASE,
-            )
-            if not match:
-                log.warning("Skipping file with unexpected name: %s", fpath.name)
-                continue
-
-            se_num = match.group(1)
-            paradigm = match.group(2).lower()
-            phase = match.group(3).lower()
-            file_num = match.group(4)
-
-            session_key = str(int(se_num) - 1)
-            # Use a unique sequential index per session
-            idx = run_counter.get(session_key, 0)
-            run_counter[session_key] = idx + 1
-            run_key = f"{idx}{paradigm}{phase}{file_num}"
-
-            try:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    raw = read_raw_edf(str(fpath), preload=False, verbose="ERROR")
-            except Exception as e:
-                log.warning("Failed to read %s: %s", fpath.name, e)
-                continue
-
-            # Extract stimulus events from data channels before picking EEG
-            raw = self._extract_events_and_pick_eeg(raw)
-            if raw is None:
-                log.warning("Skipping %s: no valid channels/events.", fpath.name)
-                continue
-
-            # Store in sessions dict
-            if session_key not in sessions:
-                sessions[session_key] = {}
-            sessions[session_key][run_key] = raw
-
-        if not sessions:
-            raise ValueError(
-                f"No valid data found for subject {subject} "
-                f"(Study {study}, {_study_subject_id(study, local_num)})"
-            )
+                sessions.setdefault(sess_key, {})
+                sessions[sess_key][str(run_idx)] = raw
+                run_idx += 1
 
         return sessions
 
-    def _extract_events_and_pick_eeg(self, raw):
-        """Extract stimulus events from data channels and pick EEG channels.
+    @staticmethod
+    def _load_edf(edf_path):
+        """Load a single EDF file, extract P300 events, return Raw.
 
-        The BigP3BCI EDF+ files encode events as data channels (not EDF+
-        annotations). The key channels are:
-
-        - StimulusBegin: binary (0/1), rising edge marks stimulus onset
-        - StimulusType: binary (0/1), 0=non-target, 1=target
-
-        This method:
-        1. Reads StimulusBegin/StimulusType to create MNE annotations
-        2. Picks all EEG channels (prefixed with ``EEG_``) and strips prefix
-        3. Sets montage
-
-        Returns None if the file lacks required channels.
+        Reads the EDF, extracts Target/NonTarget events from the
+        StimulusBegin and StimulusType signal channels, builds a
+        synthetic stim channel, strips the ``EEG_`` prefix from
+        channel names, and sets a standard 10-20 montage.
         """
-        sfreq = raw.info["sfreq"]
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            raw = mne.io.read_raw_edf(edf_path, preload=True, verbose=False)
 
-        # Check for stimulus channels
-        if "StimulusBegin" not in raw.ch_names:
-            return None
-        if "StimulusType" not in raw.ch_names:
-            return None
+        # Extract stimulus signals before dropping non-EEG channels
+        required = {"StimulusBegin", "StimulusType"}
+        if not required.issubset(raw.ch_names):
+            raise ValueError(f"Missing StimulusBegin/StimulusType in {edf_path}")
+        stim_begin, stim_type = raw.get_data(picks=["StimulusBegin", "StimulusType"])
 
-        # Read stimulus channels (loads only these two channels into memory)
-        stim_begin = raw.get_data(picks=["StimulusBegin"])[0]
-        stim_type = raw.get_data(picks=["StimulusType"])[0]
+        # Find rising edges of StimulusBegin (transition from 0 to 1)
+        onsets = np.where(np.diff(stim_begin) > 0.5)[0] + 1
 
-        # Find rising edges of StimulusBegin
-        diff = np.diff(stim_begin)
-        onset_samples = np.where(diff > 0.5)[0] + 1
+        # Build stim channel: Target=2, NonTarget=1 (vectorized)
+        stim_data = np.zeros(raw.n_times)
+        valid = onsets[onsets < len(stim_type)]
+        stim_data[valid] = np.where(stim_type[valid] > 0.5, 2, 1)
 
-        if len(onset_samples) == 0:
-            return None
+        # Keep only EEG channels
+        eeg_picks = [ch for ch in raw.ch_names if ch.startswith("EEG_")]
+        if not eeg_picks:
+            raise ValueError(f"No EEG channels found in {edf_path}")
+        raw.pick(eeg_picks)
 
-        # Build annotations
-        onset_times = onset_samples / sfreq + raw.first_time
-        durations = np.zeros(len(onset_samples))
-        descriptions = np.where(stim_type[onset_samples] > 0.5, "Target", "NonTarget")
+        # Strip EEG_ prefix and fix non-standard names in a single pass
+        _ch_fixes = {"EEG_FP1": "Fp1", "EEG_FP2": "Fp2"}
+        rename = {ch: _ch_fixes.get(ch, ch.replace("EEG_", "")) for ch in raw.ch_names}
+        raw.rename_channels(rename)
 
-        annotations = mne.Annotations(
-            onset=onset_times, duration=durations, description=descriptions
-        )
+        # Set montage (warn on missing channels rather than error)
+        raw.set_montage("standard_1020", on_missing="warn")
 
-        # Identify all EEG channels (prefixed with "EEG_")
-        ch_rename = {}
-        eeg_channels = []
-        for ch_name in raw.ch_names:
-            if ch_name.startswith("EEG_"):
-                clean = ch_name[4:]  # strip "EEG_" prefix
-                ch_rename[ch_name] = clean
-                eeg_channels.append(clean)
-
-        if not eeg_channels:
-            return None
-
-        # Rename, pick EEG channels, then load data (avoids loading unused channels)
-        raw.rename_channels(ch_rename)
-        raw.pick(eeg_channels)
-        raw.load_data()
-        raw.set_channel_types({ch: "eeg" for ch in raw.ch_names})
-
-        # Set annotations
-        raw.set_annotations(annotations)
-
-        # Set montage
-        try:
-            raw.set_montage(
-                mne.channels.make_standard_montage("standard_1020"),
-                on_missing="warn",
-            )
-        except Exception as e:
-            log.warning("Could not set montage: %s", e)
+        # Add synthetic stim channel
+        stim_info = mne.create_info(["STI"], raw.info["sfreq"], ["stim"])
+        stim_raw = mne.io.RawArray(stim_data[np.newaxis], stim_info, verbose=False)
+        raw.add_channels([stim_raw], force_update_info=True)
 
         return raw
+
+
+def _make_study_metadata(study):
+    """Build DatasetMetadata for a given study."""
+    config = _STUDY_CONFIGS[study]
+    return DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            n_channels=config["n_eeg"],
+            channel_types={"eeg": config["n_eeg"]},
+            hardware="g.USBamp (g.tec)",
+            montage="standard_1020",
+            line_freq=60.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=len(config["subjects"]),
+            health_status="patients" if config["has_als"] else "healthy",
+            clinical_population="ALS" if config["has_als"] else None,
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="p300",
+            events={"Target": 2, "NonTarget": 1},
+            n_classes=2,
+            class_labels=["Target", "NonTarget"],
+        ),
+        documentation=_DOCUMENTATION,
+        sessions_per_subject=config["n_sessions"],
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=None,
+            feature_extraction=["P300_ERP_detection"],
+            frequency_bands=None,
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="calibration-then-test",
+            evaluation_type=["within_subject"],
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["speller"],
+            environment="laboratory",
+            online_feedback=True,
+        ),
+        tags=Tags(
+            modality=["visual"],
+            type=["perception"],
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Study-specific subclasses (one per study, 20 total)
+# ---------------------------------------------------------------------------
+
+
+class Mainsah2025_A(Mainsah2025):
+    """BigP3BCI Study A — 6x6 checkerboard/row-column/random (13 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "A")
+    METADATA = _make_study_metadata("A")
+
+
+class Mainsah2025_B(Mainsah2025):
+    """BigP3BCI Study B — 6x6 checkerboard, multi-session (19 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "B")
+    METADATA = _make_study_metadata("B")
+
+
+class Mainsah2025_C(Mainsah2025):
+    """BigP3BCI Study C — 6x6 checkerboard with ERN (19 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "C")
+    METADATA = _make_study_metadata("C")
+
+
+class Mainsah2025_D(Mainsah2025):
+    """BigP3BCI Study D — 6x6 dynamic/row-column (17 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "D")
+    METADATA = _make_study_metadata("D")
+
+
+class Mainsah2025_E(Mainsah2025):
+    """BigP3BCI Study E — 6x6 checkerboard (8 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "E")
+    METADATA = _make_study_metadata("E")
+
+
+class Mainsah2025_F(Mainsah2025):
+    """BigP3BCI Study F — 6x6 multi-paradigm, 3 sessions (10 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "F")
+    METADATA = _make_study_metadata("F")
+
+
+class Mainsah2025_G(Mainsah2025):
+    """BigP3BCI Study G — 9x8 checkerboard/dynamic (20 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "G")
+    METADATA = _make_study_metadata("G")
+
+
+class Mainsah2025_H(Mainsah2025):
+    """BigP3BCI Study H — 9x8 checkerboard with gaze conditions (16 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "H")
+    METADATA = _make_study_metadata("H")
+
+
+class Mainsah2025_I(Mainsah2025):
+    """BigP3BCI Study I — 9x8 checkerboard/performance-based (13 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "I")
+    METADATA = _make_study_metadata("I")
+
+
+class Mainsah2025_J(Mainsah2025):
+    """BigP3BCI Study J — 9x8 performance-based/row-column (20 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "J")
+    METADATA = _make_study_metadata("J")
+
+
+class Mainsah2025_K(Mainsah2025):
+    """BigP3BCI Study K — 9x8 adaptive/checkerboard, 2 sessions (5 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "K")
+    METADATA = _make_study_metadata("K")
+
+
+class Mainsah2025_L(Mainsah2025):
+    """BigP3BCI Study L — 6x6 multi-paradigm (11 ALS subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "L")
+    METADATA = _make_study_metadata("L")
+
+
+class Mainsah2025_M(Mainsah2025):
+    """BigP3BCI Study M — 9x8 adaptive/checkerboard (21 ALS subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "M")
+    METADATA = _make_study_metadata("M")
+
+
+class Mainsah2025_N(Mainsah2025):
+    """BigP3BCI Study N — 9x8 dry/wet electrode comparison (8 ALS subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "N")
+    METADATA = _make_study_metadata("N")
+
+
+class Mainsah2025_O(Mainsah2025):
+    """BigP3BCI Study O — 9x8 supervised/checkerboard (18 ALS subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "O")
+    METADATA = _make_study_metadata("O")
+
+
+class Mainsah2025_P(Mainsah2025):
+    """BigP3BCI Study P — 9x8 predictive/non-predictive spelling (19 ALS subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "P")
+    METADATA = _make_study_metadata("P")
+
+
+class Mainsah2025_Q(Mainsah2025):
+    """BigP3BCI Study Q — 6x6 color intensification (36 ALS subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "Q")
+    METADATA = _make_study_metadata("Q")
+
+
+class Mainsah2025_R(Mainsah2025):
+    """BigP3BCI Study R — 9x8 multi-face paradigms (20 ALS subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "R")
+    METADATA = _make_study_metadata("R")
+
+
+class Mainsah2025_S1(Mainsah2025):
+    """BigP3BCI Study S1 — 9x8 face/house paradigm (10 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "S1")
+    METADATA = _make_study_metadata("S1")
+
+
+class Mainsah2025_S2(Mainsah2025):
+    """BigP3BCI Study S2 — 9x8 house/tool paradigm (24 healthy subjects)."""
+
+    __init__ = partialmethod(Mainsah2025.__init__, "S2")
+    METADATA = _make_study_metadata("S2")

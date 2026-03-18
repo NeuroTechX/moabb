@@ -15,10 +15,12 @@ from .metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -69,9 +71,9 @@ class Lee2021Mobile(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=500.0,
-            n_channels=32,
-            channel_types={"eeg": 32},
+            sampling_rate=100.0,
+            n_channels=73,
+            channel_types={"eeg": 73},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
             line_freq=60.0,
@@ -149,6 +151,7 @@ class Lee2021Mobile(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events={"5.45": 11, "8.57": 12, "12.0": 13},
             n_classes=3,
             trial_duration=5.0,
             stimulus_type="visual flicker",
@@ -183,9 +186,24 @@ class Lee2021Mobile(BaseDataset):
             ],
             keywords=["SSVEP", "ERP", "mobile BCI", "ear-EEG", "locomotion"],
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["rLDA", "CCA"],
+            feature_extraction=["power_over_time_intervals", "CCA"],
+            frequency_bands={
+                "delta": [0.5, 3.5],
+                "theta": [3.5, 7.5],
+                "alpha": [7.5, 12.5],
+                "beta": [12.5, 30.0],
+            },
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="holdout",
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
-            environment="mobile",
-            online_feedback=False,
+            applications=["mobile_BCI"],
+            environment="treadmill",
         ),
         tags=Tags(
             pathology=["healthy"],
@@ -389,9 +407,9 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=500.0,
-            n_channels=32,
-            channel_types={"eeg": 32},
+            sampling_rate=100.0,
+            n_channels=73,
+            channel_types={"eeg": 73},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
             line_freq=60.0,
@@ -469,6 +487,7 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
+            events={"Target": 2, "NonTarget": 1},
             n_classes=2,
             trial_duration=1.0,
             stimulus_type="visual oddball",

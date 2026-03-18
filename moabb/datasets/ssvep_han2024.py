@@ -15,6 +15,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -22,6 +23,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import TSINGHUA_64CH_NAMES, build_raw_from_epochs, safe_extract_zip
@@ -36,6 +38,21 @@ _CONDITIONS = [
     ("high_frequency_train_data", "high", "train"),
     ("high_frequency_fatigue_data", "high", "fatigue"),
 ]
+
+# fmt: off
+# Low-frequency events (16): 8.0-15.5 Hz, 0.5 Hz step
+# High-frequency events (16): 25.5-33.0 Hz, 0.5 Hz step
+_EVENTS = {
+    "8": 1, "8.5": 2, "9": 3, "9.5": 4,
+    "10": 5, "10.5": 6, "11": 7, "11.5": 8,
+    "12": 9, "12.5": 10, "13": 11, "13.5": 12,
+    "14": 13, "14.5": 14, "15": 15, "15.5": 16,
+    "25.5": 17, "26": 18, "26.5": 19, "27": 20,
+    "27.5": 21, "28": 22, "28.5": 23, "29": 24,
+    "29.5": 25, "30": 26, "30.5": 27, "31": 28,
+    "31.5": 29, "32": 30, "32.5": 31, "33": 32,
+}
+# fmt: on
 
 
 class Han2024Fatigue(BaseDataset):
@@ -113,6 +130,7 @@ class Han2024Fatigue(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events=dict(_EVENTS),
             n_classes=32,
             trial_duration=2.0,
             stimulus_type="JFPM visual flicker",
@@ -163,6 +181,15 @@ class Han2024Fatigue(BaseDataset):
             n_trials="960 per frequency band (16 targets x 60 blocks)",
             trials_context="6 training + 24 fatigue blocks per frequency condition",
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["TRCA"],
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=["TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=None,
+        ),
         bci_application=BCIApplicationMetadata(
             environment="lab",
             online_feedback=False,
@@ -176,21 +203,7 @@ class Han2024Fatigue(BaseDataset):
         file_format="MAT",
     )
 
-    # fmt: off
-    # Low-frequency events (16): 8.0-15.5 Hz, 0.5 Hz step
-    # High-frequency events (16): 25.5-33.0 Hz, 0.5 Hz step
-    _events = {
-        "8": 1, "8.5": 2, "9": 3, "9.5": 4,
-        "10": 5, "10.5": 6, "11": 7, "11.5": 8,
-        "12": 9, "12.5": 10, "13": 11, "13.5": 12,
-        "14": 13, "14.5": 14, "15": 15, "15.5": 16,
-        "25.5": 17, "26": 18, "26.5": 19, "27": 20,
-        "27.5": 21, "28": 22, "28.5": 23, "29": 24,
-        "29.5": 25, "30": 26, "30.5": 27, "31": 28,
-        "31.5": 29, "32": 30, "32.5": 31, "33": 32,
-    }
-
-    # fmt: on
+    _events = _EVENTS
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

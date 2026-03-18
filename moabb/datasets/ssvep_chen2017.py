@@ -20,11 +20,13 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -80,7 +82,7 @@ class Chen2017SingleFlicker(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=2048.0,
+            sampling_rate=512.0,
             n_channels=32,
             channel_types={"eeg": 32},
             montage="biosemi32",
@@ -101,6 +103,7 @@ class Chen2017SingleFlicker(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events={"north": 1, "east": 2, "west": 3, "south": 4},
             n_classes=4,
             stimulus_type="single-flicker spatially coded",
             stimulus_modalities=["visual"],
@@ -147,9 +150,21 @@ class Chen2017SingleFlicker(BaseDataset):
             detected_paradigm="ssvep",
             stimulus_frequencies_hz=[15.0],
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=["CCA"],
+            frequency_bands={
+                "bandpass": [1.0, 80.0],
+            },
+            spatial_filters=["CCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             environment="lab",
             online_feedback=True,
+            applications=["spatial_navigation"],
         ),
         tags=Tags(
             pathology=["healthy"],

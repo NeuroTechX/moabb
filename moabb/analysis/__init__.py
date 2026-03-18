@@ -34,6 +34,18 @@ from moabb.analysis.timeline import (  # noqa: F401
 )
 
 
+try:
+    import plotly  # noqa: F401
+
+    from moabb.analysis.neural_signatures import (  # noqa: F401
+        generate_neural_signature,
+        neural_signature_html,
+    )
+
+    del plotly
+except ImportError:
+    pass
+
 log = logging.getLogger(__name__)
 
 

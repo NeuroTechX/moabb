@@ -533,6 +533,9 @@ def _build_dataset_metadata_catalog():
             dataset = None
 
         metadata = getattr(dataset_cls, "METADATA", None)
+        # Also check instance attribute (e.g. Lee2024 sets self.METADATA in __init__)
+        if not isinstance(metadata, DatasetMetadata) and dataset is not None:
+            metadata = getattr(dataset, "METADATA", metadata)
         if not isinstance(metadata, DatasetMetadata):
             if dataset is None:
                 if name == "ErpCore2021":

@@ -235,7 +235,10 @@ class MotorImagery(BaseMotorImagery):
         if self.events is None:
             log.warning("Choosing from all possible events")
         elif self.n_classes is not None:
-            assert n_classes <= len(self.events), "More classes than events specified"
+            if n_classes > len(self.events):  # was assert, now raises properly
+                raise ValueError(
+                    f"n_classes ({n_classes}) exceeds number of events ({len(self.events)})"
+                )
 
     def is_valid(self, dataset):
         ret = True
@@ -343,7 +346,10 @@ class FilterBankMotorImagery(MotorImagery):
         if self.events is None:
             log.warning("Choosing from all possible events")
         else:
-            assert n_classes <= len(self.events), "More classes than events specified"
+            if n_classes > len(self.events):  # was assert, now raises properly
+                raise ValueError(
+                    f"n_classes ({n_classes}) exceeds number of events ({len(self.events)})"
+                )
 
     def is_valid(self, dataset):
         ret = True

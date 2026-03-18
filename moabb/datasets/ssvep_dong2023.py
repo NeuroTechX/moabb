@@ -12,6 +12,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -19,12 +20,27 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import build_raw_from_epochs
 
 
 ZENODO_URL = "https://zenodo.org/records/18847318/files/"
+
+# fmt: off
+# 40 frequencies (8.0-15.8 Hz, 0.2 Hz step) in 4x10 row-major order
+_EVENTS = {
+    "8": 1, "8.2": 2, "8.4": 3, "8.6": 4, "8.8": 5,
+    "9": 6, "9.2": 7, "9.4": 8, "9.6": 9, "9.8": 10,
+    "10": 11, "10.2": 12, "10.4": 13, "10.6": 14, "10.8": 15,
+    "11": 16, "11.2": 17, "11.4": 18, "11.6": 19, "11.8": 20,
+    "12": 21, "12.2": 22, "12.4": 23, "12.6": 24, "12.8": 25,
+    "13": 26, "13.2": 27, "13.4": 28, "13.6": 29, "13.8": 30,
+    "14": 31, "14.2": 32, "14.4": 33, "14.6": 34, "14.8": 35,
+    "15": 36, "15.2": 37, "15.4": 38, "15.6": 39, "15.8": 40,
+}
+# fmt: on
 
 
 class Dong2023(BaseDataset):
@@ -99,6 +115,7 @@ class Dong2023(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events=dict(_EVENTS),
             n_classes=40,
             trial_duration=4.0,
             stimulus_type="JFPM visual flicker",
@@ -134,6 +151,17 @@ class Dong2023(BaseDataset):
             n_blocks=4,
             n_trials=160,
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["FBCCA", "eTRCA", "msTRCA"],
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=["CCA", "TRCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-block-out",
+            cv_folds=4,
+            evaluation_type=["within_subject"],
+        ),
         bci_application=BCIApplicationMetadata(
             environment="non-shielded",
             online_feedback=True,
@@ -146,21 +174,7 @@ class Dong2023(BaseDataset):
         file_format="MAT",
     )
 
-    # 40 frequencies (8.0-15.8 Hz, 0.2 Hz step) in 4x10 row-major order
-    # matching the Dong2023 stimulus layout (Figure 1b in paper).
-    # NOTE: This differs from Wang2016's 5x8 column-major order.
-    # fmt: off
-    _events = {
-        "8": 1, "8.2": 2, "8.4": 3, "8.6": 4, "8.8": 5,
-        "9": 6, "9.2": 7, "9.4": 8, "9.6": 9, "9.8": 10,
-        "10": 11, "10.2": 12, "10.4": 13, "10.6": 14, "10.8": 15,
-        "11": 16, "11.2": 17, "11.4": 18, "11.6": 19, "11.8": 20,
-        "12": 21, "12.2": 22, "12.4": 23, "12.6": 24, "12.8": 25,
-        "13": 26, "13.2": 27, "13.4": 28, "13.6": 29, "13.8": 30,
-        "14": 31, "14.2": 32, "14.4": 33, "14.6": 34, "14.8": 35,
-        "15": 36, "15.2": 37, "15.4": 38, "15.6": 39, "15.8": 40,
-    }
-    # fmt: on
+    _events = _EVENTS
 
     _ch_names = ["POz", "PO3", "PO4", "PO7", "PO8", "Oz", "O1", "O2"]
 

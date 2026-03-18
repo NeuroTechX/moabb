@@ -239,6 +239,18 @@ class GrosseWentrup2009(BaseDataset):
             instructions="Subjects were instructed to perform haptic motor imagery of the left or the right hand during display of the arrow, as indicated by the direction of the arrow",
             events={"left_hand": 1, "right_hand": 2},
             study_design="two-class motor imagery with arrow cues",
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TBME.2008.2009768",

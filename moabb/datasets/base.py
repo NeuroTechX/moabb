@@ -24,6 +24,7 @@ from moabb.datasets.bids_interface import (
     _FORMAT_EXTENSION_MAP,
     StepType,
     _BIDSInterfaceRawEDFNoDesc,
+    _enrich_raw_info_from_metadata,
     _interface_map,
     get_bids_root,
 )
@@ -959,7 +960,13 @@ class BaseDataset(metaclass=MetaclassDataset):
                 )
 
     def convert_to_bids(
-        self, path=None, subjects=None, overwrite=False, format="EDF", verbose=None
+        self,
+        path=None,
+        subjects=None,
+        overwrite=False,
+        format="EDF",
+        verbose=None,
+        generate_figures=False,
     ):
         """Convert the dataset to BIDS format.
 
@@ -986,6 +993,11 @@ class BaseDataset(metaclass=MetaclassDataset):
             ``"EDF"`` (default), ``"BrainVision"``, and ``"EEGLAB"``.
         verbose : str | None
             Verbosity level forwarded to MNE/MNE-BIDS.
+        generate_figures : bool
+            If ``True``, generate interactive neural signature HTML figures
+            in ``{bids_root}/derivatives/neural_signatures/``.  Requires
+            ``plotly`` (``pip install moabb[interactive]``).  Default is
+            ``False``.
 
         Returns
         -------
@@ -1048,7 +1060,25 @@ class BaseDataset(metaclass=MetaclassDataset):
             sessions_data = self.get_data(subjects=[subject])
             interface.save(sessions_data[subject])
 
-        return get_bids_root(self.code, path)
+        bids_root = get_bids_root(self.code, path)
+
+        if generate_figures:
+            try:
+                from moabb.analysis.neural_signatures import (
+                    generate_neural_signature,
+                )
+
+                fig_dir = bids_root / "derivatives" / "neural_signatures"
+                generate_neural_signature(self, subjects=subjects, output_dir=fig_dir)
+            except ImportError:
+                log.warning(
+                    "plotly not installed, skipping figure generation. "
+                    "Install with: pip install moabb[interactive]"
+                )
+            except (RuntimeError, ValueError, OSError) as e:
+                log.warning("Neural signature generation failed: %s", e)
+
+        return bids_root
 
     def _get_single_subject_data_using_cache(
         self, subject, cache_config, process_pipeline
@@ -1076,6 +1106,12 @@ class BaseDataset(metaclass=MetaclassDataset):
             if len(cached_steps) == 0:  # last option: we don't use cache
                 sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
+                # Enrich raw.info from METADATA (sex, hand, age, line_freq)
+                metadata = getattr(self, "METADATA", None)
+                if metadata is not None:
+                    for runs in sessions_data.values():
+                        for raw in runs.values():
+                            _enrich_raw_info_from_metadata(raw, metadata, subject)
             else:
                 cache_type = cached_steps[-1][0]
                 interface = _interface_map[cache_type](

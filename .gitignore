@@ -115,6 +115,9 @@ analysis/*
 /test_context.yml
 res_test/
 
+# Local validation/utility scripts
+scripts/validation/
+
 # mac os x stuff
 *DS_store*
 
@@ -146,3 +149,4 @@ results/results*
 # Auto-generated dataset SVGs (built during doc build)
 docs/source/_static/timelines/
 docs/source/_static/viz/
+.env

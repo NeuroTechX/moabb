@@ -14,12 +14,14 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import safe_extract_zip
@@ -67,8 +69,8 @@ class Wang2021Combined(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=32,
-            channel_types={"eeg": 32},
+            n_channels=31,
+            channel_types={"eeg": 31, "eog": 2},
             montage="standard_1005",
             hardware="eego mylab (ANT Neuro)",
             line_freq=50.0,
@@ -79,6 +81,7 @@ class Wang2021Combined(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
+            events={"14.17": 1, "12.14": 2, "9.44": 3, "7.73": 4},
             n_classes=4,
             trial_duration=5.0,
             stimulus_type="overlapping SSVEP arrows (CRT 85 Hz)",
@@ -115,9 +118,18 @@ class Wang2021Combined(BaseDataset):
         data_structure=DataStructureMetadata(
             n_blocks=2,
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=None,
+            feature_extraction=None,
+            frequency_bands=None,
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=None,
+        ),
         bci_application=BCIApplicationMetadata(
             environment="lab",
-            online_feedback=False,
+            online_feedback=None,
         ),
         tags=Tags(
             pathology=["healthy"],
@@ -170,7 +182,7 @@ class Wang2021Combined(BaseDataset):
         for run_idx, cnt_path in enumerate(cnt_files):
             # read_raw_cnt is used instead of read_raw_ant because the ANT
             # reader's C library (libEep) segfaults on macOS.
-            raw = mne.io.read_raw_cnt(cnt_path, preload=False, verbose=False)
+            raw = mne.io.read_raw_cnt(cnt_path, preload=True, verbose=False)
 
             # Rename annotation descriptions from trigger codes to frequencies
             raw.annotations.rename(self._TRIGGER_MAP)
