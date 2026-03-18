@@ -283,28 +283,25 @@ def depreciated_alias(name, expire_version):
 @contextlib.contextmanager
 def _open_lock_hdf5(path, *args, **kwargs):
     """
-    Context manager that opens a file with an optional file lock.
+    Context manager that opens an HDF5 file with a file lock.
 
-    If the `filelock` package is available, a lock is acquired on a lock file
-    based on the given path (by appending '.lock').
+    Acquires a lock on a lock file based on the given path (by appending
+    '.lock') before opening the HDF5 file. The lock timeout and fallback
+    behavior can be controlled via environment variables:
 
-    Otherwise, a null context is used. The path is then opened in the
-    specified mode.
+    - ``MOABB_HDF5_LOCK_TIMEOUT``: seconds to wait for the lock (default 30).
+    - ``MOABB_ALLOW_UNLOCKED_HDF5``: if ``"1"``/``"true"``/``"yes"``, fall
+      back to unlocked access on timeout instead of raising.
 
     Parameters
     ----------
     path : str
-        The path to the file to be opened.
+        The path to the HDF5 file to be opened.
     *args, **kwargs : optional
-        Additional arguments and keyword arguments to be passed to the
-        `open` function.
+        Additional arguments and keyword arguments to be passed to
+        ``h5py.File``.
 
     """
-    if not filelock:
-        with h5py.File(path, *args, **kwargs) as fid:
-            yield fid
-        return
-
     lock_timeout = float(os.environ.get("MOABB_HDF5_LOCK_TIMEOUT", "30"))
     allow_unlocked = os.environ.get("MOABB_ALLOW_UNLOCKED_HDF5", "").lower() in (
         "1",

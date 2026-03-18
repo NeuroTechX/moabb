@@ -671,7 +671,12 @@ class WithinSubjectEvaluation(BaseEvaluation):
         )
 
     def evaluate(
-        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+        self,
+        dataset: "BaseDataset",
+        pipelines: dict,
+        param_grid: Optional[dict],
+        process_pipeline,
+        postprocess_pipeline=None,
     ):
         if not self.is_valid(dataset):
             reason = self._get_incompatibility_reason(dataset)
@@ -687,5 +692,5 @@ class WithinSubjectEvaluation(BaseEvaluation):
             postprocess_pipeline=postprocess_pipeline,
         )
 
-    def is_valid(self, dataset):
+    def is_valid(self, dataset: "BaseDataset") -> bool:
         return True
