@@ -31,7 +31,7 @@ Requirements
 
 Bugs
 ~~~~
-- None yet.
+- Fix session key off-by-one in :class:`moabb.datasets.Lee2019` that caused silent data loss when filtering sessions, and improve session filtering in :class:`moabb.datasets.base.BaseDataset` to match compound session keys (e.g., ``"0train"``) by integer prefix (:gh:`1046` by `Benedetto Leto`_ and `Bruno Aristimunha`_).
 
 Code health
 ~~~~~~~~~~~
@@ -858,3 +858,4 @@ API changes
 .. _Davoud Hajhassani: https://github.com/Davoud-Hajhassani
 .. _Katelyn Begany: https://github.com/kbegany
 .. _Sarthak Tayal: https://github.com/tayal-sarthak
+.. _Benedetto Leto: https://github.com/ben9809
