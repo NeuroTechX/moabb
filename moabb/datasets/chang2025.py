@@ -249,15 +249,33 @@ class Chang2025(BaseDataset):
 
         if not subj_dir.exists():
             # Try alternative directory structures.
-            for candidate in base.iterdir():
-                if candidate.is_dir() and orig_id in candidate.name:
-                    subj_dir = candidate
-                    break
+            found = False
+            if base.exists():
+                for candidate in base.iterdir():
+                    if candidate.is_dir() and orig_id in candidate.name:
+                        subj_dir = candidate
+                        found = True
+                        break
+            if not found:
+                log.warning(
+                    "Subject directory for %s not found under %s. "
+                    "The upstream data may be missing for this subject. Skipping.",
+                    orig_id,
+                    base,
+                )
+                return {}
 
         # Find .set files for the selected paradigm type.
         set_files = sorted(subj_dir.rglob("*.set"))
         if not set_files:
-            raise FileNotFoundError(f"No .set files for {orig_id} in {subj_dir}")
+            log.warning(
+                "No .set files found for %s in %s. "
+                "The download may be incomplete or the upstream data may be "
+                "missing for this subject. Skipping.",
+                orig_id,
+                subj_dir,
+            )
+            return {}
 
         # Filter files by paradigm type.
         # File naming: {orig_id}_{prefix}{session_num}.set
@@ -309,7 +327,13 @@ class Chang2025(BaseDataset):
                 log.warning("Failed to load %s: %s", sf.name, e)
 
         if not sessions:
-            raise FileNotFoundError(f"No loadable {pt} data for {orig_id}")
+            log.warning(
+                "No loadable %s session data for %s. "
+                "All .set files failed to load. Skipping.",
+                pt,
+                orig_id,
+            )
+            return {}
         return sessions
 
     def data_path(
