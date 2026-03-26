@@ -177,10 +177,12 @@ def _load_data_002_2016(
     onset_times = []
     descriptions = []
 
+    # marker_labels has shape (n_classes, n_events); each column is an event
+    # and the row index with a positive value indicates the class.
     for i, time_ms in enumerate(marker_times):
         # Find which class this event belongs to
-        event_row = marker_labels[i, :]
-        for class_idx, value in enumerate(event_row):
+        event_col = marker_labels[:, i]
+        for class_idx, value in enumerate(event_col):
             if value > 0:
                 # Marker times are in milliseconds, convert to seconds
                 onset_times.append(time_ms / 1000.0)
