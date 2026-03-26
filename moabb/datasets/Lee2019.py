@@ -3,7 +3,7 @@
 from functools import partialmethod
 
 import numpy as np
-from mne import create_info
+from mne import Annotations, create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 from scipy.io import loadmat
@@ -200,6 +200,12 @@ class Lee2019(BaseDataset):
         )
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
+        # Add a "rest" annotation spanning the full recording for BIDS compat.
+        raw.set_annotations(
+            Annotations(
+                onset=[0], duration=[raw.times[-1]], description=["rest"]
+            )
+        )
         return raw
 
     def _get_single_subject_data(self, subject):
