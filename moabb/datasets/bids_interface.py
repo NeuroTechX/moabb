@@ -2540,6 +2540,7 @@ _FORMAT_EXTENSION_MAP = {
     "EDF": ".edf",
     "BrainVision": ".vhdr",
     "EEGLAB": ".set",
+    "BDF": ".bdf",
 }
 
 
