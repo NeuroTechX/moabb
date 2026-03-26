@@ -376,6 +376,16 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
         # --- Chailloux2020: include all tasks ---
         if hasattr(dataset, "task") and dataset.task != "all":
             dataset.task = "all"
+        # --- Shin2017A/B: re-instantiate with both MI and MA ---
+        if name in ("Shin2017A", "Shin2017B"):
+            from moabb.datasets import Shin2017A, Shin2017B
+            cls = Shin2017A if name == "Shin2017A" else Shin2017B
+            dataset = cls(
+                accept=True,
+                motor_imagery=True,
+                mental_arithmetic=True,
+                return_all_modalities=True,
+            )
         # --- All datasets: keep EOG/EMG/misc channels ---
         if hasattr(dataset, "return_all_modalities"):
             dataset.return_all_modalities = True
