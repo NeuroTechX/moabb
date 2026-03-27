@@ -350,7 +350,7 @@ class Forenzo2023(BaseDataset):
 
         sign = self.code
         data_dir = Path(dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
-        subj_dir = data_dir / f"Subject{subject:02d}"
+        subj_dir = data_dir / f"Subject{subject:02d}" / "publicData"
 
         if subj_dir.exists() and list(subj_dir.glob("*.mat")):
             return str(data_dir)
