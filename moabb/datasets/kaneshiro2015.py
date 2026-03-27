@@ -227,7 +227,9 @@ class Kaneshiro2015(BaseDataset):
                 if actual < expected:
                     log.warning(
                         "Truncated %s (%d/%d bytes), re-downloading...",
-                        fname, actual, expected,
+                        fname,
+                        actual,
+                        expected,
                     )
                     local.unlink(missing_ok=True)
                     downloaded = dl.data_dl(url, _SIGN, force_update=True)

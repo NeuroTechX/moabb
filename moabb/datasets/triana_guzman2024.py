@@ -286,8 +286,7 @@ class TrianaGuzman2024(BaseBIDSDataset):
         except AttributeError as e:
             if "chanlocs" in str(e):
                 log.warning(
-                    "Corrupt .set file for subject %d (missing chanlocs), "
-                    "skipping.",
+                    "Corrupt .set file for subject %d (missing chanlocs), " "skipping.",
                     subject,
                 )
                 return {}

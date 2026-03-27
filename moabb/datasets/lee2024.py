@@ -437,9 +437,13 @@ class Lee2024(BaseDataset):
         else:
             # Some experiments (AC, EL) have no events in stim channel.
             # Add a minimal annotation so BIDS export doesn't fail.
-            raw.set_annotations(mne.Annotations(
-                onset=[0], duration=[0], description=["stimulus"],
-            ))
+            raw.set_annotations(
+                mne.Annotations(
+                    onset=[0],
+                    duration=[0],
+                    description=["stimulus"],
+                )
+            )
 
         return raw
 

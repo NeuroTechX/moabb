@@ -207,7 +207,7 @@ class Lee2019(BaseDataset):
             if interval is not None:
                 interval = interval.squeeze()
                 if prefix == "pre":
-                    emg_slice = data["EMG"][: rest_samples]
+                    emg_slice = data["EMG"][:rest_samples]
                 else:
                     emg_slice = data["EMG"][-rest_samples:]
                 if emg_slice.shape[0] == rest_samples:
@@ -218,9 +218,7 @@ class Lee2019(BaseDataset):
 
         # Add a "rest" annotation spanning the full recording for BIDS compat.
         raw.set_annotations(
-            Annotations(
-                onset=[0], duration=[raw.times[-1]], description=["rest"]
-            )
+            Annotations(onset=[0], duration=[raw.times[-1]], description=["rest"])
         )
         return raw
 

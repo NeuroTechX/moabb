@@ -2649,18 +2649,18 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 n_records = n_samples // samples_per_record
                 target_samples = n_records * samples_per_record
                 if 0 < target_samples < n_samples:
-                    raw = raw.copy().crop(
-                        tmax=(target_samples - 1) / sfreq
-                    )
+                    raw = raw.copy().crop(tmax=(target_samples - 1) / sfreq)
 
             # Fix montage: if 'head' frame but missing fiducials (NAS/LPA/RPA),
             # re-set a standard montage with fiducials so mne_bids doesn't crash.
             montage = raw.get_montage()
             if montage is not None:
                 FIFF = mne.io.constants.FIFF
-                has_nas = any(p["kind"] == FIFF.FIFFV_POINT_CARDINAL
-                              and p.get("ident") == FIFF.FIFFV_POINT_NASION
-                              for p in montage.dig or [])
+                has_nas = any(
+                    p["kind"] == FIFF.FIFFV_POINT_CARDINAL
+                    and p.get("ident") == FIFF.FIFFV_POINT_NASION
+                    for p in montage.dig or []
+                )
                 coord_frame = montage.get_positions().get("coord_frame", "")
                 if coord_frame == "head" and not has_nas:
                     try:
