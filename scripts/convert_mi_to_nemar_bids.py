@@ -54,53 +54,53 @@ log = logging.getLogger(__name__)
 #           MunichMI (deprecated alias of GrosseWentrup2009).
 # Total: 47 datasets, 1087 subjects.
 MI_DATASETS_TO_CONVERT = [
-    "Beetl2021_B",          #    2 subjects
-    "Beetl2021_A",          #    3 subjects
-    "BNCI2003_004",         #    5 subjects
-    "Wu2020",               #    6 subjects
-    "Kaya2018",             #    7 subjects
-    "AlexMI",               #    8 subjects
-    "BNCI2014_001",         #    9 subjects
-    "BNCI2014_004",         #    9 subjects
-    "BNCI2015_004",         #    9 subjects
-    "BNCI2019_001",         #   10 subjects
-    "BNCI2025_002",         #   10 subjects
-    "GrosseWentrup2009",    #   10 subjects
-    "Weibo2014",            #   10 subjects
-    "BNCI2015_001",         #   12 subjects
-    "Tavakolan2017",        #   12 subjects
-    "Zhang2017",            #   12 subjects
-    "BNCI2022_001",         #   13 subjects
-    "BNCI2014_002",         #   14 subjects
-    "Schirrmeister2017",    #   14 subjects
-    "Wairagkar2018",        #   14 subjects
-    "Ofner2017",            #   15 subjects
-    "Brandl2020",           #   16 subjects
-    "Kumar2024",            #   18 subjects
-    "Yi2025",               #   18 subjects
-    "BNCI2024_001",         #   20 subjects
-    "BNCI2025_001",         #   20 subjects
-    "Zhou2020",             #   20 subjects
-    "Gao2026",              #   22 subjects
-    "Forenzo2023",          #   25 subjects
-    "Jeong2020",            #   25 subjects
-    "Ma2020",               #   25 subjects
-    "Liu2025",              #   27 subjects
-    "Chang2025",            #   28 subjects
-    "Shin2017A",            #   29 subjects
-    "Shin2017B",            #   29 subjects
-    "Rozado2015",           #   30 subjects
-    "Zuo2025",              #   30 subjects
-    "GuttmannFlury2025_MI", #   31 subjects
-    "TrianaGuzman2024",     #   32 subjects
-    "HefmiIch2025",         #   37 subjects
-    "BNCI2020_001",         #   45 subjects
-    "Liu2024",              #   50 subjects
-    "Yang2025",             #   51 subjects
-    "Cho2017",              #   52 subjects
-    "Lee2019_MI",           #   54 subjects
-    "Stieger2021",          #   62 subjects
-    "Dreyer2023",           #   87 subjects
+    "Beetl2021_B",  #    2 subjects
+    "Beetl2021_A",  #    3 subjects
+    "BNCI2003_004",  #    5 subjects
+    "Wu2020",  #    6 subjects
+    "Kaya2018",  #    7 subjects
+    "AlexMI",  #    8 subjects
+    "BNCI2014_001",  #    9 subjects
+    "BNCI2014_004",  #    9 subjects
+    "BNCI2015_004",  #    9 subjects
+    "BNCI2019_001",  #   10 subjects
+    "BNCI2025_002",  #   10 subjects
+    "GrosseWentrup2009",  #   10 subjects
+    "Weibo2014",  #   10 subjects
+    "BNCI2015_001",  #   12 subjects
+    "Tavakolan2017",  #   12 subjects
+    "Zhang2017",  #   12 subjects
+    "BNCI2022_001",  #   13 subjects
+    "BNCI2014_002",  #   14 subjects
+    "Schirrmeister2017",  #   14 subjects
+    "Wairagkar2018",  #   14 subjects
+    "Ofner2017",  #   15 subjects
+    "Brandl2020",  #   16 subjects
+    "Kumar2024",  #   18 subjects
+    "Yi2025",  #   18 subjects
+    "BNCI2024_001",  #   20 subjects
+    "BNCI2025_001",  #   20 subjects
+    "Zhou2020",  #   20 subjects
+    "Gao2026",  #   22 subjects
+    "Forenzo2023",  #   25 subjects
+    "Jeong2020",  #   25 subjects
+    "Ma2020",  #   25 subjects
+    "Liu2025",  #   27 subjects
+    "Chang2025",  #   28 subjects
+    "Shin2017A",  #   29 subjects
+    "Shin2017B",  #   29 subjects
+    "Rozado2015",  #   30 subjects
+    "Zuo2025",  #   30 subjects
+    "GuttmannFlury2025_MI",  #   31 subjects
+    "TrianaGuzman2024",  #   32 subjects
+    "HefmiIch2025",  #   37 subjects
+    "BNCI2020_001",  #   45 subjects
+    "Liu2024",  #   50 subjects
+    "Yang2025",  #   51 subjects
+    "Cho2017",  #   52 subjects
+    "Lee2019_MI",  #   54 subjects
+    "Stieger2021",  #   62 subjects
+    "Dreyer2023",  #   87 subjects
 ]
 
 # Datasets with extra constructor kwargs to expose all sessions
@@ -152,8 +152,9 @@ def save_progress(output_dir, progress):
 def get_disk_free_gb():
     """Return free disk space in GB."""
     import os
+
     stat = os.statvfs("/")
-    return (stat.f_bavail * stat.f_frsize) / (1024 ** 3)
+    return (stat.f_bavail * stat.f_frsize) / (1024**3)
 
 
 def validate_bids(bids_root):
@@ -205,7 +206,10 @@ def upload_to_nemar(bids_root, name):
     try:
         result = subprocess.run(
             [
-                "nemar", "dataset", "upload", str(bids_root),
+                "nemar",
+                "dataset",
+                "upload",
+                str(bids_root),
                 "--skip-orcid",
                 "--skip-validation",
                 "--yes",
@@ -220,7 +224,11 @@ def upload_to_nemar(bids_root, name):
             return True, "uploaded"
         else:
             # Check for overload/rate limit
-            if "overload" in output.lower() or "rate" in output.lower() or "429" in output:
+            if (
+                "overload" in output.lower()
+                or "rate" in output.lower()
+                or "429" in output
+            ):
                 log.warning("  OVERLOADED uploading %s, will retry later", name)
                 return False, "overloaded"
             log.error("  UPLOAD FAILED: %s\n%s", name, output[:500])
@@ -304,7 +312,11 @@ def nemar_save_and_push(clone_path, name):
         )
         if result.returncode != 0:
             output = result.stdout + result.stderr
-            if "overload" in output.lower() or "rate" in output.lower() or "429" in output:
+            if (
+                "overload" in output.lower()
+                or "rate" in output.lower()
+                or "429" in output
+            ):
                 log.warning("  OVERLOADED pushing %s, will retry later", name)
                 return False, "overloaded"
             log.error("  Push failed for %s: %s", name, output[:500])
@@ -338,7 +350,9 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
 
         log.info(
             "━━━ [%s] %s (%d subjects) ━━━",
-            name, code, n_subj,
+            name,
+            code,
+            n_subj,
         )
 
         free_gb = get_disk_free_gb()
@@ -379,6 +393,7 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
         # --- Shin2017A/B: re-instantiate with both MI and MA ---
         if name in ("Shin2017A", "Shin2017B"):
             from moabb.datasets import Shin2017A, Shin2017B
+
             cls = Shin2017A if name == "Shin2017A" else Shin2017B
             dataset = cls(
                 accept=True,
@@ -403,7 +418,7 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
 
         # Rename: remove "MNE-BIDS-" prefix
         if bids_root.name.startswith("MNE-BIDS-"):
-            new_name = bids_root.name[len("MNE-BIDS-"):]
+            new_name = bids_root.name[len("MNE-BIDS-") :]
             new_root = bids_root.parent / new_name
             if new_root.exists() and new_root != bids_root:
                 shutil.rmtree(new_root)
@@ -446,6 +461,7 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
         # Step 4: Delete local copies
         if delete_after:
             log.info("  [4/4] Deleting local copies to free space...")
+
             # git-annex objects are read-only; fix permissions before removing
             def _force_remove(func, path, exc_info):
                 try:
@@ -459,6 +475,7 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
                         os.unlink(path)
                 except OSError:
                     pass
+
             shutil.rmtree(bids_root, onexc=_force_remove)
             if clone_path and clone_path.exists():
                 shutil.rmtree(clone_path, onexc=_force_remove)
@@ -473,6 +490,7 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
         elapsed = time.time() - t0
         tb = traceback.format_exc()
         log.error("  EXCEPTION %s after %.1fs:\n%s", name, elapsed, tb)
+
         # Clean up partial conversions to free disk space
         def _force_remove(func, path, exc_info):
             os.chmod(path, 0o755)
@@ -480,6 +498,7 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
                 shutil.rmtree(path)
             else:
                 os.unlink(path)
+
         for pattern in [f"MNE-BIDS-{folder_name}", folder_name]:
             p = Path(output_dir) / pattern
             if p.exists():
@@ -556,7 +575,10 @@ def main():
             if info.get("nemar_id"):
                 progress.setdefault("nemar_ids", {})[name] = info["nemar_id"]
         elif status == "overloaded":
-            log.warning("NEMAR overloaded at %s, stopping. Re-run with --skip-uploaded to resume.", name)
+            log.warning(
+                "NEMAR overloaded at %s, stopping. Re-run with --skip-uploaded to resume.",
+                name,
+            )
             save_progress(output_dir, progress)
             sys.exit(2)  # Special exit code for overload
         else:
@@ -575,7 +597,11 @@ def main():
     # Final summary
     log.info("")
     log.info("═" * 70)
-    log.info("ALL DONE: %d uploaded, %d failed", len(progress["uploaded"]), len(progress["failed"]))
+    log.info(
+        "ALL DONE: %d uploaded, %d failed",
+        len(progress["uploaded"]),
+        len(progress["failed"]),
+    )
     for name in progress["uploaded"]:
         log.info("  ✓ %s", name)
     for name in progress["failed"]:
