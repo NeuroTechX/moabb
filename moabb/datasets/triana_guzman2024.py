@@ -281,16 +281,7 @@ class TrianaGuzman2024(BaseBIDSDataset):
 
     def _get_single_subject_data(self, subject):
         """Load BIDS data and remap numeric event annotations."""
-        try:
-            data = super()._get_single_subject_data(subject)
-        except AttributeError as e:
-            if "chanlocs" in str(e):
-                log.warning(
-                    "Corrupt .set file for subject %d (missing chanlocs), " "skipping.",
-                    subject,
-                )
-                return {}
-            raise
+        data = super()._get_single_subject_data(subject)
 
         # Remap numeric annotation descriptions to descriptive event names
         # and add a stim channel for MOABB paradigm compatibility.
