@@ -208,9 +208,7 @@ class Lee2019(BaseDataset):
             else:
                 emg_slice = data["EMG"][-rest_samples:]
             if emg_slice.shape[0] == rest_samples:
-                emg_raw = self._make_raw_array(
-                    emg_slice, data["EMG_index"], "emg", sfreq
-                )
+                emg_raw = self._make_raw_array(emg_slice, data["EMG_index"], "emg", sfreq)
                 raw = raw.add_channels([emg_raw])
 
         # Add annotation for BIDS compatibility
