@@ -203,18 +203,15 @@ class Lee2019(BaseDataset):
         # Add EMG channels if available and duration matches
         if "EMG" in data.dtype.names and "EMG_index" in data.dtype.names:
             rest_samples = data[rest_key].shape[0]
-            interval = data.get("rest_interval", None)
-            if interval is not None:
-                interval = interval.squeeze()
-                if prefix == "pre":
-                    emg_slice = data["EMG"][:rest_samples]
-                else:
-                    emg_slice = data["EMG"][-rest_samples:]
-                if emg_slice.shape[0] == rest_samples:
-                    emg_raw = self._make_raw_array(
-                        emg_slice, data["EMG_index"], "emg", sfreq
-                    )
-                    raw = raw.add_channels([emg_raw])
+            if prefix == "pre":
+                emg_slice = data["EMG"][:rest_samples]
+            else:
+                emg_slice = data["EMG"][-rest_samples:]
+            if emg_slice.shape[0] == rest_samples:
+                emg_raw = self._make_raw_array(
+                    emg_slice, data["EMG_index"], "emg", sfreq
+                )
+                raw = raw.add_channels([emg_raw])
 
         # Add a "rest" annotation spanning the full recording for BIDS compat.
         raw.set_annotations(
