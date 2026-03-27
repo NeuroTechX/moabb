@@ -366,8 +366,10 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
         # --- Lee2019: include test runs and resting state ---
         if hasattr(dataset, "test_run") and not dataset.test_run:
             dataset.test_run = True
-        if hasattr(dataset, "resting_state") and not dataset.resting_state:
-            dataset.resting_state = True
+        # NOTE: resting_state=True causes BIDS export issues (events not in
+        # event_id). Disabled for now — train+test data is the priority.
+        # if hasattr(dataset, "resting_state") and not dataset.resting_state:
+        #     dataset.resting_state = True
         # --- BrainInvaders: include online/adaptive phases ---
         if hasattr(dataset, "online") and not dataset.online:
             dataset.online = True

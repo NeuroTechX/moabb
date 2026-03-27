@@ -213,7 +213,7 @@ class Lee2019(BaseDataset):
                 )
                 raw = raw.add_channels([emg_raw])
 
-        # Add a "rest" annotation spanning the full recording for BIDS compat.
+        # Add annotation for BIDS compatibility
         raw.set_annotations(
             Annotations(onset=[0], duration=[raw.times[-1]], description=["rest"])
         )
