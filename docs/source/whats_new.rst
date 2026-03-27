@@ -32,6 +32,7 @@ Requirements
 Bugs
 ~~~~
 - Fix session key off-by-one in :class:`moabb.datasets.Lee2019` that caused silent data loss when filtering sessions, and improve session filtering in :class:`moabb.datasets.base.BaseDataset` to match compound session keys (e.g., ``"0train"``) by integer prefix (:gh:`1046` by `Benedetto Leto`_ and `Bruno Aristimunha`_).
+- Fix data path lookup in :class:`moabb.datasets.Forenzo2023` that makes MOABB unable to find the downloaded data (:gh:`1048` by `Ethan Davis`_).
 
 Code health
 ~~~~~~~~~~~
