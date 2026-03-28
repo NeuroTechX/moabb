@@ -263,11 +263,33 @@ def _data_path_for_paradigm(
                 f"Downloaded {zip_name} but could not locate ZIP in {dl_path}"
             )
 
-    # Extract ZIP to subject directory.
+    # Extract ZIP to subject directory (skip if already extracted).
     subj_dir.mkdir(parents=True, exist_ok=True)
-    log.info("Extracting %s (%s) to %s", zip_name, paradigm, subj_dir)
-    with zipfile.ZipFile(str(dl_path)) as zf:
-        safe_extract_zip(zf, subj_dir)
+    if any(subj_dir.rglob("*.bdf")):
+        log.info("Already extracted %s (%s), skipping.", zip_name, paradigm)
+    else:
+        log.info("Extracting %s (%s) to %s", zip_name, paradigm, subj_dir)
+        try:
+            with zipfile.ZipFile(str(dl_path)) as zf:
+                safe_extract_zip(zf, subj_dir)
+        except OSError:
+            # NFS may fail with EINVAL; try extracting via /scratch as fallback
+            import tempfile
+            import shutil
+
+            log.warning("NFS extraction failed, using /scratch fallback")
+            with tempfile.TemporaryDirectory(
+                dir="/scratch/baristim" if Path("/scratch/baristim").exists() else None
+            ) as tmp:
+                with zipfile.ZipFile(str(dl_path)) as zf:
+                    safe_extract_zip(zf, Path(tmp))
+                # Copy extracted files to destination
+                for item in Path(tmp).rglob("*"):
+                    if item.is_file():
+                        rel = item.relative_to(tmp)
+                        dest = subj_dir / rel
+                        dest.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(item, dest)
 
     return str(subj_dir)
 
