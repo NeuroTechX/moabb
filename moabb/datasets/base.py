@@ -875,6 +875,12 @@ class BaseDataset(metaclass=MetaclassDataset):
         if process_pipeline is None:
             process_pipeline = self._create_process_pipeline()
 
+        if effective_sessions is not None:
+            str_sessions = {str(s) for s in effective_sessions}
+            pat = session_run_pattern()
+        else:
+            str_sessions = pat = None
+
         data = dict()
         for subject in subjects:
             if subject not in self.subject_list:
@@ -884,10 +890,12 @@ class BaseDataset(metaclass=MetaclassDataset):
                 cache_config,
                 process_pipeline,
             )
-            if effective_sessions is not None:
-                str_sessions = {str(s) for s in effective_sessions}
+            if str_sessions is not None:
                 subject_data = {
-                    k: v for k, v in subject_data.items() if k in str_sessions
+                    k: v
+                    for k, v in subject_data.items()
+                    if k in str_sessions
+                    or ((m := re.fullmatch(pat, k)) and m.group(1) in str_sessions)
                 }
             data[subject] = subject_data
         check_subject_names(data)

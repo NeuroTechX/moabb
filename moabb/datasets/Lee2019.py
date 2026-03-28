@@ -212,7 +212,7 @@ class Lee2019(BaseDataset):
             if self.train_run or self.test_run:
                 mat = loadmat(file_path_list[self.sessions.index(session)])
 
-            session_name = str(session - 1)
+            session_name = str(session)
             sessions[session_name] = {}
             if self.train_run:
                 sessions[session_name]["1train"] = self._get_single_run(

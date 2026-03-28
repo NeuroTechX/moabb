@@ -2,6 +2,7 @@ import inspect
 import logging
 import re
 import warnings
+from unittest.mock import patch
 
 import mne
 import numpy as np
@@ -574,6 +575,35 @@ class TestSubjectSessionFiltering:
         assert set(data.keys()) == {1, 2}
         for sess_data in data.values():
             assert set(sess_data.keys()) == {"0", "1"}
+
+    def test_session_filtering_matches_by_integer_prefix(self):
+        """Session selection by integer should match compound keys like '0train'."""
+        ds = FakeDataset(n_subjects=1, n_sessions=2, sessions=[0])
+        # Patch the cache layer to return compound keys
+        original = ds._get_single_subject_data_using_cache
+
+        def compound_keys(subject, cache_config, process_pipeline):
+            data = original(subject, cache_config, process_pipeline)
+            return {f"{k}desc": v for k, v in data.items()}
+
+        with patch.object(ds, "_get_single_subject_data_using_cache", compound_keys):
+            data = ds.get_data()
+            for sess_data in data.values():
+                assert list(sess_data.keys()) == ["0desc"]
+
+    def test_session_filtering_with_string_compound_key(self):
+        """Exact string session selection should work for compound keys."""
+        ds = FakeDataset(n_subjects=1, n_sessions=2, sessions=["0desc"])
+        original = ds._get_single_subject_data_using_cache
+
+        def compound_keys(subject, cache_config, process_pipeline):
+            data = original(subject, cache_config, process_pipeline)
+            return {f"{k}desc": v for k, v in data.items()}
+
+        with patch.object(ds, "_get_single_subject_data_using_cache", compound_keys):
+            data = ds.get_data()
+            for sess_data in data.values():
+                assert list(sess_data.keys()) == ["0desc"]
 
     def test_all_subjects_is_immutable_copy(self):
         ds = PhysionetMI(subjects=[1, 2])
