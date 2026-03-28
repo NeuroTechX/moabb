@@ -509,7 +509,9 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
 
                 shutil.rmtree(p, onexc=_force_remove)
             elif p.exists():
-                log.info("  Keeping completed BIDS output: %s (upload from login node)", p)
+                log.info(
+                    "  Keeping completed BIDS output: %s (upload from login node)", p
+                )
         return name, "failed", elapsed, f"exception: {tb[:200]}", {}
 
 
