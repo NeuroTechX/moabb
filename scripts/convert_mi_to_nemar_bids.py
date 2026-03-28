@@ -493,19 +493,23 @@ def process_one(name, output_dir, overwrite=False, delete_after=True):
         tb = traceback.format_exc()
         log.error("  EXCEPTION %s after %.1fs:\n%s", name, elapsed, tb)
 
-        # Clean up partial conversions to free disk space
-        def _force_remove(func, path, exc_info):
-            os.chmod(path, 0o755)
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-            else:
-                os.unlink(path)
-
+        # Only clean up if BIDS conversion didn't complete (no dataset_description.json)
+        # Keep completed BIDS output so it can be uploaded from login node later.
         for pattern in [f"MNE-BIDS-{folder_name}", folder_name]:
             p = Path(output_dir) / pattern
-            if p.exists():
+            if p.exists() and not (p / "dataset_description.json").exists():
                 log.info("  Cleaning up partial conversion: %s", p)
+
+                def _force_remove(func, path, exc_info):
+                    os.chmod(path, 0o755)
+                    if os.path.isdir(path):
+                        shutil.rmtree(path)
+                    else:
+                        os.unlink(path)
+
                 shutil.rmtree(p, onexc=_force_remove)
+            elif p.exists():
+                log.info("  Keeping completed BIDS output: %s (upload from login node)", p)
         return name, "failed", elapsed, f"exception: {tb[:200]}", {}
 
 
