@@ -274,8 +274,8 @@ def _data_path_for_paradigm(
                 safe_extract_zip(zf, subj_dir)
         except OSError:
             # NFS may fail with EINVAL; try extracting via /scratch as fallback
-            import tempfile
             import shutil
+            import tempfile
 
             log.warning("NFS extraction failed, using /scratch fallback")
             with tempfile.TemporaryDirectory(
