@@ -669,6 +669,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         if self.resample is not None:
             steps.append(("resample", get_resample_pipeline(self.resample)))
         if return_epochs:  # needed to concatenate epochs
+            # MNE: mne.Epochs.load_data (preload epochs arrays into memory)
             steps.append(("load_data", FunctionTransformer(methodcaller("load_data"))))
         return FixedPipeline(steps)
 
@@ -677,10 +678,12 @@ class BaseProcessing(metaclass=MoabbMetaClass):
     ):
         steps = []
         if not return_epochs and not return_raws:
+            # MNE: mne.Epochs.get_data → (n_epochs, n_channels, n_times) ndarray
             steps.append(("get_data", FunctionTransformer(methodcaller("get_data"))))
             steps.append(
                 (
                     "scaling",
+                    # ndarray multiply; unit_factor comes from the MOABB dataset definition
                     FunctionTransformer(methodcaller("__mul__", dataset.unit_factor)),
                 )
             )

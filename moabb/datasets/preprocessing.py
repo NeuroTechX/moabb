@@ -487,8 +487,11 @@ def _compute_events_desc(event_id):
 
 
 class SetRawAnnotations(FixedTransformer):
-    """
-    Always sets the annotations, even if the events list is empty
+    """Derive trial markers on ``Raw`` and set them as MNE :class:`mne.Annotations`.
+
+    Uses :func:`mne.find_events` or :func:`mne.events_from_annotations` to read triggers,
+    then :func:`mne.annotations_from_events` and :meth:`mne.io.BaseRaw.set_annotations`.
+    If no events remain after filtering, annotations are not set (see implementation).
     """
 
     def __init__(self, event_id, interval: Tuple[float, float]):
@@ -565,6 +568,9 @@ class SetRawAnnotations(FixedTransformer):
 
 class RawToEvents(FixedTransformer):
     """
+    Extract an ``(n_events, 3)`` MNE events array from ``Raw`` via :func:`mne.find_events`
+    or :func:`mne.events_from_annotations` (see ``_find_events``).
+
     Always returns an array for shape (n_events, 3), even if no events found.
 
     When ``overlap`` and ``window_length`` are provided, generates overlapping
@@ -646,6 +652,8 @@ class RawToEvents(FixedTransformer):
 
 
 class RawToEventsP300(RawToEvents):
+    """P300-specific :class:`RawToEvents` that may merge stimulus codes with :func:`mne.merge_events`."""
+
     def __init__(self, event_id, interval, ignore_relabelling=False):
         self.ignore_relabelling = ignore_relabelling
         super().__init__(event_id, interval)
@@ -669,6 +677,8 @@ class RawToEventsP300(RawToEvents):
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
+    """Build synthetic events on a fixed grid (no MNE event finder); output is standard MNE ``events``."""
+
     def __init__(
         self,
         length,
@@ -711,6 +721,8 @@ class RawToFixedIntervalEvents(FixedTransformer):
 
 
 class EpochsToEvents(FixedTransformer):
+    """Pass through :attr:`mne.Epochs.events` (the ``(n_epochs, 3)`` integer event array)."""
+
     def __init__(self):
         super().__init__()
 
@@ -719,6 +731,8 @@ class EpochsToEvents(FixedTransformer):
 
 
 class EventsToLabels(FixedTransformer):
+    """Map event type column ``events[:, 2]`` to string labels using ``event_id`` (pure Python / NumPy)."""
+
     def __init__(self, event_id):
         super().__init__()
         self.event_id = event_id
@@ -730,6 +744,12 @@ class EventsToLabels(FixedTransformer):
 
 
 class RawToEpochs(FixedTransformer):
+    """Cut trials from continuous ``Raw`` using the :class:`mne.Epochs` constructor.
+
+    ``transform`` calls :class:`mne.Epochs` with the given ``tmin``/``tmax``/``baseline``,
+    channel picks, and optional bad-channel interpolation (:meth:`mne.io.BaseRaw.interpolate_bads`).
+    """
+
     def __init__(
         self,
         event_id: Dict[str, int],
@@ -824,6 +844,12 @@ class RawToEpochs(FixedTransformer):
 
 
 class NamedFunctionTransformer(FunctionTransformer):
+    """Like :class:`sklearn.preprocessing.FunctionTransformer` but with a readable ``repr``.
+
+    Used here mainly to wrap **MNE** methods on ``BaseRaw`` (e.g. ``filter``, ``crop``,
+    ``resample``) passed via :class:`operator.methodcaller`, so pipeline diagrams stay legible.
+    """
+
     def __init__(self, func, *, display_name=None, validate=False, **kwargs):
         super().__init__(func=func, validate=validate, **kwargs)
         self.display_name = display_name
@@ -846,6 +872,20 @@ class NamedFunctionTransformer(FunctionTransformer):
 
 
 def get_filter_pipeline(fmin, fmax):
+    """Return a pipeline step that applies MNE band-pass filtering to ``Raw``.
+
+    At transform time this invokes :meth:`mne.io.BaseRaw.filter` on the object
+    (via :class:`operator.methodcaller`), i.e. ``raw.filter(l_freq=fmin, h_freq=fmax, ...)`` —
+    not a sklearn or numpy implementation.
+
+    Parameters
+    ----------
+    fmin : float
+        Low cutoff frequency (Hz) passed as ``l_freq``.
+    fmax : float
+        High cutoff frequency (Hz) passed as ``h_freq``.
+    """
+    # methodcaller: forwards to mne.io.BaseRaw.filter when the pipeline passes a Raw.
     return NamedFunctionTransformer(
         func=methodcaller(
             "filter",
@@ -860,6 +900,7 @@ def get_filter_pipeline(fmin, fmax):
 
 
 def get_crop_pipeline(tmin, tmax):
+    """Return a pipeline step that applies MNE temporal cropping: :meth:`mne.io.BaseRaw.crop`."""
     return NamedFunctionTransformer(
         func=methodcaller(
             "crop",
@@ -872,6 +913,7 @@ def get_crop_pipeline(tmin, tmax):
 
 
 def get_resample_pipeline(sfreq):
+    """Return a pipeline step that applies MNE resampling: :meth:`mne.io.BaseRaw.resample`."""
     return NamedFunctionTransformer(
         func=methodcaller(
             "resample",
