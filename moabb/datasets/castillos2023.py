@@ -185,7 +185,7 @@ class BaseCastillos2023(BaseDataset):
         path_folder = path_zip.rstrip("4Class-VEP.zip")
 
         # check if has to unzip
-        if not (osp.isdir(path_folder + "4Class-VEP")):
+        if not (osp.isdir(path_folder + "4Class-CVEP")):
             zip_ref = z.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 

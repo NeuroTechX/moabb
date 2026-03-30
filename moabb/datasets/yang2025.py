@@ -343,15 +343,13 @@ class Yang2025(BaseDataset):
         basepath = Path(path) / "MNE-yang2025-data"
         basepath.mkdir(parents=True, exist_ok=True)
 
-        # Check if data already exists (raw BDF files)
-        subj_str = f"sub-{subject:03d}"
-        existing = list(basepath.rglob(f"*{subj_str}*data.bdf"))
-        if existing:
-            return str(basepath)
+        # Check if data already extracted (look for the extracted directory)
+        extracted_dir = basepath / "WBCIC_SHU Motor Imagery dataset"
+        already_extracted = extracted_dir.is_dir() and any(extracted_dir.rglob("*.mat"))
 
-        # Single 65.6 GB ZIP - check if already downloaded/extracted.
+        # Single 65.6 GB ZIP - download if needed.
         zip_path = basepath / "WBCIC_SHU_Motor_Imagery_dataset.zip"
-        if not zip_path.exists() and not existing:
+        if not zip_path.exists() and not already_extracted:
             log.info("Downloading Yang2025 dataset (65.6 GB) from Figshare...")
             dl_path = dl.data_dl(
                 _ZIP_URL,
@@ -366,7 +364,7 @@ class Yang2025(BaseDataset):
                 dl_path.rename(zip_path)
 
         # Extract if needed
-        if zip_path.exists() and not existing:
+        if zip_path.exists() and not already_extracted:
             log.info("Extracting Yang2025 dataset...")
             with zipfile.ZipFile(str(zip_path), "r") as zf:
                 zf.extractall(str(basepath))
