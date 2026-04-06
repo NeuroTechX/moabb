@@ -20,6 +20,7 @@ Version 1.6  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Add unified interactive macro table for dataset summary page with 58 metadata columns, SearchPanes filtering, paradigm distribution bar, and CSV export (:gh:`1043`).
+- Add rich HTML repr for preprocessing pipeline transformers: pipelines now render as interactive sklearn diagrams in Jupyter notebooks and sphinx-gallery docs, showing the three-stage flow (Raw, Epochs, Array) with readable step names, event lists, and key parameters instead of raw dict dumps (by `Zach Munro`_ and `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
@@ -860,3 +861,4 @@ API changes
 .. _Katelyn Begany: https://github.com/kbegany
 .. _Sarthak Tayal: https://github.com/tayal-sarthak
 .. _Benedetto Leto: https://github.com/ben9809
+.. _Zach Munro: https://github.com/zmunro
