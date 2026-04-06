@@ -39,6 +39,7 @@ Bugs
 - Fix :class:`moabb.datasets.Chang2025` BIDS conversion crash by gracefully skipping subjects with missing directories or ``.set`` files (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.GuttmannFlury2025` BIDS export ``OSError`` by correcting channel types (``Trig`` → stim, ``HEO``/``VEO`` → eog, ``M1``/``M2`` → misc) so trigger channel values no longer exceed EEG physical range limits (by `Bruno Aristimunha`_)
 - Fix ``numpy.void.get()`` error in :class:`moabb.datasets.Lee2019` resting state EMG channel handling (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.castillos2023.BaseCastillos2023` extraction check using wrong directory name (``4Class-VEP`` instead of ``4Class-CVEP``), causing re-extraction on every call, and replace fragile ``rstrip`` path derivation with proper ``os.path`` manipulation (by `Bruno Aristimunha`_)
 - Fix data path lookup in :class:`moabb.datasets.Forenzo2023` that makes MOABB unable to find the downloaded data (:gh:`1048` by `Ethan Davis`_).
 
 Code health
