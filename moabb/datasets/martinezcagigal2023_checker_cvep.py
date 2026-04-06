@@ -332,8 +332,9 @@ class MartinezCagigal2023Checker(BaseDataset):
         info.set_meas_date(meas_date.replace(tzinfo=timezone.utc))
         info.set_montage("standard_1005", match_case=False, on_missing="warn")
 
-        # Set data (signal shape is samples x channels, need to transpose)
-        raw_data = mne.io.RawArray(signal.T, info, verbose=False)
+        # Set data (signal shape is samples x channels, need to transpose).
+        # The BSON files store EEG in microvolts; convert to Volts for MNE.
+        raw_data = mne.io.RawArray(signal.T * 1e-6, info, verbose=False)
 
         # Get timing information
         fps = cvep_data["fps_resolution"]

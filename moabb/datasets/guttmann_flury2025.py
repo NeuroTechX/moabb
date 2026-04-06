@@ -263,11 +263,33 @@ def _data_path_for_paradigm(
                 f"Downloaded {zip_name} but could not locate ZIP in {dl_path}"
             )
 
-    # Extract ZIP to subject directory.
+    # Extract ZIP to subject directory (skip if already extracted).
     subj_dir.mkdir(parents=True, exist_ok=True)
-    log.info("Extracting %s (%s) to %s", zip_name, paradigm, subj_dir)
-    with zipfile.ZipFile(str(dl_path)) as zf:
-        safe_extract_zip(zf, subj_dir)
+    if any(subj_dir.rglob("*.bdf")):
+        log.info("Already extracted %s (%s), skipping.", zip_name, paradigm)
+    else:
+        log.info("Extracting %s (%s) to %s", zip_name, paradigm, subj_dir)
+        try:
+            with zipfile.ZipFile(str(dl_path)) as zf:
+                safe_extract_zip(zf, subj_dir)
+        except OSError:
+            # NFS may fail with EINVAL; try extracting via /scratch as fallback
+            import shutil
+            import tempfile
+
+            log.warning("NFS extraction failed, using /scratch fallback")
+            with tempfile.TemporaryDirectory(
+                dir="/scratch/baristim" if Path("/scratch/baristim").exists() else None
+            ) as tmp:
+                with zipfile.ZipFile(str(dl_path)) as zf:
+                    safe_extract_zip(zf, Path(tmp))
+                # Copy extracted files to destination
+                for item in Path(tmp).rglob("*"):
+                    if item.is_file():
+                        rel = item.relative_to(tmp)
+                        dest = subj_dir / rel
+                        dest.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(item, dest)
 
     return str(subj_dir)
 
@@ -385,12 +407,37 @@ def _decode_p300_from_sync_csv(bdf_path):
     return records if records else None
 
 
+def _fix_channel_types(raw):
+    """Fix channel types for non-EEG channels in Guttmann-Flury BDF files.
+
+    The BDF files have malformed headers so MNE defaults all channels to EEG.
+    The ``Trig`` channel contains trigger codes with values up to 40 V,
+    which exceeds BDF physical range limits and causes ``OSError`` during
+    BIDS export.  Re-type ``Trig`` as ``stim``, ``HEO`` as ``eog``, and
+    ``M1``/``M2`` as ``misc`` so that downstream writers handle them
+    correctly.
+    """
+    type_mapping = {}
+    for name in raw.ch_names:
+        upper = name.upper()
+        if upper == "TRIG":
+            type_mapping[name] = "stim"
+        elif upper in ("HEO", "VEO", "HEOG", "VEOG"):
+            type_mapping[name] = "eog"
+        elif upper in ("M1", "M2"):
+            type_mapping[name] = "misc"
+    if type_mapping:
+        raw.set_channel_types(type_mapping)
+    return raw
+
+
 def _load_raw_with_stim_events(bdf_path, event_id):
     """Load BDF file, decode Trig channel events, and set annotations.
 
     Used by MI/ME where Trig channel codes directly map to event types.
     """
     raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
+    _fix_channel_types(raw)
 
     stim_ch = "Trig"
     if stim_ch not in raw.ch_names:
@@ -757,6 +804,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
     def _load_ssvep_raw(self, bdf_path):
         """Load SSVEP BDF and decode frequency events from sync CSV."""
         raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
+        _fix_channel_types(raw)
 
         annot_onset = []
         annot_dur = []
@@ -946,6 +994,7 @@ class GuttmannFlury2025_P300(BaseDataset):
         falls back to decoding flash events from the sync CSV.
         """
         raw = mne.io.read_raw_bdf(str(bdf_path), preload=True, verbose="ERROR")
+        _fix_channel_types(raw)
 
         # Try annotations JSON first.
         ann_records = _load_annotations_json(bdf_path)
