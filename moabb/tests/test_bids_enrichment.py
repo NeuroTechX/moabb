@@ -2025,9 +2025,7 @@ class TestBuildReadme:
         ds.n_sessions = 2
         ds.event_id = {"left_hand": 1, "right_hand": 2}
         ds.interval = [0, 4]
-        type(
-            ds
-        ).__doc__ = """Test Motor Imagery dataset.
+        type(ds).__doc__ = """Test Motor Imagery dataset.
 
         A dataset for testing BIDS README generation.
 

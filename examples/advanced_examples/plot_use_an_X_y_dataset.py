@@ -16,6 +16,7 @@ classification is performed.
 The dataset provides the X y data as a single user and a single session.
 
 """
+
 # Authors: Anton ANDREEV
 
 import numpy as np
