@@ -182,10 +182,10 @@ class BaseCastillos2023(BaseDataset):
 
         url = "https://zenodo.org/records/8255618/files/4Class-CVEP.zip"
         path_zip = dl.data_dl(url, "4Class-VEP", path, force_update, verbose)
-        path_folder = path_zip.rstrip("4Class-VEP.zip")
+        path_folder = osp.join(osp.dirname(path_zip), "")
 
         # check if has to unzip
-        if not (osp.isdir(path_folder + "4Class-VEP")):
+        if not (osp.isdir(path_folder + "4Class-CVEP")):
             zip_ref = z.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 
