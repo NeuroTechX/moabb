@@ -20,6 +20,9 @@ Version 1.6  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Add unified interactive macro table for dataset summary page with 58 metadata columns, SearchPanes filtering, paradigm distribution bar, and CSV export (:gh:`1043`).
+- Expose ``motor_imagery`` and ``mental_arithmetic`` keyword-only parameters on :class:`moabb.datasets.Shin2017A` (default: MI=True, MA=False) and :class:`moabb.datasets.Shin2017B` (default: MI=False, MA=True), allowing users to load both conditions simultaneously while preserving backward compatibility (by `Bruno Aristimunha`_)
+- Add resting state annotations and EMG channel support to :class:`moabb.datasets.Lee2019` resting state runs for BIDS export compatibility (by `Bruno Aristimunha`_)
+- Skip zip extraction in :class:`moabb.datasets.GuttmannFlury2025` when files are already extracted, with ``/scratch`` fallback for NFS filesystems on compute nodes (by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -32,6 +35,10 @@ Requirements
 Bugs
 ~~~~
 - Fix session key off-by-one in :class:`moabb.datasets.Lee2019` that caused silent data loss when filtering sessions, and improve session filtering in :class:`moabb.datasets.base.BaseDataset` to match compound session keys (e.g., ``"0train"``) by integer prefix (:gh:`1046` by `Benedetto Leto`_ and `Bruno Aristimunha`_).
+- Fix BIDS conversion failures across multiple datasets: crop BDF/EDF signals to exact data records in ``bids_interface``, add standard montage fiducials when missing, fix :class:`moabb.datasets.BNCI2016_002` ``KeyError`` in event mapping, handle lowercase ``trigger`` attribute in :class:`moabb.datasets.BNCI2022_001` ``.mat`` files, detect and re-download truncated files in :class:`moabb.datasets.Kaneshiro2015`, add stim-channel annotations in :class:`moabb.datasets.Lee2024` for BIDS compatibility, convert µV to V in :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary` to fix BDF physical range overflow, and handle alternate ``data`` key in :class:`moabb.datasets.Zuo2025` ``.mat`` files (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.Chang2025` BIDS conversion crash by gracefully skipping subjects with missing directories or ``.set`` files (by `Bruno Aristimunha`_)
+- Fix :class:`moabb.datasets.GuttmannFlury2025` BIDS export ``OSError`` by correcting channel types (``Trig`` → stim, ``HEO``/``VEO`` → eog, ``M1``/``M2`` → misc) so trigger channel values no longer exceed EEG physical range limits (by `Bruno Aristimunha`_)
+- Fix ``numpy.void.get()`` error in :class:`moabb.datasets.Lee2019` resting state EMG channel handling (by `Bruno Aristimunha`_)
 - Fix data path lookup in :class:`moabb.datasets.Forenzo2023` that makes MOABB unable to find the downloaded data (:gh:`1048` by `Ethan Davis`_).
 
 Code health

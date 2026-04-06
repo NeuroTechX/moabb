@@ -201,8 +201,12 @@ def _convert_run_001_2022(
 
     if hasattr(run_data, "Trigger"):
         trigger = run_data.Trigger
+    elif hasattr(run_data, "trigger"):
+        trigger = run_data.trigger
     elif "Trigger" in data:
         trigger = data["Trigger"]
+    elif "trigger" in data:
+        trigger = data["trigger"]
 
     # Try to get sampling rate from header
     if hasattr(run_data, "Header"):

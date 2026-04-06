@@ -628,6 +628,9 @@ def _build_sidecar_enrichment(metadata):
     # EEGReference is REQUIRED by BIDS — ensure always present
     entries.setdefault("EEGReference", "n/a")
 
+    # SoftwareVersions is RECOMMENDED — ensure always present
+    entries.setdefault("SoftwareVersions", "n/a")
+
     # HardwareFilters and SoftwareFilters
     if prep and any(
         v is not None
@@ -2537,6 +2540,7 @@ _FORMAT_EXTENSION_MAP = {
     "EDF": ".edf",
     "BrainVision": ".vhdr",
     "EEGLAB": ".set",
+    "BDF": ".bdf",
 }
 
 
@@ -2634,6 +2638,41 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 'Encountered data in "double" format',
                 RuntimeWarning,
             )
+            # Crop to exact number of data records for BDF/EDF export — edfio
+            # requires signal duration exactly divisible by data_record_duration.
+            if self._format in ("BDF", "EDF"):
+                sfreq = raw.info["sfreq"]
+                n_samples = raw.n_times
+                # edfio uses data_record_duration = round(sfreq) / sfreq
+                # for non-integer sfreq, or 1.0 for integer sfreq.
+                samples_per_record = round(sfreq)
+                n_records = n_samples // samples_per_record
+                target_samples = n_records * samples_per_record
+                if 0 < target_samples < n_samples:
+                    raw = raw.copy().crop(tmax=(target_samples - 1) / sfreq)
+
+            # Fix montage: if 'head' frame but missing fiducials (NAS/LPA/RPA),
+            # re-set a standard montage with fiducials so mne_bids doesn't crash.
+            montage = raw.get_montage()
+            if montage is not None:
+                FIFF = mne.io.constants.FIFF
+                has_nas = any(
+                    p["kind"] == FIFF.FIFFV_POINT_CARDINAL
+                    and p.get("ident") == FIFF.FIFFV_POINT_NASION
+                    for p in montage.dig or []
+                )
+                coord_frame = montage.get_positions().get("coord_frame", "")
+                if coord_frame == "head" and not has_nas:
+                    try:
+                        std = mne.channels.make_standard_montage("standard_1005")
+                        raw.set_montage(std, on_missing="ignore")
+                    except Exception:
+                        log.warning(
+                            "Could not set standard montage, dropping "
+                            "electrode positions."
+                        )
+                        raw.set_montage(None)
+
             # Save annotation extras before write_raw_bids (which may
             # strip them).  We patch events.tsv afterwards.
             ann_extras = getattr(raw.annotations, "extras", None)
@@ -2694,6 +2733,36 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # SpatialReference in electrodes.json sidecars is handled by the
         # monkey-patched _write_dig_bids function at module level.
+
+        # FiducialsCoordinates is RECOMMENDED in coordsystem.json — add if missing
+        FIFF = mne.io.constants.FIFF
+        coordsystem_files = list(bids_path.root.rglob("*_coordsystem.json"))
+        for cs_path in coordsystem_files:
+            with open(cs_path) as f:
+                cs = json.load(f)
+            if "FiducialsCoordinates" not in cs:
+                montage = raw.get_montage() if raw is not None else None
+                fids = {}
+                if montage is not None:
+                    for dig_point in montage.dig or []:
+                        kind = dig_point["kind"]
+                        ident = dig_point.get("ident", 0)
+                        pos = list(dig_point["r"])
+                        if kind == FIFF.FIFFV_POINT_CARDINAL:
+                            if ident == FIFF.FIFFV_POINT_NASION:
+                                fids["NAS"] = pos
+                            elif ident == FIFF.FIFFV_POINT_LPA:
+                                fids["LPA"] = pos
+                            elif ident == FIFF.FIFFV_POINT_RPA:
+                                fids["RPA"] = pos
+                if fids:
+                    cs["FiducialsCoordinates"] = fids
+                    cs.setdefault(
+                        "FiducialsCoordinateSystem",
+                        cs.get("EEGCoordinateSystem", "CapTrak"),
+                    )
+                    with open(cs_path, "w") as f:
+                        json.dump(cs, f, indent="\t")
 
         # Enrich events.json sidecar with HED annotations and stimulus info
         hed_tags = _build_hed_sidecar_annotations(self.dataset)

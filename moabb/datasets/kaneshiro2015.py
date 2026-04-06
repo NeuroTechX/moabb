@@ -10,6 +10,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
+import requests
 from scipy.io import loadmat
 
 from . import download as dl
@@ -206,11 +207,36 @@ class Kaneshiro2015(BaseDataset):
         fname = f"S{subject}.mat"
         local = base / fname
 
+        url = f"{_BASE_URL}/{fname}"
+
         if not local.exists() or force_update:
-            url = f"{_BASE_URL}/{fname}"
-            downloaded = dl.data_dl(url, _SIGN)
+            downloaded = dl.data_dl(url, _SIGN, force_update=force_update)
             downloaded = Path(downloaded)
             if downloaded != local:
                 downloaded.rename(local)
+
+        # Stanford uses chunked transfer (no Content-Length), so pooch
+        # can silently accept truncated downloads.  Verify size via a
+        # range request and re-download if truncated.
+        try:
+            resp = requests.get(url, headers={"Range": "bytes=0-0"}, timeout=10)
+            cr = resp.headers.get("Content-Range", "")
+            if "/" in cr:
+                expected = int(cr.rsplit("/", 1)[1])
+                actual = local.stat().st_size
+                if actual < expected:
+                    log.warning(
+                        "Truncated %s (%d/%d bytes), re-downloading...",
+                        fname,
+                        actual,
+                        expected,
+                    )
+                    local.unlink(missing_ok=True)
+                    downloaded = dl.data_dl(url, _SIGN, force_update=True)
+                    downloaded = Path(downloaded)
+                    if downloaded != local:
+                        downloaded.rename(local)
+        except Exception:
+            pass  # If range check fails, proceed with what we have
 
         return str(local)

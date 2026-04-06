@@ -426,6 +426,25 @@ class Lee2024(BaseDataset):
         info = mne.create_info(ch_names_full, sfreq, ch_types)
         raw = mne.io.RawArray(all_data, info, verbose=False)
         raw.set_montage("standard_1020", on_missing="warn")
+
+        # Convert stim channel events to annotations for BIDS compatibility.
+        events = mne.find_events(raw, stim_channel="STI", verbose=False)
+        if len(events) > 0:
+            annot = mne.annotations_from_events(
+                events, sfreq, event_desc={1: "NonTarget", 2: "Target"}
+            )
+            raw.set_annotations(annot)
+        else:
+            # Some experiments (AC, EL) have no events in stim channel.
+            # Add a minimal annotation so BIDS export doesn't fail.
+            raw.set_annotations(
+                mne.Annotations(
+                    onset=[0],
+                    duration=[0],
+                    description=["stimulus"],
+                )
+            )
+
         return raw
 
     def data_path(

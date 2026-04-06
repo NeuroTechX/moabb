@@ -459,10 +459,19 @@ class Zuo2025(BaseDataset):
         """Load a raw session MAT file and return MNE Raw."""
         mat = loadmat(str(mat_path), squeeze_me=True)
 
-        # The raw data is stored as 'EEG' with shape [33 x N].
+        # The raw data is stored as 'EEG' (or 'data' for some subjects)
+        # with shape [33 x N].
         # Rows 1-32: EEG channels (30 EEG + 2 EOG)
         # Row 33: Event labels
-        eeg_raw = mat["EEG"]
+        if "EEG" in mat:
+            eeg_raw = mat["EEG"]
+        elif "data" in mat:
+            eeg_raw = mat["data"]
+        else:
+            raise KeyError(
+                f"Expected 'EEG' or 'data' key in {mat_path}, "
+                f"got {[k for k in mat.keys() if not k.startswith('__')]}"
+            )
         if eeg_raw.shape[0] > eeg_raw.shape[1]:
             eeg_raw = eeg_raw.T  # Ensure shape is [channels x samples]
 

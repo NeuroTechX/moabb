@@ -541,6 +541,8 @@ class Shin2017A(BaseShin2017):
         subjects=None,
         sessions=None,
         *,
+        motor_imagery=True,
+        mental_arithmetic=False,
         return_all_modalities=False,
         **kwargs,
     ):
@@ -550,8 +552,8 @@ class Shin2017A(BaseShin2017):
         super().__init__(
             suffix="A",
             fnirs=False,
-            motor_imagery=True,
-            mental_arithmetic=False,
+            motor_imagery=motor_imagery,
+            mental_arithmetic=mental_arithmetic,
             accept=accept,
             subjects=subjects,
             sessions=sessions,
@@ -863,6 +865,8 @@ class Shin2017B(BaseShin2017):
         subjects=None,
         sessions=None,
         *,
+        motor_imagery=False,
+        mental_arithmetic=True,
         return_all_modalities=False,
         **kwargs,
     ):
@@ -872,8 +876,8 @@ class Shin2017B(BaseShin2017):
         super().__init__(
             suffix="B",
             fnirs=False,
-            motor_imagery=False,
-            mental_arithmetic=True,
+            motor_imagery=motor_imagery,
+            mental_arithmetic=mental_arithmetic,
             subjects=subjects,
             sessions=sessions,
             accept=accept,
