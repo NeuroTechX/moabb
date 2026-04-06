@@ -206,6 +206,55 @@ class Jeong2020(BaseDataset):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
+            hed_tags={
+                # Reaching: 6 directions (Forward/Backward not in HED schema)
+                "reach_forward": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Reach, (Label/forward)))"
+                ),
+                "reach_backward": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Reach, (Label/backward)))"
+                ),
+                "reach_left": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Reach, Left))"
+                ),
+                "reach_right": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Reach, Right))"
+                ),
+                "reach_up": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Reach, Upward))"
+                ),
+                "reach_down": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Reach, Downward))"
+                ),
+                # Grasping: 3 types (cylindrical/spherical/lateral per paper)
+                "grasp_cup": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Grasp, Hand, (Label/cylindrical)))"
+                ),
+                "grasp_ball": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Grasp, Hand, (Label/spherical)))"
+                ),
+                "grasp_card": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Grasp, Hand, (Label/lateral)))"
+                ),
+                # Twisting: 2 types (Forearm for consistency with Ofner2017)
+                "twist_pronation": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Turn, Forearm, (Label/pronation)))"
+                ),
+                "twist_supination": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Turn, Forearm, (Label/supination)))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1093/gigascience/giaa098",
