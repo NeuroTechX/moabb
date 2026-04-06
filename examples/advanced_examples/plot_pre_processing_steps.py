@@ -90,8 +90,8 @@ paradigm_filterbank = FilterBankLeftRightImagery()
 pre_procesing_filter_bank_steps = paradigm_filterbank.make_process_pipelines(dataset)
 
 # By default, we have six filter banks, and each filter bank has the same steps.
-for i, step in enumerate(pre_procesing_filter_bank_steps):
-    print(f"Filter bank {i}: {step}")
+# Let's display the first one:
+pre_procesing_filter_bank_steps[0]
 
 ##############################################################################
 # How to include extra steps?

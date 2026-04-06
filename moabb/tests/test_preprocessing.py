@@ -6,7 +6,7 @@ import mne
 import numpy as np
 import pytest
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FunctionTransformer, Pipeline
 
 from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
@@ -641,6 +641,20 @@ def test_named_function_transformer(display_name, expected_repr):
 
 
 @pytest.mark.parametrize(
+    "display_name, expected_name",
+    [("My Transform", "My Transform"), (None, "my_func")],
+)
+def test_named_function_transformer_repr_html(display_name, expected_name):
+    def my_func(x):
+        return x
+
+    t = NamedFunctionTransformer(my_func, display_name=display_name)
+    html = t._repr_html_()
+    assert expected_name in html
+    assert "<style>" in html  # sklearn's full HTML repr includes CSS
+
+
+@pytest.mark.parametrize(
     "factory, args, label",
     [
         (get_filter_pipeline, (8, 30), "Band Pass Filter"),
@@ -651,3 +665,19 @@ def test_named_function_transformer(display_name, expected_repr):
 def test_pipeline_helpers(factory, args, label):
     t = factory(*args)
     assert isinstance(t, NamedFunctionTransformer) and label in repr(t)
+
+
+def test_fixed_pipeline_repr_html_with_steptype_keys():
+    """FixedPipeline._repr_html_ must work with StepType enum keys."""
+    pipeline = FixedPipeline(
+        steps=[
+            (StepType.RAW, FunctionTransformer()),
+            (StepType.EPOCHS, FunctionTransformer()),
+        ]
+    )
+    html = pipeline._repr_html_()
+    assert "<style>" in html
+    assert "FunctionTransformer" in html
+    # StepType enums must not leak into the HTML output
+    assert "StepType.RAW" not in html
+    assert "StepType.EPOCHS" not in html

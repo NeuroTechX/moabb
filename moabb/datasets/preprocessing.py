@@ -1,5 +1,6 @@
 import logging
 from collections import OrderedDict
+from enum import Enum
 from operator import methodcaller
 from typing import Dict, List, Tuple, Union
 
@@ -7,6 +8,7 @@ import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
+from sklearn.utils import Bunch
 
 from moabb.datasets._channel_pick import pick_channels_for_modalities
 
@@ -39,6 +41,76 @@ class FixedPipeline(Pipeline):
     def __sklearn_is_fitted__(self):
         """Return True to indicate this pipeline is always considered fitted."""
         return True
+
+    def __repr__(self):
+        step_names = [
+            f"{self._step_label(n)}: {e.__class__.__name__}" for n, e in self.steps
+        ]
+        return f"FixedPipeline([{' -> '.join(step_names)}])"
+
+    @staticmethod
+    def _step_label(name):
+        """Convert a step name (possibly a StepType enum) to a display string."""
+        key = name.value if isinstance(name, Enum) else str(name)
+        return key.capitalize()
+
+    @property
+    def named_steps(self):
+        """Access the steps by name, converting non-string keys to strings.
+
+        Overrides :attr:`sklearn.pipeline.Pipeline.named_steps` so that
+        :class:`~moabb.datasets.bids_interface.StepType` enum keys (used
+        instead of plain strings) don't crash sklearn's ``Bunch(**dict(steps))``.
+        """
+        return Bunch(**{self._step_label(k): v for k, v in self.steps})
+
+    def get_params(self, deep=True):
+        # Temporarily convert enum keys to strings so super().get_params()
+        # generates consistent deep keys (e.g. "Raw__param" not "StepType.RAW__param").
+        orig_steps = self.steps
+        self.steps = [(self._step_label(n), e) for n, e in orig_steps]
+        try:
+            params = super().get_params(deep=deep)
+        finally:
+            self.steps = orig_steps
+        return params
+
+    def _sk_visual_block_(self):
+        if _VisualBlock is None:
+            return NotImplemented
+
+        # Flatten single-step wrappers: if this pipeline has exactly one step
+        # and that step is itself a pipeline, delegate to the inner pipeline's
+        # visual block so we don't show an empty nesting level.
+        if len(self.steps) == 1:
+            _, only_step = self.steps[0]
+            if isinstance(only_step, Pipeline) and hasattr(
+                only_step, "_sk_visual_block_"
+            ):
+                return only_step._sk_visual_block_()
+
+        def _step_short_name(est):
+            """One-line name for a step estimator."""
+            if est is None or est == "passthrough":
+                return "passthrough"
+            if hasattr(est, "_display_name"):
+                return est._display_name
+            return est.__class__.__name__
+
+        names = []
+        for n, e in self.steps:
+            label = self._step_label(n)
+            names.append(f"{label}: {_step_short_name(e)}")
+
+        estimators = [e for _, e in self.steps]
+        name_details = [_step_short_name(e) for e in estimators]
+        return _VisualBlock(
+            "serial",
+            estimators,
+            names=names,
+            name_details=name_details,
+            dash_wrapped=False,
+        )
 
     def find_steps(self, step_type):
         """Return ``(index, transformer)`` tuples for all steps matching *step_type*.
@@ -414,6 +486,10 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         self.transformers = transformers
         self._is_fitted = True
 
+    def __repr__(self):
+        branches = ", ".join(n for n, _ in self.transformers)
+        return f"ForkPipelines([{branches}])"
+
     def transform(self, X, y=None):
         return OrderedDict([(n, t.transform(X)) for n, t in self.transformers])
 
@@ -431,10 +507,19 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         if _VisualBlock is None:
             return NotImplemented
         names, estimators = zip(*self.transformers)
+        clean_estimators = []
+        display_names = []
+        for n, e in zip(names, estimators):
+            if _is_none_pipeline(e):
+                clean_estimators.append("passthrough")
+                display_names.append(f"{n} (passthrough)")
+            else:
+                clean_estimators.append(e)
+                display_names.append(n)
         return _VisualBlock(
             kind="parallel",
-            estimators=list(estimators),
-            names=list(names),
+            estimators=clean_estimators,
+            names=display_names,
             name_caption=self.__class__.__name__,
             dash_wrapped=True,
         )
@@ -454,16 +539,27 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
         """Return True to indicate this transformer is always considered fitted."""
         return True
 
+    def _get_visual_name(self):
+        """Short display name for sklearn pipeline diagrams."""
+        return self.__class__.__name__
+
+    def _get_visual_details(self):
+        """One-line summary for sklearn pipeline diagrams (shown below the name)."""
+        return None
+
     def _sk_visual_block_(self):
-        """Tell sklearn's diagrammer to lay us out in parallel."""
         if _VisualBlock is None:
             return NotImplemented
+        name = self._get_visual_name()
+        details = self._get_visual_details()
+        if details:
+            name = f"{name}\n{details}"
         return _VisualBlock(
-            kind="parallel",
-            name_caption=str(self.__class__.__name__),
-            estimators=[str(self.get_params())],
-            name_details=str(self.__class__.__name__),
-            dash_wrapped=True,
+            kind="single",
+            estimators=self,
+            names=name,
+            name_details=str(self.get_params()),
+            dash_wrapped=False,
         )
 
 
@@ -473,6 +569,11 @@ def _get_event_id_values(event_id):
         return []
     arrays = [np.atleast_1d(val) for val in event_id_values]
     return np.concatenate(arrays).tolist()
+
+
+def _format_event_names(event_id):
+    """Return a comma-separated string of event names from an event_id dict."""
+    return ", ".join(event_id.keys())
 
 
 def _compute_events_desc(event_id):
@@ -503,6 +604,14 @@ class SetRawAnnotations(FixedTransformer):
             raise ValueError("Duplicate event code")
         self.event_desc = _compute_events_desc(self.event_id)
         self.interval = interval
+
+    def __repr__(self):
+        events = _format_event_names(self.event_id)
+        return f"SetRawAnnotations([{events}])"
+
+    def _get_visual_details(self):
+        events = _format_event_names(self.event_id)
+        return f"events: [{events}] | interval: {list(self.interval)}"
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
@@ -616,6 +725,18 @@ class RawToEvents(FixedTransformer):
                 raise ValueError(f"overlap must be in [0, 100), got {self.overlap!r}")
             self.overlap = overlap_value
 
+    def __repr__(self):
+        extra = f", overlap={self.overlap}%" if self.overlap is not None else ""
+        return f"RawToEvents({list(self.interval)}{extra})"
+
+    def _get_visual_details(self):
+        events = _format_event_names(self.event_id)
+        parts = [f"[{events}]", f"interval: {list(self.interval)}"]
+        if self.overlap is not None:
+            parts.append(f"overlap: {self.overlap}%")
+            parts.append(f"window: {self.window_length}s")
+        return " | ".join(parts)
+
     def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
@@ -658,6 +779,9 @@ class RawToEventsP300(RawToEvents):
         self.ignore_relabelling = ignore_relabelling
         super().__init__(event_id, interval)
 
+    def __repr__(self):
+        return f"RawToEventsP300({list(self.interval)})"
+
     def transform(self, raw, y=None):
         events = self._find_events(raw)
         event_id = self.event_id
@@ -694,6 +818,12 @@ class RawToFixedIntervalEvents(FixedTransformer):
         self.stop_offset = stop_offset
         self.marker = marker
 
+    def __repr__(self):
+        return f"RawToFixedIntervalEvents(length={self.length}, stride={self.stride})"
+
+    def _get_visual_details(self):
+        return f"length={self.length}s | stride={self.stride}s"
+
     def transform(self, raw: mne.io.BaseRaw, y=None):
         if not isinstance(raw, mne.io.BaseRaw):
             raise ValueError
@@ -726,6 +856,12 @@ class EpochsToEvents(FixedTransformer):
     def __init__(self):
         super().__init__()
 
+    def __repr__(self):
+        return "EpochsToEvents"
+
+    def _get_visual_name(self):
+        return "Extract Labels (y)"
+
     def transform(self, epochs, y=None):
         return epochs.events
 
@@ -736,6 +872,12 @@ class EventsToLabels(FixedTransformer):
     def __init__(self, event_id):
         super().__init__()
         self.event_id = event_id
+
+    def __repr__(self):
+        return "EventsToLabels"
+
+    def _get_visual_details(self):
+        return _format_event_names(self.event_id)
 
     def transform(self, events, y=None):
         inv_events = _compute_events_desc(self.event_id)
@@ -769,6 +911,18 @@ class RawToEpochs(FixedTransformer):
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
         self.return_all_modalities = return_all_modalities
+
+    def __repr__(self):
+        return f"RawToEpochs(tmin={self.tmin}, tmax={self.tmax})"
+
+    def _get_visual_details(self):
+        events = _format_event_names(self.event_id)
+        parts = [f"[{events}]", f"tmin={self.tmin}", f"tmax={self.tmax}"]
+        if self.baseline is not None:
+            parts.append(f"baseline={self.baseline}")
+        if self.channels is not None:
+            parts.append(f"{len(self.channels)} ch")
+        return " | ".join(parts)
 
     def transform(self, X, y=None):
         raw = X["raw"]

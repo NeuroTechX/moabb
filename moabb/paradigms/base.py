@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import check_scoring, make_scorer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.bids_interface import StepType
@@ -19,6 +18,7 @@ from moabb.datasets.preprocessing import (
     EventsToLabels,
     FixedPipeline,
     ForkPipelines,
+    NamedFunctionTransformer,
     RawToEpochs,
     RawToEvents,
     SetRawAnnotations,
@@ -645,22 +645,30 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         steps.append(
             (
                 "epoching",
-                make_fixed_pipeline(
-                    ForkPipelines(
-                        [
-                            ("raw", make_fixed_pipeline(None)),
-                            ("events", self._get_events_pipeline(dataset)),
-                        ]
-                    ),
-                    RawToEpochs(
-                        event_id=self.used_events(dataset),
-                        tmin=bmin,
-                        tmax=bmax,
-                        baseline=baseline,
-                        channels=self.channels,
-                        interpolate_missing_channels=self.interpolate_missing_channels,
-                        return_all_modalities=dataset.return_all_modalities,
-                    ),
+                FixedPipeline(
+                    [
+                        (
+                            "extract events",
+                            ForkPipelines(
+                                [
+                                    ("raw", make_fixed_pipeline(None)),
+                                    ("events", self._get_events_pipeline(dataset)),
+                                ]
+                            ),
+                        ),
+                        (
+                            "create epochs",
+                            RawToEpochs(
+                                event_id=self.used_events(dataset),
+                                tmin=bmin,
+                                tmax=bmax,
+                                baseline=baseline,
+                                channels=self.channels,
+                                interpolate_missing_channels=self.interpolate_missing_channels,
+                                return_all_modalities=dataset.return_all_modalities,
+                            ),
+                        ),
+                    ]
                 ),
             )
         )
@@ -670,7 +678,15 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             steps.append(("resample", get_resample_pipeline(self.resample)))
         if return_epochs:  # needed to concatenate epochs
             # MNE: mne.Epochs.load_data (preload epochs arrays into memory)
-            steps.append(("load_data", FunctionTransformer(methodcaller("load_data"))))
+            steps.append(
+                (
+                    "load_data",
+                    NamedFunctionTransformer(
+                        methodcaller("load_data"),
+                        display_name="Load Data",
+                    ),
+                )
+            )
         return FixedPipeline(steps)
 
     def _get_array_pipeline(
@@ -679,12 +695,22 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         steps = []
         if not return_epochs and not return_raws:
             # MNE: mne.Epochs.get_data → (n_epochs, n_channels, n_times) ndarray
-            steps.append(("get_data", FunctionTransformer(methodcaller("get_data"))))
+            steps.append(
+                (
+                    "get_data",
+                    NamedFunctionTransformer(
+                        methodcaller("get_data"),
+                        display_name="Epochs to Array",
+                    ),
+                )
+            )
             steps.append(
                 (
                     "scaling",
-                    # ndarray multiply; unit_factor comes from the MOABB dataset definition
-                    FunctionTransformer(methodcaller("__mul__", dataset.unit_factor)),
+                    NamedFunctionTransformer(
+                        methodcaller("__mul__", dataset.unit_factor),
+                        display_name=f"Scale (x{dataset.unit_factor:g})",
+                    ),
                 )
             )
         if processing_pipeline is not None:
