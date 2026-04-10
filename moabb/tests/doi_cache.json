@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 145
+        "total": 149
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -320,6 +320,22 @@
         "year": 2025,
         "doi": "10.1038/s41597-025-05767-2"
     },
+    "10.1038/s41597-025-05926-5": {
+        "title": "An EEG-based Imagined Speech Database for comparing Paradigm Designs",
+        "authors": [
+            "Edgar Aguilera-Rodr\u00edguez",
+            "Alma Cuevas-Romero",
+            "Santiago Mendoza-Franco",
+            "Jonathan Wornovitzky-Green",
+            "Eduardo Rivera-Cerros",
+            "David Villanueva-Cazares",
+            "Luis Alberto Mu\u00f1oz-Ubando",
+            "David Ibarra-Z\u00e1rate",
+            "Luz Mar\u00eda Alonso-Valerdi"
+        ],
+        "year": 2025,
+        "doi": "10.1038/s41597-025-05926-5"
+    },
     "10.1038/s41597-025-06032-2": {
         "title": "A 40-Class SSVEP Speller Dataset: Beta Range Stimulation for Low-Fatigue BCI Applications",
         "authors": [
@@ -406,6 +422,16 @@
             "Hilmi Yanar",
             "Yuriy Mishchenko"
         ]
+    },
+    "10.1088/1741-2552/aa8235": {
+        "title": "Inferring imagined speech using EEG signals: a new approach using Riemannian manifold features",
+        "authors": [
+            "Chuong H Nguyen",
+            "George K Karavas",
+            "Panagiotis Artemiadis"
+        ],
+        "year": 2017,
+        "doi": "10.1088/1741-2552/aa8235"
     },
     "10.1088/1741-2552/ab4057": {
         "title": "Low channel count montages using sensor tying for VEP-based BCI",
@@ -753,6 +779,16 @@
         "year": 2020,
         "doi": "10.1111/ejn.15030"
     },
+    "10.1117/12.2255697": {
+        "title": "Open access database of EEG signals recorded during imagined speech",
+        "authors": [
+            "Germ\u00e1n A. Pressel Coretto",
+            "Iv\u00e1n E. Gareis",
+            "H. Leonardo Rufiner"
+        ],
+        "year": 2017,
+        "doi": "10.1117/12.2255697"
+    },
     "10.13026/0byy-ry86": {
         "title": "bigP3BCI: An Open, Diverse and Machine Learning Ready P300-based Brain-Computer Interface Dataset",
         "authors": [
@@ -1016,6 +1052,22 @@
         ],
         "year": 2021,
         "doi": "10.3389/fnhum.2021.701091"
+    },
+    "10.3389/fnhum.2022.898300": {
+        "title": "2020 International brain\u2013computer interface competition: A review",
+        "authors": [
+            "Ji-Hoon Jeong",
+            "Jeong-Hyun Cho",
+            "Young-Eun Lee",
+            "Seo-Hyun Lee",
+            "Gi-Hwan Shin",
+            "Young-Seok Kweon",
+            "Jos\u00e9 del R. Mill\u00e1n",
+            "Klaus-Robert M\u00fcller",
+            "Seong-Whan Lee"
+        ],
+        "year": 2022,
+        "doi": "10.3389/fnhum.2022.898300"
     },
     "10.3389/fnhum.2023.1288438": {
         "title": "Influence of spatial frequency in visual stimuli for cVEP-based BCIs: evaluation of performance and user experience",
