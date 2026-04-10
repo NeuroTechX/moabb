@@ -2,11 +2,12 @@
 
 Nguyen, Karavas, and Artemiadis (2017), Journal of Neural Engineering.
 DOI: 10.1088/1741-2552/aa8235
-Data: https://www.dropbox.com/scl/fi/20j120qae7c2rlmr5lfwr/dataset.zip
+Data: Zenodo mirror (`10.5281/zenodo.19502794`). The original
+distribution is on Dropbox (HORC lab, ASU); the Zenodo record is a
+re-packaging of the 4 condition zips with normalized filenames.
 """
 
 import logging
-import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -27,7 +28,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import build_raw_from_epochs
+from .utils import build_raw_from_epochs, download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -41,10 +42,8 @@ _N_CHANNELS = 64
 # (1-indexed) were used for EOG recording.
 _EOG_INDICES = [0, 9, 32, 63]
 
-_DROPBOX_URL = (
-    "https://www.dropbox.com/scl/fi/20j120qae7c2rlmr5lfwr/dataset.zip"
-    "?rlkey=0xjdairhprrakmw27d2fnesj7&dl=1"
-)
+_ZENODO_RECORD = "19502794"
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 # Condition-specific configuration.
 _CONDITIONS = {
@@ -214,69 +213,32 @@ class _Nguyen2017Base(BaseDataset):
         base = self._subject_dir()
         base.mkdir(parents=True, exist_ok=True)
 
-        # Map integer subject to filename.
-        sub_basename = cfg["subjects"][subject - 1]
-        mat_file = base / f"{sub_basename}.mat"
+        # The Zenodo mirror stores files as sub-01.mat … sub-NN.mat inside
+        # each per-condition zip; the authors' opaque basenames (and the
+        # corresponding entries in cfg['subjects']) are preserved as
+        # provenance in the bundled Read_me.txt / README.md.
+        cond_dir = base / cfg["zip_name"].replace(".zip", "")
+        mat_file = cond_dir / f"sub-{subject:02d}.mat"
 
         if mat_file.exists() and not force_update:
             return str(mat_file)
 
-        # Check in the manually downloaded location.
-        alt_dir = Path.home() / "mne_data" / "bci_speech_imagery"
-        zip_name = cfg["zip_name"]
-        folder_name = zip_name.replace(".zip", "")
-
-        # Try extracting from existing zip.
-        alt_zip = alt_dir / zip_name
-        if alt_zip.exists():
-            with zipfile.ZipFile(str(alt_zip)) as zf:
-                target = f"{folder_name}/{sub_basename}.mat"
-                try:
-                    info = zf.getinfo(target)
-                    with zf.open(info) as src:
-                        mat_file.write_bytes(src.read())
-                    return str(mat_file)
-                except KeyError:
-                    # Try listing all mat files to find the right one.
-                    for name in zf.namelist():
-                        if sub_basename in name and name.endswith(".mat"):
-                            with zf.open(name) as src:
-                                mat_file.write_bytes(src.read())
-                            return str(mat_file)
-
-        # Attempt to download the condition zip from Dropbox.
-        log.info("Downloading %s from Dropbox...", zip_name)
-        try:
-            downloaded = dl.data_dl(
-                _DROPBOX_URL,
-                "nguyen2017",
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
-            )
-            downloaded = Path(downloaded)
-            # The outer zip contains condition zips.
-            if downloaded.suffix == ".zip" and downloaded.exists():
-                from .utils import safe_extract_zip
-
-                with zipfile.ZipFile(str(downloaded)) as outer_zf:
-                    safe_extract_zip(outer_zf, alt_dir)
-                # Retry extraction from the condition zip.
-                alt_zip = alt_dir / zip_name
-                if alt_zip.exists():
-                    with zipfile.ZipFile(str(alt_zip)) as zf:
-                        for name in zf.namelist():
-                            if sub_basename in name and name.endswith(".mat"):
-                                with zf.open(name) as src:
-                                    mat_file.write_bytes(src.read())
-                                return str(mat_file)
-        except Exception:
-            log.warning("Dropbox download failed.")
+        # Download per-condition ZIP from Zenodo (10.5281/zenodo.19502794)
+        # and extract the renamed subject file.
+        url = f"{_ZENODO_BASE}/{cfg['zip_name']}"
+        download_and_extract_subject_zip(
+            url,
+            cfg["sign"],
+            cond_dir,
+            path=path,
+            force_update=force_update,
+            verbose=verbose,
+        )
 
         if not mat_file.exists():
             raise FileNotFoundError(
-                f"Could not find {mat_file}. Download the dataset zip from "
-                f"Dropbox and place condition zips in {alt_dir}/"
+                f"Expected {mat_file} after extracting {url}, but it is "
+                f"missing. The Zenodo record may have been re-packaged."
             )
         return str(mat_file)
 
@@ -364,7 +326,9 @@ class Nguyen2017_V(_Nguyen2017Base):
             institution_address="Tempe, AZ 85287, USA",
             country="US",
             publication_year=2018,
-            license="Unspecified (research use; cite paper)",
+            license="other-open",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Zenodo",
             senior_author="Panagiotis Artemiadis",
             contact_info=["chuong.h.nguyen@asu.edu", "panagiotis.artemiadis@asu.edu"],
             associated_paper_doi="10.1088/1741-2552/aa8235",
@@ -508,7 +472,9 @@ class Nguyen2017_S(_Nguyen2017Base):
             ),
             country="US",
             publication_year=2018,
-            license="Unspecified (research use; cite paper)",
+            license="other-open",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Zenodo",
             contact_info=["chuong.h.nguyen@asu.edu"],
             associated_paper_doi="10.1088/1741-2552/aa8235",
             keywords=["imagined speech", "EEG", "Riemannian manifold", "short words"],
@@ -626,7 +592,9 @@ class Nguyen2017_L(_Nguyen2017Base):
             ),
             country="US",
             publication_year=2018,
-            license="Unspecified (research use; cite paper)",
+            license="other-open",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Zenodo",
             contact_info=["chuong.h.nguyen@asu.edu"],
             associated_paper_doi="10.1088/1741-2552/aa8235",
             keywords=["imagined speech", "EEG", "Riemannian manifold", "long words"],
@@ -746,7 +714,9 @@ class Nguyen2017_SL(_Nguyen2017Base):
             ),
             country="US",
             publication_year=2018,
-            license="Unspecified (research use; cite paper)",
+            license="other-open",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Zenodo",
             contact_info=["chuong.h.nguyen@asu.edu"],
             associated_paper_doi="10.1088/1741-2552/aa8235",
             keywords=[

@@ -2,12 +2,12 @@
 
 Pressel Coretto, Gareis, and Rufiner (2017), SIPAIM/SPIE Proceedings.
 DOI: 10.1117/12.2255697
-Data: Google Drive (Base de Datos Habla Imaginada).
+Data: Zenodo mirror (`10.5281/zenodo.19502780`). The original
+distribution is on Google Drive; the Zenodo record is a faithful
+per-subject re-packaging for reliable automated download.
 """
 
 import logging
-import shutil
-import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -26,7 +26,7 @@ from .metadata.schema import (
     PreprocessingMetadata,
     Tags,
 )
-from .utils import build_raw_from_epochs
+from .utils import build_raw_from_epochs, download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -59,12 +59,8 @@ _STIMULUS_MAP = {
 _MODALITY_IMAGINED = 1
 _MODALITY_PRONOUNCED = 2
 
-_GDRIVE_FILE_ID = "0By7apHbIp8ENZVBLRFVlSFhzbHc"
-_GDRIVE_URL = (
-    f"https://drive.google.com/uc?export=download&id={_GDRIVE_FILE_ID}"
-    "&confirm=t"
-    "&resourcekey=0-JVHv2UiRsxim41Wioro0EA"
-)
+_ZENODO_RECORD = "19502780"
+_ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
 
 class Pressel2016(BaseDataset):
@@ -153,7 +149,9 @@ class Pressel2016(BaseDataset):
             institution="Universidad Nacional de Entre Rios",
             country="AR",
             publication_year=2017,
-            license="Open access",
+            license="other-open",
+            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Zenodo",
             contact_info=["germanpressel@gmail.com"],
             associated_paper_doi="10.1117/12.2255697",
             keywords=[
@@ -294,62 +292,20 @@ class Pressel2016(BaseDataset):
         base = self._subject_dir()
         base.mkdir(parents=True, exist_ok=True)
 
-        mat_file = base / f"S{subject:02d}_EEG.mat"
+        subj_dir = base / f"S{subject:02d}"
+        mat_file = subj_dir / f"sub-{subject:02d}_eeg.mat"
         if mat_file.exists() and not force_update:
             return str(mat_file)
 
-        # Check in zip file (manual download location).
-        mne_data = Path(dl.get_dataset_path(_SIGN, path))
-        zip_path = mne_data / "imagined_speech.zip"
-        if zip_path.exists():
-            with zipfile.ZipFile(str(zip_path)) as zf:
-                target = (
-                    f"Base de Datos Habla Imaginada/S{subject:02d}/S{subject:02d}_EEG.mat"
-                )
-                try:
-                    with zf.open(target) as src:
-                        mat_file.write_bytes(src.read())
-                    return str(mat_file)
-                except KeyError:
-                    pass
-
-        # Try alternate extracted location.
-        mne_data = Path(dl.get_dataset_path(_SIGN, path))
-        alt_extracted = (
-            mne_data
-            / "imagined_speech"
-            / "Base de Datos Habla Imaginada"
-            / f"S{subject:02d}"
-            / f"S{subject:02d}_EEG.mat"
+        # Download per-subject ZIP from Zenodo (10.5281/zenodo.19502780)
+        # and extract the single sub-NN_eeg.mat file it contains.
+        url = f"{_ZENODO_BASE}/S{subject:02d}.zip"
+        download_and_extract_subject_zip(
+            url, _SIGN, subj_dir, path=path, force_update=force_update, verbose=verbose
         )
-        if alt_extracted.exists():
-            shutil.copy2(str(alt_extracted), str(mat_file))
-            return str(mat_file)
-
-        # Attempt download via gdown (Google Drive).
-        log.info("Downloading from Google Drive...")
-        try:
-            import gdown
-
-            zip_dl = base / "imagined_speech.zip"
-            gdown.download(id=_GDRIVE_FILE_ID, output=str(zip_dl), quiet=False)
-            if zip_dl.exists():
-                with zipfile.ZipFile(str(zip_dl)) as zf:
-                    target = (
-                        f"Base de Datos Habla Imaginada/S{subject:02d}/"
-                        f"S{subject:02d}_EEG.mat"
-                    )
-                    with zf.open(target) as src:
-                        mat_file.write_bytes(src.read())
-                return str(mat_file)
-        except ImportError:
-            log.warning("gdown not installed. Install with: pip install gdown")
-        except Exception as exc:
-            log.warning("Google Drive download failed: %s", exc)
-
         if not mat_file.exists():
             raise FileNotFoundError(
-                f"Could not find {mat_file}. Download imagined_speech.zip from "
-                f"Google Drive and place in {mne_data}/"
+                f"Expected {mat_file} after extracting {url}, but it is "
+                f"missing. The Zenodo record may have been re-packaged."
             )
         return str(mat_file)
