@@ -19,6 +19,7 @@ Version 1.6  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add 7 new imagined speech dataset adapters: :class:`moabb.datasets.BCIComp2020IS` (15 subjects, 5 phrases, BCI Competition 2020 Track 3), :class:`moabb.datasets.AguileraRodriguez2025` (15 subjects, 4 Spanish words, traditional vs gamified paradigm), :class:`moabb.datasets.Nguyen2017_V`, :class:`moabb.datasets.Nguyen2017_S`, :class:`moabb.datasets.Nguyen2017_L`, and :class:`moabb.datasets.Nguyen2017_SL` (Nguyen et al. 2017 vowels / short words / long words / short-vs-long conditions), and :class:`moabb.datasets.Pressel2016` (15 subjects, 11-class Spanish vowels and directional commands) (by `Bruno Aristimunha`_)
 - Add unified interactive macro table for dataset summary page with 58 metadata columns, SearchPanes filtering, paradigm distribution bar, and CSV export (:gh:`1043`).
 - Add rich HTML repr for preprocessing pipeline transformers: pipelines now render as interactive sklearn diagrams in Jupyter notebooks and sphinx-gallery docs, showing the three-stage flow (Raw, Epochs, Array) with readable step names, event lists, and key parameters instead of raw dict dumps (by `Zach Munro`_ and `Bruno Aristimunha`_).
 - Expose ``motor_imagery`` and ``mental_arithmetic`` keyword-only parameters on :class:`moabb.datasets.Shin2017A` (default: MI=True, MA=False) and :class:`moabb.datasets.Shin2017B` (default: MI=False, MA=True), allowing users to load both conditions simultaneously while preserving backward compatibility (by `Bruno Aristimunha`_)

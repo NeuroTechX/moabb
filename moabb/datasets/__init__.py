@@ -10,9 +10,11 @@ on datasets (electrodes, number of trials, sessions, etc.)
 from . import compound_dataset
 
 # flake8: noqa
+from .aguilera_rodriguez2025 import AguileraRodriguez2025
 from .alex_mi import AlexMI
 from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
+from .bcicomp2020_imagined_speech import BCIComp2020IS
 from .beetl import Beetl2021_A, Beetl2021_B
 
 # BNCI datasets (from bnci subpackage)
@@ -121,8 +123,10 @@ from .mainsah2025 import (
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import GrosseWentrup2009
+from .nguyen2017 import Nguyen2017_L, Nguyen2017_S, Nguyen2017_SL, Nguyen2017_V
 from .phmd_ml import Cattan2019_PHMD
 from .physionet_mi import PhysionetMI
+from .pressel2016 import Pressel2016
 from .romani_bf2025_erp import RomaniBF2025ERP
 from .rozado2015 import Rozado2015
 from .schirrmeister2017 import Schirrmeister2017
