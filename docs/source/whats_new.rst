@@ -42,6 +42,7 @@ Bugs
 - Fix ``numpy.void.get()`` error in :class:`moabb.datasets.Lee2019` resting state EMG channel handling (by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.castillos2023.BaseCastillos2023` extraction check using wrong directory name (``4Class-VEP`` instead of ``4Class-CVEP``), causing re-extraction on every call, and replace fragile ``rstrip`` path derivation with proper ``os.path`` manipulation (by `Bruno Aristimunha`_)
 - Fix data path lookup in :class:`moabb.datasets.Forenzo2023` that makes MOABB unable to find the downloaded data (:gh:`1048` by `Ethan Davis`_).
+- Fix wrong paper reference in :class:`moabb.datasets.Thielen2021` (``associated_paper_doi`` pointed to the Ahmadi electrode-montage reference instead of the dataset's primary publication), restore Radboud data-repository DOI as ``__init__.doi``, and add regression test ``test_primary_paper_matches_dataset_code`` that validates every ``<Surname><Year>`` dataset against its cited primary paper (by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~

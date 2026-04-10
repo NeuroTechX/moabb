@@ -198,7 +198,8 @@ class Thielen2021(BaseDataset):
             ],
             license="CC0-1.0",
             repository="Radboud",
-            associated_paper_doi="10.1088/1741-2552/ab4057",
+            associated_paper_doi="10.1088/1741-2552/abecef",
+            related_paper_dois=["10.1088/1741-2552/ab4057"],
         ),
         tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         preprocessing=PreprocessingMetadata(

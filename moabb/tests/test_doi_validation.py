@@ -434,6 +434,79 @@ def test_investigators_match_doi_authors(dataset_class):
         )
 
 
+_SURNAME_YEAR_RE = re.compile(r"^([A-Z][a-z]+)\d{4}")
+
+
+def _german_fold(s: str) -> str:
+    return s.replace("ue", "u").replace("oe", "o").replace("ae", "a")
+
+
+def _first_author_tokens(author: str) -> set[str]:
+    """Lowercased, accent-stripped, German-umlaut-folded name tokens.
+
+    Handles compound surnames, ``Given Family`` ordering, and
+    ``Hübner``/``Huebner``/``Hubner`` as equivalent.
+    """
+    return {
+        _german_fold(_strip_accents(p).strip(".").lower())
+        for p in (author or "").replace(",", " ").split()
+        if len(p.strip(".")) > 1
+    }
+
+
+@pytest.mark.parametrize(
+    ("code", "first_author", "ok"),
+    [
+        ("Thielen2021", "Jordy Thielen", True),
+        ("Thielen2021", "S Ahmadi", False),  # the bug this test catches
+        ("Huebner2017", "David Hübner", True),
+        ("Huebner2017", "David Huebner", True),
+        ("Weibo2014", "Weibo Yi", True),
+        ("Chailloux2020", "Juan David Chailloux Peguero", True),
+        ("Castillos2023", "Jordy Thielen", False),
+    ],
+)
+def test_primary_paper_match_contract(code, first_author, ok):
+    expected = _german_fold(_SURNAME_YEAR_RE.match(code).group(1).lower())
+    assert (expected in _first_author_tokens(first_author)) is ok
+
+
+@pytest.mark.parametrize("dataset_class", _REAL_DATASETS, ids=_ids)
+def test_primary_paper_matches_dataset_code(dataset_class):
+    """First author of the primary paper must contain ``<Surname>`` from the dataset code.
+
+    Catches the anti-pattern where ``associated_paper_doi`` cites a
+    methodology reference (e.g. an electrode-montage paper) rather than
+    the dataset's own publication. Skips datasets not following the
+    ``<Surname><Year>`` naming convention and data-repository DOIs.
+    """
+    m = _SURNAME_YEAR_RE.match(dataset_class.__name__)
+    if not m:
+        pytest.skip("dataset code not <Surname><Year>")
+    expected = _german_fold(m.group(1).lower())
+
+    meta = getattr(dataset_class, "METADATA", None)
+    doc = getattr(meta, "documentation", None) if meta else None
+    paper_doi = (
+        _normalize_doi(doc.associated_paper_doi) or _normalize_doi(doc.doi)
+        if doc
+        else None
+    )
+    if not paper_doi or not _is_doi(paper_doi):
+        pytest.skip("no paper DOI")
+    if any(paper_doi.startswith(p) for p in _DATA_REPO_PREFIXES):
+        pytest.skip("data-repository DOI")
+    cached = _DOI_CACHE.get(paper_doi) or {}
+    if not cached.get("authors"):
+        pytest.skip("no cached authors")
+
+    first = cached["authors"][0]
+    assert expected in _first_author_tokens(first), (
+        f"{dataset_class.__name__}: {paper_doi} first author {first!r} "
+        f"does not contain {expected!r} (title: {cached.get('title')!r})"
+    )
+
+
 # -- network tests -----------------------------------------------------------
 
 
