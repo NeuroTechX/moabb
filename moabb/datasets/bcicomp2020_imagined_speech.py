@@ -1,12 +1,10 @@
 """BCI Competition 2020 Track 3 - Imagined Speech dataset.
 
-Lee et al., 2020 International BCI Competition.
+Jeong et al., 2022 International BCI Competition review.
 Data: https://osf.io/pq7vb/
 """
 
 import logging
-import shutil
-from pathlib import Path
 
 import numpy as np
 from scipy.io import loadmat
@@ -29,7 +27,7 @@ from .utils import build_raw_from_epochs
 
 log = logging.getLogger(__name__)
 
-_SIGN = "bcicomp2020is"
+_SIGN = "BCIComp2020IS"
 _SFREQ = 256.0
 
 # fmt: off
@@ -46,8 +44,43 @@ _CH_NAMES = [
 
 _CLASS_NAMES = ["Hello", "Helpme", "Stop", "Thankyou", "Yes"]
 
-# For download, we use the OSF storage API.
-_OSF_API = "https://api.osf.io/v2/nodes/pq7vb/files/osfstorage/"
+# Stable OSF download URLs for every subject file. Test split is
+# excluded: the released test files have no ground-truth labels
+# (competition holdout).
+_OSF_URLS = {
+    ("training", 1): "https://osf.io/download/us96c/",
+    ("training", 2): "https://osf.io/download/yeh24/",
+    ("training", 3): "https://osf.io/download/qcbv9/",
+    ("training", 4): "https://osf.io/download/682y9/",
+    ("training", 5): "https://osf.io/download/3txuf/",
+    ("training", 6): "https://osf.io/download/q9tbf/",
+    ("training", 7): "https://osf.io/download/tyzc9/",
+    ("training", 8): "https://osf.io/download/mywcq/",
+    ("training", 9): "https://osf.io/download/we3u7/",
+    ("training", 10): "https://osf.io/download/sng2u/",
+    ("training", 11): "https://osf.io/download/xc7pz/",
+    ("training", 12): "https://osf.io/download/tpz6n/",
+    ("training", 13): "https://osf.io/download/8md2p/",
+    ("training", 14): "https://osf.io/download/m6wbu/",
+    ("training", 15): "https://osf.io/download/q2ndy/",
+    ("validation", 1): "https://osf.io/download/dqrfu/",
+    ("validation", 2): "https://osf.io/download/f5c9n/",
+    ("validation", 3): "https://osf.io/download/vyjth/",
+    ("validation", 4): "https://osf.io/download/ax5v6/",
+    ("validation", 5): "https://osf.io/download/qprs3/",
+    ("validation", 6): "https://osf.io/download/ep7sw/",
+    ("validation", 7): "https://osf.io/download/ga5r2/",
+    ("validation", 8): "https://osf.io/download/jpcem/",
+    ("validation", 9): "https://osf.io/download/fcj8y/",
+    ("validation", 10): "https://osf.io/download/tnh2g/",
+    ("validation", 11): "https://osf.io/download/w46s7/",
+    ("validation", 12): "https://osf.io/download/wqm3k/",
+    ("validation", 13): "https://osf.io/download/y9edh/",
+    ("validation", 14): "https://osf.io/download/w9gh4/",
+    ("validation", 15): "https://osf.io/download/2zh87/",
+}
+
+_SPLITS = [("training", "epo_train"), ("validation", "epo_validation")]
 
 
 class BCIComp2020IS(BaseDataset):
@@ -198,181 +231,73 @@ class BCIComp2020IS(BaseDataset):
             selected_sessions=sessions,
         )
 
-    def _load_epoch_mat(self, fpath, epo_key):
-        """Load a MATLAB epoch file and return (data, labels, ch_names).
+    @staticmethod
+    def _load_epoch_mat(fpath, epo_key):
+        """Load a MATLAB v5 epoch file and return (data, labels, ch_names).
 
         Parameters
         ----------
         fpath : str
             Path to the .mat file.
         epo_key : str
-            Key for the epoch struct (e.g. 'epo_train').
+            Key for the epoch struct (e.g. ``'epo_train'``).
 
         Returns
         -------
         data : ndarray, shape (n_trials, n_channels, n_times)
         labels : ndarray of int, shape (n_trials,)
+            1-indexed class labels.
         ch_names : list of str
-
-        Returns None, None, None if labels are not available.
         """
-        try:
-            mat = loadmat(fpath, squeeze_me=False)
-            epo = mat[epo_key]
+        mat = loadmat(fpath, squeeze_me=False)
+        epo = mat[epo_key]
 
-            x = epo["x"][0, 0]  # (n_times, n_channels, n_trials)
-            y = epo["y"][0, 0]  # (n_classes, n_trials) one-hot
+        # x is (n_times, n_channels, n_trials) in the .mat;
+        # transpose to (n_trials, n_channels, n_times).
+        data = np.transpose(epo["x"][0, 0], (2, 1, 0))
 
-            # Transpose to (n_trials, n_channels, n_times)
-            data = np.transpose(x, (2, 1, 0))
+        # y is (n_classes, n_trials) one-hot; argmax gives 0-indexed label.
+        labels = np.argmax(epo["y"][0, 0], axis=0) + 1
 
-            # Convert one-hot to integer labels (1-indexed)
-            labels = np.argmax(y, axis=0) + 1
-
-            # Channel names from the file
-            clab = epo["clab"][0, 0][0]
-            ch_names = [str(c[0]) for c in clab]
-
-        except NotImplementedError:
-            # HDF5 / MATLAB v7.3 format (e.g. test files).
-            import h5py
-
-            with h5py.File(fpath, "r") as f:
-                epo = f[epo_key]
-
-                # HDF5 transposes: (n_trials, n_channels, n_times)
-                x = epo["x"][:]
-                data = x
-
-                # Check if labels are available.
-                y = epo["y"][:]
-                if y.ndim < 2 or y.shape[0] < 2 or np.all(y == 0):
-                    return None, None, None
-
-                labels = np.argmax(y, axis=0) + 1
-
-                # Channel names from object references.
-                clab = epo["clab"]
-                ch_names = []
-                for i in range(clab.shape[0]):
-                    ref = clab[i, 0]
-                    ch = f[ref][:]
-                    name = "".join(chr(c) for c in ch.flat)
-                    ch_names.append(name)
-
+        ch_names = [str(c[0]) for c in epo["clab"][0, 0][0]]
         return data, labels, ch_names
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
-        self.data_path(subject)
-        base = self._subject_dir()
         runs = {}
-
-        for run_idx, (split, epo_key) in enumerate(
-            [
-                ("training", "epo_train"),
-                ("validation", "epo_validation"),
-                ("test", "epo_test"),
-            ]
-        ):
-            fpath = base / split / f"Data_Sample{subject:02d}.mat"
-            if not fpath.exists():
-                log.warning("File not found: %s", fpath)
-                continue
-
-            data, labels, ch_names = self._load_epoch_mat(str(fpath), epo_key)
-            if data is None:
-                log.info("Skipping %s (no labels available).", split)
-                continue
-            raw = build_raw_from_epochs(
+        for run_idx, (split, epo_key) in enumerate(_SPLITS):
+            fpath = self.data_path(subject, split=split)
+            data, labels, ch_names = self._load_epoch_mat(fpath, epo_key)
+            runs[str(run_idx)] = build_raw_from_epochs(
                 data, ch_names, _SFREQ, labels, montage_name="standard_1005"
             )
-            runs[str(run_idx)] = raw
-
         return {"0": runs}
 
-    def _subject_dir(self):
-        path = dl.get_dataset_path(_SIGN, None)
-        return Path(path) / f"MNE-{_SIGN}-data"
-
     def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+        self,
+        subject,
+        path=None,
+        force_update=False,
+        update_path=None,
+        verbose=None,
+        *,
+        split=None,
     ):
+        """Return the local path to a subject file.
+
+        Downloads all (training + validation) files for ``subject``
+        via :func:`moabb.datasets.download.data_dl` if they are not
+        already present. Returns the path for the requested ``split``
+        if one is provided, otherwise the training file path.
+        """
         if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
+            raise ValueError(f"Invalid subject number {subject}")
 
-        base = self._subject_dir()
-
-        # Check if files already exist.
-        train_file = base / "training" / f"Data_Sample{subject:02d}.mat"
-        if train_file.exists() and not force_update:
-            return str(base)
-
-        # Try to find files in alternate location (manual download).
-        mne_data = Path(dl.get_dataset_path(_SIGN, path))
-        alt_paths = [mne_data / "bci_comp_2020_imagined_speech"]
-
-        for alt in alt_paths:
-            alt_train = alt / "training" / f"Data_Sample{subject:02d}.mat"
-            if alt_train.exists():
-                for split in ["training", "validation", "test"]:
-                    src = alt / split / f"Data_Sample{subject:02d}.mat"
-                    dst = base / split / f"Data_Sample{subject:02d}.mat"
-                    if src.exists() and not dst.exists():
-                        dst.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(str(src), str(dst))
-                return str(base)
-
-        # Download from OSF.
-        log.info("Downloading subject %d from OSF...", subject)
-        self._download_from_osf(subject, base, path, force_update, verbose)
-
-        return str(base)
-
-    def _download_from_osf(self, subject, base, path, force_update, verbose):
-        """Download subject files from the OSF API."""
-        import requests
-
-        fname = f"Data_Sample{subject:02d}.mat"
-        resp = requests.get(_OSF_API, timeout=30)
-        if not resp.ok:
-            raise ConnectionError(
-                f"Failed to list OSF files (HTTP {resp.status_code}). "
-                "Download manually from https://osf.io/pq7vb/"
+        paths = {}
+        for split_name, _ in _SPLITS:
+            url = _OSF_URLS[(split_name, subject)]
+            paths[split_name] = dl.data_dl(
+                url, _SIGN, path=path, force_update=force_update, verbose=verbose
             )
 
-        folder_map = {}
-        for item in resp.json().get("data", []):
-            folder_map[item["attributes"]["name"]] = item["relationships"]["files"][
-                "links"
-            ]["related"]["href"]
-
-        for split in ["training", "validation"]:
-            dest_dir = base / split
-            dest_dir.mkdir(parents=True, exist_ok=True)
-            dest = dest_dir / fname
-
-            if dest.exists() and not force_update:
-                continue
-
-            folder_url = folder_map.get(split)
-            if folder_url is None:
-                continue
-
-            freq = requests.get(folder_url, timeout=30)
-            if not freq.ok:
-                continue
-
-            for fitem in freq.json().get("data", []):
-                if fitem["attributes"]["name"] == fname:
-                    download_url = fitem["links"]["download"]
-                    downloaded = dl.data_dl(
-                        download_url,
-                        _SIGN,
-                        path=path,
-                        force_update=force_update,
-                        verbose=verbose,
-                    )
-                    downloaded = Path(downloaded)
-                    if downloaded != dest:
-                        shutil.move(str(downloaded), str(dest))
+        return paths[split] if split else paths["training"]
