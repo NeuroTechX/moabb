@@ -411,7 +411,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         """
         subjects = metadata["subject"].unique()
         n_splits = 0
-        for _subject in subjects:
+        for subject in subjects:  # noqa: B007 — referenced via @subject in pandas query below
             subject_metadata = metadata.query("subject == @subject")
             sessions = subject_metadata["session"].unique()
 
