@@ -140,9 +140,7 @@ class MartinezCagigal2023Checker(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
-            n_channels=16,
-            channel_types={"eeg": 16},
+            sampling_rate=256.0, n_channels=16, channel_types={"eeg": 16}
         ),
         participants=ParticipantMetadata(n_subjects=16),
         experiment=ExperimentMetadata(paradigm="cvep"),
@@ -188,8 +186,7 @@ class MartinezCagigal2023Checker(BaseDataset):
         for cond in conditions:
             if cond not in ALL_CONDITIONS:
                 raise ValueError(
-                    f"Invalid condition '{cond}'. "
-                    f"Valid conditions are: {ALL_CONDITIONS}"
+                    f"Invalid condition '{cond}'. Valid conditions are: {ALL_CONDITIONS}"
                 )
         self.conditions = conditions
 
@@ -231,8 +228,7 @@ class MartinezCagigal2023Checker(BaseDataset):
                         )
                     except Exception:
                         log.error(  # was print(), now uses proper logging
-                            f"Cannot convert signal {train_path}.",
-                            exc_info=True,
+                            f"Cannot convert signal {train_path}.", exc_info=True
                         )
                 n = len(train_paths)
 
@@ -247,14 +243,13 @@ class MartinezCagigal2023Checker(BaseDataset):
                 assert len(test_paths) == len(true_labels)
                 for j, test_path in enumerate(test_paths):
                     try:
-                        log.info(f"Loading {user}, cond {cond}, test {j+n+1}")
+                        log.info(f"Loading {user}, cond {cond}, test {j + n + 1}")
                         sessions[session_name][f"{j + n + 1}test"] = (
                             self._convert_to_mne_format(test_path, true_labels[j])
                         )
                     except Exception:
                         log.error(  # was print(), now uses proper logging
-                            f"Cannot convert signal {test_path}.",
-                            exc_info=True,
+                            f"Cannot convert signal {test_path}.", exc_info=True
                         )
 
         return sessions
@@ -271,7 +266,7 @@ class MartinezCagigal2023Checker(BaseDataset):
 
         # Get subject data
         url = f"{HANDLE_URI}/{sub}.zip"
-        subject_paths = list()
+        subject_paths = []
         subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
 
         return subject_paths
@@ -341,7 +336,7 @@ class MartinezCagigal2023Checker(BaseDataset):
         sample_onsets = np.array(cvep_data["onsets"]) - times[0]
 
         # Get bit-wise sequences for each cycle
-        seqs_by_cycle = list()
+        seqs_by_cycle = []
         commands_info = cvep_data["commands_info"]
 
         if cvep_data["mode"] == "train":
@@ -354,7 +349,7 @@ class MartinezCagigal2023Checker(BaseDataset):
         else:
             # For test mode, need to look up sequences by label
             assert true_labels is not None
-            seqs_by_trial = list()
+            seqs_by_trial = []
             for label in true_labels:
                 for item in commands_info[0].values():
                     if item["label"] == label:

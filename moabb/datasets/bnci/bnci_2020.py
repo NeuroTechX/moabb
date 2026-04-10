@@ -24,24 +24,14 @@ from moabb.datasets.metadata.schema import (
 )
 
 from .base import BNCIBaseDataset
-from .utils import (
-    BNCI_URL,
-    bnci_data_path,
-    convert_units,
-    make_raw,
-    validate_subject,
-)
+from .utils import BNCI_URL, bnci_data_path, convert_units, make_raw, validate_subject
 
 
 # =============================================================================
 # BNCI 2020-001: Reach-and-Grasp Electrode Comparison
 # =============================================================================
 
-ELECTRODE_TYPES = [
-    ("G", "gel"),
-    ("V", "water"),
-    ("H", "dry"),
-]
+ELECTRODE_TYPES = [("G", "gel"), ("V", "water"), ("H", "dry")]
 SUBJECTS_PER_TYPE = 15
 TOTAL_SUBJECTS_001 = SUBJECTS_PER_TYPE * len(ELECTRODE_TYPES)
 
@@ -164,11 +154,7 @@ def _load_data_001_2020(
     # Create annotations from events
     # Filter for movement onset and rest events only
     relevant_codes = [503587, 503588, 768]  # palmar onset, lateral onset, rest onset
-    code_to_desc = {
-        503587: "palmar_grasp",
-        503588: "lateral_grasp",
-        768: "rest",
-    }
+    code_to_desc = {503587: "palmar_grasp", 503588: "lateral_grasp", 768: "rest"}
 
     onset_times = []
     descriptions = []
@@ -179,9 +165,7 @@ def _load_data_001_2020(
 
     if onset_times:
         annotations = Annotations(
-            onset=onset_times,
-            duration=[0.0] * len(onset_times),
-            description=descriptions,
+            onset=onset_times, duration=[0.0] * len(onset_times), description=descriptions
         )
         raw.set_annotations(annotations)
 
@@ -449,11 +433,7 @@ class BNCI2020_001(BNCIBaseDataset):
         data_processed=False,
         file_format="MAT",
         external_links={"source": "http://bnci-horizon-2020.eu/database/data-sets"},
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Execution"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Execution"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
@@ -484,10 +464,7 @@ class BNCI2020_001(BNCIBaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["Shrinkage LDA"],
             feature_extraction=["LFTD", "MRCPs", "ERD", "ERS", "PSD"],
-            frequency_bands={
-                "alpha": [8.0, 12.0],
-                "analyzed_range": [2.0, 40.0],
-            },
+            frequency_bands={"alpha": [8.0, 12.0], "analyzed_range": [2.0, 40.0]},
             spatial_filters=["CAR"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -893,9 +870,7 @@ class BNCI2020_002(BNCIBaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=2,
-                eog_type=["horizontal", "vertical"],
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
             ),
             cap_manufacturer="Brain Products GmbH",
         ),
@@ -971,11 +946,7 @@ class BNCI2020_002(BNCIBaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Attention"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Attention"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
@@ -1019,15 +990,10 @@ class BNCI2020_002(BNCIBaseDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            n_targets=2,
-            n_repetitions=10,
-            soa_ms=850.0,
+            detected_paradigm="p300", n_targets=2, n_repetitions=10, soa_ms=850.0
         ),
         data_structure=DataStructureMetadata(
-            n_trials=24,
-            n_blocks=7,
-            trials_context="per_block",
+            n_trials=24, n_blocks=7, trials_context="per_block"
         ),
         file_format="MAT",
         data_processed=False,

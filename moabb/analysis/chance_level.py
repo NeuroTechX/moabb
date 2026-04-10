@@ -17,8 +17,7 @@ def adjusted_chance_level(n_classes: int, n_trials: int, alpha: float = 0.05) ->
 
 
 def chance_by_chance(
-    data,
-    alpha: float | list[float] = 0.05,
+    data, alpha: float | list[float] = 0.05
 ) -> dict[str, dict[str, Any]]:
     """Compute chance levels from ``samples_test`` and ``n_classes`` columns."""
     if isinstance(alpha, (int, float)):

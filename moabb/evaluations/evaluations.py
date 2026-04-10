@@ -3,11 +3,7 @@ from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 from sklearn.base import clone
-from sklearn.model_selection import (
-    GroupKFold,
-    LeaveOneGroupOut,
-    StratifiedKFold,
-)
+from sklearn.model_selection import GroupKFold, LeaveOneGroupOut, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -147,7 +143,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     X_ = X[ix]
                     y_ = y[ix] if self.mne_labels else y_cv
                     meta_ = metadata[ix].reset_index(drop=True)
-                    acc = list()
+                    acc = []
                     durations = []
                     test_sizes = []
                     nchan = self._get_nchan(X)
@@ -366,10 +362,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     cvclf = clone(grid_clf)
 
                     duration, emissions, task_name = self._fit_cv(
-                        cvclf,
-                        X[train],
-                        y[train],
-                        tracker if _carbonfootprint else None,
+                        cvclf, X[train], y[train], tracker if _carbonfootprint else None
                     )
                     self._maybe_save_model_cv(
                         cvclf,
@@ -516,10 +509,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             return
 
         X, y, metadata = self._load_data(
-            dataset,
-            run_pipes,
-            process_pipeline,
-            postprocess_pipeline,
+            dataset, run_pipes, process_pipeline, postprocess_pipeline
         )
         le = LabelEncoder()
         y = y if self.mne_labels else le.fit_transform(y)
@@ -563,19 +553,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 cvclf = clone(clf)
 
                 duration, emissions, task_name = self._fit_cv(
-                    cvclf,
-                    X[train],
-                    y[train],
-                    tracker if _carbonfootprint else None,
+                    cvclf, X[train], y[train], tracker if _carbonfootprint else None
                 )
                 self._maybe_save_model_cv(
-                    cvclf,
-                    dataset,
-                    subject,
-                    "",
-                    name,
-                    cv_ind,
-                    eval_type="CrossSubject",
+                    cvclf, dataset, subject, "", name, cv_ind, eval_type="CrossSubject"
                 )
 
                 # Create scorer once per pipeline

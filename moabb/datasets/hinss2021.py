@@ -26,7 +26,7 @@ from moabb.datasets.metadata.schema import (
 
 URL = "https://zenodo.org/record/5055046/files/"
 # private dictionary to map events to integers
-_HINNS_EVENTS = dict(rs=1, easy=2, medium=3, diff=4)
+_HINNS_EVENTS = {"rs": 1, "easy": 2, "medium": 3, "diff": 4}
 
 
 class Hinss2021(BaseDataset):
@@ -144,9 +144,7 @@ class Hinss2021(BaseDataset):
                 "TP8",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                other_physiological=["ecg"],
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["ecg"]),
         ),
         participants=ParticipantMetadata(
             n_subjects=15,
@@ -202,11 +200,7 @@ class Hinss2021(BaseDataset):
             data_url="https://doi.org/10.5281/zenodo.6874128",
             license="CC-BY-SA-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Cognitive"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Cognitive"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
@@ -219,30 +213,21 @@ class Hinss2021(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["MDM", "Riemannian"],
             feature_extraction=["Bandpower", "Covariance/Riemannian", "ICA"],
-            frequency_bands={
-                "alpha": [8.0, 13.0],
-                "theta": [4.0, 8.0],
-            },
+            frequency_bands={"alpha": [8.0, 13.0], "theta": [4.0, 8.0]},
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="5-fold",
             cv_folds=5,
             evaluation_type=["cross_subject", "cross_session", "transfer_learning"],
         ),
-        performance={
-            "accuracy_percent": 70.67,
-        },
+        performance={"accuracy_percent": 70.67},
         bci_application=BCIApplicationMetadata(
             applications=["neuroergonomics", "mental_workload_estimation"],
             environment="laboratory",
         ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="rstate",
-        ),
+        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="rstate"),
         data_structure=DataStructureMetadata(
-            n_trials=90,
-            n_blocks=None,
-            trials_context="total",
+            n_trials=90, n_blocks=None, trials_context="total"
         ),
         sessions_per_subject=2,
         runs_per_session=1,

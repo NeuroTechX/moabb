@@ -242,14 +242,7 @@ class Ma2020(BaseDataset):
                 "National Natural Science Foundation of China (No. 61976209)",
                 "National Natural Science Foundation of China (No. 61906188)",
             ],
-            keywords=[
-                "motor imagery",
-                "EEG",
-                "BCI",
-                "same limb",
-                "hand",
-                "elbow",
-            ],
+            keywords=["motor imagery", "EEG", "BCI", "same limb", "hand", "elbow"],
         ),
         sessions_per_subject=15,
         runs_per_session=1,
@@ -273,34 +266,25 @@ class Ma2020(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["FBCSP+SVM"],
             feature_extraction=["FBCSP"],
-            frequency_bands={
-                "alpha": [8.0, 13.0],
-                "beta": [20.0, 25.0],
-            },
+            frequency_bands={"alpha": [8.0, 13.0], "beta": [20.0, 25.0]},
             spatial_filters=["CAR", "FBCSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="5-fold",
-            cv_folds=5,
-            evaluation_type=["within_subject"],
+            cv_method="5-fold", cv_folds=5, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             environment="laboratory",
             online_feedback=False,
             applications=["motor_rehabilitation", "prosthetic_control"],
         ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["motor"],
-            type=["imagery"],
-        ),
+        tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
     )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 26)),
             sessions_per_subject=15,
-            events=dict(right_hand=1, right_elbow=2),
+            events={"right_hand": 1, "right_elbow": 2},
             code="Ma2020",
             interval=[0, 4],
             paradigm="imagery",
@@ -327,7 +311,7 @@ class Ma2020(BaseDataset):
         sessions = {}
         for sess_idx in range(15):
             cnt_name = (
-                f"sub-{subject:03d}_ses-{sess_idx + 1:02d}" f"_task-motorimagery_eeg.cnt"
+                f"sub-{subject:03d}_ses-{sess_idx + 1:02d}_task-motorimagery_eeg.cnt"
             )
             cnt_path = subj_dir / cnt_name
             if not cnt_path.exists():
@@ -382,7 +366,7 @@ class Ma2020(BaseDataset):
         file_ids = _CNT_FILE_IDS[subject]
         for sess_idx, file_id in enumerate(file_ids):
             cnt_name = (
-                f"sub-{subject:03d}_ses-{sess_idx + 1:02d}" f"_task-motorimagery_eeg.cnt"
+                f"sub-{subject:03d}_ses-{sess_idx + 1:02d}_task-motorimagery_eeg.cnt"
             )
             cnt_path = subj_dir / cnt_name
             if cnt_path.exists() and not force_update:

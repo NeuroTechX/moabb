@@ -37,9 +37,7 @@ class TestAcquisitionMetadata:
     def test_required_fields_only(self):
         """Test instantiation with only required fields."""
         acq = AcquisitionMetadata(
-            sampling_rate=512.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
+            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
         )
         assert acq.sampling_rate == 512.0
         assert acq.n_channels == 64
@@ -213,9 +211,7 @@ class TestDatasetMetadata:
     def minimal_acquisition(self):
         """Create minimal AcquisitionMetadata for testing."""
         return AcquisitionMetadata(
-            sampling_rate=512.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
+            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
         )
 
     @pytest.fixture
@@ -248,10 +244,7 @@ class TestDatasetMetadata:
         self, minimal_acquisition, minimal_participants, minimal_experiment
     ):
         """Test instantiation with all fields."""
-        doc = DocumentationMetadata(
-            doi="10.1234/example",
-            description="Test dataset",
-        )
+        doc = DocumentationMetadata(doi="10.1234/example", description="Test dataset")
         meta = DatasetMetadata(
             acquisition=minimal_acquisition,
             participants=minimal_participants,
@@ -343,10 +336,7 @@ class TestMetadataIntegration:
                 hardware="BioSemi ActiveTwo",
                 reference="CMS/DRL",
             ),
-            participants=ParticipantMetadata(
-                n_subjects=8,
-                health_status="healthy",
-            ),
+            participants=ParticipantMetadata(n_subjects=8, health_status="healthy"),
             experiment=ExperimentMetadata(
                 paradigm="p300",
                 task_type="row_col_speller",
@@ -369,18 +359,10 @@ class TestMetadataIntegration:
                 channel_types={"eeg": 8},
                 sensors=["PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2"],
             ),
-            participants=ParticipantMetadata(
-                n_subjects=35,
-                health_status="healthy",
-            ),
+            participants=ParticipantMetadata(n_subjects=35, health_status="healthy"),
             experiment=ExperimentMetadata(
                 paradigm="ssvep",
-                events={
-                    "8Hz": 1,
-                    "10Hz": 2,
-                    "12Hz": 3,
-                    "14Hz": 4,
-                },
+                events={"8Hz": 1, "10Hz": 2, "12Hz": 3, "14Hz": 4},
                 n_classes=4,
                 trial_duration=5.0,
             ),
@@ -504,9 +486,9 @@ class TestMetadataCatalog:
         """Test that datasets have correct paradigm assignment."""
         for name in expected_datasets:
             metadata = get_dataset_metadata(name)
-            assert (
-                metadata.experiment.paradigm == paradigm
-            ), f"{name} should have paradigm '{paradigm}'"
+            assert metadata.experiment.paradigm == paradigm, (
+                f"{name} should have paradigm '{paradigm}'"
+            )
 
     def test_all_datasets_have_required_fields(self):
         """Test that all catalog datasets have required metadata fields."""
@@ -514,9 +496,9 @@ class TestMetadataCatalog:
             # Acquisition required fields
             assert metadata.acquisition.sampling_rate > 0, f"{name} missing sampling_rate"
             assert metadata.acquisition.n_channels > 0, f"{name} missing n_channels"
-            assert (
-                len(metadata.acquisition.channel_types) > 0
-            ), f"{name} missing channel_types"
+            assert len(metadata.acquisition.channel_types) > 0, (
+                f"{name} missing channel_types"
+            )
             # Participants required field
             assert metadata.participants.n_subjects > 0, f"{name} missing n_subjects"
             # Experiment required field
@@ -760,9 +742,9 @@ class TestMetadataCatalog:
                 v = getattr(metadata, f.name)
                 if v is not None:
                     all_errors.extend(_check_type(v, f.type, f"{name}.{f.name}"))
-        assert (
-            all_errors == []
-        ), f"Found {len(all_errors)} type violations:\n" + "\n".join(all_errors[:20])
+        assert all_errors == [], (
+            f"Found {len(all_errors)} type violations:\n" + "\n".join(all_errors[:20])
+        )
 
 
 class TestBuildRawFromEpochsValidation:
@@ -886,9 +868,7 @@ class TestParticipantsResolutionOrdering:
                 sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
             ),
             participants=ParticipantMetadata(
-                n_subjects=2,
-                ages=[25, None],
-                age_mean=44.0,
+                n_subjects=2, ages=[25, None], age_mean=44.0
             ),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -917,10 +897,7 @@ class TestParticipantsResolutionOrdering:
 
         # Subject 1: metadata list has priority over raw sex.
         _update_participants_tsv(
-            tmp_path,
-            1,
-            metadata,
-            raw=self._make_raw(subject_info={"sex": 2, "hand": 2}),
+            tmp_path, 1, metadata, raw=self._make_raw(subject_info={"sex": 2, "hand": 2})
         )
         # Subject 2: fallback to raw subject_info with numeric strings.
         _update_participants_tsv(

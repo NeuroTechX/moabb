@@ -45,11 +45,7 @@ _DATA_REPO_PREFIXES = (
     "10.35376/",
     "10.13026/",
 )
-_DOI_URL_PREFIXES = (
-    "https://doi.org/",
-    "http://doi.org/",
-    "https://dx.doi.org/",
-)
+_DOI_URL_PREFIXES = ("https://doi.org/", "http://doi.org/", "https://dx.doi.org/")
 _DOI_RE = re.compile(r"^10\.\d{4,}/")
 _REQUEST_DELAY = 0.15
 

@@ -153,10 +153,7 @@ class Cho2017(BaseDataset):
                 "TP8",
             ],
             line_freq=60.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_emg=True,
-                emg_channels=4,
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=4),
         ),
         participants=ParticipantMetadata(
             n_subjects=52,
@@ -224,11 +221,7 @@ class Cho2017(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
@@ -263,8 +256,7 @@ class Cho2017(BaseDataset):
             "total_subjects": 50,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            online_feedback=False,
+            applications=["motor_control"], online_feedback=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -287,7 +279,7 @@ class Cho2017(BaseDataset):
         super().__init__(
             subjects=list(range(1, 53)),
             sessions_per_subject=1,
-            events=dict(left_hand=1, right_hand=2),
+            events={"left_hand": 1, "right_hand": 2},
             code="Cho2017",
             interval=[0, 3],  # full trial is 0-3s, but edge effects
             paradigm="imagery",

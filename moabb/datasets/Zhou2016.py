@@ -174,14 +174,9 @@ class Zhou2016(BaseBIDSDataset):
         ),
         sessions_per_subject=3,
         runs_per_session=2,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["zero-training classifier"],
@@ -194,7 +189,7 @@ class Zhou2016(BaseBIDSDataset):
             spatial_filters=["ICA", "CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["cross_session", "within_session", "cross_run"],
+            evaluation_type=["cross_session", "within_session", "cross_run"]
         ),
         performance={
             "accuracy_percent": 80.6,
@@ -202,8 +197,7 @@ class Zhou2016(BaseBIDSDataset):
             "ICA-T_session_transfer_success_rate": 67.0,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            environment="laboratory",
+            applications=["motor_control"], environment="laboratory"
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -224,7 +218,7 @@ class Zhou2016(BaseBIDSDataset):
         super().__init__(
             subjects=list(range(1, 5)),
             sessions_per_subject=3,
-            events=dict(left_hand=1, right_hand=2, feet=3),
+            events={"left_hand": 1, "right_hand": 2, "feet": 3},
             code="Zhou2016",
             # MI 1-6s, prepare 0-1, break 6-10
             # boundary effects

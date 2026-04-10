@@ -50,14 +50,14 @@ get_dataset_description
 Example
 -------
 >>> from moabb.datasets.metadata import (
-...     DatasetMetadata, AcquisitionMetadata,
-...     ParticipantMetadata, ExperimentMetadata
+...     DatasetMetadata,
+...     AcquisitionMetadata,
+...     ParticipantMetadata,
+...     ExperimentMetadata,
 ... )
 >>> metadata = DatasetMetadata(
 ...     acquisition=AcquisitionMetadata(
-...         sampling_rate=512.0,
-...         n_channels=64,
-...         channel_types={"eeg": 60, "eog": 4},
+...         sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
 ...     ),
 ...     participants=ParticipantMetadata(n_subjects=20),
 ...     experiment=ExperimentMetadata(paradigm="imagery"),
@@ -98,44 +98,30 @@ _MANUAL_METADATA_OVERRIDES = {
         "documentation": {"country": "AT"},
         "runs_per_session": 6,
     },
-    "BI2012": {
-        "experiment": {"task_type": "brain_invaders"},
-    },
+    "BI2012": {"experiment": {"task_type": "brain_invaders"}},
     # ERP CORE 2021 variants
-    "ErpCore2021_ERN": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
-    },
-    "ErpCore2021_LRP": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
-    },
-    "ErpCore2021_MMN": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
-    },
+    "ErpCore2021_ERN": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_LRP": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_MMN": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
     "ErpCore2021_N170": {
         "participants": {"age_mean": 21.5},
         "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
     },
-    "ErpCore2021_N2pc": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
-    },
-    "ErpCore2021_N400": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
-    },
-    "ErpCore2021_P3": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
-    },
+    "ErpCore2021_N2pc": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_N400": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_P3": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
     # cVEP datasets
     "CastillosBurstVEP40": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
     },
     "CastillosBurstVEP100": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
     },
     "CastillosCVEP40": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
     },
     "CastillosCVEP100": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"},
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
     },
     "MartinezCagigal2023Checker": {
         "sessions_per_subject": 8,
@@ -148,26 +134,18 @@ _MANUAL_METADATA_OVERRIDES = {
         "documentation": {"license": "CC-BY-NC-SA-4.0", "repository": "U Valladoid"},
     },
     # Beetl datasets
-    "Beetl2021_A": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"},
-    },
-    "Beetl2021_B": {
-        "documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"},
-    },
+    "Beetl2021_A": {"documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"}},
+    "Beetl2021_B": {"documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"}},
     # Kojima datasets
     "Kojima2024A": {
-        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"},
+        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"}
     },
     "Kojima2024B": {
-        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"},
+        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"}
     },
     # Dreyer2023 variants (METADATA inherited from _Dreyer2023Base)
-    "Dreyer2023B": {
-        "documentation": {"repository": "Osf"},
-    },
-    "Dreyer2023C": {
-        "documentation": {"repository": "Osf"},
-    },
+    "Dreyer2023B": {"documentation": {"repository": "Osf"}},
+    "Dreyer2023C": {"documentation": {"repository": "Osf"}},
 }
 
 
@@ -262,9 +240,7 @@ def _build_fallback_metadata(dataset_name: str) -> DatasetMetadata:
     )
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=1.0,
-            n_channels=1,
-            channel_types={"eeg": 1},
+            sampling_rate=1.0, n_channels=1, channel_types={"eeg": 1}
         ),
         participants=ParticipantMetadata(n_subjects=1),
         experiment=ExperimentMetadata(paradigm="imagery"),
@@ -301,9 +277,7 @@ def _merge_with_dataset(metadata: DatasetMetadata, dataset) -> DatasetMetadata:
     if event_id:
         class_labels = list(event_id.keys())
         experiment = replace(
-            experiment,
-            n_classes=len(event_id),
-            class_labels=class_labels,
+            experiment, n_classes=len(event_id), class_labels=class_labels
         )
 
     # Acquisition
@@ -397,10 +371,7 @@ def _apply_dataset_family_defaults(
             "ethics_approval": [
                 "Approved by the Institutional Review Board at the University of California, Davis"
             ],
-            "funding": [
-                "NIH R01MH087450",
-                "NIH R25MH080794",
-            ],
+            "funding": ["NIH R01MH087450", "NIH R25MH080794"],
             "acknowledgements": (
                 "We thank Mike Blank and David Woods at Neurobehavioral Systems, Inc. "
                 "for providing professional programming of the tasks in Presentation. "
@@ -417,7 +388,7 @@ def _apply_dataset_family_defaults(
         if not documentation.license:
             doc_updates["license"] = "CC BY 4.0"
         # Only set fields that are not already populated
-        for key, value in list(doc_updates.items()):
+        for key, _value in list(doc_updates.items()):
             if getattr(documentation, key, None):
                 del doc_updates[key]
         documentation = replace(documentation, **doc_updates)
@@ -463,10 +434,7 @@ def _apply_dataset_family_defaults(
     if name.startswith("MartinezCagigal2023"):
         acquisition = metadata.acquisition or AcquisitionMetadata()
         acquisition = replace(
-            acquisition,
-            sampling_rate=256.0,
-            n_channels=16,
-            channel_types={"eeg": 16},
+            acquisition, sampling_rate=256.0, n_channels=16, channel_types={"eeg": 16}
         )
         participants = metadata.participants or ParticipantMetadata(n_subjects=16)
         participants = replace(participants, n_subjects=16)
@@ -496,7 +464,7 @@ def canonicalize_dataset_class_metadata(dataset_name: str, dataset_cls) -> None:
     metadata = _merge_with_dataset(metadata, dataset)
     metadata = _apply_manual_overrides(dataset_name, metadata)
     metadata = _apply_dataset_family_defaults(dataset_name, metadata)
-    setattr(dataset_cls, "METADATA", metadata)
+    dataset_cls.METADATA = metadata
 
 
 def canonicalize_dataset_class_catalog(dataset_classes: dict[str, type]) -> None:

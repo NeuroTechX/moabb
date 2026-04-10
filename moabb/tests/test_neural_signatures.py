@@ -30,86 +30,86 @@ from moabb.analysis.neural_signatures import (  # noqa: E402
 
 
 _PARADIGM_CONFIGS = {
-    "p300": dict(
-        dataset_kw=dict(
-            paradigm="p300",
-            event_list=("Target", "NonTarget"),
-            channels=("C3", "Cz", "C4", "Fz", "Pz", "Oz"),
-            sfreq=128,
-            n_events=40,
-            duration=60,
-        ),
-        paradigm_cls="P300",
-        paradigm_kw={},
-        compute_fn=compute_erp_signature,
-        plot_fn=plot_erp_interactive,
-        sig_paradigm="p300",
-        sig_type="erp",
-    ),
-    "imagery": dict(
-        dataset_kw=dict(
-            paradigm="imagery",
-            event_list=("left_hand", "right_hand"),
-            channels=("C3", "Cz", "C4"),
-            sfreq=128,
-            n_events=30,
-            duration=60,
-        ),
-        paradigm_cls="MotorImagery",
-        paradigm_kw=dict(n_classes=2),
-        compute_fn=compute_erd_ers_signature,
-        plot_fn=plot_erd_ers_interactive,
-        sig_paradigm="imagery",
-        sig_type="erd_ers",
-    ),
-    "ssvep": dict(
-        dataset_kw=dict(
-            paradigm="ssvep",
-            event_list=("13.0", "15.0"),
-            channels=("O1", "Oz", "O2"),
-            sfreq=256,
-            n_events=30,
-            duration=60,
-        ),
-        paradigm_cls="SSVEP",
-        paradigm_kw=dict(n_classes=2),
-        compute_fn=compute_ssvep_signature,
-        plot_fn=plot_ssvep_interactive,
-        sig_paradigm="ssvep",
-        sig_type="psd_snr",
-    ),
-    "cvep": dict(
-        dataset_kw=dict(
-            paradigm="cvep",
-            event_list=("1.0", "0.0"),
-            channels=("O1", "Oz", "O2"),
-            sfreq=256,
-            n_events=30,
-            duration=60,
-        ),
-        paradigm_cls="CVEP",
-        paradigm_kw=dict(n_classes=2),
-        compute_fn=compute_cvep_signature,
-        plot_fn=plot_cvep_interactive,
-        sig_paradigm="cvep",
-        sig_type="cvep_response",
-    ),
-    "rstate": dict(
-        dataset_kw=dict(
-            paradigm="rstate",
-            event_list=("eyes_open", "eyes_closed"),
-            channels=("C3", "Cz", "C4", "Fz", "Pz", "Oz"),
-            sfreq=128,
-            n_events=20,
-            duration=120,
-        ),
-        paradigm_cls="RestingStateToP300Adapter",
-        paradigm_kw=dict(tmin=0, tmax=3, resample=128),
-        sig_paradigm="rstate",
-        sig_type="rstate_psd",
-        compute_fn=compute_rstate_signature,
-        plot_fn=plot_rstate_interactive,
-    ),
+    "p300": {
+        "dataset_kw": {
+            "paradigm": "p300",
+            "event_list": ("Target", "NonTarget"),
+            "channels": ("C3", "Cz", "C4", "Fz", "Pz", "Oz"),
+            "sfreq": 128,
+            "n_events": 40,
+            "duration": 60,
+        },
+        "paradigm_cls": "P300",
+        "paradigm_kw": {},
+        "compute_fn": compute_erp_signature,
+        "plot_fn": plot_erp_interactive,
+        "sig_paradigm": "p300",
+        "sig_type": "erp",
+    },
+    "imagery": {
+        "dataset_kw": {
+            "paradigm": "imagery",
+            "event_list": ("left_hand", "right_hand"),
+            "channels": ("C3", "Cz", "C4"),
+            "sfreq": 128,
+            "n_events": 30,
+            "duration": 60,
+        },
+        "paradigm_cls": "MotorImagery",
+        "paradigm_kw": {"n_classes": 2},
+        "compute_fn": compute_erd_ers_signature,
+        "plot_fn": plot_erd_ers_interactive,
+        "sig_paradigm": "imagery",
+        "sig_type": "erd_ers",
+    },
+    "ssvep": {
+        "dataset_kw": {
+            "paradigm": "ssvep",
+            "event_list": ("13.0", "15.0"),
+            "channels": ("O1", "Oz", "O2"),
+            "sfreq": 256,
+            "n_events": 30,
+            "duration": 60,
+        },
+        "paradigm_cls": "SSVEP",
+        "paradigm_kw": {"n_classes": 2},
+        "compute_fn": compute_ssvep_signature,
+        "plot_fn": plot_ssvep_interactive,
+        "sig_paradigm": "ssvep",
+        "sig_type": "psd_snr",
+    },
+    "cvep": {
+        "dataset_kw": {
+            "paradigm": "cvep",
+            "event_list": ("1.0", "0.0"),
+            "channels": ("O1", "Oz", "O2"),
+            "sfreq": 256,
+            "n_events": 30,
+            "duration": 60,
+        },
+        "paradigm_cls": "CVEP",
+        "paradigm_kw": {"n_classes": 2},
+        "compute_fn": compute_cvep_signature,
+        "plot_fn": plot_cvep_interactive,
+        "sig_paradigm": "cvep",
+        "sig_type": "cvep_response",
+    },
+    "rstate": {
+        "dataset_kw": {
+            "paradigm": "rstate",
+            "event_list": ("eyes_open", "eyes_closed"),
+            "channels": ("C3", "Cz", "C4", "Fz", "Pz", "Oz"),
+            "sfreq": 128,
+            "n_events": 20,
+            "duration": 120,
+        },
+        "paradigm_cls": "RestingStateToP300Adapter",
+        "paradigm_kw": {"tmin": 0, "tmax": 3, "resample": 128},
+        "sig_paradigm": "rstate",
+        "sig_type": "rstate_psd",
+        "compute_fn": compute_rstate_signature,
+        "plot_fn": plot_rstate_interactive,
+    },
 }
 
 _PARADIGM_IDS = list(_PARADIGM_CONFIGS.keys())
@@ -152,10 +152,7 @@ class TestPlotlyStyle:
 
 def test_neural_signature_data_creation():
     sig = NeuralSignatureData(
-        paradigm="p300",
-        dataset_name="T",
-        dataset_code="t",
-        signature_type="erp",
+        paradigm="p300", dataset_name="T", dataset_code="t", signature_type="erp"
     )
     assert sig.paradigm == "p300"
     assert isinstance(sig.data, dict) and isinstance(sig.metadata, dict)

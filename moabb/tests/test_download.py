@@ -52,27 +52,27 @@ def test_dataset_download(dl_data, dataset):
     assert isinstance(data, dict), "Data returned by get_data is not a dict."
 
     # Check that the dictionary keys match the subject_list.
-    assert (
-        list(data.keys()) == obj.subject_list
-    ), "Data keys do not match the subject_list."
+    assert list(data.keys()) == obj.subject_list, (
+        "Data keys do not match the subject_list."
+    )
 
     # For each subject, check the structure of sessions and runs.
     for subject, sessions in data.items():
-        assert isinstance(
-            sessions, dict
-        ), f"Sessions for subject {subject} is not a dict."
-        assert (
-            len(sessions) >= obj.n_sessions
-        ), f"Number of sessions for subject {subject} is less than expected."
+        assert isinstance(sessions, dict), (
+            f"Sessions for subject {subject} is not a dict."
+        )
+        assert len(sessions) >= obj.n_sessions, (
+            f"Number of sessions for subject {subject} is less than expected."
+        )
 
         for session, runs in sessions.items():
             assert isinstance(runs, dict), f"Runs for session {session} is not a dict."
 
             for run, raw in runs.items():
-                assert isinstance(
-                    raw, mne.io.BaseRaw
-                ), f"Data for run {run} in session {session} is not an instance of mne.io.BaseRaw."
+                assert isinstance(raw, mne.io.BaseRaw), (
+                    f"Data for run {run} in session {session} is not an instance of mne.io.BaseRaw."
+                )
                 events = _get_events(raw)
-                assert (
-                    len(events) != 0
-                ), f"No events found in run {run} of session {session}."
+                assert len(events) != 0, (
+                    f"No events found in run {run} of session {session}."
+                )

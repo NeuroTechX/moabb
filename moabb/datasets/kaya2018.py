@@ -62,7 +62,7 @@ _EEG_COL_IDX = list(range(10)) + list(range(12, 21))  # skip cols 10,11 (A1,A2),
 # Subject F session 1 (150916) has only 2 classes (left/right, no passive).
 _SUBJECT_FILES = {
     1: [  # Subject A
-        (9636466, "CLA-SubjectA-160108-3St-LRHand.mat"),
+        (9636466, "CLA-SubjectA-160108-3St-LRHand.mat")
     ],
     2: [  # Subject B
         (9636463, "CLA-SubjectB-151019-3St-LRHand.mat"),
@@ -75,7 +75,7 @@ _SUBJECT_FILES = {
         (9636481, "CLA-SubjectC-151223-3St-LRHand.mat"),
     ],
     4: [  # Subject D
-        (9636484, "CLA-SubjectD-151125-3St-LRHand.mat"),
+        (9636484, "CLA-SubjectD-151125-3St-LRHand.mat")
     ],
     5: [  # Subject E
         (9636487, "CLA-SubjectE-151225-3St-LRHand.mat"),
@@ -194,31 +194,21 @@ class Kaya2018(BaseDataset):
             data_url="https://figshare.com/collections/A_large_electroencephalographic_motor_imagery_dataset_for_electroencephalographic_brain_computer_interfaces/3917698",
             license="CC-BY-4.0",
             publication_year=2018,
-            keywords=[
-                "EEG",
-                "motor imagery",
-                "brain-computer interface",
-                "BCI",
-            ],
+            keywords=["EEG", "motor imagery", "brain-computer interface", "BCI"],
         ),
-        preprocessing=PreprocessingMetadata(
-            data_state="raw",
-        ),
+        preprocessing=PreprocessingMetadata(data_state="raw"),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
             imagery_tasks=["left_hand", "right_hand", "passive"],
             cue_duration_s=1.0,
         ),
         data_structure=DataStructureMetadata(
-            trials_context="Variable number of trials per session; "
-            "1s cue + 1.5-2.5s ITI",
+            trials_context="Variable number of trials per session; 1s cue + 1.5-2.5s ITI"
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["SVM"],
             feature_extraction=["fourier_transform_amplitudes"],
-            frequency_bands={
-                "low_pass": [0.0, 5.0],
-            },
+            frequency_bands={"low_pass": [0.0, 5.0]},
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
@@ -226,19 +216,12 @@ class Kaya2018(BaseDataset):
             cv_folds=5,
             evaluation_type=["within_subject"],
         ),
-        bci_application=BCIApplicationMetadata(
-            environment="lab",
-            online_feedback=False,
-        ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["motor"],
-            type=["imagery"],
-        ),
+        bci_application=BCIApplicationMetadata(environment="lab", online_feedback=False),
+        tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
         file_format="MAT",
     )
 
-    _events = dict(left_hand=1, right_hand=2, passive=3)
+    _events = {"left_hand": 1, "right_hand": 2, "passive": 3}
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -282,10 +265,7 @@ class Kaya2018(BaseDataset):
 
             # Create MNE info and RawArray
             info = mne.create_info(
-                ch_names=list(_EEG_CH_NAMES),
-                sfreq=sfreq,
-                ch_types="eeg",
-                verbose=False,
+                ch_names=list(_EEG_CH_NAMES), sfreq=sfreq, ch_types="eeg", verbose=False
             )
             raw = mne.io.RawArray(eeg_data, info, verbose=False)
 
@@ -333,7 +313,7 @@ class Kaya2018(BaseDataset):
         """
         if subject not in self.subject_list:
             raise ValueError(
-                f"Invalid subject {subject}. " f"Valid subjects: {self.subject_list}"
+                f"Invalid subject {subject}. Valid subjects: {self.subject_list}"
             )
 
         sign = self.code

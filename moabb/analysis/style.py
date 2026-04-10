@@ -265,12 +265,12 @@ def style_legend(ax, **kwargs) -> None:
     handles = legend.legend_handles
     labels = [t.get_text() for t in legend.get_texts()]
 
-    defaults = dict(
-        frameon=True,
-        edgecolor="none",
-        facecolor="white",
-        framealpha=0.9,
-        fontsize=FONT_SIZES["legend"],
-    )
+    defaults = {
+        "frameon": True,
+        "edgecolor": "none",
+        "facecolor": "white",
+        "framealpha": 0.9,
+        "fontsize": FONT_SIZES["legend"],
+    }
     defaults.update(kwargs)
     ax.legend(handles, labels, **defaults)

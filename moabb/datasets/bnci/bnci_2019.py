@@ -253,11 +253,7 @@ class BNCI2019_001(BaseDataset):
             ],
             acknowledgements="This work is supported by the European ICT Programme Project H2020-643955 'MoreGrasp'.",
         ),
-        tags=Tags(
-            pathology=["Spinal Cord Injury"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
+        tags=Tags(pathology=["Spinal Cord Injury"], modality=["Motor"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw (GDF format)",
             preprocessing_applied=True,
@@ -285,9 +281,7 @@ class BNCI2019_001(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["Shrinkage LDA", "sLDA"],
             feature_extraction=["time-domain low-frequency signals", "MRCPs", "ICA"],
-            frequency_bands={
-                "analyzed_range": [0.3, 3.0],
-            },
+            frequency_bands={"analyzed_range": [0.3, 3.0]},
             spatial_filters=["CAR"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -310,11 +304,7 @@ class BNCI2019_001(BaseDataset):
             "online_FP_per_min": 3.4,
         },
         bci_application=BCIApplicationMetadata(
-            applications=[
-                "neuroprosthetic",
-                "upper_limb_control",
-                "hand_grasp_control",
-            ],
+            applications=["neuroprosthetic", "upper_limb_control", "hand_grasp_control"],
             environment="indoor",
             online_feedback=True,
         ),

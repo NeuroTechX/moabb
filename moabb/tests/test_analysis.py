@@ -124,9 +124,9 @@ class TestStats:
         )  # We provide the exact same data for each pipeline
         n_perms = 2**n_samples
         pvals = ma.compute_pvals_perm(data)
-        assert np.all(
-            pvals == 1 - 1 / n_perms
-        ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        assert np.all(pvals == 1 - 1 / n_perms), (
+            f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        )
 
     def test_perm_random(self):
         rng = np.random.RandomState(12)
@@ -136,21 +136,20 @@ class TestStats:
         n_perms = 10000  # hardcoded in _pairedttest_random
 
         pvals = ma.compute_pvals_perm(data, seed=rng)
-        assert np.all(
-            pvals == 1 - 1 / n_perms
-        ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        assert np.all(pvals == 1 - 1 / n_perms), (
+            f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        )
 
     def test_edge_case_one_sample(self):
         data = self.return_df((1, 2))
         n_perms = 2
         pvals = ma.compute_pvals_perm(data)
-        assert pvals.shape == (
-            2,
-            2,
-        ), f"Incorrect dimension of p-values array {pvals.shape}"
-        assert np.all(
-            pvals == 1 - 1 / n_perms
-        ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        assert pvals.shape == (2, 2), (
+            f"Incorrect dimension of p-values array {pvals.shape}"
+        )
+        assert np.all(pvals == 1 - 1 / n_perms), (
+            f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        )
 
     def test_compute_pvals_exhaustif_cannot_be_zero(self):
         df = pd.DataFrame({"pipeline_1": [1, 1], "pipeline_2": [0, 0]})
@@ -188,10 +187,7 @@ class TestResults:
         _in = to_result_input(["a"], [d1])
         self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["a"]),
-            d1["dataset"],
-            d1["subject"],
-            "process_pipeline",
+            to_pipeline_dict(["a"]), d1["dataset"], d1["subject"], "process_pipeline"
         )
         assert len(not_yet_computed) == 0
 
@@ -203,24 +199,15 @@ class TestResults:
         _in = to_result_input(["a", "b"], [[d1, d2], [d2, d1]])
         self.obj.add(_in, to_pipeline_dict(["a", "b"]), "process_pipeline")
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["a"]),
-            d1["dataset"],
-            d1["subject"],
-            "process_pipeline",
+            to_pipeline_dict(["a"]), d1["dataset"], d1["subject"], "process_pipeline"
         )
         assert len(not_yet_computed) == 0, not_yet_computed
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["b"]),
-            d2["dataset"],
-            d2["subject"],
-            "process_pipeline",
+            to_pipeline_dict(["b"]), d2["dataset"], d2["subject"], "process_pipeline"
         )
         assert len(not_yet_computed) == 0, not_yet_computed
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["b"]),
-            d1["dataset"],
-            d1["subject"],
-            "process_pipeline",
+            to_pipeline_dict(["b"]), d1["dataset"], d1["subject"], "process_pipeline"
         )
         assert len(not_yet_computed) == 0, not_yet_computed
 
@@ -230,7 +217,7 @@ class TestResults:
         _in = to_result_input(["a", "b", "c"], [d2, d2, d3])
         self.obj.add(_in, to_pipeline_dict(["a", "b", "c"]), "process_pipeline")
         df = self.obj.to_dataframe()
-        assert set(np.unique(df["pipeline"])) == set(("a", "b", "c")), (
+        assert set(np.unique(df["pipeline"])) == {"a", "b", "c"}, (
             np.unique(df["pipeline"]),
         )
         assert df.shape[0] == 6, df.shape[0]

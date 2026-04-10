@@ -140,9 +140,7 @@ class Sosulski2019(BaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=1,
-                eog_type=["vertical"],
+                has_eog=True, eog_channels=1, eog_type=["vertical"]
             ),
         ),
         participants=ParticipantMetadata(
@@ -215,23 +213,15 @@ class Sosulski2019(BaseDataset):
             ],
             repository="FreiDok",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Auditory"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["Research"]),
         preprocessing=PreprocessingMetadata(),
         signal_processing=SignalProcessingMetadata(
             classifiers=["rLDA", "Shrinkage LDA"],
             feature_extraction=["Mean amplitude in time intervals"],
-            frequency_bands={
-                "analyzed_range": [1.5, 40.0],
-            },
+            frequency_bands={"analyzed_range": [1.5, 40.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="13-fold",
-            cv_folds=13,
-            evaluation_type=["within_session"],
+            cv_method="13-fold", cv_folds=13, evaluation_type=["within_session"]
         ),
         performance={
             "auc": 0.701,
@@ -242,8 +232,7 @@ class Sosulski2019(BaseDataset):
             "mean_auc_fixed60": 0.517,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication"],
-            online_feedback=False,
+            applications=["communication"], online_feedback=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
@@ -310,7 +299,7 @@ class Sosulski2019(BaseDataset):
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
         self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
-        self.events = dict(Target=21, NonTarget=1)
+        self.events = {"Target": 21, "NonTarget": 1}
         code = "Sosulski2019"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
@@ -336,7 +325,7 @@ class Sosulski2019(BaseDataset):
     def filename_trial_info_extraction(filepath):
         info_pattern = "Oddball_Run_([0-9]+)_Trial_([0-9]+)_SOA_[0-9]\\.([0-9]+)\\.vhdr"
         filename = filepath.split(os.path.sep)[-1]
-        trial_info = dict()
+        trial_info = {}
         re_matches = re.match(info_pattern, filename)
         trial_info["run"] = int(re_matches.group(1))
         trial_info["trial"] = int(re_matches.group(2))

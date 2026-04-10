@@ -305,9 +305,7 @@ class Kojima2024A(BaseDataset):
                 "xDAWN spatial filtering",
                 "Riemannian geometry covariance matrices",
             ],
-            frequency_bands={
-                "analyzed_range": [1.0, 40.0],
-            },
+            frequency_bands={"analyzed_range": [1.0, 40.0]},
             spatial_filters=["xDAWN"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -356,7 +354,7 @@ class Kojima2024A(BaseDataset):
         super().__init__(
             list(range(1, 12)),
             sessions_per_subject=1,
-            events=dict(Target=1, NonTarget=0),
+            events={"Target": 1, "NonTarget": 0},
             code="Kojima2024A",
             interval=[-0.5, 1.2],
             paradigm="p300",
@@ -375,7 +373,6 @@ class Kojima2024A(BaseDataset):
         files_to_load = []
 
         for file in manifest_files:
-
             if (f"sub-{subject_id}" not in file["label"]) or (
                 "_eeg" not in file["label"]
             ):
@@ -409,7 +406,6 @@ class Kojima2024A(BaseDataset):
         files_path = self.data_path(subject)
         runs = {}
         for file in files_path:
-
             fname = file.name
 
             run_id = fname.split("_")[2].split("-")[1]
@@ -542,9 +538,7 @@ class Kojima2024A(BaseDataset):
         for file in tqdm(files):
             download_url = _api_base_url + str(file["file_id"])
             dl.download_if_missing(
-                path / file["directory"] / file["fname"],
-                download_url,
-                warn_missing=False,
+                path / file["directory"] / file["fname"], download_url, warn_missing=False
             )
 
         return path

@@ -160,9 +160,7 @@ class Beetl2021_A(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=3,
-            health_status="healthy",
-            bci_experience=None,
+            n_subjects=3, health_status="healthy", bci_experience=None
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -232,11 +230,7 @@ class Beetl2021_A(BaseDataset):
             "moabb": "https://github.com/NeuroTechX/moabb",
             "arxiv": "https://arxiv.org/abs/2202.12950",
         },
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -247,22 +241,13 @@ class Beetl2021_A(BaseDataset):
             notch_hz=50.0,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=[
-                "EEGInception",
-                "EEGNet",
-                "Shallow ConvNet",
-                "SPDNet",
-                "MDRM",
-            ],
+            classifiers=["EEGInception", "EEGNet", "Shallow ConvNet", "SPDNet", "MDRM"],
             feature_extraction=[
                 "deep learning features",
                 "covariance matrices",
                 "Riemannian geometry",
             ],
-            spatial_filters=[
-                "Euclidean Alignment",
-                "Label Alignment",
-            ],
+            spatial_filters=["Euclidean Alignment", "Label Alignment"],
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="block-wise k-fold",
@@ -278,9 +263,7 @@ class Beetl2021_A(BaseDataset):
             "ms01_team_accuracy": 59.87,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            environment="lab",
-            online_feedback=True,
+            applications=["motor_control"], environment="lab", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
@@ -387,7 +370,7 @@ class Beetl2021_A(BaseDataset):
         super().__init__(
             subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
-            events=dict(rest=0, left_hand=1, right_hand=2, feet=3),
+            events={"rest": 0, "left_hand": 1, "right_hand": 2, "feet": 3},
             code="Beetl2021-A",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
@@ -647,12 +630,7 @@ class Beetl2021_B(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             task_type="motor imagery",
-            events={
-                "left_hand": 0,
-                "right_hand": 1,
-                "feet": 2,
-                "rest": 3,
-            },
+            events={"left_hand": 0, "right_hand": 1, "feet": 2, "rest": 3},
             n_classes=4,
             class_labels=["left_hand", "right_hand", "feet", "rest"],
             trial_duration=4.0,
@@ -728,11 +706,7 @@ class Beetl2021_B(BaseDataset):
             "moabb": "http://moabb.neurotechx.com/docs/datasets.html",
             "github": "https://github.com/NeuroTechX/moabb",
         },
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -792,7 +766,7 @@ class Beetl2021_B(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            trials_context="Training and testing data separated. Competition data cut into 4-second trials. Training has 5 races, testing has 10 races per subject.",
+            trials_context="Training and testing data separated. Competition data cut into 4-second trials. Training has 5 races, testing has 10 races per subject."
         ),
         abstract="Transfer learning and meta-learning offer some of the most promising avenues to unlock the scalability of healthcare and consumer technologies driven by biosignal data. This is because current methods cannot generalise well across human subjects' data and handle learning from different heterogeneously collected data sets, thus limiting the scale of training data. Task 2 is a 3-way motor imagery classification challenge (left-hand, right-hand motor imagery and 'reject') that gets at the heart of the problem of current BCI systems: motor imagery data is exhausting for subjects to record, and historically has been difficult to use in a cross-subject and cross-dataset manner. Dataset B contains data from the Weibo2014 dataset with 32 channels around the motor cortex selected, sampled at 200 Hz.",
         methodology="Task 2 is centred on transfer learning for BCI, addressing motor imagery decoding. The challenge lies in transferring from multiple data sets, which use different EEG setups comprising hundreds of users, to a set of new users that need to be up and running with only minutes worth of calibration data (transfer across subjects and data sets). Three source data sets (Cho2017, BNCI2014, PhysionetMI) are provided as training data. The algorithms are evaluated on new data sets with different setups, including differences in electrode channels, task definitions, and subjects. Dataset B is from Weibo2014 with 32 channels selected around motor cortex. For the leaderboard phase (subjects 3-5), only training data is provided. For the final phase (subjects 4-5), both training and testing data are included.",
@@ -819,7 +793,7 @@ class Beetl2021_B(BaseDataset):
         super().__init__(
             subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
-            events=dict(left_hand=0, right_hand=1, feet=2, rest=3),
+            events={"left_hand": 0, "right_hand": 1, "feet": 2, "rest": 3},
             code="Beetl2021-B",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",

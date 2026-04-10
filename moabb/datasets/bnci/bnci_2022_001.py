@@ -578,9 +578,7 @@ class BNCI2022_001(BNCIBaseDataset):
         data_processed=True,
         file_format="gdf",
         tags=Tags(
-            pathology=["Healthy"],
-            modality=["EEG"],
-            type=["Experimental/Research"],
+            pathology=["Healthy"], modality=["EEG"], type=["Experimental/Research"]
         ),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",

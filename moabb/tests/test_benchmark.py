@@ -49,7 +49,7 @@ class TestBenchmark:
         assert len(res) == 16
 
     def test_nodataset(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             benchmark(
                 pipelines=str(self.pp_dir),
                 exclude_datasets=["NonExistingDatasetCode"],
@@ -105,9 +105,7 @@ class TestBenchmark:
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             paradigms=["FakeImageryParadigm"],
-            include_datasets=[
-                ds,
-            ],
+            include_datasets=[ds],
             overwrite=True,
             optuna=True,
         )

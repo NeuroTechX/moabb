@@ -11,9 +11,7 @@ from mne import BaseEpochs
 from mne.io import BaseRaw
 
 from moabb.datasets import BNCI2014_001
-from moabb.datasets.base import (
-    LocalBIDSDataset,
-)
+from moabb.datasets.base import LocalBIDSDataset
 from moabb.datasets.fake import FakeDataset
 from moabb.datasets.preprocessing import (
     _REST_LABEL,
@@ -51,7 +49,6 @@ class SimpleMotorImagery(BaseMotorImagery):  # Needed to assess BaseImagery
 
 
 class TestMotorImagery(unittest.TestCase):
-
     def test_paradigm_interval(self):
         paradigm = SimpleMotorImagery()
         for use_annotations in [True, False]:
@@ -97,12 +94,7 @@ class TestMotorImagery(unittest.TestCase):
             assert isinstance(raw, BaseRaw)
         # should raise error
         with pytest.raises(ValueError):
-            paradigm.get_data(
-                dataset,
-                subjects=[1],
-                return_epochs=True,
-                return_raws=True,
-            )
+            paradigm.get_data(dataset, subjects=[1], return_epochs=True, return_raws=True)
 
     def test_BaseImagery_channel_order(self):
         """Test if paradigm return correct channel order, see issue #227."""
@@ -120,12 +112,7 @@ class TestMotorImagery(unittest.TestCase):
 
     def test_BaseImagery_overlap_stride(self):
         dataset = FakeDataset(
-            paradigm="imagery",
-            n_sessions=1,
-            n_runs=1,
-            n_events=12,
-            duration=60,
-            seed=42,
+            paradigm="imagery", n_sessions=1, n_runs=1, n_events=12, duration=60, seed=42
         )
         raw = dataset._get_single_subject_data(1)["0"]["0"]
 
@@ -145,14 +132,7 @@ class TestMotorImagery(unittest.TestCase):
         assert np.all(diffs % stride == 0)
 
     def test_BaseImagery_overlap_majority_vote(self):
-        events = np.array(
-            [
-                [0, 0, 1],
-                [10, 0, 2],
-                [20, 0, 1],
-            ],
-            dtype="int32",
-        )
+        events = np.array([[0, 0, 1], [10, 0, 2], [20, 0, 1]], dtype="int32")
         interval = (0.0, 10.0)
         sliding = _generate_sliding_window_events(
             events, window_length=8.0, overlap=50.0, sfreq=1.0, interval=interval
@@ -165,12 +145,7 @@ class TestMotorImagery(unittest.TestCase):
 
     def test_BaseImagery_overlap_produces_more_epochs(self):
         dataset = FakeDataset(
-            paradigm="imagery",
-            n_sessions=1,
-            n_runs=1,
-            n_events=12,
-            duration=60,
-            seed=42,
+            paradigm="imagery", n_sessions=1, n_runs=1, n_events=12, duration=60, seed=42
         )
         paradigm_no_overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0)
         paradigm_overlap = SimpleMotorImagery(tmin=0.0, tmax=2.0, overlap=50)
@@ -262,13 +237,7 @@ class TestMotorImagery(unittest.TestCase):
         """Verify pre-cue samples are counted as rest when tmin is negative."""
         # With tmin=-1 and interval=(0, 10), epoch_offset = -1 + 0 = -1
         # so vote_start = onset + (-1) falls before the first transition.
-        events = np.array(
-            [
-                [10, 0, 1],
-                [30, 0, 2],
-            ],
-            dtype="int32",
-        )
+        events = np.array([[10, 0, 1], [30, 0, 2]], dtype="int32")
         interval = (0.0, 10.0)
         sfreq = 1.0
         window_length = 10.0
@@ -303,13 +272,7 @@ class TestMotorImagery(unittest.TestCase):
         """Verify labels are correct when interval[0] != 0."""
         # Simulate a dataset like BNCI2014-001 with interval=(2, 6)
         # Cue at sample 0, task starts at sample 2, task ends at sample 6
-        events = np.array(
-            [
-                [0, 0, 1],
-                [20, 0, 2],
-            ],
-            dtype="int32",
-        )
+        events = np.array([[0, 0, 1], [20, 0, 2]], dtype="int32")
         interval = (2.0, 6.0)
         sfreq = 1.0
         window_length = 4.0
@@ -354,9 +317,9 @@ class TestMotorImagery(unittest.TestCase):
             return_epochs=True, return_raws=False, dataset=dataset
         )
         # no stim channel after loading cache
-        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1]["0"][
+        raw = dataset.get_data([1], cache_config={"use": False, "save_raw": False})[1][
             "0"
-        ]
+        ]["0"]
         raw.load_data()
         assert "stim" == raw.ch_names[-1]
         # add something on the event channel
@@ -414,16 +377,16 @@ class TestMotorImagery(unittest.TestCase):
             _ = paradigm.get_data(
                 dataset,
                 subjects=[1],
-                cache_config=dict(
-                    use=True,
-                    path=tempdir,
-                    save_raw=True,
-                    save_epochs=True,
-                    save_array=True,
-                    overwrite_raw=False,
-                    overwrite_epochs=False,
-                    overwrite_array=False,
-                ),
+                cache_config={
+                    "use": True,
+                    "path": tempdir,
+                    "save_raw": True,
+                    "save_epochs": True,
+                    "save_array": True,
+                    "overwrite_raw": False,
+                    "overwrite_epochs": False,
+                    "overwrite_array": False,
+                },
             )
         print("\n".join(cm.output))
         expected = [
@@ -452,16 +415,16 @@ class TestMotorImagery(unittest.TestCase):
             _ = paradigm.get_data(
                 dataset,
                 subjects=[1],
-                cache_config=dict(
-                    use=True,
-                    path=tempdir,
-                    save_raw=False,
-                    save_epochs=False,
-                    save_array=False,
-                    overwrite_raw=False,
-                    overwrite_epochs=False,
-                    overwrite_array=False,
-                ),
+                cache_config={
+                    "use": True,
+                    "path": tempdir,
+                    "save_raw": False,
+                    "save_epochs": False,
+                    "save_array": False,
+                    "overwrite_raw": False,
+                    "overwrite_epochs": False,
+                    "overwrite_array": False,
+                },
             )
         print("\n".join(cm.output))
         expected = [
@@ -477,16 +440,16 @@ class TestMotorImagery(unittest.TestCase):
             _ = paradigm.get_data(
                 dataset,
                 subjects=[1],
-                cache_config=dict(
-                    use=True,
-                    path=tempdir,
-                    save_raw=False,
-                    save_epochs=False,
-                    save_array=False,
-                    overwrite_raw=False,
-                    overwrite_epochs=False,
-                    overwrite_array=True,
-                ),
+                cache_config={
+                    "use": True,
+                    "path": tempdir,
+                    "save_raw": False,
+                    "save_epochs": False,
+                    "save_array": False,
+                    "overwrite_raw": False,
+                    "overwrite_epochs": False,
+                    "overwrite_array": True,
+                },
             )
         print("\n".join(cm.output))
         expected = [
@@ -504,16 +467,16 @@ class TestMotorImagery(unittest.TestCase):
             _ = paradigm.get_data(
                 dataset,
                 subjects=[1],
-                cache_config=dict(
-                    use=True,
-                    path=tempdir,
-                    save_raw=False,
-                    save_epochs=False,
-                    save_array=False,
-                    overwrite_raw=False,
-                    overwrite_epochs=True,
-                    overwrite_array=False,
-                ),
+                cache_config={
+                    "use": True,
+                    "path": tempdir,
+                    "save_raw": False,
+                    "save_epochs": False,
+                    "save_array": False,
+                    "overwrite_raw": False,
+                    "overwrite_epochs": True,
+                    "overwrite_array": False,
+                },
             )
         print("\n".join(cm.output))
         expected = [
@@ -666,12 +629,7 @@ class TestP300:
             assert isinstance(raw, BaseRaw)
         # should raise error
         with pytest.raises(ValueError):
-            paradigm.get_data(
-                dataset,
-                subjects=[1],
-                return_epochs=True,
-                return_raws=True,
-            )
+            paradigm.get_data(dataset, subjects=[1], return_epochs=True, return_raws=True)
 
     def test_BaseP300_channel_order(self):
         """Test if paradigm return correct channel order, see issue #227."""
@@ -717,9 +675,9 @@ class TestP300:
             return_epochs=True, return_raws=False, dataset=dataset
         )
         # no stim channel after loading cache
-        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1]["0"][
+        raw = dataset.get_data([1], cache_config={"use": False, "save_raw": False})[1][
             "0"
-        ]
+        ]["0"]
         raw.load_data()
         assert "stim" == raw.ch_names[-1]
         # add something on the event channel
@@ -799,28 +757,15 @@ class TestRestingState:
         # we should have two sessions in the metadata
         assert len(np.unique(metadata.session)) == 2
         # should return epochs
-        epochs, _, _ = paradigm.get_data(
-            dataset,
-            subjects=[1],
-            return_epochs=True,
-        )
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         assert isinstance(epochs, BaseEpochs)
         # should return raws
-        raws, _, _ = paradigm.get_data(
-            dataset,
-            subjects=[1],
-            return_raws=True,
-        )
+        raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
         for raw in raws:
             assert isinstance(raw, BaseRaw)
         # should raise error
         with pytest.raises(ValueError):
-            paradigm.get_data(
-                dataset,
-                subjects=[1],
-                return_epochs=True,
-                return_raws=True,
-            )
+            paradigm.get_data(dataset, subjects=[1], return_epochs=True, return_raws=True)
 
     def test_RestingState_default_values(self):
         paradigm = RestingStateToP300Adapter()
@@ -860,12 +805,7 @@ class TestSSVEP:
             assert isinstance(raw, BaseRaw)
         # should raise error
         with pytest.raises(ValueError):
-            paradigm.get_data(
-                dataset,
-                subjects=[1],
-                return_epochs=True,
-                return_raws=True,
-            )
+            paradigm.get_data(dataset, subjects=[1], return_epochs=True, return_raws=True)
 
     def test_BaseSSVEP_channel_order(self):
         """Test if paradigm return correct channel order, see issue #227."""
@@ -1082,10 +1022,7 @@ class TestFixedIntervalWindowsProcessing:
                 # should raise error
                 with pytest.raises(ValueError):
                     processing.get_data(
-                        dataset,
-                        subjects=[1],
-                        return_epochs=True,
-                        return_raws=True,
+                        dataset, subjects=[1], return_epochs=True, return_raws=True
                     )
 
 
@@ -1433,13 +1370,7 @@ class Test_Data:
         epo, labelsEpo, metadataEpo = epochs_labels_metadata
         # values computed form moabb 0.5:
         assert len(epo) == 576
-        events = np.array(
-            [
-                [250, 0, 4],
-                [2253, 0, 3],
-                [4171, 0, 2],
-            ]
-        )
+        events = np.array([[250, 0, 4], [2253, 0, 3], [4171, 0, 2]])
         np.testing.assert_array_equal(epo.events[:3], events)
         assert epo.tmin == 2.1
         assert epo.tmax == 5.0
@@ -1475,14 +1406,15 @@ class Test_Data:
 
 
 class TestMetadata:
-
     @pytest.fixture(scope="class")
     def cached_dataset_root(self, tmpdir_factory):
         root = tmpdir_factory.mktemp("fake_bids")
         dataset = FakeDataset(
             event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
         )
-        dataset.get_data(cache_config=dict(save_raw=True, overwrite_raw=False, path=root))
+        dataset.get_data(
+            cache_config={"save_raw": True, "overwrite_raw": False, "path": root}
+        )
         return root / "MNE-BIDS-fake-dataset-imagery-2-2--60--120--fake1-fake2--c3-cz-c4"
 
     def test_additional_metadata_extracts_aligned(self, cached_dataset_root):
@@ -1511,9 +1443,7 @@ class TestMetadata:
         paradigm = MotorImagery()
 
         epo1, labels1, metadata1 = paradigm.get_data(
-            dataset=dataset,
-            subjects=["1"],
-            return_epochs=True,
+            dataset=dataset, subjects=["1"], return_epochs=True
         )
 
         raw, raw_labels, raw_metadata = paradigm.get_data(
@@ -1524,10 +1454,7 @@ class TestMetadata:
         )
 
         epo2, labels2, metadata2 = paradigm.get_data(
-            dataset=dataset,
-            subjects=["1"],
-            return_epochs=True,
-            additional_metadata="all",
+            dataset=dataset, subjects=["1"], return_epochs=True, additional_metadata="all"
         )
 
         epo3, labels3, metadata3 = paradigm.get_data(
@@ -1567,10 +1494,7 @@ class TestMetadata:
         """
 
         dataset = LocalBIDSDataset(
-            cached_dataset_root,
-            events={"fake1": 1},
-            interval=[0, 3],
-            paradigm="imagery",
+            cached_dataset_root, events={"fake1": 1}, interval=[0, 3], paradigm="imagery"
         )
 
         # modify the events.tsv to contain 'n/a'

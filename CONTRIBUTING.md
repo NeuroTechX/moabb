@@ -52,7 +52,7 @@ pull request to the master branch referencing the specific issue you addressed.
 1. Make changes
 1. Commit your changes: `git commit -m 'Add some feature'`
 1. Don't forget to fix issues from `pre-commit` pipeline (either add changes made by hooks
-   or fix them manually in case of `flake8`)
+   or fix them manually in case of `ruff` lint errors)
 1. Push to the branch: `git push origin my-new-feature`
 1. Submit a pull request. Make sure it is based on the `develop` branch when submitting!
    :D

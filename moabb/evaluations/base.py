@@ -397,7 +397,8 @@ class BaseEvaluation(ABC):
         if (self.time_out != 60 * 15) and not self.optuna:
             warn(
                 "time_out parameter is only used when optuna is enabled. "
-                "Ignoring time_out parameter."
+                "Ignoring time_out parameter.",
+                stacklevel=2,
             )
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
@@ -420,11 +421,11 @@ class BaseEvaluation(ABC):
             if isinstance(datasets, BaseDataset):
                 datasets = [datasets]
             else:
-                raise (ValueError("datasets must be a list or a dataset " "instance"))
+                raise (ValueError("datasets must be a list or a dataset instance"))
 
         for dataset in datasets:
             if not (isinstance(dataset, BaseDataset)):
-                raise (ValueError("datasets must only contains dataset " "instance"))
+                raise (ValueError("datasets must only contains dataset instance"))
         rm = []
         for dataset in datasets:
             valid_for_paradigm = self.paradigm.is_valid(dataset)
@@ -472,12 +473,7 @@ class BaseEvaluation(ABC):
         return cv_class, cv_kwargs
 
     def _load_data(
-        self,
-        dataset,
-        run_pipes,
-        process_pipeline,
-        postprocess_pipeline,
-        subjects=None,
+        self, dataset, run_pipes, process_pipeline, postprocess_pipeline, subjects=None
     ):
         """Load data for an evaluation, handling epoch requirements.
 
@@ -507,14 +503,14 @@ class BaseEvaluation(ABC):
             _pipeline_requires_epochs(clf) for clf in run_pipes.values()
         )
         return_epochs = True if requires_epochs else self.return_epochs
-        kwargs = dict(
-            dataset=dataset,
-            return_epochs=return_epochs,
-            return_raws=self.return_raws,
-            cache_config=self.cache_config,
-            postprocess_pipeline=postprocess_pipeline,
-            process_pipelines=None if requires_epochs else [process_pipeline],
-        )
+        kwargs = {
+            "dataset": dataset,
+            "return_epochs": return_epochs,
+            "return_raws": self.return_raws,
+            "cache_config": self.cache_config,
+            "postprocess_pipeline": postprocess_pipeline,
+            "process_pipelines": None if requires_epochs else [process_pipeline],
+        }
         if subjects is not None:
             kwargs["subjects"] = subjects
         return self.paradigm.get_data(**kwargs)
@@ -655,24 +651,24 @@ class BaseEvaluation(ABC):
 
     def _build_eval_config(self, param_grid):
         """Build evaluation-wide config dict shared across all fold tasks."""
-        return dict(
-            scoring=self.paradigm.scoring,
-            error_score=self.error_score,
-            random_state=self.random_state,
-            optuna=self.optuna,
-            time_out=self.time_out,
-            n_jobs_grid=1,
-            additional_columns=self.additional_columns,
-            save_model=self.save_model,
-            hdf5_path=self.hdf5_path,
-            eval_type=self._eval_type or self.__class__.__name__,
-            mne_labels=self.mne_labels,
-            codecarbon_config=(
+        return {
+            "scoring": self.paradigm.scoring,
+            "error_score": self.error_score,
+            "random_state": self.random_state,
+            "optuna": self.optuna,
+            "time_out": self.time_out,
+            "n_jobs_grid": 1,
+            "additional_columns": self.additional_columns,
+            "save_model": self.save_model,
+            "hdf5_path": self.hdf5_path,
+            "eval_type": self._eval_type or self.__class__.__name__,
+            "mne_labels": self.mne_labels,
+            "codecarbon_config": (
                 self.emissions.codecarbon_config if _carbonfootprint else None
             ),
-            score_per_session=self._score_per_session,
-            param_grid=None,  # overridden per-task below if needed
-        )
+            "score_per_session": self._score_per_session,
+            "param_grid": None,  # overridden per-task below if needed
+        }
 
     @staticmethod
     def _preview_splits(splitter, y, metadata):
@@ -712,18 +708,18 @@ class BaseEvaluation(ABC):
                     task_param_grid = None
                 task_config["param_grid"] = task_param_grid
                 tasks.append(
-                    dict(
-                        config=task_config,
-                        dataset=dataset,
-                        pipeline_name=name,
-                        pipeline=clf,
-                        train_idx=train_idx,
-                        test_idx=test_idx,
-                        subject=subject,
-                        session=session,
-                        cv_ind=cv_ind,
-                        split_metadata=split_meta,
-                    )
+                    {
+                        "config": task_config,
+                        "dataset": dataset,
+                        "pipeline_name": name,
+                        "pipeline": clf,
+                        "train_idx": train_idx,
+                        "test_idx": test_idx,
+                        "subject": subject,
+                        "session": session,
+                        "cv_ind": cv_ind,
+                        "split_metadata": split_meta,
+                    }
                 )
         return tasks
 
@@ -796,14 +792,7 @@ class BaseEvaluation(ABC):
         )
 
         tasks = self._build_task_list(
-            dataset,
-            X,
-            y,
-            metadata,
-            dataset_splitter,
-            work_plan,
-            pipelines,
-            param_grid,
+            dataset, X, y, metadata, dataset_splitter, work_plan, pipelines, param_grid
         )
         if not tasks:
             return []
@@ -846,7 +835,7 @@ class BaseEvaluation(ABC):
         df = pd.DataFrame(fold_results)
         group_keys = ["subject", "session", "pipeline"]
         score_cols = [c for c in df.columns if c == "score" or c.startswith("score_")]
-        agg_ops = {col: "mean" for col in score_cols + ["time"]}
+        agg_ops = dict.fromkeys(score_cols + ["time"], "mean")
         if "n_samples_test" in df.columns:
             agg_ops["n_samples_test"] = "mean"
         if "n_classes" in df.columns:
@@ -919,7 +908,7 @@ class BaseEvaluation(ABC):
 
         for _, pipeline in pipelines.items():
             if not (isinstance(pipeline, BaseEstimator)):
-                raise (ValueError("pipelines must only contains Pipelines " "instance"))
+                raise (ValueError("pipelines must only contains Pipelines instance"))
 
         # Try flattened parallel approach first
         if self._create_splitter() is not None:
@@ -969,7 +958,7 @@ class BaseEvaluation(ABC):
 
         res_per_db = []
         # Process results in order
-        for (dataset, process_pipeline), results in zip(
+        for (_dataset, process_pipeline), results in zip(
             processing_params, parallel_results
         ):
             for res in results:
@@ -999,10 +988,7 @@ class BaseEvaluation(ABC):
             )[0]
 
             work_plan, cached_df = self.results.batch_not_yet_computed_or_cached_df(
-                pipelines,
-                dataset,
-                dataset.subject_list,
-                process_pipeline,
+                pipelines, dataset, dataset.subject_list, process_pipeline
             )
             if not work_plan:
                 if (cached_df is not None) and (not cached_df.empty):

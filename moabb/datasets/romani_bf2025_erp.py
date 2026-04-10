@@ -201,14 +201,9 @@ class RomaniBF2025ERP(BaseDataset):
             data_url="https://zenodo.org/records/17225966",
             license="CC-BY-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["P300"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
@@ -262,7 +257,7 @@ class RomaniBF2025ERP(BaseDataset):
         self,
         data_folder: str = None,
         subjects: Optional[List[str]] = None,
-        exclude_subjects: Optional[List[str]] = ["P15", "P18"],
+        exclude_subjects: Optional[List[str]] = None,
         calibration_length: int = 60,
         n_targets: int = 10,
         t_target: int = 1,
@@ -306,6 +301,8 @@ class RomaniBF2025ERP(BaseDataset):
             Will load sessions marked as 'Failed' if True instead of standard sessions.
         """
         # Store data folder and defer download if not provided
+        if exclude_subjects is None:
+            exclude_subjects = ["P15", "P18"]
         self.data_folder = data_folder
         self._is_temp_dir = False
         self._download_attempted = False
@@ -332,7 +329,7 @@ class RomaniBF2025ERP(BaseDataset):
         if exclude_subjects is not None:
             subjects = [s for s in subjects if s not in exclude_subjects]
 
-        self.subjects_map = {idx: subj for idx, subj in enumerate(subjects)}
+        self.subjects_map = dict(enumerate(subjects))
         subjects = list(self.subjects_map.keys())
 
         if calibration_length <= 0:
@@ -475,9 +472,7 @@ class RomaniBF2025ERP(BaseDataset):
             raise FileNotFoundError(f"Dataset folder not found: {self.data_folder}")
         return self.data_folder
 
-    def _data_url(
-        self,
-    ) -> List[str]:
+    def _data_url(self) -> List[str]:
         """
         Return download URLs for the dataset.
         Required abstract method from BaseDataset.
@@ -590,9 +585,7 @@ class RomaniBF2025ERP(BaseDataset):
                     raw_cal, t_target=self.t_target, nt_target=self.nt_target
                 )
 
-                sessions[ses_name] = {
-                    "1calibration": raw_cal,
-                }
+                sessions[ses_name] = {"1calibration": raw_cal}
                 if self.include_inference:
                     sessions[ses_name]["2inference"] = raw_infer
 

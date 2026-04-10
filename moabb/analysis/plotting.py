@@ -54,7 +54,7 @@ def _resolve_chance_levels(data, chance_level):
     datasets = data["dataset"].unique()
 
     if chance_level is None:
-        return {d: 0.5 for d in datasets}, None
+        return dict.fromkeys(datasets, 0.5), None
 
     if chance_level == "auto":
         from moabb.analysis.chance_level import chance_by_chance
@@ -96,12 +96,12 @@ def _chance_by_chance_label_text(level):
     return f"Chance by chance ({pct}, p<0.05) \u2014 Combrisson & Jerbi (2015)"
 
 
-_CHANCE_ANNOT_KW = dict(
-    fontsize=FONT_SIZES["source"],
-    color=_CHANCE_COLOR,
-    alpha=0.9,
-    bbox=dict(facecolor="white", edgecolor="none", alpha=0.8, pad=1.5),
-)
+_CHANCE_ANNOT_KW = {
+    "fontsize": FONT_SIZES["source"],
+    "color": _CHANCE_COLOR,
+    "alpha": 0.9,
+    "bbox": {"facecolor": "white", "edgecolor": "none", "alpha": 0.8, "pad": 1.5},
+}
 
 # Module-level colormap for significance heatmaps
 _MOABB_SIGNIFICANCE_CMAP = LinearSegmentedColormap.from_list(
@@ -169,9 +169,13 @@ def _draw_chance_lines(ax, chance_levels, datasets, orientation, adjusted=None):
     # --- Draw chance level lines ---
     if len(unique_levels) == 1:
         level = unique_levels.pop()
-        line_kw = dict(
-            linestyle="--", color=_CHANCE_COLOR, linewidth=1.5, alpha=0.75, zorder=2
-        )
+        line_kw = {
+            "linestyle": "--",
+            "color": _CHANCE_COLOR,
+            "linewidth": 1.5,
+            "alpha": 0.75,
+            "zorder": 2,
+        }
         if orientation in ("horizontal", "h"):
             ax.axvline(level, **line_kw)
         else:
@@ -180,9 +184,13 @@ def _draw_chance_lines(ax, chance_levels, datasets, orientation, adjusted=None):
         datasets_list = list(datasets)
         for i, d in enumerate(datasets_list):
             level = chance_levels.get(d, 0.5)
-            line_kw = dict(
-                linestyle="--", color=_CHANCE_COLOR, linewidth=1.3, alpha=0.75, zorder=2
-            )
+            line_kw = {
+                "linestyle": "--",
+                "color": _CHANCE_COLOR,
+                "linewidth": 1.3,
+                "alpha": 0.75,
+                "zorder": 2,
+            }
             if orientation in ("horizontal", "h"):
                 ax.plot([level, level], [i - 0.4, i + 0.4], **line_kw)
             else:
@@ -244,7 +252,7 @@ def _draw_adjusted_chance_lines(ax, adjusted_levels, datasets, orientation):
     # Stagger annotation vertical offset so labels don't overlap
     alpha_list = sorted(all_alphas, reverse=True)
 
-    for rank, alpha_val in enumerate(alpha_list):
+    for _rank, alpha_val in enumerate(alpha_list):
         style = _ALPHA_LINE_STYLES.get(
             alpha_val,
             {"linestyle": "--", "color": _CHANCE_COLOR, "linewidth": 1.2, "alpha": 0.5},
@@ -272,12 +280,17 @@ def _draw_adjusted_chance_lines(ax, adjusted_levels, datasets, orientation):
             # Annotate with value and alpha — place at right edge
             pct = f"{level:.1f}%"
             label = f"p<{alpha_val} ({pct})"
-            annot_kw = dict(
-                fontsize=FONT_SIZES["source"] - 1,
-                color=_CHANCE_COLOR,
-                alpha=line_alpha + 0.15,
-                bbox=dict(facecolor="white", edgecolor="none", alpha=0.85, pad=1.5),
-            )
+            annot_kw = {
+                "fontsize": FONT_SIZES["source"] - 1,
+                "color": _CHANCE_COLOR,
+                "alpha": line_alpha + 0.15,
+                "bbox": {
+                    "facecolor": "white",
+                    "edgecolor": "none",
+                    "alpha": 0.85,
+                    "pad": 1.5,
+                },
+            }
             if orientation in ("horizontal", "h"):
                 ax.annotate(
                     label,
@@ -450,11 +463,7 @@ def score_plot(data, pipelines=None, orientation="vertical", chance_level=None):
     handles, labels = ax.get_legend_handles_labels()
     color_dict = _extract_color_dict(handles, labels)
 
-    apply_moabb_style(
-        ax,
-        title="Scores per dataset and algorithm",
-        subtitle="",
-    )
+    apply_moabb_style(ax, title="Scores per dataset and algorithm", subtitle="")
     style_legend(ax)
     fig.subplots_adjust(top=0.85, bottom=0.14)
 
@@ -462,11 +471,7 @@ def score_plot(data, pipelines=None, orientation="vertical", chance_level=None):
 
 
 def distribution_plot(
-    data,
-    pipelines=None,
-    orientation="vertical",
-    chance_level=None,
-    figsize=None,
+    data, pipelines=None, orientation="vertical", chance_level=None, figsize=None
 ):
     """Plot score distributions using violin (KDE) and strip plots.
 
@@ -579,9 +584,7 @@ def distribution_plot(
     color_dict = _extract_color_dict(unique_handles, unique_labels)
 
     apply_moabb_style(
-        ax,
-        title="Score distributions per dataset and algorithm",
-        subtitle="",
+        ax, title="Score distributions per dataset and algorithm", subtitle=""
     )
     style_legend(ax)
     fig.subplots_adjust(top=0.85, bottom=0.14)
@@ -643,7 +646,9 @@ def codecarbon_plot(
     Examples
     --------
     Basic usage (emissions only):
-    >>> results = benchmark(pipelines="./pipelines/", codecarbon_config={"save_to_file": True})
+    >>> results = benchmark(
+    ...     pipelines="./pipelines/", codecarbon_config={"save_to_file": True}
+    ... )
     >>> fig = codecarbon_plot(results)
 
     With efficiency metrics:
@@ -725,10 +730,7 @@ def codecarbon_plot(
     ax.legend(title="Pipeline", bbox_to_anchor=(1.05, 1), loc="upper left")
 
     apply_moabb_style(
-        ax,
-        title=co2_title,
-        subtitle="Average emissions by pipeline",
-        accent_line=True,
+        ax, title=co2_title, subtitle="Average emissions by pipeline", accent_line=True
     )
     style_legend(ax)
 
@@ -794,7 +796,7 @@ def codecarbon_plot(
             )
         )
 
-        for idx, (pipeline, row) in enumerate(scatter_data.iterrows()):
+        for _idx, (pipeline, row) in enumerate(scatter_data.iterrows()):
             color = (
                 MOABB_PALETTE[unique_pipelines.index(pipeline) % len(MOABB_PALETTE)]
                 if pipeline in unique_pipelines
@@ -937,20 +939,8 @@ def _draw_paired_chance_region(ax, theoretical, adjusted, min_chance):
     # Draw shaded band if adjusted significance thresholds are available
     max_adj = _max_adjusted_threshold(adjusted)
     if max_adj is not None:
-        ax.axhspan(
-            ax.get_ylim()[0],
-            max_adj,
-            color=_CHANCE_COLOR,
-            alpha=0.06,
-            zorder=0,
-        )
-        ax.axvspan(
-            ax.get_xlim()[0],
-            max_adj,
-            color=_CHANCE_COLOR,
-            alpha=0.06,
-            zorder=0,
-        )
+        ax.axhspan(ax.get_ylim()[0], max_adj, color=_CHANCE_COLOR, alpha=0.06, zorder=0)
+        ax.axvspan(ax.get_xlim()[0], max_adj, color=_CHANCE_COLOR, alpha=0.06, zorder=0)
 
     # Annotate at the top-right edge of the shaded band
     if max_adj is not None:
@@ -1041,11 +1031,7 @@ def paired_plot(data, alg1, alg2, chance_level=None):
     ax.set_xlabel(f"{alg1} (%)", fontsize=FONT_SIZES["axis_label"])
     ax.set_ylabel(f"{alg2} (%)", fontsize=FONT_SIZES["axis_label"])
 
-    apply_moabb_style(
-        ax,
-        title=f"{alg1} vs {alg2}",
-        grid_axis="both",
-    )
+    apply_moabb_style(ax, title=f"{alg1} vs {alg2}", grid_axis="both")
     fig.subplots_adjust(top=0.85, bottom=0.14)
     return fig
 
@@ -1170,9 +1156,9 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     ax = fig.add_subplot(gs[0, :-1])
     ax.set_yticks(np.arange(len(dsets) + 1))
     if simplify:
-        ax.set_yticklabels(["Meta-effect"] + [d for d in unique_ids])
+        ax.set_yticklabels(["Meta-effect"] + list(unique_ids))
     else:
-        ax.set_yticklabels(["Meta-effect"] + [d for d in dsets])
+        ax.set_yticklabels(["Meta-effect"] + list(dsets))
     pval_ax = fig.add_subplot(gs[0, -1], sharey=ax)
     plt.setp(pval_ax.get_yticklabels(), visible=False)
     _min = 0
@@ -1195,9 +1181,7 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
         _min = _min if (_min < (v - ci[-1])) else (v - ci[-1])
         _max = _max if (_max > (v + ci[-1])) else (v + ci[-1])
         ax.plot(
-            np.array([v - ci[-1], v + ci[-1]]),
-            np.ones((2,)) * (ind + 1),
-            c=MOABB_SKY,
+            np.array([v - ci[-1], v + ci[-1]]), np.ones((2,)) * (ind + 1), c=MOABB_SKY
         )
     _range = max(abs(_min), abs(_max)) * 1.25  # extra breathing room
     ax.set_xlim((0 - _range, 0 + _range))
@@ -1265,12 +1249,7 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     ax.set_xlabel("Standardized Mean Difference", fontsize=xaxis_fontsize)
     ax.tick_params(axis="x", labelsize=FONT_SIZES["tick_label"] + 2)
 
-    apply_moabb_style(
-        ax,
-        title=f"{alg1} vs {alg2}",
-        subtitle="",
-        grid_axis="none",
-    )
+    apply_moabb_style(ax, title=f"{alg1} vs {alg2}", subtitle="", grid_axis="none")
     fig.subplots_adjust(top=0.85, bottom=0.16)
 
     # Draw comparison caption anchored to x=0 so "|" is exactly on the zero line.
@@ -1435,14 +1414,7 @@ def _get_dataset_parameters(dataset):
         # Fallback for unparsable trial counts
         n_trials = _match_int(row.get("#Trials / class", "1"), default=1)
     trial_len = _match_float(row["Trials length (s)"])
-    return (
-        dataset_name,
-        paradigm,
-        n_subjects,
-        n_sessions,
-        n_trials,
-        trial_len,
-    )
+    return (dataset_name, paradigm, n_subjects, n_sessions, n_trials, trial_len)
 
 
 def get_bubble_size(size_mode, n_sessions, n_trials, trial_len):
@@ -1464,10 +1436,7 @@ def get_dataset_area(
     gap: float = 0.0,
 ):
     size = get_bubble_size(
-        size_mode=size_mode,
-        n_sessions=n_sessions,
-        n_trials=n_trials,
-        trial_len=trial_len,
+        size_mode=size_mode, n_sessions=n_sessions, n_trials=n_trials, trial_len=trial_len
     )
     diameter = np.log(size) * scale + gap
     return n_subjects * 3 * 3**0.5 / 8 * diameter**2  # area of hexagons
@@ -1585,10 +1554,7 @@ def dataset_bubble_plot(
                 "n_trials and trial_len must be provided"
             )
     size = get_bubble_size(
-        size_mode=size_mode,
-        n_sessions=n_sessions,
-        n_trials=n_trials,
-        trial_len=trial_len,
+        size_mode=size_mode, n_sessions=n_sessions, n_trials=n_trials, trial_len=trial_len
     )
 
     ax = ax or plt.gca()
@@ -1613,9 +1579,12 @@ def dataset_bubble_plot(
             va="center",
             fontsize=fontsize,
             color="black",
-            bbox=dict(
-                facecolor="white", alpha=0.6, linewidth=0, boxstyle="round,pad=0.5"
-            ),
+            bbox={
+                "facecolor": "white",
+                "alpha": 0.6,
+                "linewidth": 0,
+                "boxstyle": "round,pad=0.5",
+            },
             gid=f"title/{dataset_name}",
         )
         # bbox is better than path_effects as the text is not converted to a path.

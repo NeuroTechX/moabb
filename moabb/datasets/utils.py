@@ -250,10 +250,7 @@ def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"
     for onset, label in zip(onsets, labels):
         stim_chan[0, onset] = offset + label
     info = create_info(
-        ch_names=[ch_name],
-        ch_types=["stim"],
-        sfreq=raw.info["sfreq"],
-        verbose=False,
+        ch_names=[ch_name], ch_types=["stim"], sfreq=raw.info["sfreq"], verbose=False
     )
     raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
     return raw
@@ -315,10 +312,7 @@ def add_stim_channel_epoch(
             stim_chan[0, idx] = offset + codes[:, label]
 
     info = create_info(
-        ch_names=[ch_name],
-        ch_types=["stim"],
-        sfreq=raw.info["sfreq"],
-        verbose=False,
+        ch_names=[ch_name], ch_types=["stim"], sfreq=raw.info["sfreq"], verbose=False
     )
     raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
     return raw
@@ -386,10 +380,7 @@ def bids_metainfo(bids_path: Path) -> dict:
     """
     json_data = {}
 
-    paths = mne_bids.find_matching_paths(
-        root=bids_path,
-        datatypes="eeg",
-    )
+    paths = mne_bids.find_matching_paths(root=bids_path, datatypes="eeg")
 
     for path in paths:
         uid = path.fpath.name
@@ -900,18 +891,13 @@ def plot_datasets_grid(
         Pyplot handle
     """
     plotter = _GridDatasetPlotter(
-        datasets=datasets,
-        meta_gap=margin,
-        n_col=n_col,
-        kwargs=kwargs,
+        datasets=datasets, meta_gap=margin, n_col=n_col, kwargs=kwargs
     )
     return plotter.plot()
 
 
 def plot_datasets_cluster(
-    datasets: list[BaseDataset | dict] | None = None,
-    meta_gap: float = 10.0,
-    **kwargs,
+    datasets: list[BaseDataset | dict] | None = None, meta_gap: float = 10.0, **kwargs
 ):
     """Plots all the MOABB datasets in one figure, grouped in one cluster.
 
@@ -950,9 +936,5 @@ def plot_datasets_cluster(
     fig: :class:`matplotlib.figure.Figure`
         Pyplot handle
     """
-    plotter = _ClusterDatasetPlotter(
-        datasets=datasets,
-        meta_gap=meta_gap,
-        kwargs=kwargs,
-    )
+    plotter = _ClusterDatasetPlotter(datasets=datasets, meta_gap=meta_gap, kwargs=kwargs)
     return plotter.plot()

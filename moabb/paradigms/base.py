@@ -74,13 +74,11 @@ def _normalize_scorer(scorer):
     >>> scorer = [accuracy_score, balanced_accuracy_score]
     >>> # Mix of metrics with explicit greater_is_better control
     >>> scorer = [
-    ...     accuracy_score,                  # greater_is_better=True (default)
-    ...     (mean_squared_error, False),     # greater_is_better=False (loss)
+    ...     accuracy_score,  # greater_is_better=True (default)
+    ...     (mean_squared_error, False),  # greater_is_better=False (loss)
     ... ]
     >>> # Metrics needing probability/threshold based scoring
-    >>> scorer = [
-    ...     (roc_auc_score, {"needs_threshold": True}),
-    ... ]
+    >>> scorer = [(roc_auc_score, {"needs_threshold": True})]
     """
     if scorer is None or isinstance(scorer, (str, dict)):
         return scorer
@@ -349,10 +347,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                 f"events to generate labels: {dataset.event_id}"
             )
             events_pipeline = (
-                RawToEvents(
-                    dataset.event_id,
-                    interval=dataset.interval,
-                )
+                RawToEvents(dataset.event_id, interval=dataset.interval)
                 if epochs_pipeline is None
                 else EpochsToEvents()
             )
@@ -363,10 +358,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             steps.append(
                 (
                     StepType.RAW,
-                    SetRawAnnotations(
-                        dataset.event_id,
-                        interval=dataset.interval,
-                    ),
+                    SetRawAnnotations(dataset.event_id, interval=dataset.interval),
                 )
             )
             if raw_pipeline is not None:
@@ -375,10 +367,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                 steps.append((StepType.EPOCHS, epochs_pipeline))
             if array_pipeline is not None:
                 array_events_pipeline = ForkPipelines(
-                    [
-                        ("X", array_pipeline),
-                        ("events", events_pipeline),
-                    ]
+                    [("X", array_pipeline), ("events", events_pipeline)]
                 )
                 steps.append((StepType.ARRAY, array_events_pipeline))
             process_pipelines.append(FixedPipeline(steps))
@@ -390,8 +379,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         Refer to the arguments of :func:`get_data` for more information."""
         if return_epochs:
             labels_pipeline = make_fixed_pipeline(
-                EpochsToEvents(),
-                EventsToLabels(event_id=self.used_events(dataset)),
+                EpochsToEvents(), EventsToLabels(event_id=self.used_events(dataset))
             )
         elif return_raws:
             labels_pipeline = make_fixed_pipeline(
@@ -682,8 +670,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                 (
                     "load_data",
                     NamedFunctionTransformer(
-                        methodcaller("load_data"),
-                        display_name="Load Data",
+                        methodcaller("load_data"), display_name="Load Data"
                     ),
                 )
             )
@@ -699,8 +686,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                 (
                     "get_data",
                     NamedFunctionTransformer(
-                        methodcaller("get_data"),
-                        display_name="Epochs to Array",
+                        methodcaller("get_data"), display_name="Epochs to Array"
                     ),
                 )
             )
@@ -724,7 +710,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         datasets: List[BaseDataset],
         shift=-0.5,
         channel_merge_strategy: str = "intersect",
-        ignore=["stim"],
+        ignore=None,
     ):
         """
         Initialize this paradigm to match all datasets in parameter:
@@ -751,6 +737,8 @@ class BaseProcessing(metaclass=MoabbMetaClass):
 
         ..versionadded:: 0.6.0
         """
+        if ignore is None:
+            ignore = ["stim"]
         resample = None
         channels: set = None
         for dataset in datasets:

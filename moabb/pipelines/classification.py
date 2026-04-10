@@ -67,8 +67,7 @@ def _infer_label_frequencies(X, y, classes, freq_map=None):
                 inferred[cls] = float(freq_map[cls])
             except (TypeError, ValueError) as exc:
                 raise ValueError(
-                    f"Frequency for class label {cls!r} is not numeric: "
-                    f"{freq_map[cls]!r}"
+                    f"Frequency for class label {cls!r} is not numeric: {freq_map[cls]!r}"
                 ) from exc
         return inferred
 
@@ -321,7 +320,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self, n_harmonics=3, freq_map=None):
-        self.Yf = dict()
+        self.Yf = {}
         self.cca = CCA(n_components=1)
         self.n_harmonics = n_harmonics
         self.freq_map = freq_map
@@ -383,8 +382,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
             Predicted labels.
         """
         check_is_fitted(
-            self,
-            ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"],
+            self, ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"]
         )
         scores = _score_matrix_from_trials(
             X,
@@ -408,8 +406,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
             of shape ``(n_trials, n_classes)``.
         """
         check_is_fitted(
-            self,
-            ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"],
+            self, ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"]
         )
         scores = _score_matrix_from_trials(
             X,
@@ -582,13 +579,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
        TRCA implementation works with MNE Epochs object, fix labels encoding issue.
     """
 
-    def __init__(
-        self,
-        n_fbands=5,
-        is_ensemble=True,
-        method="original",
-        estimator="scm",
-    ):
+    def __init__(self, n_fbands=5, is_ensemble=True, method="original", estimator="scm"):
         self.is_ensemble = is_ensemble
         self.estimator = estimator
         self.method = method
@@ -841,7 +832,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 X_filter = filterbank(x, self.sfreq_, band_n, self.peaks_)
 
                 # Compute correlation with all the templates and bands
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     # Get the corresponding template
                     template = np.squeeze(self.templates_[k, band_n, :, :])
 
@@ -857,8 +848,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
                     # Compute 2D correlation of spatially filtered testdata with ref
                     r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(),
-                        np.dot(template.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
                     )
                     corr_array[band_n, k] = r[0, 1]
 
@@ -928,7 +918,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
 
                 # Compute correlation with all the templates and bands
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     # Get the corresponding template
                     template = np.squeeze(self.templates_[k, band_n, :, :])
 
@@ -941,8 +931,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
                     # Compute 2D correlation of spatially filtered testdata with ref
                     r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(),
-                        np.dot(template.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
                     )
                     corr_array[band_n, k] = r[0, 1]
 
@@ -1196,10 +1185,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
                 _, tempW = linalg.eigh(
                     R - S,
                     S,
-                    subset_by_index=[
-                        R.shape[0] - self.n_filters,
-                        R.shape[0] - 1,
-                    ],
+                    subset_by_index=[R.shape[0] - self.n_filters, R.shape[0] - 1],
                 )
             except linalg.LinAlgError:
                 # Fall back to standard eigenvalue decomposition if generalized fails
@@ -1577,7 +1563,6 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
             self.class_freqs_, self.n_harmonics, self.slen_, n_times
         )
         for class_label in self.classes_:
-
             # Spatial filter from CCA(template, sinusoidal reference)
             cca_tmp = CCA(n_components=1)
             cca_tmp.fit(self.templates_[class_label].T, self.Yf[class_label].T)
@@ -1887,15 +1872,14 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
             corr_array = np.zeros((self.n_fbands, self.n_classes))
             for band_n in range(self.n_fbands):
                 X_filter = filterbank(x, self.sfreq_, band_n, self.peaks_)
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     template = np.squeeze(self.templates_[k, band_n, :, :])
                     if self.is_ensemble:
                         w = np.squeeze(self.weights_[band_n, :, :]).T
                     else:
                         w = np.squeeze(self.weights_[band_n, k, :]).T
                     r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(),
-                        np.dot(template.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
                     )
                     corr_array[band_n, k] = r[0, 1]
             rho = np.dot(self.fb_coefs, corr_array)
@@ -1941,15 +1925,14 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
             corr_array = np.zeros((self.n_fbands, self.n_classes))
             for band_n in range(self.n_fbands):
                 X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     template = np.squeeze(self.templates_[k, band_n, :, :])
                     if self.is_ensemble:
                         w = np.squeeze(self.weights_[band_n, :, :]).T
                     else:
                         w = np.squeeze(self.weights_[band_n, k, :]).T
                     r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(),
-                        np.dot(template.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
                     )
                     corr_array[band_n, k] = r[0, 1]
             normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
@@ -2017,12 +2000,7 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
     .. versionadded:: 1.2.0
     """
 
-    def __init__(
-        self,
-        n_fbands=5,
-        is_ensemble=True,
-        estimator="scm",
-    ):
+    def __init__(self, n_fbands=5, is_ensemble=True, estimator="scm"):
         self.n_fbands = n_fbands
         self.is_ensemble = is_ensemble
         self.estimator = estimator
@@ -2165,15 +2143,14 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
             corr_array = np.zeros((self.n_fbands, self.n_classes))
             for band_n in range(self.n_fbands):
                 X_filter = filterbank(x, self.sfreq_, band_n, self.peaks_)
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     template = np.squeeze(self.templates_[k, band_n, :, :])
                     if self.is_ensemble:
                         w = np.squeeze(self.weights_[band_n, :, :]).T
                     else:
                         w = np.squeeze(self.weights_[band_n, k, :]).T
                     r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(),
-                        np.dot(template.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
                     )
                     corr_array[band_n, k] = r[0, 1]
             rho = np.dot(self.fb_coefs, corr_array)
@@ -2219,15 +2196,14 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
             corr_array = np.zeros((self.n_fbands, self.n_classes))
             for band_n in range(self.n_fbands):
                 X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     template = np.squeeze(self.templates_[k, band_n, :, :])
                     if self.is_ensemble:
                         w = np.squeeze(self.weights_[band_n, :, :]).T
                     else:
                         w = np.squeeze(self.weights_[band_n, k, :]).T
                     r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(),
-                        np.dot(template.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
                     )
                     corr_array[band_n, k] = r[0, 1]
             normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
@@ -2306,13 +2282,7 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
     .. versionadded:: 1.2.0
     """
 
-    def __init__(
-        self,
-        n_fbands=5,
-        n_components=1,
-        n_delay=6,
-        is_ensemble=True,
-    ):
+    def __init__(self, n_fbands=5, n_components=1, n_delay=6, is_ensemble=True):
         self.n_fbands = n_fbands
         self.n_components = n_components
         self.n_delay = n_delay
@@ -2490,12 +2460,9 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
 
                 w = self.weights_[band_n, :, :]  # (n_components, n_aug_channels)
 
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     template = self.templates_[k, band_n, :, :]
-                    r = np.corrcoef(
-                        (w @ X_aug).flatten(),
-                        (w @ template).flatten(),
-                    )
+                    r = np.corrcoef((w @ X_aug).flatten(), (w @ template).flatten())
                     corr_array[band_n, k] = r[0, 1]
 
             rho = np.dot(self.fb_coefs, corr_array)
@@ -2545,12 +2512,9 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
 
                 w = self.weights_[band_n, :, :]
 
-                for freq, k in self.one_hot_.items():
+                for _freq, k in self.one_hot_.items():
                     template = self.templates_[k, band_n, :, :]
-                    r = np.corrcoef(
-                        (w @ X_aug).flatten(),
-                        (w @ template).flatten(),
-                    )
+                    r = np.corrcoef((w @ X_aug).flatten(), (w @ template).flatten())
                     corr_array[band_n, k] = r[0, 1]
 
             normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))

@@ -216,14 +216,9 @@ class Gao2026(BaseDataset):
         ),
         sessions_per_subject=2,
         runs_per_session=3,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
-            imagery_tasks=list(_EVENTS.keys()),
+            detected_paradigm="imagery", imagery_tasks=list(_EVENTS.keys())
         ),
         data_structure=DataStructureMetadata(
             n_trials=16800,
@@ -235,14 +230,11 @@ class Gao2026(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["EEGNet", "CSP+KNN"],
             feature_extraction=["CSP", "deep_learning"],
-            frequency_bands={
-                "bandpass": [5.0, 30.0],
-            },
+            frequency_bands={"bandpass": [5.0, 30.0]},
             spatial_filters=["CSP", "CAR"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="train-test split",
-            evaluation_type=["within_subject"],
+            cv_method="train-test split", evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["human_machine_interaction"],

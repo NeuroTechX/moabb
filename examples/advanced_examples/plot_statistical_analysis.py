@@ -33,10 +33,7 @@ from sklearn.pipeline import make_pipeline
 
 import moabb
 import moabb.analysis.plotting as moabb_plt
-from moabb.analysis.chance_level import (
-    adjusted_chance_level,
-    chance_by_chance,
-)
+from moabb.analysis.chance_level import adjusted_chance_level, chance_by_chance
 from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
     find_significant_differences,

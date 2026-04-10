@@ -127,14 +127,9 @@ class Kaneshiro2015(BaseDataset):
             license="CC-BY-3.0",
         ),
         sessions_per_subject=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["Visual ERP"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["Visual ERP"]),
         data_structure=DataStructureMetadata(
-            n_trials=5184,
-            trials_context="per subject (72 images x 72 repetitions)",
+            n_trials=5184, trials_context="per subject (72 images x 72 repetitions)"
         ),
         data_processed=True,
         file_format="MATLAB",

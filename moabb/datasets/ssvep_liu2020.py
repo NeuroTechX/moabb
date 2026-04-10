@@ -160,16 +160,11 @@ class Liu2020BETA(BaseDataset):
             stimulus_frequencies_hz=[8.0 + i * 0.2 for i in range(40)],
             frequency_resolution_hz=0.2,
         ),
-        data_structure=DataStructureMetadata(
-            n_blocks=4,
-            n_trials=160,
-        ),
+        data_structure=DataStructureMetadata(n_blocks=4, n_trials=160),
         signal_processing=SignalProcessingMetadata(
             classifiers=["TRCA", "msTRCA", "FBCCA", "CCA"],
             feature_extraction=["CCA", "TRCA", "FBCCA"],
-            frequency_bands={
-                "bandpass": [3.0, 100.0],
-            },
+            frequency_bands={"bandpass": [3.0, 100.0]},
             spatial_filters=["CCA", "TRCA"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -178,15 +173,9 @@ class Liu2020BETA(BaseDataset):
             evaluation_type=["within_subject"],
         ),
         bci_application=BCIApplicationMetadata(
-            environment="classroom",
-            online_feedback=True,
-            applications=["speller"],
+            environment="classroom", online_feedback=True, applications=["speller"]
         ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["visual"],
-            type=["perception"],
-        ),
+        tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         file_format="MAT",
     )
 

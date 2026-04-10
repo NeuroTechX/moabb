@@ -262,9 +262,7 @@ class Brandl2020(BaseDataset):
                 "open access",
                 "BCI",
             ],
-            funding=[
-                "BMBF/BIFOLD (01IS18025A, 01IS18037A)",
-            ],
+            funding=["BMBF/BIFOLD (01IS18025A, 01IS18037A)"],
             how_to_acknowledge=(
                 "Please cite: Brandl, S. and Blankertz, B. (2020). Motor Imagery "
                 "Under Distraction -- An Open Access BCI Dataset. Frontiers in "
@@ -273,32 +271,21 @@ class Brandl2020(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=7,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+LDA"],
             feature_extraction=["CSP", "bandpower"],
-            frequency_bands={
-                "mu": [8.0, 13.0],
-                "beta": [13.0, 30.0],
-            },
+            frequency_bands={"mu": [8.0, 13.0], "beta": [13.0, 30.0]},
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="holdout",
-            evaluation_type=["within_subject"],
+            cv_method="holdout", evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            environment="laboratory",
-            online_feedback=True,
+            applications=["motor_control"], environment="laboratory", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
@@ -343,7 +330,7 @@ class Brandl2020(BaseDataset):
         super().__init__(
             subjects=list(range(1, 17)),
             sessions_per_subject=1,
-            events=dict(left_hand=1, right_hand=2),
+            events={"left_hand": 1, "right_hand": 2},
             code="Brandl2020",
             interval=[0, 4.5],
             paradigm="imagery",
@@ -358,7 +345,7 @@ class Brandl2020(BaseDataset):
     ):
         if subject not in self.subject_list:
             raise ValueError(
-                f"Invalid subject number {subject}, " f"must be in {self.subject_list}"
+                f"Invalid subject number {subject}, must be in {self.subject_list}"
             )
 
         paths = []

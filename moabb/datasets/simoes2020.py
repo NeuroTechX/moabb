@@ -139,14 +139,8 @@ class Simoes2020(BaseDataset):
         ),
         sessions_per_subject=7,
         runs_per_session=2,
-        tags=Tags(
-            pathology=["Autism"],
-            modality=["ERP"],
-            type=["P300"],
-        ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-        ),
+        tags=Tags(pathology=["Autism"], modality=["ERP"], type=["P300"]),
+        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
         data_structure=DataStructureMetadata(
             n_trials="1600 train + 400*K test per session (K=3-10)",
             trials_context="per_session",
@@ -154,9 +148,7 @@ class Simoes2020(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["EEGNet", "LDA", "SVM", "MLP"],
             feature_extraction=["temporal_features", "deep_learning"],
-            frequency_bands={
-                "bandpass": [2.0, 30.0],
-            },
+            frequency_bands={"bandpass": [2.0, 30.0]},
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
@@ -251,10 +243,7 @@ class Simoes2020(BaseDataset):
 
         if n_ch != len(_CH_NAMES):
             log.warning(
-                "Expected %d channels, got %d in %s",
-                len(_CH_NAMES),
-                n_ch,
-                mat_path,
+                "Expected %d channels, got %d in %s", len(_CH_NAMES), n_ch, mat_path
             )
             return None
 

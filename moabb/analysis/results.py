@@ -90,14 +90,13 @@ class Results:
             )
         if not issubclass(paradigm_class, BaseParadigm):  # was assert
             raise TypeError(
-                f"paradigm_class must be a subclass of BaseParadigm, "
-                f"got {paradigm_class}"
+                f"paradigm_class must be a subclass of BaseParadigm, got {paradigm_class}"
             )
 
         if additional_columns is None:
             self.additional_columns = []
         else:
-            if not all([isinstance(ac, str) for ac in additional_columns]):  # was assert
+            if not all(isinstance(ac, str) for ac in additional_columns):  # was assert
                 raise TypeError("all additional_columns must be strings")
             self.additional_columns = additional_columns
 
@@ -144,8 +143,9 @@ class Results:
                 return [res]
             elif not isinstance(res, list):
                 raise ValueError(
-                    "Results are given as neither dict nor"
-                    "list but {}".format(type(res).__name__)
+                    "Results are given as neither dict norlist but {}".format(
+                        type(res).__name__
+                    )
                 )
             else:
                 return res
@@ -182,10 +182,7 @@ class Results:
                     # Create unique CodeCarbon task name attritbute
                     if _carbonfootprint:
                         dset.create_dataset(
-                            "codecarbon_task_name",
-                            (0,),
-                            dtype=dt,
-                            maxshape=(None,),
+                            "codecarbon_task_name", (0,), dtype=dt, maxshape=(None,)
                         )
 
                     dset.create_dataset("id", (0, 2), dtype=dt, maxshape=(None, 2))
@@ -196,9 +193,7 @@ class Results:
                     )
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
-                        "columns",
-                        col_names + self.additional_columns,
-                        dtype=dt,
+                        "columns", col_names + self.additional_columns, dtype=dt
                     )
                 dset = ppline_grp[dname]
                 # Backward compat: existing dataset may have fewer columns

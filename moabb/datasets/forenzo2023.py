@@ -66,10 +66,7 @@ _FILE_IDS = {
 # MI target codes from the paper.
 # 1D tasks: 1=left, 2=right (LR axis); 3=up, 4=down (UD axis)
 # 2D tasks: 1=left, 2=right, 3=up, 4=down
-_MI_EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-}
+_MI_EVENTS = {"left_hand": 1, "right_hand": 2}
 
 _SFREQ = 1000.0
 
@@ -167,11 +164,7 @@ class Forenzo2023(BaseDataset):
         ),
         sessions_per_subject=5,
         runs_per_session=3,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand"],
@@ -184,14 +177,10 @@ class Forenzo2023(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["linear_classifier"],
             feature_extraction=["AR_spectral_estimation", "alpha_bandpower"],
-            frequency_bands={
-                "alpha": [8.0, 13.0],
-            },
+            frequency_bands={"alpha": [8.0, 13.0]},
             spatial_filters=["Laplacian"],
         ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_subject"],
-        ),
+        cross_validation=CrossValidationMetadata(evaluation_type=["within_subject"]),
         bci_application=BCIApplicationMetadata(
             applications=["cursor_control"],
             environment="laboratory",
@@ -306,11 +295,7 @@ class Forenzo2023(BaseDataset):
 
         # Build info
         ch_types = ["eeg"] * len(ch_names) + ["stim"]
-        info = mne.create_info(
-            ch_names=ch_names + ["STI"],
-            ch_types=ch_types,
-            sfreq=fs,
-        )
+        info = mne.create_info(ch_names=ch_names + ["STI"], ch_types=ch_types, sfreq=fs)
 
         # Build stim channel from events
         stim = np.zeros((1, data.shape[1]))

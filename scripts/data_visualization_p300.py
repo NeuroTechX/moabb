@@ -135,7 +135,7 @@ def create_plot_overview(epo, plot_opts=None, path=None, description=""):
 
 
 def epo_summary(epos):
-    summary = dict()
+    summary = {}
     summary["mne_string"] = repr(epos)
     summary["n_channels"] = len(epos.ch_names)
     summary["n_target"] = len(epos["Target"])
@@ -158,21 +158,14 @@ if __name__ == "__main__":
     sampling_rate = 100
 
     paradigm = P300(
-        resample=sampling_rate,
-        fmin=highpass,
-        fmax=lowpass,
-        baseline=baseline,
+        resample=sampling_rate, fmin=highpass, fmax=lowpass, baseline=baseline
     )
 
     ival = [-0.3, 1]
 
     plot_opts = {
         "dpi": 120,
-        "topo": {
-            "timepoints": 10,
-            "tmin": 0,
-            "tmax": 0.6,
-        },
+        "topo": {"timepoints": 10, "tmin": 0, "tmax": 0.6},
         "format": "png",
     }
 
@@ -208,10 +201,7 @@ if __name__ == "__main__":
             description = f"Dset: {dset_name}, Sub: {subject}, Ses: all"
 
             create_plot_overview(
-                epos,
-                plot_opts=plot_opts,
-                path=subject_path,
-                description=description,
+                epos, plot_opts=plot_opts, path=subject_path, description=description
             )
 
             if len(meta["session"].unique()) > 1:

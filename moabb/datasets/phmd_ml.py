@@ -142,11 +142,7 @@ class Cattan2019_PHMD(BaseDataset):
             how_to_acknowledge="Python code for manipulating the data is available at https://github.com/plcrodrigues/py.PHMDML.EEG.2017-GIPSA",
             license="CC-BY-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["EEG"],
-            type=["Resting State"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["EEG"], type=["Resting State"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw, unfiltered",
             preprocessing_applied=False,
@@ -154,9 +150,7 @@ class Cattan2019_PHMD(BaseDataset):
             notes="Data were acquired with no digital filter. No Faraday cage used to mimic real-world usage.",
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["vr_ar"],
-            environment="laboratory",
-            online_feedback=False,
+            applications=["vr_ar"], environment="laboratory", online_feedback=False
         ),
         data_structure=DataStructureMetadata(
             n_blocks=10,
@@ -175,7 +169,7 @@ class Cattan2019_PHMD(BaseDataset):
         super().__init__(
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=1,
-            events=dict(off=1, on=2),
+            events={"off": 1, "on": 2},
             code="Cattan2019-PHMD",  # Before: "PHMD-ML"
             interval=[0, 1],
             paradigm="rstate",

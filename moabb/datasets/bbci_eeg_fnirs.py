@@ -126,17 +126,17 @@ class BaseShin2017(BaseDataset):
         if not any([motor_imagery, mental_arithmetic]):
             raise (
                 ValueError(
-                    "at least one of motor_imagery or" " mental_arithmetic must be true"
+                    "at least one of motor_imagery or mental_arithmetic must be true"
                 )
             )
-        events = dict()
+        events = {}
         n_sessions = 0
         if motor_imagery:
-            events.update(dict(left_hand=1, right_hand=2))
+            events.update({"left_hand": 1, "right_hand": 2})
             n_sessions += 3
 
         if mental_arithmetic:
-            events.update(dict(subtraction=3, rest=4))
+            events.update({"subtraction": 3, "rest": 4})
             n_sessions += 3
 
         self.motor_imagery = motor_imagery
@@ -465,11 +465,7 @@ class Shin2017A(BaseShin2017):
         runs_per_session=1,
         data_processed=True,
         file_format="MATLAB",
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -499,9 +495,7 @@ class Shin2017A(BaseShin2017):
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10x5-fold",
-            cv_folds=5,
-            evaluation_type=["within_subject"],
+            cv_method="10x5-fold", cv_folds=5, evaluation_type=["within_subject"]
         ),
         performance={
             "accuracy_percent": 65.6,
@@ -787,18 +781,10 @@ class Shin2017B(BaseShin2017):
         ),
         sessions_per_subject=3,
         runs_per_session=1,
-        sessions=[
-            "1arithmetic",
-            "3arithmetic",
-            "5arithmetic",
-        ],
+        sessions=["1arithmetic", "3arithmetic", "5arithmetic"],
         data_processed=True,
         file_format="MATLAB",
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Cognitive"],
-            type=["Cognitive"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Cognitive"], type=["Cognitive"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -820,15 +806,11 @@ class Shin2017B(BaseShin2017):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA", "Shrinkage LDA"],
             feature_extraction=["CSP", "log-variance"],
-            frequency_bands={
-                "analyzed_range": [4.0, 35.0],
-            },
+            frequency_bands={"analyzed_range": [4.0, 35.0]},
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10x5-fold",
-            cv_folds=5,
-            evaluation_type=["within_subject"],
+            cv_method="10x5-fold", cv_folds=5, evaluation_type=["within_subject"]
         ),
         performance={
             "MA_EEG_max_accuracy": 75.9,

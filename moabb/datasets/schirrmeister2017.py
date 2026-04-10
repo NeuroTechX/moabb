@@ -25,9 +25,7 @@ from moabb.datasets.metadata.schema import (
 
 log = logging.getLogger(__name__)
 
-GIN_URL = (
-    "https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data"  # noqa
-)
+GIN_URL = "https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data"  # noqa
 
 
 class Schirrmeister2017(BaseDataset):
@@ -321,8 +319,7 @@ class Schirrmeister2017(BaseDataset):
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="holdout",
-            evaluation_type=["within_subject"],
+            cv_method="holdout", evaluation_type=["within_subject"]
         ),
         performance={
             "FBCSP_accuracy_percent": 91.2,
@@ -360,7 +357,7 @@ class Schirrmeister2017(BaseDataset):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
-            events=dict(right_hand=1, left_hand=2, rest=3, feet=4),
+            events={"right_hand": 1, "left_hand": 2, "rest": 3, "feet": 4},
             code="Schirrmeister2017",
             interval=[0, 4],
             paradigm="imagery",
@@ -423,7 +420,5 @@ class Schirrmeister2017(BaseDataset):
                 raw.pick_types(eeg=True)
             raw.set_montage(montage, on_missing="warn")
 
-        sessions = {
-            "0": {"0train": train_raw, "1test": test_raw},
-        }
+        sessions = {"0": {"0train": train_raw, "1test": test_raw}}
         return sessions

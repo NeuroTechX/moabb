@@ -50,17 +50,10 @@ _CH_NAMES_EEG = [
 # fmt: on
 
 # 2C events (51 subjects): left hand, right hand
-_EVENTS_2C = {
-    "left_hand": 1,
-    "right_hand": 2,
-}
+_EVENTS_2C = {"left_hand": 1, "right_hand": 2}
 
 # 3C events (11 subjects): left hand, right hand, feet
-_EVENTS_3C = {
-    "left_hand": 1,
-    "right_hand": 2,
-    "feet": 3,
-}
+_EVENTS_3C = {"left_hand": 1, "right_hand": 2, "feet": 3}
 
 
 class Yang2025(BaseDataset):
@@ -166,11 +159,7 @@ class Yang2025(BaseDataset):
         ),
         sessions_per_subject=3,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "feet"],
@@ -187,15 +176,11 @@ class Yang2025(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+SVM", "FBCSP+SVM", "EEGNet", "deepConvNet", "FBCNet"],
             feature_extraction=["CSP", "FBCSP"],
-            frequency_bands={
-                "bandpass": [0.5, 40.0],
-            },
+            frequency_bands={"bandpass": [0.5, 40.0]},
             spatial_filters=["CSP", "FBCSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold",
-            cv_folds=10,
-            evaluation_type=["within_session"],
+            cv_method="10-fold", cv_folds=10, evaluation_type=["within_session"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],

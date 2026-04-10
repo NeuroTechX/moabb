@@ -274,27 +274,17 @@ class Stieger2021(BaseDataset):
             ],
             license="CC-BY-NC-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Active"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Active"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=None,
             feature_extraction=["ERD", "ERS", "autoregressive model", "power spectrum"],
-            frequency_bands={
-                "alpha": [10.5, 13.5],
-                "mu": [8, 14],
-            },
+            frequency_bands={"alpha": [10.5, 13.5], "mu": [8, 14]},
             spatial_filters=["Laplacian (C3/C4 with 4 surrounding electrodes)"],
         ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=["cross_session"],
-        ),
+        cross_validation=CrossValidationMetadata(evaluation_type=["cross_session"]),
         bci_application=BCIApplicationMetadata(
             applications=["cursor_control"],
             environment="laboratory",
@@ -307,9 +297,7 @@ class Stieger2021(BaseDataset):
             imagery_duration_s=6.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=450,
-            n_blocks=18,
-            trials_context="per_session",
+            n_trials=450, n_blocks=18, trials_context="per_session"
         ),
         file_format="MAT",
         sessions_per_subject=11,
@@ -326,7 +314,7 @@ class Stieger2021(BaseDataset):
 
     def __init__(
         self,
-        interval=[0, 3],
+        interval=None,
         sessions=None,
         fix_bads=True,
         subjects=None,
@@ -351,6 +339,8 @@ class Stieger2021(BaseDataset):
         subjects : list of int or None
             Subjects to load.
         """
+        if interval is None:
+            interval = [0, 3]
         deprecated_renames = {
             "Interval": "interval",
             "Sessions": "sessions",
@@ -366,7 +356,7 @@ class Stieger2021(BaseDataset):
         super().__init__(
             subjects=list(range(1, 63)),
             sessions_per_subject=11,
-            events=dict(right_hand=1, left_hand=2, both_hand=3, rest=4),
+            events={"right_hand": 1, "left_hand": 2, "both_hand": 3, "rest": 4},
             code="Stieger2021",
             interval=interval,
             paradigm="imagery",
@@ -446,7 +436,6 @@ class Stieger2021(BaseDataset):
         subject_data = {}
 
         for file in file_path:
-
             session = self._parse_session(file)
 
             if self.sessions is not None:
@@ -481,9 +470,9 @@ class Stieger2021(BaseDataset):
                 if td.artifact == 0:
                     if td.triallength >= self.interval[1]:
                         # this should be the cue time-point
-                        assert (
-                            container.time[i][2 * srate] == 0
-                        ), "This should be the cue time-point"
+                        assert container.time[i][2 * srate] == 0, (
+                            "This should be the cue time-point"
+                        )
                         stim[2 * srate] = td.targetnumber
                         accepted_triallengths.append(float(td.triallength))
                     else:

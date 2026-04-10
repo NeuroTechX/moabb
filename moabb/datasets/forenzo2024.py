@@ -68,10 +68,7 @@ _FILE_IDS = {
 # Event mapping for the continuous pursuit paradigm.
 # Each 60s trial has a target that can be in 4 quadrants.
 # For MOABB: targets 1=left, 2=right, 3=up, 4=down
-_EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-}
+_EVENTS = {"left_hand": 1, "right_hand": 2}
 
 # Standard Neuroscan 62-channel names (64 cap minus M1/M2 mastoids).
 # fmt: off
@@ -166,11 +163,7 @@ class Forenzo2024(BaseDataset):
         ),
         sessions_per_subject=8,
         runs_per_session=12,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand"],
@@ -186,13 +179,11 @@ class Forenzo2024(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["AR_linear_decoder", "EEGNet", "PointNet"],
             feature_extraction=["AR_spectral_estimation", "deep_learning"],
-            frequency_bands={
-                "alpha_mu": [8.0, 13.0],
-            },
+            frequency_bands={"alpha_mu": [8.0, 13.0]},
             spatial_filters=["Laplacian", "CAR"],
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_subject", "cross_subject"],
+            evaluation_type=["within_subject", "cross_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["cursor_control"],
@@ -290,9 +281,7 @@ class Forenzo2024(BaseDataset):
 
         ch_types = ["eeg"] * n_ch + ["stim"]
         info = mne.create_info(
-            ch_names=ch_names + ["STI"],
-            ch_types=ch_types,
-            sfreq=_SFREQ,
+            ch_names=ch_names + ["STI"], ch_types=ch_types, sfreq=_SFREQ
         )
 
         # Build stim channel from events

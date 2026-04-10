@@ -194,9 +194,7 @@ class Weibo2014(BaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=2,
-                eog_type=["HEO", "VEO"],
+                has_eog=True, eog_channels=2, eog_type=["HEO", "VEO"]
             ),
         ),
         participants=ParticipantMetadata(
@@ -281,11 +279,7 @@ class Weibo2014(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -318,12 +312,9 @@ class Weibo2014(BaseDataset):
             },
             spatial_filters=None,
         ),
-        cross_validation=CrossValidationMetadata(
-            cv_method=None,
-        ),
+        cross_validation=CrossValidationMetadata(cv_method=None),
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            environment="laboratory",
+            applications=["motor_control"], environment="laboratory"
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -350,15 +341,15 @@ class Weibo2014(BaseDataset):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
-            events=dict(
-                left_hand=1,
-                right_hand=2,
-                hands=3,
-                feet=4,
-                left_hand_right_foot=5,
-                right_hand_left_foot=6,
-                rest=7,
-            ),
+            events={
+                "left_hand": 1,
+                "right_hand": 2,
+                "hands": 3,
+                "feet": 4,
+                "left_hand_right_foot": 5,
+                "right_hand_left_foot": 6,
+                "rest": 7,
+            },
             code="Weibo2014",
             # Full trial w/ rest is 0-8
             interval=[3, 7],
@@ -408,7 +399,7 @@ class Weibo2014(BaseDataset):
         data = np.concatenate([1e-6 * raw_data, raw_events], axis=1)
         # add buffer in between trials
         log.warning(
-            "Trial data de-meaned and concatenated with a buffer to create " "cont data"
+            "Trial data de-meaned and concatenated with a buffer to create cont data"
         )
         zeroshape = (data.shape[0], data.shape[1], 50)
         data = np.concatenate([np.zeros(zeroshape), data, np.zeros(zeroshape)], axis=2)

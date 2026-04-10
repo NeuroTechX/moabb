@@ -39,10 +39,7 @@ _ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 _EAR_CH_NAMES = ["LF", "LB", "LOU", "LOD", "RF", "RB", "ROU", "ROD"]  # codespell:ignore
 # fmt: on
 
-_EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-}
+_EVENTS = {"left_hand": 1, "right_hand": 2}
 
 
 class Wu2020(BaseDataset):
@@ -135,14 +132,9 @@ class Wu2020(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
-            imagery_tasks=["left_hand", "right_hand"],
+            detected_paradigm="imagery", imagery_tasks=["left_hand", "right_hand"]
         ),
         data_structure=DataStructureMetadata(
             n_trials=1114,
@@ -154,9 +146,7 @@ class Wu2020(BaseDataset):
             frequency_bands=None,
             spatial_filters=None,
         ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_subject"],
-        ),
+        cross_validation=CrossValidationMetadata(evaluation_type=["within_subject"]),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
             environment="laboratory",

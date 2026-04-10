@@ -359,9 +359,7 @@ class Kojima2024B(BaseDataset):
             feature_extraction=[
                 "mean amplitudes in 10 intervals (0.1s non-overlapping, 0-1.0s)"
             ],
-            frequency_bands={
-                "analyzed_range": [0.1, 8.0],
-            },
+            frequency_bands={"analyzed_range": [0.1, 8.0]},
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
@@ -369,10 +367,7 @@ class Kojima2024B(BaseDataset):
             cv_folds=None,
             evaluation_type=["offline simulation"],
         ),
-        performance={
-            "ASME-4stream_accuracy": 0.83,
-            "ASME-2stream_accuracy": 0.86,
-        },
+        performance={"ASME-4stream_accuracy": 0.83, "ASME-2stream_accuracy": 0.86},
         bci_application=BCIApplicationMetadata(
             applications=["communication"],
             environment="laboratory",
@@ -412,13 +407,15 @@ class Kojima2024B(BaseDataset):
 
     def __init__(
         self,
-        events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]},
+        events=None,
         task="all",
         subjects=None,
         sessions=None,
         *,
         return_all_modalities=False,
     ):
+        if events is None:
+            events = {"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]}
         self.n_channels = 64
 
         if task == "all":
@@ -461,7 +458,6 @@ class Kojima2024B(BaseDataset):
         files_to_load = []
 
         for file in manifest_files:
-
             if (
                 (f"sub-{subject_id}" not in file["label"])
                 or ("stream_" not in file["label"])
@@ -579,9 +575,7 @@ class Kojima2024B(BaseDataset):
         for file in tqdm(files):
             download_url = _api_base_url + str(file["file_id"])
             dl.download_if_missing(
-                path / file["directory"] / file["fname"],
-                download_url,
-                warn_missing=False,
+                path / file["directory"] / file["fname"], download_url, warn_missing=False
             )
 
         return path
@@ -604,9 +598,7 @@ class Kojima2024B(BaseDataset):
         files_path = self.data_path(subject)
         runs = {}
         for file in files_path:
-
             for task in self.tasks:
-
                 fname = file.name
 
                 run = int(fname.split("_")[2].split("-")[1])

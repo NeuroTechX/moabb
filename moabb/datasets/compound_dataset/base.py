@@ -19,16 +19,13 @@ class CompoundDataset(BaseDataset):
         Example with a list of selected subjects::
 
             [
-                (bi2013(), 1, "0", "0"),   # dataset, subject 1, session 0, run 0
+                (bi2013(), 1, "0", "0"),  # dataset, subject 1, session 0, run 0
                 (bi2014(), 1, "0", None),  # dataset, subject 1, session 0, all runs
             ]
 
         Example of building a dataset compounded of CompoundDatasets::
 
-            [
-                CompoundDataset(subjects_list1),
-                CompoundDataset(subjects_list2),
-            ]
+            [CompoundDataset(subjects_list1), CompoundDataset(subjects_list2)]
 
     sessions_per_subject : int
         Number of sessions per subject (if varying, take minimum).

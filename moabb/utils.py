@@ -149,9 +149,7 @@ def verbose(function):
                     verbose_val = bound.arguments["verbose"]
             except TypeError as exc:
                 log.debug(
-                    "Failed to bind 'verbose' argument for %s: %s",
-                    function.__name__,
-                    exc,
+                    "Failed to bind 'verbose' argument for %s: %s", function.__name__, exc
                 )
 
         # Check self.verbose
@@ -315,9 +313,7 @@ def _open_lock_hdf5(path, *args, **kwargs):
         with lock, h5py.File(path, *args, **kwargs) as fid:
             yield fid
     except TimeoutError as err:
-        msg = (
-            "Could not acquire lock file after " f"{lock_timeout:g} seconds:\n{lock_path}"
-        )
+        msg = f"Could not acquire lock file after {lock_timeout:g} seconds:\n{lock_path}"
         if not allow_unlocked:
             raise TimeoutError(msg) from err
         warn(

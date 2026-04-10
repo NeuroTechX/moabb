@@ -168,10 +168,7 @@ sk_ppl["RG LR"] = make_pipeline(
     LogisticRegression(l1_ratio=1.0, solver="saga"),
 )
 sk_eval = CrossSessionEvaluation(
-    paradigm=paradigm,
-    datasets=datasets,
-    suffix="examples",
-    overwrite=True,
+    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=True
 )
 sk_res = sk_eval.process(sk_ppl)
 

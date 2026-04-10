@@ -422,23 +422,10 @@ class Liu2022EldBETA(BaseDataset):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
-            stimulus_frequencies_hz=[
-                8.0,
-                8.5,
-                9.0,
-                9.5,
-                10.0,
-                10.5,
-                11.0,
-                11.5,
-                12.0,
-            ],
+            stimulus_frequencies_hz=[8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0],
             frequency_resolution_hz=0.5,
         ),
-        data_structure=DataStructureMetadata(
-            n_blocks=7,
-            n_trials=63,
-        ),
+        data_structure=DataStructureMetadata(n_blocks=7, n_trials=63),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
                 "TDCA",
@@ -470,9 +457,7 @@ class Liu2022EldBETA(BaseDataset):
                 "MEC",
                 "MSI",
             ],
-            frequency_bands={
-                "bandpass": [6.0, 100.0],
-            },
+            frequency_bands={"bandpass": [6.0, 100.0]},
             spatial_filters=[
                 "TDCA",
                 "CCA",
@@ -494,15 +479,9 @@ class Liu2022EldBETA(BaseDataset):
             evaluation_type=["within_subject"],
         ),
         bci_application=BCIApplicationMetadata(
-            environment="lab",
-            online_feedback=True,
-            applications=["speller"],
+            environment="lab", online_feedback=True, applications=["speller"]
         ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["visual"],
-            type=["perception"],
-        ),
+        tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         sessions_per_subject=7,
         file_format="GDF (BIDS)",
     )

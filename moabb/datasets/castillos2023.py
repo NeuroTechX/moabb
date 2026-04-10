@@ -31,7 +31,6 @@ TRIAL_PRESENTATION_TIME = 2.2
 
 
 class BaseCastillos2023(BaseDataset):
-
     def __init__(
         self,
         events,
@@ -553,9 +552,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
                 "CNN 2D convolution (5x5 kernel, 4 filters)",
                 "sliding windows (250ms, 2ms stride)",
             ],
-            frequency_bands={
-                "analyzed_range": [0.1, 40.0],
-            },
+            frequency_bands={"analyzed_range": [0.1, 40.0]},
             spatial_filters=["CNN 8x1 spatial convolution (16 filters)"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -807,13 +804,9 @@ class CastillosBurstVEP40(BaseCastillos2023):
         n_contributing_labs=1,
         data_processed=False,
         file_format="EEGLAB .set",
-        external_links={
-            "source": "https://zenodo.org/record/8255618",
-        },
+        external_links={"source": "https://zenodo.org/record/8255618"},
         tags=Tags(
-            pathology=["Healthy"],
-            modality=["EEG"],
-            type=["reactive BCI", "c-VEP"],
+            pathology=["Healthy"], modality=["EEG"], type=["reactive BCI", "c-VEP"]
         ),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
@@ -835,9 +828,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method=None,
-            cv_folds=None,
-            evaluation_type=["offline"],
+            cv_method=None, cv_folds=None, evaluation_type=["offline"]
         ),
         performance={
             "accuracy_percent": 95.6,
@@ -1116,9 +1107,7 @@ class CastillosCVEP100(BaseCastillos2023):
             "calibration_data_6blocks_s": 52.8,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["reactive BCI"],
-            environment="laboratory",
-            online_feedback=False,
+            applications=["reactive BCI"], environment="laboratory", online_feedback=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="cvep",
@@ -1339,9 +1328,7 @@ class CastillosCVEP40(BaseCastillos2023):
         n_contributing_labs=1,
         data_processed=False,
         file_format="EEGLAB .set",
-        external_links={
-            "source": "https://zenodo.org/record/8255618",
-        },
+        external_links={"source": "https://zenodo.org/record/8255618"},
         tags=Tags(
             pathology=["Healthy"],
             modality=["EEG"],
@@ -1367,9 +1354,7 @@ class CastillosCVEP40(BaseCastillos2023):
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method=None,
-            cv_folds=None,
-            evaluation_type=["offline"],
+            cv_method=None, cv_folds=None, evaluation_type=["offline"]
         ),
         performance={
             "accuracy_percent": 95.6,
@@ -1381,9 +1366,7 @@ class CastillosCVEP40(BaseCastillos2023):
             "mean_selection_time": 1.5,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["reactive BCI"],
-            environment="laboratory",
-            online_feedback=False,
+            applications=["reactive BCI"], environment="laboratory", online_feedback=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="cvep",

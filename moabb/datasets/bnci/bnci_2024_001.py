@@ -33,13 +33,7 @@ from moabb.datasets.metadata.schema import (
 )
 
 from .base import BNCIBaseDataset
-from .utils import (
-    BNCI_URL,
-    bnci_data_path,
-    convert_units,
-    make_raw,
-    validate_subject,
-)
+from .utils import BNCI_URL, bnci_data_path, convert_units, make_raw, validate_subject
 
 
 # Mapping of letter markers to event codes
@@ -208,7 +202,7 @@ def _convert_run_001_2024(run, verbose=None):
     # Convert marker timestamps to sample indices
     # marker_times are absolute timestamps, eeg_time[0] is start time
     start_time = eeg_time[0]
-    for i, (marker, mtime) in enumerate(zip(markers, marker_times)):
+    for _i, (marker, mtime) in enumerate(zip(markers, marker_times)):
         # Only process letter markers (>= 100)
         if marker in _LETTER_MARKER_MAP:
             # Convert time to sample index
@@ -380,9 +374,7 @@ class BNCI2024_001(BNCIBaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=4,
-                eog_type=["horizontal", "vertical"],
+                has_eog=True, eog_channels=4, eog_type=["horizontal", "vertical"]
             ),
             cap_manufacturer="Brain Products GmbH",
         ),
@@ -464,11 +456,7 @@ class BNCI2024_001(BNCIBaseDataset):
             data_url="https://bnci-horizon-2020.eu/database/data-sets",
             license="CC-BY-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=True,
@@ -503,9 +491,7 @@ class BNCI2024_001(BNCIBaseDataset):
                 "broadband EEG",
                 "continuous kinematics decoding",
             ],
-            frequency_bands={
-                "analyzed_range": [0.3, 70.0],
-            },
+            frequency_bands={"analyzed_range": [0.3, 70.0]},
             spatial_filters=["CAR"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -534,10 +520,7 @@ class BNCI2024_001(BNCIBaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=60,
-            trials_context="per_class",
-            n_blocks=15,
-            block_duration_s=340,
+            n_trials=60, trials_context="per_class", n_blocks=15, block_duration_s=340
         ),
         sessions_per_subject=2,
         runs_per_session=2,

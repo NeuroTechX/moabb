@@ -109,19 +109,18 @@ class TestWithinSess:
             os.remove(path)
 
     def test_mne_labels(self):
-        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset])
-        epochs = dict(return_epochs=False, mne_labels=True)
+        kwargs = {"paradigm": FakeImageryParadigm(), "datasets": [dataset]}
+        epochs = {"return_epochs": False, "mne_labels": True}
         with pytest.raises(ValueError):
             ev.WithinSessionEvaluation(**epochs, **kwargs)
 
     def test_eval_results(self):
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        results = [
-            r
-            for r in self.eval.evaluate(
+        results = list(
+            self.eval.evaluate(
                 dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
             )
-        ]
+        )
 
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
@@ -151,12 +150,11 @@ class TestWithinSess:
         )
 
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        results = [
-            r
-            for r in self.eval.evaluate(
+        results = list(
+            self.eval.evaluate(
                 dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
             )
-        ]
+        )
 
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
@@ -167,15 +165,14 @@ class TestWithinSess:
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        results = [
-            r
-            for r in self.eval.evaluate(
+        results = list(
+            self.eval.evaluate(
                 dataset,
                 pipelines,
                 param_grid=param_grid,
                 process_pipeline=process_pipeline,
             )
-        ]
+        )
 
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
@@ -192,15 +189,14 @@ class TestWithinSess:
 
         self.eval.optuna = True
 
-        results = [
-            r
-            for r in self.eval.evaluate(
+        results = list(
+            self.eval.evaluate(
                 dataset,
                 pipelines,
                 param_grid=param_grid,
                 process_pipeline=process_pipeline,
             )
-        ]
+        )
 
         self.eval.optuna = False
 
@@ -251,15 +247,7 @@ class TestWithinSess:
 
     def test_postprocess_pipeline(self):
         cov = Covariances("oas")
-        pipelines0 = {
-            "CovCspLda": make_pipeline(
-                cov,
-                CSP(
-                    8,
-                ),
-                LDA(),
-            )
-        }
+        pipelines0 = {"CovCspLda": make_pipeline(cov, CSP(8), LDA())}
         pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
 
         results0 = self.eval.process(pipelines0)
@@ -292,23 +280,22 @@ class TestWithinSessLearningCurve:
             overwrite=True,
         )
         process_pipeline = learning_curve_eval.paradigm.make_process_pipelines(dataset)[0]
-        results = [
-            r
-            for r in learning_curve_eval.evaluate(
+        results = list(
+            learning_curve_eval.evaluate(
                 dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
             )
-        ]
+        )
         keys = results[0].keys()
         assert len(keys) == _expected_result_key_count(extra_columns=2)
         assert "permutation" in keys
         assert "data_size" in keys
 
     def test_all_policies_work(self):
-        kwargs = dict(
-            paradigm=FakeImageryParadigm(),
-            datasets=[dataset],
-            cv_class=LearningCurveSplitter,
-        )
+        kwargs = {
+            "paradigm": FakeImageryParadigm(),
+            "datasets": [dataset],
+            "cv_class": LearningCurveSplitter,
+        }
         # The next two should work without issue
         ev.WithinSessionEvaluation(
             cv_kwargs={
@@ -348,12 +335,12 @@ class TestWithinSessLearningCurve:
             )
 
         # E.g. if number of samples too high -> expect error
-        kwargs = dict(
-            paradigm=FakeImageryParadigm(),
-            datasets=[dataset],
-            cv_class=LearningCurveSplitter,
-            overwrite=True,
-        )
+        kwargs = {
+            "paradigm": FakeImageryParadigm(),
+            "datasets": [dataset],
+            "cv_class": LearningCurveSplitter,
+            "overwrite": True,
+        }
         should_work = ev.WithinSessionEvaluation(
             cv_kwargs={
                 "data_size": {"policy": "per_class", "value": [5, 10]},
@@ -379,12 +366,12 @@ class TestWithinSessLearningCurve:
     def test_datasize_parameters(self):
         # Fail if not values are not correctly ordered
         # (LearningCurveSplitter is instantiated at evaluation time, not construction)
-        kwargs = dict(
-            paradigm=FakeImageryParadigm(),
-            datasets=[dataset],
-            cv_class=LearningCurveSplitter,
-            overwrite=True,
-        )
+        kwargs = {
+            "paradigm": FakeImageryParadigm(),
+            "datasets": [dataset],
+            "cv_class": LearningCurveSplitter,
+            "overwrite": True,
+        }
         decreasing_datasize = dict(
             cv_kwargs={
                 "data_size": {"policy": "per_class", "value": [5, 4]},
@@ -425,15 +412,7 @@ class TestWithinSessLearningCurve:
         )
 
         cov = Covariances("oas")
-        pipelines0 = {
-            "CovCspLda": make_pipeline(
-                cov,
-                CSP(
-                    8,
-                ),
-                LDA(),
-            )
-        }
+        pipelines0 = {"CovCspLda": make_pipeline(cov, CSP(8), LDA())}
         pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
 
         results0 = learning_curve_eval.process(pipelines0)
@@ -536,12 +515,7 @@ class TestUtilEvaluation:
         )
 
         expected_grid_path = os.path.join(
-            hdf5_path,
-            "GridSearch_WithinSession",
-            code,
-            "1",
-            "0",
-            "evaluation_name",
+            hdf5_path, "GridSearch_WithinSession", code, "1", "0", "evaluation_name"
         )
         assert grid_save_path == expected_grid_path
 
@@ -893,10 +867,7 @@ class TestParallelProcess:
         merged = left.merge(right, on=keys, how="inner").sort_values(keys)
         assert len(merged) == len(left) == len(right)
         np.testing.assert_allclose(
-            merged["score_ab"].to_numpy(),
-            merged["score_ba"].to_numpy(),
-            rtol=0,
-            atol=0,
+            merged["score_ab"].to_numpy(), merged["score_ba"].to_numpy(), rtol=0, atol=0
         )
 
 
@@ -947,13 +918,13 @@ class TestParallelLegacyEquivalence:
             .rename(columns={"score": "score_legacy"})
         )
 
-        assert len(left) == len(
-            right
-        ), f"Different number of results: parallel={len(left)}, legacy={len(right)}"
+        assert len(left) == len(right), (
+            f"Different number of results: parallel={len(left)}, legacy={len(right)}"
+        )
         merged = left.merge(right, on=keys, how="inner")
-        assert len(merged) == len(
-            left
-        ), "Not all rows matched between parallel and legacy"
+        assert len(merged) == len(left), (
+            "Not all rows matched between parallel and legacy"
+        )
         np.testing.assert_allclose(
             merged["score_parallel"].to_numpy(),
             merged["score_legacy"].to_numpy(),

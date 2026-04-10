@@ -126,9 +126,7 @@ class EPFLP300(BaseDataset):
                 "T8",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False),
         ),
         participants=ParticipantMetadata(
             n_subjects=8,
@@ -202,15 +200,12 @@ class EPFLP300(BaseDataset):
             type=["Research"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["BLDA", "FLDA"],
             feature_extraction=["temporal samples from selected electrodes"],
-            frequency_bands={
-                "analyzed_range": [1.0, 12.0],
-            },
+            frequency_bands={"analyzed_range": [1.0, 12.0]},
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="leave-one-session-out",
@@ -250,7 +245,7 @@ class EPFLP300(BaseDataset):
         super().__init__(
             subjects=[1, 2, 3, 4, 6, 7, 8, 9],
             sessions_per_subject=4,
-            events=dict(Target=2, NonTarget=1),
+            events={"Target": 2, "NonTarget": 1},
             code="EPFLP300",
             interval=[0, 1],
             paradigm="p300",

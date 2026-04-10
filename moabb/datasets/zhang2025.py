@@ -152,14 +152,9 @@ class Zhang2025(BaseDataset):
         ),
         sessions_per_subject=4,
         runs_per_session=4,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["RSVP"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["RSVP"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            soa_ms=100.0,
+            detected_paradigm="p300", soa_ms=100.0
         ),
         data_structure=DataStructureMetadata(
             n_trials="~160 target + ~6240 nontarget per session",
@@ -168,14 +163,10 @@ class Zhang2025(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["HDCA"],
             feature_extraction=["HDCA"],
-            frequency_bands={
-                "ERP_dominant": [0.0, 10.0],
-            },
+            frequency_bands={"ERP_dominant": [0.0, 10.0]},
             spatial_filters=None,
         ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_subject"],
-        ),
+        cross_validation=CrossValidationMetadata(evaluation_type=["within_subject"]),
         bci_application=BCIApplicationMetadata(
             applications=["identity_authentication", "target_detection"],
             environment="laboratory",

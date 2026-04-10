@@ -324,17 +324,12 @@ class BNCI2014_001(MNEBNCI):
                 "Pz",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-                has_emg=False,
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False, has_emg=False),
             cap_manufacturer="EASYCAP GmbH",
             impedance_threshold_kohm=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=4,
-            health_status="healthy",
-            species="human",
+            n_subjects=4, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -348,12 +343,7 @@ class BNCI2014_001(MNEBNCI):
             primary_modality="multisensory",
             synchronicity="asynchronous",
             mode="offline",
-            events={
-                "left_hand": 1,
-                "right_hand": 2,
-                "foot": 3,
-                "no_control": 0,
-            },
+            events={"left_hand": 1, "right_hand": 2, "foot": 3, "no_control": 0},
             instructions="Subjects instructed to perform motor imagery during cued periods",
             hed_tags={
                 "left_hand": (
@@ -413,11 +403,7 @@ class BNCI2014_001(MNEBNCI):
             institution_department="Machine Learning Laboratory",
             keywords=["brain-computer interface", "BCI", "competition"],
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
             data_state="minimally preprocessed (bandpass and notch filtered)",
             preprocessing_applied=True,
@@ -439,21 +425,11 @@ class BNCI2014_001(MNEBNCI):
                 "Naive Bayes",
                 "RBF Neural Network",
             ],
-            feature_extraction=[
-                "CSP",
-                "FBCSP",
-                "Bandpower",
-                "ERD",
-                "ERS",
-            ],
-            frequency_bands={
-                "mu": [8, 12],
-                "beta": [16, 24],
-            },
+            feature_extraction=["CSP", "FBCSP", "Bandpower", "ERD", "ERS"],
+            frequency_bands={"mu": [8, 12], "beta": [16, 24]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="train-test split",
-            evaluation_type=["within_session"],
+            cv_method="train-test split", evaluation_type=["within_session"]
         ),
         performance={"MSE": 0.382},
         bci_application=BCIApplicationMetadata(
@@ -468,10 +444,7 @@ class BNCI2014_001(MNEBNCI):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={
-                "training": 200,
-                "test": 240,
-            },
+            n_trials={"training": 200, "test": 240},
             n_blocks=6,
             trials_context="per subject (2 training runs + 4 test runs)",
         ),
@@ -601,10 +574,7 @@ class BNCI2014_002(MNEBNCI):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="online",
-            events={
-                "right_hand": 769,
-                "feet": 770,
-            },
+            events={"right_hand": 769, "feet": 770},
         ),
         documentation=DocumentationMetadata(
             doi="10.1515/bmt-2014-0117",
@@ -620,10 +590,7 @@ class BNCI2014_002(MNEBNCI):
             license="CC-BY-ND-4.0",
             repository="BNCI Horizon",
             publication_year=2014,
-            funding=[
-                "FP7 BackHome (No. 288566)",
-                "FP7 ABC (No. 287774)",
-            ],
+            funding=["FP7 BackHome (No. 288566)", "FP7 ABC (No. 287774)"],
             contact_info=[
                 "david.steyrl@tugraz.at",
                 "reinhold.scherer@tugraz.at",
@@ -639,11 +606,7 @@ class BNCI2014_002(MNEBNCI):
                 "sensorimotor rhythms",
             ],
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="minimally preprocessed (online filtered)",
             preprocessing_applied=True,
@@ -654,24 +617,13 @@ class BNCI2014_002(MNEBNCI):
             re_reference=None,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=[
-                "Random Forest",
-                "Shrinkage LDA",
-            ],
-            feature_extraction=[
-                "CSP",
-                "DFT",
-                "Bandpower",
-            ],
-            frequency_bands={
-                "alpha": [6, 14],
-                "beta": [14, 40],
-            },
+            classifiers=["Random Forest", "Shrinkage LDA"],
+            feature_extraction=["CSP", "DFT", "Bandpower"],
+            frequency_bands={"alpha": [6, 14], "beta": [14, 40]},
             spatial_filters=["CSP", "Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="train-test split",
-            evaluation_type=["within_subject"],
+            cv_method="train-test split", evaluation_type=["within_subject"]
         ),
         performance={
             "accuracy_percent": 79.30,
@@ -691,10 +643,7 @@ class BNCI2014_002(MNEBNCI):
         ),
         data_structure=DataStructureMetadata(
             n_trials=160,
-            n_trials_per_class={
-                "right_hand": 80,
-                "feet": 80,
-            },
+            n_trials_per_class={"right_hand": 80, "feet": 80},
             n_blocks=8,
             trials_context="total per subject",
         ),
@@ -781,14 +730,7 @@ class BNCI2014_004(MNEBNCI):
             ground="Fz",
             software="rtsBCI (MATLAB/Simulink)",
             filters="0.5-100 Hz bandpass, 50 Hz notch",
-            sensors=[
-                "C3",
-                "C4",
-                "Cz",
-                "EOG1",
-                "EOG2",
-                "EOG3",
-            ],
+            sensors=["C3", "C4", "Cz", "EOG1", "EOG2", "EOG3"],
             line_freq=50.0,
             impedance_threshold_kohm=None,
             auxiliary_channels=AuxiliaryChannelsMetadata(
@@ -907,18 +849,11 @@ class BNCI2014_004(MNEBNCI):
         data_processed=False,
         file_format="GDF",
         external_links={"source": "http://biosig.sourceforge.net/"},
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw with online filtering",
             preprocessing_applied=True,
-            preprocessing_steps=[
-                "bandpass filtering",
-                "notch filtering",
-            ],
+            preprocessing_steps=["bandpass filtering", "notch filtering"],
             highpass_hz=0.5,
             lowpass_hz=100.0,
             bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
@@ -944,9 +879,7 @@ class BNCI2014_004(MNEBNCI):
         ),
         performance={},
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            environment="laboratory",
-            online_feedback=True,
+            applications=["motor_control"], environment="laboratory", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -1037,16 +970,7 @@ class BNCI2014_008(MNEBNCI):
             ground="left mastoid",
             software="BCI2000",
             filters="0.1-10 Hz bandpass, 50 Hz notch",
-            sensors=[
-                "Fz",
-                "Cz",
-                "Pz",
-                "Oz",
-                "P3",
-                "P4",
-                "PO7",
-                "PO8",
-            ],
+            sensors=["Fz", "Cz", "Pz", "Oz", "P3", "P4", "PO7", "PO8"],
             line_freq=50.0,
             electrode_type="g.Ladybird",
             electrode_material="Ag/AgCl",
@@ -1113,11 +1037,7 @@ class BNCI2014_008(MNEBNCI):
             institution_department="Neuroelectrical Imaging and BCI Laboratory",
             ethics_approval=["Fondazione Santa Lucia ethic committee"],
         ),
-        tags=Tags(
-            pathology=["ALS"],
-            modality=["P300"],
-            type=["ERP"],
-        ),
+        tags=Tags(pathology=["ALS"], modality=["P300"], type=["ERP"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -1139,13 +1059,10 @@ class BNCI2014_008(MNEBNCI):
             notes="Epochs with peak amplitude >70 μV or <-70 μV were rejected. Baseline correction based on 200 ms preceding each epoch.",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["SWLDA"],
-            feature_extraction=["temporal features", "decimation"],
+            classifiers=["SWLDA"], feature_extraction=["temporal features", "decimation"]
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="7-fold",
-            cv_folds=7,
-            evaluation_type=["within_subject"],
+            cv_method="7-fold", cv_folds=7, evaluation_type=["within_subject"]
         ),
         performance={
             "accuracy_percent": 97.5,
@@ -1153,9 +1070,7 @@ class BNCI2014_008(MNEBNCI):
             "p300_amplitude_mean_uv": 3.3,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["communication"],
-            environment="laboratory",
-            online_feedback=True,
+            applications=["communication"], environment="laboratory", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
@@ -1271,10 +1186,7 @@ class BNCI2014_009(MNEBNCI):
         experiment=ExperimentMetadata(
             paradigm="p300",
             task_type="spelling",
-            events={
-                "target": 1,
-                "non_target": 5,
-            },
+            events={"target": 1, "non_target": 5},
             n_classes=2,
             class_labels=["target", "non_target"],
             trial_duration=16.0,
@@ -1345,17 +1257,13 @@ class BNCI2014_009(MNEBNCI):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA", "SWLDA"],
             feature_extraction=["Wavelet", "Time-Frequency", "CWT"],
-            frequency_bands={
-                "analyzed_range": [1.0, 20.0],
-            },
+            frequency_bands={"analyzed_range": [1.0, 20.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="cross-validation",
-            cv_folds=3,
-            evaluation_type=["within_session"],
+            cv_method="cross-validation", cv_folds=3, evaluation_type=["within_session"]
         ),
         performance={
-            "p300_latency_jitter_correlation": "negative correlation with accuracy",
+            "p300_latency_jitter_correlation": "negative correlation with accuracy"
         },
         bci_application=BCIApplicationMetadata(
             applications=["communication", "spelling"],
@@ -1370,15 +1278,9 @@ class BNCI2014_009(MNEBNCI):
             soa_ms=250.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=18,
-            trials_context="6 trials × 3 runs per session",
-            n_blocks=3,
+            n_trials=18, trials_context="6 trials × 3 runs per session", n_blocks=3
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["P300", "ERP"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["P300", "ERP"]),
         file_format="MAT",
         data_processed=True,
         abstract="This dataset represents a complete record of P300 evoked potentials recorded with BCI2000 using two different paradigms: a paradigm based on the P300 Speller originally described by Farwell and Donchin in overt attention condition and a paradigm based on the GeoSpell interface used in covert attention condition. In these sessions, 10 healthy subjects focused on one out of 36 different characters. The objective was to predict the correct character in each of the provided character selection epochs.",

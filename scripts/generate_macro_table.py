@@ -39,11 +39,7 @@ from dataset_constants import (  # noqa: E402
 _PARADIGM_LABELS = PARADIGM_LABELS
 _PARADIGM_COLORS = PARADIGM_COLORS
 
-_HEALTH_COLORS = {
-    "healthy": "#2E7D32",
-    "patients": "#E65100",
-    "mixed": "#F9A825",
-}
+_HEALTH_COLORS = {"healthy": "#2E7D32", "patients": "#E65100", "mixed": "#F9A825"}
 
 _OUTPUT_PATH = _REPO_ROOT / "docs" / "source" / "_static" / "macro_table.html"
 
@@ -549,7 +545,7 @@ def _build_table_html(df: pd.DataFrame) -> str:
         tr_cells = "".join(f"<td>{c}</td>" for c in cells)
         body_rows.append(f'<tr style="--row-paradigm-color:{p_color}">{tr_cells}</tr>')
 
-    tbody = f'<tbody>{"".join(body_rows)}</tbody>'
+    tbody = f"<tbody>{''.join(body_rows)}</tbody>"
     return (
         f'<table id="moabb-macro-table" class="display compact nowrap" '
         f'style="width:100%">{thead}{tbody}</table>'

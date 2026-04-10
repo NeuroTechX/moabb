@@ -69,13 +69,7 @@ _CH_NAMES = [
 # fmt: on
 
 # Standard-case fixes.
-_CH_FIX = {
-    "FP1": "Fp1",
-    "FP2": "Fp2",
-    "FPz": "Fpz",
-    "FZ": "Fz",
-    "PZ": "Pz",
-}
+_CH_FIX = {"FP1": "Fp1", "FP2": "Fp2", "FPz": "Fpz", "FZ": "Fz", "PZ": "Pz"}
 
 
 class Zheng2020(BaseDataset):
@@ -160,14 +154,9 @@ class Zheng2020(BaseDataset):
         ),
         sessions_per_subject=2,
         runs_per_session=3,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["RSVP"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["RSVP"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            soa_ms=100.0,
+            detected_paradigm="p300", soa_ms=100.0
         ),
         data_structure=DataStructureMetadata(
             n_trials={"target": 168, "nontarget": 4032},
@@ -176,14 +165,11 @@ class Zheng2020(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["HDCA"],
             feature_extraction=["SIM", "CSP", "TRCA", "PCA"],
-            frequency_bands={
-                "bandpass": [2.0, 30.0],
-            },
+            frequency_bands={"bandpass": [2.0, 30.0]},
             spatial_filters=["SIM", "CSP", "PCA", "CAR", "TRCA"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="holdout",
-            evaluation_type=["within_subject", "cross_session"],
+            cv_method="holdout", evaluation_type=["within_subject", "cross_session"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["target_image_detection", "collaborative_BCI"],

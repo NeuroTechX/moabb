@@ -70,7 +70,7 @@ class Lee2019(BaseDataset):
                 0.0,
                 4.0,
             ]  # [1.0, 3.5] is the interval used in paper for online prediction
-            events = dict(left_hand=2, right_hand=1)
+            events = {"left_hand": 2, "right_hand": 1}
         elif paradigm.lower() in ["p300", "erp"]:
             paradigm = "p300"
             code_suffix = "ERP"
@@ -78,10 +78,8 @@ class Lee2019(BaseDataset):
                 0.0,
                 1.0,
             ]  # [-0.2, 0.8] is the interval used in paper for online prediction
-            events = dict(Target=1, NonTarget=2)
-        elif paradigm.lower() in [
-            "ssvep",
-        ]:
+            events = {"Target": 1, "NonTarget": 2}
+        elif paradigm.lower() in ["ssvep"]:
             paradigm = "ssvep"
             code_suffix = "SSVEP"
             interval = [0.0, 4.0]
@@ -117,15 +115,9 @@ class Lee2019(BaseDataset):
 
     def _translate_class(self, c):
         if self.paradigm == "imagery":
-            dictionary = dict(
-                left_hand=["left"],
-                right_hand=["right"],
-            )
+            dictionary = {"left_hand": ["left"], "right_hand": ["right"]}
         elif self.paradigm == "p300":
-            dictionary = dict(
-                Target=["target"],
-                NonTarget=["nontarget"],
-            )
+            dictionary = {"Target": ["target"], "NonTarget": ["nontarget"]}
         elif self.paradigm == "ssvep":
             dictionary = {
                 "12.0": ["up"],
@@ -153,7 +145,7 @@ class Lee2019(BaseDataset):
             if v != v2 or v2 is None:
                 raise_error()
 
-    _scalings = dict(eeg=1e-6, emg=1e-6, stim=1)  # to load the signal in Volts
+    _scalings = {"eeg": 1e-6, "emg": 1e-6, "stim": 1}  # to load the signal in Volts
 
     def _make_raw_array(self, signal, ch_names, ch_type, sfreq, verbose=False):
         ch_names = [np.squeeze(c).item() for c in np.ravel(ch_names)]
@@ -412,9 +404,7 @@ class Lee2019_MI(Lee2019):
             software=None,
             cap_manufacturer=None,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-                has_emg=True,
-                emg_channels=4,
+                has_eog=False, has_emg=True, emg_channels=4
             ),
         ),
         participants=ParticipantMetadata(
@@ -493,22 +483,14 @@ class Lee2019_MI(Lee2019):
         ),
         sessions_per_subject=2,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+LDA", "CSSP", "FBCSP", "BSSFO"],
             feature_extraction=["CSP", "CSSP", "FBCSP", "BSSFO", "log-variance"],
-            frequency_bands={
-                "mu": [8.0, 12.0],
-                "analyzed_range": [8.0, 30.0],
-            },
+            frequency_bands={"mu": [8.0, 12.0], "analyzed_range": [8.0, 30.0]},
             spatial_filters=["CSP", "CSSP", "FBCSP", "BSSFO"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -523,9 +505,7 @@ class Lee2019_MI(Lee2019):
             "session2_accuracy": 72.2,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            environment="laboratory",
-            online_feedback=True,
+            applications=["motor_control"], environment="laboratory", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -708,9 +688,7 @@ class Lee2019_ERP(Lee2019):
             software="OpenBMI",
             cap_manufacturer="Brain Products",
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-                has_emg=True,
-                emg_channels=4,
+                has_eog=False, has_emg=True, emg_channels=4
             ),
         ),
         participants=ParticipantMetadata(
@@ -778,18 +756,12 @@ class Lee2019_ERP(Lee2019):
         ),
         sessions_per_subject=2,
         runs_per_session=2,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Perception"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA"],
-            feature_extraction=["Mean Amplitudes"],
+            classifiers=["LDA"], feature_extraction=["Mean Amplitudes"]
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="training-test split",
@@ -801,8 +773,7 @@ class Lee2019_ERP(Lee2019):
             "illiteracy_rate": 11.1,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["speller", "communication"],
-            online_feedback=True,
+            applications=["speller", "communication"], online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
@@ -962,9 +933,7 @@ class Lee2019_SSVEP(Lee2019):
             ],
             line_freq=60.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-                has_emg=True,
-                emg_channels=4,
+                has_eog=False, has_emg=True, emg_channels=4
             ),
             software="OpenBMI",
         ),
@@ -1034,30 +1003,19 @@ class Lee2019_SSVEP(Lee2019):
         ),
         sessions_per_subject=2,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Perception"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw EEG available",
             preprocessing_applied=True,
-            preprocessing_steps=[
-                "downsampling",
-            ],
+            preprocessing_steps=["downsampling"],
             downsampled_to_hz=100,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["CCA"],
-            feature_extraction=["CCA", "PSD"],
+            classifiers=["CCA"], feature_extraction=["CCA", "PSD"]
         ),
-        performance={
-            "accuracy_percent": 95.1,
-            "illiteracy_rate": 10.2,
-        },
+        performance={"accuracy_percent": 95.1, "illiteracy_rate": 10.2},
         bci_application=BCIApplicationMetadata(
-            applications=["control"],
-            online_feedback=True,
+            applications=["control"], online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",

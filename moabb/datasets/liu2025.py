@@ -34,10 +34,7 @@ log = logging.getLogger(__name__)
 _ZENODO_RECORD = "18987384"
 _DOI = "10.1038/s41597-025-04618-4"
 
-_EVENTS = {
-    "gait_imagery": 3,
-    "rest": 9,
-}
+_EVENTS = {"gait_imagery": 3, "rest": 9}
 
 # Session labels in the BIDS output.
 # Paradigm group (sub-01..15, sub-25): all 5 sessions.
@@ -165,11 +162,7 @@ class Liu2025(BaseDataset):
         ),
         sessions_per_subject=3,
         runs_per_session=4,
-        tags=Tags(
-            pathology=["Stroke"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Stroke"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_EVENTS.keys()),
@@ -186,10 +179,7 @@ class Liu2025(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+SVM"],
             feature_extraction=["CSP", "ERSP"],
-            frequency_bands={
-                "MI_features": [8.0, 25.0],
-                "preprocessing": [3.0, 35.0],
-            },
+            frequency_bands={"MI_features": [8.0, 25.0], "preprocessing": [3.0, 35.0]},
             spatial_filters=["CSP", "CAR"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -252,7 +242,7 @@ class Liu2025(BaseDataset):
         for sess_idx, ses_label in enumerate(self._session_labels):
             if ses_label not in available:
                 log.info(
-                    "Subject %d has no session '%s' (longitudinal group), " "skipping.",
+                    "Subject %d has no session '%s' (longitudinal group), skipping.",
                     subject,
                     ses_label,
                 )
@@ -302,18 +292,12 @@ class Liu2025(BaseDataset):
 
         if not sessions:
             raise FileNotFoundError(
-                f"No data found for subject {subject} "
-                f"sessions={self._selected_sessions}"
+                f"No data found for subject {subject} sessions={self._selected_sessions}"
             )
         return sessions
 
     def data_path(
-        self,
-        subject,
-        path=None,
-        force_update=False,
-        update_path=None,
-        verbose=None,
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject {subject}, must be in {self.subject_list}")

@@ -569,10 +569,7 @@ class MAMEM1(BaseMAMEM):
             impedance_threshold_kohm=80.0,
             cap_manufacturer="EGI",
             cap_model="HydroCel Geodesic Sensor Net (HCGSN)",
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-                has_emg=False,
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False, has_emg=False),
         ),
         participants=ParticipantMetadata(
             n_subjects=11,
@@ -657,14 +654,9 @@ class MAMEM1(BaseMAMEM):
         sessions=None,
         data_processed=False,
         file_format="MATLAB .mat",
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Perception"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -687,13 +679,10 @@ class MAMEM1(BaseMAMEM):
                 "Discrete Wavelet Transform",
             ],
             spatial_filters=["CAR", "CSP", "Minimum Energy"],
-            frequency_bands={
-                "analyzed_range": [5.0, 48.0],
-            },
+            frequency_bands={"analyzed_range": [5.0, 48.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="leave-one-subject-out",
-            evaluation_type=["cross_subject"],
+            cv_method="leave-one-subject-out", evaluation_type=["cross_subject"]
         ),
         performance={
             "default_accuracy_percent": 72.47,
@@ -1084,10 +1073,7 @@ class MAMEM2(BaseMAMEM):
             cap_model="HydroCel Geodesic Sensor Net (HCGSN)",
             electrode_type=None,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=None,
-                eog_type=None,
-                has_emg=False,
-                other_physiological=None,
+                has_eog=None, eog_type=None, has_emg=False, other_physiological=None
             ),
         ),
         participants=ParticipantMetadata(
@@ -1155,14 +1141,9 @@ class MAMEM2(BaseMAMEM):
         ),
         sessions_per_subject=1,
         runs_per_session=5,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -1188,13 +1169,10 @@ class MAMEM2(BaseMAMEM):
                 "Spectrogram",
             ],
             spatial_filters=["CAR", "CSP", "Minimum Energy"],
-            frequency_bands={
-                "analyzed_range": [5.0, 48.0],
-            },
+            frequency_bands={"analyzed_range": [5.0, 48.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="leave-one-subject-out",
-            evaluation_type=["cross_subject"],
+            cv_method="leave-one-subject-out", evaluation_type=["cross_subject"]
         ),
         performance={
             "accuracy_percent": 74.42,
@@ -1434,11 +1412,7 @@ class MAMEM3(BaseMAMEM):
                 "signal processing",
             ],
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Perception"]),
         preprocessing=PreprocessingMetadata(
             preprocessing_applied=True,
             preprocessing_steps=[
@@ -1477,14 +1451,11 @@ class MAMEM3(BaseMAMEM):
                 "CSP",
                 "ICA",
             ],
-            frequency_bands={
-                "analyzed_range": [5.0, 48.0],
-            },
+            frequency_bands={"analyzed_range": [5.0, 48.0]},
             spatial_filters=["CAR", "CSP", "Minimum Energy"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="leave-one-subject-out",
-            evaluation_type=["cross_subject"],
+            cv_method="leave-one-subject-out", evaluation_type=["cross_subject"]
         ),
         performance={
             "accuracy_percent": 72.47,

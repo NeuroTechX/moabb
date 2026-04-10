@@ -86,16 +86,16 @@ set_log_level("info")
 #
 # The ``cache_config`` parameter is a dictionary that has the
 # following default values:
-default_cache_config = dict(
-    save_raw=False,
-    save_epochs=False,
-    save_array=False,
-    use=False,
-    overwrite_raw=False,
-    overwrite_epochs=False,
-    overwrite_array=False,
-    path=None,
-)
+default_cache_config = {
+    "save_raw": False,
+    "save_epochs": False,
+    "save_array": False,
+    "use": False,
+    "overwrite_raw": False,
+    "overwrite_epochs": False,
+    "overwrite_array": False,
+    "path": None,
+}
 
 ###############################################################################
 # You don not need to specify all the keys of ``cache_config``, only the ones
@@ -120,13 +120,13 @@ subjects = [1]
 ###############################################################################
 # Then, saving a cache can simply be done by setting the desired parameters
 # in the ``cache_config`` dictionary:
-cache_config = dict(
-    use=True,
-    save_raw=True,
-    save_epochs=True,
-    save_array=True,
-    path=temp_dir,
-)
+cache_config = {
+    "use": True,
+    "save_raw": True,
+    "save_epochs": True,
+    "save_array": True,
+    "path": temp_dir,
+}
 _ = paradigm.get_data(dataset, subjects, cache_config=cache_config)
 
 ###############################################################################
@@ -140,64 +140,64 @@ _ = paradigm.get_data(dataset, subjects, cache_config=cache_config)
 # number of missing steps.
 #
 # Using array cache:
-cache_config = dict(
-    use=True,
-    path=temp_dir,
-    save_raw=False,
-    save_epochs=False,
-    save_array=False,
-    overwrite_raw=False,
-    overwrite_epochs=False,
-    overwrite_array=False,
-)
+cache_config = {
+    "use": True,
+    "path": temp_dir,
+    "save_raw": False,
+    "save_epochs": False,
+    "save_array": False,
+    "overwrite_raw": False,
+    "overwrite_epochs": False,
+    "overwrite_array": False,
+}
 t0 = time.time()
 _ = paradigm.get_data(dataset, subjects, cache_config=cache_config)
 t_array = time.time() - t0
 
 ###############################################################################
 # Using epochs cache:
-cache_config = dict(
-    use=True,
-    path=temp_dir,
-    save_raw=False,
-    save_epochs=False,
-    save_array=False,
-    overwrite_raw=False,
-    overwrite_epochs=False,
-    overwrite_array=True,
-)
+cache_config = {
+    "use": True,
+    "path": temp_dir,
+    "save_raw": False,
+    "save_epochs": False,
+    "save_array": False,
+    "overwrite_raw": False,
+    "overwrite_epochs": False,
+    "overwrite_array": True,
+}
 t0 = time.time()
 _ = paradigm.get_data(dataset, subjects, cache_config=cache_config)
 t_epochs = time.time() - t0
 
 ###############################################################################
 # Using raw cache:
-cache_config = dict(
-    use=True,
-    path=temp_dir,
-    save_raw=False,
-    save_epochs=False,
-    save_array=False,
-    overwrite_raw=False,
-    overwrite_epochs=True,
-    overwrite_array=True,
-)
+cache_config = {
+    "use": True,
+    "path": temp_dir,
+    "save_raw": False,
+    "save_epochs": False,
+    "save_array": False,
+    "overwrite_raw": False,
+    "overwrite_epochs": True,
+    "overwrite_array": True,
+}
 t0 = time.time()
 _ = paradigm.get_data(dataset, subjects, cache_config=cache_config)
 t_raw = time.time() - t0
 
 ###############################################################################
 # Using no cache:
-cache_config = dict(
-    use=False,
-    path=temp_dir,
-    save_raw=False,
-    save_epochs=False,
-    save_array=False,
-    overwrite_raw=False,
-    overwrite_epochs=False,
-    overwrite_array=False,
-)
+cache_config = {
+    "use": False,
+    "path": temp_dir,
+    "save_raw": False,
+    "save_epochs": False,
+    "save_array": False,
+    "overwrite_raw": False,
+    "overwrite_epochs": False,
+    "overwrite_array": False,
+}
 t0 = time.time()
 _ = paradigm.get_data(dataset, subjects, cache_config=cache_config)
 t_nocache = time.time() - t0

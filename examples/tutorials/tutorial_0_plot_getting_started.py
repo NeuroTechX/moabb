@@ -99,10 +99,7 @@ datasets = [dataset]
 fmin = 8
 fmax = 35
 # You can inject custom scoring directly into the paradigm (single or multi-metric).
-custom_scorer = [
-    accuracy_score,
-    (roc_auc_score, {"needs_threshold": True}),
-]
+custom_scorer = [accuracy_score, (roc_auc_score, {"needs_threshold": True})]
 paradigm = LeftRightImagery(fmin=fmin, fmax=fmax, scorer=custom_scorer)
 
 ##########################################################################

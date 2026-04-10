@@ -33,10 +33,7 @@ log = logging.getLogger(__name__)
 
 _SFREQ = 500.0
 
-_EVENTS = {
-    "left_leg": 1,
-    "right_leg": 2,
-}
+_EVENTS = {"left_leg": 1, "right_leg": 2}
 
 # 30 EEG channels (from channels.tsv, excluding 2 EOG channels).
 # fmt: off
@@ -338,7 +335,7 @@ class Zuo2025(BaseDataset):
             ],
             institution="Air Force Medical Center, Beijing",
             country="CN",
-            data_url=("https://figshare.com/articles/dataset/" "28740260"),
+            data_url=("https://figshare.com/articles/dataset/28740260"),
             publication_year=2025,
             license="CC-BY-4.0",
         ),
@@ -362,21 +359,14 @@ class Zuo2025(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+LDA", "FBCSP+SVM", "EEGNet", "OTFWRGD"],
             feature_extraction=["CSP", "FBCSP", "deep_learning", "Riemannian_geometry"],
-            frequency_bands={
-                "alpha_mu": [8.0, 15.0],
-                "beta": [15.0, 30.0],
-            },
+            frequency_bands={"alpha_mu": [8.0, 15.0], "beta": [15.0, 30.0]},
             spatial_filters=["CSP", "FBCSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold",
-            cv_folds=10,
-            evaluation_type=["within_subject"],
+            cv_method="10-fold", cv_folds=10, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["rehabilitation"],
-            environment="clinical",
-            online_feedback=False,
+            applications=["rehabilitation"], environment="clinical", online_feedback=False
         ),
         data_processed=False,
         file_format="MAT",
@@ -435,7 +425,7 @@ class Zuo2025(BaseDataset):
         self.data_path(subject)
 
         sessions = {}
-        for file_id, fname in file_list:
+        for _file_id, fname in file_list:
             local_path = basepath / fname
             if not local_path.exists():
                 log.warning("Missing %s for subject %d", fname, subject)
@@ -504,9 +494,7 @@ class Zuo2025(BaseDataset):
 
         ch_types = ["eeg"] * 30 + ["stim"]
         info = mne.create_info(
-            ch_names=list(_CH_NAMES) + ["STI"],
-            ch_types=ch_types,
-            sfreq=_SFREQ,
+            ch_names=list(_CH_NAMES) + ["STI"], ch_types=ch_types, sfreq=_SFREQ
         )
         full_data = np.concatenate([eeg_data, stim], axis=0)
         raw = mne.io.RawArray(data=full_data, info=info, verbose=False)

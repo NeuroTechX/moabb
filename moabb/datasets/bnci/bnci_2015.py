@@ -507,9 +507,7 @@ class BNCI2015_001(MNEBNCI):
                 "CP4",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                other_physiological=["gsr"],
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["gsr"]),
             cap_manufacturer="g.tec",
             cap_model="g.GAMMAsys",
         ),
@@ -562,11 +560,7 @@ class BNCI2015_001(MNEBNCI):
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
             data_state="filtered",
             preprocessing_applied=True,
@@ -580,19 +574,14 @@ class BNCI2015_001(MNEBNCI):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
             feature_extraction=["logarithmic bandpower", "CSP"],
-            frequency_bands={
-                "alpha": [10, 13],
-                "beta": [16, 24],
-            },
+            frequency_bands={"alpha": [10, 13], "beta": [16, 24]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="leave-one-out",
-            evaluation_type=["cross_session"],
+            cv_method="leave-one-out", evaluation_type=["cross_session"]
         ),
         performance={"accuracy_percent": 80.0},
         bci_application=BCIApplicationMetadata(
-            applications=["communication", "control"],
-            online_feedback=True,
+            applications=["communication", "control"], online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -663,16 +652,7 @@ class BNCI2015_003(MNEBNCI):
             software="Matlab",
             filters="hardware analog band-pass filter between 0.1 and 250 Hz",
             line_freq=50.0,
-            sensors=[
-                "Fz",
-                "Cz",
-                "P3",
-                "Pz",
-                "P4",
-                "PO7",
-                "Oz",
-                "PO8",
-            ],
+            sensors=["Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8"],
             impedance_threshold_kohm=15.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
@@ -781,11 +761,7 @@ class BNCI2015_003(MNEBNCI):
         external_links={
             "source": "http://www.frontiersin.org/neuroprosthetics/10.3389/fnins.2011.00112/abstract"
         },
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Auditory"],
-            type=["ERP", "P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["ERP", "P300"]),
         preprocessing=PreprocessingMetadata(
             data_state="filtered",
             preprocessing_applied=True,
@@ -811,9 +787,7 @@ class BNCI2015_003(MNEBNCI):
             spatial_filters=["shrinkage regularization (Ledoit-Wolf)"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="online",
-            cv_folds=None,
-            evaluation_type=["online"],
+            cv_method="online", cv_folds=None, evaluation_type=["online"]
         ),
         performance={
             "accuracy_percent": 77.4,
@@ -939,9 +913,7 @@ class BNCI2015_004(MNEBNCI):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=2,
-                eog_type=["horizontal", "vertical"],
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
             ),
             cap_manufacturer="g.tec",
             electrode_type="g.LADYbird active electrodes",
@@ -1046,10 +1018,7 @@ class BNCI2015_004(MNEBNCI):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
             feature_extraction=["bandpower", "temporal features"],
-            frequency_bands={
-                "mu": [8, 12],
-                "beta": [13, 30],
-            },
+            frequency_bands={"mu": [8, 12], "beta": [13, 30]},
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="10-fold cross-validation",
@@ -1082,9 +1051,7 @@ class BNCI2015_004(MNEBNCI):
             cue_duration_s=1.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=40,
-            trials_context="per_class_per_day",
-            n_blocks=8,
+            n_trials=40, trials_context="per_class_per_day", n_blocks=8
         ),
         data_processed=True,
         file_format="gdf",
@@ -1094,13 +1061,7 @@ class BNCI2015_004(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
-            events={
-                "math": 1,
-                "letter": 2,
-                "rotation": 3,
-                "count": 4,
-                "baseline": 5,
-            },
+            events={"math": 1, "letter": 2, "rotation": 3, "count": 4, "baseline": 5},
             code="BNCI2015-004",
             interval=[0, 4],
             paradigm="imagery",
@@ -1314,9 +1275,7 @@ class BNCI2015_006(MNEBNCI):
         file_format="gdf",
         external_links=None,
         tags=Tags(
-            pathology=["Healthy"],
-            modality=["Auditory"],
-            type=["Perception", "Attention"],
+            pathology=["Healthy"], modality=["Auditory"], type=["Perception", "Attention"]
         ),
         preprocessing=PreprocessingMetadata(
             data_state="epoched",
@@ -1342,15 +1301,11 @@ class BNCI2015_006(MNEBNCI):
                 "spatio-temporal features",
                 "voltage averaging in time windows",
             ],
-            frequency_bands={
-                "alpha": [8, 13],
-            },
+            frequency_bands={"alpha": [8, 13]},
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="leave-one-clip-out",
-            cv_folds=None,
-            evaluation_type=["cross_trial"],
+            cv_method="leave-one-clip-out", cv_folds=None, evaluation_type=["cross_trial"]
         ),
         performance={
             "accuracy_percent": 91.0,
@@ -1656,11 +1611,7 @@ class BNCI2015_007(MNEBNCI):
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["P300", "VEP"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["P300", "VEP"]),
         preprocessing=PreprocessingMetadata(
             data_state="filtered",
             preprocessing_applied=True,
@@ -1685,9 +1636,7 @@ class BNCI2015_007(MNEBNCI):
             feature_extraction=[
                 "signed square values of point-biserial correlation coefficients"
             ],
-            frequency_bands={
-                "analyzed_range": [100.0, 800.0],
-            },
+            frequency_bands={"analyzed_range": [100.0, 800.0]},
             spatial_filters=["LDA spatial filter"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -1972,11 +1921,7 @@ class BNCI2015_008(MNEBNCI):
             data_url="https://github.com/bbci/bbci_public/blob/master/doc/index.markdown",
             license="CC-BY-NC-ND-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["ERP", "P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["ERP", "P300"]),
         preprocessing=PreprocessingMetadata(
             data_state="filtered",
             preprocessing_applied=True,
@@ -1996,8 +1941,7 @@ class BNCI2015_008(MNEBNCI):
             spatial_filters=["shrinkage covariance"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="calibration-test split",
-            evaluation_type=["within_session"],
+            cv_method="calibration-test split", evaluation_type=["within_session"]
         ),
         performance={
             "accuracy_percent": 92.0,
@@ -2012,10 +1956,7 @@ class BNCI2015_008(MNEBNCI):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            n_targets=30,
-            n_repetitions=10,
-            soa_ms=200.0,
+            detected_paradigm="p300", n_targets=30, n_repetitions=10, soa_ms=200.0
         ),
         data_structure=DataStructureMetadata(
             n_trials="60 intensifications per stage (10 sequences × 6 elements)",
@@ -2125,9 +2066,7 @@ class BNCI2015_009(MNEBNCI):
             sensors=[],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=2,
-                eog_type=["bipolar"],
+                has_eog=True, eog_channels=2, eog_type=["bipolar"]
             ),
         ),
         participants=ParticipantMetadata(
@@ -2203,11 +2142,7 @@ class BNCI2015_009(MNEBNCI):
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Auditory"],
-            type=["P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["P300"]),
         preprocessing=PreprocessingMetadata(
             data_state="filtered",
             preprocessing_applied=True,
@@ -2231,13 +2166,10 @@ class BNCI2015_009(MNEBNCI):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
             feature_extraction=["ROC-separability-index"],
-            frequency_bands={
-                "analyzed_range": [0.1, 250.0],
-            },
+            frequency_bands={"analyzed_range": [0.1, 250.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="cross-validation",
-            evaluation_type=["offline"],
+            cv_method="cross-validation", evaluation_type=["offline"]
         ),
         performance={
             "accuracy_percent": 90.0,
@@ -2252,10 +2184,7 @@ class BNCI2015_009(MNEBNCI):
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            n_targets=5,
-            n_repetitions=15,
-            isi_ms=300.0,
+            detected_paradigm="p300", n_targets=5, n_repetitions=15, isi_ms=300.0
         ),
         data_structure=DataStructureMetadata(
             n_trials="varied by condition",
@@ -2451,11 +2380,7 @@ class BNCI2015_010(MNEBNCI):
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["ERP"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["ERP"]),
         preprocessing=PreprocessingMetadata(
             data_state="filtered",
             preprocessing_applied=True,
@@ -2483,16 +2408,13 @@ class BNCI2015_010(MNEBNCI):
                 "spatio-temporal features",
                 "averaged voltages within time windows",
             ],
-            frequency_bands={
-                "alpha": [7, 13],
-            },
+            frequency_bands={"alpha": [7, 13]},
             spatial_filters=[
                 "55 channels used for classification (all except Fp1,2, AF3,4, F9,10, FT7,8)"
             ],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="calibration/test split",
-            evaluation_type=["within_session"],
+            cv_method="calibration/test split", evaluation_type=["within_session"]
         ),
         performance={
             "accuracy_percent": 94.8,
@@ -2506,10 +2428,7 @@ class BNCI2015_010(MNEBNCI):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            n_targets=30,
-            n_repetitions=10,
-            soa_ms=116.0,
+            detected_paradigm="p300", n_targets=30, n_repetitions=10, soa_ms=116.0
         ),
         data_structure=DataStructureMetadata(
             n_trials="10 sequences of 30 symbols",
@@ -2745,11 +2664,7 @@ class BNCI2015_012(MNEBNCI):
         data_processed=True,
         file_format="gdf",
         external_links=None,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Auditory"],
-            type=["ERP", "P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["ERP", "P300"]),
         preprocessing=PreprocessingMetadata(
             data_state="filtered and downsampled",
             preprocessing_applied=True,
@@ -2937,9 +2852,7 @@ class BNCI2015_013(MNEBNCI):
                 "O2",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=False,
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False),
         ),
         participants=ParticipantMetadata(
             n_subjects=6,
@@ -2995,25 +2908,17 @@ class BNCI2015_013(MNEBNCI):
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Cognitive"],
-            type=["ErrP"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Cognitive"], type=["ErrP"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["Gaussian classifier"],
             feature_extraction=["event-related potentials"],
-            frequency_bands={
-                "analyzed_range": [1.0, 10.0],
-            },
+            frequency_bands={"analyzed_range": [1.0, 10.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="train-test split",
-            evaluation_type=["cross_session"],
+            cv_method="train-test split", evaluation_type=["cross_session"]
         ),
         performance={
             "accuracy_percent": 75.8,
@@ -3026,8 +2931,7 @@ class BNCI2015_013(MNEBNCI):
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            n_targets=None,
+            detected_paradigm="p300", n_targets=None
         ),
         data_structure=DataStructureMetadata(
             n_trials="~50 trials per block, ~64 trials per block for error_prob=0.20",

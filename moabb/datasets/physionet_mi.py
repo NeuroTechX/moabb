@@ -166,16 +166,13 @@ class PhysionetMI(BaseDataset):
             ],
             line_freq=60.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_emg=True,
-                other_physiological=["ppg"],
+                has_emg=True, other_physiological=["ppg"]
             ),
             sensor_type="EEG",
             montage="standard_1020",
         ),
         participants=ParticipantMetadata(
-            n_subjects=109,
-            health_status="healthy",
-            species="human",
+            n_subjects=109, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             events={"left_hand": 2, "right_hand": 3, "feet": 5, "hands": 4, "rest": 1},
@@ -224,11 +221,7 @@ class PhysionetMI(BaseDataset):
             license="ODC-By-1.0",
             repository="Physionet",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw EEG stored with all event markers for offline reconstruction",
             preprocessing_applied=True,
@@ -256,10 +249,7 @@ class PhysionetMI(BaseDataset):
                 "independent components",
                 "common spatial patterns",
             ],
-            frequency_bands={
-                "mu": [8.0, 12.0],
-                "beta": [12.0, 30.0],
-            },
+            frequency_bands={"mu": [8.0, 12.0], "beta": [12.0, 30.0]},
         ),
         bci_application=BCIApplicationMetadata(
             applications=[
@@ -276,12 +266,8 @@ class PhysionetMI(BaseDataset):
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "feet", "rest"],
         ),
-        performance={
-            "itr_bits_per_min": 25.0,
-        },
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=["online", "offline"],
-        ),
+        performance={"itr_bits_per_min": 25.0},
+        cross_validation=CrossValidationMetadata(evaluation_type=["online", "offline"]),
         sessions_per_subject=1,
         runs_per_session=6,
         data_processed=True,
@@ -310,7 +296,7 @@ class PhysionetMI(BaseDataset):
         super().__init__(
             subjects=list(range(1, 110)),
             sessions_per_subject=1,
-            events=dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1),
+            events={"left_hand": 2, "right_hand": 3, "feet": 5, "hands": 4, "rest": 1},
             code="PhysionetMotorImagery",
             # website does not specify how long the trials are, but the
             # interval between 2 trial is 4 second.
@@ -321,7 +307,7 @@ class PhysionetMI(BaseDataset):
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
         )
-        self.events = dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1)
+        self.events = {"left_hand": 2, "right_hand": 3, "feet": 5, "hands": 4, "rest": 1}
         self.imagined = imagined
         self.executed = executed
         self.feet_runs = []

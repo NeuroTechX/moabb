@@ -83,9 +83,7 @@ class Lee2021Mobile(BaseDataset):
             ground="Fpz",
             impedance_threshold_kohm=50,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=4,
-                eog_type=["vertical", "horizontal"],
+                has_eog=True, eog_channels=4, eog_type=["vertical", "horizontal"]
             ),
         ),
         participants=ParticipantMetadata(
@@ -198,18 +196,12 @@ class Lee2021Mobile(BaseDataset):
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="holdout",
-            evaluation_type=["within_subject"],
+            cv_method="holdout", evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["mobile_BCI"],
-            environment="treadmill",
+            applications=["mobile_BCI"], environment="treadmill"
         ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["visual"],
-            type=["perception"],
-        ),
+        tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         sessions_per_subject=4,
         file_format="BrainVision",
     )
@@ -222,18 +214,10 @@ class Lee2021Mobile(BaseDataset):
     }
 
     # BrainVision annotation -> label mapping for ERP (P300)
-    _ERP_MARKER_MAP = {
-        "Stimulus/S  2": "Target",
-        "Stimulus/S  1": "NonTarget",
-    }
+    _ERP_MARKER_MAP = {"Stimulus/S  2": "Target", "Stimulus/S  1": "NonTarget"}
 
     def __init__(
-        self,
-        paradigm,
-        subjects=None,
-        sessions=None,
-        *,
-        return_all_modalities=False,
+        self, paradigm, subjects=None, sessions=None, *, return_all_modalities=False
     ):
         if paradigm.lower() == "ssvep":
             code_suffix = "SSVEP"
@@ -419,9 +403,7 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             ground="Fpz",
             impedance_threshold_kohm=50,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=4,
-                eog_type=["vertical", "horizontal"],
+                has_eog=True, eog_channels=4, eog_type=["vertical", "horizontal"]
             ),
         ),
         participants=ParticipantMetadata(
@@ -523,14 +505,9 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             keywords=["SSVEP", "ERP", "mobile BCI", "ear-EEG", "locomotion"],
         ),
         bci_application=BCIApplicationMetadata(
-            environment="mobile",
-            online_feedback=False,
+            environment="mobile", online_feedback=False
         ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["visual"],
-            type=["perception"],
-        ),
+        tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         sessions_per_subject=5,
         file_format="BrainVision",
     )

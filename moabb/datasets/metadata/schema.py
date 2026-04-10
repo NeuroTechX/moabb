@@ -664,19 +664,18 @@ class DatasetMetadata:
     Examples
     --------
     >>> from moabb.datasets.metadata import (
-    ...     DatasetMetadata, AcquisitionMetadata,
-    ...     ParticipantMetadata, ExperimentMetadata
+    ...     DatasetMetadata,
+    ...     AcquisitionMetadata,
+    ...     ParticipantMetadata,
+    ...     ExperimentMetadata,
     ... )
     >>> metadata = DatasetMetadata(
     ...     acquisition=AcquisitionMetadata(
-    ...         sampling_rate=512.0,
-    ...         n_channels=64,
-    ...         channel_types={"eeg": 60, "eog": 4},
+    ...         sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
     ...     ),
     ...     participants=ParticipantMetadata(n_subjects=20),
     ...     experiment=ExperimentMetadata(
-    ...         paradigm="imagery",
-    ...         events={"left_hand": 1, "right_hand": 2},
+    ...         paradigm="imagery", events={"left_hand": 1, "right_hand": 2}
     ...     ),
     ... )
     """

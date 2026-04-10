@@ -105,11 +105,7 @@ def test_make_fixed_pipeline(n_steps):
 
 @pytest.mark.parametrize(
     "steps, search, expected_indices",
-    [
-        ((R, E, R), R, [0, 2]),
-        ((R, E, A), E, [1]),
-        ((R, E), A, []),
-    ],
+    [((R, E, R), R, [0, 2]), ((R, E, A), E, [1]), ((R, E), A, [])],
     ids=["multiple", "single", "none"],
 )
 def test_find_steps(steps, search, expected_indices):
@@ -128,12 +124,12 @@ def test_find_steps_returns_correct_transformers():
 @pytest.mark.parametrize(
     "steps, kwargs, expected_pos",
     [
-        ((R, E, A), dict(after=E), 2),
-        ((R, E, E, A), dict(after=E), 3),
-        ((R, E, A), dict(before=E), 1),
-        ((R, E, E, A), dict(before=E), 1),
-        ((R, E), dict(index=0), 0),
-        ((R, E), dict(index=2), 2),
+        ((R, E, A), {"after": E}, 2),
+        ((R, E, E, A), {"after": E}, 3),
+        ((R, E, A), {"before": E}, 1),
+        ((R, E, E, A), {"before": E}, 1),
+        ((R, E), {"index": 0}, 0),
+        ((R, E), {"index": 2}, 2),
     ],
     ids=["after", "after-last", "before", "before-first", "index-0", "index-end"],
 )
@@ -149,10 +145,10 @@ def test_insert_step(steps, kwargs, expected_pos):
 @pytest.mark.parametrize(
     "kwargs, match",
     [
-        (dict(after=A), "No steps of type"),
-        (dict(before=A), "No steps of type"),
+        ({"after": A}, "No steps of type"),
+        ({"before": A}, "No steps of type"),
         ({}, "Exactly one"),
-        (dict(after=R, before=E), "Exactly one"),
+        ({"after": R, "before": E}, "Exactly one"),
     ],
     ids=["after-missing", "before-missing", "no-arg", "multi-arg"],
 )
@@ -168,9 +164,9 @@ def test_insert_step_errors(kwargs, match):
 @pytest.mark.parametrize(
     "steps, kwargs, remaining_types",
     [
-        ((R, E, A), dict(index=1), [R, A]),
-        ((R, E, A), dict(step_type=E), [R, A]),
-        ((R, E, R, A), dict(step_type=R), [E, A]),
+        ((R, E, A), {"index": 1}, [R, A]),
+        ((R, E, A), {"step_type": E}, [R, A]),
+        ((R, E, R, A), {"step_type": R}, [E, A]),
     ],
     ids=["by-index", "by-type-single", "by-type-multi"],
 )
@@ -184,11 +180,11 @@ def test_remove_step(steps, kwargs, remaining_types):
 @pytest.mark.parametrize(
     "steps, kwargs, match",
     [
-        ((R, E), dict(step_type=A), "No steps of type"),
-        ((R, R), dict(step_type=R), "Cannot remove all"),
-        ((R,), dict(index=0), "Cannot remove all"),
+        ((R, E), {"step_type": A}, "No steps of type"),
+        ((R, R), {"step_type": R}, "Cannot remove all"),
+        ((R,), {"index": 0}, "Cannot remove all"),
         ((R, E), {}, "Exactly one"),
-        ((R, E), dict(index=0, step_type=R), "Exactly one"),
+        ((R, E), {"index": 0, "step_type": R}, "Exactly one"),
     ],
     ids=["not-found", "empty-by-type", "empty-by-index", "no-arg", "multi-arg"],
 )
@@ -226,11 +222,7 @@ def test_is_none_pipeline(obj, expected):
 
 @pytest.mark.parametrize(
     "labels, include, expected_count",
-    [
-        ([1, 2, 1], [1], 2),
-        ([1, 2], [99], 0),
-        ([5, 5], [5], 2),
-    ],
+    [([1, 2, 1], [1], 2), ([1, 2], [99], 0), ([5, 5], [5], 2)],
     ids=["partial", "none", "all"],
 )
 def test_unsafe_pick_events(labels, include, expected_count):
@@ -309,12 +301,7 @@ def test_sliding_window_max_start_too_small():
 
 
 @pytest.mark.parametrize(
-    "event_id, expected",
-    [
-        ({"left": 1, "right": 2}, [1, 2]),
-        ({}, []),
-        ({"a": 5}, [5]),
-    ],
+    "event_id, expected", [({"left": 1, "right": 2}, [1, 2]), ({}, []), ({"a": 5}, [5])]
 )
 def test_get_event_id_values(event_id, expected):
     assert _get_event_id_values(event_id) == expected
@@ -369,10 +356,7 @@ def test_set_raw_annotations_duplicate_raises():
 
 @pytest.mark.parametrize(
     "stim, event_id, n_ann",
-    [
-        ([(500, 1), (1500, 2)], {"left": 1, "right": 2}, 2),
-        ([(500, 99)], {"left": 1}, 0),
-    ],
+    [([(500, 1), (1500, 2)], {"left": 1, "right": 2}, 2), ([(500, 99)], {"left": 1}, 0)],
     ids=["found", "no-match"],
 )
 def test_set_raw_annotations_stim(stim, event_id, n_ann):
@@ -444,17 +428,14 @@ def test_raw_to_events_valid_overlap():
 )
 def test_raw_to_events_stim(stim, event_id, use_overlap, min_events):
     raw = _raw(stim_events=stim)
-    kw = dict(overlap=50, window_length=1.0) if use_overlap else {}
+    kw = {"overlap": 50, "window_length": 1.0} if use_overlap else {}
     events = RawToEvents(event_id=event_id, interval=(0, 4), **kw).transform(raw)
     assert events.shape[1] == 3 and len(events) >= min_events
 
 
 @pytest.mark.parametrize(
     "descs, event_id, n_expected",
-    [
-        (["left", "right"], {"left": 1, "right": 2}, 2),
-        (["other"], {"left": 1}, 0),
-    ],
+    [(["left", "right"], {"left": 1, "right": 2}, 2), (["other"], {"left": 1}, 0)],
     ids=["match", "no-match"],
 )
 def test_raw_to_events_annotations(descs, event_id, n_expected):
@@ -500,11 +481,7 @@ def test_raw_to_events_p300(event_id, ignore, expected_labels):
 
 @pytest.mark.parametrize(
     "stop_offset, marker, expect_events",
-    [
-        (None, 1, True),
-        (5.0, 1, True),
-        (None, 42, True),
-    ],
+    [(None, 1, True), (5.0, 1, True), (None, 42, True)],
     ids=["default", "stop-offset", "custom-marker"],
 )
 def test_raw_to_fixed_interval_events(stop_offset, marker, expect_events):
@@ -628,8 +605,7 @@ def test_raw_to_epochs_interpolate_missing():
 
 
 @pytest.mark.parametrize(
-    "display_name, expected_repr",
-    [("My Transform", "My Transform"), (None, "my_func")],
+    "display_name, expected_repr", [("My Transform", "My Transform"), (None, "my_func")]
 )
 def test_named_function_transformer(display_name, expected_repr):
     def my_func(x):
@@ -641,8 +617,7 @@ def test_named_function_transformer(display_name, expected_repr):
 
 
 @pytest.mark.parametrize(
-    "display_name, expected_name",
-    [("My Transform", "My Transform"), (None, "my_func")],
+    "display_name, expected_name", [("My Transform", "My Transform"), (None, "my_func")]
 )
 def test_named_function_transformer_repr_html(display_name, expected_name):
     def my_func(x):

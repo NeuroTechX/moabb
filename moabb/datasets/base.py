@@ -59,12 +59,7 @@ def get_summary_table(paradigm: str, dir_name: str | None = None):
     if dir_name is None:
         dir_name = Path(__file__).parent
     path = Path(dir_name) / f"summary_{paradigm}.csv"
-    df = pd.read_csv(
-        path,
-        header=0,
-        index_col="Dataset",
-        skipinitialspace=True,
-    )
+    df = pd.read_csv(path, header=0, index_col="Dataset", skipinitialspace=True)
     return df
 
 
@@ -80,7 +75,7 @@ _summary_table = pd.concat(
         _summary_table_ssvep,
         _summary_table_cvep,
         _summary_table_rstate,
-    ],
+    ]
 )
 
 
@@ -146,7 +141,7 @@ class CacheConfig:
 
         From a dict:
 
-        >>> dic = {'save': False}
+        >>> dic = {"save": False}
         >>> CacheConfig.make(dic)
         CacheConfig(save=False, use=True, overwrite=True, path=None)
         """
@@ -192,8 +187,7 @@ def _is_event_int(v):
 
 
 _KWARG_HINT = (
-    "Check that keyword arguments were not accidentally "
-    "included inside the events dict."
+    "Check that keyword arguments were not accidentally included inside the events dict."
 )
 
 
@@ -220,7 +214,7 @@ constraint_message = (
 
 def check_session_names(data):
     pattern = session_run_pattern()
-    for subject, sessions in data.items():
+    for _subject, sessions in data.items():
         indexes = []
         for session in sessions.keys():
             match = re.fullmatch(pattern, session)
@@ -238,8 +232,8 @@ def check_session_names(data):
 
 def check_run_names(data):
     pattern = session_run_pattern()
-    for subject, sessions in data.items():
-        for session, runs in sessions.items():
+    for _subject, sessions in data.items():
+        for _session, runs in sessions.items():
             indexes = []
             for run in runs.keys():
                 match = re.fullmatch(pattern, run)
@@ -752,15 +746,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     def _create_process_pipeline(self):
         return FixedPipeline(
-            [
-                (
-                    StepType.RAW,
-                    SetRawAnnotations(
-                        self.event_id,
-                        interval=self.interval,
-                    ),
-                ),
-            ]
+            [(StepType.RAW, SetRawAnnotations(self.event_id, interval=self.interval))]
         )
 
     def _block_rep(self, block, repetition):
@@ -807,22 +793,13 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         return X_select, labels_select, meta_select
 
-    def get_data(
-        self,
-        subjects=None,
-        cache_config=None,
-        process_pipeline=None,
-    ):
+    def get_data(self, subjects=None, cache_config=None, process_pipeline=None):
         """
         Return the data corresponding to a list of subjects.
 
         The returned data is a dictionary with the following structure::
 
-            data = {'subject_id' :
-                        {'session_id':
-                            {'run_id': run}
-                        }
-                    }
+            data = {"subject_id": {"session_id": {"run_id": run}}}
 
         subjects are on top, then we have sessions, then runs.
         A sessions is a recording done in a single day, without removing the
@@ -881,14 +858,12 @@ class BaseDataset(metaclass=MetaclassDataset):
         else:
             str_sessions = pat = None
 
-        data = dict()
+        data = {}
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
             subject_data = self._get_single_subject_data_using_cache(
-                subject,
-                cache_config,
-                process_pipeline,
+                subject, cache_config, process_pipeline
             )
             if str_sessions is not None:
                 subject_data = {
@@ -1013,7 +988,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         --------
         >>> from moabb.datasets import AlexMI
         >>> dataset = AlexMI()
-        >>> bids_root = dataset.convert_to_bids(path='/tmp/bids', subjects=[1])
+        >>> bids_root = dataset.convert_to_bids(path="/tmp/bids", subjects=[1])
 
         Notes
         -----
@@ -1035,8 +1010,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         invalid = [s for s in subjects if s not in self.subject_list]
         if invalid:
             raise ValueError(
-                f"Invalid subject(s) {invalid}. "
-                f"Valid subjects are {self.subject_list}"
+                f"Invalid subject(s) {invalid}. Valid subjects are {self.subject_list}"
             )
 
         ext = _FORMAT_EXTENSION_MAP[format]
@@ -1068,9 +1042,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         if generate_figures:
             try:
-                from moabb.analysis.neural_signatures import (
-                    generate_neural_signature,
-                )
+                from moabb.analysis.neural_signatures import generate_neural_signature
 
                 fig_dir = bids_root / "derivatives" / "neural_signatures"
                 generate_neural_signature(self, subjects=subjects, output_dir=fig_dir)
@@ -1486,16 +1458,16 @@ class LocalBIDSDataset(BaseBIDSDataset):
             raise ValueError(f"No BIDS dataset found in {bids_root}")
         if subjects is None or sessions_per_subject is None:
             if subjects is None:
-                subjects = sorted(set(path.subject for path in bids_paths))
+                subjects = sorted({path.subject for path in bids_paths})
                 log.warning(f"Found subjects: {subjects}")
             if sessions_per_subject is None:
                 sessions_per_subject = min(
                     len(
-                        set(
+                        {
                             bids_path.session
                             for bids_path in bids_paths
                             if bids_path.subject == subject
-                        )
+                        }
                     )
                     for subject in subjects
                 )

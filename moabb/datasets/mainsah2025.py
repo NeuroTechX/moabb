@@ -484,9 +484,7 @@ def _make_study_metadata(study):
         ),
         documentation=_DOCUMENTATION,
         sessions_per_subject=config["n_sessions"],
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-        ),
+        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
         signal_processing=SignalProcessingMetadata(
             classifiers=None,
             feature_extraction=["P300_ERP_detection"],
@@ -494,18 +492,12 @@ def _make_study_metadata(study):
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="calibration-then-test",
-            evaluation_type=["within_subject"],
+            cv_method="calibration-then-test", evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["speller"],
-            environment="laboratory",
-            online_feedback=True,
+            applications=["speller"], environment="laboratory", online_feedback=True
         ),
-        tags=Tags(
-            modality=["visual"],
-            type=["perception"],
-        ),
+        tags=Tags(modality=["visual"], type=["perception"]),
     )
 
 

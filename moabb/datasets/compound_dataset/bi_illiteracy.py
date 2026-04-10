@@ -9,10 +9,7 @@ class _base_bi_il(CompoundDataset):
         if code is None:
             code = f"{dataset.code}-Il"
         CompoundDataset.__init__(
-            self,
-            subjects_list=subjects_list,
-            code=code,
-            interval=[0, 1.0],
+            self, subjects_list=subjects_list, code=code, interval=[0, 1.0]
         )
 
 

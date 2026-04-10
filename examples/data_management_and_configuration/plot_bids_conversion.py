@@ -51,7 +51,7 @@ dataset = AlexMI()
 # Reducing the number of subjects to speed up the example
 
 dataset.subject_list = dataset.subject_list[:1]
-_ = dataset.get_data(cache_config=dict(path=temp_dir, save_raw=True))
+_ = dataset.get_data(cache_config={"path": temp_dir, "save_raw": True})
 
 
 ###############################################################################

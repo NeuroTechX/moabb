@@ -47,32 +47,16 @@ _ZENODO_RECORDS = {
 _DOI = "10.1038/s41597-025-04861-9"
 
 # Event mappings per paradigm family.
-_MI_ME_EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-}
+_MI_ME_EVENTS = {"left_hand": 1, "right_hand": 2}
 
 # SSVEP: 4 frequencies at 4 spatial positions.
 # Actual frequencies from the E-Prime sync CSV: 10, 11, 12, 13 Hz.
-_SSVEP_EVENTS = {
-    "10.0": 1,
-    "11.0": 2,
-    "12.0": 3,
-    "13.0": 4,
-}
+_SSVEP_EVENTS = {"10.0": 1, "11.0": 2, "12.0": 3, "13.0": 4}
 # Direction → frequency mapping (retained for future annotation support).
-_SSVEP_DIRECTION_TO_FREQ = {
-    "Up": "13.0",
-    "Down": "10.0",
-    "Left": "12.0",
-    "Right": "11.0",
-}
+_SSVEP_DIRECTION_TO_FREQ = {"Up": "13.0", "Down": "10.0", "Left": "12.0", "Right": "11.0"}
 
 # P300 speller: Target vs NonTarget flash events.
-_P300_EVENTS = {
-    "Target": 1,
-    "NonTarget": 2,
-}
+_P300_EVENTS = {"Target": 1, "NonTarget": 2}
 
 # 62 EEG channel names (Neuroscan 64-ch Quik-Cap minus M1/M2 mastoids).
 # fmt: off
@@ -159,11 +143,7 @@ _BIS_MAP = {
 # Shared documentation metadata.
 _DOCUMENTATION = DocumentationMetadata(
     doi=_DOI,
-    investigators=[
-        "Eva Guttmann-Flury",
-        "Xinjun Sheng",
-        "Xiangyang Zhu",
-    ],
+    investigators=["Eva Guttmann-Flury", "Xinjun Sheng", "Xiangyang Zhu"],
     institution="Shanghai Jiao Tong University",
     country="CN",
     publication_year=2025,
@@ -537,11 +517,7 @@ class GuttmannFlury2025_MI(BaseDataset):
         documentation=_DOCUMENTATION,
         sessions_per_subject=3,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand"],
@@ -558,10 +534,7 @@ class GuttmannFlury2025_MI(BaseDataset):
             frequency_bands=None,
             spatial_filters=None,
         ),
-        cross_validation=CrossValidationMetadata(
-            cv_method=None,
-            evaluation_type=None,
-        ),
+        cross_validation=CrossValidationMetadata(cv_method=None, evaluation_type=None),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
             environment="laboratory",
@@ -645,12 +618,7 @@ class GuttmannFlury2025_MI(BaseDataset):
         return sessions
 
     def data_path(
-        self,
-        subject,
-        path=None,
-        force_update=False,
-        update_path=None,
-        verbose=None,
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -766,22 +734,15 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
         documentation=_DOCUMENTATION,
         sessions_per_subject=3,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="ssvep",
-            stimulus_frequencies_hz=[8.0, 10.0, 12.0, 15.0],
+            detected_paradigm="ssvep", stimulus_frequencies_hz=[8.0, 10.0, 12.0, 15.0]
         ),
         data_structure=DataStructureMetadata(
-            n_trials=3024,
-            trials_context="63 sessions x 48 trials = 3024",
+            n_trials=3024, trials_context="63 sessions x 48 trials = 3024"
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["communication"],
-            environment="laboratory",
+            applications=["communication"], environment="laboratory"
         ),
         data_processed=False,
         file_format="BDF",
@@ -869,12 +830,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
         return sessions
 
     def data_path(
-        self,
-        subject,
-        path=None,
-        force_update=False,
-        update_path=None,
-        verbose=None,
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -939,33 +895,21 @@ class GuttmannFlury2025_P300(BaseDataset):
         documentation=_DOCUMENTATION,
         sessions_per_subject=3,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["Research"],
-        ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["Research"]),
+        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
         data_structure=DataStructureMetadata(
             n_trials=2520,
             trials_context="63 sessions x 40 trials = 2520 (P300-4L default)",
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["speller", "communication"],
-            environment="laboratory",
+            applications=["speller", "communication"], environment="laboratory"
         ),
         data_processed=False,
         file_format="BDF",
     )
 
     def __init__(
-        self,
-        grid_size="4L",
-        subjects=None,
-        sessions=None,
-        *,
-        return_all_modalities=False,
+        self, grid_size="4L", subjects=None, sessions=None, *, return_all_modalities=False
     ):
         if grid_size not in ("4L", "5L"):
             raise ValueError(f"grid_size must be '4L' or '5L', got '{grid_size}'")
@@ -1070,12 +1014,7 @@ class GuttmannFlury2025_P300(BaseDataset):
         return sessions
 
     def data_path(
-        self,
-        subject,
-        path=None,
-        force_update=False,
-        update_path=None,
-        verbose=None,
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")

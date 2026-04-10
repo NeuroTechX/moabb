@@ -2,10 +2,7 @@
 
 import pandas as pd
 
-from moabb.analysis.chance_level import (
-    adjusted_chance_level,
-    chance_by_chance,
-)
+from moabb.analysis.chance_level import adjusted_chance_level, chance_by_chance
 
 
 def test_adjusted_chance_level():

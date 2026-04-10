@@ -36,10 +36,7 @@ _FIGSHARE_ARTICLE = 28955456
 _FIGSHARE_API = f"https://api.figshare.com/v2/articles/{_FIGSHARE_ARTICLE}"
 
 # Event codes (from the paper and MakeDatasetFromRaw.m).
-_EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-}
+_EVENTS = {"left_hand": 1, "right_hand": 2}
 
 # 32 EEG channel names (from mne_analysis.py in the code.zip).
 # fmt: off
@@ -178,32 +175,21 @@ class HefmiIch2025(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+SVM", "FBCSP+SVM", "EEGBaseNet", "TF+SVM"],
             feature_extraction=["CSP", "FBCSP", "time-frequency features"],
-            frequency_bands={
-                "preprocessing": [0.5, 30.0],
-            },
+            frequency_bands={"preprocessing": [0.5, 30.0]},
             spatial_filters=["CSP", "FBCSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="5-fold",
-            cv_folds=5,
-            evaluation_type=["within_subject"],
+            cv_method="5-fold", cv_folds=5, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["rehabilitation"],
-            environment="clinical",
-            online_feedback=False,
+            applications=["rehabilitation"], environment="clinical", online_feedback=False
         ),
         data_processed=True,
         file_format="MAT (pre-epoched)",
     )
 
     def __init__(
-        self,
-        group="all",
-        subjects=None,
-        sessions=None,
-        *,
-        return_all_modalities=False,
+        self, group="all", subjects=None, sessions=None, *, return_all_modalities=False
     ):
         self.group = group
 
@@ -363,7 +349,7 @@ class HefmiIch2025(BaseDataset):
         # Group into subjects: session "1_epo.mat" starts a new subject.
         manifest = {}
         subj_idx = 0
-        for file_id, name, size in eeg_files:
+        for file_id, name, _size in eeg_files:
             if name == "1_epo.mat":
                 subj_idx += 1
             if subj_idx not in manifest:

@@ -49,10 +49,7 @@ def test_download_subject_repairs_incomplete_subject_dir(tmp_path, monkeypatch):
         "get_metainfo",
         lambda path=None: {
             "files": [
-                {
-                    "key": "sub-1.zip",
-                    "links": {"self": "https://example.org/sub-1.zip"},
-                }
+                {"key": "sub-1.zip", "links": {"self": "https://example.org/sub-1.zip"}}
             ]
         },
     )

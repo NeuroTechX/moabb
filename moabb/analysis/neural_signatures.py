@@ -52,11 +52,11 @@ def _check_plotly():
     """Raise a helpful error if plotly is not installed."""
     try:
         import plotly  # noqa: F401
-    except ImportError:
+    except ImportError as err:
         raise ImportError(
             "plotly is required for neural signature figures. "
             "Install with: pip install moabb[interactive]"
-        )
+        ) from err
 
 
 # Plotly style adapter
@@ -82,61 +82,57 @@ def get_plotly_template():
 
     template = go.layout.Template()
     template.layout = go.Layout(
-        font=dict(
-            family=_FONT_FAMILY,
-            color=MOABB_DARK_TEXT,
-            size=12,
-        ),
-        title=dict(
-            font=dict(size=20, color=MOABB_DARK_TEXT, family=_FONT_FAMILY),
-            x=0.02,
-            xanchor="left",
-            y=0.97,
-            yanchor="top",
-            pad=dict(b=12),
-        ),
+        font={"family": _FONT_FAMILY, "color": MOABB_DARK_TEXT, "size": 12},
+        title={
+            "font": {"size": 20, "color": MOABB_DARK_TEXT, "family": _FONT_FAMILY},
+            "x": 0.02,
+            "xanchor": "left",
+            "y": 0.97,
+            "yanchor": "top",
+            "pad": {"b": 12},
+        },
         colorway=MOABB_PALETTE,
         paper_bgcolor=_BG_TINT,
         plot_bgcolor=_BG_TINT,
-        margin=dict(l=72, r=24, t=80, b=64),
-        xaxis=dict(
-            showgrid=False,
-            zeroline=False,
-            linecolor=GRID_COLOR,
-            linewidth=0.7,
-            ticks="outside",
-            ticklen=4,
-            tickwidth=0.7,
-            tickcolor=GRID_COLOR,
-            title_font=dict(size=13, color=MOABB_DARK_TEXT),
-            title_standoff=10,
-        ),
-        yaxis=dict(
-            showgrid=True,
-            gridcolor=_GRID_LIGHT,
-            gridwidth=0.5,
-            griddash="solid",
-            zeroline=False,
-            showline=False,
-            ticks="",
-            title_font=dict(size=13, color=MOABB_DARK_TEXT),
-            title_standoff=8,
-        ),
-        legend=dict(
-            bgcolor="rgba(250, 251, 252, 0.92)",
-            borderwidth=0,
-            font=dict(size=11, family=_FONT_FAMILY),
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="left",
-            x=0.0,
-        ),
-        hoverlabel=dict(
-            bgcolor="white",
-            bordercolor=MOABB_NAVY,
-            font=dict(size=12, family=_FONT_FAMILY, color=MOABB_DARK_TEXT),
-        ),
+        margin={"l": 72, "r": 24, "t": 80, "b": 64},
+        xaxis={
+            "showgrid": False,
+            "zeroline": False,
+            "linecolor": GRID_COLOR,
+            "linewidth": 0.7,
+            "ticks": "outside",
+            "ticklen": 4,
+            "tickwidth": 0.7,
+            "tickcolor": GRID_COLOR,
+            "title_font": {"size": 13, "color": MOABB_DARK_TEXT},
+            "title_standoff": 10,
+        },
+        yaxis={
+            "showgrid": True,
+            "gridcolor": _GRID_LIGHT,
+            "gridwidth": 0.5,
+            "griddash": "solid",
+            "zeroline": False,
+            "showline": False,
+            "ticks": "",
+            "title_font": {"size": 13, "color": MOABB_DARK_TEXT},
+            "title_standoff": 8,
+        },
+        legend={
+            "bgcolor": "rgba(250, 251, 252, 0.92)",
+            "borderwidth": 0,
+            "font": {"size": 11, "family": _FONT_FAMILY},
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "left",
+            "x": 0.0,
+        },
+        hoverlabel={
+            "bgcolor": "white",
+            "bordercolor": MOABB_NAVY,
+            "font": {"size": 12, "family": _FONT_FAMILY, "color": MOABB_DARK_TEXT},
+        },
     )
     return template
 
@@ -160,8 +156,7 @@ def _hex_to_rgba(hex_color: str, alpha: float) -> str:
 
 
 def _get_montage_xy(
-    ch_names: list[str],
-    epochs: "mne.Epochs | None" = None,
+    ch_names: list[str], epochs: "mne.Epochs | None" = None
 ) -> dict[str, tuple[float, float]]:
     """Return normalised 2-D (x, y) positions for *ch_names*."""
     pos_3d: dict[str, np.ndarray] = {}
@@ -239,8 +234,7 @@ class NeuralSignatureData:
 
 
 def _compute_evokeds_and_sems(
-    epochs: mne.Epochs,
-    event_names: list[str],
+    epochs: mne.Epochs, event_names: list[str]
 ) -> tuple[dict, dict, dict]:
     """Return ``(evokeds, sems, n_trials)`` dicts keyed by event name."""
     evokeds: dict[str, np.ndarray] = {}
@@ -293,8 +287,7 @@ def _compute_psd_per_event(
 
 
 def compute_erp_signature(
-    epochs: mne.Epochs,
-    event_names: list[str] | None = None,
+    epochs: mne.Epochs, event_names: list[str] | None = None
 ) -> NeuralSignatureData:
     """Compute P300/ERP evoked averages and 95% CI SEMs per event class."""
     if event_names is None:
@@ -309,23 +302,22 @@ def compute_erp_signature(
         dataset_name="",
         dataset_code="",
         signature_type="erp",
-        data=dict(
-            evokeds=evokeds,
-            sems=sems,
-            times=epochs.times,
-            event_names=event_names,
-        ),
-        metadata=dict(
-            ch_names=epochs.ch_names,
-            sfreq=epochs.info["sfreq"],
-            n_trials=n_trials,
-        ),
+        data={
+            "evokeds": evokeds,
+            "sems": sems,
+            "times": epochs.times,
+            "event_names": event_names,
+        },
+        metadata={
+            "ch_names": epochs.ch_names,
+            "sfreq": epochs.info["sfreq"],
+            "n_trials": n_trials,
+        },
     )
 
 
 def _select_motor_channels(
-    epochs: mne.Epochs,
-    max_channels: int | None = None,
+    epochs: mne.Epochs, max_channels: int | None = None
 ) -> list[str]:
     """Select sensorimotor channels: montage coords → label patterns → all."""
     ch_names = epochs.ch_names
@@ -448,24 +440,22 @@ def compute_erd_ers_signature(
         dataset_name="",
         dataset_code="",
         signature_type="erd_ers",
-        data=dict(
-            tfr=tfr_data,
-            freqs=freqs,
-            times=times,
-            event_names=event_names,
-        ),
-        metadata=dict(
-            ch_names=central_chs,
-            sfreq=epochs.info["sfreq"],
-            n_trials=n_trials,
-        ),
+        data={
+            "tfr": tfr_data,
+            "freqs": freqs,
+            "times": times,
+            "event_names": event_names,
+        },
+        metadata={
+            "ch_names": central_chs,
+            "sfreq": epochs.info["sfreq"],
+            "n_trials": n_trials,
+        },
     )
 
 
 def _snr_spectrum(
-    psd: np.ndarray,
-    noise_n_neighbor_freqs: int = 3,
-    noise_skip_neighbor_freqs: int = 1,
+    psd: np.ndarray, noise_n_neighbor_freqs: int = 3, noise_skip_neighbor_freqs: int = 1
 ) -> np.ndarray:
     """Compute SNR spectrum (MNE SSVEP tutorial convolution-kernel approach)."""
     averaging_kernel = np.concatenate(
@@ -478,9 +468,7 @@ def _snr_spectrum(
     averaging_kernel /= averaging_kernel.sum()
 
     mean_noise = np.apply_along_axis(
-        lambda psd_: np.convolve(psd_, averaging_kernel, mode="valid"),
-        axis=-1,
-        arr=psd,
+        lambda psd_: np.convolve(psd_, averaging_kernel, mode="valid"), axis=-1, arr=psd
     )
     edge = noise_n_neighbor_freqs + noise_skip_neighbor_freqs
     pad_width = [(0, 0)] * (mean_noise.ndim - 1) + [(edge, edge)]
@@ -490,8 +478,7 @@ def _snr_spectrum(
 
 
 def compute_ssvep_signature(
-    epochs: mne.Epochs,
-    stimulus_frequencies: list[float] | None = None,
+    epochs: mne.Epochs, stimulus_frequencies: list[float] | None = None
 ) -> NeuralSignatureData:
     """Compute SSVEP PSD and SNR at stimulus frequencies (MNE tutorial approach)."""
     event_names = list(epochs.event_id.keys())
@@ -553,24 +540,23 @@ def compute_ssvep_signature(
         dataset_name="",
         dataset_code="",
         signature_type="psd_snr",
-        data=dict(
-            psd=psd_data,
-            snr=snr_data,
-            freqs=freqs,
-            stimulus_frequencies=stimulus_frequencies,
-            event_names=event_names,
-        ),
-        metadata=dict(
-            ch_names=epochs.ch_names,
-            sfreq=epochs.info["sfreq"],
-            n_trials=n_trials,
-        ),
+        data={
+            "psd": psd_data,
+            "snr": snr_data,
+            "freqs": freqs,
+            "stimulus_frequencies": stimulus_frequencies,
+            "event_names": event_names,
+        },
+        metadata={
+            "ch_names": epochs.ch_names,
+            "sfreq": epochs.info["sfreq"],
+            "n_trials": n_trials,
+        },
     )
 
 
 def compute_cvep_signature(
-    epochs: mne.Epochs,
-    event_names: list[str] | None = None,
+    epochs: mne.Epochs, event_names: list[str] | None = None
 ) -> NeuralSignatureData:
     """Compute c-VEP evoked response and PSD."""
     if event_names is None:
@@ -578,10 +564,7 @@ def compute_cvep_signature(
 
     evokeds, sems, n_trials_evk = _compute_evokeds_and_sems(epochs, event_names)
     psd_data, freqs, n_trials_psd = _compute_psd_per_event(
-        epochs,
-        event_names,
-        fmin=1,
-        fmax=50,
+        epochs, event_names, fmin=1, fmax=50
     )
     n_trials = {**n_trials_psd, **n_trials_evk}
 
@@ -590,25 +573,24 @@ def compute_cvep_signature(
         dataset_name="",
         dataset_code="",
         signature_type="cvep_response",
-        data=dict(
-            evokeds=evokeds,
-            sems=sems,
-            psd=psd_data,
-            freqs=freqs,
-            times=epochs.times,
-            event_names=event_names,
-        ),
-        metadata=dict(
-            ch_names=epochs.ch_names,
-            sfreq=epochs.info["sfreq"],
-            n_trials=n_trials,
-        ),
+        data={
+            "evokeds": evokeds,
+            "sems": sems,
+            "psd": psd_data,
+            "freqs": freqs,
+            "times": epochs.times,
+            "event_names": event_names,
+        },
+        metadata={
+            "ch_names": epochs.ch_names,
+            "sfreq": epochs.info["sfreq"],
+            "n_trials": n_trials,
+        },
     )
 
 
 def compute_rstate_signature(
-    epochs: mne.Epochs,
-    event_names: list[str] | None = None,
+    epochs: mne.Epochs, event_names: list[str] | None = None
 ) -> NeuralSignatureData:
     """Compute resting state PSD and relative band powers per condition."""
     if event_names is None:
@@ -623,10 +605,7 @@ def compute_rstate_signature(
     }
 
     psd_data, freqs, n_trials = _compute_psd_per_event(
-        epochs,
-        event_names,
-        fmin=1,
-        fmax=50,
+        epochs, event_names, fmin=1, fmax=50
     )
 
     # Compute relative band powers from the PSD
@@ -644,18 +623,18 @@ def compute_rstate_signature(
         dataset_name="",
         dataset_code="",
         signature_type="rstate_psd",
-        data=dict(
-            psd=psd_data,
-            band_powers=band_powers,
-            freqs=freqs,
-            bands=bands,
-            event_names=event_names,
-        ),
-        metadata=dict(
-            ch_names=epochs.ch_names,
-            sfreq=epochs.info["sfreq"],
-            n_trials=n_trials,
-        ),
+        data={
+            "psd": psd_data,
+            "band_powers": band_powers,
+            "freqs": freqs,
+            "bands": bands,
+            "event_names": event_names,
+        },
+        metadata={
+            "ch_names": epochs.ch_names,
+            "sfreq": epochs.info["sfreq"],
+            "n_trials": n_trials,
+        },
     )
 
 
@@ -701,8 +680,8 @@ def _add_branding(fig, title: str, subtitle: str = ""):
     )
     # Title
     fig.update_layout(
-        title=dict(
-            text=(
+        title={
+            "text": (
                 f"<b>{title}</b>"
                 + (
                     f"<br><span style='font-size:13px;color:{GRID_COLOR}'>"
@@ -711,12 +690,12 @@ def _add_branding(fig, title: str, subtitle: str = ""):
                     else ""
                 )
             ),
-            font=dict(size=18, color=MOABB_DARK_TEXT, family=_FONT_FAMILY),
-            x=0.0,
-            xanchor="left",
-            y=0.96,
-            yanchor="top",
-        ),
+            "font": {"size": 18, "color": MOABB_DARK_TEXT, "family": _FONT_FAMILY},
+            "x": 0.0,
+            "xanchor": "left",
+            "y": 0.96,
+            "yanchor": "top",
+        }
     )
     # Source footnote
     fig.add_annotation(
@@ -728,16 +707,12 @@ def _add_branding(fig, title: str, subtitle: str = ""):
         y=-0.08,
         xanchor="left",
         yanchor="top",
-        font=dict(size=9, color=GRID_COLOR, family=_FONT_FAMILY),
+        font={"size": 9, "color": GRID_COLOR, "family": _FONT_FAMILY},
     )
 
 
 def _evoked_metrics(
-    metrics: dict,
-    name: str,
-    evk: np.ndarray,
-    times: np.ndarray | None,
-    n: int,
+    metrics: dict, name: str, evk: np.ndarray, times: np.ndarray | None, n: int
 ) -> None:
     """Add evoked-response metrics (shared by ERP and c-VEP)."""
     evk_uv = evk * 1e6
@@ -922,11 +897,11 @@ def _build_head_svg(ch_names: list[str], active_ch: str | None = None) -> str:
         f'style="display:block;width:100%;height:100%">',
         f'<circle cx="{cx}" cy="{cy}" r="{r}" '
         f'fill="#FAFBFC" stroke="{MOABB_NAVY}" stroke-width="1.5"/>',
-        f'<polygon points="{cx-4},{cy-r} {cx},{cy-r-7} {cx+4},{cy-r}" '
+        f'<polygon points="{cx - 4},{cy - r} {cx},{cy - r - 7} {cx + 4},{cy - r}" '
         f'fill="none" stroke="{MOABB_NAVY}" stroke-width="1.5"/>',
-        f'<path d="M{cx-r},{cy-5} Q{cx-r-4},{cy} {cx-r},{cy+5}" '
+        f'<path d="M{cx - r},{cy - 5} Q{cx - r - 4},{cy} {cx - r},{cy + 5}" '
         f'fill="none" stroke="{MOABB_NAVY}" stroke-width="1.5"/>',
-        f'<path d="M{cx+r},{cy-5} Q{cx+r+4},{cy} {cx+r},{cy+5}" '
+        f'<path d="M{cx + r},{cy - 5} Q{cx + r + 4},{cy} {cx + r},{cy + 5}" '
         f'fill="none" stroke="{MOABB_NAVY}" stroke-width="1.5"/>',
     ]
 
@@ -1084,10 +1059,7 @@ def _wrap_branded_html(
 </html>"""
 
 
-def plot_erp_interactive(
-    sig: NeuralSignatureData,
-    channel_idx: int = 0,
-) -> "go.Figure":
+def plot_erp_interactive(sig: NeuralSignatureData, channel_idx: int = 0) -> "go.Figure":
     """Plot P300/ERP waveforms with confidence bands."""
     import plotly.graph_objects as go
 
@@ -1105,7 +1077,7 @@ def plot_erp_interactive(
     n_ev = len(active_events)
     traces_per_ch = n_ev * 3  # line + upper/lower CI
 
-    for ch_i, ch_name in enumerate(ch_names):
+    for ch_i, _ch_name in enumerate(ch_names):
         for ev_i, name in enumerate(active_events):
             evk = sig.data["evokeds"][name][ch_i] * 1e6
             sem = sig.data["sems"][name][ch_i] * 1e6
@@ -1119,7 +1091,7 @@ def plot_erp_interactive(
                     y=evk,
                     mode="lines",
                     name=f"{name}  n={n_t}",
-                    line=dict(color=color, width=2.5),
+                    line={"color": color, "width": 2.5},
                     visible=visible,
                     legendgroup=f"{name}_{ch_i}",
                     showlegend=True,
@@ -1130,7 +1102,7 @@ def plot_erp_interactive(
                     x=times_ms,
                     y=evk + sem,
                     mode="lines",
-                    line=dict(width=0),
+                    line={"width": 0},
                     showlegend=False,
                     visible=visible,
                     legendgroup=f"{name}_{ch_i}",
@@ -1142,7 +1114,7 @@ def plot_erp_interactive(
                     x=times_ms,
                     y=evk - sem,
                     mode="lines",
-                    line=dict(width=0),
+                    line={"width": 0},
                     fill="tonexty",
                     fillcolor=_hex_to_rgba(color, 0.10),
                     showlegend=False,
@@ -1156,24 +1128,28 @@ def plot_erp_interactive(
         vis = []
         for c_i in range(len(ch_names)):
             vis.extend([c_i == ch_i] * traces_per_ch)
-        buttons.append(dict(label=ch_name, method="update", args=[{"visible": vis}]))
+        buttons.append({"label": ch_name, "method": "update", "args": [{"visible": vis}]})
 
     if len(ch_names) > 1:
         fig.update_layout(
             updatemenus=[
-                dict(
-                    buttons=buttons,
-                    direction="down",
-                    showactive=True,
-                    x=1.0,
-                    xanchor="right",
-                    y=1.12,
-                    yanchor="top",
-                    bgcolor="white",
-                    bordercolor=MOABB_NAVY,
-                    borderwidth=1,
-                    font=dict(size=11, family=_FONT_FAMILY, color=MOABB_DARK_TEXT),
-                )
+                {
+                    "buttons": buttons,
+                    "direction": "down",
+                    "showactive": True,
+                    "x": 1.0,
+                    "xanchor": "right",
+                    "y": 1.12,
+                    "yanchor": "top",
+                    "bgcolor": "white",
+                    "bordercolor": MOABB_NAVY,
+                    "borderwidth": 1,
+                    "font": {
+                        "size": 11,
+                        "family": _FONT_FAMILY,
+                        "color": MOABB_DARK_TEXT,
+                    },
+                }
             ]
         )
 
@@ -1185,7 +1161,7 @@ def plot_erp_interactive(
         xref="x",
         yref="paper",
         showarrow=False,
-        font=dict(size=9, color=GRID_COLOR),
+        font={"size": 9, "color": GRID_COLOR},
     )
 
     _add_branding(
@@ -1199,15 +1175,13 @@ def plot_erp_interactive(
         yaxis_title="Amplitude (\u00b5V)",
         hovermode="x unified",
         height=480,
-        margin=dict(t=100, b=60, l=72, r=24),
+        margin={"t": 100, "b": 60, "l": 72, "r": 24},
     )
 
     return fig
 
 
-def plot_erd_ers_interactive(
-    sig: NeuralSignatureData,
-) -> "go.Figure":
+def plot_erd_ers_interactive(sig: NeuralSignatureData) -> "go.Figure":
     """Plot ERD/ERS time-frequency heatmaps for motor imagery."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
@@ -1246,7 +1220,7 @@ def plot_erd_ers_interactive(
     steps = []
     for ch_i, ch_name in enumerate(ch_names):
         step_data = [sig.data["tfr"][name][ch_i] for name in event_names]
-        steps.append(dict(method="update", label=ch_name, args=[{"z": step_data}]))
+        steps.append({"method": "update", "label": ch_name, "args": [{"z": step_data}]})
 
     for ev_i, name in enumerate(event_names):
         tfr = sig.data["tfr"][name][0]
@@ -1259,20 +1233,19 @@ def plot_erd_ers_interactive(
                 zmin=-vmax,
                 zmax=vmax,
                 colorbar=(
-                    dict(
-                        title=dict(text="ERD/ERS (%)", font=dict(size=11)),
-                        thickness=12,
-                        len=0.85,
-                        tickfont=dict(size=10),
-                        outlinewidth=0,
-                    )
+                    {
+                        "title": {"text": "ERD/ERS (%)", "font": {"size": 11}},
+                        "thickness": 12,
+                        "len": 0.85,
+                        "tickfont": {"size": 10},
+                        "outlinewidth": 0,
+                    }
                     if ev_i == n_events - 1
                     else None
                 ),
                 showscale=(ev_i == n_events - 1),
                 hovertemplate=(
-                    "<b>%{y:.0f} Hz</b> at %{x:.2f}s"
-                    "<br>ERD/ERS: %{z:.1f}%<extra></extra>"
+                    "<b>%{y:.0f} Hz</b> at %{x:.2f}s<br>ERD/ERS: %{z:.1f}%<extra></extra>"
                 ),
             ),
             row=1,
@@ -1282,19 +1255,19 @@ def plot_erd_ers_interactive(
     if len(ch_names) > 1:
         fig.update_layout(
             sliders=[
-                dict(
-                    active=0,
-                    currentvalue=dict(
-                        prefix="Channel: ",
-                        font=dict(size=12, color=MOABB_DARK_TEXT),
-                    ),
-                    pad=dict(t=40),
-                    steps=steps,
-                    bordercolor=MOABB_NAVY,
-                    borderwidth=1,
-                    activebgcolor=_hex_to_rgba(MOABB_TEAL, 0.25),
-                    font=dict(size=11),
-                )
+                {
+                    "active": 0,
+                    "currentvalue": {
+                        "prefix": "Channel: ",
+                        "font": {"size": 12, "color": MOABB_DARK_TEXT},
+                    },
+                    "pad": {"t": 40},
+                    "steps": steps,
+                    "bordercolor": MOABB_NAVY,
+                    "borderwidth": 1,
+                    "activebgcolor": _hex_to_rgba(MOABB_TEAL, 0.25),
+                    "font": {"size": 11},
+                }
             ]
         )
 
@@ -1319,10 +1292,7 @@ def plot_erd_ers_interactive(
             col=ev_i + 1,
         )
 
-    fig.update_layout(
-        height=700,
-        margin=dict(t=40, b=80, l=72, r=80),
-    )
+    fig.update_layout(height=700, margin={"t": 40, "b": 80, "l": 72, "r": 80})
     for i in range(1, n_events + 1):
         fig.update_xaxes(title_text="Time (s)", row=1, col=i)
     fig.update_yaxes(title_text="Frequency (Hz)", row=1, col=1)
@@ -1330,9 +1300,7 @@ def plot_erd_ers_interactive(
     return fig
 
 
-def plot_ssvep_interactive(
-    sig: NeuralSignatureData,
-) -> "go.Figure":
+def plot_ssvep_interactive(sig: NeuralSignatureData) -> "go.Figure":
     """Plot SSVEP power spectra with stimulus frequency markers."""
     import plotly.graph_objects as go
 
@@ -1362,7 +1330,7 @@ def plot_ssvep_interactive(
                 y=psd,
                 mode="lines",
                 name=label,
-                line=dict(color=color, width=2.5),
+                line={"color": color, "width": 2.5},
             )
         )
 
@@ -1384,7 +1352,7 @@ def plot_ssvep_interactive(
                         yref="paper",
                         text=f"<b>{f:.0f} Hz</b>",
                         showarrow=False,
-                        font=dict(size=9, color=MOABB_NAVY),
+                        font={"size": 9, "color": MOABB_NAVY},
                     )
 
     total_trials = sum(n_trials.values())
@@ -1399,16 +1367,13 @@ def plot_ssvep_interactive(
         yaxis_type="log",
         hovermode="x unified",
         height=480,
-        margin=dict(t=100, b=60, l=72, r=24),
+        margin={"t": 100, "b": 60, "l": 72, "r": 24},
     )
 
     return fig
 
 
-def plot_cvep_interactive(
-    sig: NeuralSignatureData,
-    channel_idx: int = 0,
-) -> "go.Figure":
+def plot_cvep_interactive(sig: NeuralSignatureData, channel_idx: int = 0) -> "go.Figure":
     """Plot c-VEP evoked responses and PSD."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
@@ -1421,10 +1386,7 @@ def plot_cvep_interactive(
     fig = make_subplots(
         rows=2,
         cols=1,
-        subplot_titles=[
-            "<b>Evoked Response</b>",
-            "<b>Power Spectrum</b>",
-        ],
+        subplot_titles=["<b>Evoked Response</b>", "<b>Power Spectrum</b>"],
         vertical_spacing=0.18,
         row_heights=[0.6, 0.4],
     )
@@ -1442,7 +1404,7 @@ def plot_cvep_interactive(
                 y=sig.data["evokeds"][name][ch_i] * 1e6,
                 mode="lines",
                 name=f"Code {name}  n={n_t}",
-                line=dict(color=color, width=2.5),
+                line={"color": color, "width": 2.5},
                 legendgroup=name,
             ),
             row=1,
@@ -1456,7 +1418,7 @@ def plot_cvep_interactive(
                     y=sig.data["psd"][name],
                     mode="lines",
                     name=f"PSD {name}",
-                    line=dict(color=color, width=2, dash="dot"),
+                    line={"color": color, "width": 2, "dash": "dot"},
                     legendgroup=name,
                     showlegend=False,
                 ),
@@ -1476,16 +1438,12 @@ def plot_cvep_interactive(
         subtitle=f"Channel: {ch_label} \u00b7 {sum(n_trials.values())} trials",
     )
     fig.update_layout(
-        height=640,
-        hovermode="x unified",
-        margin=dict(t=110, b=60, l=72, r=24),
+        height=640, hovermode="x unified", margin={"t": 110, "b": 60, "l": 72, "r": 24}
     )
     return fig
 
 
-def plot_rstate_interactive(
-    sig: NeuralSignatureData,
-) -> "go.Figure":
+def plot_rstate_interactive(sig: NeuralSignatureData) -> "go.Figure":
     """Plot resting state PSD overlay and band power bar chart."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
@@ -1498,10 +1456,7 @@ def plot_rstate_interactive(
     fig = make_subplots(
         rows=1,
         cols=2,
-        subplot_titles=[
-            "<b>Power Spectral Density</b>",
-            "<b>Relative Band Power</b>",
-        ],
+        subplot_titles=["<b>Power Spectral Density</b>", "<b>Relative Band Power</b>"],
         horizontal_spacing=0.14,
         column_widths=[0.6, 0.4],
     )
@@ -1521,7 +1476,7 @@ def plot_rstate_interactive(
                 y=sig.data["psd"][name],
                 mode="lines",
                 name=f"{name}  n={n_t}",
-                line=dict(color=color, width=2.5),
+                line={"color": color, "width": 2.5},
                 legendgroup=name,
             ),
             row=1,
@@ -1559,7 +1514,7 @@ def plot_rstate_interactive(
         height=480,
         hovermode="x unified",
         barmode="group",
-        margin=dict(t=110, b=60, l=72, r=24),
+        margin={"t": 110, "b": 60, "l": 72, "r": 24},
     )
     return fig
 
@@ -1575,13 +1530,7 @@ _PARADIGM_HANDLERS = {
 
 def _get_paradigm_instance(paradigm_name: str, dataset=None):
     """Instantiate the appropriate paradigm for data loading."""
-    from moabb.paradigms import (
-        CVEP,
-        P300,
-        SSVEP,
-        MotorImagery,
-        RestingStateToP300Adapter,
-    )
+    from moabb.paradigms import CVEP, P300, SSVEP, MotorImagery, RestingStateToP300Adapter
 
     _paradigm_factories = {
         "imagery": lambda _ds: MotorImagery(n_classes=2, fmin=1, fmax=45, resample=128),
@@ -1599,8 +1548,7 @@ def _get_paradigm_instance(paradigm_name: str, dataset=None):
     factory = _paradigm_factories.get(paradigm_name)
     if factory is None:
         raise ValueError(
-            f"Unknown paradigm {paradigm_name!r}. "
-            f"Supported: {list(_paradigm_factories)}"
+            f"Unknown paradigm {paradigm_name!r}. Supported: {list(_paradigm_factories)}"
         )
     return factory(dataset)
 
@@ -1669,9 +1617,7 @@ def _load_and_compute(
 
 
 def generate_neural_signature(
-    dataset,
-    subjects: list[int] | None = None,
-    output_dir: str | Path | None = None,
+    dataset, subjects: list[int] | None = None, output_dir: str | Path | None = None
 ) -> list[Path]:
     """Generate interactive neural signature HTML files for a dataset.
 
@@ -1715,11 +1661,7 @@ def generate_neural_signature(
     generated = []
 
     sig, fig, all_evokeds_per_subject = _load_and_compute(
-        dataset,
-        subjects,
-        compute_fn,
-        plot_fn,
-        collect_per_subject=True,
+        dataset, subjects, compute_fn, plot_fn, collect_per_subject=True
     )
     if sig is None:
         log.warning("No valid epochs for %s, skipping.", ds_name)
@@ -1737,9 +1679,7 @@ def generate_neural_signature(
     }
     title = f"{_sig_titles.get(sig.signature_type, 'Neural Signature')} \u2014 {ds_name}"
     n_total = sum(sig.metadata.get("n_trials", {}).values())
-    subtitle = (
-        f"Grand average across {len(subjects)} subject(s), " f"{n_total} total trials"
-    )
+    subtitle = f"Grand average across {len(subjects)} subject(s), {n_total} total trials"
 
     plotly_div = fig.to_html(
         include_plotlyjs="cdn",
@@ -1776,12 +1716,7 @@ def generate_neural_signature(
 
     if len(all_evokeds_per_subject) > 1:
         fig_subj = _make_per_subject_figure(
-            all_evokeds_per_subject,
-            compute_fn,
-            plot_fn,
-            paradigm_name,
-            ds_name,
-            code,
+            all_evokeds_per_subject, compute_fn, plot_fn, paradigm_name, ds_name, code
         )
         if fig_subj is not None:
             path_subj = output_dir / f"{code}_per_subject.html"
@@ -1834,7 +1769,10 @@ def _make_per_channel_figure(sig, paradigm_name):
                     y=evk[ch_i] * 1e6,
                     mode="lines",
                     name=name,
-                    line=dict(color=_PLOT_PALETTE[ev_i % len(_PLOT_PALETTE)], width=1.5),
+                    line={
+                        "color": _PLOT_PALETTE[ev_i % len(_PLOT_PALETTE)],
+                        "width": 1.5,
+                    },
                     showlegend=(ch_i == 0),
                     legendgroup=name,
                 ),
@@ -1848,12 +1786,7 @@ def _make_per_channel_figure(sig, paradigm_name):
 
 
 def _make_per_subject_figure(
-    subjects_epochs,
-    compute_fn,
-    plot_fn,
-    paradigm_name,
-    ds_name,
-    code,
+    subjects_epochs, compute_fn, plot_fn, paradigm_name, ds_name, code
 ):
     """Create a per-subject overlay figure."""
     import plotly.graph_objects as go
@@ -1897,7 +1830,7 @@ def _make_per_subject_figure(
                 y=y,
                 mode="lines",
                 name=f"Sub {subj}",
-                line=dict(color=color, width=1.5),
+                line={"color": color, "width": 1.5},
                 opacity=0.7,
             )
         )
@@ -1911,8 +1844,7 @@ def _make_per_subject_figure(
 
     if paradigm_name == "imagery":
         fig.update_layout(
-            xaxis_title="Time (s)",
-            yaxis_title="Mu-band (8\u201313 Hz) Power",
+            xaxis_title="Time (s)", yaxis_title="Mu-band (8\u201313 Hz) Power"
         )
     elif paradigm_name in ("p300", "cvep"):
         fig.update_layout(xaxis_title="Time (ms)", yaxis_title="Amplitude (\u00b5V)")
@@ -1921,17 +1853,12 @@ def _make_per_subject_figure(
         )
     elif paradigm_name in ("ssvep", "rstate"):
         fig.update_layout(
-            xaxis_title="Frequency (Hz)",
-            yaxis_title="PSD (V\u00b2/Hz)",
-            yaxis_type="log",
+            xaxis_title="Frequency (Hz)", yaxis_title="PSD (V\u00b2/Hz)", yaxis_type="log"
         )
     return fig
 
 
-def neural_signature_html(
-    dataset,
-    subjects: list[int] | None = None,
-) -> dict[str, str]:
+def neural_signature_html(dataset, subjects: list[int] | None = None) -> dict[str, str]:
     """Generate neural signature figures and return HTML strings.
 
     Parameters

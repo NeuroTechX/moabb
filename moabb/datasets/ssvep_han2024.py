@@ -166,9 +166,7 @@ class Han2024Fatigue(BaseDataset):
             ],
             keywords=["SSVEP", "BCI", "fatigue", "dynamic stopping", "EEG"],
         ),
-        preprocessing=PreprocessingMetadata(
-            data_state="epoched",
-        ),
+        preprocessing=PreprocessingMetadata(data_state="epoched"),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
             stimulus_frequencies_hz=(
@@ -187,18 +185,9 @@ class Han2024Fatigue(BaseDataset):
             frequency_bands=None,
             spatial_filters=["TRCA"],
         ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=None,
-        ),
-        bci_application=BCIApplicationMetadata(
-            environment="lab",
-            online_feedback=False,
-        ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["visual"],
-            type=["perception"],
-        ),
+        cross_validation=CrossValidationMetadata(evaluation_type=None),
+        bci_application=BCIApplicationMetadata(environment="lab", online_feedback=False),
+        tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         sessions_per_subject=2,
         file_format="MAT",
     )

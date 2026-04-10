@@ -519,10 +519,7 @@ def _convert_run_bbci2003(run, ch_names, ch_types, verbose=None):
         event_id (dict):
             Dictionary containing class names.
     """
-    class_map = {
-        "right": "right_hand",
-        "foot": "feet",
-    }
+    class_map = {"right": "right_hand", "foot": "feet"}
 
     raw_labels = run["mrk"]["y"][0, 0][0]
     labels_mask = ~np.isnan(raw_labels)

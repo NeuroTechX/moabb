@@ -167,19 +167,14 @@ class MartinezCagigal2023Pary(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
-            n_channels=16,
-            channel_types={"eeg": 16},
+            sampling_rate=256.0, n_channels=16, channel_types={"eeg": 16}
         ),
         participants=ParticipantMetadata(n_subjects=16),
         experiment=ExperimentMetadata(paradigm="cvep"),
         documentation=DocumentationMetadata(
             doi="10.71569/025s-eq10",
             associated_paper_doi="10.1016/j.eswa.2023.120815",
-            related_paper_dois=[
-                "10.1088/1741-2552/ac38cf",
-                "10.1016/j.cmpb.2023.107357",
-            ],
+            related_paper_dois=["10.1088/1741-2552/ac38cf", "10.1016/j.cmpb.2023.107357"],
             publication_year=2023,
             investigators=[
                 "Víctor Martínez-Cagigal",
@@ -226,8 +221,7 @@ class MartinezCagigal2023Pary(BaseDataset):
         for cond in conditions:
             if cond not in ALL_CONDITIONS:
                 raise ValueError(
-                    f"Invalid condition '{cond}'. "
-                    f"Valid conditions are: {ALL_CONDITIONS}"
+                    f"Invalid condition '{cond}'. Valid conditions are: {ALL_CONDITIONS}"
                 )
         self.conditions = conditions
 
@@ -268,10 +262,7 @@ class MartinezCagigal2023Pary(BaseDataset):
                             self._convert_to_mne_format(train_path)
                         )
                     except Exception:
-                        log.error(
-                            f"Cannot convert signal {train_path}.",
-                            exc_info=True,
-                        )
+                        log.error(f"Cannot convert signal {train_path}.", exc_info=True)
                 n = len(train_paths)
 
                 # Load the true labels for testing
@@ -290,10 +281,7 @@ class MartinezCagigal2023Pary(BaseDataset):
                             self._convert_to_mne_format(test_path, true_labels[j])
                         )
                     except Exception:
-                        log.error(
-                            f"Cannot convert signal {test_path}.",
-                            exc_info=True,
-                        )
+                        log.error(f"Cannot convert signal {test_path}.", exc_info=True)
 
         return sessions
 
@@ -309,7 +297,7 @@ class MartinezCagigal2023Pary(BaseDataset):
 
         # Get subject data
         url = f"{HANDLE_URI}/{sub}.zip"
-        subject_paths = list()
+        subject_paths = []
         subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
 
         return subject_paths
@@ -379,7 +367,7 @@ class MartinezCagigal2023Pary(BaseDataset):
         sample_onsets = np.array(cvep_data["onsets"]) - times[0]
 
         # Get bit-wise sequences for each cycle
-        seqs_by_cycle = list()
+        seqs_by_cycle = []
         commands_info = cvep_data["commands_info"]
 
         if cvep_data["mode"] == "train":
@@ -392,7 +380,7 @@ class MartinezCagigal2023Pary(BaseDataset):
         else:
             # For test mode, need to look up sequences by label
             assert true_labels is not None
-            seqs_by_trial = list()
+            seqs_by_trial = []
             for label in true_labels:
                 for item in commands_info[0].values():
                     if item["label"] == label:

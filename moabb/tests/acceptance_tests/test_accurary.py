@@ -132,10 +132,7 @@ def _assert_performance_stable(eval_class, dataset, reference_csv):
 
 @pytest.mark.parametrize("dataset_class", [BNCI2014_001, BNCI2015_001])
 def test_decoding_performance_stable(dataset_class):
-    csv_map = {
-        "BNCI2014_001": BNCI2014_001_results,
-        "BNCI2015_001": BNCI2015_001_results,
-    }
+    csv_map = {"BNCI2014_001": BNCI2014_001_results, "BNCI2015_001": BNCI2015_001_results}
     _assert_performance_stable(
         CrossSessionEvaluation, dataset_class(), csv_map[dataset_class.__name__]
     )

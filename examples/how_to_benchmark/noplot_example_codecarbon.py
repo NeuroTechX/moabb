@@ -146,12 +146,7 @@ results = benchmark(
 # are saved in the ``benchmark`` folder.
 results.head()
 
-order_list = [
-    "CSP + SVM",
-    "Tangent Space LR",
-    "EN Grid",
-    "CSP + LDA Grid",
-]
+order_list = ["CSP + SVM", "Tangent Space LR", "EN Grid", "CSP + LDA Grid"]
 
 ###############################################################################
 # Comprehensive CodeCarbon Visualization Analysis
@@ -196,12 +191,7 @@ fig1 = codecarbon_plot(results, order_list, country="(France)")
 # **Best for:** Identifying which pipelines are most sustainable
 # **Use case:** When you care about accuracy-to-emissions ratio
 
-fig2 = codecarbon_plot(
-    results,
-    order_list,
-    country="(France)",
-    include_efficiency=True,
-)
+fig2 = codecarbon_plot(results, order_list, country="(France)", include_efficiency=True)
 
 ###############################################################################
 # Visualization Mode 3: Complete Analysis with Pareto Frontier

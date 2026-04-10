@@ -249,10 +249,7 @@ class BNCI2003_004(MNEBNCI):
             sensor_type="EEG",
             auxiliary_channels=None,
         ),
-        participants=ParticipantMetadata(
-            n_subjects=5,
-            health_status="healthy",
-        ),
+        participants=ParticipantMetadata(n_subjects=5, health_status="healthy"),
         experiment=ExperimentMetadata(
             events={"right_hand": 0, "feet": 1},
             paradigm="imagery",
@@ -301,18 +298,11 @@ class BNCI2003_004(MNEBNCI):
             license="CC-BY-4.0",
             repository="BBCI",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="downsampled to 100 Hz for offline analysis",
             preprocessing_applied=True,
-            preprocessing_steps=[
-                "bandpass filtering",
-                "downsampling",
-            ],
+            preprocessing_steps=["bandpass filtering", "downsampling"],
             bandpass={"low_cutoff_hz": 0.05, "high_cutoff_hz": 200.0},
             downsampled_to_hz=100,
             notes="Band-pass filtered 0.05-200 Hz during acquisition at 1000 Hz with 16-bit (0.1 uV) accuracy, then downsampled to 100 Hz by picking each 10th sample. Original experiment also recorded EMG and EOG but these are not in the shared data files.",
@@ -320,11 +310,7 @@ class BNCI2003_004(MNEBNCI):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA", "regularized LDA"],
             feature_extraction=["CSP", "SUB (MRP/slow potentials)", "AR"],
-            frequency_bands={
-                "alpha": [8, 13],
-                "beta": [15, 25],
-                "alpha_beta": [7, 30],
-            },
+            frequency_bands={"alpha": [8, 13], "beta": [15, 25], "alpha_beta": [7, 30]},
             spatial_filters=["CSP", "spatial Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -339,10 +325,7 @@ class BNCI2003_004(MNEBNCI):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
-            imagery_tasks=[
-                "right_hand",
-                "feet",
-            ],
+            imagery_tasks=["right_hand", "feet"],
             cue_duration_s=3.5,
         ),
         data_structure=DataStructureMetadata(

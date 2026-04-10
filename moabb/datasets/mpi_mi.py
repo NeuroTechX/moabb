@@ -275,11 +275,7 @@ class GrosseWentrup2009(BaseDataset):
             license="CC-BY-4.0",
             repository="Zenodo",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -289,20 +285,12 @@ class GrosseWentrup2009(BaseDataset):
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["Logistic Regression"],
-            feature_extraction=[
-                "CSP",
-                "Beamforming",
-                "Laplacian",
-                "Bandpower",
-            ],
-            frequency_bands={
-                "analyzed_range": [7.0, 30.0],
-            },
+            feature_extraction=["CSP", "Beamforming", "Laplacian", "Bandpower"],
+            frequency_bands={"analyzed_range": [7.0, 30.0]},
             spatial_filters=["CSP", "Beamforming", "Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_subject"],
-            cv_method="bootstrapping",
+            evaluation_type=["within_subject"], cv_method="bootstrapping"
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
@@ -315,10 +303,7 @@ class GrosseWentrup2009(BaseDataset):
             cue_duration_s=7.0,
             imagery_duration_s=7.0,
         ),
-        data_structure=DataStructureMetadata(
-            n_trials=150,
-            trials_context="per_class",
-        ),
+        data_structure=DataStructureMetadata(n_trials=150, trials_context="per_class"),
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=True,
@@ -326,7 +311,7 @@ class GrosseWentrup2009(BaseDataset):
     )
 
     def __init__(self, subjects=None, sessions=None):
-        self.events_id = dict(right_hand=2, left_hand=1)
+        self.events_id = {"right_hand": 2, "left_hand": 1}
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=1,

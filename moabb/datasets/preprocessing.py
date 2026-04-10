@@ -717,10 +717,10 @@ class RawToEvents(FixedTransformer):
         if self.overlap is not None:
             try:
                 overlap_value = float(self.overlap)
-            except (TypeError, ValueError):
+            except (TypeError, ValueError) as err:
                 raise TypeError(
                     f"overlap must be a number in [0, 100), got {self.overlap!r}"
-                )
+                ) from err
             if not (0.0 <= overlap_value < 100.0):
                 raise ValueError(f"overlap must be in [0, 100), got {self.overlap!r}")
             self.overlap = overlap_value
@@ -792,7 +792,7 @@ class RawToEventsP300(RawToEvents):
             and isinstance(event_id["Target"], list)
             and isinstance(event_id["NonTarget"], list)
         ):
-            event_id_new = dict(Target=1, NonTarget=0)
+            event_id_new = {"Target": 1, "NonTarget": 0}
             events = mne.merge_events(events, event_id["Target"], 1)
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
@@ -803,14 +803,7 @@ class RawToEventsP300(RawToEvents):
 class RawToFixedIntervalEvents(FixedTransformer):
     """Build synthetic events on a fixed grid (no MNE event finder); output is standard MNE ``events``."""
 
-    def __init__(
-        self,
-        length,
-        stride,
-        start_offset,
-        stop_offset,
-        marker=1,
-    ):
+    def __init__(self, length, stride, start_offset, stop_offset, marker=1):
         super().__init__()
         self.length = length
         self.stride = stride
@@ -836,9 +829,7 @@ class RawToFixedIntervalEvents(FixedTransformer):
         )
         stop_samples = stop_offset_samples - length_samples + raw.first_samp
         onset = np.arange(
-            raw.first_samp + start_offset_samples,
-            stop_samples,
-            stride_samples,
+            raw.first_samp + start_offset_samples, stop_samples, stride_samples
         )
         if len(onset) == 0:
             # skip raw if no event found
@@ -1042,12 +1033,7 @@ def get_filter_pipeline(fmin, fmax):
     # methodcaller: forwards to mne.io.BaseRaw.filter when the pipeline passes a Raw.
     return NamedFunctionTransformer(
         func=methodcaller(
-            "filter",
-            l_freq=fmin,
-            h_freq=fmax,
-            method="iir",
-            picks="data",
-            verbose=False,
+            "filter", l_freq=fmin, h_freq=fmax, method="iir", picks="data", verbose=False
         ),
         display_name=f"Band Pass Filter ({fmin}–{fmax} Hz)",
     )
@@ -1056,12 +1042,7 @@ def get_filter_pipeline(fmin, fmax):
 def get_crop_pipeline(tmin, tmax):
     """Return a pipeline step that applies MNE temporal cropping: :meth:`mne.io.BaseRaw.crop`."""
     return NamedFunctionTransformer(
-        func=methodcaller(
-            "crop",
-            tmin=tmin,
-            tmax=tmax,
-            verbose=False,
-        ),
+        func=methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
         display_name=f"Crop ({tmin}–{tmax} s)",
     )
 
@@ -1069,10 +1050,6 @@ def get_crop_pipeline(tmin, tmax):
 def get_resample_pipeline(sfreq):
     """Return a pipeline step that applies MNE resampling: :meth:`mne.io.BaseRaw.resample`."""
     return NamedFunctionTransformer(
-        func=methodcaller(
-            "resample",
-            sfreq=sfreq,
-            verbose=False,
-        ),
+        func=methodcaller("resample", sfreq=sfreq, verbose=False),
         display_name=f"Resample ({sfreq} Hz)",
     )

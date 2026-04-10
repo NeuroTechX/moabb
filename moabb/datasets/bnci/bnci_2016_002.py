@@ -191,9 +191,7 @@ def _load_data_002_2016(
 
     if onset_times:
         annotations = Annotations(
-            onset=onset_times,
-            duration=[0.0] * len(onset_times),
-            description=descriptions,
+            onset=onset_times, duration=[0.0] * len(onset_times), description=descriptions
         )
         raw.set_annotations(annotations)
 
@@ -548,8 +546,7 @@ class BNCI2016_002(BNCIBaseDataset):
             spatial_filters=["Artifact rejection based on spectral power"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="sequential temporal split",
-            evaluation_type=["temporal_validation"],
+            cv_method="sequential temporal split", evaluation_type=["temporal_validation"]
         ),
         performance={
             "auc": 0.5,
@@ -566,7 +563,7 @@ class BNCI2016_002(BNCIBaseDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="emergency_braking_erp",
+            detected_paradigm="emergency_braking_erp"
         ),
         data_structure=DataStructureMetadata(
             n_trials="~99 emergency braking events per subject (test set)",

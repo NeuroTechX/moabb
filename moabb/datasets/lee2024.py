@@ -31,7 +31,7 @@ from .metadata.schema import (
 log = logging.getLogger(__name__)
 
 _GITHUB_RAW = (
-    "https://raw.githubusercontent.com/jml226/" "Home-Appliance-Control-Dataset/main"
+    "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset/main"
 )
 _DOI = "10.3389/fnhum.2024.1320457"
 _SIGN = "lee2024erp"
@@ -194,19 +194,14 @@ def _make_metadata(experiment):
             license="CC-BY-4.0",
         ),
         sessions_per_subject=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["P300"]),
         bci_application=BCIApplicationMetadata(
             applications=["home_appliance_control"],
             environment="laboratory",
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            soa_ms=750.0,
+            detected_paradigm="p300", soa_ms=750.0
         ),
         data_structure=DataStructureMetadata(
             n_trials="50 training + 30 testing blocks per subject",
@@ -438,11 +433,7 @@ class Lee2024(BaseDataset):
             # Some experiments (AC, EL) have no events in stim channel.
             # Add a minimal annotation so BIDS export doesn't fail.
             raw.set_annotations(
-                mne.Annotations(
-                    onset=[0],
-                    duration=[0],
-                    description=["stimulus"],
-                )
+                mne.Annotations(onset=[0], duration=[0], description=["stimulus"])
             )
 
         return raw

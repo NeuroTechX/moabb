@@ -49,7 +49,7 @@ def eval_split_within_session(shuffle, random_state, data):
         shuffle_rng = check_random_state(random_state)
         shuffle_rng.shuffle(subjects)
 
-    for i, subject in enumerate(subjects):
+    for _i, subject in enumerate(subjects):
         subject_mask = metadata["subject"] == subject
 
         subject_indices = all_index[subject_mask]
@@ -227,10 +227,7 @@ def test_is_shuffling(data):
         CrossDatasetSplitter,
     ],
 )
-def test_custom_inner_cv(
-    splitter,
-    data,
-):
+def test_custom_inner_cv(splitter, data):
     X, y, metadata = data
     if splitter == CrossDatasetSplitter:
         metadata = _metadata_with_dataset_column(metadata)
@@ -248,9 +245,7 @@ def test_custom_shuffle_group(data):
 
     n_splits = 5
     splitter = CrossSubjectSplitter(
-        random_state=42,
-        cv_class=GroupShuffleSplit,
-        n_splits=n_splits,
+        random_state=42, cv_class=GroupShuffleSplit, n_splits=n_splits
     )
 
     splits = list(splitter.split(y, metadata))
@@ -266,8 +261,7 @@ def test_custom_shuffle_group(data):
 
     # Check if shuffling produces different splits
     splitter_different_seed = CrossSubjectSplitter(
-        cv_class=GroupShuffleSplit,
-        n_splits=n_splits,
+        cv_class=GroupShuffleSplit, n_splits=n_splits
     )
     splits_different_seed = list(splitter_different_seed.split(y, metadata))
 
@@ -403,7 +397,7 @@ def test_cross_session_unique_subjects(data):
 
     # Check if session splits are different across subjects
     subject_session_patterns = {}
-    for i, (train_idx, test_idx) in enumerate(splits_shuffle):
+    for _i, (train_idx, test_idx) in enumerate(splits_shuffle):
         subject = metadata.iloc[train_idx]["subject"].iloc[
             0
         ]  # Get the subject for this fold
@@ -428,9 +422,9 @@ def test_cross_session_unique_subjects(data):
                 break
         pattern_differences.append(patterns_differ)
 
-    assert any(
-        pattern_differences
-    ), "Session splitting patterns are identical across all subjects"
+    assert any(pattern_differences), (
+        "Session splitting patterns are identical across all subjects"
+    )
 
 
 @pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
@@ -448,9 +442,9 @@ def test_cross_session_unique_sessions(shuffle, random_state, data):
     for i, (train, test) in enumerate(splits):
         train_sessions = metadata.iloc[train]["session"].unique()
         test_sessions = metadata.iloc[test]["session"].unique()
-        assert not np.intersect1d(
-            train_sessions, test_sessions
-        ).size, f"Fold {i} train and test sessions overlap"
+        assert not np.intersect1d(train_sessions, test_sessions).size, (
+            f"Fold {i} train and test sessions overlap"
+        )
 
 
 @pytest.mark.parametrize("shuffle", [True, False])
@@ -547,9 +541,7 @@ def test_raise_error_on_invalid_cv_class(cv_class):
         StratifiedShuffleSplit,
     ],
 )
-def test_cross_session_splitter_without_error(
-    cv_class,
-):
+def test_cross_session_splitter_without_error(cv_class):
     splitter = CrossSessionSplitter(shuffle=True, cv_class=cv_class)
     assert splitter is not None
     assert isinstance(splitter, CrossSessionSplitter)

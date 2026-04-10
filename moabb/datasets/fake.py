@@ -145,7 +145,7 @@ class FakeDataset(BaseDataset):
     def _get_single_subject_data(self, subject):
         if self.seed is not None:
             np.random.seed(self.seed + subject)
-        data = dict()
+        data = {}
         for session in range(self.n_sessions):
             data[f"{session}"] = {
                 f"{ii}": self._generate_raw(n, d)
@@ -235,7 +235,7 @@ class FakeVirtualRealityDataset(FakeDataset):
             n_runs=self.n_blocks * self.n_repetitions,
             n_subjects=21,
             code="FakeVirtualRealityDataset",
-            event_list=dict(Target=2, NonTarget=1),
+            event_list={"Target": 2, "NonTarget": 1},
             paradigm="p300",
             seed=seed,
             duration=self.duration_rep * self.n_blocks,
@@ -249,7 +249,7 @@ class FakeVirtualRealityDataset(FakeDataset):
     def _get_single_subject_data(self, subject):
         if self.seed is not None:
             np.random.seed(self.seed + subject)
-        data = dict()
+        data = {}
         for session in range(self.n_sessions):
             data[f"{session}"] = {}
             for block in range(self.n_blocks):

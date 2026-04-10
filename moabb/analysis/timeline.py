@@ -116,11 +116,7 @@ _PARADIGM_STYLES: dict[str, dict[str, dict]] = {
     },
     "cvep": {
         "cue": {"facecolor": "#80CBC4", "edgecolor": "#00695C"},
-        "code_stim": {
-            "facecolor": "#00897B",
-            "edgecolor": "#004D40",
-            "hatch": "||",
-        },
+        "code_stim": {"facecolor": "#00897B", "edgecolor": "#004D40", "hatch": "||"},
         "feedback": {"facecolor": "#4DB6AC", "edgecolor": "#00695C"},
     },
     "rstate": {
@@ -246,7 +242,7 @@ def _draw_timeline_arrow(
         "",
         xy=(x_end, y_arrow),
         xytext=(x_start, y_arrow),
-        arrowprops=dict(arrowstyle="->", color="#7F7F7F", lw=1.2),
+        arrowprops={"arrowstyle": "->", "color": "#7F7F7F", "lw": 1.2},
     )
     ax.text(
         x_end,
@@ -275,16 +271,10 @@ def _draw_timing_brace(
         "",
         xy=(x_start, y_base),
         xytext=(x_end, y_base),
-        arrowprops=dict(arrowstyle="|-|", color="#555555", lw=0.8),
+        arrowprops={"arrowstyle": "|-|", "color": "#555555", "lw": 0.8},
     )
     ax.text(
-        mid,
-        y_base - 0.08,
-        label,
-        ha="center",
-        va="top",
-        fontsize=8.5,
-        color="#555555",
+        mid, y_base - 0.08, label, ha="center", va="top", fontsize=8.5, color="#555555"
     )
 
 
@@ -306,15 +296,7 @@ def _draw_time_tick(ax: Axes, x: float, label: str, y: float = _TIMELINE_Y) -> N
     """Draw a time tick mark below a phase."""
     y_tick = y - _BLOCK_HEIGHT / 2 - 0.05
     ax.plot([x, x], [y_tick, y_tick - 0.06], color="#7F7F7F", lw=0.8)
-    ax.text(
-        x,
-        y_tick - 0.12,
-        label,
-        ha="center",
-        va="top",
-        fontsize=8,
-        color="#7F7F7F",
-    )
+    ax.text(x, y_tick - 0.12, label, ha="center", va="top", fontsize=8, color="#7F7F7F")
 
 
 def _format_time(seconds: float) -> str:
@@ -735,11 +717,7 @@ def _extract_cvep_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline |
 
     if details:
         annotations.append(
-            TimelineAnnotation(
-                cue_dur_s,
-                cue_dur_s + stim_dur,
-                " | ".join(details),
-            )
+            TimelineAnnotation(cue_dur_s, cue_dur_s + stim_dur, " | ".join(details))
         )
 
     return StimulusTimeline(
@@ -814,9 +792,7 @@ def _extract_generic_timeline(dataset: BaseDataset) -> StimulusTimeline:
         label += " / \u2026"
 
     phases = [TimelinePhase(label, 0, dur, "standard")]
-    annotations = [
-        TimelineAnnotation(0, dur, f"interval = [{tmin}, {tmax}]s"),
-    ]
+    annotations = [TimelineAnnotation(0, dur, f"interval = [{tmin}, {tmax}]s")]
 
     return StimulusTimeline(
         paradigm=getattr(dataset, "paradigm", "unknown"),
@@ -1223,9 +1199,7 @@ def _normalize_class_label(label: str) -> str:
 
 
 def plot_class_balance(
-    dataset: BaseDataset,
-    *,
-    figsize: tuple[float, float] | None = None,
+    dataset: BaseDataset, *, figsize: tuple[float, float] | None = None
 ) -> Figure | None:
     """Generate a horizontal bar chart showing trial counts per class.
 
@@ -1395,9 +1369,7 @@ def class_balance_svg(dataset: BaseDataset, **kwargs) -> str | None:
 
 
 def plot_session_structure(
-    dataset: BaseDataset,
-    *,
-    figsize: tuple[float, float] | None = None,
+    dataset: BaseDataset, *, figsize: tuple[float, float] | None = None
 ) -> Figure | None:
     """Generate a small-multiples diagram showing session/run layout.
 

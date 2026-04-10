@@ -50,11 +50,7 @@ _ZIP_FILES = {
 _ORIG_IDS = [f"S{i}" for i in range(201, 231) if i not in (207, 218)]
 
 # Event codes (embedded as EEGLAB annotations in .set files).
-_EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-    "both_hands": 3,
-}
+_EVENTS = {"left_hand": 1, "right_hand": 2, "both_hands": 3}
 
 # Six paradigm types, each with N sessions per subject.
 _PARADIGM_SESSIONS = {
@@ -165,11 +161,7 @@ class Chang2025(BaseDataset):
         ),
         sessions_per_subject=4,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_EVENTS.keys()),
@@ -184,16 +176,11 @@ class Chang2025(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+SVM", "FBCSP+SVM"],
             feature_extraction=["CSP", "FBCSP"],
-            frequency_bands={
-                "alpha": [8.0, 13.0],
-                "FBCSP_range": [4.0, 28.0],
-            },
+            frequency_bands={"alpha": [8.0, 13.0], "FBCSP_range": [4.0, 28.0]},
             spatial_filters=["CSP", "FBCSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold",
-            cv_folds=10,
-            evaluation_type=["within_subject"],
+            cv_method="10-fold", cv_folds=10, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation"],

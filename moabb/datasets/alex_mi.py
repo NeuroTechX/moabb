@@ -81,9 +81,7 @@ class AlexMI(BaseDataset):
             sensor_type="EEG",
         ),
         participants=ParticipantMetadata(
-            n_subjects=8,
-            health_status="healthy",
-            species="human",
+            n_subjects=8, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             events={"right_hand": 2, "feet": 3, "rest": 4},
@@ -130,14 +128,8 @@ class AlexMI(BaseDataset):
         runs_per_session=1,
         data_processed=True,
         file_format="fif",
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
-        preprocessing=PreprocessingMetadata(
-            re_reference="earlobe",
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        preprocessing=PreprocessingMetadata(re_reference="earlobe"),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
                 "LDA",
@@ -158,15 +150,11 @@ class AlexMI(BaseDataset):
                 "AR",
                 "ICA",
             ],
-            frequency_bands={
-                "alpha": [8.0, 12.0],
-                "mu": [8.0, 12.0],
-            },
+            frequency_bands={"alpha": [8.0, 12.0], "mu": [8.0, 12.0]},
             spatial_filters=["CSP", "Geodesic filtering"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="cross-validation",
-            evaluation_type=["within_session"],
+            cv_method="cross-validation", evaluation_type=["within_session"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
@@ -192,7 +180,7 @@ class AlexMI(BaseDataset):
         super().__init__(
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
-            events=dict(right_hand=2, feet=3, rest=4),
+            events={"right_hand": 2, "feet": 3, "rest": 4},
             code="AlexandreMotorImagery",
             interval=[0, 3],
             paradigm="imagery",

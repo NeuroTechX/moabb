@@ -128,11 +128,7 @@ class Rozado2015(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0121262",
-            investigators=[
-                "David Rozado",
-                "Andreas Duenser",
-                "Ben Howell",
-            ],
+            investigators=["David Rozado", "Andreas Duenser", "Ben Howell"],
             senior_author="David Rozado",
             institution="CSIRO",
             institution_department="Digital Productivity Flagship",
@@ -166,25 +162,14 @@ class Rozado2015(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
             feature_extraction=["CSP", "pupil_diameter"],
-            frequency_bands={
-                "bandpass": [8.0, 30.0],
-            },
+            frequency_bands={"bandpass": [8.0, 30.0]},
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold",
-            cv_folds=10,
-            evaluation_type=["within_subject"],
+            cv_method="10-fold", cv_folds=10, evaluation_type=["within_subject"]
         ),
-        bci_application=BCIApplicationMetadata(
-            environment="lab",
-            online_feedback=False,
-        ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["auditory"],
-            type=["motor_imagery"],
-        ),
+        bci_application=BCIApplicationMetadata(environment="lab", online_feedback=False),
+        tags=Tags(pathology=["healthy"], modality=["auditory"], type=["motor_imagery"]),
         file_format="XDF",
         sessions_per_subject=1,
         runs_per_session=2,

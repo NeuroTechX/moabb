@@ -49,11 +49,11 @@ def _read_bci2000_file(fpath):
     """
     try:
         from BCI2kReader.BCI2kReader import BCI2kReader
-    except ImportError:
+    except ImportError as err:
         raise ImportError(
             "The BCI2kReader package is required to read BCI2000 .dat files. "
             "Install it with: pip install BCI2kReader"
-        )
+        ) from err
 
     reader = BCI2kReader(str(fpath))
     signals = reader.signals  # (n_channels, n_samples)
@@ -301,11 +301,7 @@ class Zhang2017(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0188293",
-            investigators=[
-                "Xin Zhang",
-                "Xinyi Yong",
-                "Carlo Menon",
-            ],
+            investigators=["Xin Zhang", "Xinyi Yong", "Carlo Menon"],
             institution="Simon Fraser University",
             institution_department="School of Engineering Science",
             country="CA",
@@ -325,14 +321,9 @@ class Zhang2017(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=15,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -368,9 +359,7 @@ class Zhang2017(BaseDataset):
             spatial_filters=["CSP", "FBCSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="5x5-fold",
-            cv_folds=5,
-            evaluation_type=["within_subject"],
+            cv_method="5x5-fold", cv_folds=5, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],
@@ -401,18 +390,18 @@ class Zhang2017(BaseDataset):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
-            events=dict(
-                rest=1,
-                elbow_flexion=2,
-                drawer=3,
-                soup=4,
-                weight_lifting=5,
-                door=6,
-                plate_cleaning=7,
-                combing=8,
-                pizza_cutting=9,
-                pick_and_place=10,
-            ),
+            events={
+                "rest": 1,
+                "elbow_flexion": 2,
+                "drawer": 3,
+                "soup": 4,
+                "weight_lifting": 5,
+                "door": 6,
+                "plate_cleaning": 7,
+                "combing": 8,
+                "pizza_cutting": 9,
+                "pick_and_place": 10,
+            },
             code="Zhang2017",
             interval=[0, 4],
             paradigm="imagery",
@@ -469,7 +458,7 @@ class Zhang2017(BaseDataset):
         """
         if subject not in self.subject_list:
             raise ValueError(
-                f"Invalid subject number {subject}. " f"Must be in {self.subject_list}."
+                f"Invalid subject number {subject}. Must be in {self.subject_list}."
             )
 
         sign = self.code
@@ -497,7 +486,7 @@ class Zhang2017(BaseDataset):
             # Log available files for debugging
             all_files = list(extract_dir.rglob("*"))
             log.error(
-                "No .dat files found for subject %s in %s. " "Available files/dirs: %s",
+                "No .dat files found for subject %s in %s. Available files/dirs: %s",
                 subject_id,
                 extract_dir,
                 [str(f.relative_to(extract_dir)) for f in all_files[:50]],

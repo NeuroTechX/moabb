@@ -143,16 +143,7 @@ class Thielen2021(BaseDataset):
             hardware="Biosemi ActiveTwo",
             sensor_type="sintered Ag/AgCl active electrodes",
             reference="CMS/DRL",
-            sensors=[
-                "Fpz",
-                "Iz",
-                "O1",
-                "O2",
-                "Oz",
-                "POz",
-                "T7",
-                "T8",
-            ],
+            sensors=["Fpz", "Iz", "O1", "O2", "Oz", "POz", "T7", "T8"],
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -209,14 +200,9 @@ class Thielen2021(BaseDataset):
             repository="Radboud",
             associated_paper_doi="10.1088/1741-2552/ab4057",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["template-matching", "reconvolution", "CCA"],
@@ -229,13 +215,9 @@ class Thielen2021(BaseDataset):
             cv_folds=5,
             evaluation_type=["within_session", "transfer_learning", "zero_training"],
         ),
-        performance={
-            "high_communication_rates": "achieved in online spelling task",
-        },
+        performance={"high_communication_rates": "achieved in online spelling task"},
         bci_application=BCIApplicationMetadata(
-            applications=["speller"],
-            environment="indoor",
-            online_feedback=False,
+            applications=["speller"], environment="indoor", online_feedback=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="cvep",

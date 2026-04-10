@@ -157,9 +157,7 @@ class Rodrigues2017(BaseDataset):
             ),
         ),
         tags=Tags(
-            pathology=["Healthy"],
-            modality=["Resting State"],
-            type=["Resting-state"],
+            pathology=["Healthy"], modality=["Resting State"], type=["Resting-state"]
         ),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
@@ -168,20 +166,11 @@ class Rodrigues2017(BaseDataset):
             re_reference=None,
         ),
         signal_processing=SignalProcessingMetadata(
-            feature_extraction=["ERS"],
-            frequency_bands={
-                "alpha": [8, 12],
-            },
+            feature_extraction=["ERS"], frequency_bands={"alpha": [8, 12]}
         ),
-        bci_application=BCIApplicationMetadata(
-            applications=None,
-        ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="rstate",
-        ),
-        data_structure=DataStructureMetadata(
-            n_trials=10,
-        ),
+        bci_application=BCIApplicationMetadata(applications=None),
+        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="rstate"),
+        data_structure=DataStructureMetadata(n_trials=10),
         data_processed=False,
     )
 
@@ -190,7 +179,7 @@ class Rodrigues2017(BaseDataset):
         super().__init__(
             subjects=subject_list,
             sessions_per_subject=1,
-            events=dict(closed=1, open=2),
+            events={"closed": 1, "open": 2},
             code="Rodrigues2017",
             interval=[0, 10],
             paradigm="rstate",

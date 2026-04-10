@@ -84,9 +84,7 @@ class Kalunga2016(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=12,
-            health_status="healthy",
-            species="human",
+            n_subjects=12, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             events={"13": 2, "17": 4, "21": 3, "rest": 1},
@@ -135,21 +133,13 @@ class Kalunga2016(BaseDataset):
             description="Online SSVEP-based BCI using Riemannian geometry for assistive robotics with shared control scheme",
             license="CC-BY-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
-        preprocessing=PreprocessingMetadata(
-            preprocessing_applied=False,
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Perception"]),
+        preprocessing=PreprocessingMetadata(preprocessing_applied=False),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["MDRM", "CCA"],
-            feature_extraction=["Covariance/Riemannian"],
+            classifiers=["MDRM", "CCA"], feature_extraction=["Covariance/Riemannian"]
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="bootstrap",
-            evaluation_type=["cross_subject", "cross_session"],
+            cv_method="bootstrap", evaluation_type=["cross_subject", "cross_session"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["assistive_robotics"],

@@ -134,19 +134,12 @@ class Chailloux2020(BaseDataset):
         ),
         sessions_per_subject=3,
         runs_per_session=7,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["P300"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            isi_ms=75.0,
-            soa_ms=150.0,
+            detected_paradigm="p300", isi_ms=75.0, soa_ms=150.0
         ),
         data_structure=DataStructureMetadata(
-            n_trials="varies",
-            trials_context="~198 flashes per block, ~6 blocks per run",
+            n_trials="varies", trials_context="~198 flashes per block, ~6 blocks per run"
         ),
         data_processed=False,
         file_format="BrainVision",
@@ -229,7 +222,7 @@ class Chailloux2020(BaseDataset):
         non_eeg = [ch for ch in raw.ch_names if ch not in _CH_NAMES]
         if non_eeg:
             raw.drop_channels(non_eeg)
-        raw.set_channel_types({ch: "eeg" for ch in eeg_chs})
+        raw.set_channel_types(dict.fromkeys(eeg_chs, "eeg"))
         raw.set_montage("standard_1020", on_missing="warn")
 
         # Extract events from annotations.

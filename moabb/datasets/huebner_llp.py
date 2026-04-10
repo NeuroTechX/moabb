@@ -53,7 +53,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             kwargs["interval"] = [-0.2, 0.7]
 
         super().__init__(
-            events=dict(Target=10002, NonTarget=10001),
+            events={"Target": 10002, "NonTarget": 10001},
             paradigm="p300",
             subjects=(np.arange(n_subjects) + 1).tolist(),
             selected_subjects=subjects,
@@ -89,14 +89,12 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
     def _get_single_subject_data(self, subject):
         subject_data_vhdr_files = self.data_path(subject)
-        sessions = dict()
+        sessions = {}
 
         for _file_idx, subject_data_vhdr_file in enumerate(subject_data_vhdr_files):
-            (
-                session_name,
-                block_idx,
-                run_idx,
-            ) = Huebner2017._filename_trial_info_extraction(subject_data_vhdr_file)
+            (session_name, block_idx, run_idx) = (
+                Huebner2017._filename_trial_info_extraction(subject_data_vhdr_file)
+            )
 
             raw_bvr_list = _read_raw_llp_study_data(
                 vhdr_fname=subject_data_vhdr_file,
@@ -109,7 +107,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             if self.use_blocks_as_sessions:
                 session_name = str(block_idx)
             if session_name not in sessions.keys():
-                sessions[session_name] = dict()
+                sessions[session_name] = {}
             run_name = str(run_idx)
             sessions[session_name][run_name] = raw_bvr_list[0]
 
@@ -325,14 +323,9 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
                 "visual speller",
             ],
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -341,9 +334,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
                 "EM-algorithm",
             ],
             feature_extraction=["mean amplitude per time interval"],
-            frequency_bands={
-                "analyzed_range": [0.5, 8.0],
-            },
+            frequency_bands={"analyzed_range": [0.5, 8.0]},
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="5-fold chronological cross-validation",
@@ -365,9 +356,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            n_targets=42,
-            soa_ms=250.0,
+            detected_paradigm="p300", n_targets=42, soa_ms=250.0
         ),
         data_structure=DataStructureMetadata(
             n_trials=12852,
@@ -580,14 +569,9 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         n_contributing_labs=None,
         data_processed=False,
         file_format="BrainVision",
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -616,10 +600,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            n_targets=46,
-            isi_ms=150.0,
-            soa_ms=250.0,
+            detected_paradigm="p300", n_targets=46, isi_ms=150.0, soa_ms=250.0
         ),
         data_structure=DataStructureMetadata(
             n_trials=35,
@@ -705,7 +686,7 @@ def _create_annotations_from(marker_arr, onset_arr, raw_bvr):
 
     onset = onset_arr / 1e3  # convert onset in seconds to ms
     durations = np.repeat(default_bvr_marker_duration, len(marker_arr))
-    description = list(map(lambda m: f"Stimulus/S {m:3}", marker_arr))
+    description = [f"Stimulus/S {m:3}" for m in marker_arr]
     orig_time = raw_bvr.annotations[0]["orig_time"]
     return mne.Annotations(
         onset=onset, duration=durations, description=description, orig_time=orig_time
@@ -743,7 +724,7 @@ def _extract_target_non_target_description(events):
     onset_arr = np.empty((n_events,), dtype=np.int64)
     marker_arr = np.empty((n_events,), dtype=np.int64)
 
-    broken_events_idx = list()
+    broken_events_idx = []
     for epoch_idx in range(n_events):
         epoch_start_idx = single_trial_start_end_idx[epoch_idx]
         epoch_end_idx = single_trial_start_end_idx[epoch_idx + 1]

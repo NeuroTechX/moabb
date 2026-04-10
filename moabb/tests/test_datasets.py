@@ -86,10 +86,7 @@ class Test_Datasets:
         n_runs = 2
 
         ds = FakeDataset(
-            n_sessions=n_sessions,
-            n_runs=n_runs,
-            n_subjects=n_subjects,
-            paradigm=paradigm,
+            n_sessions=n_sessions, n_runs=n_runs, n_subjects=n_subjects, paradigm=paradigm
         )
         data = ds.get_data()
 
@@ -312,8 +309,7 @@ class Test_Datasets:
                 ),
                 documentation=DocumentationMetadata(doi="10.1093/gigascience/giz002"),
                 preprocessing=PreprocessingMetadata(
-                    bandpass=[0.5, 40.0],
-                    preprocessing_steps=["common average reference"],
+                    bandpass=[0.5, 40.0], preprocessing_steps=["common average reference"]
                 ),
             )
 
@@ -365,9 +361,7 @@ class Test_Datasets:
 
             METADATA = DatasetMetadata(
                 acquisition=AcquisitionMetadata(
-                    sampling_rate=256.0,
-                    n_channels=8,
-                    channel_types={"eeg": 8},
+                    sampling_rate=256.0, n_channels=8, channel_types={"eeg": 8}
                 ),
                 participants=ParticipantMetadata(n_subjects=4, health_status="healthy"),
                 experiment=ExperimentMetadata(paradigm="imagery"),
@@ -490,8 +484,7 @@ class Test_Datasets:
             c
             for c in db.__dict__.values()
             if (
-                inspect.isclass(c)
-                and issubclass(c, BaseDataset)
+                inspect.isclass(c) and issubclass(c, BaseDataset)
                 # and c.__name__ not in depreciated_list
             )
         ]
@@ -533,10 +526,10 @@ class TestSubjectSessionFiltering:
     @pytest.mark.parametrize(
         "dataset_cls, kwargs, expected_len, all_len",
         [
-            (PhysionetMI, dict(subjects=[1, 2, 3]), 3, 109),
-            (BNCI2014_001, dict(subjects=[1, 5, 9]), 3, 9),
-            (Ofner2017, dict(subjects=[1, 2]), 2, 15),
-            (FakeDataset, dict(subjects=[1, 2, 3]), 3, 10),
+            (PhysionetMI, {"subjects": [1, 2, 3]}, 3, 109),
+            (BNCI2014_001, {"subjects": [1, 5, 9]}, 3, 9),
+            (Ofner2017, {"subjects": [1, 2]}, 2, 15),
+            (FakeDataset, {"subjects": [1, 2, 3]}, 3, 10),
         ],
         ids=["PhysionetMI", "BNCI2014_001", "Ofner2017", "FakeDataset"],
     )
@@ -549,9 +542,9 @@ class TestSubjectSessionFiltering:
     @pytest.mark.parametrize(
         "dataset_cls, kwargs",
         [
-            (PhysionetMI, dict(subjects=[999])),
-            (BNCI2014_001, dict(subjects=[0, 100])),
-            (FakeDataset, dict(subjects=[50])),
+            (PhysionetMI, {"subjects": [999]}),
+            (BNCI2014_001, {"subjects": [0, 100]}),
+            (FakeDataset, {"subjects": [50]}),
         ],
     )
     def test_invalid_subjects_raises(self, dataset_cls, kwargs):
@@ -620,9 +613,9 @@ class TestSubjectSessionFiltering:
             if parent.__name__ not in ("object", "ABC"):
                 psig = inspect.signature(parent.__init__)
                 params |= set(psig.parameters.keys())
-            assert (
-                "subjects" in params or "sessions" in params
-            ), f"{cls.__name__} missing subjects/sessions param"
+            assert "subjects" in params or "sessions" in params, (
+                f"{cls.__name__} missing subjects/sessions param"
+            )
 
 
 class TestVirtualRealityDataset:
@@ -759,9 +752,7 @@ class TestCompoundDataset:
         """This test will insure the compoundataset works."""
         subjects_list = [(self.ds, 1, sessions, runs)]
         compound_data = CompoundDataset(
-            subjects_list,
-            code="CompoundDataset-test",
-            interval=[0, 1],
+            subjects_list, code="CompoundDataset-test", interval=[0, 1]
         )
 
         data = compound_data.get_data()
@@ -800,17 +791,13 @@ class TestCompoundDataset:
         # Create an instance of CompoundDataset with one subject
         subjects_list = [(self.ds, 1, None, None)]
         compound_dataset = CompoundDataset(
-            subjects_list,
-            code="CompoundDataset-test",
-            interval=[0, 1],
+            subjects_list, code="CompoundDataset-test", interval=[0, 1]
         )
 
         # Add it two time to a subjects_list
         subjects_list = [compound_dataset, compound_dataset]
         compound_data = CompoundDataset(
-            subjects_list,
-            code="CompoundDataset-test",
-            interval=[0, 1],
+            subjects_list, code="CompoundDataset-test", interval=[0, 1]
         )
 
         # Assert there is only one source dataset in the compound dataset
@@ -833,9 +820,7 @@ class TestCompoundDataset:
         # Add the two datasets to a CompoundDataset
         subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
         compound_dataset = CompoundDataset(
-            subjects_list,
-            code="CompoundDataset",
-            interval=[0, 1],
+            subjects_list, code="CompoundDataset", interval=[0, 1]
         )
 
         # Assert there are two source datasets (ds and ds2) in the compound dataset
@@ -858,9 +843,7 @@ class TestCompoundDataset:
         subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
 
         compound_dataset = CompoundDataset(
-            subjects_list,
-            code="CompoundDataset",
-            interval=[0, 1],
+            subjects_list, code="CompoundDataset", interval=[0, 1]
         )
 
         # Check that the event_id of the compound_dataset is the same has the first dataset
@@ -922,13 +905,7 @@ class TestData:
         # using raw = data[1]['session_T']['run_0']
         raw = data[1]["0train"]["0"]
         assert len(raw) == 96735
-        events = np.array(
-            [
-                [250, 0, 4],
-                [2253, 0, 3],
-                [4171, 0, 2],
-            ]
-        )
+        events = np.array([[250, 0, 4], [2253, 0, 3], [4171, 0, 2]])
         np.testing.assert_array_equal(mne.find_events(raw)[:3], events)
         X = np.array(
             [
@@ -969,7 +946,7 @@ class TestData:
         np.testing.assert_array_equal(raw.annotations.onset[:3], onset)
         np.testing.assert_array_equal(raw.annotations.duration, np.ones(48) * 4.0)
         description = ["tongue", "feet", "right_hand"]
-        assert all([a == b for a, b in zip(raw.annotations.description[:3], description)])
+        assert all(a == b for a, b in zip(raw.annotations.description[:3], description))
 
 
 class TestBIDSDataset:
@@ -979,7 +956,9 @@ class TestBIDSDataset:
         dataset = FakeDataset(
             event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
         )
-        dataset.get_data(cache_config=dict(save_raw=True, overwrite_raw=False, path=root))
+        dataset.get_data(
+            cache_config={"save_raw": True, "overwrite_raw": False, "path": root}
+        )
         return root / "MNE-BIDS-fake-dataset-imagery-2-2--60--120--fake1-fake2--c3-cz-c4"
 
     @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
@@ -1041,10 +1020,7 @@ class TestBIDSDataset:
         "ignore:Converting data files to BrainVision.*:RuntimeWarning"
     )
     @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
-    @pytest.mark.parametrize(
-        "format, ext",
-        [("EDF", ".edf"), ("BrainVision", ".vhdr")],
-    )
+    @pytest.mark.parametrize("format, ext", [("EDF", ".edf"), ("BrainVision", ".vhdr")])
     def test_convert_to_bids_format(self, tmp_path, format, ext):
         """Test that convert_to_bids respects the format parameter."""
         dataset = FakeDataset(
@@ -1286,12 +1262,12 @@ class TestDatasetMetadata:
         if metadata is None:
             pytest.skip(f"{dataset_class.__name__} has no metadata catalog entry")
 
-        assert (
-            metadata.documentation is not None
-        ), f"{dataset_class.__name__} has no documentation metadata defined"
-        assert (
-            metadata.documentation.license is not None
-        ), f"{dataset_class.__name__} is missing a license in its documentation metadata"
+        assert metadata.documentation is not None, (
+            f"{dataset_class.__name__} has no documentation metadata defined"
+        )
+        assert metadata.documentation.license is not None, (
+            f"{dataset_class.__name__} is missing a license in its documentation metadata"
+        )
 
     @pytest.mark.download
     def test_n_channels_matches_raw_data(self):
@@ -1416,7 +1392,7 @@ class TestReturnAllModalities:
 
     def test_set_dict(self):
         """Verify return_all_modalities accepts a dict of channel types."""
-        ch_dict = dict(eeg=True, eog=True)
+        ch_dict = {"eeg": True, "eog": True}
         dataset = FakeDataset(return_all_modalities=ch_dict)
         assert dataset.return_all_modalities == ch_dict
 
@@ -1433,9 +1409,7 @@ class TestReturnAllModalities:
         from moabb.datasets._channel_pick import pick_channels_for_modalities
 
         info = mne.create_info(
-            ["C3", "C4", "EOG1", "EMG1", "STI"],
-            256,
-            ["eeg", "eeg", "eog", "emg", "stim"],
+            ["C3", "C4", "EOG1", "EMG1", "STI"], 256, ["eeg", "eeg", "eog", "emg", "stim"]
         )
         # False → EEG only
         picks_false = pick_channels_for_modalities(info, False)
@@ -1444,13 +1418,13 @@ class TestReturnAllModalities:
         picks_true = pick_channels_for_modalities(info, True)
         assert list(picks_true) == [0, 1, 2, 3]
         # dict(eeg=True, eog=True) → EEG + EOG
-        picks_dict = pick_channels_for_modalities(info, dict(eeg=True, eog=True))
+        picks_dict = pick_channels_for_modalities(info, {"eeg": True, "eog": True})
         assert list(picks_dict) == [0, 1, 2]
         # dict(eog=True) → EOG only
-        picks_eog = pick_channels_for_modalities(info, dict(eog=True))
+        picks_eog = pick_channels_for_modalities(info, {"eog": True})
         assert list(picks_eog) == [2]
         # dict with stim=True should still exclude stim
-        picks_no_stim = pick_channels_for_modalities(info, dict(eeg=True, stim=True))
+        picks_no_stim = pick_channels_for_modalities(info, {"eeg": True, "stim": True})
         assert list(picks_no_stim) == [0, 1]
 
     @pytest.mark.parametrize("dataset_class", dataset_list)
@@ -1460,9 +1434,9 @@ class TestReturnAllModalities:
         if "return_all_modalities" not in sig.parameters:
             pytest.skip(f"{dataset_class.__name__} does not have return_all_modalities")
         param = sig.parameters["return_all_modalities"]
-        assert (
-            param.kind == inspect.Parameter.KEYWORD_ONLY
-        ), f"{dataset_class.__name__}: return_all_modalities should be keyword-only"
+        assert param.kind == inspect.Parameter.KEYWORD_ONLY, (
+            f"{dataset_class.__name__}: return_all_modalities should be keyword-only"
+        )
 
 
 def _make_dataset(dataset_cls, **extra_kwargs):

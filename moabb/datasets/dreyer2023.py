@@ -151,7 +151,7 @@ class _Dreyer2023Base(BaseDataset):
             data_url="https://doi.org/10.5281/zenodo.8089820",
             publication_year=2023,
             funding=[
-                "European Research Council (ERC Starting Grant project BrainConquest, grant ERC-2016-STG-714567)",
+                "European Research Council (ERC Starting Grant project BrainConquest, grant ERC-2016-STG-714567)"
             ],
             ethics_approval=[
                 "Inria's ethics committee, the COERLE (Approval number: 2018-13)"
@@ -168,11 +168,7 @@ class _Dreyer2023Base(BaseDataset):
             ],
             license="CC-BY-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
@@ -195,8 +191,7 @@ class _Dreyer2023Base(BaseDataset):
             },
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_session"],
-            cv_method="calibration-feedback",
+            evaluation_type=["within_session"], cv_method="calibration-feedback"
         ),
         bci_application=BCIApplicationMetadata(
             applications=[
@@ -258,7 +253,7 @@ class _Dreyer2023Base(BaseDataset):
         super().__init__(
             all_subjects,
             sessions_per_subject=1,
-            events=dict(left_hand=1, right_hand=2),
+            events={"left_hand": 1, "right_hand": 2},
             code="Dreyer2023" + self.sub_id,
             interval=[0, 5],
             paradigm="imagery",
@@ -285,7 +280,6 @@ class _Dreyer2023Base(BaseDataset):
         files_path = self.data_path(subject)
         runs = {}
         for run_id, file in enumerate(files_path):
-
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 # Read the subject's raw data and set the montage
@@ -293,7 +287,7 @@ class _Dreyer2023Base(BaseDataset):
                 raw = raw.load_data()
 
                 # Set the channel montage
-                mapping = dict()
+                mapping = {}
                 for ch in raw.ch_names:
                     if "EOG" in ch:
                         mapping[ch] = "eog"

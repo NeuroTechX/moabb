@@ -323,9 +323,7 @@ def _parse_args() -> argparse.Namespace:
         help="HTTP timeout for GA4 requests.",
     )
     parser.add_argument(
-        "--fail-on-error",
-        action="store_true",
-        help="Exit non-zero if GA export fails.",
+        "--fail-on-error", action="store_true", help="Exit non-zero if GA export fails."
     )
     return parser.parse_args()
 
@@ -407,10 +405,7 @@ def main() -> int:
         return 0
     except Exception as exc:
         _write_snapshot(
-            output_path,
-            property_id=property_id,
-            status="error",
-            reason=str(exc),
+            output_path, property_id=property_id, status="error", reason=str(exc)
         )
         print(f"[ga4] WARNING: {exc}")
         print(f"[ga4] Wrote fallback snapshot to {output_path}.")

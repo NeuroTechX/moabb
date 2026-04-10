@@ -60,30 +60,18 @@ class CustomDataset1(CompoundDataset):
     def __init__(self):
         biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
         runs = blocks_reps([0, 2], [0, 1, 2, 3, 4], biVR.n_repetitions)
-        subjects_list = [
-            (biVR, 1, "0VR", runs),
-            (biVR, 2, "0VR", runs),
-        ]
+        subjects_list = [(biVR, 1, "0VR", runs), (biVR, 2, "0VR", runs)]
         CompoundDataset.__init__(
-            self,
-            subjects_list=subjects_list,
-            code="CustomDataset1",
-            interval=[0, 1.0],
+            self, subjects_list=subjects_list, code="CustomDataset1", interval=[0, 1.0]
         )
 
 
 class CustomDataset2(CompoundDataset):
     def __init__(self):
         bi2014 = BI2014a()
-        subjects_list = [
-            (bi2014, 4, None, None),
-            (bi2014, 7, None, None),
-        ]
+        subjects_list = [(bi2014, 4, None, None), (bi2014, 7, None, None)]
         CompoundDataset.__init__(
-            self,
-            subjects_list=subjects_list,
-            code="CustomDataset2",
-            interval=[0, 1.0],
+            self, subjects_list=subjects_list, code="CustomDataset2", interval=[0, 1.0]
         )
 
 
@@ -101,10 +89,7 @@ class CustomDataset3(CompoundDataset):
     def __init__(self):
         subjects_list = [CustomDataset1(), CustomDataset2()]
         CompoundDataset.__init__(
-            self,
-            subjects_list=subjects_list,
-            code="CustomDataset3",
-            interval=[0, 1.0],
+            self, subjects_list=subjects_list, code="CustomDataset3", interval=[0, 1.0]
         )
 
 

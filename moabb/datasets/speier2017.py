@@ -309,15 +309,9 @@ class Speier2017(BaseDataset):
         ),
         sessions_per_subject=2,
         runs_per_session=3,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["ERP"],
-            type=["P300"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["P300"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            soa_ms=125.0,
-            isi_ms=25.0,
+            detected_paradigm="p300", soa_ms=125.0, isi_ms=25.0
         ),
         data_structure=DataStructureMetadata(
             n_trials="~1200 flashes per training run (10 chars x 10 seq x 12)",

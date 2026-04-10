@@ -228,11 +228,7 @@ class Thielen2015(BaseDataset):
             data_url="https://public.data.ru.nl/dcc/DSC_2018.00047_553_v3",
             license="CC0-1.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -255,8 +251,7 @@ class Thielen2015(BaseDataset):
             spatial_filters=["Canonical Correlation Analysis"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="training-testing split",
-            evaluation_type=["within-subject"],
+            cv_method="training-testing split", evaluation_type=["within-subject"]
         ),
         performance={
             "accuracy_percent_fixed_length": 86.0,
@@ -267,9 +262,7 @@ class Thielen2015(BaseDataset):
             "spm_early_stopping": 8.99,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["speller"],
-            environment="laboratory",
-            online_feedback=True,
+            applications=["speller"], environment="laboratory", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="cvep",

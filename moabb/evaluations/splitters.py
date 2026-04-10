@@ -411,7 +411,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         """
         subjects = metadata["subject"].unique()
         n_splits = 0
-        for subject in subjects:
+        for _subject in subjects:
             subject_metadata = metadata.query("subject == @subject")
             sessions = subject_metadata["session"].unique()
 
@@ -471,9 +471,10 @@ class CrossSessionSplitter(BaseCrossValidator):
 
             for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
                 self._last_split_metadata = _splitter_metadata(splitter)
-                yield subject_indices[train_session_idx], subject_indices[
-                    test_session_idx
-                ]
+                yield (
+                    subject_indices[train_session_idx],
+                    subject_indices[test_session_idx],
+                )
 
     def get_metadata(self):
         """Return metadata for the most recent split."""
@@ -729,13 +730,14 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
     Using LearningCurveSplitter with WithinSessionSplitter:
 
     >>> from moabb.evaluations.splitters import (
-    ...     WithinSessionSplitter, LearningCurveSplitter
+    ...     WithinSessionSplitter,
+    ...     LearningCurveSplitter,
     ... )
     >>> import numpy as np
     >>> splitter = WithinSessionSplitter(
     ...     n_folds=1,  # LearningCurveSplitter handles its own permutations
     ...     cv_class=LearningCurveSplitter,
-    ...     data_size={'policy': 'ratio', 'value': np.array([0.1, 0.5, 1.0])},
+    ...     data_size={"policy": "ratio", "value": np.array([0.1, 0.5, 1.0])},
     ...     n_perms=10,
     ...     test_size=0.2,
     ... )
@@ -963,7 +965,4 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             Dictionary with 'permutation' and 'data_size' keys.
             Only valid during or after iteration.
         """
-        return {
-            "permutation": self._current_perm,
-            "data_size": self._current_data_size,
-        }
+        return {"permutation": self._current_perm, "data_size": self._current_data_size}

@@ -91,13 +91,7 @@ print(f"Number of epochs: {len(X)}")
 # the original events of the dataset. For this, we will first instantiate
 # a :class:`moabb.paradigms.MotorImagery` paradigm to recover the original
 # events of the dataset:
-paradigm = MotorImagery(
-    resample=100,
-    fmin=7,
-    fmax=45,
-    baseline=None,
-    channels=None,
-)
+paradigm = MotorImagery(resample=100, fmin=7, fmax=45, baseline=None, channels=None)
 
 ###############################################################################
 # Then, we can recover the events of both paradigms using the
@@ -114,11 +108,7 @@ event_id = dict(**paradigm.used_events(dataset), **processing.used_events(datase
 # Finally, we can plot the events. The artificial events created by
 # :class:`moabb.paradigms.FixedIntervalWindowsProcessing` are named
 # ``"Windows"``:
-fig = mne.viz.plot_events(
-    events,
-    sfreq=raw.info["sfreq"],
-    event_id=event_id,
-)
+fig = mne.viz.plot_events(events, sfreq=raw.info["sfreq"], event_id=event_id)
 fig.subplots_adjust(right=0.7)
 plt.show()
 

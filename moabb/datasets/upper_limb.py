@@ -184,8 +184,7 @@ class Ofner2017(BaseDataset):
             line_freq=50.0,
             montage="standard_1005",
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_emg=False,
-                other_physiological=None,
+                has_emg=False, other_physiological=None
             ),
         ),
         participants=ParticipantMetadata(
@@ -277,9 +276,7 @@ class Ofner2017(BaseDataset):
             modality=["Motor"],
             type=["Motor Imagery", "Motor Execution"],
         ),
-        preprocessing=PreprocessingMetadata(
-            preprocessing_applied=False,
-        ),
+        preprocessing=PreprocessingMetadata(preprocessing_applied=False),
         signal_processing=SignalProcessingMetadata(
             classifiers=["sLDA"],
             feature_extraction=[
@@ -287,9 +284,7 @@ class Ofner2017(BaseDataset):
                 "discriminative spatial patterns (DSP)",
             ],
             spatial_filters=["sLORETA source localization"],
-            frequency_bands={
-                "analyzed_range": [0.3, 3.0],
-            },
+            frequency_bands={"analyzed_range": [0.3, 3.0]},
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="10x10-fold cross-validation",

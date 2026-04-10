@@ -165,11 +165,7 @@ class Nakanishi2015(BaseDataset):
         runs_per_session=1,
         data_processed=True,
         file_format="mat",
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             bandpass={"low_cutoff_hz": 6.0, "high_cutoff_hz": 80.0},
             filter_type="IIR",

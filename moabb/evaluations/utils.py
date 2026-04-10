@@ -89,7 +89,7 @@ def _ensure_fitted(estimator):
 
     # For Pipeline objects, also ensure all steps are marked
     if isinstance(estimator, Pipeline):
-        for name, step in estimator.steps:
+        for _name, step in estimator.steps:
             if step is not None:
                 _ensure_fitted(step)
 
@@ -280,7 +280,7 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
     """
     if not optuna_available:
         raise ImportError(
-            "Optuna is not available. Please install it optuna " "and optuna-integration."
+            "Optuna is not available. Please install it optuna and optuna-integration."
         )
     else:
         optuna_params = {}
@@ -291,7 +291,7 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
                 else:
                     optuna_params[key] = value
             except Exception as e:
-                raise ValueError(f"Conversion failed for parameter {key}: {e}")
+                raise ValueError(f"Conversion failed for parameter {key}: {e}") from e
         return optuna_params
 
 
@@ -503,7 +503,7 @@ def _pipeline_requires_epochs(pipeline):
     if not hasattr(pipeline, "steps"):
         return isinstance(pipeline, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA))
 
-    for name, step in pipeline.steps:
+    for _name, step in pipeline.steps:
         if isinstance(step, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA)):
             return True
     return False
@@ -521,7 +521,7 @@ class Emissions:
         self.codecarbon_config = codecarbon_config
         if codecarbon_config is None:
             # Default CodeCarbon configurations
-            self.codecarbon_config = dict(save_to_file=False, log_level="error")
+            self.codecarbon_config = {"save_to_file": False, "log_level": "error"}
             self.codecarbon_offline = False
         else:
             # Offline mode parameters are a superset of online mode parameters

@@ -211,7 +211,7 @@ covs = Covariances(estimator="lwf").transform(data)
 # keys (see pyriemann.utils.mean.mean_covariance and
 # pyriemann.utils.distance.distance). Using the dict form makes explicit
 # which metric is used for barycenter estimation vs distance computation.
-potato = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
+potato = Potato(metric={"mean": "riemann", "distance": "riemann"}, threshold=3)
 potato.fit(covs)
 z_scores = potato.transform(covs)
 is_clean = predict_clean_mask(potato, covs)
@@ -273,8 +273,7 @@ covs_2d = covs[:, [ch_idx_x, ch_idx_y], :][:, :, [ch_idx_x, ch_idx_y]]
 n_calib_2d = min(40, len(covs_2d))
 z_threshold_2d = 3.0
 potato_2d = Potato(
-    metric=dict(mean="riemann", distance="riemann"),
-    threshold=z_threshold_2d,
+    metric={"mean": "riemann", "distance": "riemann"}, threshold=z_threshold_2d
 )
 potato_2d.fit(covs_2d[:n_calib_2d])
 z_2d = potato_2d.transform(covs_2d)
@@ -289,8 +288,7 @@ y_vals = covs_2d[:, 1, 1] * cov_scale
 
 # Compare Riemannian and Euclidean potatoes on the same calibration set.
 potato_2d_euclid = Potato(
-    metric=dict(mean="euclid", distance="euclid"),
-    threshold=z_threshold_2d,
+    metric={"mean": "euclid", "distance": "euclid"}, threshold=z_threshold_2d
 )
 potato_2d_euclid.fit(covs_2d[:n_calib_2d])
 
@@ -695,7 +693,7 @@ cov_list = compute_potato_covariances(epochs, POTATO_FIELD_CONFIG)
 # Fit a PotatoField (single metric for all potatoes, as in [2]_)
 rpf_vis = PotatoField(
     n_potatoes=len(POTATO_FIELD_CONFIG),
-    metric=dict(mean="riemann", distance="riemann"),
+    metric={"mean": "riemann", "distance": "riemann"},
     z_threshold=3,
     p_threshold=0.01,
 )
@@ -781,7 +779,7 @@ axes[0].annotate(
     xy=(n_rejected // 2, 0.01),
     xytext=(n_rejected + 50, 0.001),
     fontsize=9,
-    arrowprops=dict(arrowstyle="->", color="gray"),
+    arrowprops={"arrowstyle": "->", "color": "gray"},
 )
 
 # Per-potato contribution heatmap
@@ -790,10 +788,7 @@ sorted_idx = np.argsort(combined_p)
 p_matrix_viz = np.array(potato_p_values)  # (n_potatoes, n_epochs)
 p_sorted = p_matrix_viz[:, sorted_idx]
 im = axes[1].imshow(
-    np.log10(p_sorted),
-    aspect="auto",
-    cmap="RdYlBu",
-    interpolation="nearest",
+    np.log10(p_sorted), aspect="auto", cmap="RdYlBu", interpolation="nearest"
 )
 axes[1].set_xlabel("Epoch index (sorted by SQI)")
 axes[1].set_ylabel("Potato index")
@@ -833,7 +828,7 @@ def riemannian_potato_rejection(epochs):
     n_before = len(data)
 
     covs = Covariances(estimator="lwf").transform(data)
-    potato = Potato(metric=dict(mean="riemann", distance="riemann"), threshold=3)
+    potato = Potato(metric={"mean": "riemann", "distance": "riemann"}, threshold=3)
     potato.fit(covs)
     is_clean = predict_clean_mask(potato, covs)
 
@@ -881,7 +876,7 @@ def riemannian_potato_field_rejection(epochs):
     # Use PotatoField with a single metric (standard RPF approach from [2])
     rpf = PotatoField(
         n_potatoes=len(valid_config),
-        metric=dict(mean="riemann", distance="riemann"),
+        metric={"mean": "riemann", "distance": "riemann"},
         z_threshold=3,
         p_threshold=0.01,
     )
@@ -1068,9 +1063,7 @@ axes[1].set_title(
 axes[1].legend(fontsize=8)
 
 fig.suptitle(
-    "iRPF Stage 1: GFRMS Amplitude Pre-filtering",
-    fontsize=12,
-    fontweight="bold",
+    "iRPF Stage 1: GFRMS Amplitude Pre-filtering", fontsize=12, fontweight="bold"
 )
 plt.tight_layout()
 plt.show()
@@ -1166,9 +1159,7 @@ rpf_pipeline.insert_step(
 
 irpf_pipeline = paradigm.make_process_pipelines(dataset)[0]
 irpf_pipeline.insert_step(
-    StepType.EPOCHS,
-    FunctionTransformer(improved_rpf_rejection),
-    after=StepType.EPOCHS,
+    StepType.EPOCHS, FunctionTransformer(improved_rpf_rejection), after=StepType.EPOCHS
 )
 
 ##############################################################################
@@ -1187,14 +1178,11 @@ irpf_pipeline.insert_step(
 pipelines = {}
 pipelines["ERP+MDM"] = make_pipeline(
     ERPCovariances(estimator="lwf"),
-    MDM(metric=dict(mean="riemann", distance="riemann")),
+    MDM(metric={"mean": "riemann", "distance": "riemann"}),
 )
 
 evaluation = WithinSessionEvaluation(
-    paradigm=paradigm,
-    datasets=[dataset],
-    suffix="rar_tutorial",
-    overwrite=True,
+    paradigm=paradigm, datasets=[dataset], suffix="rar_tutorial", overwrite=True
 )
 
 # We call evaluation.evaluate() separately for each preprocessing variant
@@ -1326,14 +1314,7 @@ for ax, (metric_col, metric_name) in zip(axes, metrics.items()):
         # Use groupby to handle potential duplicate or missing sessions
         session_scores = method_df.groupby("session")[metric_col].mean()
         scores = [session_scores.get(s, np.nan) for s in sessions]
-        ax.bar(
-            x + i * width,
-            scores,
-            width,
-            label=method,
-            color=color,
-            edgecolor="white",
-        )
+        ax.bar(x + i * width, scores, width, label=method, color=color, edgecolor="white")
 
     ax.set_xlabel("Session")
     ax.set_ylabel(metric_name)
@@ -1396,7 +1377,7 @@ axes[0].annotate(
     xy=(0.02, 0.02),
     xycoords="axes fraction",
     fontsize=9,
-    bbox=dict(boxstyle="round,pad=0.3", facecolor="wheat", alpha=0.5),
+    bbox={"boxstyle": "round,pad=0.3", "facecolor": "wheat", "alpha": 0.5},
 )
 
 # Scatter plot: RPF (Fisher) vs iRPF (min) p-values

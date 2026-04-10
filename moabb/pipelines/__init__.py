@@ -17,12 +17,7 @@ from .classification import (
     SSVEP_itCCA,
     SSVEP_MsetCCA,
 )
-from .features import (
-    FM,
-    AugmentedDataset,
-    ExtendedSSVEPSignal,
-    LogVariance,
-)
+from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
 from .utils import FilterBank, create_pipeline_from_config
 
 
@@ -36,10 +31,7 @@ def __getattr__(name):
         "KerasEEGTCNet",
         "KerasShallowConvNet",
     }
-    utils_deep_model_classes = {
-        "EEGNet",
-        "TCN_block",
-    }
+    utils_deep_model_classes = {"EEGNet", "TCN_block"}
 
     if name in deep_learning_classes or name in utils_deep_model_classes:
         raise AttributeError(

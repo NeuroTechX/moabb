@@ -17,8 +17,7 @@ from moabb.datasets.utils import dataset_list
 
 
 @pytest.mark.parametrize(
-    "dataset_class",
-    [pytest.param(d, id=d.__name__) for d in dataset_list],
+    "dataset_class", [pytest.param(d, id=d.__name__) for d in dataset_list]
 )
 def test_get_dataset_parameters(dataset_class):
     if "Fake" in dataset_class.__name__:

@@ -133,9 +133,7 @@ class Kumar2024(BaseDataset):
             sensors=_EEG_CHANNELS,
             line_freq=60.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=3,
-                eog_type=["horizontal", "vertical"],
+                has_eog=True, eog_channels=3, eog_type=["horizontal", "vertical"]
             ),
         ),
         participants=ParticipantMetadata(
@@ -191,10 +189,7 @@ class Kumar2024(BaseDataset):
                 "Jose del R. Millan",
             ],
             senior_author="Jose del R. Millan",
-            contact_info=[
-                "satyam.kumar@utexas.edu",
-                "jose.millan@austin.utexas.edu",
-            ],
+            contact_info=["satyam.kumar@utexas.edu", "jose.millan@austin.utexas.edu"],
             institution="The University of Texas at Austin",
             institution_address="Austin, TX, USA",
             country="US",
@@ -217,11 +212,7 @@ class Kumar2024(BaseDataset):
         ),
         sessions_per_subject=6,
         runs_per_session=3,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
@@ -233,14 +224,8 @@ class Kumar2024(BaseDataset):
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["Riemannian MDM", "CSP+LDA"],
-            feature_extraction=[
-                "Covariance matrices",
-                "Riemannian geometry",
-                "CSP",
-            ],
-            frequency_bands={
-                "mu_beta": [8.0, 30.0],
-            },
+            feature_extraction=["Covariance matrices", "Riemannian geometry", "CSP"],
+            frequency_bands={"mu_beta": [8.0, 30.0]},
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -312,7 +297,7 @@ class Kumar2024(BaseDataset):
         super().__init__(
             subjects=list(range(1, 19)),
             sessions_per_subject=6,
-            events=dict(left_hand=1, right_hand=2),
+            events={"left_hand": 1, "right_hand": 2},
             code="Kumar2024",
             interval=[0, 5],
             paradigm="imagery",

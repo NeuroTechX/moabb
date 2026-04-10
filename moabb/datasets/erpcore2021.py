@@ -33,10 +33,10 @@ _manifest_link = (
 )
 
 DATASET_PARAMS = {
-    task: dict(
-        archive_name=f"ERPCORE2021_{task}.zip",
-        folder_name=f"MNE-erpcore{task.lower()}2021-data",
-    )
+    task: {
+        "archive_name": f"ERPCORE2021_{task}.zip",
+        "folder_name": f"MNE-erpcore{task.lower()}2021-data",
+    }
     for task in _ERPCORE_TASKS
 }
 

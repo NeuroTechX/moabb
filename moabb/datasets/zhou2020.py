@@ -79,12 +79,7 @@ _GDF_EVENT_MAP = {
 }
 
 # MOABB event_id mapping (integer codes for stim channel).
-_EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-    "feet": 3,
-    "rest": 4,
-}
+_EVENTS = {"left_hand": 1, "right_hand": 2, "feet": 3, "rest": 4}
 
 # Channel counts per subject group (EEG only, excluding EOG and trigger).
 _S_N_EEG = 41  # S-subjects (1-12)
@@ -186,11 +181,7 @@ class Zhou2020(BaseDataset):
         ),
         sessions_per_subject=7,
         runs_per_session=6,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "feet", "rest"],
@@ -203,20 +194,14 @@ class Zhou2020(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["SVM"],
             feature_extraction=["CSP"],
-            frequency_bands={
-                "classification": [8.0, 30.0],
-            },
+            frequency_bands={"classification": [8.0, 30.0]},
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold",
-            cv_folds=10,
-            evaluation_type=["within_session"],
+            cv_method="10-fold", cv_folds=10, evaluation_type=["within_session"]
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["research"],
-            environment="laboratory",
-            online_feedback=False,
+            applications=["research"], environment="laboratory", online_feedback=False
         ),
         data_processed=True,
         file_format="NPZ",
@@ -306,11 +291,7 @@ class Zhou2020(BaseDataset):
         all_data = np.concatenate([eeg_data, stim], axis=0)
         ch_types = ["eeg"] * n_eeg + ["stim"]
         ch_names_full = list(ch_names) + ["STI"]
-        info = mne.create_info(
-            ch_names=ch_names_full,
-            ch_types=ch_types,
-            sfreq=sfreq,
-        )
+        info = mne.create_info(ch_names=ch_names_full, ch_types=ch_types, sfreq=sfreq)
         raw = mne.io.RawArray(data=all_data, info=info, verbose=False)
 
         # Set montage for A-subjects (standard channel names).
@@ -321,12 +302,7 @@ class Zhou2020(BaseDataset):
         return raw
 
     def data_path(
-        self,
-        subject,
-        path=None,
-        force_update=False,
-        update_path=None,
-        verbose=None,
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")

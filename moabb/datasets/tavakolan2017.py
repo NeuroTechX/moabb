@@ -41,11 +41,7 @@ _ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 # BCI2000 StimulusCode -> event name mapping.
 # From the BCI2000 header: stimulus1=Rest, stimulus2=Wrist, stimulus3=Elbow,
 # stimulus4=Reach-Hold the Glass.
-_STIM_CODE_TO_EVENT = {
-    1: "rest",
-    2: "right_hand",
-    3: "right_elbow_flexion",
-}
+_STIM_CODE_TO_EVENT = {1: "rest", 2: "right_hand", 3: "right_elbow_flexion"}
 # StimulusCode 4 (Reach-Hold the Glass) is excluded from the default event
 # mapping because the paper analyses only three classes.
 
@@ -125,16 +121,10 @@ class Tavakolan2017(BaseDataset):
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=12,
-            health_status="healthy",
-            species="human",
+            n_subjects=12, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
-            events={
-                "rest": 1,
-                "right_hand": 2,
-                "right_elbow_flexion": 3,
-            },
+            events={"rest": 1, "right_hand": 2, "right_elbow_flexion": 3},
             paradigm="imagery",
             n_classes=3,
             class_labels=["rest", "right_hand", "right_elbow_flexion"],
@@ -186,9 +176,7 @@ class Tavakolan2017(BaseDataset):
                 "BCI",
             ],
         ),
-        preprocessing=PreprocessingMetadata(
-            data_state="continuous",
-        ),
+        preprocessing=PreprocessingMetadata(data_state="continuous"),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["rest", "right_hand", "right_elbow_flexion"],
@@ -198,11 +186,7 @@ class Tavakolan2017(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials=2880,
             trials_context="12 subjects x 4 sessions x 60 trials (20 per class)",
-            n_trials_per_class={
-                "rest": 20,
-                "right_hand": 20,
-                "right_elbow_flexion": 20,
-            },
+            n_trials_per_class={"rest": 20, "right_hand": 20, "right_elbow_flexion": 20},
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["SVM-RBF"],
@@ -211,36 +195,24 @@ class Tavakolan2017(BaseDataset):
                 "waveform_length",
                 "root_mean_square",
             ],
-            frequency_bands={
-                "bandpass": [6.0, 35.0],
-            },
+            frequency_bands={"bandpass": [6.0, 35.0]},
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10x10-fold",
-            cv_folds=10,
-            evaluation_type=["within_subject"],
+            cv_method="10x10-fold", cv_folds=10, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],
             environment="laboratory",
             online_feedback=False,
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         sessions_per_subject=4,
         runs_per_session=1,
         file_format="BCI2000",
     )
 
-    _events = {
-        "rest": 1,
-        "right_hand": 2,
-        "right_elbow_flexion": 3,
-    }
+    _events = {"rest": 1, "right_hand": 2, "right_elbow_flexion": 3}
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -285,11 +257,11 @@ class Tavakolan2017(BaseDataset):
         """Read a BCI2000 .DAT file and return an MNE Raw object."""
         try:
             from BCI2kReader.BCI2kReader import BCI2kReader
-        except ImportError:
+        except ImportError as err:
             raise ImportError(
                 "BCI2kReader is required for Tavakolan2017.  "
                 "Install it with: pip install BCI2kReader"
-            )
+            ) from err
 
         reader = BCI2kReader(dat_path)
         sfreq = reader.samplingrate

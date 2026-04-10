@@ -75,10 +75,7 @@ class Wang2021Combined(BaseDataset):
             hardware="eego mylab (ANT Neuro)",
             line_freq=50.0,
         ),
-        participants=ParticipantMetadata(
-            n_subjects=8,
-            health_status="healthy",
-        ),
+        participants=ParticipantMetadata(n_subjects=8, health_status="healthy"),
         experiment=ExperimentMetadata(
             paradigm="ssvep",
             events={"14.17": 1, "12.14": 2, "9.44": 3, "7.73": 4},
@@ -112,30 +109,18 @@ class Wang2021Combined(BaseDataset):
             publication_year=2021,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="ssvep",
-            stimulus_frequencies_hz=[14.17, 12.14, 9.44, 7.73],
+            detected_paradigm="ssvep", stimulus_frequencies_hz=[14.17, 12.14, 9.44, 7.73]
         ),
-        data_structure=DataStructureMetadata(
-            n_blocks=2,
-        ),
+        data_structure=DataStructureMetadata(n_blocks=2),
         signal_processing=SignalProcessingMetadata(
             classifiers=None,
             feature_extraction=None,
             frequency_bands=None,
             spatial_filters=None,
         ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=None,
-        ),
-        bci_application=BCIApplicationMetadata(
-            environment="lab",
-            online_feedback=None,
-        ),
-        tags=Tags(
-            pathology=["healthy"],
-            modality=["visual"],
-            type=["perception"],
-        ),
+        cross_validation=CrossValidationMetadata(evaluation_type=None),
+        bci_application=BCIApplicationMetadata(environment="lab", online_feedback=None),
+        tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         file_format="CNT",
     )
 

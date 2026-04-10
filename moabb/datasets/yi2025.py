@@ -187,11 +187,7 @@ class Yi2025(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=8,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
             imagery_tasks=list(_EVENTS.keys()),
@@ -200,7 +196,7 @@ class Yi2025(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=320,
-            n_trials_per_class={k: 40 for k in _EVENTS},
+            n_trials_per_class=dict.fromkeys(_EVENTS, 40),
             n_blocks=8,
             trials_context="8 blocks x 40 trials (5 per class x 8 classes)",
         ),
@@ -215,9 +211,7 @@ class Yi2025(BaseDataset):
             spatial_filters=["CAR"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="5-fold",
-            cv_folds=5,
-            evaluation_type=["within_subject"],
+            cv_method="5-fold", cv_folds=5, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation"],

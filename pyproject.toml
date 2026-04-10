@@ -114,15 +114,34 @@ include = ["moabb*"]
 exclude = []
 namespaces = false
 
-[tool.black]
+[tool.ruff]
 line-length = 90
-target-version = ["py311"]
+target-version = "py311"
+extend-exclude = ["docs/", "setup.py"]
 
-[tool.isort]
-src_paths = ["moabb"]
-profile = "black"
-line_length = 90
-lines_after_imports = 2
+[tool.ruff.lint]
+# pycodestyle/pyflakes (E/F/W), bugbear (B), comprehensions (C4), isort (I).
+# mccabe (C90) is intentionally omitted — the old flake8 config declared
+# max-complexity=12 but wasn't actually enforced, and retrofitting it would
+# require refactoring ~47 functions.
+select = ["E", "F", "W", "B", "C4", "I"]
+# Matches the old setup.cfg ignore list. W503 and B950 are flake8-only
+# concepts with no ruff equivalent and are intentionally omitted.
+ignore = ["E203", "E501", "B905"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["moabb"]
+lines-after-imports = 2
+# Paired with format.skip-magic-trailing-comma=true below so import sorting
+# and formatting agree on line wrapping.
+split-on-trailing-comma = false
+
+[tool.ruff.format]
+docstring-code-format = true
+# Collapse multi-line constructs that would fit on a single line, matching
+# the old isort `profile = "black"` behavior (which predates black's
+# magic-trailing-comma feature).
+skip-magic-trailing-comma = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"

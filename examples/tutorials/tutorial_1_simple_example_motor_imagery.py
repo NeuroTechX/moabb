@@ -131,10 +131,7 @@ pipeline = make_pipeline(CSP(n_components=8), LDA())
 # partition and the remaining one as testing partition.
 
 evaluation = WithinSessionEvaluation(
-    paradigm=paradigm,
-    datasets=[dataset],
-    overwrite=True,
-    hdf5_path=None,
+    paradigm=paradigm, datasets=[dataset], overwrite=True, hdf5_path=None
 )
 
 ##############################################################################

@@ -349,9 +349,7 @@ class BNCI2025_001(BNCIBaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=4,
-                eog_type=["horizontal", "vertical"],
+                has_eog=True, eog_channels=4, eog_type=["horizontal", "vertical"]
             ),
             cap_manufacturer="Zebris Medical GmbH",
             cap_model="ELPOS",
@@ -424,11 +422,7 @@ class BNCI2025_001(BNCIBaseDataset):
             acknowledgements="Members of the Graz BCI team, especially Markus Crell for providing motion capture software",
             license="CC-BY-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Motor"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed with eye artifact correction",
             preprocessing_applied=True,
@@ -471,15 +465,10 @@ class BNCI2025_001(BNCIBaseDataset):
                 "ROI-based features",
             ],
             spatial_filters=["Common Average Reference", "Source-space projection"],
-            frequency_bands={
-                "delta": [0.3, 3.0],
-                "analyzed_range": [0.3, 100.0],
-            },
+            frequency_bands={"delta": [0.3, 3.0], "analyzed_range": [0.3, 100.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="stratified k-fold",
-            cv_folds=10,
-            evaluation_type=["within_session"],
+            cv_method="stratified k-fold", cv_folds=10, evaluation_type=["within_session"]
         ),
         performance={
             "direction_accuracy_cstp_percent": 39.75,
@@ -688,7 +677,7 @@ def _extract_annotations(mat_data, sfreq, n_samples):
 # Marker codes for 002-2025 dataset
 # These files contain snake run trials with perception feedback
 _MARKER_CODE_002 = {
-    1000: "snakerun",  # Trial start - snake tracking task
+    1000: "snakerun"  # Trial start - snake tracking task
 }
 
 
@@ -1132,9 +1121,7 @@ class BNCI2025_002(BNCIBaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=4,
-                eog_type=["horizontal", "vertical"],
+                has_eog=True, eog_channels=4, eog_type=["horizontal", "vertical"]
             ),
         ),
         participants=ParticipantMetadata(

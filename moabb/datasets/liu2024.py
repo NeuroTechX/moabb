@@ -140,9 +140,7 @@ class Liu2024(BaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=2,
-                eog_type=["horizontal", "vertical"],
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
             ),
             electrode_material="Ag/AgCl semi-dry electrodes based on highly absorbable porous sponges dampened with 3% NaCl solution",
         ),
@@ -221,11 +219,7 @@ class Liu2024(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Stroke"],
-            modality=["Motor"],
-            type=["Motor Imagery"],
-        ),
+        tags=Tags(pathology=["Stroke"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -244,12 +238,7 @@ class Liu2024(BaseDataset):
             notes="Preprocessed with EEGLAB toolbox in MATLAB R2019b. Filtered data split into trials x channels x time-samples format by marker '1'. Some motion artifacts present in subjects 4, 5, 13, 14, 18, 24, 28, 33, 42, 43, 47, 48, 49.",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=[
-                "CSP+LDA",
-                "FBCSP+SVM",
-                "TSLDA+DGFMDRM",
-                "TWFB+DGFMDM",
-            ],
+            classifiers=["CSP+LDA", "FBCSP+SVM", "TSLDA+DGFMDRM", "TWFB+DGFMDM"],
             feature_extraction=[
                 "CSP",
                 "FBCSP",
@@ -281,9 +270,7 @@ class Liu2024(BaseDataset):
             "TWFB+DGFMDM_sensitivity": 0.7845,
         },
         bci_application=BCIApplicationMetadata(
-            applications=["rehabilitation"],
-            environment="hospital",
-            online_feedback=False,
+            applications=["rehabilitation"], environment="hospital", online_feedback=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -298,9 +285,7 @@ class Liu2024(BaseDataset):
         ),
         file_format="MAT and EDF",
         data_processed=True,
-        contributing_labs=[
-            "Xuanwu Hospital Capital Medical University",
-        ],
+        contributing_labs=["Xuanwu Hospital Capital Medical University"],
         n_contributing_labs=1,
         abstract="The brain-computer interface (BCI) is a technology that involves direct communication with parts of the brain and has evolved rapidly in recent years; it has begun to be used in clinical practice, such as for patient rehabilitation. Patient electroencephalography (EEG) datasets are critical for algorithm optimization and clinical applications of BCIs but are rare at present. We collected data from 50 acute stroke patients with wireless portable saline EEG devices during the performance of two tasks: 1) imagining right-handed movements and 2) imagining left-handed movements. The dataset consists of four types of data: 1) the motor imagery instructions, 2) raw recording data, 3) pre-processed data after removing artefacts and other manipulations, and 4) patient characteristics. This is the first open dataset to address left- and right-handed motor imagery in acute stroke patients.",
         methodology="50 acute stroke patients (1-30 days post-stroke) performed 40 trials of hand-grip motor imagery (20 left, 20 right). Each 8s trial included instruction, 4s video-guided imagery, and rest phases. EEG recorded with ZhenTec NT1 wireless system (29 EEG + 2 EOG channels) at 500 Hz. Data organized in EEG-BIDS format with raw (.mat) and preprocessed (.edf) versions. Clinical assessments: NIHSS (mean=4.16, SD=2.85), MBI (mean=70.94, SD=18.22), mRS (mean=2.66, SD=1.44). 23 patients right hemiplegia, 27 left hemiplegia.",
@@ -391,7 +376,9 @@ class Liu2024(BaseDataset):
                 with z.ZipFile(path_zip, "r") as zip_ref:
                     zip_ref.extractall(path_folder)
             except BadZipFile:
-                warnings.warn("Corrupted zip file detected, re-downloading...")
+                warnings.warn(
+                    "Corrupted zip file detected, re-downloading...", stacklevel=2
+                )
                 path_zip.unlink(missing_ok=True)
                 path_zip = Path(dl.data_dl(LIU2024_URL, self.code, force_update=True))
                 with z.ZipFile(path_zip, "r") as zip_ref:
@@ -443,10 +430,7 @@ class Liu2024(BaseDataset):
             (2, 2): 2,  # Right hand MI (trial_type=2 per paper = right)
         }
 
-        mapping = {
-            1: "left_hand",
-            2: "right_hand",
-        }
+        mapping = {1: "left_hand", 2: "right_hand"}
 
         if self.instr_events:
             encoding_mapping.update(

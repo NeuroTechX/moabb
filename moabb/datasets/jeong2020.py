@@ -95,17 +95,10 @@ _REACHING_MI_EVENTS = {
 }
 
 # Multigrasp MI events.
-_GRASP_MI_EVENTS = {
-    "grasp_cup": 11,
-    "grasp_ball": 21,
-    "grasp_card": 61,
-}
+_GRASP_MI_EVENTS = {"grasp_cup": 11, "grasp_ball": 21, "grasp_card": 61}
 
 # Twist MI events.
-_TWIST_MI_EVENTS = {
-    "twist_pronation": 91,
-    "twist_supination": 101,
-}
+_TWIST_MI_EVENTS = {"twist_pronation": 91, "twist_supination": 101}
 
 # Default events: all 11 classes combined.
 _ALL_EVENTS = {
@@ -276,11 +269,7 @@ class Jeong2020(BaseDataset):
         ),
         sessions_per_subject=3,
         runs_per_session=3,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_ALL_EVENTS.keys()),
@@ -296,15 +285,11 @@ class Jeong2020(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+RLDA"],
             feature_extraction=["CSP"],
-            frequency_bands={
-                "mu_beta": [8.0, 30.0],
-            },
+            frequency_bands={"mu_beta": [8.0, 30.0]},
             spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10x10-fold",
-            cv_folds=10,
-            evaluation_type=["within_session"],
+            cv_method="10x10-fold", cv_folds=10, evaluation_type=["within_session"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "prosthetics"],
@@ -316,12 +301,7 @@ class Jeong2020(BaseDataset):
     )
 
     def __init__(
-        self,
-        condition="MI",
-        subjects=None,
-        sessions=None,
-        *,
-        return_all_modalities=False,
+        self, condition="MI", subjects=None, sessions=None, *, return_all_modalities=False
     ):
         self.condition = condition
         super().__init__(
@@ -389,16 +369,9 @@ class Jeong2020(BaseDataset):
                 "S 61": "reach_down",
             }
         elif task_type == "multigrasp":
-            marker_map = {
-                "S 11": "grasp_cup",
-                "S 21": "grasp_ball",
-                "S 61": "grasp_card",
-            }
+            marker_map = {"S 11": "grasp_cup", "S 21": "grasp_ball", "S 61": "grasp_card"}
         elif task_type == "twist":
-            marker_map = {
-                "S 91": "twist_pronation",
-                "S101": "twist_supination",
-            }
+            marker_map = {"S 91": "twist_pronation", "S101": "twist_supination"}
         else:
             return
 

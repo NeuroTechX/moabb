@@ -274,12 +274,7 @@ class Wang2016(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2016.2627556",
             description="A benchmark SSVEP dataset acquired with a 40-target BCI speller using joint frequency and phase modulation (JFPM) approach",
-            investigators=[
-                "Yijun Wang",
-                "Xiaogang Chen",
-                "Xiaorong Gao",
-                "Shangkai Gao",
-            ],
+            investigators=["Yijun Wang", "Xiaogang Chen", "Xiaorong Gao", "Shangkai Gao"],
             institution="Tsinghua University",
             country="CN",
             publication_year=2016,
@@ -311,11 +306,7 @@ class Wang2016(BaseDataset):
             data_url="http://bci.med.tsinghua.edu.cn/download.html",
             license="CC-BY-4.0",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Perception"]),
         preprocessing=PreprocessingMetadata(
             data_state="Raw epochs extracted from continuous EEG recordings according to stimulus onsets, downsampled to 250 Hz, no digital filters applied",
             preprocessing_applied=True,
@@ -333,9 +324,7 @@ class Wang2016(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["CCA", "FBCCA"],
             feature_extraction=["Canonical Correlation Analysis", "Filter Bank CCA"],
-            frequency_bands={
-                "analyzed_range": [7.0, 90.0],
-            },
+            frequency_bands={"analyzed_range": [7.0, 90.0]},
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="leave-one-out (on six blocks)",

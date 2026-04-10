@@ -93,10 +93,7 @@ class TestEnrichRawInfoFromMetadata:
         raw = self._make_raw()
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256,
-                n_channels=2,
-                channel_types={"eeg": 2},
-                line_freq=60.0,
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}, line_freq=60.0
             ),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -278,8 +275,7 @@ class TestBuildSidecarEnrichment:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
-                bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
-                notch_hz=50,
+                bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0}, notch_hz=50
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -297,9 +293,7 @@ class TestBuildSidecarEnrichment:
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
-            preprocessing=PreprocessingMetadata(
-                bandpass=[0.5, 100.0],
-            ),
+            preprocessing=PreprocessingMetadata(bandpass=[0.5, 100.0]),
         )
         entries = _build_sidecar_enrichment(metadata)
         bp = entries["HardwareFilters"]["Bandpass"]
@@ -313,10 +307,7 @@ class TestBuildSidecarEnrichment:
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
-            preprocessing=PreprocessingMetadata(
-                highpass_hz=0.1,
-                lowpass_hz=40.0,
-            ),
+            preprocessing=PreprocessingMetadata(highpass_hz=0.1, lowpass_hz=40.0),
         )
         entries = _build_sidecar_enrichment(metadata)
         bp = entries["HardwareFilters"]["Bandpass"]
@@ -330,8 +321,7 @@ class TestBuildSidecarEnrichment:
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
-                paradigm="imagery",
-                study_design="Four-class motor imagery",
+                paradigm="imagery", study_design="Four-class motor imagery"
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -388,8 +378,7 @@ class TestBuildSidecarEnrichment:
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
-                paradigm="imagery",
-                instructions="Imagine moving your left or right hand.",
+                paradigm="imagery", instructions="Imagine moving your left or right hand."
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -557,9 +546,7 @@ class TestBuildSidecarEnrichment:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
-                bandpass=[0.5, 100.0],
-                filter_type="butterworth",
-                filter_order=4,
+                bandpass=[0.5, 100.0], filter_type="butterworth", filter_order=4
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -605,7 +592,7 @@ class TestBuildSidecarEnrichment:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
-                preprocessing_steps=["bandpass filter", "ICA", "epoching"],
+                preprocessing_steps=["bandpass filter", "ICA", "epoching"]
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -659,8 +646,7 @@ class TestBuildSidecarEnrichment:
                 trial_duration=3.0,
             ),
             paradigm_specific=ParadigmSpecificMetadata(
-                cue_duration_s=1.0,
-                imagery_duration_s=3.0,
+                cue_duration_s=1.0, imagery_duration_s=3.0
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -694,12 +680,10 @@ class TestBuildSidecarEnrichment:
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
-                paradigm="ssvep",
-                study_design="SSVEP BCI experiment",
+                paradigm="ssvep", study_design="SSVEP BCI experiment"
             ),
             paradigm_specific=ParadigmSpecificMetadata(
-                stimulus_frequencies_hz=[8.0, 10.0, 12.0],
-                isi_ms=500.0,
+                stimulus_frequencies_hz=[8.0, 10.0, 12.0], isi_ms=500.0
             ),
         )
         entries = _build_sidecar_enrichment(metadata)
@@ -715,10 +699,7 @@ class TestBuildSidecarEnrichment:
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
-            documentation=DocumentationMetadata(
-                institution="TU Graz",
-                country="Austria",
-            ),
+            documentation=DocumentationMetadata(institution="TU Graz", country="Austria"),
         )
         entries = _build_sidecar_enrichment(metadata)
         assert entries["InstitutionAddress"] == "Austria"
@@ -837,8 +818,7 @@ class TestBuildDatasetDescriptionKwargs:
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(
-                publication_year=2019,
-                data_url="https://example.com/data",
+                publication_year=2019, data_url="https://example.com/data"
             ),
         )
         ds = self._make_dataset(metadata=metadata)
@@ -862,7 +842,7 @@ class TestBuildDatasetDescriptionKwargs:
         ds = self._make_dataset(metadata=metadata)
         kwargs = _build_dataset_description_kwargs(ds)
         # No URL means source_datasets stays as default (DOI only)
-        assert kwargs["source_datasets"] == [dict(DOI="10.1234/test")]
+        assert kwargs["source_datasets"] == [{"DOI": "10.1234/test"}]
 
     def test_no_publication_year_no_url_keeps_default(self):
         metadata = DatasetMetadata(
@@ -876,7 +856,7 @@ class TestBuildDatasetDescriptionKwargs:
         ds = self._make_dataset(metadata=metadata)
         kwargs = _build_dataset_description_kwargs(ds)
         # source_datasets should remain the default (DOI only)
-        assert kwargs["source_datasets"] == [dict(DOI="10.1234/test")]
+        assert kwargs["source_datasets"] == [{"DOI": "10.1234/test"}]
 
 
 # ============================================================
@@ -1044,9 +1024,7 @@ class TestUpdateParticipantsTsv:
                 sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
             ),
             participants=ParticipantMetadata(
-                n_subjects=2,
-                sexes=["male", "female"],
-                handedness_list=["right", "left"],
+                n_subjects=2, sexes=["male", "female"], handedness_list=["right", "left"]
             ),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -1152,9 +1130,7 @@ class TestUpdateElectrodesTsv:
         tsv_path = elec_dir / "sub-1_ses-1_electrodes.tsv"
         with open(tsv_path, "w", newline="") as f:
             writer = csv.DictWriter(
-                f,
-                fieldnames=["name", "x", "y", "z", "type", "material"],
-                delimiter="\t",
+                f, fieldnames=["name", "x", "y", "z", "type", "material"], delimiter="\t"
             )
             writer.writeheader()
             writer.writerow(
@@ -1262,11 +1238,7 @@ class TestUpdateDatasetDescriptionExtra:
             ),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
-            tags=Tags(
-                pathology=["healthy"],
-                modality=["motor"],
-                type=["imagery"],
-            ),
+            tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
         )
         _update_dataset_description_extra(tmp_path, metadata)
 
@@ -1280,10 +1252,7 @@ class TestUpdateDatasetDescriptionExtra:
     def test_no_overwrite_existing(self, tmp_path):
         desc_path = tmp_path / "dataset_description.json"
         with open(desc_path, "w") as f:
-            json.dump(
-                {"Name": "Test", "Keywords": ["existing_keyword"]},
-                f,
-            )
+            json.dump({"Name": "Test", "Keywords": ["existing_keyword"]}, f)
 
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
@@ -1326,13 +1295,9 @@ class TestUpdateDatasetDescriptionExtra:
             ),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
-            tags=Tags(
-                pathology=["healthy"],
-                modality=["motor"],
-                type=["imagery"],
-            ),
+            tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
             bci_application=BCIApplicationMetadata(
-                applications=["speller", "wheelchair"],
+                applications=["speller", "wheelchair"]
             ),
         )
         _update_dataset_description_extra(tmp_path, metadata)
@@ -1356,9 +1321,7 @@ class TestUpdateDatasetDescriptionExtra:
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(keywords=["BCI", "EEG"]),
-            bci_application=BCIApplicationMetadata(
-                applications=["speller"],
-            ),
+            bci_application=BCIApplicationMetadata(applications=["speller"]),
         )
         _update_dataset_description_extra(tmp_path, metadata)
 
@@ -1378,10 +1341,7 @@ class TestUpdateDatasetDescriptionExtra:
             ),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
-            documentation=DocumentationMetadata(
-                publication_year=2021,
-                keywords=["BCI"],
-            ),
+            documentation=DocumentationMetadata(publication_year=2021, keywords=["BCI"]),
         )
         _update_dataset_description_extra(tmp_path, metadata)
 
@@ -1472,10 +1432,7 @@ class TestBuildHedSidecarAnnotations:
         assert "Open" in hed["open"]
 
     def test_metadata_override(self):
-        custom_tags = {
-            "left_hand": "Custom-tag, Left",
-            "right_hand": "Custom-tag, Right",
-        }
+        custom_tags = {"left_hand": "Custom-tag, Left", "right_hand": "Custom-tag, Right"}
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
@@ -1493,9 +1450,7 @@ class TestBuildHedSidecarAnnotations:
 
     def test_metadata_override_partial_merges_defaults(self):
         """Partial hed_tags override merges with paradigm defaults."""
-        custom_tags = {
-            "left_hand": "Custom-tag, Left",
-        }
+        custom_tags = {"left_hand": "Custom-tag, Left"}
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
@@ -1543,11 +1498,7 @@ class TestBuildHedSidecarAnnotations:
     def test_upper_limb_events(self):
         ds = self._make_dataset(
             "imagery",
-            {
-                "right_elbow_flexion": 1536,
-                "right_hand_open": 1541,
-                "rest": 1542,
-            },
+            {"right_elbow_flexion": 1536, "right_hand_open": 1541, "rest": 1542},
         )
         hed = _build_hed_sidecar_annotations(ds)
         assert "Flex" in hed["right_elbow_flexion"]
@@ -1560,8 +1511,7 @@ class TestBuildHedSidecarAnnotations:
 
     def test_reaching_events(self):
         ds = self._make_dataset(
-            "imagery",
-            {"up_slow_near": 1, "down_fast_far": 8, "left_fast_near": 11},
+            "imagery", {"up_slow_near": 1, "down_fast_far": 8, "left_fast_near": 11}
         )
         hed = _build_hed_sidecar_annotations(ds)
         assert "Reach" in hed["up_slow_near"]
@@ -1619,8 +1569,7 @@ class TestBuildHedSidecarAnnotations:
     def test_label_fallback_sanitizes_dots(self):
         """Label fallback sanitizes dots for HED nameClass compliance."""
         ds = self._make_dataset(
-            paradigm="unknown_paradigm",
-            event_id={"13.5": 1, "event name": 2},
+            paradigm="unknown_paradigm", event_id={"13.5": 1, "event name": 2}
         )
         hed = _build_hed_sidecar_annotations(ds)
         assert hed["13.5"] == "Sensory-event, (Label/13_5)"
@@ -1629,8 +1578,7 @@ class TestBuildHedSidecarAnnotations:
     def test_all_events_covered_no_gaps(self):
         """Every event from dataset.event_id must appear in the output."""
         ds = self._make_dataset(
-            "imagery",
-            {"left_hand": 1, "right_hand": 2, "novel_future_event": 99},
+            "imagery", {"left_hand": 1, "right_hand": 2, "novel_future_event": 99}
         )
         hed = _build_hed_sidecar_annotations(ds)
         assert set(hed.keys()) == {"left_hand", "right_hand", "novel_future_event"}
@@ -1676,12 +1624,7 @@ class TestUpdateEventsJsonWithHed:
 
     def test_existing_hed_preserved_on_conflict(self, tmp_path):
         existing_hed = {"left_hand": "Existing-tag"}
-        content = {
-            "trial_type": {
-                "Description": "Event type.",
-                "HED": existing_hed,
-            }
-        }
+        content = {"trial_type": {"Description": "Event type.", "HED": existing_hed}}
         bp, json_path = self._make_bids_path(tmp_path, content)
         hed_tags = {"left_hand": "New-tag", "right_hand": "Right-tag"}
         _update_events_json_sidecar(bp, hed_tags, None)
@@ -1740,10 +1683,7 @@ class TestArrowCueOverrideViaMetadata:
         )
         # Create a mock dataset with metadata containing hed_tags overrides
         experiment = MagicMock()
-        experiment.hed_tags = {
-            "left_hand": arrow_left,
-            "right_hand": arrow_right,
-        }
+        experiment.hed_tags = {"left_hand": arrow_left, "right_hand": arrow_right}
         metadata = MagicMock()
         metadata.experiment = experiment
 
@@ -2188,8 +2128,7 @@ class TestBuildReadme:
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
             signal_processing=SignalProcessingMetadata(
-                classifiers=["LDA", "SVM"],
-                feature_extraction=["CSP", "PSD"],
+                classifiers=["LDA", "SVM"], feature_extraction=["CSP", "PSD"]
             ),
         )
         ds = self._make_dataset(metadata)
@@ -2206,9 +2145,7 @@ class TestBuildReadme:
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
             cross_validation=CrossValidationMetadata(
-                cv_method="5-fold",
-                cv_folds=5,
-                evaluation_type=["within-subject"],
+                cv_method="5-fold", cv_folds=5, evaluation_type=["within-subject"]
             ),
         )
         ds = self._make_dataset(metadata)
@@ -2266,8 +2203,7 @@ class TestBuildReadme:
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="ssvep"),
             paradigm_specific=ParadigmSpecificMetadata(
-                detected_paradigm="ssvep",
-                stimulus_frequencies_hz=[9.25, 11.25, 13.25],
+                detected_paradigm="ssvep", stimulus_frequencies_hz=[9.25, 11.25, 13.25]
             ),
         )
         ds = self._make_dataset(metadata)
@@ -2336,13 +2272,13 @@ class TestBuildReadme:
 
 def _minimal_metadata(**overrides):
     """Build a DatasetMetadata with only required fields plus overrides."""
-    kwargs = dict(
-        acquisition=AcquisitionMetadata(
+    kwargs = {
+        "acquisition": AcquisitionMetadata(
             sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
         ),
-        participants=ParticipantMetadata(n_subjects=10),
-        experiment=ExperimentMetadata(paradigm="imagery"),
-    )
+        "participants": ParticipantMetadata(n_subjects=10),
+        "experiment": ExperimentMetadata(paradigm="imagery"),
+    }
     kwargs.update(overrides)
     return DatasetMetadata(**kwargs)
 
@@ -2387,7 +2323,7 @@ class TestReadmeAcquisitionFields:
         ],
     )
     def test_field_present(self, field, value, expected):
-        kwargs = dict(sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32})
+        kwargs = {"sampling_rate": 256.0, "n_channels": 32, "channel_types": {"eeg": 32}}
         kwargs[field] = value
         meta = _minimal_metadata(acquisition=AcquisitionMetadata(**kwargs))
         readme = _build_readme(_mock_ds(meta))
@@ -2400,10 +2336,7 @@ class TestReadmeAuxiliaryChannelsFields:
     @pytest.mark.parametrize(
         "aux_kwargs,expected",
         [
-            (
-                {"has_eog": True, "eog_channels": 2},
-                "EOG (2 ch)",
-            ),
+            ({"has_eog": True, "eog_channels": 2}, "EOG (2 ch)"),
             (
                 {
                     "has_eog": True,
@@ -2412,14 +2345,8 @@ class TestReadmeAuxiliaryChannelsFields:
                 },
                 "EOG (4 ch, horizontal, vertical)",
             ),
-            (
-                {"has_emg": True, "emg_channels": 3},
-                "EMG (3 ch)",
-            ),
-            (
-                {"other_physiological": ["ECG", "respiration"]},
-                "ECG",
-            ),
+            ({"has_emg": True, "emg_channels": 3}, "EMG (3 ch)"),
+            ({"other_physiological": ["ECG", "respiration"]}, "ECG"),
         ],
     )
     def test_aux_field(self, aux_kwargs, expected):

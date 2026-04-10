@@ -131,11 +131,7 @@ class Wairagkar2018(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            events={
-                "right_hand": 1,
-                "rest": 2,
-                "left_hand": 3,
-            },
+            events={"right_hand": 1, "rest": 2, "left_hand": 3},
             paradigm="imagery",
             n_classes=3,
             class_labels=["right_hand", "rest", "left_hand"],
@@ -173,11 +169,7 @@ class Wairagkar2018(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Research"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -194,8 +186,7 @@ class Wairagkar2018(BaseDataset):
             notch_hz=50.0,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
-            imagery_tasks=["right_hand", "left_hand", "rest"],
+            detected_paradigm="imagery", imagery_tasks=["right_hand", "left_hand", "rest"]
         ),
         data_structure=DataStructureMetadata(
             n_trials=1665,
@@ -216,9 +207,7 @@ class Wairagkar2018(BaseDataset):
             spatial_filters=["bipolar_montage"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10x10-fold",
-            cv_folds=10,
-            evaluation_type=["within_subject"],
+            cv_method="10x10-fold", cv_folds=10, evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
@@ -233,7 +222,7 @@ class Wairagkar2018(BaseDataset):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
-            events=dict(right_hand=1, rest=2, left_hand=3),
+            events={"right_hand": 1, "rest": 2, "left_hand": 3},
             code="Wairagkar2018",
             interval=[0, 3],  # 0-3 s post movement onset
             paradigm="imagery",

@@ -100,7 +100,9 @@ def benchmark(  # noqa: C901
            pipelines = [
                {
                    "paradigms": ["SomeParadigm"],
-                   "pipeline": make_pipeline(Transformer1(), Transformer2(), Classifier()),
+                   "pipeline": make_pipeline(
+                       Transformer1(), Transformer2(), Classifier()
+                   ),
                    "name": "PipelineName",
                },
                {
@@ -191,7 +193,7 @@ def benchmark(  # noqa: C901
         evaluations = ["WithinSession", "CrossSession", "CrossSubject"]
 
     if codecarbon_config is None:
-        codecarbon_config = dict(save_to_file=False, log_level="error")
+        codecarbon_config = {"save_to_file": False, "log_level": "error"}
 
     eval_type = {
         "WithinSession": WithinSessionEvaluation,
@@ -240,7 +242,7 @@ def benchmark(  # noqa: C901
     # Looping over the evaluations to be done
     df_eval = []
     for evaluation in evaluations:
-        eval_results = dict()
+        eval_results = {}
 
         processed_paradigms = 0
         for paradigm in prdgms_from_pipelines:
