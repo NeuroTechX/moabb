@@ -406,7 +406,12 @@ def main():
         print(f"Error: missing condition zips in {SRC}:")
         for f in missing:
             print(f"  - {f.name}")
-        print("Run: python scripts/repackage_nguyen2017.py")
+        print(
+            "Stage the four condition ZIPs in this directory before "
+            "running the upload. This script was used once to produce "
+            "Zenodo record 19502794; see that record for the canonical "
+            "layout."
+        )
         sys.exit(1)
 
     readme_file = SRC / "README.md"

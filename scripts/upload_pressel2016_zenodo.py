@@ -392,7 +392,11 @@ def main():
     zip_files = sorted(SRC.glob("S*.zip"))
     if not zip_files:
         print(f"Error: No S*.zip files in {SRC}")
-        print("Run: python scripts/repackage_pressel2016.py")
+        print(
+            "Stage the per-subject ZIPs in this directory before running "
+            "the upload. This script was used once to produce Zenodo "
+            "record 19502780; see that record for the canonical layout."
+        )
         sys.exit(1)
 
     readme_file = SRC / "README.md"
