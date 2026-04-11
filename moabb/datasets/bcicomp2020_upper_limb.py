@@ -9,10 +9,6 @@ DOI: 10.3389/fnhum.2022.898300
 Data: OSF https://osf.io/pq7vb/
 """
 
-from __future__ import annotations
-
-import logging
-
 import numpy as np
 from scipy.io import loadmat
 
@@ -32,8 +28,6 @@ from .metadata.schema import (
 from .utils import build_raw_from_epochs
 
 
-log = logging.getLogger(__name__)
-
 _SIGN = "BCIComp2020UpperLimb"
 _SFREQ = 250.0
 
@@ -50,6 +44,7 @@ _CH_NAMES = [
 
 # Class names in the order used by epo.y rows (see Data Description PDF).
 _CLASS_NAMES = ["cylindrical", "spherical", "lumbrical"]
+_EVENTS = {name: code for code, name in enumerate(_CLASS_NAMES, start=1)}
 
 # Stable OSF file guids for each (split, subject) pair.
 # fmt: off
@@ -207,7 +202,7 @@ class BCIComp2020UpperLimb(BaseDataset):
             reference="FCz",
             ground="Fpz",
             sensors=list(_CH_NAMES),
-            filters={"notch": 60.0},
+            filters={"notch_hz": 60},
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
@@ -223,9 +218,9 @@ class BCIComp2020UpperLimb(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            events={"cylindrical": 1, "spherical": 2, "lumbrical": 3},
+            events=_EVENTS,
             paradigm="imagery",
-            n_classes=3,
+            n_classes=len(_EVENTS),
             class_labels=list(_CLASS_NAMES),
             trial_duration=_MI_DURATION_S,
             study_design=(
@@ -304,7 +299,8 @@ class BCIComp2020UpperLimb(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials=450,
             trials_context=(
-                "15 subjects * 3 sessions * 150 trials/session (50 per class)."
+                "450 trials per subject (150 trials/session x 3 sessions, "
+                "50 per class). 15 subjects, 6750 trials total."
             ),
         ),
         data_processed=True,
@@ -315,7 +311,7 @@ class BCIComp2020UpperLimb(BaseDataset):
         super().__init__(
             subjects=list(range(1, 16)),
             sessions_per_subject=3,
-            events={"cylindrical": 1, "spherical": 2, "lumbrical": 3},
+            events=_EVENTS,
             code="BCIComp2020UpperLimb",
             interval=[0, _MI_DURATION_S],
             paradigm="imagery",
@@ -333,7 +329,7 @@ class BCIComp2020UpperLimb(BaseDataset):
         labels from :data:`_TEST_LABELS_DAY3` when the split is
         ``"test"`` (those files do not store ``epo.y``).
         """
-        mat = loadmat(fpath, squeeze_me=False)
+        mat = loadmat(fpath, squeeze_me=False, variable_names=["epo"])
         epo = mat["epo"]
 
         # x is (n_times, n_channels, n_trials); slice to the MI window
@@ -350,12 +346,32 @@ class BCIComp2020UpperLimb(BaseDataset):
         ch_names = [str(c[0]) for c in epo["clab"][0, 0][0]]
         return data, labels, ch_names
 
+    def _download_all_splits(self, subject, path, force_update, verbose):
+        """Download every split file for ``subject`` and return the paths.
+
+        Kept separate from :meth:`data_path` so the per-subject hot path
+        in :meth:`_get_single_subject_data` downloads each file once,
+        instead of re-running the loop per split.
+        """
+        return {
+            split_name: dl.data_dl(
+                _OSF_URLS[(split_name, subject)],
+                _SIGN,
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
+            )
+            for split_name, _ in _SESSIONS
+        }
+
     def _get_single_subject_data(self, subject):
         """Return data for a single subject, one MOABB session per recording day."""
+        paths = self._download_all_splits(
+            subject, path=None, force_update=False, verbose=None
+        )
         sessions = {}
         for split, session_key in _SESSIONS:
-            fpath = self.data_path(subject, split=split)
-            data, labels, ch_names = self._load_epoch_mat(fpath, split, subject)
+            data, labels, ch_names = self._load_epoch_mat(paths[split], split, subject)
             sessions[session_key] = {
                 "0": build_raw_from_epochs(
                     data, ch_names, _SFREQ, labels, montage_name="standard_1005"
@@ -382,11 +398,5 @@ class BCIComp2020UpperLimb(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number {subject}")
 
-        paths = {}
-        for split_name, _ in _SESSIONS:
-            url = _OSF_URLS[(split_name, subject)]
-            paths[split_name] = dl.data_dl(
-                url, _SIGN, path=path, force_update=force_update, verbose=verbose
-            )
-
+        paths = self._download_all_splits(subject, path, force_update, verbose)
         return paths[split] if split else paths["training"]

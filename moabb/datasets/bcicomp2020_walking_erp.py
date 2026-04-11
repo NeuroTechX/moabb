@@ -10,10 +10,6 @@ DOI: 10.3389/fnhum.2022.898300
 Data: OSF https://osf.io/pq7vb/
 """
 
-from __future__ import annotations
-
-import logging
-
 import numpy as np
 from scipy.io import loadmat
 
@@ -32,8 +28,6 @@ from .metadata.schema import (
 )
 from .utils import build_raw_from_epochs
 
-
-log = logging.getLogger(__name__)
 
 _SIGN = "BCIComp2020WalkingERP"
 _SFREQ = 100.0
@@ -65,6 +59,8 @@ _CH_TYPES = (
     + ["eeg"] * len(_EAR_CHANNELS)  # ear-EEG shares units with scalp EEG
     + ["misc"] * len(_IMU_CHANNELS)  # IMU stays in source units (not V)
 )
+
+_EVENTS = {"NonTarget": 1, "Target": 2}
 
 # Stable OSF file guids for each (split, subject) pair.
 # fmt: off
@@ -232,10 +228,10 @@ class BCIComp2020WalkingERP(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            events={"NonTarget": 1, "Target": 2},
+            events=_EVENTS,
             paradigm="p300",
-            n_classes=2,
-            class_labels=["NonTarget", "Target"],
+            n_classes=len(_EVENTS),
+            class_labels=list(_EVENTS.keys()),
             trial_duration=1.0,
             study_design=(
                 "Visual oddball P300 (target 'OOO' vs non-target 'XXX', "
@@ -315,7 +311,7 @@ class BCIComp2020WalkingERP(BaseDataset):
         super().__init__(
             subjects=list(range(1, 16)),
             sessions_per_subject=1,
-            events={"NonTarget": 1, "Target": 2},
+            events=_EVENTS,
             code="BCIComp2020WalkingERP",
             interval=[-0.19, 0.8],
             paradigm="p300",
@@ -337,7 +333,7 @@ class BCIComp2020WalkingERP(BaseDataset):
         Both are mapped to the dataset's canonical event codes via
         explicit string lookup, not positional arithmetic.
         """
-        mat = loadmat(fpath, squeeze_me=False)
+        mat = loadmat(fpath, squeeze_me=False, variable_names=[epo_key])
         epo = mat[epo_key]
 
         # x is (n_times, n_channels, n_trials); transpose to
@@ -364,12 +360,34 @@ class BCIComp2020WalkingERP(BaseDataset):
         ch_names = [str(c[0]) for c in epo["clab"][0, 0][0]]
         return data, labels, ch_names
 
+    def _download_all_splits(self, subject, path, force_update, verbose):
+        """Download every split file for ``subject`` and return the paths.
+
+        Kept separate from :meth:`data_path` so the per-subject hot path
+        in :meth:`_get_single_subject_data` downloads each file once,
+        instead of re-running the loop per split.
+        """
+        return {
+            split_name: dl.data_dl(
+                _OSF_URLS[(split_name, subject)],
+                _SIGN,
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
+            )
+            for split_name, _, _ in _SPLITS
+        }
+
     def _get_single_subject_data(self, subject):
         """Return data for a single subject (1 session with 3 runs)."""
+        paths = self._download_all_splits(
+            subject, path=None, force_update=False, verbose=None
+        )
         runs = {}
         for split, epo_key, run_key in _SPLITS:
-            fpath = self.data_path(subject, split=split)
-            data, labels, ch_names = self._load_epoch_mat(fpath, epo_key, split, subject)
+            data, labels, ch_names = self._load_epoch_mat(
+                paths[split], epo_key, split, subject
+            )
             runs[run_key] = build_raw_from_epochs(
                 data,
                 ch_names,
@@ -399,11 +417,5 @@ class BCIComp2020WalkingERP(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number {subject}")
 
-        paths = {}
-        for split_name, _, _ in _SPLITS:
-            url = _OSF_URLS[(split_name, subject)]
-            paths[split_name] = dl.data_dl(
-                url, _SIGN, path=path, force_update=force_update, verbose=verbose
-            )
-
+        paths = self._download_all_splits(subject, path, force_update, verbose)
         return paths[split] if split else paths["training"]
