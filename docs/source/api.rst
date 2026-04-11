@@ -80,6 +80,7 @@ Motor Imagery Datasets
     Liu2024
     Beetl2021_A
     Beetl2021_B
+    BCIComp2020UpperLimb
     Brandl2020
     Chang2025
     Forenzo2023
@@ -102,7 +103,6 @@ Motor Imagery Datasets
     Zhang2017
     Zhou2020
     Zuo2025
-    BCIComp2020UpperLimb
 
 ------------------------
 Imagined Speech Datasets

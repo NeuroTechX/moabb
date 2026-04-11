@@ -80,10 +80,25 @@ MOABB, imagined speech datasets are tagged with the ``imagery`` paradigm so
 you can benchmark them with :class:`moabb.paradigms.MotorImagery` and
 :class:`moabb.paradigms.FilterBankMotorImagery` without new paradigm code.
 
-The datasets span English and Spanish, phonemes through phrases, and 2 to
-11 classes. The rows below also appear in the Motor Imagery table above
-(same ``paradigm="imagery"`` tag); they are repeated here to make the
-imagined speech family easy to discover.
+The family currently contains
+:class:`~moabb.datasets.BCIComp2020IS`,
+:class:`~moabb.datasets.AguileraRodriguez2025`,
+:class:`~moabb.datasets.Nguyen2017_V`, ``_S``, ``_L``, ``_SL``, and
+:class:`~moabb.datasets.Pressel2016` — spanning English and Spanish,
+phonemes through phrases, and 2 to 11 classes. These rows also appear
+in the Motor Imagery table above since they share the
+``paradigm="imagery"`` tag.
+
+Loading is identical to motor imagery:
+
+.. code-block:: python
+
+    from moabb.datasets import BCIComp2020IS
+    from moabb.paradigms import MotorImagery
+
+    dataset = BCIComp2020IS()
+    paradigm = MotorImagery(n_classes=5)
+    X, y, metadata = paradigm.get_data(dataset=dataset, subjects=[1])
 
 .. csv-table::
    :file: ../build/summary_imagined_speech.csv
