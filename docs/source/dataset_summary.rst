@@ -53,12 +53,22 @@ Column definitions:
 - **#Runs** is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
 
 
-Motor Imagery
+Imagery
 ======================
 
-Motor Imagery is a BCI paradigm where the subject imagines performing physical movements. Each movement is associated with a different command to build an application.
+Imagery is a BCI paradigm where the subject internally rehearses a mental
+task without any overt movement or vocalization. In MOABB it covers two
+sub-families that share the same ``paradigm="imagery"`` tag and the same
+:class:`moabb.paradigms.MotorImagery` /
+:class:`moabb.paradigms.FilterBankMotorImagery` paradigm classes:
 
-Motor Imagery-specific definitions:
+- **Motor imagery** — imagining physical movements such as squeezing the
+  left or right hand, moving the tongue, or a specific grasping task.
+- **Imagined speech** — silently imagining speaking a phoneme, word, or
+  phrase. See the :ref:`imagined speech subsection <imagined-speech>`
+  below for a curated listing.
+
+Imagery-specific definitions:
 
 - **#Classes** is the number of different imagery tasks.
 - **Trial** is one repetition of the imagery task.
@@ -69,8 +79,10 @@ Motor Imagery-specific definitions:
    :class: sortable
 
 
-Imagined Speech
-======================
+.. _imagined-speech:
+
+Imagined Speech (imagery subset)
+================================
 
 Welcome to the **imagined speech** family, where subjects silently imagine
 speaking words, phonemes, or phrases without any sound or movement.
@@ -86,7 +98,7 @@ The family currently contains
 :class:`~moabb.datasets.Nguyen2017_V`, ``_S``, ``_L``, ``_SL``, and
 :class:`~moabb.datasets.Pressel2016` — spanning English and Spanish,
 phonemes through phrases, and 2 to 11 classes. These rows also appear
-in the Motor Imagery table above since they share the
+in the Imagery table above since they share the
 ``paradigm="imagery"`` tag.
 
 Loading is identical to motor imagery:
