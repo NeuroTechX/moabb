@@ -106,14 +106,13 @@ class _Nguyen2017Base(BaseDataset):
             selected_sessions=sessions,
         )
 
-    @property
-    def _cfg(self):
-        return _CONDITIONS[self._condition]
-
     def _mat_to_raw(self, fpath):
         """Load a .mat file and build a continuous Raw with stim channel.
 
         Uses the 'last_beep' variable (speech imagery period, 5s).
+        Trials are returned in class-blocked order as stored in the
+        upstream .mat file; downstream code is responsible for any
+        shuffling its evaluation protocol requires.
         """
         mat = loadmat(str(fpath), squeeze_me=False)
         key = "eeg_data_wrt_task_rep_no_eog_256Hz_last_beep"
@@ -139,13 +138,6 @@ class _Nguyen2017Base(BaseDataset):
 
         data = np.array(all_data, dtype=np.float64)
         labels = np.array(all_labels, dtype=int)
-
-        # Shuffle trials to avoid class-blocked ordering, which can
-        # leak temporal autocorrelation into cross-validation folds.
-        rng = np.random.RandomState(42)
-        perm = rng.permutation(len(labels))
-        data = data[perm]
-        labels = labels[perm]
 
         # Build channel names, marking EOG channels.
         ch_names = [f"EEG{i + 1:03d}" for i in range(n_ch_use)]
@@ -176,7 +168,7 @@ class _Nguyen2017Base(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        cfg = self._cfg
+        cfg = _CONDITIONS[self._condition]
         # The Zenodo mirror stores files as sub-01.mat … sub-NN.mat inside
         # each per-condition zip; the authors' opaque basenames are
         # preserved as provenance in the bundled Read_me.txt / README.md.

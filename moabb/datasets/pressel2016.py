@@ -7,9 +7,9 @@ distribution is on Google Drive; the Zenodo record is a faithful
 per-subject re-packaging for reliable automated download.
 """
 
-import logging
 from pathlib import Path
 
+import mne
 import numpy as np
 from scipy.io import loadmat
 
@@ -28,8 +28,6 @@ from .metadata.schema import (
 )
 from .utils import build_raw_from_epochs, download_and_extract_subject_zip
 
-
-log = logging.getLogger(__name__)
 
 _SIGN = "pressel2016"
 _SFREQ = 1024.0
@@ -237,19 +235,17 @@ class Pressel2016(BaseDataset):
         stimulus_col = label_cols[:, 1].astype(int)
         artifact_col = label_cols[:, 2].astype(int)  # 1=clean, 2=artifact
 
-        # Filter by modality and remove artifact trials (artifact_col==2).
-        # BAD annotations are not reliably rejected by all paradigms, so
-        # we exclude artifact trials at the data level.
-        mask = np.ones(len(eeg_data), dtype=bool)
+        # Filter by modality; keep artifact trials and mark them via
+        # BAD_artifact annotations on the resulting Raw so downstream
+        # code can decide how to handle them rather than having them
+        # silently dropped at load time.
         if modality is not None:
-            mask &= modality_col == modality
-        mask &= artifact_col == 1  # keep only clean trials
-        eeg_data = eeg_data[mask]
-        stimulus_col = stimulus_col[mask]
+            mask = modality_col == modality
+            eeg_data = eeg_data[mask]
+            stimulus_col = stimulus_col[mask]
+            artifact_col = artifact_col[mask]
 
         n_trials = eeg_data.shape[0]
-
-        # Reshape all trials: (n_trials, 6*4096) -> (n_trials, 6, 4096).
         data = eeg_data.reshape(n_trials, _N_CHANNELS, n_samples_per_ch)
 
         raw = build_raw_from_epochs(
@@ -260,6 +256,18 @@ class Pressel2016(BaseDataset):
             montage_name="standard_1020",
             buffer_samples=100,
         )
+
+        bad_trial_indices = np.where(artifact_col == 2)[0]
+        if bad_trial_indices.size:
+            events = mne.find_events(raw, stim_channel="STI", verbose=False)
+            onsets = events[bad_trial_indices, 0] / raw.info["sfreq"]
+            durations = np.full(bad_trial_indices.size, n_samples_per_ch / _SFREQ)
+            raw.set_annotations(
+                raw.annotations
+                + mne.Annotations(
+                    onset=onsets, duration=durations, description="BAD_artifact"
+                )
+            )
 
         return raw
 

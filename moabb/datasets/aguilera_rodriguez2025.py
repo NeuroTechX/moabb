@@ -5,8 +5,6 @@ DOI: 10.1038/s41597-025-05926-5
 Data DOI: 10.17632/57g8z63tmy.1
 """
 
-import logging
-import shutil
 from pathlib import Path
 
 import mne
@@ -26,8 +24,6 @@ from .metadata.schema import (
     Tags,
 )
 
-
-log = logging.getLogger(__name__)
 
 _SIGN = "aguilerarodriguez2025"
 _SFREQ = 500.0
@@ -52,8 +48,29 @@ _ANNOT_MAP = {
     "OVTK_StimulationId_Label_04": "izquierda",
 }
 
-# Mendeley Data API for file listing.
-_MENDELEY_API = "https://data.mendeley.com/api/datasets/57g8z63tmy/files?version=1"
+# Stable Mendeley Data download URLs for the traditional-paradigm EDFs
+# (dataset 57g8z63tmy v1). Enumerated once via
+# https://data.mendeley.com/api/datasets/57g8z63tmy/files?version=1
+# so the loader doesn't need a runtime API call.
+# fmt: off
+_SUBJECT_URLS = {
+    1: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/5eb0269f-05ba-48f0-811d-277a257e8832/file_downloaded",
+    2: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/513909eb-42b6-463c-b06c-e544c768f70b/file_downloaded",
+    3: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/20f6008b-b862-4d2e-8698-d09a63a90ebb/file_downloaded",
+    4: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/605afb13-2f54-435e-827c-5dbfa55b17c1/file_downloaded",
+    5: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/b86b9355-15b4-43a9-aa9e-03cfdcda89f2/file_downloaded",
+    6: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/4a86115a-d742-4a2d-8bb7-6c5e72948878/file_downloaded",
+    7: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/5c48b9ea-451b-485a-a286-f5985d0f46a3/file_downloaded",
+    8: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/b8e9340d-20c4-47ad-a648-217bc9fd38d3/file_downloaded",
+    9: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/1810c5ea-574a-4d07-96a6-b564c74af112/file_downloaded",
+    10: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/78c96afb-0642-491a-9e27-b4bdc819cd01/file_downloaded",
+    11: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/b17c723e-4016-4c86-8009-aaa5f7316c20/file_downloaded",
+    12: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/5207d944-0754-4a66-b699-9eec86b5428d/file_downloaded",
+    13: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/cd1b5bdf-d9d6-4143-ab9d-832c0f869c9d/file_downloaded",
+    14: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/89dd25bc-a900-40a3-bc60-322b800eb472/file_downloaded",
+    15: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/f6216d04-0176-44a2-a961-99d03df6a077/file_downloaded",
+}
+# fmt: on
 
 
 class AguileraRodriguez2025(BaseDataset):
@@ -255,66 +272,27 @@ class AguileraRodriguez2025(BaseDataset):
 
         return {"0": {"0": raw}}
 
-    def _subject_dir(self):
-        path = dl.get_dataset_path(_SIGN, None)
-        return Path(path) / f"MNE-{_SIGN}-data"
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-
-        base = self._subject_dir()
-        base.mkdir(parents=True, exist_ok=True)
-
-        edf_file = base / f"S{subject}.edf"
-        if edf_file.exists() and not force_update:
-            return str(edf_file)
-
-        # Check alternate locations (manual download).
-        mne_data = Path(dl.get_dataset_path(_SIGN, path))
-        alt_paths = [
-            mne_data
-            / "mendeley_imagined_speech_traditional_gamified"
-            / "traditional_raw",
-            mne_data / "imagined_speech_eeg_paradigms" / "raw_traditional",
-        ]
-        for alt in alt_paths:
-            src = alt / f"S{subject}.edf"
-            if src.exists():
-                shutil.copy2(str(src), str(edf_file))
-                return str(edf_file)
-
-        # Download from Mendeley Data API.
-        log.info("Downloading subject %d from Mendeley Data...", subject)
-        import requests
-
-        resp = requests.get(_MENDELEY_API, timeout=30)
-        if resp.ok:
-            target_name = f"S{subject}.edf"
-            for finfo in resp.json():
-                fname = finfo.get("filename", "")
-                if fname == target_name:
-                    download_url = finfo.get("content_details", {}).get(
-                        "download_url", ""
-                    )
-                    if download_url:
-                        downloaded = dl.data_dl(
-                            download_url,
-                            _SIGN,
-                            path=path,
-                            force_update=force_update,
-                            verbose=verbose,
-                        )
-                        downloaded = Path(downloaded)
-                        if downloaded != edf_file:
-                            shutil.move(str(downloaded), str(edf_file))
-                        return str(edf_file)
-
-        if not edf_file.exists():
-            raise FileNotFoundError(
-                f"Could not find or download {edf_file}. "
-                "Download manually from https://data.mendeley.com/datasets/57g8z63tmy/1"
+        downloaded = Path(
+            dl.data_dl(
+                _SUBJECT_URLS[subject],
+                _SIGN,
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
             )
-        return str(edf_file)
+        )
+        if downloaded.suffix == ".edf":
+            return str(downloaded)
+        # Mendeley URLs end in "file_downloaded" (no extension), but
+        # mne.io.read_raw_edf requires a .edf suffix. Expose a
+        # same-inode .edf view via a hardlink so pooch's cache stays
+        # intact and subsequent calls don't re-download.
+        edf_path = downloaded.with_suffix(".edf")
+        if not edf_path.exists():
+            edf_path.hardlink_to(downloaded)
+        return str(edf_path)
