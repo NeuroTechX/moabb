@@ -14,7 +14,7 @@ import pycountry
 # ---------------------------------------------------------------------------
 
 PARADIGM_LABELS = {
-    "imagery": "Motor Imagery",
+    "imagery": "Imagery",
     "p300": "P300 / ERP",
     "erp": "P300 / ERP",
     "ssvep": "SSVEP",
