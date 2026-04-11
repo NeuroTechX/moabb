@@ -174,11 +174,13 @@ class BCIComp2020WalkingERP(BaseDataset):
     split them temporally into 180 training / 60 validation / 60 test
     trials, exposed here as three runs inside a single MOABB session.
 
-    EEG was recorded at 500 Hz from 32 scalp electrodes and 14 ear-EEG
-    electrodes, with 4 EOG channels and a 6-axis IMU on the forehead
-    (accelerometer XYZ + gyroscope XYZ). Data released on OSF is
-    downsampled to 100 Hz and epoched from -200 to +800 ms around
-    stimulus onset (100 samples per trial).
+    Data is released on OSF at 100 Hz, epoched from -190 to +800 ms
+    around stimulus onset (100 samples per trial, 10 ms spacing —
+    the data description PDF rounds this to "-200 to 800 ms", but
+    ``epo.t`` in the actual .mat files starts at -190 ms). The
+    recording comprises 32 scalp EEG channels, 14 ear-EEG electrodes,
+    4 EOG channels, and a 6-axis IMU on the forehead (accelerometer
+    XYZ + gyroscope XYZ).
 
     **Channel handling**
 
@@ -215,7 +217,10 @@ class BCIComp2020WalkingERP(BaseDataset):
                 "misc": len(_IMU_CHANNELS),
             },
             montage="standard_1005",
-            hardware="scalp EEG + ear-EEG amplifiers + forehead IMU",
+            # Amplifier model is not stated in the Track 5 data
+            # description PDF and not clearly documented in the
+            # Frontiers review paper either; left unset rather than
+            # guessed.
             sensors=list(_CH_NAMES),
         ),
         participants=ParticipantMetadata(
@@ -290,8 +295,8 @@ class BCIComp2020WalkingERP(BaseDataset):
             data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=[
-                "downsampled to 100 Hz",
-                "epoched (-200 to 800 ms around stimulus)",
+                "100 Hz sampling rate",
+                "epoched from -190 ms to +800 ms around stimulus",
             ],
         ),
         paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
@@ -312,7 +317,7 @@ class BCIComp2020WalkingERP(BaseDataset):
             sessions_per_subject=1,
             events={"NonTarget": 1, "Target": 2},
             code="BCIComp2020WalkingERP",
-            interval=[-0.2, 0.8],
+            interval=[-0.19, 0.8],
             paradigm="p300",
             doi="10.3389/fnhum.2022.898300",
             selected_subjects=subjects,

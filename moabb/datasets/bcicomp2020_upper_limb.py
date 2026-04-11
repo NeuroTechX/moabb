@@ -108,17 +108,17 @@ _OSF_URLS: dict[tuple[str, int], str] = {
 # typically train on session "0" and evaluate on sessions "1"/"2".
 _SESSIONS: list[tuple[str, str]] = [("training", "0"), ("validation", "1"), ("test", "2")]
 
-# For the train/val .mat files, epo.x holds a full 10-second trial
-# (relaxation 0-3s, cue 3-6s, motor imagery 6-10s) at 250 Hz. The
-# test .mat files only hold 7 seconds: the cue section (3-6s of the
-# original timeline) was removed by the organizers to prevent the
-# visual-cue artifact from inflating test accuracy. We slice out the
-# 4-second motor imagery window from each file so every session has
-# the same (n_trials, n_channels, n_samples) shape.
+# epo.x holds a full 10-second trial (relaxation 0-3s, cue 3-6s,
+# motor imagery 6-10s) at 250 Hz for all three splits. The
+# organizer-released test files have the same (2501, 60, 150) shape
+# as train/val but with the cue section (samples 750-1500, i.e.
+# seconds 3-6) zeroed out in-place to prevent the visual-cue response
+# from inflating test accuracy. The MI window at samples 1500-2500
+# is unchanged across splits, so we use the same slice everywhere
+# and return only the 4-second motor imagery segment.
 _MI_DURATION_S = 4.0
 _MI_N_SAMPLES = int(_MI_DURATION_S * _SFREQ)  # 1000 samples
-_MI_SLICE_FULL = slice(1500, 1500 + _MI_N_SAMPLES)  # samples 1500-2500 / 10s epoch
-_MI_SLICE_TEST = slice(750, 750 + _MI_N_SAMPLES)  # samples 750-1750 / 7s epoch
+_MI_SLICE = slice(1500, 1500 + _MI_N_SAMPLES)  # samples 1500-2500 = 6-10 s
 
 # Day-3 test labels, extracted from the OSF answer sheet
 # Track4_Answer_Sheet_Test.xlsx. Values are 0-indexed class IDs
@@ -178,10 +178,11 @@ class BCIComp2020UpperLimb(BaseDataset):
     - Session "2": day 3, intended as the held-out transfer test
 
     The test-day .mat files released by the organizers have the cue
-    section (3-6 s of the original timeline) removed to prevent the
-    visual-cue response from inflating results, so their raw epochs
-    span 7 s instead of 10 s; this loader compensates by slicing the
-    motor imagery window from the correct offset in each split.
+    section (samples 750-1500, i.e. seconds 3-6 of each trial)
+    zeroed in-place to prevent the visual-cue response from
+    inflating results. The array shape stays at (2501, 60, 150),
+    so the same sample slice (1500-2500) extracts the motor imagery
+    window consistently across train / val / test.
 
     Test-day labels are published as a separate answer-sheet XLSX on
     OSF rather than inside the .mat files. They are embedded in this
@@ -214,7 +215,11 @@ class BCIComp2020UpperLimb(BaseDataset):
             health_status="healthy",
             age_min=20,
             age_max=34,
-            handedness={"right": 15},
+            # Data description PDF has garbled text around handedness
+            # ("all right-handed - S1, 4, and 5; all right-handed"),
+            # so the per-subject split is unclear. The task is
+            # performed on a single right arm, but we leave
+            # handedness unset rather than over-claim.
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -222,12 +227,14 @@ class BCIComp2020UpperLimb(BaseDataset):
             paradigm="imagery",
             n_classes=3,
             class_labels=list(_CLASS_NAMES),
-            trial_duration=10.0,
+            trial_duration=_MI_DURATION_S,
             study_design=(
                 "Three-session cue-based motor imagery of three grasping "
                 "tasks on a single right arm (cylindrical, spherical, "
-                "lumbrical). Sessions are 7 days apart to pose a "
-                "session-to-session transfer problem."
+                "lumbrical). Each original trial is 10 s long (3 s rest, "
+                "3 s cue, 4 s motor imagery); this loader exposes only "
+                "the 4 s motor imagery window. Sessions are 7 days "
+                "apart to pose a session-to-session transfer problem."
             ),
             stimulus_type="visual cue",
             stimulus_modalities=["visual"],
@@ -282,7 +289,11 @@ class BCIComp2020UpperLimb(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
-            preprocessing_steps=["60 Hz notch", "epoched (0-10 s per cue)"],
+            preprocessing_steps=[
+                "60 Hz notch filter",
+                "cue-aligned epoching",
+                "motor imagery window (6-10 s of each trial) extracted by loader",
+            ],
             notch_hz=60.0,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
@@ -317,9 +328,10 @@ class BCIComp2020UpperLimb(BaseDataset):
     def _load_epoch_mat(fpath, split, subject):
         """Load a Track 4 .mat file and return (data, labels, ch_names).
 
-        Extracts the 4-second motor imagery window from ``epo.x``,
-        using test-set labels from :data:`_TEST_LABELS_DAY3` when the
-        split is ``"test"`` (those files do not store ``epo.y``).
+        Extracts the 4-second motor imagery window (samples 1500-2500
+        of each 10-second trial) from ``epo.x``, and uses test-set
+        labels from :data:`_TEST_LABELS_DAY3` when the split is
+        ``"test"`` (those files do not store ``epo.y``).
         """
         mat = loadmat(fpath, squeeze_me=False)
         epo = mat["epo"]
@@ -327,8 +339,7 @@ class BCIComp2020UpperLimb(BaseDataset):
         # x is (n_times, n_channels, n_trials); slice to the MI window
         # then transpose to (n_trials, n_channels, n_samples).
         x = epo["x"][0, 0]
-        mi_slice = _MI_SLICE_TEST if split == "test" else _MI_SLICE_FULL
-        data = np.transpose(x[mi_slice, :, :], (2, 1, 0))
+        data = np.transpose(x[_MI_SLICE, :, :], (2, 1, 0))
 
         if split == "test":
             labels = np.array(_TEST_LABELS_DAY3[subject], dtype=int) + 1
