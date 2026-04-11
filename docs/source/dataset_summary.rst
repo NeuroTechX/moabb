@@ -56,7 +56,7 @@ Column definitions:
 Motor Imagery
 ======================
 
-Motor Imagery is a BCI paradigm where the subject imagines performing movements. Each movement is associated with a different command to build an application.
+Motor Imagery is a BCI paradigm where the subject imagines performing physical movements. Each movement is associated with a different command to build an application.
 
 Motor Imagery-specific definitions:
 
@@ -65,6 +65,28 @@ Motor Imagery-specific definitions:
 
 .. csv-table::
    :file: ../build/summary_imagery.csv
+   :header-rows: 1
+   :class: sortable
+
+
+Imagined Speech
+======================
+
+Welcome to the **imagined speech** family, where subjects silently imagine
+speaking words, phonemes, or phrases without any sound or movement.
+Imagined speech is a close cousin of classical motor imagery: both rely on
+internal mental rehearsal and both are decoded with similar pipelines. In
+MOABB, imagined speech datasets are tagged with the ``imagery`` paradigm so
+you can benchmark them with :class:`moabb.paradigms.MotorImagery` and
+:class:`moabb.paradigms.FilterBankMotorImagery` without new paradigm code.
+
+The datasets span English and Spanish, phonemes through phrases, and 2 to
+11 classes. The rows below also appear in the Motor Imagery table above
+(same ``paradigm="imagery"`` tag); they are repeated here to make the
+imagined speech family easy to discover.
+
+.. csv-table::
+   :file: ../build/summary_imagined_speech.csv
    :header-rows: 1
    :class: sortable
 

@@ -1,0 +1,8 @@
+Dataset,#Subj,#Chan,#Classes,#Trials / class,Trials length (s),Freq (Hz),#Sessions,#Runs,Total_trials
+BCIComp2020IS,15,64,5,80,3.1,256,1,3,6000
+AguileraRodriguez2025,15,24,4,30,4.0,500,1,1,1800
+Nguyen2017_V,8,64,3,100,5.0,256,1,1,2400
+Nguyen2017_S,6,64,3,100,5.0,256,1,1,1800
+Nguyen2017_L,6,64,2,100,5.0,256,1,1,1200
+Nguyen2017_SL,6,64,2,100,5.0,256,1,1,1200
+Pressel2016,15,6,11,50,4.0,1024,1,1,8670

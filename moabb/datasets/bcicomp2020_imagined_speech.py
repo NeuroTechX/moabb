@@ -4,8 +4,6 @@ Jeong et al., 2022 International BCI Competition review.
 Data: https://osf.io/pq7vb/
 """
 
-import logging
-
 import numpy as np
 from scipy.io import loadmat
 
@@ -24,8 +22,6 @@ from .metadata.schema import (
 )
 from .utils import build_raw_from_epochs
 
-
-log = logging.getLogger(__name__)
 
 _SIGN = "BCIComp2020IS"
 _SFREQ = 256.0

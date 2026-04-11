@@ -31,6 +31,10 @@ from .utils import build_raw_from_epochs
 
 _SIGN = "BCIComp2020WalkingERP"
 _SFREQ = 100.0
+# epo.t in the source .mat files spans -190 ms to +800 ms at 10 ms
+# spacing, so the actual stimulus onset is at sample index 19 of
+# each 100-sample trial (indices 0-18 are the pre-stim baseline).
+_STIM_ONSET_SAMPLE = 19
 
 # Channel layout per Data Description PDF:
 #   1-32:  scalp EEG
@@ -125,10 +129,8 @@ _SPLITS: list[tuple[str, str, str]] = [
 
 # Test-run labels, extracted from the OSF answer sheet
 # Track5_Answer_Sheet_Test.xlsx. Values are 0-indexed (0=NonTarget,
-# 1=Target). The loader converts them to 1-indexed events matching
-# the :data:`_TEST_LABELS_RUN2` dict is 0-indexed because that
-# matches the xlsx source format; the +1 conversion happens at load
-# time to align with the {"NonTarget": 1, "Target": 2} event map.
+# 1=Target), matching the raw xlsx cells; ``_load_epoch_mat`` maps
+# them to the canonical event codes ``{NonTarget: 1, Target: 2}``.
 #
 # Several subjects share identical trial orders in the organizer
 # answer sheet (e.g. S4-S8, S12-S15); this is a property of the
@@ -379,7 +381,18 @@ class BCIComp2020WalkingERP(BaseDataset):
         }
 
     def _get_single_subject_data(self, subject):
-        """Return data for a single subject (1 session with 3 runs)."""
+        """Return data for a single subject (1 session with 3 runs).
+
+        ``epo.t`` in the source .mat files spans -190 ms to +800 ms at
+        10 ms (100 Hz) spacing, so the actual stimulus onset sits at
+        sample index 19 of each trial (not sample 0). We pass
+        ``onset_sample=19`` to ``build_raw_from_epochs`` so the stim
+        marker lands on the real stimulus, not on the start of the
+        pre-stim baseline window. Without this offset the paradigm
+        pipeline would treat the 190 ms baseline as "post-stimulus"
+        data and replace the first 19 samples of the epoch with
+        leading-buffer zeros.
+        """
         paths = self._download_all_splits(
             subject, path=None, force_update=False, verbose=None
         )
@@ -395,6 +408,7 @@ class BCIComp2020WalkingERP(BaseDataset):
                 labels,
                 montage_name="standard_1005",
                 ch_types=_CH_TYPES,
+                onset_sample=_STIM_ONSET_SAMPLE,
             )
         return {"0": runs}
 

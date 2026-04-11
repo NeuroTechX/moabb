@@ -7,7 +7,6 @@ distribution is on Dropbox (HORC lab, ASU); the Zenodo record is a
 re-packaging of the 4 condition zips with normalized filenames.
 """
 
-import logging
 from pathlib import Path
 
 import numpy as np
@@ -30,8 +29,6 @@ from .metadata.schema import (
 )
 from .utils import build_raw_from_epochs, download_and_extract_subject_zip
 
-
-log = logging.getLogger(__name__)
 
 _DOI = "10.1088/1741-2552/aa8235"
 _IRB = "ASU IRB Protocols 1309009601, STUDY00001345"
@@ -245,10 +242,13 @@ class Nguyen2017_V(_Nguyen2017Base):
         participants=ParticipantMetadata(
             n_subjects=8,
             health_status="healthy",
-            gender={"male": 11, "female": 4},
+            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
+            # all right-handed except S13) from the original paper;
+            # each sub-dataset uses only 6-8 of those subjects and
+            # the per-subset gender/handedness breakdown is not
+            # published, so we only keep the age range here.
             age_min=22,
             age_max=32,
-            handedness="right (except S13)",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -392,10 +392,13 @@ class Nguyen2017_S(_Nguyen2017Base):
         participants=ParticipantMetadata(
             n_subjects=6,
             health_status="healthy",
-            gender={"male": 11, "female": 4},
+            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
+            # all right-handed except S13) from the original paper;
+            # each sub-dataset uses only 6-8 of those subjects and
+            # the per-subset gender/handedness breakdown is not
+            # published, so we only keep the age range here.
             age_min=22,
             age_max=32,
-            handedness="right (except S13)",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -512,10 +515,13 @@ class Nguyen2017_L(_Nguyen2017Base):
         participants=ParticipantMetadata(
             n_subjects=6,
             health_status="healthy",
-            gender={"male": 11, "female": 4},
+            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
+            # all right-handed except S13) from the original paper;
+            # each sub-dataset uses only 6-8 of those subjects and
+            # the per-subset gender/handedness breakdown is not
+            # published, so we only keep the age range here.
             age_min=22,
             age_max=32,
-            handedness="right (except S13)",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -634,10 +640,13 @@ class Nguyen2017_SL(_Nguyen2017Base):
         participants=ParticipantMetadata(
             n_subjects=6,
             health_status="healthy",
-            gender={"male": 11, "female": 4},
+            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
+            # all right-handed except S13) from the original paper;
+            # each sub-dataset uses only 6-8 of those subjects and
+            # the per-subset gender/handedness breakdown is not
+            # published, so we only keep the age range here.
             age_min=22,
             age_max=32,
-            handedness="right (except S13)",
             species="human",
         ),
         experiment=ExperimentMetadata(

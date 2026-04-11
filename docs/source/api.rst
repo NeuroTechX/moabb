@@ -102,6 +102,29 @@ Motor Imagery Datasets
     Zhang2017
     Zhou2020
     Zuo2025
+    BCIComp2020UpperLimb
+
+------------------------
+Imagined Speech Datasets
+------------------------
+
+MOABB now welcomes **imagined speech** datasets — subjects silently imagine
+speaking words, phonemes, or phrases. They share the ``imagery`` paradigm
+tag with motor imagery and can be decoded with the existing
+:class:`~moabb.paradigms.MotorImagery` and
+:class:`~moabb.paradigms.FilterBankMotorImagery` classes.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    AguileraRodriguez2025
+    BCIComp2020IS
+    Nguyen2017_L
+    Nguyen2017_S
+    Nguyen2017_SL
+    Nguyen2017_V
+    Pressel2016
 
 -----------------
 ERP/P300 Datasets
@@ -178,6 +201,7 @@ ERP/P300 Datasets
     Speier2017
     Zhang2025
     Zheng2020
+    BCIComp2020WalkingERP
 
 --------------
 SSVEP Datasets
