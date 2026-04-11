@@ -45,7 +45,11 @@ _EOG_INDICES = [0, 9, 32, 63]
 _ZENODO_RECORD = "19502794"
 _ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
-# Condition-specific configuration.
+# Condition-specific configuration. The Zenodo mirror stores each
+# subject as ``sub-NN.mat`` inside the per-condition zip, so only the
+# subject count is needed here — the provenance mapping from the
+# authors' opaque filenames to the sub-NN convention lives in the
+# README.md and Read_me.txt bundled inside each zip on Zenodo.
 _CONDITIONS = {
     "Vowels": {
         "sign": "nguyen2017v",
@@ -53,17 +57,7 @@ _CONDITIONS = {
         "events": {"vowel_a": 1, "vowel_i": 2, "vowel_u": 3},
         "class_labels": ["vowel_a", "vowel_i", "vowel_u"],
         "n_classes": 3,
-        # Subject file basenames (sorted), excluding time_correlation file.
-        "subjects": [
-            "sub_4b_ch80_v_eog_removed_256Hz",
-            "sub_5b_ch80_v_eog_removed_256Hz",
-            "sub_8e_ch64_v_eog_removed_256Hz",
-            "sub_9_ch64_v_eog_removed_256Hz",
-            "sub_11_ch64_v_eog_removed_256Hz",
-            "sub_12_ch64_v_eog_removed_256Hz",
-            "sub_13_ch64_v_eog_removed_256Hz",
-            "sub_15_ch64_v_eog_removed_256Hz",
-        ],
+        "n_subjects": 8,
     },
     "ShortWords": {
         "sign": "nguyen2017s",
@@ -71,14 +65,7 @@ _CONDITIONS = {
         "events": {"out": 1, "in": 2, "up": 3},
         "class_labels": ["out", "in", "up"],
         "n_classes": 3,
-        "subjects": [
-            "sub_1_ch64_s_eog_removed_256Hz",
-            "sub_3_ch64_s_eog_removed_256Hz",
-            "sub_5_ch64_s_eog_removed_256Hz",
-            "sub_6b_ch80_s_eog_removed_256Hz",
-            "sub_8g_ch64_s_eog_removed_256Hz",
-            "sub_12b_ch64_s_eog_removed_256Hz",
-        ],
+        "n_subjects": 6,
     },
     "LongWords": {
         "sign": "nguyen2017l",
@@ -86,14 +73,7 @@ _CONDITIONS = {
         "events": {"cooperate": 1, "independent": 2},
         "class_labels": ["cooperate", "independent"],
         "n_classes": 2,
-        "subjects": [
-            "sub_2b_ch64_l_eog_removed_256Hz",
-            "sub_3b_ch80_l_eog_removed_256Hz",
-            "sub_6_ch64_l_eog_removed_256Hz",
-            "sub_7_ch64_l_eog_removed_256Hz",
-            "sub_9c_ch64_l_eog_removed_256Hz",
-            "sub_11b_ch64_l_eog_removed_256Hz",
-        ],
+        "n_subjects": 6,
     },
     "ShortLongWords": {
         "sign": "nguyen2017sl",
@@ -101,15 +81,7 @@ _CONDITIONS = {
         "events": {"cooperate": 1, "in": 2},
         "class_labels": ["cooperate", "in"],
         "n_classes": 2,
-        # Exclude the _8s variant file for sub_14.
-        "subjects": [
-            "sub_1c_ch64_sl_eog_removed_256Hz_bw20",
-            "sub_5c_ch64_sl_eog_removed_256Hz_bw20",
-            "sub_8d_ch64_sl_eog_removed_256Hz",
-            "sub_9b_ch64_sl_eog_removed_256Hz_bw20",
-            "sub_10_ch64_sl_eog_removed_256Hz_bw20",
-            "sub_14_ch64_sl_eog_removed_256Hz_bw20",
-        ],
+        "n_subjects": 6,
     },
 }
 
@@ -122,9 +94,8 @@ class _Nguyen2017Base(BaseDataset):
 
     def __init__(self, subjects=None, sessions=None):
         cfg = _CONDITIONS[self._condition]
-        n_subj = len(cfg["subjects"])
         super().__init__(
-            subjects=list(range(1, n_subj + 1)),
+            subjects=list(range(1, cfg["n_subjects"] + 1)),
             sessions_per_subject=1,
             events=cfg["events"],
             code=f"Nguyen2017-{self._code_suffix}",

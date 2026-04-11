@@ -20,6 +20,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -32,6 +33,12 @@ PRODUCTION_URL = "https://zenodo.org"
 
 MAX_RETRIES = 3
 BACKOFF_BASE = 5
+
+# TODO: Zenodo is migrating to InvenioRDM. The legacy /api/deposit/depositions
+# endpoint used below is on borrowed time. When it sunsets, switch to
+# /api/records + /api/records/{id}/draft. The version header lets Zenodo pin
+# us to the legacy contract in the interim.
+_ZENODO_HEADERS = {"Accept": "application/vnd.zenodo.v1+json"}
 
 SRC = Path.home() / "mne_data" / "pressel2016_zenodo"
 
@@ -271,18 +278,38 @@ METADATA = {
 
 
 def _request_with_retry(method, url, **kwargs):
-    """Make an HTTP request with exponential backoff retry."""
+    """Make an HTTP request with exponential backoff retry.
+
+    Retries transient failures (connection drops, timeouts, 5xx) but
+    NOT 4xx — a 401/403/404 will never become a 200 on its own, so
+    retrying just delays the failure and burns rate-limit budget.
+    """
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             r = method(url, **kwargs)
-            r.raise_for_status()
-            return r
-        except requests.RequestException as e:
+        except (requests.ConnectionError, requests.Timeout) as e:
             if attempt == MAX_RETRIES:
                 raise
             wait = BACKOFF_BASE * (2 ** (attempt - 1))
             print(f"  Attempt {attempt} failed: {e}. Retrying in {wait}s...")
             time.sleep(wait)
+            continue
+        if r.status_code < 500:
+            r.raise_for_status()  # 4xx raises immediately, 2xx/3xx returns
+            return r
+        if attempt == MAX_RETRIES:
+            r.raise_for_status()
+        wait = BACKOFF_BASE * (2 ** (attempt - 1))
+        print(f"  Attempt {attempt} failed: HTTP {r.status_code}. Retrying in {wait}s...")
+        time.sleep(wait)
+    raise RuntimeError("unreachable: retry loop exited without returning")
+
+
+def _auth(token, *, content_type=None):
+    headers = {**_ZENODO_HEADERS, "Authorization": f"Bearer {token}"}
+    if content_type:
+        headers["Content-Type"] = content_type
+    return headers
 
 
 def create_deposition(base_url, token):
@@ -290,7 +317,7 @@ def create_deposition(base_url, token):
         requests.post,
         f"{base_url}/api/deposit/depositions",
         json={},
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        headers=_auth(token, content_type="application/json"),
     )
     data = r.json()
     print(f"Created deposition: {data['id']}")
@@ -303,10 +330,7 @@ def upload_file(bucket_url, file_path, token):
     print(f"  Uploading {file_path.name} ({size_mb:.1f} MB)...", end=" ", flush=True)
     with open(file_path, "rb") as fp:
         r = _request_with_retry(
-            requests.put,
-            f"{bucket_url}/{file_path.name}",
-            data=fp,
-            headers={"Authorization": f"Bearer {token}"},
+            requests.put, f"{bucket_url}/{file_path.name}", data=fp, headers=_auth(token)
         )
     print(f"OK ({r.json()['checksum']})")
 
@@ -316,7 +340,7 @@ def set_metadata(base_url, deposition_id, metadata, token):
         requests.put,
         f"{base_url}/api/deposit/depositions/{deposition_id}",
         json=metadata,
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        headers=_auth(token, content_type="application/json"),
     )
     print(f"Metadata set: {r.json()['title']}")
 
@@ -325,7 +349,7 @@ def publish(base_url, deposition_id, token):
     r = _request_with_retry(
         requests.post,
         f"{base_url}/api/deposit/depositions/{deposition_id}/actions/publish",
-        headers={"Authorization": f"Bearer {token}"},
+        headers=_auth(token),
     )
     data = r.json()
     print("Published!")
@@ -334,19 +358,33 @@ def publish(base_url, deposition_id, token):
     return data
 
 
+def _resolve_token(cli_token):
+    token = cli_token or os.environ.get("ZENODO_TOKEN")
+    if not token:
+        print(
+            "Error: no Zenodo API token. Pass --token <value> or set "
+            "ZENODO_TOKEN in the environment."
+        )
+        sys.exit(2)
+    return token
+
+
 def main():
     parser = argparse.ArgumentParser(description="Upload Pressel2016 dataset to Zenodo")
-    parser.add_argument("--token", required=True, help="Zenodo API token")
+    parser.add_argument(
+        "--token", help="Zenodo API token (falls back to ZENODO_TOKEN env var)"
+    )
     parser.add_argument("--sandbox", action="store_true", help="Use sandbox.zenodo.org")
     parser.add_argument(
         "--publish", metavar="ID", help="Publish existing deposition by ID"
     )
     args = parser.parse_args()
 
+    token = _resolve_token(args.token)
     base_url = SANDBOX_URL if args.sandbox else PRODUCTION_URL
 
     if args.publish:
-        data = publish(base_url, args.publish, args.token)
+        data = publish(base_url, args.publish, token)
         record_id = data["id"]
         print(f"\nZenodo record: {base_url}/records/{record_id}")
         return
@@ -367,14 +405,14 @@ def main():
         + (" + README.md" if readme_file.exists() else "")
     )
 
-    deposition = create_deposition(base_url, args.token)
+    deposition = create_deposition(base_url, token)
     deposition_id = deposition["id"]
     bucket_url = deposition["links"]["bucket"]
 
     for f in upload_files:
-        upload_file(bucket_url, f, args.token)
+        upload_file(bucket_url, f, token)
 
-    set_metadata(base_url, deposition_id, METADATA, args.token)
+    set_metadata(base_url, deposition_id, METADATA, token)
 
     print(f"\nDraft ready for review: {deposition['links']['html']}")
     print(f"Deposition ID: {deposition_id}")

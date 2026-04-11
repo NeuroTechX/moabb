@@ -56,7 +56,6 @@ import argparse
 import logging
 import zipfile
 from pathlib import Path
-from typing import Tuple
 
 
 logging.basicConfig(
@@ -134,7 +133,7 @@ CONDITIONS: dict[str, dict] = {
     },
 }
 
-CLASS_LABELS: dict[str, Tuple[str, ...]] = {
+CLASS_LABELS: dict[str, tuple[str, ...]] = {
     "Vowels": ("vowel_a", "vowel_i", "vowel_u"),
     "ShortWords": ("out", "in", "up"),
     "LongWords": ("cooperate", "independent"),
