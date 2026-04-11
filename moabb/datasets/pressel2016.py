@@ -279,26 +279,21 @@ class Pressel2016(BaseDataset):
 
         return sessions
 
-    def _subject_dir(self):
-        path = dl.get_dataset_path(_SIGN, None)
-        return Path(path) / f"MNE-{_SIGN}-data"
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = self._subject_dir()
-        base.mkdir(parents=True, exist_ok=True)
-
-        subj_dir = base / f"S{subject:02d}"
+        subj_dir = (
+            Path(dl.get_dataset_path(_SIGN, path))
+            / f"MNE-{_SIGN.lower()}-data"
+            / f"S{subject:02d}"
+        )
         mat_file = subj_dir / f"sub-{subject:02d}_eeg.mat"
         if mat_file.exists() and not force_update:
             return str(mat_file)
 
-        # Download per-subject ZIP from Zenodo (10.5281/zenodo.19502780)
-        # and extract the single sub-NN_eeg.mat file it contains.
         url = f"{_ZENODO_BASE}/S{subject:02d}.zip"
         download_and_extract_subject_zip(
             url, _SIGN, subj_dir, path=path, force_update=force_update, verbose=verbose

@@ -170,10 +170,6 @@ class _Nguyen2017Base(BaseDataset):
         raw = self._mat_to_raw(fpath)
         return {"0": {"0": raw}}
 
-    def _subject_dir(self):
-        path = dl.get_dataset_path(self._cfg["sign"], None)
-        return Path(path) / f"MNE-{self._cfg['sign']}-data"
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -181,21 +177,19 @@ class _Nguyen2017Base(BaseDataset):
             raise ValueError("Invalid subject number")
 
         cfg = self._cfg
-        base = self._subject_dir()
-        base.mkdir(parents=True, exist_ok=True)
-
         # The Zenodo mirror stores files as sub-01.mat … sub-NN.mat inside
-        # each per-condition zip; the authors' opaque basenames (and the
-        # corresponding entries in cfg['subjects']) are preserved as
-        # provenance in the bundled Read_me.txt / README.md.
-        cond_dir = base / cfg["zip_name"].replace(".zip", "")
+        # each per-condition zip; the authors' opaque basenames are
+        # preserved as provenance in the bundled Read_me.txt / README.md.
+        cond_dir = (
+            Path(dl.get_dataset_path(cfg["sign"], path))
+            / f"MNE-{cfg['sign']}-data"
+            / cfg["zip_name"].replace(".zip", "")
+        )
         mat_file = cond_dir / f"sub-{subject:02d}.mat"
 
         if mat_file.exists() and not force_update:
             return str(mat_file)
 
-        # Download per-condition ZIP from Zenodo (10.5281/zenodo.19502794)
-        # and extract the renamed subject file.
         url = f"{_ZENODO_BASE}/{cfg['zip_name']}"
         download_and_extract_subject_zip(
             url,
