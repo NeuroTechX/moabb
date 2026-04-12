@@ -25,6 +25,15 @@ from .metadata.schema import (
 )
 
 
+def _speech_hed(label):
+    """Build a HED tag string for an imagined-speech event (visual + auditory)."""
+    return (
+        "(Sensory-event, Experimental-stimulus, "
+        "Visual-presentation, Auditory-presentation), "
+        f"(Agent-action, (Imagine, Speak, (Word, (Label/{label}))))"
+    )
+
+
 _SIGN = "aguilerarodriguez2025"
 _SFREQ = 500.0
 _DOI = "10.1038/s41597-025-05926-5"
@@ -101,18 +110,13 @@ class AguileraRodriguez2025(BaseDataset):
         Only the traditional paradigm (EDF) is loaded by default.
         The gamified paradigm uses XDF format which requires ``pyxdf``.
 
-    .. figure:: /_static/paper_figures/AguileraRodriguez2025.png
-       :alt: AguileraRodriguez2025 trial structure (Fig. 1 of the
-             Sci. Data paper) — written word cue + 7 imagined-speech
-             repetitions at T=1.4 s, last 3 reps form the extracted
-             signal, then 2 s rest.
+    .. figure:: https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-05926-5/MediaObjects/41597_2025_5926_Fig1_HTML.png
+       :alt: AguileraRodriguez2025 trial structure — written word cue
+             + 7 imagined-speech repetitions at T=1.4 s, then 2 s rest.
        :width: 100%
 
-       Figure 1 of [1]_ — traditional paradigm trial structure.
-       Reproduced from Springer Nature under CC-BY-NC-ND-4.0 (see
-       NOTICE in ``_static/paper_figures``). The recommended bandpass
-       is 1-100 Hz (broadband) — see
-       :class:`~moabb.paradigms.SpeechImagery`.
+       Figure 1 of [1]_ (CC-BY-NC-ND-4.0). Recommended bandpass:
+       1-100 Hz — see :class:`~moabb.paradigms.SpeechImagery`.
 
     References
     ----------
@@ -169,26 +173,10 @@ class AguileraRodriguez2025(BaseDataset):
                 "Continues for 2 more repetitions after beeps stop."
             ),
             hed_tags={
-                "avanzar": (
-                    "(Sensory-event, Experimental-stimulus, "
-                    "Visual-presentation, Auditory-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/avanzar))))"
-                ),
-                "retroceder": (
-                    "(Sensory-event, Experimental-stimulus, "
-                    "Visual-presentation, Auditory-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/retroceder))))"
-                ),
-                "derecha": (
-                    "(Sensory-event, Experimental-stimulus, "
-                    "Visual-presentation, Auditory-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/derecha))))"
-                ),
-                "izquierda": (
-                    "(Sensory-event, Experimental-stimulus, "
-                    "Visual-presentation, Auditory-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/izquierda))))"
-                ),
+                "avanzar": _speech_hed("avanzar"),
+                "retroceder": _speech_hed("retroceder"),
+                "derecha": _speech_hed("derecha"),
+                "izquierda": _speech_hed("izquierda"),
             },
         ),
         documentation=DocumentationMetadata(

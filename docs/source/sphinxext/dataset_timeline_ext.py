@@ -52,8 +52,6 @@ except ImportError:
 _PARADIGM_LABELS = PARADIGM_LABELS
 _PARADIGM_COLORS = PARADIGM_COLORS
 
-_TIMELINE_SVG_DIR = "_static/timelines"
-_PAPER_FIGURES_DIR = "_static/paper_figures/"
 _BENCHMARK_FILES = [
     ("within_session_mi_left_vs_right_hand.csv", "MI left vs right"),
     ("within_session_mi_all_classes.csv", "MI all classes"),
@@ -1724,17 +1722,11 @@ def _make_visual_grid_lines(cls_name, info, srcdir, docstring_lines=None):
     timeline_svg = os.path.join(srcdir, "_static", "timelines", f"{cls_name}.svg")
 
     has_timeline = os.path.exists(timeline_svg)
-    # If the class docstring already embeds a paradigm figure (the
-    # auto-generated timeline SVG, or an original paper figure under
-    # ``_static/paper_figures/``) via a ``.. figure::`` / ``.. image::``
-    # directive, skip the auto-injected grid card to avoid showing two
-    # protocol figures on the rendered page.
+    # If the class docstring already embeds a protocol figure via a
+    # ``.. figure::`` directive (local or external URL), skip the
+    # auto-injected timeline grid card to avoid duplication.
     if has_timeline and docstring_lines is not None:
-        embedded_refs = (
-            f"{_TIMELINE_SVG_DIR}/{cls_name}.svg",
-            _PAPER_FIGURES_DIR,
-        )
-        if any(any(ref in line for ref in embedded_refs) for line in docstring_lines):
+        if any(".. figure::" in line for line in docstring_lines):
             has_timeline = False
     # Build channel summary HTML
     channel_html = _make_channel_summary_html(info)

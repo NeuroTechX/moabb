@@ -58,17 +58,12 @@ class Kojima2024A(BaseDataset):
     Each run lasted approximately 5 minutes.
     In each run, all deviant stimuli (D1--D4) were presented approximately 60 times.
 
-    .. figure:: /_static/paper_figures/Kojima2024.png
-       :alt: Kojima2024 ASME-BCI concept (Fig. 1 of the PLoS ONE
-             paper) — three concurrent auditory streams (Stream 1, 2,
-             3) each carrying a two-stimulus oddball sequence
-             (standard S, deviant D); the subject selectively attends
-             to a single target stream and the EEG response is decoded
-             via feature extraction + classification.
+    .. figure:: https://journals.plos.org/plosone/article/figure/image?size=large&id=10.1371/journal.pone.0303565.g001
+       :alt: Kojima2024 ASME-BCI — three auditory streams with oddball
+             sequences; subject attends to one target stream.
        :width: 100%
 
-       Figure 1 of [2]_ — auditory stream segregation BCI concept.
-       Reproduced from PLoS ONE under CC-BY-4.0.
+       Figure 1 of [2]_ (CC-BY-4.0).
 
     Recording Details:
         - EEG signals were recorded using a BrainAmp system (Brain Products, Germany)

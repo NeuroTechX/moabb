@@ -29,6 +29,14 @@ from .metadata.schema import (
 from .utils import build_raw_from_epochs, download_and_extract_subject_zip
 
 
+def _speech_hed(label, unit="Word", modality="Visual-presentation"):
+    """Build a HED tag string for an imagined-speech event."""
+    return (
+        f"(Sensory-event, Experimental-stimulus, {modality}), "
+        f"(Agent-action, (Imagine, Speak, ({unit}, (Label/{label}))))"
+    )
+
+
 _SIGN = "pressel2016"
 _SFREQ = 1024.0
 _N_CHANNELS = 6
@@ -147,52 +155,19 @@ class Pressel2016(BaseDataset):
             synchronicity="synchronous",
             mode="offline",
             hed_tags={
-                # Vowels — phoneme-level imagined speech
-                "vowel_a": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/a))))"
-                ),
-                "vowel_e": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/e))))"
-                ),
-                "vowel_i": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/i))))"
-                ),
-                "vowel_o": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/o))))"
-                ),
-                "vowel_u": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/u))))"
-                ),
-                # Directional commands — word-level imagined speech
-                "arriba": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/arriba))))"
-                ),
-                "abajo": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/abajo))))"
-                ),
-                "adelante": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/adelante))))"
-                ),
-                "atras": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/atras))))"
-                ),
-                "derecha": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/derecha))))"
-                ),
-                "izquierda": (
-                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/izquierda))))"
-                ),
+                # Vowels (phoneme-level)
+                "vowel_a": _speech_hed("a", "Phoneme"),
+                "vowel_e": _speech_hed("e", "Phoneme"),
+                "vowel_i": _speech_hed("i", "Phoneme"),
+                "vowel_o": _speech_hed("o", "Phoneme"),
+                "vowel_u": _speech_hed("u", "Phoneme"),
+                # Directional commands (word-level)
+                "arriba": _speech_hed("arriba"),
+                "abajo": _speech_hed("abajo"),
+                "adelante": _speech_hed("adelante"),
+                "atras": _speech_hed("atras"),
+                "derecha": _speech_hed("derecha"),
+                "izquierda": _speech_hed("izquierda"),
             },
         ),
         documentation=DocumentationMetadata(

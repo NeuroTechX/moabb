@@ -23,6 +23,15 @@ from .metadata.schema import (
 from .utils import build_raw_from_epochs
 
 
+def _speech_hed(label):
+    """Build a HED tag string for an imagined-speech event (auditory cue)."""
+    return (
+        "(Sensory-event, Experimental-stimulus, "
+        "Auditory-presentation, (Hear, Word)), "
+        f"(Agent-action, (Imagine, Speak, (Word, (Label/{label}))))"
+    )
+
+
 _SIGN = "BCIComp2020IS"
 _SFREQ = 256.0
 
@@ -102,16 +111,12 @@ class BCIComp2020IS(BaseDataset):
     have no labels (competition holdout) and are not loaded.
     Best competition result was 82.6% accuracy.
 
-    .. figure:: /_static/paper_figures/BCIComp2020IS.webp
-       :alt: BCI Competition 2020 Track 3 trial structure (Fig. 7 of
-             the Frontiers paper) — Rest 3 s → auditory cue ("Help me",
-             2 s) → 4 imagined-speech repetitions (fixation 1 s +
-             imagery 2 s).
+    .. figure:: https://www.frontiersin.org/files/Articles/898300/xml-images/fnhum-16-898300-g0007.webp
+       :alt: BCI Competition 2020 Track 3 trial structure — Rest,
+             auditory cue, 4 imagined-speech repetitions.
        :width: 100%
 
-       Figure 7 of [1]_ — Track 3 (imagined speech) trial structure.
-       Reproduced from Frontiers under CC-BY-4.0. The MOABB epoch
-       window is -0.5 s to +2.6 s relative to the audio cue onset.
+       Figure 7 of [1]_ (CC-BY-4.0). Epoch window: -0.5 to +2.6 s.
 
     References
     ----------
@@ -160,31 +165,11 @@ class BCIComp2020IS(BaseDataset):
                 "No articulator movement, no sound, no blinking."
             ),
             hed_tags={
-                "Hello": (
-                    "(Sensory-event, Experimental-stimulus, Auditory-presentation, "
-                    "(Hear, Word)), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/Hello))))"
-                ),
-                "Helpme": (
-                    "(Sensory-event, Experimental-stimulus, Auditory-presentation, "
-                    "(Hear, Word)), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/Helpme))))"
-                ),
-                "Stop": (
-                    "(Sensory-event, Experimental-stimulus, Auditory-presentation, "
-                    "(Hear, Word)), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/Stop))))"
-                ),
-                "Thankyou": (
-                    "(Sensory-event, Experimental-stimulus, Auditory-presentation, "
-                    "(Hear, Word)), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/Thankyou))))"
-                ),
-                "Yes": (
-                    "(Sensory-event, Experimental-stimulus, Auditory-presentation, "
-                    "(Hear, Word)), "
-                    "(Agent-action, (Imagine, Speak, (Word, (Label/Yes))))"
-                ),
+                "Hello": _speech_hed("Hello"),
+                "Helpme": _speech_hed("Helpme"),
+                "Stop": _speech_hed("Stop"),
+                "Thankyou": _speech_hed("Thankyou"),
+                "Yes": _speech_hed("Yes"),
             },
         ),
         documentation=DocumentationMetadata(

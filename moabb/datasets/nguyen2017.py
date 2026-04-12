@@ -92,6 +92,73 @@ def _nguyen_hed(label, unit="Word"):
     )
 
 
+# Shared metadata sections identical across all 4 Nguyen conditions.
+_NGUYEN_ACQUISITION = AcquisitionMetadata(
+    sampling_rate=256.0,
+    n_channels=64,
+    channel_types={"eeg": 60, "eog": 4},
+    montage="standard_1020",
+    hardware="BrainProducts ActiCHamp",
+    filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
+    line_freq=60.0,
+    sensor_type="EEG",
+)
+
+_NGUYEN_PREPROCESSING = PreprocessingMetadata(
+    data_state="preprocessed",
+    preprocessing_applied=True,
+    preprocessing_steps=[
+        "Bandpass 8-70 Hz (5th order Butterworth)",
+        "60 Hz notch filter (to remove line noise)",
+        "EOG artifact removal (adaptive filtering)",
+        "Downsampled from 1000 Hz to 256 Hz",
+    ],
+    highpass_hz=8.0,
+    lowpass_hz=70.0,
+    notch_hz=60.0,
+)
+
+_NGUYEN_TAGS = Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"])
+
+
+def _nguyen_participants(n_subjects):
+    return ParticipantMetadata(
+        n_subjects=n_subjects,
+        health_status="healthy",
+        age_min=22,
+        age_max=32,
+        species="human",
+    )
+
+
+def _nguyen_docs(keywords_suffix, description):
+    return DocumentationMetadata(
+        doi=_DOI,
+        investigators=["Chuong H. Nguyen", "George K. Karavas", "Panagiotis Artemiadis"],
+        institution="Arizona State University",
+        institution_department="School for Engineering of Matter, Transport and Energy",
+        institution_address="Tempe, AZ 85287, USA",
+        country="US",
+        publication_year=2018,
+        license="other-open",
+        data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+        repository="Zenodo",
+        senior_author="Panagiotis Artemiadis",
+        contact_info=["chuong.h.nguyen@asu.edu", "panagiotis.artemiadis@asu.edu"],
+        associated_paper_doi="10.1088/1741-2552/aa8235",
+        keywords=[
+            "imagined speech",
+            "EEG",
+            "Riemannian manifold",
+            "covariance matrix",
+            "relevance vector machines",
+            "brain-computer interface",
+            keywords_suffix,
+        ],
+        description=description,
+    )
+
+
 class _Nguyen2017Base(BaseDataset):
     """Base class for Nguyen et al. 2017 imagined speech conditions."""
 
@@ -251,28 +318,8 @@ class Nguyen2017_V(_Nguyen2017Base):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
-            montage="standard_1020",
-            hardware="BrainProducts ActiCHamp",
-            filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
-            line_freq=60.0,
-            sensor_type="EEG",
-        ),
-        participants=ParticipantMetadata(
-            n_subjects=8,
-            health_status="healthy",
-            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
-            # all right-handed except S13) from the original paper;
-            # each sub-dataset uses only 6-8 of those subjects and
-            # the per-subset gender/handedness breakdown is not
-            # published, so we only keep the age range here.
-            age_min=22,
-            age_max=32,
-            species="human",
-        ),
+        acquisition=_NGUYEN_ACQUISITION,
+        participants=_nguyen_participants(8),
         experiment=ExperimentMetadata(
             events={"vowel_a": 1, "vowel_i": 2, "vowel_u": 3},
             paradigm="imagery",
@@ -296,58 +343,17 @@ class Nguyen2017_V(_Nguyen2017Base):
                 "vowel_u": _nguyen_hed("u", "Phoneme"),
             },
         ),
-        documentation=DocumentationMetadata(
-            doi=_DOI,
-            investigators=[
-                "Chuong H. Nguyen",
-                "George K. Karavas",
-                "Panagiotis Artemiadis",
-            ],
-            institution="Arizona State University",
-            institution_department=(
-                "School for Engineering of Matter, Transport and Energy"
-            ),
-            institution_address="Tempe, AZ 85287, USA",
-            country="US",
-            publication_year=2018,
-            license="other-open",
-            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
-            repository="Zenodo",
-            senior_author="Panagiotis Artemiadis",
-            contact_info=["chuong.h.nguyen@asu.edu", "panagiotis.artemiadis@asu.edu"],
-            associated_paper_doi="10.1088/1741-2552/aa8235",
-            keywords=[
-                "imagined speech",
-                "EEG",
-                "Riemannian manifold",
-                "covariance matrix",
-                "relevance vector machines",
-                "brain-computer interface",
-                "vowels",
-            ],
-            description=(
-                "Imagined speech EEG dataset. Paper reports 49.0±2.4% "
-                "mean accuracy for 3-class vowels (chance 33.3%) using "
-                "Riemannian manifold features + mRVM classifier. "
-                "Ethics: ASU IRB Protocols 1309009601, STUDY00001345."
-            ),
+        documentation=_nguyen_docs(
+            "vowels",
+            "Imagined speech EEG dataset. Paper reports 49.0+/-2.4% "
+            "mean accuracy for 3-class vowels (chance 33.3%) using "
+            "Riemannian manifold features + mRVM classifier. "
+            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),
-        preprocessing=PreprocessingMetadata(
-            data_state="preprocessed",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Bandpass 8-70 Hz (5th order Butterworth)",
-                "60 Hz notch filter (to remove line noise)",
-                "EOG artifact removal (adaptive filtering)",
-                "Downsampled from 1000 Hz to 256 Hz",
-            ],
-            highpass_hz=8.0,
-            lowpass_hz=70.0,
-            notch_hz=60.0,
-        ),
+        tags=_NGUYEN_TAGS,
+        preprocessing=_NGUYEN_PREPROCESSING,
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["vowel_a", "vowel_i", "vowel_u"],
@@ -420,27 +426,8 @@ class Nguyen2017_S(_Nguyen2017Base):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
-            montage="standard_1020",
-            hardware="BrainProducts ActiCHamp",
-            filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
-            line_freq=60.0,
-        ),
-        participants=ParticipantMetadata(
-            n_subjects=6,
-            health_status="healthy",
-            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
-            # all right-handed except S13) from the original paper;
-            # each sub-dataset uses only 6-8 of those subjects and
-            # the per-subset gender/handedness breakdown is not
-            # published, so we only keep the age range here.
-            age_min=22,
-            age_max=32,
-            species="human",
-        ),
+        acquisition=_NGUYEN_ACQUISITION,
+        participants=_nguyen_participants(6),
         experiment=ExperimentMetadata(
             events={"out": 1, "in": 2, "up": 3},
             paradigm="imagery",
@@ -464,42 +451,17 @@ class Nguyen2017_S(_Nguyen2017Base):
                 "up": _nguyen_hed("up"),
             },
         ),
-        documentation=DocumentationMetadata(
-            doi=_DOI,
-            investigators=[
-                "Chuong H. Nguyen",
-                "George K. Karavas",
-                "Panagiotis Artemiadis",
-            ],
-            institution="Arizona State University",
-            institution_department=(
-                "School for Engineering of Matter, Transport and Energy"
-            ),
-            country="US",
-            publication_year=2018,
-            license="other-open",
-            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
-            repository="Zenodo",
-            contact_info=["chuong.h.nguyen@asu.edu"],
-            associated_paper_doi="10.1088/1741-2552/aa8235",
-            keywords=["imagined speech", "EEG", "Riemannian manifold", "short words"],
+        documentation=_nguyen_docs(
+            "short words",
+            "Imagined speech EEG dataset. Paper reports 50.1+/-3.5% "
+            "mean accuracy for 3-class short words (chance 33.3%) using "
+            "Riemannian manifold features + mRVM classifier. "
+            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),
-        preprocessing=PreprocessingMetadata(
-            data_state="preprocessed",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Bandpass 8-70 Hz (5th order Butterworth)",
-                "60 Hz notch filter (3 Hz bandwidth)",
-                "EOG artifact removal (adaptive filtering)",
-                "Downsampled from 1000 Hz to 256 Hz",
-            ],
-            highpass_hz=8.0,
-            lowpass_hz=70.0,
-            notch_hz=60.0,
-        ),
+        tags=_NGUYEN_TAGS,
+        preprocessing=_NGUYEN_PREPROCESSING,
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["out", "in", "up"],
@@ -562,27 +524,8 @@ class Nguyen2017_L(_Nguyen2017Base):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
-            montage="standard_1020",
-            hardware="BrainProducts ActiCHamp",
-            filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
-            line_freq=60.0,
-        ),
-        participants=ParticipantMetadata(
-            n_subjects=6,
-            health_status="healthy",
-            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
-            # all right-handed except S13) from the original paper;
-            # each sub-dataset uses only 6-8 of those subjects and
-            # the per-subset gender/handedness breakdown is not
-            # published, so we only keep the age range here.
-            age_min=22,
-            age_max=32,
-            species="human",
-        ),
+        acquisition=_NGUYEN_ACQUISITION,
+        participants=_nguyen_participants(6),
         experiment=ExperimentMetadata(
             events={"cooperate": 1, "independent": 2},
             paradigm="imagery",
@@ -605,42 +548,17 @@ class Nguyen2017_L(_Nguyen2017Base):
                 "independent": _nguyen_hed("independent"),
             },
         ),
-        documentation=DocumentationMetadata(
-            doi=_DOI,
-            investigators=[
-                "Chuong H. Nguyen",
-                "George K. Karavas",
-                "Panagiotis Artemiadis",
-            ],
-            institution="Arizona State University",
-            institution_department=(
-                "School for Engineering of Matter, Transport and Energy"
-            ),
-            country="US",
-            publication_year=2018,
-            license="other-open",
-            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
-            repository="Zenodo",
-            contact_info=["chuong.h.nguyen@asu.edu"],
-            associated_paper_doi="10.1088/1741-2552/aa8235",
-            keywords=["imagined speech", "EEG", "Riemannian manifold", "long words"],
+        documentation=_nguyen_docs(
+            "long words",
+            "Imagined speech EEG dataset. Paper reports 66.2+/-4.8% "
+            "mean accuracy for 2-class long words (chance 50.0%) using "
+            "Riemannian manifold features + mRVM classifier. "
+            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),
-        preprocessing=PreprocessingMetadata(
-            data_state="preprocessed",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Bandpass 8-70 Hz (5th order Butterworth)",
-                "60 Hz notch filter (3 Hz bandwidth)",
-                "EOG artifact removal (adaptive filtering)",
-                "Downsampled from 1000 Hz to 256 Hz",
-            ],
-            highpass_hz=8.0,
-            lowpass_hz=70.0,
-            notch_hz=60.0,
-        ),
+        tags=_NGUYEN_TAGS,
+        preprocessing=_NGUYEN_PREPROCESSING,
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["cooperate", "independent"],
@@ -704,27 +622,8 @@ class Nguyen2017_SL(_Nguyen2017Base):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
-            montage="standard_1020",
-            hardware="BrainProducts ActiCHamp",
-            filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
-            line_freq=60.0,
-        ),
-        participants=ParticipantMetadata(
-            n_subjects=6,
-            health_status="healthy",
-            # Cohort-level stats (15 subjects / 11M / 4F / 22-34 yr /
-            # all right-handed except S13) from the original paper;
-            # each sub-dataset uses only 6-8 of those subjects and
-            # the per-subset gender/handedness breakdown is not
-            # published, so we only keep the age range here.
-            age_min=22,
-            age_max=32,
-            species="human",
-        ),
+        acquisition=_NGUYEN_ACQUISITION,
+        participants=_nguyen_participants(6),
         experiment=ExperimentMetadata(
             events={"cooperate": 1, "in": 2},
             paradigm="imagery",
@@ -744,47 +643,19 @@ class Nguyen2017_SL(_Nguyen2017Base):
             mode="offline",
             hed_tags={"cooperate": _nguyen_hed("cooperate"), "in": _nguyen_hed("in")},
         ),
-        documentation=DocumentationMetadata(
-            doi=_DOI,
-            investigators=[
-                "Chuong H. Nguyen",
-                "George K. Karavas",
-                "Panagiotis Artemiadis",
-            ],
-            institution="Arizona State University",
-            institution_department=(
-                "School for Engineering of Matter, Transport and Energy"
-            ),
-            country="US",
-            publication_year=2018,
-            license="other-open",
-            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
-            repository="Zenodo",
-            contact_info=["chuong.h.nguyen@asu.edu"],
-            associated_paper_doi="10.1088/1741-2552/aa8235",
-            keywords=[
-                "imagined speech",
-                "EEG",
-                "Riemannian manifold",
-                "short vs long words",
-            ],
+        documentation=_nguyen_docs(
+            "short vs long words",
+            "Imagined speech EEG dataset. Paper reports 73.3+/-8.9% "
+            "(Method 1: spatial) to 80.1+/-8.0% (Method 2: spatial + "
+            "wavelet) mean accuracy for 2-class short-vs-long words "
+            "(chance 50.0%) using Riemannian manifold features + mRVM "
+            "classifier. "
+            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),
-        preprocessing=PreprocessingMetadata(
-            data_state="preprocessed",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Bandpass 8-70 Hz (5th order Butterworth)",
-                "60 Hz notch filter (3 Hz bandwidth)",
-                "EOG artifact removal (adaptive filtering)",
-                "Downsampled from 1000 Hz to 256 Hz",
-            ],
-            highpass_hz=8.0,
-            lowpass_hz=70.0,
-            notch_hz=60.0,
-        ),
+        tags=_NGUYEN_TAGS,
+        preprocessing=_NGUYEN_PREPROCESSING,
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["cooperate", "in"],
