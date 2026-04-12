@@ -58,7 +58,7 @@ class Kojima2024A(BaseDataset):
     Each run lasted approximately 5 minutes.
     In each run, all deviant stimuli (D1--D4) were presented approximately 60 times.
 
-    .. figure:: https://journals.plos.org/plosone/article/figure/image?size=large&id=10.1371/journal.pone.0303565.g001
+    .. figure:: /_static/paper_figures/Kojima2024.png
        :alt: Kojima2024 ASME-BCI — three auditory streams with oddball
              sequences; subject attends to one target stream.
        :width: 100%

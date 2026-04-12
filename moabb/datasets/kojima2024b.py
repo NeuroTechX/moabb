@@ -102,7 +102,7 @@ class Kojima2024B(BaseDataset):
     Each run included 4 trials, each with a different target stimulus.
     In each trial, all deviant stimuli (D1--D4) were presented 15 times.
 
-    .. figure:: https://journals.plos.org/plosone/article/figure/image?size=large&id=10.1371/journal.pone.0303565.g001
+    .. figure:: /_static/paper_figures/Kojima2024.png
        :alt: Kojima2024 ASME-BCI — auditory streams with oddball
              sequences; subject attends to one target stream.
        :width: 100%
