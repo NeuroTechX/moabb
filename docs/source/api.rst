@@ -329,14 +329,22 @@ used, i.e. in motor imagery one can have two-class, multi-class, or
 continuous paradigms; similarly, different preprocessing is necessary
 for ERP vs ERD paradigms.
 
------------------------
-Motor Imagery Paradigms
------------------------
+-----------------
+Imagery Paradigms
+-----------------
+
+The ``imagery`` paradigm tag covers both motor imagery and imagined
+speech. :class:`Imagery` is a thin alias for :class:`MotorImagery` that
+makes the umbrella scope explicit; :class:`SpeechImagery` overrides the
+defaults with the broadband 1-100 Hz filter used in imagined-speech
+work (Aguilera-Rodriguez et al. 2025).
 
 .. autosummary::
     :toctree: generated/
     :template: class.rst
 
+    Imagery
+    SpeechImagery
     MotorImagery
     LeftRightImagery
 

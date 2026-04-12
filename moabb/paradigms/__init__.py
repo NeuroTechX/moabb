@@ -23,8 +23,10 @@ from .motor_imagery import BaseMotorImagery as BaseMotorImagery
 from .motor_imagery import FakeImageryParadigm as FakeImageryParadigm
 from .motor_imagery import FilterBankLeftRightImagery as FilterBankLeftRightImagery
 from .motor_imagery import FilterBankMotorImagery as FilterBankMotorImagery
+from .motor_imagery import Imagery as Imagery
 from .motor_imagery import LeftRightImagery as LeftRightImagery
 from .motor_imagery import MotorImagery as MotorImagery
+from .motor_imagery import SpeechImagery as SpeechImagery
 from .p300 import P300 as P300
 from .p300 import BaseP300 as BaseP300
 from .p300 import FakeP300Paradigm as FakeP300Paradigm

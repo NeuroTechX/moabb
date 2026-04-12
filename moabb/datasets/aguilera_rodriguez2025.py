@@ -101,6 +101,19 @@ class AguileraRodriguez2025(BaseDataset):
         Only the traditional paradigm (EDF) is loaded by default.
         The gamified paradigm uses XDF format which requires ``pyxdf``.
 
+    .. figure:: /_static/paper_figures/AguileraRodriguez2025.png
+       :alt: AguileraRodriguez2025 trial structure (Fig. 1 of the
+             Sci. Data paper) — written word cue + 7 imagined-speech
+             repetitions at T=1.4 s, last 3 reps form the extracted
+             signal, then 2 s rest.
+       :width: 100%
+
+       Figure 1 of [1]_ — traditional paradigm trial structure.
+       Reproduced from Springer Nature under CC-BY-NC-ND-4.0 (see
+       NOTICE in ``_static/paper_figures``). The recommended bandpass
+       is 1-100 Hz (broadband) — see
+       :class:`~moabb.paradigms.SpeechImagery`.
+
     References
     ----------
     .. [1] Aguilera-Rodriguez, E., Cuevas-Romero, A., Mendoza-Franco, S.,
@@ -155,6 +168,28 @@ class AguileraRodriguez2025(BaseDataset):
                 "Subject imagines pronouncing the word at each beep. "
                 "Continues for 2 more repetitions after beeps stop."
             ),
+            hed_tags={
+                "avanzar": (
+                    "(Sensory-event, Experimental-stimulus, "
+                    "Visual-presentation, Auditory-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/avanzar))))"
+                ),
+                "retroceder": (
+                    "(Sensory-event, Experimental-stimulus, "
+                    "Visual-presentation, Auditory-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/retroceder))))"
+                ),
+                "derecha": (
+                    "(Sensory-event, Experimental-stimulus, "
+                    "Visual-presentation, Auditory-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/derecha))))"
+                ),
+                "izquierda": (
+                    "(Sensory-event, Experimental-stimulus, "
+                    "Visual-presentation, Auditory-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/izquierda))))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi=_DOI,

@@ -84,6 +84,16 @@ class Pressel2016(BaseDataset):
     By default, only imagined speech trials (modality=1) are loaded.
     Artifact-flagged trials (artifact=2) are excluded.
 
+    .. figure:: /_static/paper_figures/Pressel2016.png
+       :alt: Pressel2016 trial structure (Fig. 1 of the SPIE paper) —
+             Ready interval (2 s) → Stimulus presentation (2 s) →
+             Imagine/Pronounce interval (4 s) → Rest interval (4 s).
+       :width: 100%
+
+       Figure 1 of [1]_ — trial structure (Ready, Stimulus,
+       Imagine/Pronounce, Rest). Reproduced from the author postprint
+       at the sinc(i)/UNL institutional repository.
+
     Parameters
     ----------
     include_pronounced : bool
@@ -136,6 +146,54 @@ class Pressel2016(BaseDataset):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
+            hed_tags={
+                # Vowels — phoneme-level imagined speech
+                "vowel_a": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/a))))"
+                ),
+                "vowel_e": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/e))))"
+                ),
+                "vowel_i": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/i))))"
+                ),
+                "vowel_o": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/o))))"
+                ),
+                "vowel_u": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Phoneme, (Label/u))))"
+                ),
+                # Directional commands — word-level imagined speech
+                "arriba": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/arriba))))"
+                ),
+                "abajo": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/abajo))))"
+                ),
+                "adelante": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/adelante))))"
+                ),
+                "atras": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/atras))))"
+                ),
+                "derecha": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/derecha))))"
+                ),
+                "izquierda": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation), "
+                    "(Agent-action, (Imagine, Speak, (Word, (Label/izquierda))))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1117/12.2255697",

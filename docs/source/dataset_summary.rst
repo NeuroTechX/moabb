@@ -81,16 +81,19 @@ Imagery-specific definitions:
 
 .. _imagined-speech:
 
-Imagined Speech (imagery subset)
+Imagined Speech (imagery family)
 ================================
 
 Welcome to the **imagined speech** family, where subjects silently imagine
 speaking words, phonemes, or phrases without any sound or movement.
 Imagined speech is a close cousin of classical motor imagery: both rely on
 internal mental rehearsal and both are decoded with similar pipelines. In
-MOABB, imagined speech datasets are tagged with the ``imagery`` paradigm so
-you can benchmark them with :class:`moabb.paradigms.MotorImagery` and
-:class:`moabb.paradigms.FilterBankMotorImagery` without new paradigm code.
+MOABB, imagined speech datasets are tagged with the ``imagery`` paradigm
+and have a dedicated :class:`moabb.paradigms.SpeechImagery` class with
+broadband (1-100 Hz) defaults tuned for speech, while still being
+compatible with :class:`moabb.paradigms.MotorImagery` and
+:class:`moabb.paradigms.FilterBankMotorImagery` if you prefer the
+classic motor band.
 
 The family currently contains
 :class:`~moabb.datasets.BCIComp2020IS`,
@@ -101,15 +104,18 @@ phonemes through phrases, and 2 to 11 classes. These rows also appear
 in the Imagery table above since they share the
 ``paradigm="imagery"`` tag.
 
-Loading is identical to motor imagery:
+Loading mirrors motor imagery — use :class:`~moabb.paradigms.SpeechImagery`
+for the broadband 1-100 Hz defaults tuned for imagined speech, or
+:class:`~moabb.paradigms.MotorImagery` if you want the classic 8-32 Hz
+motor band:
 
 .. code-block:: python
 
     from moabb.datasets import BCIComp2020IS
-    from moabb.paradigms import MotorImagery
+    from moabb.paradigms import SpeechImagery
 
     dataset = BCIComp2020IS()
-    paradigm = MotorImagery(n_classes=5)
+    paradigm = SpeechImagery(n_classes=5)
     X, y, metadata = paradigm.get_data(dataset=dataset, subjects=[1])
 
 .. csv-table::

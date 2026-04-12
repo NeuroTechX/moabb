@@ -83,6 +83,15 @@ _CONDITIONS = {
 }
 
 
+def _nguyen_hed(label, unit="Word"):
+    """Build a HED tag string for a Nguyen 2017 imagined-speech event."""
+    return (
+        "(Sensory-event, Experimental-stimulus, "
+        "Auditory-presentation, Visual-presentation), "
+        f"(Agent-action, (Imagine, Speak, ({unit}, (Label/{label}))))"
+    )
+
+
 class _Nguyen2017Base(BaseDataset):
     """Base class for Nguyen et al. 2017 imagined speech conditions."""
 
@@ -219,6 +228,19 @@ class Nguyen2017_V(_Nguyen2017Base):
         Channels [1, 10, 33, 64] (1-indexed) were used for EOG
         recording and should be excluded from classification.
 
+    .. figure:: /_static/paper_figures/Nguyen2017.png
+       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
+             periodic beeps mark each rhythm period T, the visual cue
+             stays on screen, the subject performs speech imagery; the
+             extracted signal is the segment after the last beep,
+             followed by 2 s rest.
+       :width: 100%
+
+       Figure 3 of [1]_ — trial structure (period T = 1.0 s for the
+       Vowels condition). Class labels: ``vowel_a``, ``vowel_i``,
+       ``vowel_u``. Reproduced from the author postprint at the
+       University of Delaware self-archive.
+
     References
     ----------
     .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
@@ -268,6 +290,11 @@ class Nguyen2017_V(_Nguyen2017Base):
             primary_modality="auditory",
             synchronicity="synchronous",
             mode="offline",
+            hed_tags={
+                "vowel_a": _nguyen_hed("a", "Phoneme"),
+                "vowel_i": _nguyen_hed("i", "Phoneme"),
+                "vowel_u": _nguyen_hed("u", "Phoneme"),
+            },
         ),
         documentation=DocumentationMetadata(
             doi=_DOI,
@@ -370,6 +397,19 @@ class Nguyen2017_S(_Nguyen2017Base):
     recording setup as the Vowels condition, period T=1.0 s. Paper
     reports 50.1±3.5% mean accuracy with the Riemannian approach.
 
+    .. figure:: /_static/paper_figures/Nguyen2017.png
+       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
+             periodic beeps mark each rhythm period T, the visual cue
+             stays on screen, the subject performs speech imagery; the
+             extracted signal is the segment after the last beep,
+             followed by 2 s rest.
+       :width: 100%
+
+       Figure 3 of [1]_ — trial structure (period T = 1.0 s for the
+       ShortWords condition). Class labels: ``out``, ``in``, ``up``.
+       Reproduced from the author postprint at the University of
+       Delaware self-archive.
+
     References
     ----------
     .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
@@ -418,6 +458,11 @@ class Nguyen2017_S(_Nguyen2017Base):
             primary_modality="auditory",
             synchronicity="synchronous",
             mode="offline",
+            hed_tags={
+                "out": _nguyen_hed("out"),
+                "in": _nguyen_hed("in"),
+                "up": _nguyen_hed("up"),
+            },
         ),
         documentation=DocumentationMetadata(
             doi=_DOI,
@@ -493,6 +538,20 @@ class Nguyen2017_L(_Nguyen2017Base):
     condition to accommodate the longer pronunciation). Paper
     reports 66.2±4.8% mean accuracy.
 
+    .. figure:: /_static/paper_figures/Nguyen2017.png
+       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
+             periodic beeps mark each rhythm period T, the visual cue
+             stays on screen, the subject performs speech imagery; the
+             extracted signal is the segment after the last beep,
+             followed by 2 s rest.
+       :width: 100%
+
+       Figure 3 of [1]_ — trial structure (period T = 1.4 s for the
+       LongWords condition, longer than Vowels/ShortWords to
+       accommodate the longer pronunciation). Class labels:
+       ``cooperate``, ``independent``. Reproduced from the author
+       postprint at the University of Delaware self-archive.
+
     References
     ----------
     .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
@@ -541,6 +600,10 @@ class Nguyen2017_L(_Nguyen2017Base):
             primary_modality="auditory",
             synchronicity="synchronous",
             mode="offline",
+            hed_tags={
+                "cooperate": _nguyen_hed("cooperate"),
+                "independent": _nguyen_hed("independent"),
+            },
         ),
         documentation=DocumentationMetadata(
             doi=_DOI,
@@ -618,6 +681,19 @@ class Nguyen2017_SL(_Nguyen2017Base):
     spatial features only) and 80.1±8.0% (Method 2, spatial +
     wavelet features) mean accuracy.
 
+    .. figure:: /_static/paper_figures/Nguyen2017.png
+       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
+             periodic beeps mark each rhythm period T, the visual cue
+             stays on screen, the subject performs speech imagery; the
+             extracted signal is the segment after the last beep,
+             followed by 2 s rest.
+       :width: 100%
+
+       Figure 3 of [1]_ — trial structure (period T = 1.4 s for the
+       ShortLongWords condition). Class labels: ``cooperate``, ``in``.
+       Reproduced from the author postprint at the University of
+       Delaware self-archive.
+
     References
     ----------
     .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
@@ -666,6 +742,7 @@ class Nguyen2017_SL(_Nguyen2017Base):
             primary_modality="auditory",
             synchronicity="synchronous",
             mode="offline",
+            hed_tags={"cooperate": _nguyen_hed("cooperate"), "in": _nguyen_hed("in")},
         ),
         documentation=DocumentationMetadata(
             doi=_DOI,

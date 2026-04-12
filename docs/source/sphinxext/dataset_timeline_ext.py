@@ -52,6 +52,8 @@ except ImportError:
 _PARADIGM_LABELS = PARADIGM_LABELS
 _PARADIGM_COLORS = PARADIGM_COLORS
 
+_TIMELINE_SVG_DIR = "_static/timelines"
+_PAPER_FIGURES_DIR = "_static/paper_figures/"
 _BENCHMARK_FILES = [
     ("within_session_mi_left_vs_right_hand.csv", "MI left vs right"),
     ("within_session_mi_all_classes.csv", "MI all classes"),
@@ -1704,7 +1706,7 @@ def _make_header_html(
 # ---------------------------------------------------------------------------
 
 
-def _make_visual_grid_lines(cls_name, info, srcdir):
+def _make_visual_grid_lines(cls_name, info, srcdir, docstring_lines=None):
     """Build RST lines for the adaptive visual summary grid."""
     lines = []
     paradigm = info.get("paradigm") or "unknown"
@@ -1722,6 +1724,18 @@ def _make_visual_grid_lines(cls_name, info, srcdir):
     timeline_svg = os.path.join(srcdir, "_static", "timelines", f"{cls_name}.svg")
 
     has_timeline = os.path.exists(timeline_svg)
+    # If the class docstring already embeds a paradigm figure (the
+    # auto-generated timeline SVG, or an original paper figure under
+    # ``_static/paper_figures/``) via a ``.. figure::`` / ``.. image::``
+    # directive, skip the auto-injected grid card to avoid showing two
+    # protocol figures on the rendered page.
+    if has_timeline and docstring_lines is not None:
+        embedded_refs = (
+            f"{_TIMELINE_SVG_DIR}/{cls_name}.svg",
+            _PAPER_FIGURES_DIR,
+        )
+        if any(any(ref in line for ref in embedded_refs) for line in docstring_lines):
+            has_timeline = False
     # Build channel summary HTML
     channel_html = _make_channel_summary_html(info)
 
@@ -2207,7 +2221,9 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
 
     # --- Layer 2: Visual summary grid ---
     if info:
-        grid_lines = _make_visual_grid_lines(cls_name, info, app.srcdir)
+        grid_lines = _make_visual_grid_lines(
+            cls_name, info, app.srcdir, docstring_lines=lines
+        )
         top_block.extend(grid_lines)
 
     # --- Layer 3: Restructure remaining docstring into tabs ---
