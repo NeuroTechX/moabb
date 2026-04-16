@@ -13,8 +13,7 @@ Disallow: /docs/py-modindex.html
 Disallow: /docs/genindex.html
 Disallow: /docs/search.html
 
-# Disallow static assets and source files
-Disallow: /docs/_static/
+# Disallow raw RST source files (no user value)
 Disallow: /docs/_sources/
 
 Crawl-delay: 2
