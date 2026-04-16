@@ -125,6 +125,7 @@ from .mainsah2025 import (
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import GrosseWentrup2009
+from .nieto2022 import Nieto2022
 from .nguyen2017 import Nguyen2017_L, Nguyen2017_S, Nguyen2017_SL, Nguyen2017_V
 from .phmd_ml import Cattan2019_PHMD
 from .physionet_mi import PhysionetMI

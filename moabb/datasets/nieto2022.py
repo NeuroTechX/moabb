@@ -108,9 +108,11 @@ class Nieto2022(BaseDataset):
             )
         ),
         data_structure=DataStructureMetadata(
-            n_sessions=3,
-            n_runs_per_session=1,
-            n_trials_per_class=50,
+            n_trials_per_class={
+                "pronounced/up": 30, "pronounced/down": 30, "pronounced/right": 30, "pronounced/left": 30,
+                "inner/up": 60, "inner/down": 60, "inner/right": 60, "inner/left": 60,
+                "visualized/up": 30, "visualized/down": 30, "visualized/right": 30, "visualized/left": 30
+            },
             trials_context="More than 5600 total trials across all subjects and sessions.",
         ),
         tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),

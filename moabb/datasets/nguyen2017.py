@@ -25,6 +25,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import build_raw_from_epochs, download_and_extract_subject_zip
