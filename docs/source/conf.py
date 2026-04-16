@@ -352,7 +352,7 @@ ogp_social_cards = {
 }
 
 # Extra files to copy to build output root (robots.txt, llms.txt, etc.)
-html_extra_path = ["robots.txt", "llms.txt", "llms-full.txt"]
+html_extra_path = ["robots.txt", "llms.txt", "llms-full.txt", "google07a8f2e31a591297.html"]
 
 html_css_files = [
     "css/custom.css",
