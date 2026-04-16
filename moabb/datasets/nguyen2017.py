@@ -239,7 +239,7 @@ class _Nguyen2017Base(BaseDataset):
             sessions_per_subject=1,
             events=cfg["events"],
             code=f"Nguyen2017-{self._code_suffix}",
-            interval=[0, 5],
+            interval=[0, 1.5],
             paradigm="imagery",
             doi=_DOI,
             selected_subjects=subjects,
@@ -299,13 +299,13 @@ class _Nguyen2017Base(BaseDataset):
 
         raw = build_raw_from_epochs(
             data,
-            ch_names,
+            _CH_NAMES,
             _SFREQ,
             labels,
-            montage_name=None,
+            montage_name="standard_1005",
             ch_types=ch_types,
         )
-        raw.set_montage(_MONTAGE)
+        raw.set_montage(_MONTAGE, on_missing='ignore')
         return raw
 
     def _get_single_subject_data(self, subject):

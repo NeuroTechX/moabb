@@ -228,12 +228,13 @@ class AguileraRodriguez2025(BaseDataset):
             sessions_per_subject=2,
             events={"avanzar": 1, "retroceder": 2, "derecha": 3, "izquierda": 4},
             code="AguileraRodriguez2025",
-            interval=[0, 4],
-            paradigm="speech imagery",
+            interval=[0, 2],
+            paradigm="imagery",
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
         )
+
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""

@@ -75,7 +75,7 @@ class Nieto2022(BaseDataset):
             events=_EVENTS,
             paradigm="imagery",
             n_classes=4,
-            class_labels=["Arriba", "Abajo", "Derecha", "Izquierda"],
+            class_labels=["Arriba/Up", "Abajo/Down", "Derecha/Right", "Izquierda/Left"],
             trial_duration=4.5,
             study_design=(
                 "Four mental tasks (up, down, right, left) performed in three conditions: "
@@ -137,7 +137,7 @@ class Nieto2022(BaseDataset):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=3,
-            events=_EVENTS,
+            events=_EVENTS, # Pass only the event names (strings)
             code="Nieto2022",
             interval=[1.0, 3.5],
             paradigm="imagery",
@@ -145,6 +145,7 @@ class Nieto2022(BaseDataset):
             selected_subjects=subjects,
             selected_sessions=sessions,
         )
+        self.events = _EVENTS
 
     def _get_single_subject_data(self, subject):
         """Read .bdf files and handle 136-channel montage with state-tracking triggers."""
@@ -162,6 +163,8 @@ class Nieto2022(BaseDataset):
 
             # Load the raw BioSemi BDF
             raw = mne.io.read_raw_bdf(file_path, preload=True, verbose=False)
+            
+            # Find events from the specified stimulus channel
             events = mne.find_events(raw, verbose=False)
 
             # 2. State-tracking loop to find and rename valid trials
@@ -198,7 +201,7 @@ class Nieto2022(BaseDataset):
             # 4. Final configuration: Montage and EXG types
             montage = mne.channels.make_standard_montage("biosemi128")
             raw.set_montage(montage, on_missing='ignore')
-
+            raw.drop_channels(['Status'])
             # Set EXG channels to 'emg'
             ch_types = {ch: 'emg' for ch in raw.ch_names if "EXG" in ch}
             raw.set_channel_types(ch_types)
@@ -213,6 +216,6 @@ class Nieto2022(BaseDataset):
         
         subj_str = f"sub-{subject:02d}"
         ses_str = f"ses-{session:02d}"
-        filename = f"{subj_str}_{ses_str}_task-imagined-speech_eeg.bdf"
+        filename = f"{subj_str}_{ses_str}_task-innerspeech_eeg.bdf"
         url = f"{_OPENNEURO_URL}{subj_str}/{ses_str}/eeg/{filename}"
         return dl.data_dl(url, "NIETO2022", path=path, force_update=force_update)
