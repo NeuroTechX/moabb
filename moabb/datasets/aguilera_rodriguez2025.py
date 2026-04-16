@@ -9,6 +9,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
+import pyxdf
 
 from . import download as dl
 from .base import BaseDataset
@@ -39,17 +40,42 @@ _SFREQ = 500.0
 _DOI = "10.1038/s41597-025-05926-5"
 
 # mBrainTrain Smarting 24-channel layout (FCz reference, Fpz ground).
-# Channel 1-24 in the EDF map to these names in order.
-# fmt: off
 _CH_NAMES = [
     "Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4",
     "O1", "O2", "F7", "F8", "T7", "T8", "P7", "P8",
     "Fz", "Cz", "Pz", "AFz", "CPz", "POz", "M1", "M2",
 ]
-# fmt: on
+
+_CH_POSITIONS = {
+    'Fp1': [-270.,  860.,  360.],
+    'Fp2': [270., 860., 360.],
+    'F3': [-470.,  620.,  800.],
+    'F4': [470., 620., 800.],
+    'C3': [-610.,    0.,  970.],
+    'C4': [610.,   0., 970.],
+    'P3': [-470., -620.,  800.],
+    'P4': [ 470., -620.,  800.],
+    'O1': [-270., -860.,  360.],
+    'O2': [ 270., -860.,  360.],
+    'F7': [-670.,  520.,  360.],
+    'F8': [670., 520., 360.],
+    'T7': [-780.,    0.,  360.],
+    'T8': [780.,   0., 360.],
+    'P7': [-670., -520.,  360.],
+    'P8': [ 670., -520.,  360.],
+    'Fz': [  0., 670., 950.],
+    'Cz': [   0.,    0., 1200.],
+    'Pz': [   0., -670.,  950.],
+    'AFz': [  0., 830., 690.],
+    'CPz': [   0., -340., 1130.],
+    'POz': [   0., -830.,  690.],
+    'M1': [-730., -250.,    0.],
+    'M2': [ 730., -250.,    0.]
+}
+
+_MONTAGE = mne.channels.make_dig_montage(ch_pos=_CH_POSITIONS, coord_frame='head')
 
 # OpenViBE annotation labels -> imagined speech words.
-# The paper uses 4 Spanish directional words.
 _ANNOT_MAP = {
     "OVTK_StimulationId_Label_01": "avanzar",
     "OVTK_StimulationId_Label_02": "retroceder",
@@ -57,11 +83,6 @@ _ANNOT_MAP = {
     "OVTK_StimulationId_Label_04": "izquierda",
 }
 
-# Stable Mendeley Data download URLs for the traditional-paradigm EDFs
-# (dataset 57g8z63tmy v1). Enumerated once via
-# https://data.mendeley.com/api/datasets/57g8z63tmy/files?version=1
-# so the loader doesn't need a runtime API call.
-# fmt: off
 _SUBJECT_URLS = {
     1: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/5eb0269f-05ba-48f0-811d-277a257e8832/file_downloaded",
     2: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/513909eb-42b6-463c-b06c-e544c768f70b/file_downloaded",
@@ -79,61 +100,34 @@ _SUBJECT_URLS = {
     14: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/89dd25bc-a900-40a3-bc60-322b800eb472/file_downloaded",
     15: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/f6216d04-0176-44a2-a961-99d03df6a077/file_downloaded",
 }
-# fmt: on
 
+_SUBJECT_URLS_GAMIFIED = {
+    1: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/98b1e41d-ec87-4255-9703-7b4019d25ec9/file_downloaded",
+    2: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/cf740440-926b-4836-9752-e3b49b8b99b3/file_downloaded",
+    3: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/535cfba2-f69f-412d-9f67-e33e8554ef7a/file_downloaded",
+    4: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/7d60a42d-2e71-4023-820d-6172d68fc582/file_downloaded",
+    5: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/2c12579c-d365-4d20-ac54-c5eb017eea2c/file_downloaded",
+    6: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/b37dbcd5-713c-4b7c-8063-6a46cb337579/file_downloaded",
+    7: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/b54af8a4-8cfd-4844-879b-6f59a406097c/file_downloaded",
+    8: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/144456f0-5c39-4f4a-9000-b4130e74cb4a/file_downloaded",
+    9: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/04f108a8-319f-4fa4-87be-68b282d4afa7/file_downloaded",
+    10: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/db236bd1-a0b2-4e7a-9f4f-8494b4f06f6a/file_downloaded",
+    11: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/989e385a-0cbb-4c97-970a-5bbac0597a11/file_downloaded",
+    12: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/fa4c950c-69bc-4683-b817-3e5ab4981bec/file_downloaded",
+    13: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/8b36d21b-66e2-4571-bb06-4bbb3087736b/file_downloaded",
+    14: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/485ccad2-e9a3-42fd-b329-c1930f7bd463/file_downloaded",
+    15: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/646f20cd-37c0-45de-8a8b-aa8944231fbd/file_downloaded",
+}
 
 class AguileraRodriguez2025(BaseDataset):
-    """Imagined Speech EEG dataset comparing paradigm designs.
-
-    Dataset from Aguilera-Rodriguez et al. [1]_, published in
-    Scientific Data.
-
-    **Dataset Description**
-
-    Fifteen participants (8 male, 7 female, ages 18-27) performed
-    imagined speech of four Spanish directional words: "avanzar"
-    (advance), "retroceder" (backwards), "derecha" (right),
-    "izquierda" (left).
-
-    Two paradigms were used:
-
-    - **Traditional** (session 0): Cue-based design built with
-      OpenViBE. EEG stored as EDF files with annotation markers.
-    - **Gamified** (session 1): Video-game (Pac-man maze) design
-      built with Pygame/LSL. EEG stored as XDF files.
-
-    EEG was recorded at 500 Hz with 24 channels using mBrainTrain
-    Smarting (FCz reference, Fpz ground). Each paradigm has 120
-    trials (30 per word).
-
-    .. note::
-        Only the traditional paradigm (EDF) is loaded by default.
-        The gamified paradigm uses XDF format which requires ``pyxdf``.
-
-    .. figure:: https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-05926-5/MediaObjects/41597_2025_5926_Fig1_HTML.png
-       :alt: AguileraRodriguez2025 trial structure — written word cue
-             + 7 imagined-speech repetitions at T=1.4 s, then 2 s rest.
-       :width: 100%
-
-       Figure 1 of [1]_ (CC-BY-NC-ND-4.0). Recommended bandpass:
-       1-100 Hz — see :class:`~moabb.paradigms.SpeechImagery`.
-
-    References
-    ----------
-    .. [1] Aguilera-Rodriguez, E., Cuevas-Romero, A., Mendoza-Franco, S.,
-           Wornovitzky-Green, J., Rivera-Cerros, E., Villanueva-Cazares, D.,
-           Munoz-Ubando, L. A., Ibarra-Zarate, D., & Alonso-Valerdi, L. M.
-           (2025). An EEG-based Imagined Speech Database for comparing
-           Paradigm Designs. Scientific Data, 12, 1644.
-           https://doi.org/10.1038/s41597-025-05926-5
-    """
+    """Imagined Speech EEG dataset comparing paradigm designs."""
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
             n_channels=24,
             channel_types={"eeg": 24},
-            hardware="mBrainTrain Smarting (Belgrade, Serbia)",
+            hardware="mBrainTrain Smarting",
             reference="FCz",
             ground="Fpz",
             sensors=list(_CH_NAMES),
@@ -160,18 +154,23 @@ class AguileraRodriguez2025(BaseDataset):
                 "paradigms for imagined speech BCI. Traditional paradigm: "
                 "visual+auditory cue with 5 beeps at T=1.4s rhythm, subject "
                 "imagines speech for 7 repetitions, last 3 extracted for "
-                "analysis. 2s rest between trials."
+                "analysis. 2s rest between trials. "
+                "Gamified paradigm: The experiment started with a maze appearing on the screen, "
+                "composed of white borders, progress dots, and checkpoints represented by cookies. "
+                "The trial was divided into four steps: (1) movement decision, (2) imagined speech, "
+                "(3) vocalized speech, and (4) character movement. The first three steps were "
+                "performed each in period T=1.4s. The trial starts with white borders, the "
+                "character standing still, and an auxiliary arrow pointing in the next correct "
+                "direction. Based on the way the character was faced, the user must decide which "
+                "word is adequate to achieve the goal (movement decision). Then, the maze borders "
+                "turn green, indicating the participant must imagine pronouncing the previously "
+                "decided word (imagined speech)."
             ),
             stimulus_type="visual + auditory cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
-            instructions=(
-                "Visual word cue + auditory beep at T=1.4s rhythm. "
-                "Subject imagines pronouncing the word at each beep. "
-                "Continues for 2 more repetitions after beeps stop."
-            ),
             hed_tags={
                 "avanzar": _speech_hed("avanzar"),
                 "retroceder": _speech_hed("retroceder"),
@@ -193,39 +192,17 @@ class AguileraRodriguez2025(BaseDataset):
                 "Luz Maria Alonso-Valerdi",
             ],
             institution="Tecnologico de Monterrey",
-            institution_department="Escuela de Ingenieria y Ciencias",
-            institution_address=(
-                "Ave. Eugenio Garza Sada 2501, Monterrey, N.L., 64849, Mexico"
-            ),
-            country="MX",
-            data_url="https://data.mendeley.com/datasets/57g8z63tmy/1",
             publication_year=2025,
             license="CC-BY-NC-ND-4.0",
             repository="Mendeley Data",
-            senior_author="Luz Maria Alonso-Valerdi",
-            associated_paper_doi="10.1038/s41597-025-05926-5",
-            keywords=[
-                "imagined speech",
-                "EEG",
-                "brain-computer interface",
-                "gamified paradigm",
-                "biomedical engineering",
-                "Spanish",
-            ],
-            description=(
-                "EEG-based imagined speech database comparing traditional "
-                "cue-based and gamified (Pac-man) paradigms. 4 Spanish "
-                "directional words. Ethics: CONBIOETICA-19-CEI-011-20161017. "
-                "Paper reports 32.48% (traditional) and 35.65% (gamified) "
-                "accuracy with Random Forest."
-            ),
+            associated_paper_doi=_DOI,
+            keywords=["imagined speech", "EEG", "gamified paradigm"],
+            description="EEG-based imagined speech database comparing traditional cue-based and gamified paradigms."
         ),
-        sessions_per_subject=1,
+        sessions_per_subject=2,
         runs_per_session=1,
         tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),
-        preprocessing=PreprocessingMetadata(
-            data_state="raw", preprocessing_applied=False
-        ),
+        preprocessing=PreprocessingMetadata(data_state="raw", preprocessing_applied=False),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["avanzar", "retroceder", "derecha", "izquierda"],
@@ -234,26 +211,25 @@ class AguileraRodriguez2025(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=1800,
-            n_trials_per_class={
-                "avanzar": 450,
-                "retroceder": 450,
-                "derecha": 450,
-                "izquierda": 450,
-            },
-            trials_context=("15 subjects x 120 trials (30 per class). Session ~32 min."),
+            n_trials_per_class={"avanzar": 450, "retroceder": 450, "derecha": 450, "izquierda": 450},
+            trials_context=("15 subjects x 120 trials (30 per class)."),
         ),
         data_processed=False,
         file_format="EDF",
     )
 
     def __init__(self, subjects=None, sessions=None):
+        if sessions is None:
+            sessions = [1, 2]
+        self.sessions = sessions
+
         super().__init__(
             subjects=list(range(1, 16)),
-            sessions_per_subject=1,
+            sessions_per_subject=2,
             events={"avanzar": 1, "retroceder": 2, "derecha": 3, "izquierda": 4},
             code="AguileraRodriguez2025",
             interval=[0, 4],
-            paradigm="imagery",
+            paradigm="speech imagery",
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
@@ -261,61 +237,102 @@ class AguileraRodriguez2025(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
-        fpath = self.data_path(subject)
+        sessions = {}
+        file_path_list = self.data_path(subject)
 
-        raw = mne.io.read_raw_edf(fpath, preload=True, verbose="ERROR")
+        for session in self.sessions:
+            session_name = str(session)
+            sessions[session_name] = {}
+            fpath = file_path_list[self.sessions.index(session)]
 
-        # Rename channels from generic "Channel N" to actual electrode names.
-        rename_map = {}
-        for i, name in enumerate(_CH_NAMES):
-            old_name = f"Channel {i + 1}"
-            if old_name in raw.ch_names:
-                rename_map[old_name] = name
-        raw.rename_channels(rename_map)
+            if session == 1:
+                # Traditional (EDF)
+                raw = mne.io.read_raw_edf(fpath, preload=True, verbose="ERROR")
+                rename_map = dict(zip(raw.ch_names, _CH_NAMES))
+                gyro_chs = [ch for ch in raw.ch_names if ch.startswith("Gyro")]
+                if gyro_chs:
+                    raw.drop_channels(gyro_chs)
+                raw.rename_channels(rename_map)
+                raw.set_montage(_MONTAGE)
 
-        # Drop gyroscope channels if present.
-        gyro_chs = [ch for ch in raw.ch_names if ch.startswith("Gyro")]
-        if gyro_chs:
-            raw.drop_channels(gyro_chs)
+                if raw.annotations is not None and len(raw.annotations) > 0:
+                    new_desc = []
+                    for desc in raw.annotations.description:
+                        mapped = _ANNOT_MAP.get(desc)
+                        if mapped is not None:
+                            new_desc.append(mapped)
+                        else:
+                            new_desc.append("BAD_" + desc)
+                    raw.annotations.description = np.array(new_desc)
+                
+                sessions[session_name]["0"] = raw
 
-        # Set montage (M1/M2 won't be found in standard montage, which is fine).
-        montage = mne.channels.make_standard_montage("standard_1020")
-        raw.set_montage(montage, on_missing="ignore")
+            elif session == 2:
+                # Gamified (XDF)
+                streams, header = pyxdf.load_xdf(fpath)
+                eeg_stream = None
+                marker_stream = None
+                for stream in streams:
+                    if stream["info"]["type"][0] == "EEG":
+                        eeg_stream = stream
+                    elif stream["info"]["type"][0] == "Markers":
+                        marker_stream = stream
 
-        # Remap annotation descriptions to word labels.
-        if raw.annotations is not None and len(raw.annotations) > 0:
-            new_desc = []
-            for desc in raw.annotations.description:
-                mapped = _ANNOT_MAP.get(desc)
-                if mapped is not None:
-                    new_desc.append(mapped)
-                else:
-                    new_desc.append("BAD_" + desc)
-            raw.annotations.description = np.array(new_desc)
+                if eeg_stream is None or marker_stream is None:
+                    raise RuntimeError(f"EEG or Marker stream not found for subject {subject}")
 
-        return {"0": {"0": raw}}
+                data_exp = eeg_stream["time_series"].T
+                t_start = eeg_stream["time_stamps"][0]
+                onsets = marker_stream["time_stamps"] - t_start
+                descriptions = [str(t[0]) for t in marker_stream["time_series"]]
+
+                new_onsets, new_descriptions = [], []
+                for onset, descrp in zip(onsets, descriptions):
+                    d_lower = descrp.lower()
+                    if d_lower in ["avanzar", "derecha", "izquierda", "retroceder"]:
+                        new_onsets.append(onset)
+                        new_descriptions.append(d_lower)
+
+                annot = mne.Annotations(
+                    onset=new_onsets, duration=[0] * len(new_onsets), description=new_descriptions
+                )
+                info = mne.create_info(_CH_NAMES, 500, "eeg")
+                raw = mne.io.RawArray(data_exp, info)
+                raw.set_montage(_MONTAGE)
+                raw.set_annotations(annot)
+                
+                sessions[session_name]["0"] = raw
+
+        return sessions
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-        downloaded = Path(
-            dl.data_dl(
-                _SUBJECT_URLS[subject],
-                _SIGN,
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
+
+        paths = []
+        for session in self.sessions:
+            if session == 1:
+                url = _SUBJECT_URLS[subject]
+                ext = ".edf"
+            elif session == 2:
+                url = _SUBJECT_URLS_GAMIFIED[subject]
+                ext = ".xdf"
+            else:
+                raise ValueError(f"Invalid session {session}")
+
+            downloaded = Path(
+                dl.data_dl(url, _SIGN, path=path, force_update=force_update, verbose=verbose)
             )
-        )
-        if downloaded.suffix == ".edf":
-            return str(downloaded)
-        # Mendeley URLs end in "file_downloaded" (no extension), but
-        # mne.io.read_raw_edf requires a .edf suffix. Expose a
-        # same-inode .edf view via a hardlink so pooch's cache stays
-        # intact and subsequent calls don't re-download.
-        edf_path = downloaded.with_suffix(".edf")
-        if not edf_path.exists():
-            edf_path.hardlink_to(downloaded)
-        return str(edf_path)
+
+            if downloaded.suffix == ext:
+                paths.append(str(downloaded))
+                continue
+
+            final_path = downloaded.with_suffix(ext)
+            if not final_path.exists():
+                final_path.hardlink_to(downloaded)
+            paths.append(str(final_path))
+
+        return paths

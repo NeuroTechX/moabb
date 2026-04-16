@@ -10,6 +10,7 @@ re-packaging of the 4 condition zips with normalized filenames.
 from pathlib import Path
 
 import numpy as np
+import mne
 from scipy.io import loadmat
 
 from . import download as dl
@@ -24,7 +25,6 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
-    SignalProcessingMetadata,
     Tags,
 )
 from .utils import build_raw_from_epochs, download_and_extract_subject_zip
@@ -42,11 +42,6 @@ _EOG_INDICES = [0, 9, 32, 63]
 _ZENODO_RECORD = "19502794"
 _ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 
-# Condition-specific configuration. The Zenodo mirror stores each
-# subject as ``sub-NN.mat`` inside the per-condition zip, so only the
-# subject count is needed here — the provenance mapping from the
-# authors' opaque filenames to the sub-NN convention lives in the
-# README.md and Read_me.txt bundled inside each zip on Zenodo.
 _CONDITIONS = {
     "Vowels": {
         "sign": "nguyen2017v",
@@ -81,6 +76,77 @@ _CONDITIONS = {
         "n_subjects": 6,
     },
 }
+
+_CH_POSITIONS = {
+    'Fp1': [-2.93566145e-02,  9.03503690e-02,  5.81707230e-18],
+    'Fz': [4.11329127e-18, 6.71751442e-02, 6.71751442e-02],
+    'F3': [-0.05177571,  0.06393767,  0.0475],
+    'F7': [-7.68566145e-02,  5.58395990e-02,  5.81707230e-18],
+    'FT9': [-0.08316795,  0.02702291, -0.03711946],
+    'FC5': [-0.08223207,  0.03322391,  0.03404496],
+    'FC1': [-0.03398867,  0.0351963 ,  0.08143089],
+    'C3': [-0.06717514, -0.        ,  0.06717514],
+    'T7': [-9.5000000e-02, -0.0000000e+00,  5.8170723e-18],
+    'TP9': [-0.08316795, -0.02702291, -0.03711946],
+    'CP5': [-0.08279938, -0.0317837 ,  0.03404496],
+    'CP1': [-0.03398867, -0.0351963 ,  0.08143089],
+    'Pz': [ 4.11329127e-18, -6.71751442e-02,  6.71751442e-02],
+    'P3': [-0.05177571, -0.06393767,  0.0475],
+    'P7': [-7.68566145e-02, -5.58395990e-02,  5.81707230e-18],
+    'O1': [-2.93566145e-02, -9.03503690e-02,  5.81707230e-18],
+    'Oz': [ 5.8170723e-18, -9.5000000e-02,  5.8170723e-18],
+    'O2': [ 2.93566145e-02, -9.03503690e-02,  5.81707230e-18],
+    'P4': [ 0.05177571, -0.06393767,  0.0475],
+    'P8': [ 7.68566145e-02, -5.58395990e-02,  5.81707230e-18],
+    'TP10': [ 0.08316795, -0.02702291, -0.03711946],
+    'CP6': [ 0.08279938, -0.0317837 ,  0.03404496],
+    'CP2': [ 0.03398867, -0.0351963 ,  0.08143089],
+    'Cz': [0.   , 0.   , 0.095],
+    'C4': [0.06717514, 0.        , 0.06717514],
+    'T8': [9.5000000e-02, 0.0000000e+00, 5.8170723e-18],
+    'FT10': [ 0.08316795,  0.02702291, -0.03711946],
+    'FC6': [0.08279938, 0.0317837 , 0.03404496],
+    'FC2': [0.03398867, 0.0351963 , 0.08143089],
+    'F4': [0.05177571, 0.06393767, 0.0475],
+    'F8': [7.68566145e-02, 5.58395990e-02, 5.81707230e-18],
+    'Fp2': [2.93566145e-02, 9.03503690e-02, 5.81707230e-18],
+    'AF7': [-5.58395990e-02,  7.68566145e-02,  5.81707230e-18],
+    'AF3': [-0.03420902,  0.0846703 ,  0.02618555],
+    'AFz': [5.35464328e-18, 8.74479611e-02, 3.71194572e-02],
+    'F1': [-0.02685832,  0.06647668,  0.06232561],
+    'F5': [-0.06891997,  0.05991122,  0.02618555],
+    'FT7': [-9.03503690e-02,  2.93566145e-02,  5.81707230e-18],
+    'FC3': [-0.06270797,  0.03475959,  0.06232561],
+    'C1': [-0.03711946, -0.        ,  0.08744796],
+    'C5': [-0.08808247, -0.        ,  0.03558763],
+    'TP7': [-9.03503690e-02, -2.93566145e-02,  5.81707230e-18],
+    'CP3': [-0.06270797, -0.03475959,  0.06232561],
+    'P1': [-0.02685832, -0.06647668,  0.06232561],
+    'P5': [-0.06891997, -0.05991122,  0.02618555],
+    'PO7': [-5.58395990e-02, -7.68566145e-02,  5.81707230e-18],
+    'PO3': [-0.03420902, -0.0846703 ,  0.02618555],
+    'POz': [ 5.35464328e-18, -8.74479611e-02,  3.71194572e-02],
+    'PO4': [ 0.03420902, -0.0846703 ,  0.02618555],
+    'PO8': [ 5.58395990e-02, -7.68566145e-02,  5.81707230e-18],
+    'P6': [ 0.06891997, -0.05991122,  0.02618555],
+    'P2': [ 0.02685832, -0.06647668,  0.06232561],
+    'CPz': [ 2.17911364e-18, -3.55876264e-02,  8.80824662e-02],
+    'CP4': [ 0.06270797, -0.03475959,  0.06232561],
+    'TP8': [ 9.03503690e-02, -2.93566145e-02,  5.81707230e-18],
+    'C6': [0.08808247, 0.        , 0.03558763],
+    'C2': [0.03711946, 0.        , 0.08744796],
+    'FC4': [0.06270797, 0.03475959,  0.06232561],
+    'FT8': [9.03503690e-02, 2.93566145e-02, 5.81707230e-18],
+    'F6': [0.06891997, 0.05991122, 0.02618555],
+    'AF8': [5.58395990e-02, 7.68566145e-02, 5.81707230e-18],
+    'AF4': [0.03420902, 0.0846703 , 0.02618555],
+    'F2': [0.02685832, 0.06647668, 0.06232561],
+    'Iz': [ 5.39349551e-18, -8.80824662e-02, -3.55876264e-02]
+}
+
+_MONTAGE = mne.channels.make_dig_montage(ch_pos=_CH_POSITIONS, coord_frame='head')
+
+_CH_NAMES = list(_CH_POSITIONS.keys())
 
 
 def _nguyen_hed(label, unit="Word"):
@@ -145,7 +211,7 @@ def _nguyen_docs(keywords_suffix, description):
         repository="Zenodo",
         senior_author="Panagiotis Artemiadis",
         contact_info=["chuong.h.nguyen@asu.edu", "panagiotis.artemiadis@asu.edu"],
-        associated_paper_doi="10.1088/1741-2552/aa8235",
+        associated_paper_doi=_DOI,
         keywords=[
             "imagined speech",
             "EEG",
@@ -183,9 +249,9 @@ class _Nguyen2017Base(BaseDataset):
         """Load a .mat file and build a continuous Raw with stim channel.
 
         Uses the 'last_beep' variable (speech imagery period, 5s).
-        Trials are returned in class-blocked order as stored in the
-        upstream .mat file; downstream code is responsible for any
-        shuffling its evaluation protocol requires.
+        Each 5s trial is split into three overlapping 2s trials:
+        - Vowels/ShortWords (T=1.0s): total 4s used, split as 2s epochs with 1s overlap.
+        - LongWords/ShortLongWords (T=1.4s): total 4.5s used, split as 2s epochs with 1.25s overlap.
         """
         mat = loadmat(str(fpath), squeeze_me=False)
         key = "eeg_data_wrt_task_rep_no_eog_256Hz_last_beep"
@@ -194,20 +260,31 @@ class _Nguyen2017Base(BaseDataset):
         n_classes, n_trials = cell.shape
         first_cell = cell[0, 0]
         n_ch_file = first_cell.shape[0]
-        n_times = first_cell.shape[1]  # 1280 = 5s at 256Hz
 
         # Use first 64 channels for 80-channel subjects.
         n_ch_use = min(n_ch_file, _N_CHANNELS)
 
-        # Collect all epochs: (n_total_trials, n_ch, n_times).
+        # Splitting parameters based on literature ( Nguyen et al. 2017)
+        # Epoch duration is always 2s = 512 samples at 256Hz
+        epoch_len = int(2.0 * _SFREQ)
+        if self._condition in ["Vowels", "ShortWords"]:
+            # 4s total used, 1s overlap -> starts at 0s, 1s, 2s
+            offsets = [int(0 * _SFREQ), int(1.0 * _SFREQ), int(2.0 * _SFREQ)]
+        else:
+            # LongWords or ShortLongWords
+            offsets = [int(0 * _SFREQ), int(1.4 * _SFREQ), int(2.8 * _SFREQ)]
+
+        # Collect all split epochs: (n_total_trials * 3, n_ch, n_times).
         all_data = []
         all_labels = []
         for cls_idx in range(n_classes):
             event_id = cls_idx + 1
             for trial_idx in range(n_trials):
-                trial_data = cell[cls_idx, trial_idx][:n_ch_use, :n_times]
-                all_data.append(trial_data)
-                all_labels.append(event_id)
+                trial_data_full = cell[cls_idx, trial_idx][:n_ch_use, :]
+                for offset in offsets:
+                    epoch = trial_data_full[:, offset : offset + epoch_len]
+                    all_data.append(epoch)
+                    all_labels.append(event_id)
 
         data = np.array(all_data, dtype=np.float64)
         labels = np.array(all_labels, dtype=int)
@@ -224,9 +301,10 @@ class _Nguyen2017Base(BaseDataset):
             ch_names,
             _SFREQ,
             labels,
-            montage_name="standard_1005",
+            montage_name=None,
             ch_types=ch_types,
         )
+        raw.set_montage(_MONTAGE)
         return raw
 
     def _get_single_subject_data(self, subject):
@@ -242,9 +320,6 @@ class _Nguyen2017Base(BaseDataset):
             raise ValueError("Invalid subject number")
 
         cfg = _CONDITIONS[self._condition]
-        # The Zenodo mirror stores files as sub-01.mat … sub-NN.mat inside
-        # each per-condition zip; the authors' opaque basenames are
-        # preserved as provenance in the bundled Read_me.txt / README.md.
         cond_dir = (
             Path(dl.get_dataset_path(cfg["sign"], path))
             / f"MNE-{cfg['sign']}-data"
@@ -274,48 +349,7 @@ class _Nguyen2017Base(BaseDataset):
 
 
 class Nguyen2017_V(_Nguyen2017Base):
-    """Nguyen 2017 Imagined Speech - Vowels condition.
-
-    Imagined speech of three vowels: /a/, /i/, /u/.
-
-    Dataset from Nguyen, Karavas, and Artemiadis [1]_.
-
-    **Dataset Description**
-
-    Eight of the 15 subjects (S4, S5, S8, S9, S11, S12, S13, S15)
-    performed imagined speech of three vowels with 100 trials per
-    class. EEG was recorded at 1000 Hz with 64 channels using the
-    BrainProducts ActiCHamp amplifier (10/20 placement), then
-    preprocessed (8-70 Hz Butterworth bandpass, 60 Hz notch, adaptive
-    EOG artifact removal) and downsampled to 256 Hz. Each trial uses
-    period T=1.0 s. Analyzed segment is 5 s after the last beep
-    (visual cue only, no auditory evoked potentials).
-
-    .. note::
-        Channels [1, 10, 33, 64] (1-indexed) were used for EOG
-        recording and should be excluded from classification.
-
-    .. figure:: /_static/paper_figures/Nguyen2017.png
-       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
-             periodic beeps mark each rhythm period T, the visual cue
-             stays on screen, the subject performs speech imagery; the
-             extracted signal is the segment after the last beep,
-             followed by 2 s rest.
-       :width: 100%
-
-       Figure 3 of [1]_ — trial structure (period T = 1.0 s for the
-       Vowels condition). Class labels: ``vowel_a``, ``vowel_i``,
-       ``vowel_u``. Reproduced from the author postprint at the
-       University of Delaware self-archive.
-
-    References
-    ----------
-    .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
-           Inferring imagined speech using EEG signals: a new approach
-           using Riemannian Manifold features. Journal of Neural
-           Engineering, 15(1), 016002.
-           https://doi.org/10.1088/1741-2552/aa8235
-    """
+    """Nguyen 2017 Imagined Speech - Vowels condition."""
 
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
@@ -325,12 +359,12 @@ class Nguyen2017_V(_Nguyen2017Base):
             paradigm="imagery",
             n_classes=3,
             class_labels=["vowel_a", "vowel_i", "vowel_u"],
-            trial_duration=5.0,
+            trial_duration=2.0,
             study_design=(
-                "Auditory beep + visual cue. 5 beeps at T=1.0s rhythm, "
-                "subject imagines speech at each beep and continues for "
-                "3 more periods. Analyzed segment: after last beep (no "
-                "auditory evoked potentials). ~2s rest between trials."
+                "Auditory beep + visual cue. 5 beeps at T=1.0s rhythm. "
+                "Subject imagines speech at each beep and continues for "
+                "3 more periods. Analyzed segment: after last beep. "
+                "Each 5s trial is split into 3 overlapping epochs of 2s."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
@@ -345,10 +379,7 @@ class Nguyen2017_V(_Nguyen2017Base):
         ),
         documentation=_nguyen_docs(
             "vowels",
-            "Imagined speech EEG dataset. Paper reports 49.0+/-2.4% "
-            "mean accuracy for 3-class vowels (chance 33.3%) using "
-            "Riemannian manifold features + mRVM classifier. "
-            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
+            "Imagined speech EEG dataset. Paper reports 49.0+/-2.4% mean accuracy.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
@@ -361,25 +392,18 @@ class Nguyen2017_V(_Nguyen2017Base):
             imagery_duration_s=5.0,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["mRVM (multi-class Relevance Vector Machines)"],
-            feature_extraction=["Riemannian tangent space", "covariance matrices"],
-            frequency_bands={
-                "mu": [8.0, 13.0],
-                "beta": [13.0, 30.0],
-                "gamma": [30.0, 70.0],
-            },
-            spatial_filters=["CSP (for channel selection)"],
+            classifiers=["mRVM"],
+            feature_extraction=["Riemannian tangent space"],
+            frequency_bands={"mu": [8.0, 13.0], "beta": [13.0, 30.0], "gamma": [30.0, 70.0]},
+            spatial_filters=["CSP"],
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="10-fold", cv_folds=10, evaluation_type=["within_session"]
         ),
         data_structure=DataStructureMetadata(
-            n_trials=2400,
-            n_trials_per_class={"vowel_a": 800, "vowel_i": 800, "vowel_u": 800},
-            trials_context=(
-                "8 subjects (S4, S5, S8, S9, S11, S12, S13, S15) x 300 "
-                "trials (100 per class). T=1.0 s rhythm."
-            ),
+            n_trials=7200,
+            n_trials_per_class={"vowel_a": 2400, "vowel_i": 2400, "vowel_u": 2400},
+            trials_context=("8 subjects x 300 trials (100 per class), each split into 3 epochs. T=1.0 s."),
         ),
         data_processed=True,
         file_format="MAT",
@@ -390,40 +414,7 @@ class Nguyen2017_V(_Nguyen2017Base):
 
 
 class Nguyen2017_S(_Nguyen2017Base):
-    """Nguyen 2017 Imagined Speech - Short Words condition.
-
-    Imagined speech of three short words: "in", "out", "up".
-
-    Dataset from Nguyen, Karavas, and Artemiadis [1]_.
-
-    **Dataset Description**
-
-    Six of the 15 subjects (S1, S3, S5, S6, S8, S12) performed imagined
-    speech of three short words with 100 trials per class. Same
-    recording setup as the Vowels condition, period T=1.0 s. Paper
-    reports 50.1±3.5% mean accuracy with the Riemannian approach.
-
-    .. figure:: /_static/paper_figures/Nguyen2017.png
-       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
-             periodic beeps mark each rhythm period T, the visual cue
-             stays on screen, the subject performs speech imagery; the
-             extracted signal is the segment after the last beep,
-             followed by 2 s rest.
-       :width: 100%
-
-       Figure 3 of [1]_ — trial structure (period T = 1.0 s for the
-       ShortWords condition). Class labels: ``out``, ``in``, ``up``.
-       Reproduced from the author postprint at the University of
-       Delaware self-archive.
-
-    References
-    ----------
-    .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
-           Inferring imagined speech using EEG signals: a new approach
-           using Riemannian Manifold features. Journal of Neural
-           Engineering, 15(1), 016002.
-           https://doi.org/10.1088/1741-2552/aa8235
-    """
+    """Nguyen 2017 Imagined Speech - Short Words condition."""
 
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
@@ -433,30 +424,21 @@ class Nguyen2017_S(_Nguyen2017Base):
             paradigm="imagery",
             n_classes=3,
             class_labels=["out", "in", "up"],
-            trial_duration=5.0,
+            trial_duration=2.0,
             study_design=(
                 "Auditory beep + visual cue. 5 beeps at T=1.0s rhythm. "
-                "Subject imagines speech at each beep and continues for "
-                "3 more periods. Analyzed: 5s after last beep. Paper "
-                "reports 50.1±3.5% mean accuracy."
+                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
             primary_modality="auditory",
             synchronicity="synchronous",
             mode="offline",
-            hed_tags={
-                "out": _nguyen_hed("out"),
-                "in": _nguyen_hed("in"),
-                "up": _nguyen_hed("up"),
-            },
+            hed_tags={"out": _nguyen_hed("out"), "in": _nguyen_hed("in"), "up": _nguyen_hed("up")},
         ),
         documentation=_nguyen_docs(
             "short words",
-            "Imagined speech EEG dataset. Paper reports 50.1+/-3.5% "
-            "mean accuracy for 3-class short words (chance 33.3%) using "
-            "Riemannian manifold features + mRVM classifier. "
-            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
+            "Imagined speech EEG dataset. Paper reports 50.1+/-3.5% mean accuracy.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
@@ -469,12 +451,9 @@ class Nguyen2017_S(_Nguyen2017Base):
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=1800,
-            n_trials_per_class={"out": 600, "in": 600, "up": 600},
-            trials_context=(
-                "6 subjects (S1, S3, S5, S6, S8, S12) x 300 trials "
-                "(100 per class). T=1.0 s rhythm."
-            ),
+            n_trials=5400,
+            n_trials_per_class={"out": 1800, "in": 1800, "up": 1800},
+            trials_context=("6 subjects x 300 trials, each split into 3 epochs. T=1.0 s."),
         ),
         data_processed=True,
         file_format="MAT",
@@ -485,43 +464,7 @@ class Nguyen2017_S(_Nguyen2017Base):
 
 
 class Nguyen2017_L(_Nguyen2017Base):
-    """Nguyen 2017 Imagined Speech - Long Words condition.
-
-    Imagined speech of two long words: "cooperate", "independent".
-
-    Dataset from Nguyen, Karavas, and Artemiadis [1]_.
-
-    **Dataset Description**
-
-    Six of the 15 subjects (S2, S3, S6, S7, S9, S11) performed
-    imagined speech of two long words with 100 trials per class.
-    EEG recorded with BrainProducts ActiCHamp, 64 channels, 10/20
-    system. Period T=1.4 s (longer than the short words / vowels
-    condition to accommodate the longer pronunciation). Paper
-    reports 66.2±4.8% mean accuracy.
-
-    .. figure:: /_static/paper_figures/Nguyen2017.png
-       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
-             periodic beeps mark each rhythm period T, the visual cue
-             stays on screen, the subject performs speech imagery; the
-             extracted signal is the segment after the last beep,
-             followed by 2 s rest.
-       :width: 100%
-
-       Figure 3 of [1]_ — trial structure (period T = 1.4 s for the
-       LongWords condition, longer than Vowels/ShortWords to
-       accommodate the longer pronunciation). Class labels:
-       ``cooperate``, ``independent``. Reproduced from the author
-       postprint at the University of Delaware self-archive.
-
-    References
-    ----------
-    .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
-           Inferring imagined speech using EEG signals: a new approach
-           using Riemannian Manifold features. Journal of Neural
-           Engineering, 15(1), 016002.
-           https://doi.org/10.1088/1741-2552/aa8235
-    """
+    """Nguyen 2017 Imagined Speech - Long Words condition."""
 
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
@@ -531,29 +474,21 @@ class Nguyen2017_L(_Nguyen2017Base):
             paradigm="imagery",
             n_classes=2,
             class_labels=["cooperate", "independent"],
-            trial_duration=5.0,
+            trial_duration=2.0,
             study_design=(
                 "Auditory beep + visual cue. 5 beeps at T=1.4s rhythm. "
-                "Subject imagines speech at each beep and continues for "
-                "3 more periods. Analyzed: 5s after last beep. Paper "
-                "reports 66.2±4.8% mean accuracy."
+                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
             primary_modality="auditory",
             synchronicity="synchronous",
             mode="offline",
-            hed_tags={
-                "cooperate": _nguyen_hed("cooperate"),
-                "independent": _nguyen_hed("independent"),
-            },
+            hed_tags={"cooperate": _nguyen_hed("cooperate"), "independent": _nguyen_hed("independent")},
         ),
         documentation=_nguyen_docs(
             "long words",
-            "Imagined speech EEG dataset. Paper reports 66.2+/-4.8% "
-            "mean accuracy for 2-class long words (chance 50.0%) using "
-            "Riemannian manifold features + mRVM classifier. "
-            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
+            "Imagined speech EEG dataset. Paper reports 66.2+/-4.8% mean accuracy.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
@@ -566,12 +501,9 @@ class Nguyen2017_L(_Nguyen2017Base):
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=1200,
-            n_trials_per_class={"cooperate": 600, "independent": 600},
-            trials_context=(
-                "6 subjects (S2, S3, S6, S7, S9, S11) x 200 trials "
-                "(100 per class). T=1.4 s rhythm."
-            ),
+            n_trials=3600,
+            n_trials_per_class={"cooperate": 1800, "independent": 1800},
+            trials_context=("6 subjects x 200 trials, each split into 3 epochs. T=1.4 s."),
         ),
         data_processed=True,
         file_format="MAT",
@@ -582,44 +514,7 @@ class Nguyen2017_L(_Nguyen2017Base):
 
 
 class Nguyen2017_SL(_Nguyen2017Base):
-    """Nguyen 2017 Imagined Speech - Short vs Long Words condition.
-
-    Imagined speech discriminating a short word ("in") from a long
-    word ("cooperate").
-
-    Dataset from Nguyen, Karavas, and Artemiadis [1]_.
-
-    **Dataset Description**
-
-    Six of the 15 subjects (S1, S5, S8, S9, S10, S14) performed
-    imagined speech of one short ("in") and one long ("cooperate")
-    word with 100 trials per class (80 for some subjects). EEG
-    recorded with BrainProducts ActiCHamp, 64 channels, 10/20
-    system. Period T=1.4 s. Paper reports 73.3±8.9% (Method 1,
-    spatial features only) and 80.1±8.0% (Method 2, spatial +
-    wavelet features) mean accuracy.
-
-    .. figure:: /_static/paper_figures/Nguyen2017.png
-       :alt: Nguyen2017 trial structure (Fig. 3 of the JNE paper) —
-             periodic beeps mark each rhythm period T, the visual cue
-             stays on screen, the subject performs speech imagery; the
-             extracted signal is the segment after the last beep,
-             followed by 2 s rest.
-       :width: 100%
-
-       Figure 3 of [1]_ — trial structure (period T = 1.4 s for the
-       ShortLongWords condition). Class labels: ``cooperate``, ``in``.
-       Reproduced from the author postprint at the University of
-       Delaware self-archive.
-
-    References
-    ----------
-    .. [1] Nguyen, C. H., Karavas, G. K., & Artemiadis, P. (2017).
-           Inferring imagined speech using EEG signals: a new approach
-           using Riemannian Manifold features. Journal of Neural
-           Engineering, 15(1), 016002.
-           https://doi.org/10.1088/1741-2552/aa8235
-    """
+    """Nguyen 2017 Imagined Speech - Short vs Long Words condition."""
 
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
@@ -629,12 +524,10 @@ class Nguyen2017_SL(_Nguyen2017Base):
             paradigm="imagery",
             n_classes=2,
             class_labels=["cooperate", "in"],
-            trial_duration=5.0,
+            trial_duration=2.0,
             study_design=(
                 "Auditory beep + visual cue. 5 beeps at T=1.4s rhythm. "
-                "Analyzed: 5s after last beep. Paper reports 73.3±8.9% "
-                "(Method 1: spatial) to 80.1±8.0% (Method 2: spatial + "
-                "wavelet) mean accuracy."
+                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
@@ -645,12 +538,7 @@ class Nguyen2017_SL(_Nguyen2017Base):
         ),
         documentation=_nguyen_docs(
             "short vs long words",
-            "Imagined speech EEG dataset. Paper reports 73.3+/-8.9% "
-            "(Method 1: spatial) to 80.1+/-8.0% (Method 2: spatial + "
-            "wavelet) mean accuracy for 2-class short-vs-long words "
-            "(chance 50.0%) using Riemannian manifold features + mRVM "
-            "classifier. "
-            "Ethics: ASU IRB Protocols 1309009601, STUDY00001345.",
+            "Imagined speech EEG dataset. Paper reports 73.3+/-8.9% mean accuracy.",
         ),
         sessions_per_subject=1,
         runs_per_session=1,
@@ -663,13 +551,9 @@ class Nguyen2017_SL(_Nguyen2017Base):
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=1200,
-            n_trials_per_class={"cooperate": 600, "in": 600},
-            trials_context=(
-                "6 subjects (S1, S5, S8, S9, S10, S14) x 200 trials "
-                "(100 per class, 80 per class for some subjects). "
-                "T=1.4 s rhythm."
-            ),
+            n_trials=3600,
+            n_trials_per_class={"cooperate": 1800, "in": 1800},
+            trials_context=("6 subjects x 200 trials, each split into 3 epochs. T=1.4 s."),
         ),
         data_processed=True,
         file_format="MAT",
