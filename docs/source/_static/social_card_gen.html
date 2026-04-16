@@ -92,20 +92,11 @@
     gap: 18px;
   }
 
-  .logo-icon {
-    width: 90px;
+  .logo-full {
+    width: 240px;
     height: auto;
     filter: brightness(0) invert(1);
-    opacity: 0.92;
-  }
-
-  .logo-wordmark {
-    font-family: 'Source Serif 4', serif;
-    font-weight: 700;
-    font-size: 62px;
-    color: #ffffff;
-    letter-spacing: 2px;
-    line-height: 1;
+    opacity: 0.95;
   }
 
   .tagline-blue {
@@ -215,8 +206,10 @@
   .pill.mi    { background: rgba(58,134,200,0.10); color: #2a6fa8; border-color: rgba(58,134,200,0.20); }
   .pill.p300  { background: rgba(232,112,106,0.10); color: #c45550; border-color: rgba(232,112,106,0.20); }
   .pill.ssvep { background: rgba(77,175,74,0.10);  color: #3a8838; border-color: rgba(77,175,74,0.20); }
-  .pill.cvep  { background: rgba(200,125,186,0.10); color: #9a5e8e; border-color: rgba(200,125,186,0.20); }
-  .pill.tool  { background: rgba(127,211,202,0.08); color: #2a7a70; border-color: rgba(127,211,202,0.20); }
+  .pill.cvep    { background: rgba(200,125,186,0.10); color: #9a5e8e; border-color: rgba(200,125,186,0.20); }
+  .pill.speech  { background: rgba(255,165,0,0.10);  color: #b57a14; border-color: rgba(255,165,0,0.20); }
+  .pill.rstate  { background: rgba(120,140,170,0.10); color: #5a6e82; border-color: rgba(120,140,170,0.20); }
+  .pill.tool    { background: rgba(127,211,202,0.08); color: #2a7a70; border-color: rgba(127,211,202,0.20); }
 
   /* URL bottom right */
   .url {
@@ -260,8 +253,7 @@
   <div class="accent-line"></div>
 
   <div class="logo-area">
-    <img class="logo-icon" src="moabb_notext.svg" alt="MOABB">
-    <div class="logo-wordmark">MOABB</div>
+    <img class="logo-full" src="moabb_logo.svg" alt="MOABB - Mother of all BCI Benchmarks">
     <div class="tagline-blue">Reproducible benchmarking for EEG-based brain-computer interfaces. Compare pipelines across datasets, paradigms, and evaluation strategies.</div>
   </div>
 
@@ -295,9 +287,10 @@
       <span class="pill p300">P300 / ERP</span>
       <span class="pill ssvep">SSVEP</span>
       <span class="pill cvep">c-VEP</span>
+      <span class="pill speech">Speech Imagery</span>
+      <span class="pill rstate">Resting State</span>
       <span class="pill tool">MNE-Python</span>
       <span class="pill tool">scikit-learn</span>
-      <span class="pill tool">Python 3.10+</span>
     </div>
   </div>
 
