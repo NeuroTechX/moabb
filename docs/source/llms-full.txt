@@ -1,6 +1,6 @@
 # MOABB - Mother of all BCI Benchmarks
 
-> MOABB is a Python library for reproducible benchmarking of EEG-based Brain-Computer Interface (BCI) algorithms. Install with `pip install moabb`. It provides 67+ open EEG datasets (1735+ subjects), standardized evaluations, and is built on MNE-Python + scikit-learn.
+> MOABB is a Python library for reproducible benchmarking of EEG-based Brain-Computer Interface (BCI) algorithms. Install with `pip install moabb`. It provides 158 open EEG datasets (3500+ subjects), standardized evaluations, and is built on MNE-Python + scikit-learn.
 >
 > License: BSD-3-Clause | Python 3.10+ | DOI: 10.5281/zenodo.10034223
 > Repository: https://github.com/NeuroTechX/moabb
@@ -440,7 +440,7 @@ results = evaluation.process(pipelines)
 ## Documentation
 
 - [Installation](https://moabb.neurotechx.com/docs/install/install.html): pip, source, optional extras (deeplearning, optuna, interactive)
-- [Dataset Catalog](https://moabb.neurotechx.com/docs/dataset_summary.html): All 67+ datasets with interactive filtering
+- [Dataset Catalog](https://moabb.neurotechx.com/docs/dataset_summary.html): All 158 datasets with interactive filtering
 - [API Reference](https://moabb.neurotechx.com/docs/api.html): Full class/method documentation
 - [Tutorials](https://moabb.neurotechx.com/docs/auto_examples/tutorials/index.html): Step-by-step guides
 - [Paradigm Examples](https://moabb.neurotechx.com/docs/auto_examples/paradigm_examples/index.html): MI, P300, SSVEP walkthroughs

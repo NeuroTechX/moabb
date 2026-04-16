@@ -334,7 +334,7 @@ ogp_site_name = "MOABB - Mother of all BCI Benchmarks"
 ogp_image = "https://moabb.neurotechx.com/docs/_static/moabb_og_card.png"
 ogp_image_alt = (
     "MOABB - Mother of all BCI Benchmarks: "
-    "67+ open EEG datasets for reproducible BCI research"
+    "158 open EEG datasets for reproducible BCI research"
 )
 ogp_description_length = 200
 ogp_type = "website"
@@ -423,7 +423,7 @@ html_context = {
     "carousel": [
         dict(
             title="Datasets",
-            text="Access 67+ open EEG datasets for motor imagery, P300, and SSVEP paradigms.",
+            text="Access 158 open EEG datasets for motor imagery, P300, SSVEP, and c-VEP paradigms.",
             url="dataset_summary.html",
             img="datasets_overview.png",
             alt="Datasets overview",

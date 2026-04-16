@@ -1,5 +1,5 @@
 .. meta::
-   :description: Browse 67+ open EEG datasets for BCI research in MOABB. Filter by paradigm (Motor Imagery, P300, SSVEP, c-VEP), subject count, channels, and license. Interactive table with CSV export.
+   :description: Browse 158 open EEG datasets for BCI research in MOABB. Filter by paradigm (Motor Imagery, P300, SSVEP, c-VEP), subject count, channels, and license. Interactive table with CSV export.
    :keywords: EEG datasets, BCI datasets, motor imagery dataset, P300 dataset, SSVEP dataset, open EEG data, brain-computer interface data
 
 .. _data_summary:

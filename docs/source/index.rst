@@ -1,7 +1,7 @@
 :html_theme.sidebar_secondary.remove:
 
 .. meta::
-   :description: MOABB (Mother of all BCI Benchmarks) - Open-source Python framework for reproducible EEG-based brain-computer interface benchmarking with 67+ datasets, standardized evaluations, and built on MNE-Python and scikit-learn.
+   :description: MOABB (Mother of all BCI Benchmarks) - Open-source Python framework for reproducible EEG-based brain-computer interface benchmarking with 158 datasets, 3500+ subjects, standardized evaluations, and built on MNE-Python and scikit-learn.
    :keywords: MOABB, BCI, EEG, brain-computer interface, benchmark, motor imagery, P300, SSVEP, MNE-Python, open science, reproducibility
 
 .. title:: MOABB - Mother of all BCI Benchmarks
