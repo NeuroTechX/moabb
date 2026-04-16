@@ -234,7 +234,7 @@ class Pressel2016(BaseDataset):
             sessions_per_subject=n_sessions,
             events={v: k for k, v in _STIMULUS_MAP.items()},
             code="Pressel2016",
-            interval=[0, 4],
+            interval=[0, 3],
             paradigm="imagery",
             doi="10.1117/12.2255697",
             selected_subjects=subjects,
