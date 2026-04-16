@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: #f0f5fa;
+    position: relative;
+  }
+
+  /* Deep navy band on left */
+  .band {
+    position: absolute;
+    top: 0; left: 0;
+    width: 500px; height: 100%;
+    background: linear-gradient(165deg, #001a35 0%, #002B5C 40%, #007CBA 100%);
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+  }
+
+  /* Mountain curves overlay (brand motif) */
+  .mountain-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 500px; height: 100%;
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+    overflow: hidden;
+  }
+
+  .mountain-overlay::before {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 20px;
+    width: 360px; height: 200px;
+    background:
+      radial-gradient(ellipse 120px 160px at 30% 100%, rgba(165,207,229,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 100px 190px at 50% 100%, rgba(49,77,103,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 90px 140px at 70% 100%, rgba(127,211,202,0.10) 0%, transparent 70%);
+  }
+
+  /* Subtle horizontal line overlay on left */
+  .wave-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 500px; height: 100%;
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+    opacity: 0.05;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.5) 20px,
+      rgba(255,255,255,0.5) 21px
+    );
+  }
+
+  /* Grid dots pattern on right side */
+  .grid-dots {
+    position: absolute;
+    top: 0; right: 0;
+    width: 740px; height: 100%;
+    background-image: radial-gradient(circle, #b8cad8 0.7px, transparent 0.7px);
+    background-size: 26px 26px;
+    opacity: 0.30;
+  }
+
+  /* Teal accent line */
+  .accent-line {
+    position: absolute;
+    top: 0; left: 418px;
+    width: 5px; height: 100%;
+    background: linear-gradient(180deg, #7fd3ca 0%, #4db8a8 100%);
+    transform: skewX(-8deg);
+  }
+
+  /* Logo area on the blue side */
+  .logo-area {
+    position: absolute;
+    top: 50%; left: 48px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .logo-icon {
+    width: 90px;
+    height: auto;
+    filter: brightness(0) invert(1);
+    opacity: 0.92;
+  }
+
+  .logo-wordmark {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 62px;
+    color: #ffffff;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .tagline-blue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.62);
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+    max-width: 310px;
+  }
+
+  /* Content on the right side */
+  .content {
+    position: absolute;
+    top: 46%; right: 56px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 620px;
+  }
+
+  .headline {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 34px;
+    color: #0f1c2e;
+    line-height: 1.22;
+    letter-spacing: -0.3px;
+  }
+
+  .headline em {
+    font-style: normal;
+    color: #007CBA;
+  }
+
+  /* Code snippet */
+  .code-snippet {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    font-weight: 400;
+    background: #0f1c2e;
+    color: #e2e8f0;
+    padding: 14px 20px;
+    border-radius: 8px;
+    line-height: 1.65;
+    width: 100%;
+    border-left: 3px solid #7fd3ca;
+  }
+
+  .code-snippet .kw { color: #7dd3fc; }
+  .code-snippet .fn { color: #7fd3ca; }
+  .code-snippet .cls { color: #a5cfe5; }
+  .code-snippet .cm { color: #5a6e82; }
+  .code-snippet .st { color: #86efac; }
+  .code-snippet .op { color: #94a3b8; }
+
+  /* Stats row */
+  .stats {
+    display: flex;
+    gap: 36px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 30px;
+    color: #007CBA;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+    font-size: 11px;
+    color: #6b7f94;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  /* Paradigm pills */
+  .pills {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 5px;
+    background: rgba(0, 124, 186, 0.07);
+    color: #007CBA;
+    border: 1px solid rgba(0, 124, 186, 0.15);
+  }
+
+  .pill.mi    { background: rgba(58,134,200,0.10); color: #2a6fa8; border-color: rgba(58,134,200,0.20); }
+  .pill.p300  { background: rgba(232,112,106,0.10); color: #c45550; border-color: rgba(232,112,106,0.20); }
+  .pill.ssvep { background: rgba(77,175,74,0.10);  color: #3a8838; border-color: rgba(77,175,74,0.20); }
+  .pill.cvep  { background: rgba(200,125,186,0.10); color: #9a5e8e; border-color: rgba(200,125,186,0.20); }
+  .pill.tool  { background: rgba(127,211,202,0.08); color: #2a7a70; border-color: rgba(127,211,202,0.20); }
+
+  /* URL bottom right */
+  .url {
+    position: absolute;
+    bottom: 24px; right: 56px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: #007CBA;
+    letter-spacing: 0.5px;
+  }
+
+  /* Bottom left on blue */
+  .url-left {
+    position: absolute;
+    bottom: 24px; left: 48px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.40);
+    letter-spacing: 0.5px;
+  }
+
+  /* DOI badge */
+  .doi {
+    position: absolute;
+    bottom: 24px; right: 320px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    color: #8a9bb0;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+  <div class="grid-dots"></div>
+  <div class="band"></div>
+  <div class="mountain-overlay"></div>
+  <div class="wave-overlay"></div>
+  <div class="accent-line"></div>
+
+  <div class="logo-area">
+    <img class="logo-icon" src="moabb_notext.svg" alt="MOABB">
+    <div class="logo-wordmark">MOABB</div>
+    <div class="tagline-blue">Reproducible benchmarking for EEG-based brain-computer interfaces. Compare pipelines across datasets, paradigms, and evaluation strategies.</div>
+  </div>
+
+  <div class="content">
+    <div class="headline">
+      <em>158</em> open EEG datasets for reproducible BCI benchmarking
+    </div>
+    <div class="code-snippet">
+      <span class="kw">from</span> moabb.datasets <span class="kw">import</span> <span class="cls">BNCI2014_001</span><br>
+      <span class="kw">from</span> moabb.paradigms <span class="kw">import</span> <span class="cls">LeftRightImagery</span><br>
+      <span class="kw">from</span> moabb.evaluations <span class="kw">import</span> <span class="cls">CrossSessionEvaluation</span><br>
+      <span class="cm"># Dataset &rarr; Paradigm &rarr; Evaluation &rarr; Results</span><br>
+      results <span class="op">=</span> evaluation.<span class="fn">process</span><span class="op">(</span>pipelines<span class="op">)</span>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-number">158</span>
+        <span class="stat-label">Datasets</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">3,513</span>
+        <span class="stat-label">Subjects</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">9.1k</span>
+        <span class="stat-label">Sessions</span>
+      </div>
+    </div>
+    <div class="pills">
+      <span class="pill mi">Motor Imagery</span>
+      <span class="pill p300">P300 / ERP</span>
+      <span class="pill ssvep">SSVEP</span>
+      <span class="pill cvep">c-VEP</span>
+      <span class="pill tool">MNE-Python</span>
+      <span class="pill tool">scikit-learn</span>
+      <span class="pill tool">Python 3.10+</span>
+    </div>
+  </div>
+
+  <div class="url-left">BSD-3-Clause &middot; Open Source</div>
+  <div class="doi">DOI: 10.5281/zenodo.10034223</div>
+  <div class="url">moabb.neurotechx.com</div>
+</body>
+</html>
