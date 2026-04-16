@@ -93,16 +93,16 @@
   }
 
   .logo-icon {
-    width: 160px;
+    width: 220px;
     height: auto;
   }
 
   .logo-wordmark {
     font-family: 'Source Serif 4', serif;
     font-weight: 700;
-    font-size: 58px;
+    font-size: 72px;
     color: #ffffff;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     line-height: 1;
   }
 
@@ -285,10 +285,9 @@
       <em>158</em> open EEG datasets for reproducible BCI benchmarking
     </div>
     <div class="code-snippet">
-      <span class="kw">from</span> moabb.datasets <span class="kw">import</span> <span class="cls">BNCI2014_001</span><br>
-      <span class="kw">from</span> moabb.paradigms <span class="kw">import</span> <span class="cls">LeftRightImagery</span><br>
-      <span class="kw">from</span> moabb.evaluations <span class="kw">import</span> <span class="cls">CrossSessionEvaluation</span><br>
-      <span class="cm"># Dataset &rarr; Paradigm &rarr; Evaluation &rarr; Results</span><br>
+      <span class="cm"># benchmark any pipeline in 3 lines</span><br>
+      paradigm <span class="op">=</span> <span class="cls">LeftRightImagery</span><span class="op">()</span><br>
+      evaluation <span class="op">=</span> <span class="cls">CrossSessionEvaluation</span><span class="op">(</span>paradigm<span class="op">=</span>paradigm<span class="op">)</span><br>
       results <span class="op">=</span> evaluation.<span class="fn">process</span><span class="op">(</span>pipelines<span class="op">)</span>
     </div>
     <div class="stats">
