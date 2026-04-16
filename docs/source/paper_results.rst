@@ -1,4 +1,6 @@
 .. meta::
+   :description: The largest EEG-based BCI reproducibility benchmark results. Compare within-session, cross-session, and cross-subject accuracy across motor imagery, P300, and SSVEP paradigms.
+   :keywords: BCI benchmark results, EEG benchmark, motor imagery accuracy, P300 accuracy, SSVEP accuracy, within-session evaluation
    :hide_sidebar: true
 
 :html_theme.sidebar_secondary.remove:

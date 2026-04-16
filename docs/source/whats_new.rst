@@ -1,3 +1,7 @@
+.. meta::
+   :description: Latest updates, enhancements, bug fixes, and API changes in MOABB releases. Changelog for the Mother of all BCI Benchmarks.
+   :keywords: MOABB changelog, MOABB release notes, BCI benchmark updates, MOABB version history
+
 .. _whats_new:
 
 .. currentmodule:: moabb

@@ -1,3 +1,7 @@
+.. meta::
+   :description: Install MOABB via pip or from source. Supports Python 3.10+ with optional dependencies for deep learning (braindecode), carbon tracking, and interactive visualization.
+   :keywords: install MOABB, pip install moabb, BCI Python package, EEG benchmark installation
+
 .. _installation:
 
 ================

@@ -17,13 +17,39 @@ maintainers = [
     { name = "Sylvain Chevallier", email = "sylvain.chevallier@universite-paris-saclay.fr" },
 ]
 license = { text = "BSD-3-Clause" }
-keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
+keywords = [
+    "eeg",
+    "datasets",
+    "reproducibility",
+    "bci",
+    "benchmark",
+    "brain-computer interface",
+    "motor imagery",
+    "p300",
+    "ssvep",
+    "neuroscience",
+    "mne-python",
+    "open science",
+    "electroencephalography",
+    "signal processing",
+    "machine learning",
+    "scikit-learn",
+    "neural engineering",
+    "cvep",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -60,9 +86,14 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://moabb.neurotechx.com/docs/index.html"
-repository = "https://github.com/NeuroTechX/moabb"
-documentation = "https://moabb.neurotechx.com/docs/index.html"
+Homepage = "https://moabb.neurotechx.com/docs/"
+Documentation = "https://moabb.neurotechx.com/docs/"
+Repository = "https://github.com/NeuroTechX/moabb"
+"Bug Tracker" = "https://github.com/NeuroTechX/moabb/issues"
+Changelog = "https://moabb.neurotechx.com/docs/whats_new.html"
+"Dataset Catalog" = "https://moabb.neurotechx.com/docs/dataset_summary.html"
+"Benchmark Results" = "https://moabb.neurotechx.com/docs/paper_results.html"
+"Cite MOABB" = "https://moabb.neurotechx.com/docs/cite.html"
 
 [project.optional-dependencies]
 carbonemission = ["codecarbon>=2.1.4"]
@@ -93,6 +124,7 @@ docs = [
     "mne-features>=0.3",
     "snowballstemmer>=3.0.1",
     "sphinx-sitemap",
+    "sphinxext-opengraph>=0.9.0",
 ]
 all = [
     "moabb[carbonemission]",

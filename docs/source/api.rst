@@ -1,3 +1,7 @@
+.. meta::
+   :description: MOABB API reference - Datasets, Paradigms, Evaluations, Pipelines, and analysis tools for EEG-based BCI benchmarking in Python.
+   :keywords: MOABB API, BCI Python API, EEG analysis, motor imagery paradigm, P300 paradigm, cross-session evaluation
+
 =====================
 API and Main Concepts
 =====================
