@@ -41,39 +41,60 @@ _DOI = "10.1038/s41597-025-05926-5"
 
 # mBrainTrain Smarting 24-channel layout (FCz reference, Fpz ground).
 _CH_NAMES = [
-    "Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4",
-    "O1", "O2", "F7", "F8", "T7", "T8", "P7", "P8",
-    "Fz", "Cz", "Pz", "AFz", "CPz", "POz", "M1", "M2",
+    "Fp1",
+    "Fp2",
+    "F3",
+    "F4",
+    "C3",
+    "C4",
+    "P3",
+    "P4",
+    "O1",
+    "O2",
+    "F7",
+    "F8",
+    "T7",
+    "T8",
+    "P7",
+    "P8",
+    "Fz",
+    "Cz",
+    "Pz",
+    "AFz",
+    "CPz",
+    "POz",
+    "M1",
+    "M2",
 ]
 
 _CH_POSITIONS = {
-    'Fp1': [-270.,  860.,  360.],
-    'Fp2': [270., 860., 360.],
-    'F3': [-470.,  620.,  800.],
-    'F4': [470., 620., 800.],
-    'C3': [-610.,    0.,  970.],
-    'C4': [610.,   0., 970.],
-    'P3': [-470., -620.,  800.],
-    'P4': [ 470., -620.,  800.],
-    'O1': [-270., -860.,  360.],
-    'O2': [ 270., -860.,  360.],
-    'F7': [-670.,  520.,  360.],
-    'F8': [670., 520., 360.],
-    'T7': [-780.,    0.,  360.],
-    'T8': [780.,   0., 360.],
-    'P7': [-670., -520.,  360.],
-    'P8': [ 670., -520.,  360.],
-    'Fz': [  0., 670., 950.],
-    'Cz': [   0.,    0., 1200.],
-    'Pz': [   0., -670.,  950.],
-    'AFz': [  0., 830., 690.],
-    'CPz': [   0., -340., 1130.],
-    'POz': [   0., -830.,  690.],
-    'M1': [-730., -250.,    0.],
-    'M2': [ 730., -250.,    0.]
+    "Fp1": [-270.0, 860.0, 360.0],
+    "Fp2": [270.0, 860.0, 360.0],
+    "F3": [-470.0, 620.0, 800.0],
+    "F4": [470.0, 620.0, 800.0],
+    "C3": [-610.0, 0.0, 970.0],
+    "C4": [610.0, 0.0, 970.0],
+    "P3": [-470.0, -620.0, 800.0],
+    "P4": [470.0, -620.0, 800.0],
+    "O1": [-270.0, -860.0, 360.0],
+    "O2": [270.0, -860.0, 360.0],
+    "F7": [-670.0, 520.0, 360.0],
+    "F8": [670.0, 520.0, 360.0],
+    "T7": [-780.0, 0.0, 360.0],
+    "T8": [780.0, 0.0, 360.0],
+    "P7": [-670.0, -520.0, 360.0],
+    "P8": [670.0, -520.0, 360.0],
+    "Fz": [0.0, 670.0, 950.0],
+    "Cz": [0.0, 0.0, 1200.0],
+    "Pz": [0.0, -670.0, 950.0],
+    "AFz": [0.0, 830.0, 690.0],
+    "CPz": [0.0, -340.0, 1130.0],
+    "POz": [0.0, -830.0, 690.0],
+    "M1": [-730.0, -250.0, 0.0],
+    "M2": [730.0, -250.0, 0.0],
 }
 
-_MONTAGE = mne.channels.make_dig_montage(ch_pos=_CH_POSITIONS, coord_frame='head')
+_MONTAGE = mne.channels.make_dig_montage(ch_pos=_CH_POSITIONS, coord_frame="head")
 
 # OpenViBE annotation labels -> imagined speech words.
 _ANNOT_MAP = {
@@ -118,6 +139,7 @@ _SUBJECT_URLS_GAMIFIED = {
     14: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/485ccad2-e9a3-42fd-b329-c1930f7bd463/file_downloaded",
     15: "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files/646f20cd-37c0-45de-8a8b-aa8944231fbd/file_downloaded",
 }
+
 
 class AguileraRodriguez2025(BaseDataset):
     """Imagined Speech EEG dataset comparing paradigm designs."""
@@ -197,12 +219,14 @@ class AguileraRodriguez2025(BaseDataset):
             repository="Mendeley Data",
             associated_paper_doi=_DOI,
             keywords=["imagined speech", "EEG", "gamified paradigm"],
-            description="EEG-based imagined speech database comparing traditional cue-based and gamified paradigms."
+            description="EEG-based imagined speech database comparing traditional cue-based and gamified paradigms.",
         ),
         sessions_per_subject=2,
         runs_per_session=1,
         tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),
-        preprocessing=PreprocessingMetadata(data_state="raw", preprocessing_applied=False),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw", preprocessing_applied=False
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["avanzar", "retroceder", "derecha", "izquierda"],
@@ -211,7 +235,12 @@ class AguileraRodriguez2025(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=1800,
-            n_trials_per_class={"avanzar": 450, "retroceder": 450, "derecha": 450, "izquierda": 450},
+            n_trials_per_class={
+                "avanzar": 450,
+                "retroceder": 450,
+                "derecha": 450,
+                "izquierda": 450,
+            },
             trials_context=("15 subjects x 120 trials (30 per class)."),
         ),
         data_processed=False,
@@ -234,7 +263,6 @@ class AguileraRodriguez2025(BaseDataset):
             selected_subjects=subjects,
             selected_sessions=sessions,
         )
-
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -265,7 +293,7 @@ class AguileraRodriguez2025(BaseDataset):
                         else:
                             new_desc.append("BAD_" + desc)
                     raw.annotations.description = np.array(new_desc)
-                
+
                 sessions[session_name]["0"] = raw
 
             elif session == 2:
@@ -280,7 +308,9 @@ class AguileraRodriguez2025(BaseDataset):
                         marker_stream = stream
 
                 if eeg_stream is None or marker_stream is None:
-                    raise RuntimeError(f"EEG or Marker stream not found for subject {subject}")
+                    raise RuntimeError(
+                        f"EEG or Marker stream not found for subject {subject}"
+                    )
 
                 data_exp = eeg_stream["time_series"].T
                 t_start = eeg_stream["time_stamps"][0]
@@ -295,13 +325,15 @@ class AguileraRodriguez2025(BaseDataset):
                         new_descriptions.append(d_lower)
 
                 annot = mne.Annotations(
-                    onset=new_onsets, duration=[0] * len(new_onsets), description=new_descriptions
+                    onset=new_onsets,
+                    duration=[0] * len(new_onsets),
+                    description=new_descriptions,
                 )
                 info = mne.create_info(_CH_NAMES, 500, "eeg")
                 raw = mne.io.RawArray(data_exp, info)
                 raw.set_montage(_MONTAGE)
                 raw.set_annotations(annot)
-                
+
                 sessions[session_name]["0"] = raw
 
         return sessions
@@ -324,7 +356,9 @@ class AguileraRodriguez2025(BaseDataset):
                 raise ValueError(f"Invalid session {session}")
 
             downloaded = Path(
-                dl.data_dl(url, _SIGN, path=path, force_update=force_update, verbose=verbose)
+                dl.data_dl(
+                    url, _SIGN, path=path, force_update=force_update, verbose=verbose
+                )
             )
 
             if downloaded.suffix == ext:
