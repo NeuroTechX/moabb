@@ -5,11 +5,11 @@ DOI: 10.1038/s41597-025-05926-5
 Data DOI: 10.17632/57g8z63tmy.1
 """
 
+import importlib
 from pathlib import Path
 
 import mne
 import numpy as np
-import pyxdf
 
 from . import download as dl
 from .base import BaseDataset
@@ -142,7 +142,14 @@ _SUBJECT_URLS_GAMIFIED = {
 
 
 class AguileraRodriguez2025(BaseDataset):
-    """Imagined Speech EEG dataset comparing paradigm designs."""
+    """Imagined Speech EEG dataset comparing paradigm designs.
+
+    .. note::
+        Session 2 (gamified paradigm) is distributed as XDF and requires the
+        optional ``pyxdf`` dependency (install with ``pip install moabb[xdf]``).
+        Session 1 (traditional paradigm, EDF) works without it — restrict with
+        ``AguileraRodriguez2025(sessions=[1])``.
+    """
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
@@ -297,7 +304,16 @@ class AguileraRodriguez2025(BaseDataset):
                 sessions[session_name]["0"] = raw
 
             elif session == 2:
-                # Gamified (XDF)
+                # Gamified (XDF) — pyxdf is an optional dependency.
+                try:
+                    pyxdf = importlib.import_module("pyxdf")
+                except ImportError as exc:
+                    raise ImportError(
+                        "The 'pyxdf' package is required to load the gamified "
+                        "(session 2) XDF data for AguileraRodriguez2025. "
+                        "Install it with `pip install moabb[xdf]`, or restrict "
+                        "to session 1 with `AguileraRodriguez2025(sessions=[1])`."
+                    ) from exc
                 streams, header = pyxdf.load_xdf(fpath)
                 eeg_stream = None
                 marker_stream = None
