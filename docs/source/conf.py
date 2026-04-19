@@ -50,6 +50,10 @@ version = moabb.__version__
 # The full version, including alpha/beta/rc tags
 release = f"{moabb.__version__}-dev"
 
+# Control the page title suffix in <title> tags for SEO
+html_title = "MOABB Documentation"
+html_short_title = "MOABB"
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -85,6 +89,7 @@ extensions = [
     "sphinx_favicon",
     "sphinxcontrib.jquery",
     "sphinx_sitemap",
+    "sphinxext.opengraph",
 ]
 
 _build_sitemap = os.environ.get("MOABB_BUILD_SITEMAP", "1").strip().lower()
@@ -315,6 +320,39 @@ html_baseurl = "https://moabb.neurotechx.com/docs/"
 
 # Sitemap configuration
 sitemap_url_scheme = "{link}"
+sitemap_excludes = [
+    "genindex",
+    "py-modindex",
+    "search",
+    "auto_examples/*/sg_execution_times",
+    "auto_examples/sg_execution_times",
+]
+
+# -- OpenGraph / social sharing meta tags (sphinxext-opengraph) -----------
+ogp_site_url = "https://moabb.neurotechx.com/docs/"
+ogp_site_name = "MOABB - Mother of all BCI Benchmarks"
+ogp_image = "https://moabb.neurotechx.com/docs/_static/moabb_og_card.png"
+ogp_image_alt = (
+    "MOABB - Mother of all BCI Benchmarks: "
+    "158 open EEG datasets for reproducible BCI research"
+)
+ogp_description_length = 200
+ogp_type = "website"
+ogp_custom_meta_tags = [
+    '<meta name="twitter:card" content="summary_large_image" />',
+    '<meta name="twitter:site" content="@NeuroTechX" />',
+]
+
+# Auto-generate unique social preview cards per page (uses matplotlib).
+# Each page gets its own card with the page title, site name, and description.
+# The static moabb_og_card.png is the fallback for pages without auto-generated cards.
+ogp_social_cards = {
+    "image": "_static/moabb_logo.png",
+    "line_color": "#4a90d9",
+}
+
+# Extra files to copy to build output root (robots.txt, llms.txt, etc.)
+html_extra_path = ["robots.txt", "llms.txt", "llms-full.txt", "google07a8f2e31a591297.html"]
 
 html_css_files = [
     "css/custom.css",
@@ -385,7 +423,7 @@ html_context = {
     "carousel": [
         dict(
             title="Datasets",
-            text="Access 67+ open EEG datasets for motor imagery, P300, and SSVEP paradigms.",
+            text="Access 158 open EEG datasets for motor imagery, P300, SSVEP, and c-VEP paradigms.",
             url="dataset_summary.html",
             img="datasets_overview.png",
             alt="Datasets overview",

@@ -961,7 +961,7 @@ def _update_participants_tsv(root, subject, metadata, raw=None):
                 row["bci_experience"] = bci_experience
 
     # Write back
-    with open(tsv_path, "w", newline="") as f:
+    with open(tsv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter="\t")
         writer.writeheader()
         writer.writerows(rows)
@@ -1368,7 +1368,7 @@ def _write_metadata_yaml(root, dataset):
     code_dir = Path(root) / "code"
     code_dir.mkdir(exist_ok=True)
     yaml_path = code_dir / f"{type(dataset).__name__}.metadata.yaml"
-    with open(yaml_path, "w") as f:
+    with open(yaml_path, "w", encoding="utf-8") as f:
         yaml.dump(
             data,
             f,

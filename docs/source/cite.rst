@@ -1,3 +1,7 @@
+.. meta::
+   :description: How to cite MOABB in academic publications. BibTeX entries for the MOABB software (Zenodo DOI 10.5281/zenodo.10034223) and the MOABB benchmark paper.
+   :keywords: cite MOABB, MOABB BibTeX, MOABB DOI, BCI benchmark citation, MOABB paper
+
 Citing MOABB and related publications
 ============================================
 

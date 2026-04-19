@@ -50,7 +50,7 @@ repos:
           - --skip="./.*,*.csv,*.json,*.ambr"
           - --quiet-level=2
         exclude_types: [ csv, json, svg, pdf ]
-        exclude: ^tests/|generated/
+        exclude: ^tests/|generated/|social_card_gen\.html$
 
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.38.0

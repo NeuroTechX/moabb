@@ -205,8 +205,7 @@ def benchmark(  # noqa: C901
     # logging.basicConfig(level=logging.WARNING)
 
     output = Path(output)
-    if not osp.isdir(output):
-        os.makedirs(output)
+    os.makedirs(output, exist_ok=True)
 
     if isinstance(pipelines, str):
         pipeline_configs = parse_pipelines_from_directory(pipelines)
