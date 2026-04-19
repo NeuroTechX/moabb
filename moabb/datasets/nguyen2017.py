@@ -290,8 +290,6 @@ class _Nguyen2017Base(BaseDataset):
         data = np.array(all_data, dtype=np.float64)
         labels = np.array(all_labels, dtype=int)
 
-        # Build channel names, marking EOG channels.
-        ch_names = [f"EEG{i + 1:03d}" for i in range(n_ch_use)]
         ch_types = ["eeg"] * n_ch_use
         for idx in _EOG_INDICES:
             if idx < n_ch_use:
