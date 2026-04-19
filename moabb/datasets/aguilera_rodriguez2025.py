@@ -5,11 +5,11 @@ DOI: 10.1038/s41597-025-05926-5
 Data DOI: 10.17632/57g8z63tmy.1
 """
 
-import importlib
 from pathlib import Path
 
 import mne
 import numpy as np
+from mne.utils import _soft_import
 
 from . import download as dl
 from .base import BaseDataset
@@ -304,16 +304,12 @@ class AguileraRodriguez2025(BaseDataset):
                 sessions[session_name]["0"] = raw
 
             elif session == 2:
-                # Gamified (XDF) — pyxdf is an optional dependency.
-                try:
-                    pyxdf = importlib.import_module("pyxdf")
-                except ImportError as exc:
-                    raise ImportError(
-                        "The 'pyxdf' package is required to load the gamified "
-                        "(session 2) XDF data for AguileraRodriguez2025. "
-                        "Install it with `pip install moabb[xdf]`, or restrict "
-                        "to session 1 with `AguileraRodriguez2025(sessions=[1])`."
-                    ) from exc
+                # Gamified (XDF) — pyxdf is an optional dependency
+                # (install via `pip install moabb[xdf]`).
+                pyxdf = _soft_import(
+                    "pyxdf",
+                    "loading XDF gamified-paradigm data for AguileraRodriguez2025",
+                )
                 streams, header = pyxdf.load_xdf(fpath)
                 eeg_stream = None
                 marker_stream = None
