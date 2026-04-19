@@ -128,6 +128,7 @@ tag with motor imagery and can be decoded with the existing
     Nguyen2017_S
     Nguyen2017_SL
     Nguyen2017_V
+    Nieto2022
     Pressel2016
 
 -----------------

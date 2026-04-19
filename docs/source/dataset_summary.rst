@@ -102,7 +102,8 @@ classic motor band.
 The family currently contains
 :class:`~moabb.datasets.BCIComp2020IS`,
 :class:`~moabb.datasets.AguileraRodriguez2025`,
-:class:`~moabb.datasets.Nguyen2017_V`, ``_S``, ``_L``, ``_SL``, and
+:class:`~moabb.datasets.Nguyen2017_V`, ``_S``, ``_L``, ``_SL``,
+:class:`~moabb.datasets.Nieto2022`, and
 :class:`~moabb.datasets.Pressel2016` — spanning English and Spanish,
 phonemes through phrases, and 2 to 11 classes. These rows also appear
 in the Imagery table above since they share the
