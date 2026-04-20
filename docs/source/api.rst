@@ -123,7 +123,6 @@ tag with motor imagery and can be decoded with the existing
     :template: class.rst
 
     AguileraRodriguez2025
-    BCIComp2020IS
     Nguyen2017_L
     Nguyen2017_S
     Nguyen2017_SL

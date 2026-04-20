@@ -14,7 +14,6 @@ from .aguilera_rodriguez2025 import AguileraRodriguez2025
 from .alex_mi import AlexMI
 from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
-from .bcicomp2020_imagined_speech import BCIComp2020IS
 from .bcicomp2020_upper_limb import BCIComp2020UpperLimb
 from .bcicomp2020_walking_erp import BCIComp2020WalkingERP
 from .beetl import Beetl2021_A, Beetl2021_B

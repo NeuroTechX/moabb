@@ -100,7 +100,6 @@ compatible with :class:`moabb.paradigms.MotorImagery` and
 classic motor band.
 
 The family currently contains
-:class:`~moabb.datasets.BCIComp2020IS`,
 :class:`~moabb.datasets.AguileraRodriguez2025`,
 :class:`~moabb.datasets.Nguyen2017_V`, ``_S``, ``_L``, ``_SL``,
 :class:`~moabb.datasets.Nieto2022`, and
@@ -116,11 +115,11 @@ motor band:
 
 .. code-block:: python
 
-    from moabb.datasets import BCIComp2020IS
+    from moabb.datasets import Nieto2022
     from moabb.paradigms import SpeechImagery
 
-    dataset = BCIComp2020IS()
-    paradigm = SpeechImagery(n_classes=5)
+    dataset = Nieto2022()
+    paradigm = SpeechImagery(n_classes=4)
     X, y, metadata = paradigm.get_data(dataset=dataset, subjects=[1])
 
 .. csv-table::
