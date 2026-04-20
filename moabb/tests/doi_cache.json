@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 149
+        "total": 150
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -155,6 +155,18 @@
         ],
         "year": 2021,
         "doi": "10.1038/s41597-021-01094-4"
+    },
+    "10.1038/s41597-022-01147-2": {
+        "title": "Thinking out loud, an open-access EEG-based BCI dataset for inner speech recognition",
+        "authors": [
+            "Nicol\u00e1s Nieto",
+            "Victoria Peterson",
+            "Hugo Leonardo Rufiner",
+            "Juan Esteban Kamienkowski",
+            "Ruben Spies"
+        ],
+        "year": 2022,
+        "doi": "10.1038/s41597-022-01147-2"
     },
     "10.1038/s41597-022-01372-9": {
         "title": "eldBETA: A Large Eldercare-oriented Benchmark Database of SSVEP-BCI for the Aging Population",

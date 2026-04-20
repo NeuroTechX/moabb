@@ -104,11 +104,11 @@ class Nieto2022(BaseDataset):
         documentation=DocumentationMetadata(
             doi=_DOI,
             investigators=[
-                "Nicolas Nieto",
+                "Nicolás Nieto",
                 "Victoria Peterson",
                 "Hugo Leonardo Rufiner",
-                "Diego Milone",
-                "Enzo Ferrante",
+                "Juan Esteban Kamienkowski",
+                "Ruben Spies",
             ],
             institution="CIMEC (UNL-CONICET) / sinc(i) (UNL-CONICET)",
             country="AR",
