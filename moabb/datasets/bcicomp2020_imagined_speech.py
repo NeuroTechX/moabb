@@ -6,6 +6,7 @@ Data: https://osf.io/pq7vb/
 
 import numpy as np
 from scipy.io import loadmat
+from sklearn.utils import check_random_state
 
 from . import download as dl
 from .base import BaseDataset
@@ -249,7 +250,14 @@ class BCIComp2020IS(BaseDataset):
     )
 
     def __init__(self, subjects=None, sessions=None, random_state=42):
-        self.random_state = random_state
+        # Normalize random_state to an int seed so per-(subject, run_idx)
+        # derivations in _get_single_subject_data are reproducible — mirrors
+        # the pattern used in :class:`moabb.evaluations.splitters.CrossSessionSplitter`.
+        # Accepts None (fresh RNG each load), int, or np.random.RandomState.
+        if isinstance(random_state, np.random.RandomState):
+            self.random_state = int(random_state.randint(0, 2**31))
+        else:
+            self.random_state = random_state
         super().__init__(
             subjects=list(range(1, 16)),
             sessions_per_subject=1,
@@ -309,11 +317,7 @@ class BCIComp2020IS(BaseDataset):
         for run_idx, (split, epo_key) in enumerate(_SPLITS):
             fpath = self.data_path(subject, split=split)
             data, labels, ch_names = self._load_epoch_mat(fpath, epo_key)
-            rng = np.random.default_rng(
-                np.asarray(
-                    [self.random_state, int(subject), int(run_idx)], dtype=np.int64
-                )
-            )
+            rng = check_random_state(self._derive_seed(int(subject), int(run_idx)))
             perm = rng.permutation(data.shape[0])
             data = data[perm]
             labels = labels[perm]
@@ -321,6 +325,20 @@ class BCIComp2020IS(BaseDataset):
                 data, ch_names, _SFREQ, labels, montage_name="standard_1005"
             )
         return {"0": runs}
+
+    def _derive_seed(self, subject, run_idx):
+        """Derive a reproducible int seed per (subject, run_idx).
+
+        Uses :class:`numpy.random.SeedSequence` for high-quality seed
+        expansion so each ``(subject, run_idx)`` pair gets an independent
+        permutation while remaining deterministic in ``self.random_state``.
+        Returns ``None`` when ``random_state`` is ``None`` so callers get a
+        fresh, non-reproducible RNG.
+        """
+        if self.random_state is None:
+            return None
+        ss = np.random.SeedSequence([int(self.random_state), subject, run_idx])
+        return int(ss.generate_state(1, dtype=np.uint32)[0])
 
     def data_path(
         self,
