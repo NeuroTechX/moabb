@@ -310,7 +310,7 @@ class AguileraRodriguez2025(BaseDataset):
                     "pyxdf",
                     "loading XDF gamified-paradigm data for AguileraRodriguez2025",
                 )
-                streams, header = pyxdf.load_xdf(fpath)
+                streams, _ = pyxdf.load_xdf(fpath)
                 eeg_stream = None
                 marker_stream = None
                 for stream in streams:
