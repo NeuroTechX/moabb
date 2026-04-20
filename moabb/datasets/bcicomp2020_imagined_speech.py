@@ -111,6 +111,17 @@ class BCIComp2020IS(BaseDataset):
     have no labels (competition holdout) and are not loaded.
     Best competition result was 82.6% accuracy.
 
+    .. warning::
+        The original recording uses a block-like design (trials of the
+        same class recorded contiguously). The released ``.mat`` files
+        preserve that ordering, so stitching trials back into a Raw
+        object in their on-disk order would leak intra-block temporal
+        correlations into random-split evaluations and inflate scores.
+        This loader therefore permutes trials at load time with an RNG
+        seeded on ``(random_state, subject, run_idx)``. Override
+        ``random_state`` to change the permutation; the default (``42``)
+        is stable across runs.
+
     .. figure:: https://www.frontiersin.org/files/Articles/898300/xml-images/fnhum-16-898300-g0007.webp
        :alt: BCI Competition 2020 Track 3 trial structure — Rest,
              auditory cue, 4 imagined-speech repetitions.
@@ -237,7 +248,8 @@ class BCIComp2020IS(BaseDataset):
         file_format="MAT",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+    def __init__(self, subjects=None, sessions=None, random_state=42):
+        self.random_state = random_state
         super().__init__(
             subjects=list(range(1, 16)),
             sessions_per_subject=1,
@@ -282,11 +294,29 @@ class BCIComp2020IS(BaseDataset):
         return data, labels, ch_names
 
     def _get_single_subject_data(self, subject):
-        """Return data for a single subject."""
+        """Return data for a single subject.
+
+        Trials from the released ``.mat`` files are shuffled with a
+        deterministic RNG seeded on ``(random_state, subject, run_idx)``.
+        The underlying recording follows a block-like design (trials of
+        the same class recorded contiguously); re-stitching them into a
+        Raw object in their on-disk order would expose downstream
+        evaluations to intra-block temporal leakage and inflated scores.
+        The shuffle breaks that class-adjacency while staying
+        reproducible across runs.
+        """
         runs = {}
         for run_idx, (split, epo_key) in enumerate(_SPLITS):
             fpath = self.data_path(subject, split=split)
             data, labels, ch_names = self._load_epoch_mat(fpath, epo_key)
+            rng = np.random.default_rng(
+                np.asarray(
+                    [self.random_state, int(subject), int(run_idx)], dtype=np.int64
+                )
+            )
+            perm = rng.permutation(data.shape[0])
+            data = data[perm]
+            labels = labels[perm]
             runs[str(run_idx)] = build_raw_from_epochs(
                 data, ch_names, _SFREQ, labels, montage_name="standard_1005"
             )
