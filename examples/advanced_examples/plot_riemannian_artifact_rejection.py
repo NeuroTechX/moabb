@@ -70,19 +70,6 @@ References
 # License: BSD (3-clause)
 
 ##############################################################################
-# .. warning::
-#
-#    This tutorial requires ``pyriemann`` installed from source (master branch)
-#    to access the ``PotatoField`` features introduced in
-#    `pyRiemann PR #423 <https://github.com/pyRiemann/pyRiemann/pull/423>`_.
-#    Install with:
-#
-#    .. code-block:: bash
-#
-#       pip install git+https://github.com/pyRiemann/pyRiemann.git@master
-#
-
-##############################################################################
 # Imports and Setup
 # -----------------
 #

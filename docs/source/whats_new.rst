@@ -34,6 +34,7 @@ Enhancements
 - Expose ``motor_imagery`` and ``mental_arithmetic`` keyword-only parameters on :class:`moabb.datasets.Shin2017A` (default: MI=True, MA=False) and :class:`moabb.datasets.Shin2017B` (default: MI=False, MA=True), allowing users to load both conditions simultaneously while preserving backward compatibility (by `Bruno Aristimunha`_)
 - Add resting state annotations and EMG channel support to :class:`moabb.datasets.Lee2019` resting state runs for BIDS export compatibility (by `Bruno Aristimunha`_)
 - Skip zip extraction in :class:`moabb.datasets.GuttmannFlury2025` when files are already extracted, with ``/scratch`` fallback for NFS filesystems on compute nodes (by `Bruno Aristimunha`_)
+- Re-enable auto-execution of the Riemannian Artifact Rejection tutorial (``examples/advanced_examples/plot_riemannian_artifact_rejection.py``) now that pyRiemann 0.11 is on PyPI with per-potato metrics and ``method_combination`` support on ``PotatoField`` (by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -41,7 +42,7 @@ API changes
 
 Requirements
 ~~~~~~~~~~~~
-- None yet.
+- Bump minimum ``pyriemann`` to ``0.11`` to use :class:`pyriemann.clustering.PotatoField` per-potato metrics and the ``method_combination`` parameter (pyRiemann `PR #423 <https://github.com/pyRiemann/pyRiemann/pull/423>`_) used by the Riemannian Artifact Rejection tutorial (by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
