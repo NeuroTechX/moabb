@@ -91,7 +91,7 @@ class RomaniBF2025ERP(BaseDataset):
     --------
     Loading the dataset and then create a subset of the available sessions and runs for subject P01 and P02:
     >>> paradigm = P300(resample=128)
-    >>> dataset = RomaniBF2025ERP(include_inference=True, exclude_failed=False)
+    >>> dataset = RomaniBF2025ERP(include_inference=True)
     >>> subset = paradigm.get_data(dataset, [0, 1])
 
     Expected output:
@@ -267,7 +267,8 @@ class RomaniBF2025ERP(BaseDataset):
         include_inference: bool = False,
         load_failed: bool = False,
         montage: str = "standard_1020",
-        sessions=None,
+        sessions:Optional[List[str]] = None,
+        calibration_buffer = 1.5  
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -299,6 +300,12 @@ class RomaniBF2025ERP(BaseDataset):
             Whether to include inference data along with calibration.
         load_failed : bool
             Will load sessions marked as 'Failed' if True instead of standard sessions.
+        montage: str
+            Default montage of the Unicorn EEG headset
+        sessions: 
+            List of session indices to include. If None, include all sessions.
+        calibration_buffer: float
+            Buffer in seconds after the last trigger of the calibration session. Prevents the drop of the last epochs when the time window exceeds the recording.
         """
         # Store data folder and defer download if not provided
         if exclude_subjects is None:
@@ -315,6 +322,7 @@ class RomaniBF2025ERP(BaseDataset):
         self.include_inference = include_inference
         self.load_failed = load_failed
         self.montage = montage
+        self.buffer = calibration_buffer
 
         if subjects is None:
             # Discover subjects from BIDS structure if data folder exists
@@ -575,7 +583,7 @@ class RomaniBF2025ERP(BaseDataset):
                 # Split calibration vs inference by event count
                 calib_end_sample = events[n_calib_events - 1, 0]
                 raw_cal = raw.copy().crop(
-                    tmin=0, tmax=calib_end_sample / raw.info["sfreq"]
+                    tmin=0, tmax=calib_end_sample / raw.info["sfreq"] + self.buffer
                 )
 
                 raw_infer = raw.copy().crop(tmin=calib_end_sample / raw.info["sfreq"])
