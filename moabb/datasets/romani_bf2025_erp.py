@@ -267,8 +267,8 @@ class RomaniBF2025ERP(BaseDataset):
         include_inference: bool = False,
         load_failed: bool = False,
         montage: str = "standard_1020",
-        sessions:Optional[List[str]] = None,
-        calibration_buffer = 1.5  
+        sessions: Optional[List[str]] = None,
+        calibration_buffer=1.5,
     ):
         """
         Initialize the Brainform MOABB dataset.
@@ -302,7 +302,7 @@ class RomaniBF2025ERP(BaseDataset):
             Will load sessions marked as 'Failed' if True instead of standard sessions.
         montage: str
             Default montage of the Unicorn EEG headset
-        sessions: 
+        sessions:
             List of session indices to include. If None, include all sessions.
         calibration_buffer: float
             Buffer in seconds after the last trigger of the calibration session. Prevents the drop of the last epochs when the time window exceeds the recording.
