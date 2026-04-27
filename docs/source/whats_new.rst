@@ -57,6 +57,7 @@ Bugs
 - Fix wrong paper reference in :class:`moabb.datasets.Thielen2021` (``associated_paper_doi`` pointed to the Ahmadi electrode-montage reference instead of the dataset's primary publication), restore Radboud data-repository DOI as ``__init__.doi``, and add regression test ``test_primary_paper_matches_dataset_code`` that validates every ``<Surname><Year>`` dataset against its cited primary paper (by `Bruno Aristimunha`_)
 - Fix ``UnicodeEncodeError`` when the GBK codec fails on ``'\xef'`` in BIDS metadata export by explicitly setting ``encoding="utf-8"`` on file writes in ``bids_interface`` (:gh:`1059` by `sli930`_)
 - Modified example usage and fixed epoch extraction with an adjustable buffer that prevents last epochs being dropped in :class:`moabb.datasets.RomaniBF2025ERP`.
+- Fix zip extraction in :class:`moabb.datasets.Wairagkar2018` dataset loader.
 
 Code health
 ~~~~~~~~~~~
