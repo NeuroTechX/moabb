@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-04-24T07:25:52.964773</dc:date>
+    <dc:date>2026-04-27T16:23:13.024318</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 23.775045 48.242864 23.775045 52.386625
 L 23.775045 130.082148 
 Q 23.775045 134.225909 27.918806 134.225909 
 z
-" clip-path="url(#p7c59835f4e)" style="fill: #bbdefb; stroke: #64b5f6; stroke-width: 1.2"/>
+" clip-path="url(#p9cbdd10acc)" style="fill: #bbdefb; stroke: #64b5f6; stroke-width: 1.2"/>
    </g>
    <g id="patch_3">
     <path d="M 193.669254 134.225909 
@@ -53,25 +53,25 @@ Q 189.525493 48.242864 189.525493 52.386625
 L 189.525493 130.082148 
 Q 189.525493 134.225909 193.669254 134.225909 
 z
-" clip-path="url(#p7c59835f4e)" style="fill: #4285f4; stroke: #1565c0; stroke-width: 1.2"/>
+" clip-path="url(#p9cbdd10acc)" style="fill: #4285f4; stroke: #1565c0; stroke-width: 1.2"/>
    </g>
    <g id="line2d_1">
     <path d="M 27.918806 135.261849 
 L 27.918806 141.477491 
-" clip-path="url(#p7c59835f4e)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: round"/>
+" clip-path="url(#p9cbdd10acc)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: round"/>
    </g>
    <g id="line2d_2">
     <path d="M 193.669254 135.261849 
 L 193.669254 141.477491 
-" clip-path="url(#p7c59835f4e)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: round"/>
+" clip-path="url(#p9cbdd10acc)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: round"/>
    </g>
    <g id="line2d_3">
     <path d="M 649.482985 135.261849 
 L 649.482985 141.477491 
-" clip-path="url(#p7c59835f4e)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: round"/>
+" clip-path="url(#p9cbdd10acc)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: round"/>
    </g>
    <g id="text_1">
-    <g clip-path="url(#p7c59835f4e)">
+    <g clip-path="url(#p9cbdd10acc)">
      <!-- Fixation + -->
      <g style="fill: #2c3e50" transform="translate(80.575358 94.13173) scale(0.105 -0.105)">
       <defs>
@@ -294,7 +294,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p7c59835f4e)">
+    <g clip-path="url(#p9cbdd10acc)">
      <!-- Motor Imagery -->
      <g style="fill: #ffffff" transform="translate(381.699127 93.720715) scale(0.095 -0.095)">
       <defs>
@@ -1180,7 +1180,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p7c59835f4e">
+  <clipPath id="p9cbdd10acc">
    <rect x="7.2" y="29.077969" width="694.08" height="134.672239"/>
   </clipPath>
  </defs>
