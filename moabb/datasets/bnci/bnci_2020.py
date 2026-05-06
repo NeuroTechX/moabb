@@ -656,14 +656,8 @@ def _convert_attention_shift(filename, verbose=None):
     ch_names_full = ch_names + ["HEOG", "VEOG", "STI"]
     ch_types_full = ch_types + ["eog", "eog", "stim"]
 
-    # Reshape data: concatenate trials in trial-major order.
-    # ``bciexp.data`` is (channels, samples, trials) and is F-contiguous out of
-    # ``scipy.io.loadmat``; a default C-order ``reshape(n_channels, -1)`` would
-    # produce a *trial-fastest* interleaved layout
-    # (``flat[c, k] = data[c, k // n_trials, k % n_trials]``) that disagrees
-    # with the per-trial markers below, which assume trial-major ordering.
-    # ``transpose(0, 2, 1)`` places trials before samples so the C-order
-    # reshape yields ``flat[c, t * n_samples + s] = data[c, s, t]``.
+    # ``bciexp.data`` is F-contiguous from ``loadmat``; transpose to trial-major
+    # before C-order reshape so per-trial markers align with the EEG samples.
     eeg_data = bciexp.data.transpose(0, 2, 1).reshape(n_channels, -1)
 
     # Get EOG data: (samples, trials) -> (samples * trials)

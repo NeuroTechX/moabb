@@ -128,13 +128,8 @@ class BaseMAMEM(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         fnames = self.data_path(subject)
-        # Reuse the on-disk filelist that ``data_path`` populated (it is at
-        # most a tiny JSON read on disk; the Figshare API is never queried
-        # again once that file exists).  Computing the path the same way
-        # ``data_path`` does keeps the two call sites in lockstep so the
-        # cache always lands where the data does.
-        path = self._dataset_root(path=None)
-        filelist = self._load_or_fetch_filelist(path)
+        # ``data_path`` already populated the filelist cache; reuse it here.
+        filelist = self._load_or_fetch_filelist(self._dataset_root())
         fsn = fs_get_file_name(filelist)
         sessions = {}
 
@@ -201,90 +196,32 @@ class BaseMAMEM(BaseDataset):
         return spath
 
     def _dataset_root(self, *, path=None):
-        """Return the ``MNE-<code>-data`` directory under MNE's data root.
-
-        Centralises the path the dataset's .mat files and Figshare filelist
-        cache live under, so :meth:`data_path` and
-        :meth:`_get_single_subject_data` cannot drift out of sync.
-        """
         sign = self.code.split("-")[0]
-        key_dest = f"MNE-{sign.lower():s}-data"
-        return osp.join(get_dataset_path(sign, path), key_dest)
+        return osp.join(get_dataset_path(sign, path), f"MNE-{sign.lower()}-data")
 
     def _filelist_cache_path(self, path):
-        """Path to the on-disk JSON cache of the Figshare filelist."""
         return osp.join(path, f"figshare_filelist_{self.figshare_id}.json")
 
     def _load_or_fetch_filelist(self, path, *, force_update=False):
-        """Return the Figshare filelist, persisting it next to the data.
-
-        Resolution order (the *first* hit wins, so an already-downloaded
-        dataset never reaches Figshare):
-
-        1. The on-disk JSON cache at ``<path>/figshare_filelist_<id>.json``,
-           written by the very first successful download.  Subsequent calls
-           -- including in fresh processes / on different machines that
-           share the data folder -- read this file and return immediately.
-        2. ``fs_get_file_list`` (which itself sits behind a process-level
-           ``lru_cache``).  Only reached when the JSON cache is absent or
-           explicitly bypassed via ``force_update=True``.
-
-        The Figshare API rate-limits aggressively on its public endpoint
-        and ``fs_get_file_list`` used to be called on every ``get_data``
-        invocation (once in ``data_path`` and once in
-        ``_get_single_subject_data``), which 403'd from datacenter IPs the
-        moment a user iterated over subjects.  After the first successful
-        download every later access of the same dataset returns from the
-        on-disk cache without contacting Figshare.
-
-        Parameters
-        ----------
-        path : str
-            Local dataset directory (where the .mat files live).  The
-            filelist JSON is written into this directory.
-        force_update : bool
-            If True, ignore the on-disk cache and re-fetch from Figshare,
-            then overwrite the cache.  Use this when you genuinely need to
-            pick up a republished article version.
-        """
+        """Disk-cached Figshare filelist; never re-pings once cached."""
         cache_path = self._filelist_cache_path(path)
-        if not force_update and osp.exists(cache_path):
+        if not force_update:
             try:
                 with open(cache_path, "r") as f:
-                    filelist = json.load(f)
-                log.debug(
-                    "Loaded Figshare filelist for %s from on-disk cache %s; "
-                    "skipping API call.",
-                    self.code,
-                    cache_path,
-                )
-                return filelist
+                    return json.load(f)
+            except FileNotFoundError:
+                pass
             except (OSError, ValueError) as err:
                 log.warning(
-                    "Figshare filelist cache at %s is unreadable (%s); "
-                    "falling back to the API to repopulate it.",
-                    cache_path,
-                    err,
+                    "Refetching unreadable filelist cache %s: %s", cache_path, err
                 )
-        log.info(
-            "Fetching Figshare filelist for %s (article %s); will be cached "
-            "at %s for subsequent runs.",
-            self.code,
-            self.figshare_id,
-            cache_path,
-        )
         filelist = fs_get_file_list(self.figshare_id)
         os.makedirs(path, exist_ok=True)
         try:
             with open(cache_path, "w") as f:
                 json.dump(filelist, f)
         except OSError as err:
-            log.warning(
-                "Could not persist Figshare filelist cache at %s (%s); "
-                "subsequent runs will need to re-query the API.",
-                cache_path,
-                err,
-            )
+            log.warning("Could not persist filelist cache %s: %s", cache_path, err)
         return filelist
 
 

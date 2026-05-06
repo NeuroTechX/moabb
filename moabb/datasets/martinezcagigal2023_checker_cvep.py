@@ -18,7 +18,11 @@ from moabb.datasets.metadata.schema import (
     ExperimentMetadata,
     ParticipantMetadata,
 )
-from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.datasets.utils import (
+    add_stim_channel_epoch,
+    add_stim_channel_trial,
+    resolve_cvep_command_ids,
+)
 from moabb.utils import _handle_deprecated_kwargs
 
 
@@ -362,42 +366,18 @@ class MartinezCagigal2023Checker(BaseDataset):
         # Calculate trial onsets in samples
         trial_onsets_samples = (sample_onsets * sampling_freq).astype(int)
 
-        # Get unique trial indices and their labels
+        # ``stim_trial`` must carry the attended command id (matching
+        # ``Castillos*`` / ``Thielen*``) so markers are comparable across
+        # recordings; ``codes`` below stays indexed by per-recording trial id.
         trial_idx = np.array(cvep_data["trial_idx"])
-        unique_trials = np.unique(trial_idx)
+        unique_trials, first_idx = np.unique(trial_idx, return_index=True)
         trial_labels = unique_trials.astype(int)
+        command_ids = resolve_cvep_command_ids(
+            cvep_data, trial_idx, first_idx, true_labels
+        )
+        first_trial_onsets = trial_onsets_samples[first_idx]
 
-        # Resolve the attended command id for each trial.  The ``stim_trial``
-        # channel must carry the *command id* (i.e. the attended symbol /
-        # codebook column id) so the same marker value points at the same
-        # command across recordings -- without this, multiclass classification
-        # across recordings collapses because every recording reuses
-        # ``0..n_trials-1`` as marker values.  The other c-VEP datasets in
-        # MOABB (``Castillos*``, ``Thielen*``) already follow this convention.
-        if cvep_data["mode"] == "train":
-            cmd_arr = np.array(cvep_data["command_idx"], dtype=int)
-            command_ids = np.array(
-                [int(cmd_arr[np.where(trial_idx == t)[0][0]]) for t in unique_trials],
-                dtype=int,
-            )
-        else:
-            assert true_labels is not None
-            label_to_cmd = {item["label"]: int(c) for c, item in commands_info[0].items()}
-            command_ids = np.array(
-                [label_to_cmd[true_labels[int(t)]] for t in unique_trials], dtype=int
-            )
-
-        # Find the first onset for each trial
-        first_trial_onsets = []
-        for t in unique_trials:
-            mask = trial_idx == t
-            first_onset_idx = np.where(mask)[0][0]
-            first_trial_onsets.append(trial_onsets_samples[first_onset_idx])
-        first_trial_onsets = np.array(first_trial_onsets)
-
-        # Add trial-level annotations so trial identity survives BIDS export.
-        # SetRawAnnotations transfers extras by sample position to the first
-        # bit event of each trial, which then appear as columns in events.tsv.
+        # Trial-level annotations carry trial_id + command_id through BIDS.
         trial_onsets_sec = first_trial_onsets / sampling_freq
         trial_annotations = mne.Annotations(
             onset=trial_onsets_sec,
@@ -410,9 +390,6 @@ class MartinezCagigal2023Checker(BaseDataset):
         ]
         raw_data.set_annotations(raw_data.annotations + trial_annotations)
 
-        # The stim_trial channel encodes the attended command id (offset 200);
-        # ``codes`` below remains indexed by per-recording ``trial_id`` so the
-        # epoch-level channel still works as a codebook lookup.
         raw_data = add_stim_channel_trial(
             raw_data, first_trial_onsets, command_ids, offset=200
         )

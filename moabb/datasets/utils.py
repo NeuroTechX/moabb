@@ -219,6 +219,25 @@ def blocks_reps(blocks: list, reps: list, n_rep: int):
     return [block_rep(b, r, n_rep) for b in blocks for r in reps]
 
 
+def resolve_cvep_command_ids(cvep_data, trial_idx, first_idx, true_labels=None):
+    """Return the attended command id for each unique trial in ``trial_idx``.
+
+    Resolves train mode from ``cvep_data["command_idx"]`` and test mode from
+    ``cvep_data["commands_info"]`` + ``true_labels``.  ``first_idx`` is the
+    output of ``np.unique(trial_idx, return_index=True)`` (the row of the
+    first occurrence of each unique trial); callers compute it once and reuse
+    it for ``first_trial_onsets``.
+    """
+    if cvep_data["mode"] == "train":
+        return np.asarray(cvep_data["command_idx"], dtype=int)[first_idx]
+    assert true_labels is not None
+    label_to_cmd = {
+        item["label"]: int(c) for c, item in cvep_data["commands_info"][0].items()
+    }
+    unique_trials = np.asarray(trial_idx)[first_idx]
+    return np.array([label_to_cmd[true_labels[int(t)]] for t in unique_trials], dtype=int)
+
+
 def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"):
     """
     Add a stimulus channel with trial onsets and their labels.
@@ -795,7 +814,6 @@ class _BaseDatasetPlotter:
         pass
 
     def plot(self):
-
         centers = self._get_centers()
 
         rm = self.radii + self.meta_gap
