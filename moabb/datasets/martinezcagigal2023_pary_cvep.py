@@ -398,6 +398,26 @@ class MartinezCagigal2023Pary(BaseDataset):
         unique_trials = np.unique(trial_idx)
         trial_labels = unique_trials.astype(int)
 
+        # Resolve the attended command id for each trial.  The ``stim_trial``
+        # channel must carry the *command id* (i.e. the attended symbol /
+        # codebook column id) so the same marker value points at the same
+        # command across recordings -- without this, multiclass classification
+        # across recordings collapses because every recording reuses
+        # ``0..n_trials-1`` as marker values.  The other c-VEP datasets in
+        # MOABB (``Castillos*``, ``Thielen*``) already follow this convention.
+        if cvep_data["mode"] == "train":
+            cmd_arr = np.array(cvep_data["command_idx"], dtype=int)
+            command_ids = np.array(
+                [int(cmd_arr[np.where(trial_idx == t)[0][0]]) for t in unique_trials],
+                dtype=int,
+            )
+        else:
+            assert true_labels is not None
+            label_to_cmd = {item["label"]: int(c) for c, item in commands_info[0].items()}
+            command_ids = np.array(
+                [label_to_cmd[true_labels[int(t)]] for t in unique_trials], dtype=int
+            )
+
         # Find the first onset for each trial
         first_trial_onsets = []
         for t in unique_trials:
@@ -415,12 +435,17 @@ class MartinezCagigal2023Pary(BaseDataset):
             duration=[0.0] * len(trial_onsets_sec),
             description=["_trial_meta"] * len(trial_onsets_sec),
         )
-        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in trial_labels]
+        trial_annotations.extras = [
+            {"trial_id": int(lbl), "command_id": int(cid)}
+            for lbl, cid in zip(trial_labels, command_ids)
+        ]
         raw_data.set_annotations(raw_data.annotations + trial_annotations)
 
-        # The stim_trial channel is kept for backward compat with paradigm code.
+        # The stim_trial channel encodes the attended command id (offset 200);
+        # ``codes`` below remains indexed by per-recording ``trial_id`` so the
+        # epoch-level channel still works as a codebook lookup.
         raw_data = add_stim_channel_trial(
-            raw_data, first_trial_onsets, trial_labels, offset=200
+            raw_data, first_trial_onsets, command_ids, offset=200
         )
 
         # Build a codebook from the sequences (shape: n_bits x n_codes)

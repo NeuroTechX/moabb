@@ -1,6 +1,8 @@
 """SSVEP MAMEM1 dataset."""
 
+import json
 import logging
+import os
 import os.path as osp
 
 import numpy as np
@@ -126,7 +128,14 @@ class BaseMAMEM(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         fnames = self.data_path(subject)
-        filelist = fs_get_file_list(self.figshare_id)
+        # Reuse the cached on-disk filelist written by ``data_path``; this
+        # avoids a second Figshare API hit per subject (the public endpoint
+        # rate-limits aggressively and 403s when called once per subject in a
+        # tight loop).
+        sign = self.code.split("-")[0]
+        key_dest = f"MNE-{sign.lower():s}-data"
+        path = osp.join(get_dataset_path(sign, None), key_dest)
+        filelist = self._load_or_fetch_filelist(path)
         fsn = fs_get_file_name(filelist)
         sessions = {}
 
@@ -183,7 +192,7 @@ class BaseMAMEM(BaseDataset):
         key_dest = f"MNE-{sign.lower():s}-data"
         path = osp.join(get_dataset_path(sign, path), key_dest)
 
-        filelist = fs_get_file_list(self.figshare_id)
+        filelist = self._load_or_fetch_filelist(path, force_update=force_update)
         reg = fs_get_file_hash(filelist)
         fsn = fs_get_file_id(filelist)
         gb = pooch.create(path=path, base_url=MAMEM_URL, registry=reg)
@@ -193,6 +202,42 @@ class BaseMAMEM(BaseDataset):
             if f[2:4] == sub:
                 spath.append(gb.fetch(fsn[f]))
         return spath
+
+    def _filelist_cache_path(self, path):
+        """Path to the on-disk JSON cache of the Figshare filelist."""
+        return osp.join(path, f"figshare_filelist_{self.figshare_id}.json")
+
+    def _load_or_fetch_filelist(self, path, *, force_update=False):
+        """Return the Figshare filelist, persisting it next to the data.
+
+        The Figshare API rate-limits aggressively on its public endpoint and
+        ``fs_get_file_list`` was being called on every ``get_data`` invocation
+        (once in ``data_path`` and once in ``_get_single_subject_data``).  This
+        helper reads the cached JSON written on first download so subsequent
+        sessions never need to contact Figshare to enumerate subjects'
+        per-recording filenames.  A process-level ``lru_cache`` on
+        ``fs_get_file_list`` further deduplicates within a single run.
+        """
+        cache_path = self._filelist_cache_path(path)
+        if not force_update and osp.exists(cache_path):
+            try:
+                with open(cache_path, "r") as f:
+                    return json.load(f)
+            except (OSError, ValueError):
+                # Corrupt or unreadable cache -- fall through to API.
+                pass
+        filelist = fs_get_file_list(self.figshare_id)
+        os.makedirs(path, exist_ok=True)
+        try:
+            with open(cache_path, "w") as f:
+                json.dump(filelist, f)
+        except OSError:
+            log.warning(
+                "Could not persist Figshare filelist cache at %s; "
+                "subsequent runs will need to re-query the API.",
+                cache_path,
+            )
+        return filelist
 
 
 class MAMEM1(BaseMAMEM):

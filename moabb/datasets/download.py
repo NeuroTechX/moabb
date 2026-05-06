@@ -3,6 +3,7 @@
 #         Bruno Aristimunha <b.aristimunha@gmail.com>
 # License: BSD Style.
 
+import functools
 import json
 import logging
 import os
@@ -274,8 +275,16 @@ def _fs_paginated_file_list(base_url, headers, page_size=1000):
     return files
 
 
+@functools.lru_cache(maxsize=None)
 def fs_get_file_list(article_id, version=None):
     """List all the files associated with a given article.
+
+    Results are cached in-process keyed by ``(article_id, version)`` because
+    Figshare's article-level file listing is stable per version and the public
+    ``api.figshare.com`` endpoint applies aggressive 403 rate limits when the
+    same listing is requested back-to-back (e.g. once per subject during a
+    ``get_data`` loop).  Callers that need a fresh listing can clear the
+    cache explicitly with ``fs_get_file_list.cache_clear()``.
 
     Parameters
     ----------
