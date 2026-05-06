@@ -14,6 +14,7 @@ Each test exercises a single bug that previously corrupted public datasets:
   Figshare at all.
 """
 
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -142,4 +143,60 @@ def test_mamem_filelist_disk_cache(tmp_path: Path):
     ) as api:
         ds._load_or_fetch_filelist(str(tmp_path), force_update=True)
     assert api.call_count == 1
+    _dl.fs_get_file_list.cache_clear()
+
+
+def test_mamem_already_downloaded_does_not_ping_figshare(tmp_path: Path):
+    """End-to-end: pre-existing data + cache = zero Figshare API calls.
+
+    Simulates the realistic "user already has the dataset" workflow by
+    pre-populating the on-disk filelist JSON, then iterating over
+    :meth:`data_path` for several subjects.  The Figshare API must not be
+    contacted at all -- not by ``fs_get_file_list`` and not by pooch (we
+    pre-create local files matching the registry hashes so ``gb.fetch``
+    short-circuits).
+    """
+    _dl.fs_get_file_list.cache_clear()
+    ds = MAMEM1()
+
+    # Build a tiny synthetic Figshare filelist covering 3 subjects, plus
+    # local files matching each registry hash so pooch never downloads.
+    filelist = []
+    for sub_id in (1, 2, 3):
+        for (
+            run_letter
+        ) in "ai":  # two runs per subject, naming convention U<sub>{a,i}{i}.mat
+            payload = f"S{sub_id:02d}{run_letter}".encode()
+            md5 = hashlib.md5(payload).hexdigest()
+            file_id = sub_id * 100 + ord(run_letter)
+            name = f"U0{sub_id:02d}{run_letter}i.mat"
+            filelist.append({"id": file_id, "name": name, "supplied_md5": md5})
+            # Pooch saves files with the file-id as their basename (the
+            # registry key), so write the synthetic bytes to that path.
+            (tmp_path / str(file_id)).write_bytes(payload)
+
+    # Pre-populate the filelist cache exactly where ``data_path`` would
+    # write it -- this is the post-download state.
+    cache_path = Path(ds._filelist_cache_path(str(tmp_path)))
+    cache_path.write_text(json.dumps(filelist))
+
+    # Force ``_dataset_root`` to land in tmp_path so we don't touch the
+    # user's real MNE data directory.
+    with (
+        patch.object(ds, "_dataset_root", return_value=str(tmp_path)),
+        patch(
+            "moabb.datasets.ssvep_mamem.fs_get_file_list",
+            side_effect=AssertionError(
+                "fs_get_file_list must not be called when the dataset is "
+                "already downloaded and the filelist cache is present"
+            ),
+        ),
+    ):
+        # Iterating over multiple subjects must not contact Figshare even
+        # once.  Each call performs a JSON read + pooch hash check.
+        for sub_id in (1, 2, 3):
+            paths = ds.data_path(sub_id)
+            assert paths, f"Expected files for subject {sub_id}"
+            for p in paths:
+                assert Path(p).exists()
     _dl.fs_get_file_list.cache_clear()
