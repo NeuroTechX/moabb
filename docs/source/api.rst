@@ -231,6 +231,7 @@ SSVEP Datasets
     Liu2022EldBETA
     Wang2021Combined
     GuttmannFlury2025_SSVEP
+    Schrag2026Pediatric
 
 --------------
 c-VEP Datasets
