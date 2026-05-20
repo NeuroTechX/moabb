@@ -548,7 +548,9 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
     # Motor imagery / feedback
     if feedback_onset_s is not None:
         if cue_onset_s is not None and cue_dur_s is not None:
-            phases.append(TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left"))
+            phases.append(
+                TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left")
+            )
         if feedback_dur_s is None:
             feedback_dur_s = trial_dur_s - feedback_onset_s
         phases.append(
@@ -578,7 +580,9 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
                     )
                 )
         else:
-            phases.append(TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left"))
+            phases.append(
+                TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left")
+            )
             phases.append(TimelinePhase("Motor Imagery", img_onset, img_dur, "imagery"))
     else:
         # Simple: just event interval
