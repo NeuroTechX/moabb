@@ -557,6 +557,8 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
     elif cue_onset_s is not None and cue_dur_s is not None:
         img_onset = cue_onset_s + cue_dur_s
         img_dur = imagery_dur_s or (trial_dur_s - img_onset)
+        # Some MI protocols start imagery at cue onset, with the cue covering
+        # only the first part of the imagery period.
         if (
             imagery_dur_s is not None
             and cue_onset_s + cue_dur_s + imagery_dur_s > trial_dur_s
