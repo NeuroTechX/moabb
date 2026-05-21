@@ -15,10 +15,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://moabb.neurotechx.com/docs/auto_examples/tutorials/sg_execution_times.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
-<meta property="og:description" content="02:30.790 total execution time for 6 files from auto_examples/tutorials:,,, Example, Time, Mem (MB),,, Tutorial 1: Simple Motor Imagery( tutorial_1_simple_example_motor_imagery.py), 01:49.937, 0.0,..." />
+<meta property="og:description" content="15:55.849 total execution time for 6 files from auto_examples/tutorials:,,, Example, Time, Mem (MB),,, Tutorial 3: Benchmarking multiple pipelines( tutorial_3_benchmarking_multiple_pipelines.py), 0..." />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
-<meta name="description" content="02:30.790 total execution time for 6 files from auto_examples/tutorials:,,, Example, Time, Mem (MB),,, Tutorial 1: Simple Motor Imagery( tutorial_1_simple_example_motor_imagery.py), 01:49.937, 0.0,..." />
+<meta name="description" content="15:55.849 total execution time for 6 files from auto_examples/tutorials:,,, Example, Time, Mem (MB),,, Tutorial 3: Benchmarking multiple pipelines( tutorial_3_benchmarking_multiple_pipelines.py), 0..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@NeuroTechX" />
 
@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -318,11 +318,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -335,8 +342,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -347,8 +353,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -456,11 +461,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -473,8 +485,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -485,8 +496,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -546,7 +556,7 @@
   
   <section id="computation-times">
 <span id="sphx-glr-auto-examples-tutorials-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">#</a></h1>
-<p><strong>02:30.790</strong> total execution time for 6 files <strong>from auto_examples/tutorials</strong>:</p>
+<p><strong>15:55.849</strong> total execution time for 6 files <strong>from auto_examples/tutorials</strong>:</p>
 <div class="docutils container">
 <style scoped>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
@@ -567,29 +577,29 @@ $(document).ready( function () {
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="tutorial_1_simple_example_motor_imagery.html#sphx-glr-auto-examples-tutorials-tutorial-1-simple-example-motor-imagery-py"><span class="std std-ref">Tutorial 1: Simple Motor Imagery</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_1_simple_example_motor_imagery.py</span></code>)</p></td>
-<td><p>01:49.937</p></td>
-<td><p>0.0</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="tutorial_0_plot_getting_started.html#sphx-glr-auto-examples-tutorials-tutorial-0-plot-getting-started-py"><span class="std std-ref">Tutorial 0: Getting Started</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_0_plot_getting_started.py</span></code>)</p></td>
-<td><p>00:33.993</p></td>
-<td><p>0.0</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="tutorial_3_benchmarking_multiple_pipelines.html#sphx-glr-auto-examples-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">Tutorial 3: Benchmarking multiple pipelines</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_3_benchmarking_multiple_pipelines.py</span></code>)</p></td>
-<td><p>00:03.237</p></td>
-<td><p>0.0</p></td>
+<td><p>08:03.979</p></td>
+<td><p>536.3</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="tutorial_2_using_mulitple_datasets.html#sphx-glr-auto-examples-tutorials-tutorial-2-using-mulitple-datasets-py"><span class="std std-ref">Tutorial 2: Using multiple datasets</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_2_using_mulitple_datasets.py</span></code>)</p></td>
-<td><p>00:02.667</p></td>
-<td><p>0.0</p></td>
+<td><p>02:29.311</p></td>
+<td><p>461.0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tutorial_5_combining_datasets.html#sphx-glr-auto-examples-tutorials-tutorial-5-combining-datasets-py"><span class="std std-ref">Tutorial 5: Combining Multiple Datasets into a Single Dataset</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_5_combining_datasets.py</span></code>)</p></td>
+<td><p>02:02.887</p></td>
+<td><p>679.2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tutorial_1_simple_example_motor_imagery.html#sphx-glr-auto-examples-tutorials-tutorial-1-simple-example-motor-imagery-py"><span class="std std-ref">Tutorial 1: Simple Motor Imagery</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_1_simple_example_motor_imagery.py</span></code>)</p></td>
+<td><p>01:50.866</p></td>
+<td><p>1056.9</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="tutorial_4_adding_a_dataset.html#sphx-glr-auto-examples-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Tutorial 4: Creating custom datasets</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_4_adding_a_dataset.py</span></code>)</p></td>
-<td><p>00:00.928</p></td>
-<td><p>0.0</p></td>
+<td><p>00:55.862</p></td>
+<td><p>324.8</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="tutorial_5_combining_datasets.html#sphx-glr-auto-examples-tutorials-tutorial-5-combining-datasets-py"><span class="std std-ref">Tutorial 5: Combining Multiple Datasets into a Single Dataset</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_5_combining_datasets.py</span></code>)</p></td>
-<td><p>00:00.028</p></td>
-<td><p>0.0</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="tutorial_0_plot_getting_started.html#sphx-glr-auto-examples-tutorials-tutorial-0-plot-getting-started-py"><span class="std std-ref">Tutorial 0: Getting Started</span></a> (<code class="docutils literal notranslate"><span class="pre">tutorial_0_plot_getting_started.py</span></code>)</p></td>
+<td><p>00:32.943</p></td>
+<td><p>816.5</p></td>
 </tr>
 </tbody>
 </table>
@@ -625,8 +635,8 @@ $(document).ready( function () {
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -652,7 +662,7 @@ $(document).ready( function () {
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

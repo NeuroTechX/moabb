@@ -42,8 +42,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -62,10 +62,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -320,11 +320,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -337,8 +344,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -349,8 +355,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -460,11 +465,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -477,8 +489,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -489,8 +500,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -589,6 +599,7 @@
 <section id="bugs">
 <h3>Bugs<a class="headerlink" href="#bugs" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Fix <a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2014_001</span></code></a> stimulus protocol timing in the generated documentation figure to show 2 s fixation, 1.25 s cue, and motor imagery through t=6 s (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix stim-marker placement in <a class="reference internal" href="generated/moabb.datasets.BCIComp2020WalkingERP.html#moabb.datasets.BCIComp2020WalkingERP" title="moabb.datasets.BCIComp2020WalkingERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.BCIComp2020WalkingERP</span></code></a> (Track 5): <code class="docutils literal notranslate"><span class="pre">build_raw_from_epochs</span></code> was called with <code class="docutils literal notranslate"><span class="pre">onset_sample=0</span></code>, which placed the event at sample 0 of each trial — the start of the pre-stim baseline (t=-190 ms), not the actual stimulus onset. With <code class="docutils literal notranslate"><span class="pre">interval=[-0.19,</span> <span class="pre">0.8]</span></code>, the paradigm was therefore reading the leading zero buffer as “pre-stim data” and missing the last 180 ms of real post-stim data. Now the loader passes <code class="docutils literal notranslate"><span class="pre">onset_sample=19</span></code> so the marker lands on t=0 and the interval picks the real 100-sample epoch as published (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix session key off-by-one in <code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Lee2019</span></code> that caused silent data loss when filtering sessions, and improve session filtering in <a class="reference internal" href="generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.base.BaseDataset</span></code></a> to match compound session keys (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;0train&quot;</span></code>) by integer prefix (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1046">#1046</a> by <a class="reference external" href="https://github.com/ben9809">Benedetto Leto</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Fix BIDS conversion failures across multiple datasets: crop BDF/EDF signals to exact data records in <code class="docutils literal notranslate"><span class="pre">bids_interface</span></code>, add standard montage fiducials when missing, fix <a class="reference internal" href="generated/moabb.datasets.BNCI2016_002.html#moabb.datasets.BNCI2016_002" title="moabb.datasets.BNCI2016_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2016_002</span></code></a> <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> in event mapping, handle lowercase <code class="docutils literal notranslate"><span class="pre">trigger</span></code> attribute in <a class="reference internal" href="generated/moabb.datasets.BNCI2022_001.html#moabb.datasets.BNCI2022_001" title="moabb.datasets.BNCI2022_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2022_001</span></code></a> <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files, detect and re-download truncated files in <a class="reference internal" href="generated/moabb.datasets.Kaneshiro2015.html#moabb.datasets.Kaneshiro2015" title="moabb.datasets.Kaneshiro2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Kaneshiro2015</span></code></a>, add stim-channel annotations in <code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Lee2024</span></code> for BIDS compatibility, convert µV to V in <a class="reference internal" href="generated/moabb.datasets.MartinezCagigal2023Checker.html#moabb.datasets.MartinezCagigal2023Checker" title="moabb.datasets.MartinezCagigal2023Checker"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.MartinezCagigal2023Checker</span></code></a> and <a class="reference internal" href="generated/moabb.datasets.MartinezCagigal2023Pary.html#moabb.datasets.MartinezCagigal2023Pary" title="moabb.datasets.MartinezCagigal2023Pary"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.MartinezCagigal2023Pary</span></code></a> to fix BDF physical range overflow, and handle alternate <code class="docutils literal notranslate"><span class="pre">data</span></code> key in <a class="reference internal" href="generated/moabb.datasets.Zuo2025.html#moabb.datasets.Zuo2025" title="moabb.datasets.Zuo2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Zuo2025</span></code></a> <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -601,6 +612,9 @@
 <li><p>Fix <code class="docutils literal notranslate"><span class="pre">UnicodeEncodeError</span></code> when the GBK codec fails on <code class="docutils literal notranslate"><span class="pre">'\xef'</span></code> in BIDS metadata export by explicitly setting <code class="docutils literal notranslate"><span class="pre">encoding=&quot;utf-8&quot;</span></code> on file writes in <code class="docutils literal notranslate"><span class="pre">bids_interface</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1059">#1059</a> by <a class="reference external" href="https://github.com/sli930">sli930</a>)</p></li>
 <li><p>Modified example usage and fixed epoch extraction with an adjustable buffer that prevents last epochs being dropped in <a class="reference internal" href="generated/moabb.datasets.RomaniBF2025ERP.html#moabb.datasets.RomaniBF2025ERP" title="moabb.datasets.RomaniBF2025ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.RomaniBF2025ERP</span></code></a>.</p></li>
 <li><p>Fix zip extraction in <a class="reference internal" href="generated/moabb.datasets.Wairagkar2018.html#moabb.datasets.Wairagkar2018" title="moabb.datasets.Wairagkar2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Wairagkar2018</span></code></a> dataset loader.</p></li>
+<li><p>Fix EEG layout corruption in <a class="reference internal" href="generated/moabb.datasets.BNCI2020_002.html#moabb.datasets.BNCI2020_002" title="moabb.datasets.BNCI2020_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2020_002</span></code></a>: the F-contiguous <code class="docutils literal notranslate"><span class="pre">bciexp.data</span></code> was reshaped in default C-order, producing a trial-fastest interleaved layout that disagreed with the per-trial stim markers and made every epoch sample the wrong trial. The reshape now transposes to trial-major before flattening (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">stim_trial</span></code> content in <a class="reference internal" href="generated/moabb.datasets.MartinezCagigal2023Checker.html#moabb.datasets.MartinezCagigal2023Checker" title="moabb.datasets.MartinezCagigal2023Checker"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.MartinezCagigal2023Checker</span></code></a> and <a class="reference internal" href="generated/moabb.datasets.MartinezCagigal2023Pary.html#moabb.datasets.MartinezCagigal2023Pary" title="moabb.datasets.MartinezCagigal2023Pary"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.MartinezCagigal2023Pary</span></code></a>: the channel was carrying the per-recording trial index instead of the attended command id, breaking multiclass classification across recordings. The marker is now the command id (resolved via the new <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.utils.resolve_cvep_command_ids()</span></code> helper), and the <code class="docutils literal notranslate"><span class="pre">_trial_meta</span></code> annotation extras gain a <code class="docutils literal notranslate"><span class="pre">command_id</span></code> key alongside <code class="docutils literal notranslate"><span class="pre">trial_id</span></code> (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Cache Figshare’s file listing in <a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_list.html#moabb.datasets.download.fs_get_file_list" title="moabb.datasets.download.fs_get_file_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.download.fs_get_file_list()</span></code></a> (process-level <code class="docutils literal notranslate"><span class="pre">lru_cache</span></code>) and persist it on disk next to the data for MAMEM (<a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.MAMEM1</span></code></a>/<code class="docutils literal notranslate"><span class="pre">MAMEM2</span></code>/<code class="docutils literal notranslate"><span class="pre">MAMEM3</span></code>). Once a dataset has been downloaded, subsequent calls never contact Figshare; pass <code class="docutils literal notranslate"><span class="pre">force_update=True</span></code> to bypass both layers (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="code-health">
@@ -1640,8 +1654,8 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1667,7 +1681,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -320,11 +320,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -337,8 +344,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -349,8 +355,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -460,11 +465,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -477,8 +489,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -489,8 +500,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -755,22 +765,6 @@ in the <code class="docutils literal notranslate"><span class="pre">cache_config
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-04-27 15:59:07,213 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad...
-2026-04-27 15:59:07,218 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmpfq5gca0_/MNE-BIDS-zhou2016/code.
-2026-04-27 15:59:07,218 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of &#39;Zhou2016&#39; sub-1 suffix-epo desc-c94b4a4...
-2026-04-27 15:59:07,221 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmpfq5gca0_/MNE-BIDS-zhou2016/code.
-2026-04-27 15:59:07,222 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of &#39;Zhou2016&#39; sub-1 suffix-eeg desc-13877a2...
-2026-04-27 15:59:07,224 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmpfq5gca0_/MNE-BIDS-zhou2016/code.
-2026-04-27 15:59:07,225 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of &#39;Zhou2016&#39; sub-1 suffix-eeg desc-bcfb35b...
-2026-04-27 15:59:07,227 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmpfq5gca0_/MNE-BIDS-zhou2016/code.
-2026-04-27 15:59:08,290 INFO MainThread moabb.datasets.bids_interface Starting caching &#39;Zhou2016&#39; sub-1 suffix-eeg desc-13877a2
-2026-04-27 15:59:08,705 INFO MainThread moabb.datasets.bids_interface Finished caching &#39;Zhou2016&#39; sub-1 suffix-eeg desc-13877a2 to disk.
-2026-04-27 15:59:08,762 INFO MainThread moabb.datasets.bids_interface Starting caching &#39;Zhou2016&#39; sub-1 suffix-epo desc-c94b4a4
-2026-04-27 15:59:08,825 INFO MainThread moabb.datasets.bids_interface Finished caching &#39;Zhou2016&#39; sub-1 suffix-epo desc-c94b4a4 to disk.
-2026-04-27 15:59:08,832 INFO MainThread moabb.datasets.bids_interface Starting caching &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad
-2026-04-27 15:59:08,862 INFO MainThread moabb.datasets.bids_interface Finished caching &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad to disk.
-</pre></div>
-</div>
 </section>
 <section id="time-comparison">
 <h2>Time comparison<a class="headerlink" href="#time-comparison" title="Link to this heading">#</a></h2>
@@ -795,10 +789,6 @@ number of missing steps.</p>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_array</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-04-27 15:59:08,870 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad...
-2026-04-27 15:59:08,888 INFO MainThread moabb.datasets.bids_interface Finished reading cache of &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad
-</pre></div>
-</div>
 <p>Using epochs cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -815,12 +805,6 @@ number of missing steps.</p>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_epochs</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-04-27 15:59:08,899 INFO MainThread moabb.datasets.bids_interface Starting erasing cache of &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad...
-2026-04-27 15:59:08,928 INFO MainThread moabb.datasets.bids_interface Finished erasing cache of &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad.
-2026-04-27 15:59:08,928 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of &#39;Zhou2016&#39; sub-1 suffix-epo desc-c94b4a4...
-2026-04-27 15:59:08,974 INFO MainThread moabb.datasets.bids_interface Finished reading cache of &#39;Zhou2016&#39; sub-1 suffix-epo desc-c94b4a4
-</pre></div>
-</div>
 <p>Using raw cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -835,44 +819,6 @@ number of missing steps.</p>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="p">)</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_raw</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-04-27 15:59:09,008 INFO MainThread moabb.datasets.bids_interface Starting erasing cache of &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad...
-2026-04-27 15:59:09,013 INFO MainThread moabb.datasets.bids_interface Finished erasing cache of &#39;Zhou2016&#39; sub-1 suffix-array desc-d713cad.
-2026-04-27 15:59:09,013 INFO MainThread moabb.datasets.bids_interface Starting erasing cache of &#39;Zhou2016&#39; sub-1 suffix-epo desc-c94b4a4...
-2026-04-27 15:59:09,035 INFO MainThread moabb.datasets.bids_interface Finished erasing cache of &#39;Zhou2016&#39; sub-1 suffix-epo desc-c94b4a4.
-2026-04-27 15:59:09,035 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of &#39;Zhou2016&#39; sub-1 suffix-eeg desc-13877a2...
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2544: RuntimeWarning: Unable to map the following column(s) to to MNE:
-group: healthy
-species: homo sapiens
-bci_experience: experienced
-  raw = mne_bids.read_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2544: RuntimeWarning: Unable to map the following column(s) to to MNE:
-group: healthy
-species: homo sapiens
-bci_experience: experienced
-  raw = mne_bids.read_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2544: RuntimeWarning: Unable to map the following column(s) to to MNE:
-group: healthy
-species: homo sapiens
-bci_experience: experienced
-  raw = mne_bids.read_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2544: RuntimeWarning: Unable to map the following column(s) to to MNE:
-group: healthy
-species: homo sapiens
-bci_experience: experienced
-  raw = mne_bids.read_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2544: RuntimeWarning: Unable to map the following column(s) to to MNE:
-group: healthy
-species: homo sapiens
-bci_experience: experienced
-  raw = mne_bids.read_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2544: RuntimeWarning: Unable to map the following column(s) to to MNE:
-group: healthy
-species: homo sapiens
-bci_experience: experienced
-  raw = mne_bids.read_raw_bids(
-2026-04-27 15:59:09,176 INFO MainThread moabb.datasets.bids_interface Finished reading cache of &#39;Zhou2016&#39; sub-1 suffix-eeg desc-13877a2
 </pre></div>
 </div>
 <p>Using no cache:</p>
@@ -898,10 +844,10 @@ bci_experience: experienced
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Without cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_nocache</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using array cache: 0.03 seconds
-Using epochs cache: 0.11 seconds
-Using raw cache: 0.35 seconds
-Without cache: 0.83 seconds
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using array cache: 0.12 seconds
+Using epochs cache: 0.23 seconds
+Using raw cache: 0.53 seconds
+Without cache: 1.07 seconds
 </pre></div>
 </div>
 <p>As you can see, using a raw cache is more than 5 times faster than
@@ -955,7 +901,8 @@ to decode the description key.</p></li>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.423 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.368 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  371 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-plot-disk-cache-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b843884d191ec86afaa081573b87c5dc/plot_disk_cache.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_disk_cache.ipynb</span></code></a></p>
@@ -1099,8 +1046,8 @@ to decode the description key.</p></li>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1126,7 +1073,7 @@ to decode the description key.</p></li>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

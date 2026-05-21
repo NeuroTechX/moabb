@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -320,11 +320,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -337,8 +344,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -349,8 +355,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -460,11 +465,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="External Links">
@@ -477,8 +489,7 @@
           
           
           
-          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -489,8 +500,7 @@
           
           
           
-          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -733,16 +743,91 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...         dataset  pipeline  codecarbon_task_name
-0  0.662500  0.341561    120.0  ...  CustomDataset3       MDM
-1  0.530000  0.328182    120.0  ...  CustomDataset3       MDM
-2  0.548391  4.455969   1356.0  ...  CustomDataset3       MDM
-3  0.652010  2.062387    768.0  ...  CustomDataset3       MDM
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
+  0%|                                     | 12.3k/46.4M [00:00&lt;10:37, 72.8kB/s]
+  0%|                                      | 39.9k/46.4M [00:00&lt;05:55, 131kB/s]
+  0%|                                      | 94.2k/46.4M [00:00&lt;03:25, 226kB/s]
+  0%|▏                                      | 163k/46.4M [00:00&lt;02:30, 307kB/s]
+  1%|▏                                      | 247k/46.4M [00:00&lt;01:59, 387kB/s]
+  1%|▎                                      | 338k/46.4M [00:00&lt;01:42, 451kB/s]
+  1%|▍                                      | 461k/46.4M [00:01&lt;01:22, 557kB/s]
+  1%|▌                                      | 608k/46.4M [00:01&lt;01:07, 676kB/s]
+  2%|▋                                      | 788k/46.4M [00:01&lt;00:55, 821kB/s]
+  2%|▊                                      | 984k/46.4M [00:01&lt;00:48, 941kB/s]
+  3%|█                                    | 1.28M/46.4M [00:01&lt;00:36, 1.22MB/s]
+  3%|█▏                                   | 1.52M/46.4M [00:01&lt;00:34, 1.32MB/s]
+  4%|█▌                                   | 1.93M/46.4M [00:02&lt;00:26, 1.70MB/s]
+  5%|█▉                                   | 2.39M/46.4M [00:02&lt;00:21, 2.06MB/s]
+  6%|██▎                                  | 2.98M/46.4M [00:02&lt;00:16, 2.56MB/s]
+  8%|███                                  | 3.85M/46.4M [00:02&lt;00:12, 3.44MB/s]
+ 11%|███▉                                 | 4.88M/46.4M [00:02&lt;00:09, 4.36MB/s]
+ 14%|█████                                | 6.30M/46.4M [00:02&lt;00:06, 5.75MB/s]
+ 18%|██████▌                              | 8.21M/46.4M [00:03&lt;00:04, 7.65MB/s]
+ 23%|████████▍                            | 10.6M/46.4M [00:03&lt;00:03, 9.88MB/s]
+ 30%|███████████                          | 13.8M/46.4M [00:03&lt;00:02, 13.0MB/s]
+ 36%|█████████████▍                       | 16.8M/46.4M [00:03&lt;00:02, 14.8MB/s]
+ 45%|████████████████▋                    | 20.9M/46.4M [00:03&lt;00:01, 17.9MB/s]
+ 54%|███████████████████▉                 | 24.9M/46.4M [00:03&lt;00:01, 20.0MB/s]
+ 62%|███████████████████████              | 29.0M/46.4M [00:03&lt;00:00, 21.2MB/s]
+ 71%|██████████████████████████▎          | 33.0M/46.4M [00:04&lt;00:00, 22.3MB/s]
+ 80%|█████████████████████████████▌       | 37.1M/46.4M [00:04&lt;00:00, 23.2MB/s]
+ 89%|████████████████████████████████▊    | 41.2M/46.4M [00:04&lt;00:00, 23.8MB/s]
+ 97%|████████████████████████████████████ | 45.2M/46.4M [00:04&lt;00:00, 24.3MB/s]
+  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 46.4M/46.4M [00:00&lt;00:00, 222GB/s]
+
+  0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
+  0%|                                     | 12.3k/74.3M [00:00&lt;19:18, 64.1kB/s]
+  0%|                                      | 35.8k/74.3M [00:00&lt;11:09, 111kB/s]
+  0%|                                      | 91.1k/74.3M [00:00&lt;05:41, 217kB/s]
+  0%|                                       | 162k/74.3M [00:00&lt;04:00, 308kB/s]
+  0%|▏                                      | 244k/74.3M [00:00&lt;03:12, 384kB/s]
+  0%|▏                                      | 342k/74.3M [00:00&lt;02:38, 468kB/s]
+  1%|▏                                      | 440k/74.3M [00:01&lt;02:21, 521kB/s]
+  1%|▎                                      | 554k/74.3M [00:01&lt;02:05, 587kB/s]
+  1%|▎                                      | 685k/74.3M [00:01&lt;01:50, 666kB/s]
+  1%|▍                                      | 849k/74.3M [00:01&lt;01:33, 785kB/s]
+  1%|▌                                      | 996k/74.3M [00:01&lt;01:27, 835kB/s]
+  2%|▌                                    | 1.22M/74.3M [00:01&lt;01:11, 1.03MB/s]
+  2%|▋                                    | 1.45M/74.3M [00:02&lt;01:02, 1.16MB/s]
+  2%|▉                                    | 1.83M/74.3M [00:02&lt;00:47, 1.54MB/s]
+  3%|█▏                                   | 2.27M/74.3M [00:02&lt;00:37, 1.93MB/s]
+  4%|█▍                                   | 2.93M/74.3M [00:02&lt;00:27, 2.61MB/s]
+  5%|█▊                                   | 3.73M/74.3M [00:02&lt;00:20, 3.37MB/s]
+  6%|██▎                                  | 4.76M/74.3M [00:02&lt;00:15, 4.35MB/s]
+  8%|███                                  | 6.20M/74.3M [00:02&lt;00:11, 5.82MB/s]
+ 11%|███▉                                 | 7.91M/74.3M [00:03&lt;00:08, 7.38MB/s]
+ 14%|█████                                | 10.2M/74.3M [00:03&lt;00:06, 9.61MB/s]
+ 18%|██████▌                              | 13.1M/74.3M [00:03&lt;00:05, 12.2MB/s]
+ 21%|███████▊                             | 15.8M/74.3M [00:03&lt;00:04, 13.8MB/s]
+ 26%|█████████▌                           | 19.2M/74.3M [00:03&lt;00:03, 16.2MB/s]
+ 30%|███████████                          | 22.2M/74.3M [00:03&lt;00:03, 17.2MB/s]
+ 34%|████████████▋                        | 25.5M/74.3M [00:04&lt;00:02, 18.2MB/s]
+ 40%|██████████████▋                      | 29.5M/74.3M [00:04&lt;00:02, 20.5MB/s]
+ 45%|████████████████▌                    | 33.3M/74.3M [00:04&lt;00:01, 21.6MB/s]
+ 49%|██████████████████▏                  | 36.5M/74.3M [00:04&lt;00:01, 21.0MB/s]
+ 55%|████████████████████▏                | 40.5M/74.3M [00:04&lt;00:01, 22.2MB/s]
+ 60%|██████████████████████▏              | 44.5M/74.3M [00:04&lt;00:01, 23.0MB/s]
+ 65%|████████████████████████▏            | 48.6M/74.3M [00:05&lt;00:01, 23.7MB/s]
+ 71%|██████████████████████████▏          | 52.6M/74.3M [00:05&lt;00:00, 24.2MB/s]
+ 76%|███████████████████████████▉         | 56.1M/74.3M [00:05&lt;00:00, 23.6MB/s]
+ 81%|█████████████████████████████▉       | 60.2M/74.3M [00:05&lt;00:00, 24.1MB/s]
+ 87%|████████████████████████████████     | 64.2M/74.3M [00:05&lt;00:00, 24.6MB/s]
+ 92%|██████████████████████████████████   | 68.3M/74.3M [00:05&lt;00:00, 24.8MB/s]
+ 97%|████████████████████████████████████ | 72.3M/74.3M [00:05&lt;00:00, 25.0MB/s]
+  0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 74.3M/74.3M [00:00&lt;00:00, 308GB/s]
+      score      time  samples  ...         dataset  pipeline  codecarbon_task_name
+0  0.587500  0.332801    120.0  ...  CustomDataset3       MDM
+1  0.565000  0.337454    120.0  ...  CustomDataset3       MDM
+2  0.588719  2.008563    768.0  ...  CustomDataset3       MDM
+3  0.541950  4.220372   1356.0  ...  CustomDataset3       MDM
 
 [4 rows x 13 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.028 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 2.887 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  679 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-5-combining-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1d572f55de1f1c75feff109ca6a55fab/tutorial_5_combining_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_5_combining_datasets.ipynb</span></code></a></p>
@@ -886,8 +971,8 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -913,7 +998,7 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>
