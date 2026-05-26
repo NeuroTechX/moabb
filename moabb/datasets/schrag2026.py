@@ -257,8 +257,8 @@ class Schrag2026Pediatric(BaseDataset):
             environment="lab", online_feedback=True, applications=["navigation game"]
         ),
         tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
-        sessions_per_subject=1, 
-        runs_per_session=2, 
+        sessions_per_subject=1,
+        runs_per_session=2,
         file_format="XDF",
     )
 
