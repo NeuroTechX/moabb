@@ -237,7 +237,7 @@ class Schrag2026Pediatric(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials=12,
             trials_context=(
-                "Each game session contains ~30-90 movement trials (one "
+                "Each game session contains ~30-160 movement trials (one "
                 "per 5 s SSVEP stimulation period). Of these, exactly 12 "
                 "are ground-truth target events (4 frequencies x 3 "
                 "predefined target positions, minus skipped events on "
@@ -257,8 +257,8 @@ class Schrag2026Pediatric(BaseDataset):
             environment="lab", online_feedback=True, applications=["navigation game"]
         ),
         tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
-        sessions_per_subject=2,
-        runs_per_session=1,
+        sessions_per_subject=1, 
+        runs_per_session=2, 
         file_format="XDF",
     )
 
@@ -266,7 +266,8 @@ class Schrag2026Pediatric(BaseDataset):
         self.include_personalization = bool(include_personalization)
         super().__init__(
             subjects=list(range(1, _N_SUBJECTS + 1)),
-            sessions_per_subject=3 if include_personalization else 2,
+            sessions_per_subject=1,
+            runs_per_session=3 if include_personalization else 2,
             events=dict(_GAME_EVENTS),
             code="Schrag2026Pediatric",
             interval=[0.0, _TRIAL_DURATION_S],
