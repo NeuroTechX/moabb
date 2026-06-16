@@ -45,10 +45,7 @@ def _sanitize_path(path: Path) -> Path:
     table = {ord(c): "-" for c in ':*?"<>|'}
 
     if path.anchor:
-        return Path(
-            path.anchor,
-            *(part.translate(table) for part in path.parts[1:]),
-        )
+        return Path(path.anchor, *(part.translate(table) for part in path.parts[1:]))
 
     return Path(*(part.translate(table) for part in path.parts))
 
