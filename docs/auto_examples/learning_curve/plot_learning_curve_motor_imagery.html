@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -75,28 +75,20 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('consent', 'default', {
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied',
-                    'analytics_storage': 'denied'
-                });
-                gtag('js', new Date());
-                gtag('config', 'G-5WJBKDMSTE');
-            </script>
-    <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('consent', 'default', {
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied',
-                    'analytics_storage': 'denied'
-                });
+                function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
@@ -731,12 +723,154 @@ be overwritten if necessary.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
-0  0.919048  0.013389  ...     RG+LR  1c2d81e0-5933-4621-b893-b2e7f93cb756
-1  0.990476  0.018151  ...     RG+LR  99525812-82de-4ff5-a8b4-ffcd880d9142
-2  1.000000  0.043566  ...     RG+LR  095b06ef-bd58-4a65-924a-21818f24d203
-3  0.995238  0.070208  ...     RG+LR  83f6172d-8d64-42d6-9db4-1dc80a37eb0e
-4  0.942857  0.012030  ...     RG+LR  070d08fd-96ec-45b8-a149-ca3e1d97bead
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.852
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.919
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.900
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.938
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.967
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.952
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.933
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.962
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.829
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.938
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.943
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.957
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.962
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.948
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.933
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.948
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.767
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.871
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.881
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.938
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.895
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.933
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.943
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.962
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.948
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.948
+2026-06-16 19:54:58,427 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.962
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.957
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.776
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.981
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.967
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 1.000
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.662
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.943
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.776
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.948
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.738
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.938
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.857
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.943
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.976
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.962
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.929
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.967
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.990
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.948
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.876
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.914
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.890
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.852
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.919
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.929
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.924
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.962
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.900
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.967
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.857
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.886
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.567
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.957
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.762
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.952
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.886
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.986
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.724
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.943
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.919
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.995
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.876
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.748
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.843
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.871
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.710
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.881
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.905
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.957
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.919
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.952
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.910
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.962
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.933
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.981
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.952
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.986
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.943
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.981
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.805
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.971
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.919
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.971
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.981
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.986
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.867
+2026-06-16 19:54:58,428 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.938
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.962
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.971
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.881
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.933
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.876
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.890
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.857
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.919
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.643
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.757
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.781
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.829
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.819
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.838
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.843
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.938
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.819
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.838
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.876
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.871
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.938
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.924
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.943
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.981
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.900
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.924
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.748
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.681
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.705
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.671
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.871
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.938
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.924
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.967
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.695
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.929
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.705
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.862
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.867
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.910
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.790
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.871
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.829
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.995
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.690
+2026-06-16 19:54:58,429 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.800
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
+  dset.create_dataset(
+      score      time  ...  pipeline                  codecarbon_task_name
+0  0.919048  0.011230  ...     RG+LR  98506c25-72fb-4a03-be01-a53f4a69c61e
+1  0.938095  0.017896  ...     RG+LR  9df1cb08-6931-44f7-9afd-69e596a589f0
+2  0.952381  0.043853  ...     RG+LR  e16af9a4-4c8c-417a-b009-6519e1f4e162
+3  0.961905  0.070759  ...     RG+LR  810c757a-6bb1-4cb8-aeab-0be34a34ca36
+4  0.938095  0.011922  ...     RG+LR  cbd449b5-290d-4912-8dc9-1d13f8362123
 
 [5 rows x 15 columns]
 </pre></div>
@@ -766,8 +900,11 @@ each pipeline</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 20.926 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  497 MB</p>
+<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-06-16 19:54:58,572 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-06-16 19:54:58,576 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 18.297 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5b1f506cd53838de0dd70e569a36f198/plot_learning_curve_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_learning_curve_motor_imagery.ipynb</span></code></a></p>
@@ -910,8 +1047,8 @@ each pipeline</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -937,7 +1074,7 @@ each pipeline</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

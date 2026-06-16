@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -75,28 +75,20 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('consent', 'default', {
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied',
-                    'analytics_storage': 'denied'
-                });
-                gtag('js', new Date());
-                gtag('config', 'G-5WJBKDMSTE');
-            </script>
-    <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('consent', 'default', {
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied',
-                    'analytics_storage': 'denied'
-                });
+                function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
@@ -729,6 +721,985 @@ are applied to the raw data. The pipelines are defined in the paradigm object.</
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+
+#sk-container-id-1 label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    font-family: monospace;
+    cursor: pointer;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table td {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left;
+}
+
+.user-set td.value pre {
+    color:rgb(255, 94, 0) !important;
+    background-color: transparent !important;
+}
+
+.default td {
+    color: black;
+    text-align: left;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+</style><body><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" ><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('steps',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">steps&nbsp;</td>
+            <td class="value">[(&#x27;Raw&#x27;, ...), (&#x27;Raw&#x27;, ...), ...]</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('transform_input',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">transform_input&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('memory',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">memory&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('verbose',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">verbose&nbsp;</td>
+            <td class="value">False</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" ><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
+events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('event_id',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">event_id&nbsp;</td>
+            <td class="value">{&#x27;feet&#x27;: 3, &#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2, &#x27;tongue&#x27;: 4}</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('interval',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">interval&nbsp;</td>
+            <td class="value">[2, 6]</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox" ><label for="sk-estimator-id-3" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('func',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">func&nbsp;</td>
+            <td class="value">operator.meth...verbose=False)</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('display_name',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">display_name&nbsp;</td>
+            <td class="value">&#x27;Band Pass Filter (8–32 Hz)&#x27;</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('validate',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">validate&nbsp;</td>
+            <td class="value">False</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox" ><label for="sk-estimator-id-4" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('steps',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">steps&nbsp;</td>
+            <td class="value">[(&#x27;Epoching&#x27;, ...)]</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('transform_input',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">transform_input&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('memory',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">memory&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('verbose',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">verbose&nbsp;</td>
+            <td class="value">False</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-5" type="checkbox" ><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('transformers',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">transformers&nbsp;</td>
+            <td class="value">[(&#x27;raw&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-6" type="checkbox" ><label for="sk-estimator-id-6" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre>passthrough</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-7" type="checkbox" ><label for="sk-estimator-id-7" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
+[left_hand, right_hand] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__events__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('event_id',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">event_id&nbsp;</td>
+            <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('interval',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">interval&nbsp;</td>
+            <td class="value">[2, 6]</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('overlap',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">overlap&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('window_length',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">window_length&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('tmin',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">tmin&nbsp;</td>
+            <td class="value">0.0</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-8" type="checkbox" ><label for="sk-estimator-id-8" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
+[left_hand, right_hand] | tmin=2.0 | tmax=6</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Create epochs__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('event_id',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">event_id&nbsp;</td>
+            <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('tmin',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">tmin&nbsp;</td>
+            <td class="value">2.0</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('tmax',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">tmax&nbsp;</td>
+            <td class="value">6</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('baseline',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">baseline&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('channels',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">channels&nbsp;</td>
+            <td class="value">None</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('interpolate_missing_channels',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">interpolate_missing_channels&nbsp;</td>
+            <td class="value">False</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('return_all_modalities',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">return_all_modalities&nbsp;</td>
+            <td class="value">False</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-9" type="checkbox" ><label for="sk-estimator-id-9" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('transformers',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">transformers&nbsp;</td>
+            <td class="value">[(&#x27;X&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-10" type="checkbox" ><label for="sk-estimator-id-10" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('func',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">func&nbsp;</td>
+            <td class="value">operator.meth...er(&#x27;get_data&#x27;)</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('display_name',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">display_name&nbsp;</td>
+            <td class="value">&#x27;Epochs to Array&#x27;</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('validate',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">validate&nbsp;</td>
+            <td class="value">False</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-11" type="checkbox" ><label for="sk-estimator-id-11" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('func',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">func&nbsp;</td>
+            <td class="value">operator.meth..._&#x27;, 1000000.0)</td>
+        </tr>
+
+
+        <tr class="user-set">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('display_name',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">display_name&nbsp;</td>
+            <td class="value">&#x27;Scale (x1e+06)&#x27;</td>
+        </tr>
+
+
+        <tr class="default">
+            <td><i class="copy-paste-icon"
+                 onclick="copyToClipboard('validate',
+                          this.parentElement.nextElementSibling)"
+            ></i></td>
+            <td class="param">validate&nbsp;</td>
+            <td class="value">False</td>
+        </tr>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-12" type="checkbox" ><label for="sk-estimator-id-12" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                <table class="parameters-table">
+                  <tbody>
+
+                  </tbody>
+                </table>
+            </details>
+        </div>
+    </div></div></div></div></div></div></div></div></div></div></div></div><script>function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const paramName = element.parentElement.nextElementSibling.textContent.trim();
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+</script></body>
+</div>
+<br />
+<br /></section>
+<section id="filter-bank-paradigm">
+<h2>Filter Bank Paradigm<a class="headerlink" href="#filter-bank-paradigm" title="Link to this heading">#</a></h2>
+<p>On the filterbank paradigm, we have n branches in the case of multiple filters:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.FilterBankLeftRightImagery.html#moabb.paradigms.FilterBankLeftRightImagery" title="moabb.paradigms.FilterBankLeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm_filterbank</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.FilterBankLeftRightImagery.html#moabb.paradigms.FilterBankLeftRightImagery" title="moabb.paradigms.FilterBankLeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">FilterBankLeftRightImagery</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.make_process_pipelines" title="moabb.paradigms.base.BaseProcessing.make_process_pipelines" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm_filterbank</span><span class="o">.</span><span class="n">make_process_pipelines</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
+
+<span class="c1"># By default, we have six filter banks, and each filter bank has the same steps.</span>
+<span class="c1"># Let&#39;s display the first one:</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
 <style>#sk-container-id-2 {
   /* Definition of color scheme common for light and dark mode */
   --sklearn-color-text: #000;
@@ -1206,7 +2177,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
     height: 14px;
     cursor: pointer;
 }
-</style><body><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox" ><label for="sk-estimator-id-4" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><body><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-13" type="checkbox" ><label for="sk-estimator-id-13" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1256,7 +2227,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-5" type="checkbox" ><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-14" type="checkbox" ><label for="sk-estimator-id-14" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
 events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
@@ -1287,7 +2258,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-6" type="checkbox" ><label for="sk-estimator-id-6" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-15" type="checkbox" ><label for="sk-estimator-id-15" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–12 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1310,7 +2281,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">display_name&nbsp;</td>
-            <td class="value">&#x27;Band Pass Filter (8–32 Hz)&#x27;</td>
+            <td class="value">&#x27;Band Pass Filter (8–12 Hz)&#x27;</td>
         </tr>
 
 
@@ -1327,7 +2298,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-7" type="checkbox" ><label for="sk-estimator-id-7" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-16" type="checkbox" ><label for="sk-estimator-id-16" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1377,7 +2348,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-8" type="checkbox" ><label for="sk-estimator-id-8" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-17" type="checkbox" ><label for="sk-estimator-id-17" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1397,7 +2368,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-9" type="checkbox" ><label for="sk-estimator-id-9" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre>passthrough</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-10" type="checkbox" ><label for="sk-estimator-id-10" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-18" type="checkbox" ><label for="sk-estimator-id-18" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre>passthrough</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-19" type="checkbox" ><label for="sk-estimator-id-19" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
 [left_hand, right_hand] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__events__">
         <div class="estimator-table">
             <details>
@@ -1458,7 +2429,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-11" type="checkbox" ><label for="sk-estimator-id-11" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
+    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-20" type="checkbox" ><label for="sk-estimator-id-20" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
 [left_hand, right_hand] | tmin=2.0 | tmax=6</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Create epochs__">
         <div class="estimator-table">
             <details>
@@ -1539,7 +2510,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-12" type="checkbox" ><label for="sk-estimator-id-12" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
+    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-21" type="checkbox" ><label for="sk-estimator-id-21" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1559,7 +2530,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-13" type="checkbox" ><label for="sk-estimator-id-13" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-22" type="checkbox" ><label for="sk-estimator-id-22" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1599,7 +2570,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-14" type="checkbox" ><label for="sk-estimator-id-14" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-23" type="checkbox" ><label for="sk-estimator-id-23" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1639,7 +2610,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-15" type="checkbox" ><label for="sk-estimator-id-15" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-24" type="checkbox" ><label for="sk-estimator-id-24" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1696,15 +2667,35 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </div>
 <br />
 <br /></section>
-<section id="filter-bank-paradigm">
-<h2>Filter Bank Paradigm<a class="headerlink" href="#filter-bank-paradigm" title="Link to this heading">#</a></h2>
-<p>On the filterbank paradigm, we have n branches in the case of multiple filters:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.FilterBankLeftRightImagery.html#moabb.paradigms.FilterBankLeftRightImagery" title="moabb.paradigms.FilterBankLeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm_filterbank</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.FilterBankLeftRightImagery.html#moabb.paradigms.FilterBankLeftRightImagery" title="moabb.paradigms.FilterBankLeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">FilterBankLeftRightImagery</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.make_process_pipelines" title="moabb.paradigms.base.BaseProcessing.make_process_pipelines" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm_filterbank</span><span class="o">.</span><span class="n">make_process_pipelines</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
+<section id="how-to-include-extra-steps">
+<h2>How to include extra steps?<a class="headerlink" href="#how-to-include-extra-steps" title="Link to this heading">#</a></h2>
+<p>The paradigm object accepts parameters to configure common
+pre-processing and epoching steps applied to the raw data. These include:</p>
+<ul class="simple">
+<li><p>Bandpass filtering (<cite>filters</cite>)</p></li>
+<li><p>Event selection for epoching (<cite>events</cite>)</p></li>
+<li><p>Epoch time window definition (<cite>tmin</cite>, <cite>tmax</cite>)</p></li>
+<li><p>Baseline correction (<cite>baseline</cite>)</p></li>
+<li><p>Channel selection (<cite>channels</cite>)</p></li>
+<li><p>Resampling (<cite>resample</cite>)</p></li>
+</ul>
+<p>The following example demonstrates how you can surgically add custom processing steps
+beyond these built-in options.</p>
+<p>In this example, we want to add a min-max function step to the raw data to do this.
+We need to do pipeline surgery and use the evaluation function.
+We will use the <cite>FunctionTransformer</cite> instead of the <cite>MinMaxScaler</cite> to avoid
+the need to fit the raw data. The <cite>FunctionTransformer</cite> will apply the function
+to the data without fitting it.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">minmax_raw</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply min-max scaling to the raw data.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">raw</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span>
+        <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.minmax_scale.html#sklearn.preprocessing.minmax_scale" title="sklearn.preprocessing.minmax_scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">minmax_scale</span></a><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
-<span class="c1"># By default, we have six filter banks, and each filter bank has the same steps.</span>
-<span class="c1"># Let&#39;s display the first one:</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">process_pipeline</span> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.make_process_pipelines" title="moabb.paradigms.base.BaseProcessing.make_process_pipelines" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">make_process_pipelines</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">process_pipeline</span><span class="o">.</span><span class="n">insert_step</span><span class="p">(</span><span class="n">StepType</span><span class="o">.</span><span class="n">RAW</span><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.FunctionTransformer.html#sklearn.preprocessing.FunctionTransformer" title="sklearn.preprocessing.FunctionTransformer" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-class"><span class="n">FunctionTransformer</span></a><span class="p">(</span><span class="n">minmax_raw</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -2185,7 +3176,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
     height: 14px;
     cursor: pointer;
 }
-</style><body><div id="sk-container-id-3" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-16" type="checkbox" ><label for="sk-estimator-id-16" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><body><div id="sk-container-id-3" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Raw: FunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-25" type="checkbox" ><label for="sk-estimator-id-25" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2235,7 +3226,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-17" type="checkbox" ><label for="sk-estimator-id-17" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-26" type="checkbox" ><label for="sk-estimator-id-26" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
 events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
@@ -2266,1006 +3257,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-18" type="checkbox" ><label for="sk-estimator-id-18" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–12 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('func',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">func&nbsp;</td>
-            <td class="value">operator.meth...verbose=False)</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('display_name',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">display_name&nbsp;</td>
-            <td class="value">&#x27;Band Pass Filter (8–12 Hz)&#x27;</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('validate',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">validate&nbsp;</td>
-            <td class="value">False</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-19" type="checkbox" ><label for="sk-estimator-id-19" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('steps',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">steps&nbsp;</td>
-            <td class="value">[(&#x27;Epoching&#x27;, ...)]</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('transform_input',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">transform_input&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('memory',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">memory&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('verbose',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">verbose&nbsp;</td>
-            <td class="value">False</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-20" type="checkbox" ><label for="sk-estimator-id-20" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('transformers',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">transformers&nbsp;</td>
-            <td class="value">[(&#x27;raw&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-21" type="checkbox" ><label for="sk-estimator-id-21" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre>passthrough</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-22" type="checkbox" ><label for="sk-estimator-id-22" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
-[left_hand, right_hand] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__events__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('event_id',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">event_id&nbsp;</td>
-            <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('interval',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">interval&nbsp;</td>
-            <td class="value">[2, 6]</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('overlap',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">overlap&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('window_length',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">window_length&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('tmin',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">tmin&nbsp;</td>
-            <td class="value">0.0</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-23" type="checkbox" ><label for="sk-estimator-id-23" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
-[left_hand, right_hand] | tmin=2.0 | tmax=6</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Create epochs__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('event_id',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">event_id&nbsp;</td>
-            <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('tmin',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">tmin&nbsp;</td>
-            <td class="value">2.0</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('tmax',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">tmax&nbsp;</td>
-            <td class="value">6</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('baseline',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">baseline&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('channels',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">channels&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('interpolate_missing_channels',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">interpolate_missing_channels&nbsp;</td>
-            <td class="value">False</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('return_all_modalities',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">return_all_modalities&nbsp;</td>
-            <td class="value">False</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-24" type="checkbox" ><label for="sk-estimator-id-24" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('transformers',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">transformers&nbsp;</td>
-            <td class="value">[(&#x27;X&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-25" type="checkbox" ><label for="sk-estimator-id-25" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('func',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">func&nbsp;</td>
-            <td class="value">operator.meth...er(&#x27;get_data&#x27;)</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('display_name',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">display_name&nbsp;</td>
-            <td class="value">&#x27;Epochs to Array&#x27;</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('validate',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">validate&nbsp;</td>
-            <td class="value">False</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-26" type="checkbox" ><label for="sk-estimator-id-26" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('func',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">func&nbsp;</td>
-            <td class="value">operator.meth..._&#x27;, 1000000.0)</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('display_name',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">display_name&nbsp;</td>
-            <td class="value">&#x27;Scale (x1e+06)&#x27;</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('validate',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">validate&nbsp;</td>
-            <td class="value">False</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-27" type="checkbox" ><label for="sk-estimator-id-27" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div></div></div></div></div></div></div></div></div></div><script>function copyToClipboard(text, element) {
-    // Get the parameter prefix from the closest toggleable content
-    const toggleableContent = element.closest('.sk-toggleable__content');
-    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
-    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
-
-    const originalStyle = element.style;
-    const computedStyle = window.getComputedStyle(element);
-    const originalWidth = computedStyle.width;
-    const originalHTML = element.innerHTML.replace('Copied!', '');
-
-    navigator.clipboard.writeText(fullParamName)
-        .then(() => {
-            element.style.width = originalWidth;
-            element.style.color = 'green';
-            element.innerHTML = "Copied!";
-
-            setTimeout(() => {
-                element.innerHTML = originalHTML;
-                element.style = originalStyle;
-            }, 2000);
-        })
-        .catch(err => {
-            console.error('Failed to copy:', err);
-            element.style.color = 'red';
-            element.innerHTML = "Failed!";
-            setTimeout(() => {
-                element.innerHTML = originalHTML;
-                element.style = originalStyle;
-            }, 2000);
-        });
-    return false;
-}
-
-document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
-    const toggleableContent = element.closest('.sk-toggleable__content');
-    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
-    const paramName = element.parentElement.nextElementSibling.textContent.trim();
-    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
-
-    element.setAttribute('title', fullParamName);
-});
-</script></body>
-</div>
-<br />
-<br /></section>
-<section id="how-to-include-extra-steps">
-<h2>How to include extra steps?<a class="headerlink" href="#how-to-include-extra-steps" title="Link to this heading">#</a></h2>
-<p>The paradigm object accepts parameters to configure common
-pre-processing and epoching steps applied to the raw data. These include:</p>
-<ul class="simple">
-<li><p>Bandpass filtering (<cite>filters</cite>)</p></li>
-<li><p>Event selection for epoching (<cite>events</cite>)</p></li>
-<li><p>Epoch time window definition (<cite>tmin</cite>, <cite>tmax</cite>)</p></li>
-<li><p>Baseline correction (<cite>baseline</cite>)</p></li>
-<li><p>Channel selection (<cite>channels</cite>)</p></li>
-<li><p>Resampling (<cite>resample</cite>)</p></li>
-</ul>
-<p>The following example demonstrates how you can surgically add custom processing steps
-beyond these built-in options.</p>
-<p>In this example, we want to add a min-max function step to the raw data to do this.
-We need to do pipeline surgery and use the evaluation function.
-We will use the <cite>FunctionTransformer</cite> instead of the <cite>MinMaxScaler</cite> to avoid
-the need to fit the raw data. The <cite>FunctionTransformer</cite> will apply the function
-to the data without fitting it.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">minmax_raw</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply min-max scaling to the raw data.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">raw</span><span class="o">.</span><span class="n">apply_function</span><span class="p">(</span>
-        <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.minmax_scale.html#sklearn.preprocessing.minmax_scale" title="sklearn.preprocessing.minmax_scale" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-function"><span class="n">minmax_scale</span></a><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
-
-
-<span class="n">process_pipeline</span> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.make_process_pipelines" title="moabb.paradigms.base.BaseProcessing.make_process_pipelines" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">make_process_pipelines</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="n">process_pipeline</span><span class="o">.</span><span class="n">insert_step</span><span class="p">(</span><span class="n">StepType</span><span class="o">.</span><span class="n">RAW</span><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.FunctionTransformer.html#sklearn.preprocessing.FunctionTransformer" title="sklearn.preprocessing.FunctionTransformer" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-class"><span class="n">FunctionTransformer</span></a><span class="p">(</span><span class="n">minmax_raw</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<style>#sk-container-id-4 {
-  /* Definition of color scheme common for light and dark mode */
-  --sklearn-color-text: #000;
-  --sklearn-color-text-muted: #666;
-  --sklearn-color-line: gray;
-  /* Definition of color scheme for unfitted estimators */
-  --sklearn-color-unfitted-level-0: #fff5e6;
-  --sklearn-color-unfitted-level-1: #f6e4d2;
-  --sklearn-color-unfitted-level-2: #ffe0b3;
-  --sklearn-color-unfitted-level-3: chocolate;
-  /* Definition of color scheme for fitted estimators */
-  --sklearn-color-fitted-level-0: #f0f8ff;
-  --sklearn-color-fitted-level-1: #d4ebff;
-  --sklearn-color-fitted-level-2: #b3dbfd;
-  --sklearn-color-fitted-level-3: cornflowerblue;
-
-  /* Specific color for light theme */
-  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
-  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
-  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
-  --sklearn-color-icon: #696969;
-
-  @media (prefers-color-scheme: dark) {
-    /* Redefinition of color scheme for dark theme */
-    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
-    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
-    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
-    --sklearn-color-icon: #878787;
-  }
-}
-
-#sk-container-id-4 {
-  color: var(--sklearn-color-text);
-}
-
-#sk-container-id-4 pre {
-  padding: 0;
-}
-
-#sk-container-id-4 input.sk-hidden--visually {
-  border: 0;
-  clip: rect(1px 1px 1px 1px);
-  clip: rect(1px, 1px, 1px, 1px);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-}
-
-#sk-container-id-4 div.sk-dashed-wrapped {
-  border: 1px dashed var(--sklearn-color-line);
-  margin: 0 0.4em 0.5em 0.4em;
-  box-sizing: border-box;
-  padding-bottom: 0.4em;
-  background-color: var(--sklearn-color-background);
-}
-
-#sk-container-id-4 div.sk-container {
-  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
-     but bootstrap.min.css set `[hidden] { display: none !important; }`
-     so we also need the `!important` here to be able to override the
-     default hidden behavior on the sphinx rendered scikit-learn.org.
-     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
-  display: inline-block !important;
-  position: relative;
-}
-
-#sk-container-id-4 div.sk-text-repr-fallback {
-  display: none;
-}
-
-div.sk-parallel-item,
-div.sk-serial,
-div.sk-item {
-  /* draw centered vertical line to link estimators */
-  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
-  background-size: 2px 100%;
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-
-/* Parallel-specific style estimator block */
-
-#sk-container-id-4 div.sk-parallel-item::after {
-  content: "";
-  width: 100%;
-  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
-  flex-grow: 1;
-}
-
-#sk-container-id-4 div.sk-parallel {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  background-color: var(--sklearn-color-background);
-  position: relative;
-}
-
-#sk-container-id-4 div.sk-parallel-item {
-  display: flex;
-  flex-direction: column;
-}
-
-#sk-container-id-4 div.sk-parallel-item:first-child::after {
-  align-self: flex-end;
-  width: 50%;
-}
-
-#sk-container-id-4 div.sk-parallel-item:last-child::after {
-  align-self: flex-start;
-  width: 50%;
-}
-
-#sk-container-id-4 div.sk-parallel-item:only-child::after {
-  width: 0;
-}
-
-/* Serial-specific style estimator block */
-
-#sk-container-id-4 div.sk-serial {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: var(--sklearn-color-background);
-  padding-right: 1em;
-  padding-left: 1em;
-}
-
-
-/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
-clickable and can be expanded/collapsed.
-- Pipeline and ColumnTransformer use this feature and define the default style
-- Estimators will overwrite some part of the style using the `sk-estimator` class
-*/
-
-/* Pipeline and ColumnTransformer style (default) */
-
-#sk-container-id-4 div.sk-toggleable {
-  /* Default theme specific background. It is overwritten whether we have a
-  specific estimator or a Pipeline/ColumnTransformer */
-  background-color: var(--sklearn-color-background);
-}
-
-/* Toggleable label */
-#sk-container-id-4 label.sk-toggleable__label {
-  cursor: pointer;
-  display: flex;
-  width: 100%;
-  margin-bottom: 0;
-  padding: 0.5em;
-  box-sizing: border-box;
-  text-align: center;
-  align-items: start;
-  justify-content: space-between;
-  gap: 0.5em;
-}
-
-#sk-container-id-4 label.sk-toggleable__label .caption {
-  font-size: 0.6rem;
-  font-weight: lighter;
-  color: var(--sklearn-color-text-muted);
-}
-
-#sk-container-id-4 label.sk-toggleable__label-arrow:before {
-  /* Arrow on the left of the label */
-  content: "▸";
-  float: left;
-  margin-right: 0.25em;
-  color: var(--sklearn-color-icon);
-}
-
-#sk-container-id-4 label.sk-toggleable__label-arrow:hover:before {
-  color: var(--sklearn-color-text);
-}
-
-/* Toggleable content - dropdown */
-
-#sk-container-id-4 div.sk-toggleable__content {
-  display: none;
-  text-align: left;
-  /* unfitted */
-  background-color: var(--sklearn-color-unfitted-level-0);
-}
-
-#sk-container-id-4 div.sk-toggleable__content.fitted {
-  /* fitted */
-  background-color: var(--sklearn-color-fitted-level-0);
-}
-
-#sk-container-id-4 div.sk-toggleable__content pre {
-  margin: 0.2em;
-  border-radius: 0.25em;
-  color: var(--sklearn-color-text);
-  /* unfitted */
-  background-color: var(--sklearn-color-unfitted-level-0);
-}
-
-#sk-container-id-4 div.sk-toggleable__content.fitted pre {
-  /* unfitted */
-  background-color: var(--sklearn-color-fitted-level-0);
-}
-
-#sk-container-id-4 input.sk-toggleable__control:checked~div.sk-toggleable__content {
-  /* Expand drop-down */
-  display: block;
-  width: 100%;
-  overflow: visible;
-}
-
-#sk-container-id-4 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
-  content: "▾";
-}
-
-/* Pipeline/ColumnTransformer-specific style */
-
-#sk-container-id-4 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
-  color: var(--sklearn-color-text);
-  background-color: var(--sklearn-color-unfitted-level-2);
-}
-
-#sk-container-id-4 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
-  background-color: var(--sklearn-color-fitted-level-2);
-}
-
-/* Estimator-specific style */
-
-/* Colorize estimator box */
-#sk-container-id-4 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
-  /* unfitted */
-  background-color: var(--sklearn-color-unfitted-level-2);
-}
-
-#sk-container-id-4 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
-  /* fitted */
-  background-color: var(--sklearn-color-fitted-level-2);
-}
-
-#sk-container-id-4 div.sk-label label.sk-toggleable__label,
-#sk-container-id-4 div.sk-label label {
-  /* The background is the default theme color */
-  color: var(--sklearn-color-text-on-default-background);
-}
-
-/* On hover, darken the color of the background */
-#sk-container-id-4 div.sk-label:hover label.sk-toggleable__label {
-  color: var(--sklearn-color-text);
-  background-color: var(--sklearn-color-unfitted-level-2);
-}
-
-/* Label box, darken color on hover, fitted */
-#sk-container-id-4 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
-  color: var(--sklearn-color-text);
-  background-color: var(--sklearn-color-fitted-level-2);
-}
-
-/* Estimator label */
-
-#sk-container-id-4 div.sk-label label {
-  font-family: monospace;
-  font-weight: bold;
-  display: inline-block;
-  line-height: 1.2em;
-}
-
-#sk-container-id-4 div.sk-label-container {
-  text-align: center;
-}
-
-/* Estimator-specific */
-#sk-container-id-4 div.sk-estimator {
-  font-family: monospace;
-  border: 1px dotted var(--sklearn-color-border-box);
-  border-radius: 0.25em;
-  box-sizing: border-box;
-  margin-bottom: 0.5em;
-  /* unfitted */
-  background-color: var(--sklearn-color-unfitted-level-0);
-}
-
-#sk-container-id-4 div.sk-estimator.fitted {
-  /* fitted */
-  background-color: var(--sklearn-color-fitted-level-0);
-}
-
-/* on hover */
-#sk-container-id-4 div.sk-estimator:hover {
-  /* unfitted */
-  background-color: var(--sklearn-color-unfitted-level-2);
-}
-
-#sk-container-id-4 div.sk-estimator.fitted:hover {
-  /* fitted */
-  background-color: var(--sklearn-color-fitted-level-2);
-}
-
-/* Specification for estimator info (e.g. "i" and "?") */
-
-/* Common style for "i" and "?" */
-
-.sk-estimator-doc-link,
-a:link.sk-estimator-doc-link,
-a:visited.sk-estimator-doc-link {
-  float: right;
-  font-size: smaller;
-  line-height: 1em;
-  font-family: monospace;
-  background-color: var(--sklearn-color-background);
-  border-radius: 1em;
-  height: 1em;
-  width: 1em;
-  text-decoration: none !important;
-  margin-left: 0.5em;
-  text-align: center;
-  /* unfitted */
-  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
-  color: var(--sklearn-color-unfitted-level-1);
-}
-
-.sk-estimator-doc-link.fitted,
-a:link.sk-estimator-doc-link.fitted,
-a:visited.sk-estimator-doc-link.fitted {
-  /* fitted */
-  border: var(--sklearn-color-fitted-level-1) 1pt solid;
-  color: var(--sklearn-color-fitted-level-1);
-}
-
-/* On hover */
-div.sk-estimator:hover .sk-estimator-doc-link:hover,
-.sk-estimator-doc-link:hover,
-div.sk-label-container:hover .sk-estimator-doc-link:hover,
-.sk-estimator-doc-link:hover {
-  /* unfitted */
-  background-color: var(--sklearn-color-unfitted-level-3);
-  color: var(--sklearn-color-background);
-  text-decoration: none;
-}
-
-div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
-.sk-estimator-doc-link.fitted:hover,
-div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
-.sk-estimator-doc-link.fitted:hover {
-  /* fitted */
-  background-color: var(--sklearn-color-fitted-level-3);
-  color: var(--sklearn-color-background);
-  text-decoration: none;
-}
-
-/* Span, style for the box shown on hovering the info icon */
-.sk-estimator-doc-link span {
-  display: none;
-  z-index: 9999;
-  position: relative;
-  font-weight: normal;
-  right: .2ex;
-  padding: .5ex;
-  margin: .5ex;
-  width: min-content;
-  min-width: 20ex;
-  max-width: 50ex;
-  color: var(--sklearn-color-text);
-  box-shadow: 2pt 2pt 4pt #999;
-  /* unfitted */
-  background: var(--sklearn-color-unfitted-level-0);
-  border: .5pt solid var(--sklearn-color-unfitted-level-3);
-}
-
-.sk-estimator-doc-link.fitted span {
-  /* fitted */
-  background: var(--sklearn-color-fitted-level-0);
-  border: var(--sklearn-color-fitted-level-3);
-}
-
-.sk-estimator-doc-link:hover span {
-  display: block;
-}
-
-/* "?"-specific style due to the `<a>` HTML tag */
-
-#sk-container-id-4 a.estimator_doc_link {
-  float: right;
-  font-size: 1rem;
-  line-height: 1em;
-  font-family: monospace;
-  background-color: var(--sklearn-color-background);
-  border-radius: 1rem;
-  height: 1rem;
-  width: 1rem;
-  text-decoration: none;
-  /* unfitted */
-  color: var(--sklearn-color-unfitted-level-1);
-  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
-}
-
-#sk-container-id-4 a.estimator_doc_link.fitted {
-  /* fitted */
-  border: var(--sklearn-color-fitted-level-1) 1pt solid;
-  color: var(--sklearn-color-fitted-level-1);
-}
-
-/* On hover */
-#sk-container-id-4 a.estimator_doc_link:hover {
-  /* unfitted */
-  background-color: var(--sklearn-color-unfitted-level-3);
-  color: var(--sklearn-color-background);
-  text-decoration: none;
-}
-
-#sk-container-id-4 a.estimator_doc_link.fitted:hover {
-  /* fitted */
-  background-color: var(--sklearn-color-fitted-level-3);
-}
-
-.estimator-table summary {
-    padding: .5rem;
-    font-family: monospace;
-    cursor: pointer;
-}
-
-.estimator-table details[open] {
-    padding-left: 0.1rem;
-    padding-right: 0.1rem;
-    padding-bottom: 0.3rem;
-}
-
-.estimator-table .parameters-table {
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
-
-.estimator-table .parameters-table tr:nth-child(odd) {
-    background-color: #fff;
-}
-
-.estimator-table .parameters-table tr:nth-child(even) {
-    background-color: #f6f6f6;
-}
-
-.estimator-table .parameters-table tr:hover {
-    background-color: #e0e0e0;
-}
-
-.estimator-table table td {
-    border: 1px solid rgba(106, 105, 104, 0.232);
-}
-
-.user-set td {
-    color:rgb(255, 94, 0);
-    text-align: left;
-}
-
-.user-set td.value pre {
-    color:rgb(255, 94, 0) !important;
-    background-color: transparent !important;
-}
-
-.default td {
-    color: black;
-    text-align: left;
-}
-
-.user-set td i,
-.default td i {
-    color: black;
-}
-
-.copy-paste-icon {
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
-    background-repeat: no-repeat;
-    background-size: 14px 14px;
-    background-position: 0;
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
-}
-</style><body><div id="sk-container-id-4" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Raw: FunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-28" type="checkbox" ><label for="sk-estimator-id-28" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('steps',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">steps&nbsp;</td>
-            <td class="value">[(&#x27;Raw&#x27;, ...), (&#x27;Raw&#x27;, ...), ...]</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('transform_input',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">transform_input&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('memory',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">memory&nbsp;</td>
-            <td class="value">None</td>
-        </tr>
-
-
-        <tr class="default">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('verbose',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">verbose&nbsp;</td>
-            <td class="value">False</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-29" type="checkbox" ><label for="sk-estimator-id-29" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
-events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
-        <div class="estimator-table">
-            <details>
-                <summary>Parameters</summary>
-                <table class="parameters-table">
-                  <tbody>
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('event_id',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">event_id&nbsp;</td>
-            <td class="value">{&#x27;feet&#x27;: 3, &#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2, &#x27;tongue&#x27;: 4}</td>
-        </tr>
-
-
-        <tr class="user-set">
-            <td><i class="copy-paste-icon"
-                 onclick="copyToClipboard('interval',
-                          this.parentElement.nextElementSibling)"
-            ></i></td>
-            <td class="param">interval&nbsp;</td>
-            <td class="value">[2, 6]</td>
-        </tr>
-
-                  </tbody>
-                </table>
-            </details>
-        </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-30" type="checkbox" ><label for="sk-estimator-id-30" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-27" type="checkbox" ><label for="sk-estimator-id-27" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3305,7 +3297,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-31" type="checkbox" ><label for="sk-estimator-id-31" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>minmax_raw</div><div class="caption">FunctionTransformer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.7/modules/generated/sklearn.preprocessing.FunctionTransformer.html">?<span>Documentation for FunctionTransformer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-28" type="checkbox" ><label for="sk-estimator-id-28" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>minmax_raw</div><div class="caption">FunctionTransformer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.7/modules/generated/sklearn.preprocessing.FunctionTransformer.html">?<span>Documentation for FunctionTransformer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3318,7 +3310,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                           this.parentElement.nextElementSibling)"
             ></i></td>
             <td class="param">func&nbsp;</td>
-            <td class="value">&lt;function min...x7fd8b9f34a60&gt;</td>
+            <td class="value">&lt;function min...x7f539d60d5a0&gt;</td>
         </tr>
 
 
@@ -3395,7 +3387,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-32" type="checkbox" ><label for="sk-estimator-id-32" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-29" type="checkbox" ><label for="sk-estimator-id-29" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3445,7 +3437,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-33" type="checkbox" ><label for="sk-estimator-id-33" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-30" type="checkbox" ><label for="sk-estimator-id-30" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3465,7 +3457,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-34" type="checkbox" ><label for="sk-estimator-id-34" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre>passthrough</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-35" type="checkbox" ><label for="sk-estimator-id-35" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-31" type="checkbox" ><label for="sk-estimator-id-31" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre>passthrough</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-32" type="checkbox" ><label for="sk-estimator-id-32" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
 [left_hand, right_hand] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__events__">
         <div class="estimator-table">
             <details>
@@ -3526,7 +3518,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-36" type="checkbox" ><label for="sk-estimator-id-36" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
+    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-33" type="checkbox" ><label for="sk-estimator-id-33" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
 [left_hand, right_hand] | tmin=2.0 | tmax=6</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Create epochs__">
         <div class="estimator-table">
             <details>
@@ -3607,7 +3599,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-37" type="checkbox" ><label for="sk-estimator-id-37" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
+    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-34" type="checkbox" ><label for="sk-estimator-id-34" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3627,7 +3619,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-38" type="checkbox" ><label for="sk-estimator-id-38" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-35" type="checkbox" ><label for="sk-estimator-id-35" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3667,7 +3659,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-39" type="checkbox" ><label for="sk-estimator-id-39" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-36" type="checkbox" ><label for="sk-estimator-id-36" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3707,7 +3699,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-40" type="checkbox" ><label for="sk-estimator-id-40" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-37" type="checkbox" ><label for="sk-estimator-id-37" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3783,8 +3775,8 @@ Here, we will use the <cite>DummyClassifier</cite> from sklearn to run the evalu
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-CrossSession:   0%|          | 0/1 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:07&lt;00:00,  7.10s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:07&lt;00:00,  7.10s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:07&lt;00:00,  7.24s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:07&lt;00:00,  7.24s/it]
 </pre></div>
 </div>
 </section>
@@ -3806,8 +3798,7 @@ BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:07&lt;00
 <img src="../../_images/sphx_glr_plot_pre_processing_steps_001.png" srcset="../../_images/sphx_glr_plot_pre_processing_steps_001.png" alt="Results of the evaluation with custom pre-processing steps" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={&#39;center&#39;: &#39;Results of the evaluation with custom pre-processing steps&#39;}, xlabel=&#39;Pipeline&#39;, ylabel=&#39;Score&#39;&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.819 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  420 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.344 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-pre-processing-steps-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5c253279cf67626fd4e913feb6c12336/plot_pre_processing_steps.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_pre_processing_steps.ipynb</span></code></a></p>
@@ -3953,8 +3944,8 @@ BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:07&lt;00
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -3980,7 +3971,7 @@ BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:07&lt;00
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

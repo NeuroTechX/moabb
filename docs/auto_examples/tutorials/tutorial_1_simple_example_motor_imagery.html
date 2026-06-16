@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -75,28 +75,20 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('consent', 'default', {
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied',
-                    'analytics_storage': 'denied'
-                });
-                gtag('js', new Date());
-                gtag('config', 'G-5WJBKDMSTE');
-            </script>
-    <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('consent', 'default', {
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied',
-                    'analytics_storage': 'denied'
-                });
+                function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
@@ -675,6 +667,10 @@ classify these signals.</p>
 <a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f&quot;{msg} Use `optuna_integration.sklearn` instead.&quot;, FutureWarning)
+</pre></div>
+</div>
 <section id="instantiating-dataset">
 <h2>Instantiating Dataset<a class="headerlink" href="#instantiating-dataset" title="Link to this heading">#</a></h2>
 <p>The first thing to do is to instantiate the dataset that we want to analyze.
@@ -734,7 +730,7 @@ paradigm (note that BNCI2014_001 is in it)</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.datasets" title="moabb.paradigms.base.BaseProcessing.datasets" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-property"><span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.bnci_2014.BNCI2014_001 object at 0x7fd893efdb10&gt;, &lt;moabb.datasets.bnci.bnci_2014.BNCI2014_004 object at 0x7fd893efd300&gt;, &lt;moabb.datasets.beetl.Beetl2021_A object at 0x7fd893eebcd0&gt;, &lt;moabb.datasets.beetl.Beetl2021_B object at 0x7fd893effc10&gt;, &lt;moabb.datasets.brandl2020.Brandl2020 object at 0x7fd893efe410&gt;, &lt;moabb.datasets.chang2025.Chang2025 object at 0x7fd893efd120&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fd8baa3c430&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7fd8baa3c2e0&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7fd893effa60&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7fd8baa3f610&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7fd8baa3f670&gt;, &lt;moabb.datasets.forenzo2023.Forenzo2023 object at 0x7fd8baa3c220&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fd8baa3c490&gt;, &lt;moabb.datasets.guttmann_flury2025.GuttmannFlury2025_ME object at 0x7fd8baa3f6a0&gt;, &lt;moabb.datasets.guttmann_flury2025.GuttmannFlury2025_MI object at 0x7fd8baa3c790&gt;, &lt;moabb.datasets.hefmi_ich2025.HefmiIch2025 object at 0x7fd8baa3c6d0&gt;, &lt;moabb.datasets.kaya2018.Kaya2018 object at 0x7fd8baa3f700&gt;, &lt;moabb.datasets.kumar2024.Kumar2024 object at 0x7fd8baa3c4f0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fd8baa3f730&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7fd8baa3f6d0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fd8baa3c460&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fd8baa3f1c0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fd8baa3de70&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7fd8baa3e500&gt;, &lt;moabb.datasets.wairagkar2018.Wairagkar2018 object at 0x7fd8baa3e530&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fd8baa3f5b0&gt;, &lt;moabb.datasets.wu2020.Wu2020 object at 0x7fd8baa3e560&gt;, &lt;moabb.datasets.yang2025.Yang2025 object at 0x7fd8baa3e4d0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fd8baa3f190&gt;, &lt;moabb.datasets.zhou2020.Zhou2020 object at 0x7fd8baa3f640&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.bnci_2014.BNCI2014_001 object at 0x7f06dabfefb0&gt;, &lt;moabb.datasets.bnci.bnci_2014.BNCI2014_004 object at 0x7f06da54f8e0&gt;, &lt;moabb.datasets.beetl.Beetl2021_A object at 0x7f06dabff1c0&gt;, &lt;moabb.datasets.beetl.Beetl2021_B object at 0x7f06da54e290&gt;, &lt;moabb.datasets.brandl2020.Brandl2020 object at 0x7f06da54fb50&gt;, &lt;moabb.datasets.chang2025.Chang2025 object at 0x7f06da54ebc0&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f06da54f910&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023 object at 0x7f06da5c8eb0&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023A object at 0x7f06da54fcd0&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023B object at 0x7f06da5c8400&gt;, &lt;moabb.datasets.dreyer2023.Dreyer2023C object at 0x7f06da5c8370&gt;, &lt;moabb.datasets.forenzo2023.Forenzo2023 object at 0x7f06da5c8430&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f06da5c83d0&gt;, &lt;moabb.datasets.guttmann_flury2025.GuttmannFlury2025_ME object at 0x7f06da5c8550&gt;, &lt;moabb.datasets.guttmann_flury2025.GuttmannFlury2025_MI object at 0x7f06da5c82b0&gt;, &lt;moabb.datasets.hefmi_ich2025.HefmiIch2025 object at 0x7f06da5c82e0&gt;, &lt;moabb.datasets.kaya2018.Kaya2018 object at 0x7f06da5c80a0&gt;, &lt;moabb.datasets.kumar2024.Kumar2024 object at 0x7f06da5c8a90&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f06da5c8640&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7f06da5c85e0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f06da5ca620&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f06da5c8160&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f06da5c8100&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7f06da5c8220&gt;, &lt;moabb.datasets.wairagkar2018.Wairagkar2018 object at 0x7f06da5c81f0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f06da5c8820&gt;, &lt;moabb.datasets.wu2020.Wu2020 object at 0x7f06da5c8670&gt;, &lt;moabb.datasets.yang2025.Yang2025 object at 0x7f06da5ca710&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f06da5c8610&gt;, &lt;moabb.datasets.zhou2020.Zhou2020 object at 0x7f06da5cace0&gt;]
 </pre></div>
 </div>
 <p>The data from a list of subjects could be preprocessed and return as a 3D
@@ -777,6 +773,15 @@ partition and the remaining one as testing partition.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">({</span><span class="s2">&quot;csp+lda&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">})</span>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 19:23:50] Multiple instances of codecarbon are allowed to run at the same time.
+2026-06-16 19:25:27,621 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 0train: Score 0.663
+2026-06-16 19:25:27,621 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 1test: Score 0.709
+2026-06-16 19:25:27,621 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 0train: Score 0.992
+2026-06-16 19:25:27,621 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 1test: Score 0.995
+2026-06-16 19:25:27,621 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 0train: Score 0.915
+2026-06-16 19:25:27,621 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 1test: Score 0.941
+</pre></div>
+</div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
 It is saved in <cite>hdf5_path</cite> if defined or in ~/mne_data/results  otherwise.
 To export the results in CSV:</p>
@@ -802,8 +807,11 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 50.866 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1057 MB</p>
+<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-06-16 19:25:27,656 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-06-16 19:25:27,659 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 50.662 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b5e20655a202770c185990e75afbe3cd/tutorial_1_simple_example_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.ipynb</span></code></a></p>
@@ -949,8 +957,8 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -976,7 +984,7 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>
