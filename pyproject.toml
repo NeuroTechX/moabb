@@ -101,7 +101,7 @@ optuna = ["optuna>=3.6.1", "optuna-integration>=3.6.0"]
 xdf = ["pyxdf>=1.16.4"]
 interactive = ["plotly>=5.18.0"]
 tests = [
-    "pytest<9.1",  # pytest 9.1.0 changed IdMaker's signature, which breaks pytest_cases 3.10.1 (crash at collection time). Remove the cap once pytest_cases supports pytest >=9.1.
+    "pytest>=8.3.5,<9.1",  # pytest 9.1.0 changed IdMaker's signature, which breaks pytest_cases 3.10.1 (crash at collection time). Remove the cap once pytest_cases supports pytest >=9.1.
     "pytest-cov>=5.0.0",
     "codecov>=2.1.0",
     "pytest_cases>=3.0.0",
