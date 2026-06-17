@@ -1,0 +1,1502 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="moabb icon" sizes="180x180" href="../_static/_static/moabb_logo.png" type="image/png">
+    <link rel="icon" href="../_static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" sizes="144x144" href="../_static/favicon-144.png" type="image/png">
+    <link rel="mask-icon" href="../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="500x500" href="../_static/favicon-500.png" type="image/png"><meta property="og:title" content="moabb.datasets.Schrag2026Pediatric" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://moabb.neurotechx.com/docs/generated/moabb.datasets.Schrag2026Pediatric.html" />
+<meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
+<meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
+<meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@NeuroTechX" />
+
+    <title>moabb.datasets.Schrag2026Pediatric &#8212; MOABB Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.0/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/3.2.6/css/buttons.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/2.3.5/css/searchPanes.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/3.1.3/css/select.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=1558bf76"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.Schrag2026Pediatric';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.0/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.html5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.colVis.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.print.js"></script>
+    <script src="https://cdn.datatables.net/select/3.1.3/js/dataTables.select.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/dataTables.searchPanes.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/searchPanes.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/4.0.6/js/dataTables.fixedHeader.js"></script>
+    <script src="../_static/js/section-nav-hierarchy.js?v=c53969c2"></script>
+    <script src="../_static/js/macro-table.js?v=c799a707"></script>
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.datasets.Schrag2026Pediatric.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="moabb.datasets.Thielen2015" href="moabb.datasets.Thielen2015.html" />
+    <link rel="prev" title="moabb.datasets.GuttmannFlury2025_SSVEP" href="moabb.datasets.GuttmannFlury2025_SSVEP.html" />
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.datasets.Schrag2026Pediatric.html" />
+
+    
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": "Schrag2026Pediatric",
+      "description": "EEG dataset for brain-computer interface research, part of the MOABB benchmark suite.",
+      "url": "https://moabb.neurotechx.com/docs/generated/moabb.datasets.Schrag2026Pediatric.html",
+      "license": "https://opensource.org/licenses/BSD-3-Clause",
+      "isPartOf": {
+        "@type": "DataCatalog",
+        "name": "MOABB Dataset Catalog",
+        "url": "https://moabb.neurotechx.com/docs/dataset_summary.html"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "NeuroTechX",
+        "url": "https://neurotechx.com"
+      }
+    }
+    </script>
+    
+
+    
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "MOABB",
+          "item": "https://moabb.neurotechx.com/docs/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "moabb.datasets.Schrag2026Pediatric",
+          "item": "https://moabb.neurotechx.com/docs/generated/moabb.datasets.Schrag2026Pediatric.html"
+        }
+      ]
+    }
+    </script>
+    
+
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.5.0dev0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><strong>Using MOABB in academic work?</strong> <a class='moabb-announcement-cta' href='cite.html'>Cite MOABB</a> <span class='moabb-announcement-secondary'>DOI: <a href='https://doi.org/10.5281/zenodo.10034223'>10.5281/zenodo.10034223</a> · Explore <a href='paper_results.html'>benchmark results</a></span></div>
+</aside>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/moabb_light.svg" class="logo__image only-light" alt="MOABB Documentation - Home"/>
+    <img src="../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="MOABB Documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="External Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="External Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.AlexMI.html">moabb.datasets.AlexMI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2003_004.html">moabb.datasets.BNCI2003_004</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_001.html">moabb.datasets.BNCI2014_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_002.html">moabb.datasets.BNCI2014_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_004.html">moabb.datasets.BNCI2014_004</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_001.html">moabb.datasets.BNCI2015_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_004.html">moabb.datasets.BNCI2015_004</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2019_001.html">moabb.datasets.BNCI2019_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2020_001.html">moabb.datasets.BNCI2020_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2022_001.html">moabb.datasets.BNCI2022_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_001.html">moabb.datasets.BNCI2025_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_002.html">moabb.datasets.BNCI2025_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cho2017.html">moabb.datasets.Cho2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023.html">moabb.datasets.Dreyer2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023A.html">moabb.datasets.Dreyer2023A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023B.html">moabb.datasets.Dreyer2023B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023C.html">moabb.datasets.Dreyer2023C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019_MI.html">moabb.datasets.Lee2019_MI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GrosseWentrup2009.html">moabb.datasets.GrosseWentrup2009</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Ofner2017.html">moabb.datasets.Ofner2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.PhysionetMI.html">moabb.datasets.PhysionetMI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Schirrmeister2017.html">moabb.datasets.Schirrmeister2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017A.html">moabb.datasets.Shin2017A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Weibo2014.html">moabb.datasets.Weibo2014</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhou2016.html">moabb.datasets.Zhou2016</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Stieger2021.html">moabb.datasets.Stieger2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2024.html">moabb.datasets.Liu2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Beetl2021_A.html">moabb.datasets.Beetl2021_A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Beetl2021_B.html">moabb.datasets.Beetl2021_B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BCIComp2020UpperLimb.html">moabb.datasets.BCIComp2020UpperLimb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Brandl2020.html">moabb.datasets.Brandl2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Chang2025.html">moabb.datasets.Chang2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Forenzo2023.html">moabb.datasets.Forenzo2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Gao2026.html">moabb.datasets.Gao2026</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_ME.html">moabb.datasets.GuttmannFlury2025_ME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_MI.html">moabb.datasets.GuttmannFlury2025_MI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.HefmiIch2025.html">moabb.datasets.HefmiIch2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Jeong2020.html">moabb.datasets.Jeong2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kaya2018.html">moabb.datasets.Kaya2018</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kumar2024.html">moabb.datasets.Kumar2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2025.html">moabb.datasets.Liu2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Ma2020.html">moabb.datasets.Ma2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Rozado2015.html">moabb.datasets.Rozado2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Tavakolan2017.html">moabb.datasets.Tavakolan2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.TrianaGuzman2024.html">moabb.datasets.TrianaGuzman2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wairagkar2018.html">moabb.datasets.Wairagkar2018</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wu2020.html">moabb.datasets.Wu2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Yang2025.html">moabb.datasets.Yang2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Yi2025.html">moabb.datasets.Yi2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhang2017.html">moabb.datasets.Zhang2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhou2020.html">moabb.datasets.Zhou2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zuo2025.html">moabb.datasets.Zuo2025</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.AguileraRodriguez2025.html">moabb.datasets.AguileraRodriguez2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_L.html">moabb.datasets.Nguyen2017_L</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_S.html">moabb.datasets.Nguyen2017_S</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_SL.html">moabb.datasets.Nguyen2017_SL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_V.html">moabb.datasets.Nguyen2017_V</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nieto2022.html">moabb.datasets.Nieto2022</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Pressel2016.html">moabb.datasets.Pressel2016</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2012.html">moabb.datasets.BI2012</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2013a.html">moabb.datasets.BI2013a</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2014a.html">moabb.datasets.BI2014a</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2014b.html">moabb.datasets.BI2014b</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2015a.html">moabb.datasets.BI2015a</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2015b.html">moabb.datasets.BI2015b</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cattan2019_VR.html">moabb.datasets.Cattan2019_VR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_008.html">moabb.datasets.BNCI2014_008</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_009.html">moabb.datasets.BNCI2014_009</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_003.html">moabb.datasets.BNCI2015_003</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_006.html">moabb.datasets.BNCI2015_006</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_007.html">moabb.datasets.BNCI2015_007</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_008.html">moabb.datasets.BNCI2015_008</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_009.html">moabb.datasets.BNCI2015_009</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_010.html">moabb.datasets.BNCI2015_010</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_012.html">moabb.datasets.BNCI2015_012</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_013.html">moabb.datasets.BNCI2015_013</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2016_002.html">moabb.datasets.BNCI2016_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2020_002.html">moabb.datasets.BNCI2020_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.EPFLP300.html">moabb.datasets.EPFLP300</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Huebner2017.html">moabb.datasets.Huebner2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Huebner2018.html">moabb.datasets.Huebner2018</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019_ERP.html">moabb.datasets.Lee2019_ERP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Sosulski2019.html">moabb.datasets.Sosulski2019</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_ERN.html">moabb.datasets.ErpCore2021_ERN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_LRP.html">moabb.datasets.ErpCore2021_LRP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_MMN.html">moabb.datasets.ErpCore2021_MMN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N2pc.html">moabb.datasets.ErpCore2021_N2pc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N170.html">moabb.datasets.ErpCore2021_N170</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N400.html">moabb.datasets.ErpCore2021_N400</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_P3.html">moabb.datasets.ErpCore2021_P3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.RomaniBF2025ERP.html">moabb.datasets.RomaniBF2025ERP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kojima2024A.html">moabb.datasets.Kojima2024A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kojima2024B.html">moabb.datasets.Kojima2024B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2021Mobile_ERP.html">moabb.datasets.Lee2021Mobile_ERP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Chailloux2020.html">moabb.datasets.Chailloux2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_P300.html">moabb.datasets.GuttmannFlury2025_P300</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kaneshiro2015.html">moabb.datasets.Kaneshiro2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_AC.html">moabb.datasets.Lee2024_AC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_BS.html">moabb.datasets.Lee2024_BS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_DL.html">moabb.datasets.Lee2024_DL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_EL.html">moabb.datasets.Lee2024_EL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_TV.html">moabb.datasets.Lee2024_TV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_A.html">moabb.datasets.Mainsah2025_A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_B.html">moabb.datasets.Mainsah2025_B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_C.html">moabb.datasets.Mainsah2025_C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_D.html">moabb.datasets.Mainsah2025_D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_E.html">moabb.datasets.Mainsah2025_E</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_F.html">moabb.datasets.Mainsah2025_F</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_G.html">moabb.datasets.Mainsah2025_G</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_H.html">moabb.datasets.Mainsah2025_H</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_I.html">moabb.datasets.Mainsah2025_I</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_J.html">moabb.datasets.Mainsah2025_J</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_K.html">moabb.datasets.Mainsah2025_K</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_L.html">moabb.datasets.Mainsah2025_L</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_M.html">moabb.datasets.Mainsah2025_M</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_N.html">moabb.datasets.Mainsah2025_N</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_O.html">moabb.datasets.Mainsah2025_O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_P.html">moabb.datasets.Mainsah2025_P</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_Q.html">moabb.datasets.Mainsah2025_Q</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_R.html">moabb.datasets.Mainsah2025_R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_S1.html">moabb.datasets.Mainsah2025_S1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_S2.html">moabb.datasets.Mainsah2025_S2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Simoes2020.html">moabb.datasets.Simoes2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Speier2017.html">moabb.datasets.Speier2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhang2025.html">moabb.datasets.Zhang2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zheng2020.html">moabb.datasets.Zheng2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BCIComp2020WalkingERP.html">moabb.datasets.BCIComp2020WalkingERP</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kalunga2016.html">moabb.datasets.Kalunga2016</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nakanishi2015.html">moabb.datasets.Nakanishi2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wang2016.html">moabb.datasets.Wang2016</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MAMEM1.html">moabb.datasets.MAMEM1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MAMEM2.html">moabb.datasets.MAMEM2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MAMEM3.html">moabb.datasets.MAMEM3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Chen2017SingleFlicker.html">moabb.datasets.Chen2017SingleFlicker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dong2023.html">moabb.datasets.Dong2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Han2024Fatigue.html">moabb.datasets.Han2024Fatigue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kim2025BetaRange.html">moabb.datasets.Kim2025BetaRange</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2021Mobile_SSVEP.html">moabb.datasets.Lee2021Mobile_SSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2020BETA.html">moabb.datasets.Liu2020BETA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2022EldBETA.html">moabb.datasets.Liu2022EldBETA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wang2021Combined.html">moabb.datasets.Wang2021Combined</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_SSVEP.html">moabb.datasets.GuttmannFlury2025_SSVEP</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">moabb.datasets.Schrag2026Pediatric</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Thielen2015.html">moabb.datasets.Thielen2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Thielen2021.html">moabb.datasets.Thielen2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosBurstVEP40.html">moabb.datasets.CastillosBurstVEP40</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosBurstVEP100.html">moabb.datasets.CastillosBurstVEP100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MartinezCagigal2023Checker.html">moabb.datasets.MartinezCagigal2023Checker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MartinezCagigal2023Pary.html">moabb.datasets.MartinezCagigal2023Pary</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Hinss2021.html">moabb.datasets.Hinss2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Rodrigues2017.html">moabb.datasets.Rodrigues2017</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2014a_Il.html">moabb.datasets.compound_dataset.BI2014a_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2014b_Il.html">moabb.datasets.compound_dataset.BI2014b_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2015a_Il.html">moabb.datasets.compound_dataset.BI2015a_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2015b_Il.html">moabb.datasets.compound_dataset.BI2015b_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.Cattan2019_VR_Il.html">moabb.datasets.compound_dataset.Cattan2019_VR_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI_Il.html">moabb.datasets.compound_dataset.BI_Il</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.BaseBIDSDataset.html">moabb.datasets.base.BaseBIDSDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.LocalBIDSDataset.html">moabb.datasets.base.LocalBIDSDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.bnci.base.MNEBNCI.html">moabb.datasets.bnci.base.MNEBNCI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.bnci.base.BNCIBaseDataset.html">moabb.datasets.bnci.base.BNCIBaseDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.erpcore2021.ErpCore2021.html">moabb.datasets.erpcore2021.ErpCore2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.mainsah2025.Mainsah2025.html">moabb.datasets.mainsah2025.Mainsah2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.lee2024.Lee2024.html">moabb.datasets.lee2024.Lee2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019.Lee2019.html">moabb.datasets.Lee2019.Lee2019</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.castillos2023.BaseCastillos2023.html">moabb.datasets.castillos2023.BaseCastillos2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ssvep_mamem.BaseMAMEM.html">moabb.datasets.ssvep_mamem.BaseMAMEM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.lee2021_mobile.Lee2021Mobile.html">moabb.datasets.lee2021_mobile.Lee2021Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.bbci_eeg_fnirs.BaseShin2017.html">moabb.datasets.bbci_eeg_fnirs.BaseShin2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.dreyer2023._Dreyer2023Base.html">moabb.datasets.dreyer2023._Dreyer2023Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.huebner_llp._BaseVisualMatrixSpellerDataset.html">moabb.datasets.huebner_llp._BaseVisualMatrixSpellerDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.base.CompoundDataset.html">moabb.datasets.compound_dataset.base.CompoundDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.bi_illiteracy._base_bi_il.html">moabb.datasets.compound_dataset.bi_illiteracy._base_bi_il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.data_dl.html">moabb.datasets.download.data_dl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_issue_request.html">moabb.datasets.download.fs_issue_request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_list.html">moabb.datasets.download.fs_get_file_list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_hash.html">moabb.datasets.download.fs_get_file_hash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_id.html">moabb.datasets.download.fs_get_file_id</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_name.html">moabb.datasets.download.fs_get_file_name</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.dataset_search.html">moabb.datasets.utils.dataset_search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.find_intersecting_channels.html">moabb.datasets.utils.find_intersecting_channels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.plot_datasets_grid.html">moabb.datasets.utils.plot_datasets_grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.plot_datasets_cluster.html">moabb.datasets.utils.plot_datasets_cluster</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.Imagery.html">moabb.paradigms.Imagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.SpeechImagery.html">moabb.paradigms.SpeechImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.MotorImagery.html">moabb.paradigms.MotorImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.LeftRightImagery.html">moabb.paradigms.LeftRightImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankLeftRightImagery.html">moabb.paradigms.FilterBankLeftRightImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankMotorImagery.html">moabb.paradigms.FilterBankMotorImagery</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.SSVEP.html">moabb.paradigms.SSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.CVEP.html">moabb.paradigms.CVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankCVEP.html">moabb.paradigms.FilterBankCVEP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.RestingStateToP300Adapter.html">moabb.paradigms.RestingStateToP300Adapter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.p300.BaseP300.html">moabb.paradigms.p300.BaseP300</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.ssvep.BaseSSVEP.html">moabb.paradigms.ssvep.BaseSSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.BaseFixedIntervalWindowsProcessing.html">moabb.paradigms.BaseFixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.base.BaseParadigm.html">moabb.paradigms.base.BaseParadigm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.base.BaseProcessing.html">moabb.paradigms.base.BaseProcessing</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSessionSplitter.html">moabb.evaluations.WithinSessionSplitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSubjectSplitter.html">moabb.evaluations.WithinSubjectSplitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSessionSplitter.html">moabb.evaluations.CrossSessionSplitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSubjectSplitter.html">moabb.evaluations.CrossSubjectSplitter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.base.BaseEvaluation.html">moabb.evaluations.base.BaseEvaluation</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.LogVariance.html">moabb.pipelines.features.LogVariance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.FM.html">moabb.pipelines.features.FM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.ExtendedSSVEPSignal.html">moabb.pipelines.features.ExtendedSSVEPSignal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.AugmentedDataset.html">moabb.pipelines.features.AugmentedDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.StandardScaler_Epoch.html">moabb.pipelines.features.StandardScaler_Epoch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.csp.TRCSP.html">moabb.pipelines.csp.TRCSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_CCA.html">moabb.pipelines.classification.SSVEP_CCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_TRCA.html">moabb.pipelines.classification.SSVEP_TRCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_MsetCCA.html">moabb.pipelines.classification.SSVEP_MsetCCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_itCCA.html">moabb.pipelines.classification.SSVEP_itCCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_eCCA.html">moabb.pipelines.classification.SSVEP_eCCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_TRCA_R.html">moabb.pipelines.classification.SSVEP_TRCA_R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_SSCOR.html">moabb.pipelines.classification.SSVEP_SSCOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_TDCA.html">moabb.pipelines.classification.SSVEP_TDCA</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.score_plot.html">moabb.analysis.plotting.score_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.paired_plot.html">moabb.analysis.plotting.paired_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.summary_plot.html">moabb.analysis.plotting.summary_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.meta_analysis_plot.html">moabb.analysis.plotting.meta_analysis_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.dataset_bubble_plot.html">moabb.analysis.plotting.dataset_bubble_plot</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.find_significant_differences.html">moabb.analysis.meta_analysis.find_significant_differences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.compute_dataset_statistics.html">moabb.analysis.meta_analysis.compute_dataset_statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.combine_effects.html">moabb.analysis.meta_analysis.combine_effects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.combine_pvalues.html">moabb.analysis.meta_analysis.combine_pvalues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.collapse_session_scores.html">moabb.analysis.meta_analysis.collapse_session_scores</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.set_log_level.html">moabb.set_log_level</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.setup_seed.html">moabb.setup_seed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.set_download_dir.html">moabb.set_download_dir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.make_process_pipelines.html">moabb.make_process_pipelines</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.benchmark.html">moabb.benchmark</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API and Main Concepts</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">moabb.datasets.Schrag2026Pediatric</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<div>
+  
+  
+  <section id="moabb-datasets-schrag2026pediatric">
+<h1>moabb.datasets.Schrag2026Pediatric<a class="headerlink" href="#moabb-datasets-schrag2026pediatric" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Schrag2026Pediatric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_personalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schrag2026.py#L92-L339"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
+<div class="ds-card" role="region" aria-label="Schrag2026Pediatric dataset overview">
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schrag2026.py#L92-L339" target="_blank" rel="noopener">[source]</a>
+  <div class="ds-card-head">
+    <p class="ds-card-kicker">Dataset Snapshot</p>
+    <p class="ds-card-title">Schrag2026Pediatric</p>
+    <p class="ds-card-alt-name">Open-access pediatric SSVEP-BCI dataset: 47 children aged 5-18 performing a personalization pipeline and an online 4-target SSVEP game with both personal and standard stimuli.</p>
+    <p class="ds-subtitle">SSVEP, 4 classes (6.25 vs 10 vs 11.11 vs 14.28)</p>
+    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Emily Schrag</span>, <span class="ds-author-name">Daniel Comaduran Marquez</span>, <span class="ds-author-name">Adam Kirton</span>, <span class="ds-author-name ds-author-senior">Eli Kinney-Lang</span></p><div class="ds-provenance-meta"><span>🇨🇦 University of Calgary, CA</span><span class="ds-provenance-sep">·</span><span>2026</span></div></div>
+  </div>
+  <div class="ds-stats">
+      <span class="ds-chip" style="--chip-color: #2E7D32">SSVEP</span>
+      <span class="ds-chip ds-chip-muted">Code: Schrag2026Pediatric</span>
+      <span class="ds-chip ds-chip-muted">47 subjects</span>
+      <span class="ds-chip ds-chip-muted">1 session</span>
+      <span class="ds-chip ds-chip-muted">16 ch</span>
+      <span class="ds-chip ds-chip-muted">256 Hz</span>
+      <span class="ds-chip ds-chip-muted">4 classes</span>
+      <span class="ds-chip ds-chip-muted">5.0 s trials</span>
+      <a class="ds-chip ds-chip-license" href="https://creativecommons.org/licenses/by-nd/4.0/" target="_blank" rel="noopener" title="CC BY-ND 4.0"><svg width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="currentColor"><path d="M14.972 0c4.196 0 7.769 1.465 10.715 4.393A14.426 14.426 0 0128.9 9.228C29.633 11.04 30 12.964 30 15c0 2.054-.363 3.978-1.085 5.772a13.77 13.77 0 01-3.2 4.754 15.417 15.417 0 01-4.983 3.322A14.932 14.932 0 0114.973 30c-1.982 0-3.88-.38-5.692-1.14a15.087 15.087 0 01-4.875-3.293c-1.437-1.437-2.531-3.058-3.281-4.862A14.71 14.71 0 010 15c0-1.982.38-3.888 1.138-5.719a15.062 15.062 0 013.308-4.915C7.303 1.456 10.812 0 14.972 0zm.055 2.706c-3.429 0-6.313 1.196-8.652 3.589a12.896 12.896 0 00-2.72 4.031 11.814 11.814 0 00-.95 4.675c0 1.607.316 3.156.95 4.646a12.428 12.428 0 002.72 3.992 12.362 12.362 0 003.99 2.679c1.483.616 3.037.924 4.662.924 1.607 0 3.164-.312 4.675-.937a12.954 12.954 0 004.084-2.705c2.339-2.286 3.508-5.152 3.508-8.6 0-1.66-.304-3.231-.91-4.713a11.994 11.994 0 00-2.651-3.965c-2.412-2.41-5.314-3.616-8.706-3.616zm-.188 9.803l-2.01 1.045c-.215-.445-.477-.758-.79-.937-.312-.178-.602-.268-.87-.268-1.34 0-2.01.884-2.01 2.652 0 .803.17 1.446.509 1.928.34.482.84.724 1.5.724.876 0 1.492-.43 1.85-1.286l1.847.937a4.407 4.407 0 01-1.634 1.728c-.696.42-1.464.63-2.303.63-1.34 0-2.42-.41-3.242-1.233-.821-.82-1.232-1.964-1.232-3.428 0-1.428.416-2.562 1.246-3.401.83-.84 1.879-1.26 3.147-1.26 1.858 0 3.188.723 3.992 2.17zm8.652 0l-1.983 1.045c-.214-.445-.478-.758-.79-.937-.313-.178-.613-.268-.897-.268-1.34 0-2.01.884-2.01 2.652 0 .803.17 1.446.51 1.928.338.482.838.724 1.5.724.874 0 1.49-.43 1.847-1.286l1.875.937a4.606 4.606 0 01-1.66 1.728c-.696.42-1.455.63-2.277.63-1.357 0-2.441-.41-3.253-1.233-.814-.82-1.22-1.964-1.22-3.428 0-1.428.415-2.562 1.246-3.401.83-.84 1.879-1.26 3.147-1.26 1.857 0 3.18.723 3.965 2.17z"/></svg><svg width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="currentColor"><path d="M14.973 0c4.213 0 7.768 1.446 10.66 4.34C28.544 7.25 30 10.803 30 15c0 4.215-1.43 7.723-4.287 10.526C22.678 28.51 19.098 30 14.973 30c-4.054 0-7.571-1.474-10.553-4.42C1.474 22.633 0 19.107 0 15S1.474 7.34 4.42 4.34C7.313 1.446 10.83 0 14.973 0zm.054 2.706c-3.41 0-6.295 1.196-8.652 3.589-2.447 2.5-3.67 5.402-3.67 8.706 0 3.321 1.214 6.196 3.642 8.624 2.429 2.429 5.322 3.642 8.679 3.642 3.339 0 6.25-1.222 8.732-3.67 2.358-2.267 3.536-5.133 3.536-8.598 0-3.41-1.197-6.311-3.589-8.705-2.392-2.392-5.285-3.588-8.678-3.588zm4.018 8.57v6.134H17.33v7.286h-4.66V17.41h-1.714v-6.134a.93.93 0 01.28-.683.933.933 0 01.684-.281h6.161c.25 0 .474.093.67.28a.912.912 0 01.294.684zM12.91 7.42c0-1.41.696-2.116 2.09-2.116s2.09.705 2.09 2.116c0 1.393-.697 2.09-2.09 2.09-1.393 0-2.09-.697-2.09-2.09z"/></svg><svg width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="currentColor"><path d="M14.973 0c4.196 0 7.75 1.455 10.66 4.366C28.544 7.26 30 10.804 30 15c0 4.197-1.43 7.714-4.287 10.553C22.696 28.518 19.115 30 14.973 30c-4.054 0-7.571-1.473-10.553-4.42C1.474 22.634 0 19.108 0 15c0-4.088 1.474-7.633 4.42-10.633C7.33 1.455 10.848 0 14.973 0zm.054 2.706c-3.41 0-6.295 1.205-8.652 3.616-2.447 2.483-3.67 5.375-3.67 8.678 0 3.34 1.214 6.214 3.642 8.625 2.429 2.43 5.322 3.643 8.679 3.643 3.339 0 6.25-1.223 8.732-3.67 2.358-2.285 3.536-5.15 3.536-8.598 0-3.428-1.197-6.321-3.589-8.678-2.375-2.412-5.268-3.616-8.678-3.616zm5.652 8.758v2.571H9.777v-2.571H20.68zm0 4.822v2.57H9.777v-2.57H20.68z"/></svg>CC BY-ND 4.0</a>
+  </div>
+  <p class="ds-class-line"><span class="ds-class-line-label">Class Labels:</span> 6.25, 10, 11.11, 14.28</p>
+  <div class="ds-actions">
+      <button id="ds-quickstart-btn-schrag2026pediatric" class="ds-btn ds-btn-primary ds-btn-toggle" type="button" aria-controls="ds-quickstart-schrag2026pediatric" aria-expanded="false" onclick="var el=document.getElementById('ds-quickstart-schrag2026pediatric');if(el){var expanded=this.getAttribute('aria-expanded')==='true';var next=!expanded;this.setAttribute('aria-expanded',next?'true':'false');el.hidden=!next;el.setAttribute('aria-hidden',next?'false':'true');}">Quickstart</button>
+      <a class="ds-btn" href="https://doi.org/10.21203%2Frs.3.rs-9347306%2Fv1" target="_blank" rel="noopener">Read Paper</a>
+      <a class="ds-btn" href="../dataset_summary.html#ssvep">Compare Similar</a>
+      <a class="ds-btn" href="https://github.com/NeuroTechX/moabb/issues/new?title=%5BDataset%5D%20Issue%20with%20Schrag2026Pediatric&amp;body=%23%23%20Dataset%0A%0A-%20%2A%2ADataset%20ID%3A%2A%2A%20Schrag2026Pediatric%0A%0A%23%23%20Issue%20Description%0A%0APlease%20describe%20the%20issue%20you%20encountered%20with%20this%20dataset%3A%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A1.%20%0A2.%20%0A3.%20%0A%0A%23%23%20Expected%20Behavior%0A%0A%0A%23%23%20Additional%20Context%0A%0A&amp;labels=dataset" target="_blank" rel="noopener">Report Issue</a>
+  </div>
+  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">SSVEP-based BCI dataset in children and adolescents (Schrag et al. 2026).</p><p class="ds-overview-text">Dataset from, hosted on Zenodo</p><p class="ds-overview-text">Forty-seven neurotypical children and adolescents (ages 5-18, mean 12.6 +/- 3.9 yr; 40.4% female) recorded with a g.tec g.GAMMAsys gel-based system (16 scalp channels at 256 Hz, ground Fpz, earlobe reference) completed a two-stage SSVEP-BCI session: (a) a <em>personalization pipeline</em> presenting 12 visual stimuli (4 contrasts x 3 sizes) all flickering at 10 Hz, and (b) an <em>online 4-target SSVEP game</em> at 6.25 / 10 / 11.11 / 14.28 Hz, played twice (once with the personal stimulus, once with a high-contrast standard) across two themed maps.</p><p class="ds-overview-text">By default this class exposes the SSVEP game runs only -- a single session per subject holding two runs (<code>&quot;0standard&quot;</code>, <code>&quot;1personal&quot;</code>), 5 s trials at four target frequencies. Set <code>include_personalization=True</code> to also load the 12-stimulus personalization recording as a third run <code>&quot;2personalization&quot;</code>; all its trials carry the <code>&quot;10&quot;</code> event since every personalization stimulus flickers at 10 Hz, conflating with the game&#x27;s 10 Hz target if both are loaded.</p><div class="ds-overview-actions"><a class="ds-overview-tab-link" href="#ds-overview-schrag2026pediatric" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-schrag2026pediatric');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+  <div id="ds-quickstart-schrag2026pediatric" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-schrag2026pediatric" aria-hidden="true" hidden>
+  <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Schrag2026Pediatric</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Schrag2026Pediatric</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+
+  <div class="ds-citation-impact"><p class="ds-citation-title">Citation &amp; Impact</p><ul><li><span>Paper DOI</span><a href="https://doi.org/10.21203%2Frs.3.rs-9347306%2Fv1" target="_blank" rel="noopener">10.21203/rs.3.rs-9347306/v1</a></li>
+      <li><span>Citations</span><strong class="ds-citation-count" data-doi="10.21203/rs.3.rs-9347306/v1">Loading…</strong></li>
+      <li><span>Public API</span><span class="ds-citation-links"><a href="https://api.crossref.org/works/10.21203/rs.3.rs-9347306/v1" target="_blank" rel="noopener">Crossref</a>&nbsp;|&nbsp;<a href="https://api.openalex.org/works/https%3A%2F%2Fdoi.org%2F10.21203%2Frs.3.rs-9347306%2Fv1" target="_blank" rel="noopener">OpenAlex</a></span></li></ul>
+<script>
+(function () {
+  if (window.__moabbCitationCountsInit) return;
+  window.__moabbCitationCountsInit = true;
+
+  function fmt(value) {
+    return (typeof value === "number" && Number.isFinite(value))
+      ? value.toLocaleString()
+      : "N/A";
+  }
+
+  function setBoth(el, openalexCount, crossrefCount) {
+    el.textContent = "OpenAlex: " + fmt(openalexCount) + " | Crossref: " + fmt(crossrefCount);
+  }
+
+  async function fetchOpenAlex(doi) {
+    const id = encodeURIComponent("https://doi.org/" + doi);
+    const resp = await fetch("https://api.openalex.org/works/" + id);
+    if (!resp.ok) throw new Error("OpenAlex request failed");
+    const data = await resp.json();
+    return data && typeof data.cited_by_count === "number"
+      ? data.cited_by_count
+      : null;
+  }
+
+  async function fetchCrossref(doi) {
+    const resp = await fetch("https://api.crossref.org/works/" + encodeURIComponent(doi));
+    if (!resp.ok) throw new Error("Crossref request failed");
+    const data = await resp.json();
+    const count = data && data.message ? data.message["is-referenced-by-count"] : null;
+    return typeof count === "number" ? count : null;
+  }
+
+  document.querySelectorAll(".ds-citation-count[data-doi]").forEach(async function (el) {
+    const doi = (el.getAttribute("data-doi") || "").trim();
+    if (!doi) {
+      setBoth(el, null, null);
+      return;
+    }
+    const [oaRes, crRes] = await Promise.allSettled([
+      fetchOpenAlex(doi),
+      fetchCrossref(doi),
+    ]);
+    const oa = oaRes.status === "fulfilled" ? oaRes.value : null;
+    const cr = crRes.status === "fulfilled" ? crRes.value : null;
+    setBoth(el, oa, cr);
+  });
+})();
+</script>
+</div>
+</div><div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row sd-col-12 sd-col-xs-12 sd-col-sm-12 sd-col-md-12 sd-col-lg-12 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm ds-viz-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Stimulus Protocol</div>
+<a class="timeline-diagram reference internal image-reference" href="../_images/Schrag2026Pediatric.svg"><img alt="../_images/Schrag2026Pediatric.svg" class="timeline-diagram" src="../_images/Schrag2026Pediatric.svg" style="width: 100%;" />
+</a>
+<p class="ds-viz-note">5s task window per trial · 4-class ssvep paradigm · 2 runs/session across 1 sessions</p></div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm ds-viz-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+HED Event Tags</div>
+<div class="ds-hed-card"><div class="ds-hed-head"><span class="ds-hed-pill">HED tags</span><span class="ds-hed-meta">4/4 events annotated</span></div><p class="ds-hed-source">Source: MOABB BIDS HED annotation mapping.</p><div class="ds-hed-bars"><div class="ds-hed-bar-row"><span class="ds-hed-bar-label">Experimental-stimulus</span><div class="ds-hed-bar"><i style="width:100%"></i></div><strong>4</strong></div><div class="ds-hed-bar-row"><span class="ds-hed-bar-label">Label</span><div class="ds-hed-bar"><i style="width:100%"></i></div><strong>4</strong></div><div class="ds-hed-bar-row"><span class="ds-hed-bar-label">Sensory-event</span><div class="ds-hed-bar"><i style="width:100%"></i></div><strong>4</strong></div><div class="ds-hed-bar-row"><span class="ds-hed-bar-label">Visual-presentation</span><div class="ds-hed-bar"><i style="width:100%"></i></div><strong>4</strong></div></div><div class="ds-hed-events"><div class="ds-hed-event-row"><span class="ds-hed-event-name">6.25</span><div class="ds-hed-chip-wrap" title="Sensory-event, Experimental-stimulus, Visual-presentation, (Label/6_25)"><span class="ds-hed-chip">Sensory-event</span><span class="ds-hed-chip">Experimental-stimulus</span><span class="ds-hed-chip">Visual-presentation</span><span class="ds-hed-chip">Label</span></div></div><div class="ds-hed-event-row"><span class="ds-hed-event-name">10</span><div class="ds-hed-chip-wrap" title="Sensory-event, Experimental-stimulus, Visual-presentation, (Label/10)"><span class="ds-hed-chip">Sensory-event</span><span class="ds-hed-chip">Experimental-stimulus</span><span class="ds-hed-chip">Visual-presentation</span><span class="ds-hed-chip">Label</span></div></div><div class="ds-hed-event-row"><span class="ds-hed-event-name">11.11</span><div class="ds-hed-chip-wrap" title="Sensory-event, Experimental-stimulus, Visual-presentation, (Label/11_11)"><span class="ds-hed-chip">Sensory-event</span><span class="ds-hed-chip">Experimental-stimulus</span><span class="ds-hed-chip">Visual-presentation</span><span class="ds-hed-chip">Label</span></div></div><div class="ds-hed-event-row"><span class="ds-hed-event-name">14.28</span><div class="ds-hed-chip-wrap" title="Sensory-event, Experimental-stimulus, Visual-presentation, (Label/14_28)"><span class="ds-hed-chip">Sensory-event</span><span class="ds-hed-chip">Experimental-stimulus</span><span class="ds-hed-chip">Visual-presentation</span><span class="ds-hed-chip">Label</span></div></div></div><div class="ds-hed-tree-block"><p class="ds-hed-tree-title">HED tree view</p><details class="ds-hed-tree-item"><summary class="ds-hed-tree-summary">Tree · 6.25</summary><pre class="ds-hed-tree-pre">├─ Sensory-event
+├─ Experimental-stimulus
+├─ Visual-presentation
+└─ Label</pre></details><details class="ds-hed-tree-item"><summary class="ds-hed-tree-summary">Tree · 10</summary><pre class="ds-hed-tree-pre">├─ Sensory-event
+├─ Experimental-stimulus
+├─ Visual-presentation
+└─ Label</pre></details><details class="ds-hed-tree-item"><summary class="ds-hed-tree-summary">Tree · 11.11</summary><pre class="ds-hed-tree-pre">├─ Sensory-event
+├─ Experimental-stimulus
+├─ Visual-presentation
+└─ Label</pre></details><details class="ds-hed-tree-item"><summary class="ds-hed-tree-summary">Tree · 14.28</summary><pre class="ds-hed-tree-pre">├─ Sensory-event
+├─ Experimental-stimulus
+├─ Visual-presentation
+└─ Label</pre></details></div></div></div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm ds-viz-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Channel Summary</div>
+<div class="ds-channel-card"><div class="ds-channel-row"><span>Total channels</span><strong>16</strong></div>
+<div class="ds-channel-row"><span>EEG</span><strong>16 (active)</strong></div>
+<div class="ds-channel-row"><span>Montage</span><strong>standard_1020</strong></div>
+<div class="ds-channel-row"><span>Sampling</span><strong>256 Hz</strong></div>
+<div class="ds-channel-row"><span>Reference</span><strong>earlobe</strong></div>
+<div class="ds-channel-row"><span>Notch / line</span><strong>60 Hz</strong></div></div></div>
+</div>
+</div>
+</div>
+</div>
+<p class="timeline-disclaimer">This diagram is automatically generated from MOABB metadata. Please consult the original publication to confirm the experimental protocol details.</p><div class="sd-tab-set ds-doc-tabs docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Overview</label><div class="sd-tab-content docutils">
+<p id="ds-overview-schrag2026pediatric">SSVEP-based BCI dataset in children and adolescents (Schrag et al. 2026).</p>
+<p>Dataset from <a class="reference internal" href="#r74f8454a1fc2-1" id="id1">[1]</a>, hosted on Zenodo <a class="reference internal" href="#r74f8454a1fc2-2" id="id2">[2]</a>.</p>
+<p>Forty-seven neurotypical children and adolescents (ages 5-18, mean
+12.6 +/- 3.9 yr; 40.4% female) recorded with a g.tec g.GAMMAsys gel-based
+system (16 scalp channels at 256 Hz, ground Fpz, earlobe reference)
+completed a two-stage SSVEP-BCI session: (a) a <em>personalization
+pipeline</em> presenting 12 visual stimuli (4 contrasts x 3 sizes) all
+flickering at 10 Hz, and (b) an <em>online 4-target SSVEP game</em> at
+6.25 / 10 / 11.11 / 14.28 Hz, played twice (once with the personal
+stimulus, once with a high-contrast standard) across two themed maps.</p>
+<p>By default this class exposes the SSVEP game runs only – a single
+session per subject holding two runs (<code class="docutils literal notranslate"><span class="pre">&quot;0standard&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;1personal&quot;</span></code>),
+5 s trials at four target frequencies. Set
+<code class="docutils literal notranslate"><span class="pre">include_personalization=True</span></code> to also load the 12-stimulus
+personalization recording as a third run <code class="docutils literal notranslate"><span class="pre">&quot;2personalization&quot;</span></code>; all
+its trials carry the <code class="docutils literal notranslate"><span class="pre">&quot;10&quot;</span></code> event since every personalization
+stimulus flickers at 10 Hz, conflating with the game’s 10 Hz target if
+both are loaded.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Trial labels for the game runs come from the recorded fbCCA
+classifier output (the <code class="docutils literal notranslate"><span class="pre">Selected</span> <span class="pre">SPO</span></code> column of the per-game
+movement CSV) – the frequency <em>the system identified</em> during the
+live game, which then drove avatar movement. They are <strong>not</strong>
+ground-truth target frequencies; treating <code class="docutils literal notranslate"><span class="pre">y</span></code> as such biases
+benchmarks toward fbCCA’s behaviour. For ground-truth labels parse
+<code class="docutils literal notranslate"><span class="pre">Intended</span> <span class="pre">Movement</span> <span class="pre">Direction</span></code> together with the per-trial
+corner-to-frequency mapping (randomised across the game; not
+currently exposed by this loader).</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The dataset ships as a single ~1.2 GB <code class="docutils literal notranslate"><span class="pre">DatasetData.zip</span></code> on
+Zenodo. Subjects are extracted on demand; <code class="docutils literal notranslate"><span class="pre">pyxdf</span></code> is required
+(<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">moabb[xdf]</span></code>).</p>
+</div>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r74f8454a1fc2-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>E. Schrag, D. Comaduran Marquez, A. Kirton, and E. Kinney-Lang,
+“A steady-state visual evoked potential-based brain-computer
+interface dataset in children and adolescents,” Research Square
+preprint, 2026. DOI: 10.21203/rs.3.rs-9347306/v1</p>
+</div>
+<div class="citation" id="r74f8454a1fc2-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Schrag et al., 2026 SSVEP Pediatric Dataset.
+Zenodo. DOI: 10.5281/zenodo.19440997</p>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Code Examples</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Schrag2026Pediatric</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Schrag2026Pediatric</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Metadata</label><div class="sd-tab-content docutils">
+<div class="admonition-dataset-summary admonition">
+<p class="admonition-title">Dataset summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><strong>#Subj</strong></p></td>
+<td><p>47</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>#Chan</strong></p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>#Classes</strong></p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>#Trials / class</strong></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Trials length</strong></p></td>
+<td><p>5 s</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Freq</strong></p></td>
+<td><p>256 Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>#Sessions</strong></p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="admonition-participants admonition">
+<p class="admonition-title">Participants</p>
+<ul class="simple">
+<li><p><strong>Population</strong>: healthy</p></li>
+<li><p><strong>Age</strong>: 12.6 (range: 5-18) years</p></li>
+<li><p><strong>BCI experience</strong>: naive</p></li>
+</ul>
+</div>
+<div class="admonition-equipment admonition">
+<p class="admonition-title">Equipment</p>
+<ul class="simple">
+<li><p><strong>Amplifier</strong>: g.tec g.GAMMAsys + g.USBamp + g.GAMMAcap</p></li>
+<li><p><strong>Electrodes</strong>: active</p></li>
+<li><p><strong>Montage</strong>: standard_1020</p></li>
+<li><p><strong>Reference</strong>: earlobe</p></li>
+</ul>
+</div>
+<div class="admonition-preprocessing admonition">
+<p class="admonition-title">Preprocessing</p>
+<ul class="simple">
+<li><p><strong>Data state</strong>: raw</p></li>
+</ul>
+</div>
+<div class="admonition-data-access admonition">
+<p class="admonition-title">Data Access</p>
+<ul class="simple">
+<li><p><strong>DOI</strong>: 10.5281/zenodo.19440997</p></li>
+<li><p><strong>Data URL</strong>: <a class="reference external" href="https://doi.org/10.5281/zenodo.19440997">https://doi.org/10.5281/zenodo.19440997</a></p></li>
+<li><p><strong>Repository</strong>: Zenodo</p></li>
+</ul>
+</div>
+<div class="admonition-experimental-protocol admonition">
+<p class="admonition-title">Experimental Protocol</p>
+<ul class="simple">
+<li><p><strong>Paradigm</strong>: ssvep</p></li>
+<li><p><strong>Task type</strong>: SSVEP-controlled videogame (4-target navigation)</p></li>
+<li><p><strong>Feedback</strong>: visual</p></li>
+<li><p><strong>Stimulus</strong>: flickering visual targets (4-target game)</p></li>
+</ul>
+</div>
+</div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_personalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schrag2026.py#L263-L275"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize function for the BaseDataset.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.all_subjects">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_subjects</span></span><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.all_subjects" title="Link to this definition">#</a></dt>
+<dd><p>Full list of subjects available in this dataset (unfiltered).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.convert_to_bids">
+<span class="sig-name descname"><span class="pre">convert_to_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EDF'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_figures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/base.py#L942-L1057"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.convert_to_bids" title="Link to this definition">#</a></dt>
+<dd><p>Convert the dataset to BIDS format.</p>
+<p>Saves the raw EEG data in a BIDS-compliant directory structure.
+Unlike the caching mechanism (see <a class="reference internal" href="moabb.datasets.base.CacheConfig.html#moabb.datasets.base.CacheConfig" title="moabb.datasets.base.CacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheConfig</span></code></a>), the files
+produced here do <strong>not</strong> contain a processing-pipeline hash
+(<code class="docutils literal notranslate"><span class="pre">desc-&lt;hash&gt;</span></code>) in their names, making the output a clean,
+shareable BIDS dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (str | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a> | None) – Directory under which the BIDS dataset will be written.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> the default MNE data directory is used (same default
+as the rest of MOABB).</p></li>
+<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – Subject numbers to convert.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all subjects in
+<code class="docutils literal notranslate"><span class="pre">subject_list</span></code> are converted.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, existing BIDS files for a subject are removed before
+saving.  Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The file format for the raw EEG data.  Supported values are
+<code class="docutils literal notranslate"><span class="pre">&quot;EDF&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;BrainVision&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;EEGLAB&quot;</span></code>.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Verbosity level forwarded to MNE/MNE-BIDS.</p></li>
+<li><p><strong>generate_figures</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, generate interactive neural signature HTML figures
+in <code class="docutils literal notranslate"><span class="pre">{bids_root}/derivatives/neural_signatures/</span></code>.  Requires
+<code class="docutils literal notranslate"><span class="pre">plotly</span></code> (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">moabb[interactive]</span></code>).  Default is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bids_root</strong> – Path to the root of the written BIDS dataset.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)">pathlib.Path</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlexMI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">AlexMI</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_root</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">convert_to_bids</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/tmp/bids&quot;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Use <a class="reference internal" href="moabb.datasets.base.CacheConfig.html#moabb.datasets.base.CacheConfig" title="moabb.datasets.base.CacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheConfig</span></code></a> to configure caching
+for <a class="reference internal" href="#moabb.datasets.Schrag2026Pediatric.get_data" title="moabb.datasets.Schrag2026Pediatric.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code></a>. Use
+<code class="docutils literal notranslate"><span class="pre">moabb.datasets.bids_interface.get_bids_root</span></code> to get the BIDS root
+path.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.5.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schrag2026.py#L310-L339"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.data_path" title="Link to this definition">#</a></dt>
+<dd><p>Get path to local copy of a subject data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of subject to use</p></li>
+<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Location of where to look for the data storing location.
+If None, the environment variable or config parameter
+<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
+“~/mne_data” directory is used. If the dataset
+is not found under the given path, the data
+will be automatically downloaded to the specified folder.</p></li>
+<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
+<li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
+config to the given path. If None, the user is prompted.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
+list of length one, for compatibility.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accept</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/base.py#L881-L940"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.download" title="Link to this definition">#</a></dt>
+<dd><p>Download all data from the dataset.</p>
+<p>This function is only useful to download all the dataset at once.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – List of subjects id to download, if None all subjects
+are downloaded.</p></li>
+<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Location of where to look for the data storing location.
+If None, the environment variable or config parameter
+<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
+“~/mne_data” directory is used. If the dataset
+is not found under the given path, the data
+will be automatically downloaded to the specified folder.</p></li>
+<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
+<li><p><strong>update_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
+config to the given path. If None, the user is prompted.</p></li>
+<li><p><strong>accept</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Accept licence term to download the data, if any. Default: False</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.get_additional_metadata">
+<span class="sig-name descname"><span class="pre">get_additional_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/base.py#L1220-L1244"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.get_additional_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Load additional metadata for a specific subject, session, and run.</p>
+<p>This method is intended to be overridden by subclasses to provide
+additional metadata specific to the dataset. The metadata is typically
+loaded from an <cite>events.tsv</cite> file or similar data source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The identifier for the subject.</p></li>
+<li><p><strong>session</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The identifier for the session.</p></li>
+<li><p><strong>run</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The identifier for the run.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame containing the additional metadata if available,
+otherwise None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None | <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.get_block_repetition">
+<span class="sig-name descname"><span class="pre">get_block_repetition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_list</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/base.py#L755-L794"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.get_block_repetition" title="Link to this definition">#</a></dt>
+<dd><p>Select data for all provided subjects, blocks and repetitions.</p>
+<p>subject -&gt; session -&gt; run -&gt; block -&gt; repetition</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#moabb.datasets.Schrag2026Pediatric.get_data" title="moabb.datasets.Schrag2026Pediatric.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subjects</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – List of subject number</p></li>
+<li><p><strong>block_list</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – List of block number</p></li>
+<li><p><strong>repetition_list</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – List of repetition number inside a block</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data</strong> – dict containing the raw data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_pipeline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/base.py#L796-L879"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.get_data" title="Link to this definition">#</a></dt>
+<dd><p>Return the data corresponding to a list of subjects.</p>
+<p>The returned data is a dictionary with the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;subject_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;session_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;run_id&quot;</span><span class="p">:</span> <span class="n">run</span><span class="p">}}}</span>
+</pre></div>
+</div>
+<p>subjects are on top, then we have sessions, then runs.
+A sessions is a recording done in a single day, without removing the
+EEG cap. A session is constitued of at least one run. A run is a single
+contiguous recording. Some dataset break session in multiple runs.</p>
+<p>Processing steps can optionally be applied to the data using the
+<code class="docutils literal notranslate"><span class="pre">*_pipeline</span></code> arguments. These pipelines are applied in the
+following order: <code class="docutils literal notranslate"><span class="pre">raw_pipeline</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">epochs_pipeline</span></code> -&gt;
+<code class="docutils literal notranslate"><span class="pre">array_pipeline</span></code>. If a <code class="docutils literal notranslate"><span class="pre">*_pipeline</span></code> argument is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+the step will be skipped. Therefore, the <code class="docutils literal notranslate"><span class="pre">array_pipeline</span></code> may
+either receive a <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> or a <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> object
+as input depending on whether <code class="docutils literal notranslate"><span class="pre">epochs_pipeline</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subjects</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – List of subject number</p></li>
+<li><p><strong>cache_config</strong> (dict | <a class="reference internal" href="moabb.datasets.base.CacheConfig.html#moabb.datasets.base.CacheConfig" title="moabb.datasets.base.CacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheConfig</span></code></a>) – Configuration for caching of datasets. See
+<a class="reference internal" href="moabb.datasets.base.CacheConfig.html#moabb.datasets.base.CacheConfig" title="moabb.datasets.base.CacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheConfig</span></code></a> for details.</p></li>
+<li><p><strong>process_pipeline</strong> (<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a> | None) – Optional processing pipeline to apply to the data.
+To generate an adequate pipeline, we recommend using
+<a class="reference internal" href="moabb.make_process_pipelines.html#moabb.make_process_pipelines" title="moabb.make_process_pipelines"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.make_process_pipelines()</span></code></a>.
+This pipeline will receive <a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a> objects.
+The steps names of this pipeline should be elements of
+<code class="docutils literal notranslate"><span class="pre">StepType</span></code>.
+According to their name, the steps should either return a
+<a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a>, a <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, or a
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.
+This pipeline must be “fixed” because it will not be trained,
+i.e. no call to <code class="docutils literal notranslate"><span class="pre">fit</span></code> will be made.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data</strong> – dict containing the raw data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="moabb.datasets.Schrag2026Pediatric.metadata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../../../../.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/functools.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schrag2026Pediatric.metadata" title="Link to this definition">#</a></dt>
+<dd><p>Return structured metadata for this dataset.</p>
+<p>Returns the DatasetMetadata object from the centralized catalog,
+or None if metadata is not available for this dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The metadata object containing acquisition parameters,
+participant demographics, experiment details, and documentation.
+Returns None if no metadata is registered for this dataset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">DatasetMetadata</span></code> | None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNCI2014_001</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">BNCI2014_001</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">participants</span><span class="o">.</span><span class="n">n_subjects</span>
+<span class="go">9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">acquisition</span><span class="o">.</span><span class="n">sampling_rate</span>
+<span class="go">250.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<div style='clear:both'></div></section>
+
+
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="moabb.datasets.GuttmannFlury2025_SSVEP.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">moabb.datasets.GuttmannFlury2025_SSVEP</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="moabb.datasets.Thielen2015.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">moabb.datasets.Thielen2015</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026 MOABB contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
