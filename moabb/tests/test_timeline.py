@@ -64,6 +64,19 @@ class TestExtractStimulusTimeline(unittest.TestCase):
         result = extract_stimulus_timeline(ds)
         assert result.paradigm == "p300"
 
+    def test_bnci2014_001_stimulus_protocol(self):
+        from moabb.analysis.timeline import extract_stimulus_timeline
+        from moabb.datasets import BNCI2014_001
+
+        result = extract_stimulus_timeline(BNCI2014_001())
+
+        assert result.total_duration_s == 6.0
+        assert [(p.label, p.onset_s, p.duration_s) for p in result.phases] == [
+            ("Fixation +", 0.0, 2.0),
+            ("Cue + MI", 2.0, 1.25),
+            ("Motor Imagery", 3.25, 2.75),
+        ]
+
 
 class TestPlotClassBalance(unittest.TestCase):
     """Tests for plot_class_balance."""

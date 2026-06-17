@@ -41,8 +41,13 @@ def _set_user_agent(downloader):
 
 
 def _sanitize_path(path: Path) -> Path:
+    path = Path(path)
     table = {ord(c): "-" for c in ':*?"<>|'}
-    return Path(str(path).translate(table))
+
+    if path.anchor:
+        return Path(path.anchor, *(part.translate(table) for part in path.parts[1:]))
+
+    return Path(*(part.translate(table) for part in path.parts))
 
 
 def _normalize_destination(url: str, root: Path) -> Path:

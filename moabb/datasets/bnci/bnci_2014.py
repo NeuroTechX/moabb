@@ -345,6 +345,11 @@ class BNCI2014_001(MNEBNCI):
             mode="offline",
             events={"left_hand": 1, "right_hand": 2, "foot": 3, "no_control": 0},
             instructions="Subjects instructed to perform motor imagery during cued periods",
+            stimulus_presentation={
+                "cross_onset": "0 s",
+                "arrow_cue": "2 s",
+                "trial_duration": "6 s",
+            },
             hed_tags={
                 "left_hand": (
                     "(Sensory-event, Experimental-stimulus, Visual-presentation, "
@@ -440,7 +445,7 @@ class BNCI2014_001(MNEBNCI):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "foot"],
-            cue_duration_s=4.0,
+            cue_duration_s=1.25,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(

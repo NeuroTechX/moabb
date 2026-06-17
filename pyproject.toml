@@ -77,7 +77,6 @@ dependencies = [
     "edflib-python>=1.0.6",
     "edfio>=0.4.2",
     "filelock>=3.18.0",
-    "pytest>=8.3.5",
     "mne-bids>=0.17",
     "scikit-learn>=1.6",
     "pybv>=0.7.3",
@@ -102,7 +101,7 @@ optuna = ["optuna>=3.6.1", "optuna-integration>=3.6.0"]
 xdf = ["pyxdf>=1.16.4"]
 interactive = ["plotly>=5.18.0"]
 tests = [
-    "pytest>=8.3.5",
+    "pytest>=8.3.5,<9.1",  # pytest 9.1.0 changed IdMaker's signature, which breaks pytest_cases 3.10.1 (crash at collection time). Remove the cap once pytest_cases supports pytest >=9.1.
     "pytest-cov>=5.0.0",
     "codecov>=2.1.0",
     "pytest_cases>=3.0.0",
@@ -178,9 +177,13 @@ skip-magic-trailing-comma = true
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q"
+testpaths = ["moabb/tests"]
+# which files count as test modules
 python_files = [
     "test_*.py",
 ]
+# which functions inside them count as tests
+python_functions = ["test_*"]
 markers = [
     "network: tests that require network access (CrossRef/DataCite APIs)",
     "download: tests that require downloading dataset files",
