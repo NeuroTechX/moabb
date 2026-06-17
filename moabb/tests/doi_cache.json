@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 150
+        "total": 152
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -1006,6 +1006,17 @@
         "year": 2016,
         "doi": "10.1515/bmt-2014-0117"
     },
+    "10.21203/rs.3.rs-9347306/v1": {
+        "title": "A steady-state visual evoked potential-based brain-computer interface dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.21203/rs.3.rs-9347306/v1"
+    },
     "10.2312/vriphys.20181064": {
         "title": "The Impact of Passive Head-Mounted Virtual Reality Devices on the Quality of EEG Signals",
         "authors": [
@@ -1393,6 +1404,17 @@
         ],
         "year": 2016,
         "doi": "10.5281/zenodo.192684"
+    },
+    "10.5281/zenodo.19440997": {
+        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.19440997"
     },
     "10.5281/zenodo.2222268": {
         "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
