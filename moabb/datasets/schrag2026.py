@@ -8,10 +8,7 @@ from __future__ import annotations
 
 import csv
 import logging
-import os
 import re
-import shutil
-import tempfile
 import zipfile
 from pathlib import Path
 
@@ -74,8 +71,8 @@ _PERSONALIZATION_LABELS = [
     f"Contrast{c}Size{s}" for c in range(1, 5) for s in range(1, 4)
 ]
 
-# Session keys must start with an integer (BaseDataset.check_session_names).
-_S_STD, _S_PERS, _S_PERSO = "0standard", "1personal", "2personalization"
+# Run keys must start with an integer (BaseDataset.check_run_names).
+_R_STD, _R_PERS, _R_PERSO = "0standard", "1personal", "2personalization"
 
 # Game XDF filename: sub-P###_ses-S001_task-T{2,3}_acq-{BW|CXSX}_M{1,2}_run-...
 _GAME_FILE_RE = re.compile(r"sub-P(\d+)_ses-S\d+_task-T[23]_acq-(BW|C\dS\d)_M([12])_run-")
@@ -106,16 +103,17 @@ class Schrag2026Pediatric(BaseDataset):
     6.25 / 10 / 11.11 / 14.28 Hz, played twice (once with the personal
     stimulus, once with a high-contrast standard) across two themed maps.
 
-    By default this class exposes the SSVEP game runs only -- two sessions
-    per subject (``"0standard"``, ``"1personal"``), 5 s trials at four
-    target frequencies. Set ``include_personalization=True`` to also load
-    the 12-stimulus personalization recording as session
-    ``"2personalization"``; all its trials carry the ``"10"`` event since
-    every personalization stimulus flickers at 10 Hz, conflating with the
-    game's 10 Hz target if both are loaded.
+    By default this class exposes the SSVEP game runs only -- a single
+    session per subject holding two runs (``"0standard"``, ``"1personal"``),
+    5 s trials at four target frequencies. Set
+    ``include_personalization=True`` to also load the 12-stimulus
+    personalization recording as a third run ``"2personalization"``; all
+    its trials carry the ``"10"`` event since every personalization
+    stimulus flickers at 10 Hz, conflating with the game's 10 Hz target if
+    both are loaded.
 
     .. warning::
-        Trial labels for the game sessions come from the recorded fbCCA
+        Trial labels for the game runs come from the recorded fbCCA
         classifier output (the ``Selected SPO`` column of the per-game
         movement CSV) -- the frequency *the system identified* during the
         live game, which then drove avatar movement. They are **not**
@@ -267,7 +265,6 @@ class Schrag2026Pediatric(BaseDataset):
         super().__init__(
             subjects=list(range(1, _N_SUBJECTS + 1)),
             sessions_per_subject=1,
-            runs_per_session=3 if include_personalization else 2,
             events=dict(_GAME_EVENTS),
             code="Schrag2026Pediatric",
             interval=[0.0, _TRIAL_DURATION_S],
@@ -284,58 +281,29 @@ class Schrag2026Pediatric(BaseDataset):
         if not eeg_dir.is_dir():
             raise FileNotFoundError(f"EEG dir missing for subject {subject}: {eeg_dir}")
 
-        # Resolve which sessions the user actually asked for. ``sessions=`` may
-        # use the full key (``"0standard"``) or just the description (``"standard"``).
-        all_keys = [_S_STD, _S_PERS]
-        if self.include_personalization:
-            all_keys.append(_S_PERSO)
-        if self._selected_sessions is None:
-            wanted = set(all_keys)
-        else:
-            asked = {str(s) for s in self._selected_sessions}
-            wanted = {
-                k for k in all_keys if k in asked or k.lstrip("0123456789") in asked
-            }
-
-        # Match game XDFs (T2, T3) to standard / personal by acq tag.
-        sessions = {}
-        std_path = pers_path = None
+        # One visit per subject = one session; the game is played twice (standard
+        # and personal stimulus) so those are two runs, matched by acq tag.
+        runs = {}
         for path in eeg_dir.glob(f"sub-P{subject:03d}_*task-T[23]*.xdf"):
             m = _GAME_FILE_RE.match(path.stem)
             if m is None:
                 continue
-            if m.group(2) == "BW":
-                std_path = path
-            else:
-                pers_path = path
-        if _S_STD in wanted:
-            if std_path is None:
-                log.warning(
-                    "Subject %d: standard game XDF missing in %s", subject, eeg_dir
-                )
-            else:
-                sessions[_S_STD] = {"0": _load_game_run(std_path)}
-        if _S_PERS in wanted:
-            if pers_path is None:
-                log.warning(
-                    "Subject %d: personal game XDF missing in %s", subject, eeg_dir
-                )
-            else:
-                sessions[_S_PERS] = {"0": _load_game_run(pers_path)}
+            key = _R_STD if m.group(2) == "BW" else _R_PERS
+            runs[key] = _load_game_run(path)
 
-        # Personalization (T1) is a single XDF per subject.
-        if _S_PERSO in wanted:
+        # Personalization (T1) is a single XDF per subject, opt-in, third run.
+        if self.include_personalization:
             t1_path = next(eeg_dir.glob(f"sub-P{subject:03d}_*task-T1*_eeg.xdf"), None)
             if t1_path is None:
                 log.warning(
                     "Subject %d: personalization (T1) XDF missing in %s", subject, eeg_dir
                 )
             else:
-                sessions[_S_PERSO] = {"0": _load_personalization_run(t1_path)}
+                runs[_R_PERSO] = _load_personalization_run(t1_path)
 
-        if not sessions:
+        if not runs:
             raise FileNotFoundError(f"No XDF files matched expected pattern in {eeg_dir}")
-        return sessions
+        return {"0": runs}
 
     # ----- Download / extract -------------------------------------------
 
@@ -353,9 +321,21 @@ class Schrag2026Pediatric(BaseDataset):
                 zip_path.rename(target)
             zip_path = target
 
+        # The single ~1.2 GB archive holds every subject; extract just the one
+        # requested on demand instead of unpacking all 47.
         subject_dir = zip_path.parent / "DatasetData" / f"P{subject:03d}"
         if force_update or not (subject_dir / "EEG").is_dir():
-            _extract_subject(zip_path, subject)
+            prefix = f"DatasetData/P{subject:03d}/"
+            # ponytail: plain extract, no temp-dir staging. Two workers
+            # unpacking the same subject concurrently could race; restore
+            # atomic os.replace staging if data_path ever runs in parallel.
+            with zipfile.ZipFile(zip_path) as zf:
+                members = [i for i in zf.infolist() if i.filename.startswith(prefix)]
+                if not members:
+                    raise FileNotFoundError(
+                        f"No entries under {prefix!r} in {zip_path.name}"
+                    )
+                safe_extract_zip(zf, zip_path.parent, members=members)
         return str(subject_dir)
 
 
@@ -548,37 +528,3 @@ def _match_freq(text):
         if abs(float(key) - f) < 0.05:
             return key
     return None
-
-
-def _extract_subject(zip_path, subject):
-    """Atomically extract one subject's folder from the 1.2 GB archive.
-
-    Stages into a sibling temp dir then ``os.replace``-s into place, so a
-    concurrent worker observing ``P{nnn}/EEG/`` always sees a complete tree.
-    A losing ``os.replace`` race is recovered by verifying the winner's
-    tree exists.
-    """
-    prefix = f"DatasetData/P{subject:03d}/"
-    final_root = zip_path.parent / "DatasetData"
-    final_dir = final_root / f"P{subject:03d}"
-    if (final_dir / "EEG").is_dir():
-        return
-
-    final_root.mkdir(parents=True, exist_ok=True)
-    log.info("Extracting %s from %s", prefix, zip_path.name)
-    # ``dir=`` keeps tmp on the same filesystem so os.replace is atomic.
-    with tempfile.TemporaryDirectory(
-        dir=zip_path.parent, prefix=f".extract_P{subject:03d}_"
-    ) as tmp:
-        tmp_path = Path(tmp)
-        with zipfile.ZipFile(zip_path) as zf:
-            members = [info for info in zf.infolist() if info.filename.startswith(prefix)]
-            if not members:
-                raise FileNotFoundError(f"No entries under {prefix!r} in {zip_path.name}")
-            safe_extract_zip(zf, tmp_path, members=members)
-        staged = tmp_path / "DatasetData" / f"P{subject:03d}"
-        try:
-            os.replace(staged, final_dir)
-        except OSError:
-            if not (final_dir / "EEG").is_dir():
-                shutil.copytree(staged, final_dir, dirs_exist_ok=True)
