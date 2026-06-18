@@ -36,7 +36,7 @@ Enhancements
 - Add resting state annotations and EMG channel support to :class:`moabb.datasets.Lee2019` resting state runs for BIDS export compatibility (by `Bruno Aristimunha`_)
 - Skip zip extraction in :class:`moabb.datasets.GuttmannFlury2025` when files are already extracted, with ``/scratch`` fallback for NFS filesystems on compute nodes (by `Bruno Aristimunha`_)
 - Re-enable auto-execution of the Riemannian Artifact Rejection tutorial (``examples/advanced_examples/plot_riemannian_artifact_rejection.py``) now that pyRiemann 0.11 is on PyPI with per-potato metrics and ``method_combination`` support on ``PotatoField`` (by `Bruno Aristimunha`_)
-- Use NEMAR as the default download source for datasets with a declared ``nemar_id``, while preserving existing dataset-specific downloaders as a fallback (by `Bruno Aristimunha`_).
+- Use NEMAR as the default download source for datasets with an assigned ``nemar_id``, while preserving existing dataset-specific downloaders as a fallback (by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
