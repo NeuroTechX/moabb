@@ -972,7 +972,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             return self.nemar_subject_template.format(subject=subject)
         except (IndexError, KeyError, ValueError) as exc:
             raise RuntimeError(
-                f"Could not format NEMAR subject {subject!r} for {self.code}."
+                f"Could not format NEMAR subject {subject!r} for {self.code} "
+                f"with template {self.nemar_subject_template!r}: {exc}"
             ) from exc
 
     def _download_nemar(

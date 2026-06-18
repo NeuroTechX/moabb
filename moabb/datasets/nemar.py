@@ -1,6 +1,6 @@
 """NEMAR dataset identifiers for MOABB datasets."""
 
-NEMAR_ID_PATTERN = r"(nm|ds)\d{6}"
+NEMAR_ID_PATTERN = r"(nm|ds)\d{6}"  # e.g. nm000139 or ds000001
 
 NEMAR_ID_MAP = {
     "AlexMI": "nm000138",

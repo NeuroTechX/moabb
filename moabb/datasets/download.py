@@ -232,7 +232,36 @@ def nemar_dl(
     verbose=None,
     **bids_filters,
 ):
-    """Download a NEMAR dataset and return the local BIDS root."""
+    """Download a NEMAR dataset and return the local BIDS root.
+
+    Parameters
+    ----------
+    nemar_id : str
+        NEMAR dataset identifier.
+    dataset_code : str
+        MOABB dataset code used to choose the local dataset directory.
+    path : None | str
+        Base path where MOABB stores datasets.
+    force_update : bool
+        Remove an existing NEMAR download before downloading again.
+    subject : str | list of str | None
+        BIDS subject label(s) to pass to :func:`nemar.download`.
+    verbose : bool, str, int, or None
+        If not None, override default verbose level.
+    **bids_filters
+        Additional BIDS filters forwarded to :func:`nemar.download`.
+
+    Returns
+    -------
+    str
+        Local BIDS root for the downloaded NEMAR dataset.
+
+    Raises
+    ------
+    NemarDownloadError
+        If nemar-py is unavailable, the existing download cannot be removed,
+        or nemar-py fails to download the selected files.
+    """
     root = Path(get_dataset_path(dataset_code, path))
     target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
 
@@ -241,7 +270,7 @@ def nemar_dl(
             shutil.rmtree(target_dir)
         except OSError as exc:
             raise NemarDownloadError(
-                f"Could not remove existing NEMAR download at {target_dir}."
+                f"Could not remove existing NEMAR download at {target_dir}: {exc}."
             ) from exc
 
     try:
