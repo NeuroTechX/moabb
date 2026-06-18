@@ -68,6 +68,7 @@ dependencies = [
     "seaborn>=0.12.1",
     "pyriemann>=0.11",
     "PyYAML>=6.0",
+    "nemar-py>=0.2.1",
     "pooch>=1.6.0",
     "requests>=2.28.1",
     "urllib3>=1.26.15",

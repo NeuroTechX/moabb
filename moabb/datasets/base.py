@@ -602,6 +602,8 @@ class BaseDataset(metaclass=MetaclassDataset):
     """
 
     _summary_table: dict[str, Any]
+    nemar_id: str | None = None
+    nemar_subject_template: str | None = "{subject:03d}"
 
     def __init__(
         self,
@@ -707,6 +709,10 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.interval = interval
         self.paradigm = paradigm
         self.doi = doi
+        if self.nemar_id is None:
+            from moabb.datasets.nemar import NEMAR_ID_MAP
+
+            self.nemar_id = NEMAR_ID_MAP.get(type(self).__name__)
         self.unit_factor = unit_factor
 
     @property
@@ -918,6 +924,24 @@ class BaseDataset(metaclass=MetaclassDataset):
         if subject_list is None:
             subject_list = self.subject_list
         for subject in subject_list:
+            if self.nemar_id is not None:
+                try:
+                    self._download_nemar(
+                        subject=subject,
+                        path=path,
+                        force_update=force_update,
+                        update_path=update_path,
+                        verbose=verbose,
+                    )
+                    continue
+                except Exception as exc:
+                    warnings.warn(
+                        f"Could not download {self.code} from NEMAR ({self.nemar_id}); "
+                        "falling back to the dataset data_path downloader. "
+                        f"Original error: {exc}",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
             # check if accept is needed
             sig = signature(self.data_path)
             if "accept" in [str(p) for p in sig.parameters]:
@@ -938,6 +962,25 @@ class BaseDataset(metaclass=MetaclassDataset):
                     update_path=update_path,
                     verbose=verbose,
                 )
+
+    def _nemar_subject(self, subject):
+        if self.nemar_subject_template is None:
+            return None
+        return self.nemar_subject_template.format(subject=subject)
+
+    def _download_nemar(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        from moabb.datasets import download as dl
+
+        return dl.nemar_dl(
+            self.nemar_id,
+            self.code,
+            path=path,
+            force_update=force_update,
+            subject=self._nemar_subject(subject),
+            verbose=verbose,
+        )
 
     def convert_to_bids(
         self,

@@ -3,6 +3,7 @@
 import mne
 import pytest
 
+from moabb.datasets import BNCI2014_001
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 from moabb.datasets.utils import dataset_list
 
@@ -15,6 +16,27 @@ def _get_events(raw):
     else:
         events, _ = mne.events_from_annotations(raw, verbose=False)
     return events
+
+
+@pytest.mark.download
+def test_nemar_download_equivalence(dl_data, tmp_path):
+    if not dl_data:
+        pytest.skip(
+            "Skipping NEMAR download test by default. "
+            "Run the test with option --dl-data to execute it."
+        )
+
+    dataset = BNCI2014_001()
+    dataset.download(subject_list=[1], path=tmp_path)
+
+    description = (
+        tmp_path
+        / f"MNE-{dataset.code.lower()}-data"
+        / dataset.nemar_id
+        / "dataset_description.json"
+    )
+    assert description.is_file()
+    assert dataset.nemar_id in description.read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize("dataset", dataset_list)

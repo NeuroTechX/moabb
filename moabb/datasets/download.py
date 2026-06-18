@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import os.path as osp
+import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -215,6 +216,35 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
         downloader=downloader,
     )
     return dlpath
+
+
+@verbose
+def nemar_dl(
+    nemar_id,
+    sign,
+    path=None,
+    force_update=False,
+    subject=None,
+    verbose=None,
+    **bids_filters,
+):
+    """Download a NEMAR dataset and return the local BIDS root."""
+    root = Path(get_dataset_path(sign, path))
+    target_dir = root / f"MNE-{sign.lower()}-data" / nemar_id
+
+    if force_update and target_dir.exists():
+        shutil.rmtree(target_dir)
+
+    import nemar
+
+    nemar.download(
+        dataset=nemar_id,
+        target_dir=target_dir,
+        subject=subject,
+        trust_existing=not force_update,
+        **bids_filters,
+    )
+    return str(target_dir)
 
 
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)
