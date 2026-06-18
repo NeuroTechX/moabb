@@ -934,7 +934,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                         verbose=verbose,
                     )
                     continue
-                except Exception as exc:
+                except RuntimeError as exc:
                     warnings.warn(
                         f"Could not download {self.code} from NEMAR ({self.nemar_id}); "
                         "falling back to the dataset data_path downloader. "

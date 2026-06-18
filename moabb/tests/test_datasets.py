@@ -42,7 +42,7 @@ from moabb.datasets.metadata import (
     PreprocessingMetadata,
     get_dataset_metadata,
 )
-from moabb.datasets.nemar import NEMAR_ID_MAP
+from moabb.datasets.nemar import NEMAR_ID_MAP, NEMAR_ID_PATTERN
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.upper_limb import Ofner2017
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
@@ -241,7 +241,7 @@ class Test_Datasets:
     def test_nemar_id_format(self):
         assert NEMAR_ID_MAP
         for nemar_id in NEMAR_ID_MAP.values():
-            assert re.fullmatch(r"(nm|ds)\d{6}", nemar_id)
+            assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
 
     def test_download_prefers_nemar(self, monkeypatch, tmp_path):
         dataset = FakeDataset(n_subjects=1)

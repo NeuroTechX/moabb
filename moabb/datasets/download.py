@@ -25,6 +25,10 @@ from requests.exceptions import HTTPError
 logger = logging.getLogger(__name__)
 
 
+class NemarDownloadError(RuntimeError):
+    """Raised when a NEMAR download cannot be completed."""
+
+
 def get_user_agent():
     """Return a user agent string for outbound requests."""
     try:
@@ -233,17 +237,27 @@ def nemar_dl(
     target_dir = root / f"MNE-{sign.lower()}-data" / nemar_id
 
     if force_update and target_dir.exists():
-        shutil.rmtree(target_dir)
+        try:
+            shutil.rmtree(target_dir)
+        except OSError as exc:
+            raise NemarDownloadError(
+                f"Could not remove existing NEMAR download at {target_dir}."
+            ) from exc
 
-    import nemar
+    try:
+        import nemar
 
-    nemar.download(
-        dataset=nemar_id,
-        target_dir=target_dir,
-        subject=subject,
-        trust_existing=not force_update,
-        **bids_filters,
-    )
+        nemar.download(
+            dataset=nemar_id,
+            target_dir=target_dir,
+            subject=subject,
+            trust_existing=not force_update,
+            **bids_filters,
+        )
+    except Exception as exc:
+        raise NemarDownloadError(
+            f"Could not download NEMAR dataset {nemar_id}."
+        ) from exc
     return str(target_dir)
 
 
