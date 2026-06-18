@@ -235,7 +235,7 @@ class Test_Datasets:
             pytest.param(Thielen2015, "nm000196", id="Thielen2015"),
         ],
     )
-    def test_nemar_id_equivalences(self, dataset, nemar_id):
+    def test_nemar_id_class_attributes(self, dataset, nemar_id):
         assert dataset.nemar_id == nemar_id
 
     @pytest.mark.parametrize("dataset", dataset_list)
