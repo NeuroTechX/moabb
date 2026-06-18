@@ -229,10 +229,14 @@ class Test_Datasets:
 
     @pytest.mark.parametrize(
         ("dataset", "nemar_id"),
-        [(BNCI2014_001, "nm000139"), (BI2012, "nm000260"), (Thielen2015, "nm000196")],
+        [
+            pytest.param(BNCI2014_001, "nm000139", id="BNCI2014_001"),
+            pytest.param(BI2012, "nm000260", id="BI2012"),
+            pytest.param(Thielen2015, "nm000196", id="Thielen2015"),
+        ],
     )
     def test_nemar_id_equivalences(self, dataset, nemar_id):
-        assert dataset.__dict__["nemar_id"] == nemar_id
+        assert dataset.nemar_id == nemar_id
 
     @pytest.mark.parametrize("dataset", dataset_list)
     def test_all_datasets_have_nemar_id_attribute(self, dataset):
