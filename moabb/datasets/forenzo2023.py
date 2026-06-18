@@ -28,7 +28,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import download_and_extract_subject_zip
+from .utils import download_and_extract_subject_zip, set_neuroscan_montage
 
 
 log = logging.getLogger(__name__)
@@ -324,6 +324,10 @@ class Forenzo2023(BaseDataset):
 
         full_data = np.concatenate([data, stim], axis=0)
         raw = mne.io.RawArray(data=full_data, info=info, verbose=False)
+
+        # Neuroscan stores ALL_CAPS labels; normalize and apply standard_1005
+        # (the stim channel is unaffected by the rename).
+        set_neuroscan_montage(raw)
 
         return raw
 
