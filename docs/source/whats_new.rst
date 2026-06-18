@@ -66,7 +66,7 @@ Bugs
 - Fix Windows download path sanitization that changed absolute paths like ``C:\data`` into relative ``C-\data`` paths (:gh:`1079` by `Anton Andreev`_).
 Code health
 ~~~~~~~~~~~
-- None yet.
+- Install CPU-only PyTorch wheels in CI by setting ``UV_TORCH_BACKEND=cpu`` in the test, braindecode, and docs workflows, so runners no longer download multi-GB CUDA builds of ``torch`` (pulled transitively via the ``deeplearning`` extra / braindecode) (:gh:`1083` by `Bhargav Kowshik`_).
 
 Version 1.5.0  (Stable - PyPi)
 -------------------------------
@@ -893,3 +893,4 @@ API changes
 .. _Zach Munro: https://github.com/zmunro
 .. _sli930: https://github.com/sli930
 .. _Emily Schrag: https://github.com/emilyschrag
+.. _Bhargav Kowshik: https://github.com/bkowshik
