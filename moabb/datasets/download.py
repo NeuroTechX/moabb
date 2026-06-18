@@ -8,7 +8,6 @@ import json
 import logging
 import os
 import os.path as osp
-import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -266,6 +265,8 @@ def nemar_dl(
     target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
 
     if force_update and target_dir.exists():
+        import shutil
+
         try:
             shutil.rmtree(target_dir)
         except OSError as exc:

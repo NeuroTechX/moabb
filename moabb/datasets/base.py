@@ -590,6 +590,11 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     doi : str, optional
         DOI for the dataset.
+    nemar_id : str | None
+        NEMAR dataset identifier used by :meth:`download` when available.
+    nemar_subject_template : str | None
+        Template for formatting subject IDs for NEMAR downloads. For example,
+        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``.
 
     return_all_modalities : bool | dict, optional
         Controls which channel types are retained when data is picked:
@@ -966,6 +971,24 @@ class BaseDataset(metaclass=MetaclassDataset):
                 )
 
     def _nemar_subject(self, subject):
+        """Format a MOABB subject identifier for NEMAR downloads.
+
+        Parameters
+        ----------
+        subject : int | str
+            MOABB subject identifier.
+
+        Returns
+        -------
+        str | None
+            Formatted NEMAR subject label, or None when subject filtering is
+            disabled.
+
+        Raises
+        ------
+        RuntimeError
+            If ``nemar_subject_template`` cannot format the subject value.
+        """
         if self.nemar_subject_template is None:
             return None
         try:
@@ -979,6 +1002,22 @@ class BaseDataset(metaclass=MetaclassDataset):
     def _download_nemar(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
+        """Download one subject from NEMAR through :func:`moabb.datasets.download.nemar_dl`.
+
+        Parameters mirror :meth:`data_path` for compatibility with
+        :meth:`download`. ``update_path`` is accepted for API compatibility but
+        is not used by NEMAR.
+
+        Returns
+        -------
+        str
+            Local BIDS root returned by ``nemar_dl``.
+
+        Raises
+        ------
+        moabb.datasets.download.NemarDownloadError
+            If nemar-py is unavailable or the NEMAR download fails.
+        """
         from moabb.datasets import download as dl
 
         return dl.nemar_dl(
