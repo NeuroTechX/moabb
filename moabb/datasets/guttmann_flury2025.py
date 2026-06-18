@@ -493,6 +493,8 @@ class GuttmannFlury2025_MI(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000265"
+
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
@@ -710,6 +712,8 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000310"
+
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
@@ -872,6 +876,8 @@ class GuttmannFlury2025_P300(BaseDataset):
            ocular activity analysis across BCI paradigms. Scientific
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
+
+    nemar_id = "nm000136"
 
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,

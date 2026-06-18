@@ -291,9 +291,7 @@ def nemar_dl(
             **bids_filters,
         )
     except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
-        raise NemarDownloadError(
-            f"Could not download NEMAR dataset {nemar_id}."
-        ) from exc
+        raise NemarDownloadError(f"Could not download NEMAR dataset {nemar_id}.") from exc
     return str(target_dir)
 
 

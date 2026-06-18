@@ -42,7 +42,6 @@ from moabb.datasets.metadata import (
     PreprocessingMetadata,
     get_dataset_metadata,
 )
-from moabb.datasets.nemar import NEMAR_ID_MAP, NEMAR_ID_PATTERN
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.upper_limb import Ofner2017
 from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
@@ -51,6 +50,7 @@ from moabb.utils import aliases_list
 
 
 _ = mne.set_log_level("CRITICAL")
+NEMAR_ID_PATTERN = r"(nm|ds)\d{6}"
 
 
 class TestRegex:
@@ -229,18 +229,19 @@ class Test_Datasets:
 
     @pytest.mark.parametrize(
         ("dataset", "nemar_id"),
-        [
-            (BNCI2014_001, "nm000139"),
-            (BI2012, "nm000260"),
-            (Thielen2015, "nm000196"),
-        ],
+        [(BNCI2014_001, "nm000139"), (BI2012, "nm000260"), (Thielen2015, "nm000196")],
     )
     def test_nemar_id_equivalences(self, dataset, nemar_id):
-        assert dataset().nemar_id == nemar_id
+        assert dataset.__dict__["nemar_id"] == nemar_id
 
-    def test_nemar_id_format(self):
-        assert NEMAR_ID_MAP
-        for nemar_id in NEMAR_ID_MAP.values():
+    @pytest.mark.parametrize("dataset", dataset_list)
+    def test_all_datasets_have_nemar_id_attribute(self, dataset):
+        assert hasattr(dataset, "nemar_id")
+
+    @pytest.mark.parametrize("dataset", dataset_list)
+    def test_nemar_id_format(self, dataset):
+        nemar_id = dataset.nemar_id
+        if nemar_id is not None:
             assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
 
     def test_download_prefers_nemar(self, monkeypatch, tmp_path):
@@ -277,7 +278,9 @@ class Test_Datasets:
 
             raise NemarDownloadError("NEMAR unavailable")
 
-        def data_path(subject, path=None, force_update=False, update_path=None, verbose=None):
+        def data_path(
+            subject, path=None, force_update=False, update_path=None, verbose=None
+        ):
             fallback_calls.append((subject, path, force_update, update_path, verbose))
 
         monkeypatch.setattr("moabb.datasets.download.nemar_dl", nemar_dl)

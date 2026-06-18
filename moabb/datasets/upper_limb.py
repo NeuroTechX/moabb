@@ -72,6 +72,8 @@ class Ofner2017(BaseDataset):
            https://doi.org/10.1371/journal.pone.0182578
     """
 
+    nemar_id = "nm000173"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

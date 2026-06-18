@@ -257,6 +257,8 @@ class Speier2017(BaseDataset):
            https://doi.org/10.1371/journal.pone.0175382
     """
 
+    nemar_id = "nm000259"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

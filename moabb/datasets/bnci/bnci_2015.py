@@ -480,6 +480,8 @@ class BNCI2015_001(MNEBNCI):
     .. versionadded:: 0.4.0
     """
 
+    nemar_id = "nm000140"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -866,6 +868,8 @@ class BNCI2015_004(MNEBNCI):
     -----
     .. versionadded:: 0.4.0
     """
+
+    nemar_id = "nm000144"
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

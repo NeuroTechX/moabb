@@ -92,6 +92,8 @@ class HefmiIch2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-06100-7
     """
 
+    nemar_id = "nm000347"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

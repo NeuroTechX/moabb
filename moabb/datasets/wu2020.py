@@ -74,6 +74,8 @@ class Wu2020(BaseDataset):
            https://doi.org/10.1088/1741-2552/abc1b6
     """
 
+    nemar_id = "nm000142"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

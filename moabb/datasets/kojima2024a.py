@@ -94,6 +94,8 @@ class Kojima2024A(BaseDataset):
         PLoS ONE 19(5): e0303565. DOI: https://doi.org/10.1371/journal.pone.0303565
     """
 
+    nemar_id = "nm000193"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

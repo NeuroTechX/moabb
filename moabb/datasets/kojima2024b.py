@@ -156,6 +156,8 @@ class Kojima2024B(BaseDataset):
         Frontiers in Human Neuroscience 18:1461960. DOI: https://doi.org/10.3389/fnhum.2024.1461960
     """
 
+    nemar_id = "nm000207"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

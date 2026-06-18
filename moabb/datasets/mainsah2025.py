@@ -516,6 +516,8 @@ class Mainsah2025_A(Mainsah2025):
 class Mainsah2025_B(Mainsah2025):
     """BigP3BCI Study B — 6x6 checkerboard, multi-session (19 healthy subjects)."""
 
+    nemar_id = "nm000157"
+
     __init__ = partialmethod(Mainsah2025.__init__, "B")
     METADATA = _make_study_metadata("B")
 
@@ -537,12 +539,16 @@ class Mainsah2025_D(Mainsah2025):
 class Mainsah2025_E(Mainsah2025):
     """BigP3BCI Study E — 6x6 checkerboard (8 healthy subjects)."""
 
+    nemar_id = "nm000186"
+
     __init__ = partialmethod(Mainsah2025.__init__, "E")
     METADATA = _make_study_metadata("E")
 
 
 class Mainsah2025_F(Mainsah2025):
     """BigP3BCI Study F — 6x6 multi-paradigm, 3 sessions (10 healthy subjects)."""
+
+    nemar_id = "nm000191"
 
     __init__ = partialmethod(Mainsah2025.__init__, "F")
     METADATA = _make_study_metadata("F")
@@ -558,12 +564,16 @@ class Mainsah2025_G(Mainsah2025):
 class Mainsah2025_H(Mainsah2025):
     """BigP3BCI Study H — 9x8 checkerboard with gaze conditions (16 healthy subjects)."""
 
+    nemar_id = "nm000218"
+
     __init__ = partialmethod(Mainsah2025.__init__, "H")
     METADATA = _make_study_metadata("H")
 
 
 class Mainsah2025_I(Mainsah2025):
     """BigP3BCI Study I — 9x8 checkerboard/performance-based (13 healthy subjects)."""
+
+    nemar_id = "nm000200"
 
     __init__ = partialmethod(Mainsah2025.__init__, "I")
     METADATA = _make_study_metadata("I")
@@ -579,12 +589,16 @@ class Mainsah2025_J(Mainsah2025):
 class Mainsah2025_K(Mainsah2025):
     """BigP3BCI Study K — 9x8 adaptive/checkerboard, 2 sessions (5 healthy subjects)."""
 
+    nemar_id = "nm000176"
+
     __init__ = partialmethod(Mainsah2025.__init__, "K")
     METADATA = _make_study_metadata("K")
 
 
 class Mainsah2025_L(Mainsah2025):
     """BigP3BCI Study L — 6x6 multi-paradigm (11 ALS subjects)."""
+
+    nemar_id = "nm000248"
 
     __init__ = partialmethod(Mainsah2025.__init__, "L")
     METADATA = _make_study_metadata("L")
@@ -593,12 +607,16 @@ class Mainsah2025_L(Mainsah2025):
 class Mainsah2025_M(Mainsah2025):
     """BigP3BCI Study M — 9x8 adaptive/checkerboard (21 ALS subjects)."""
 
+    nemar_id = "nm000197"
+
     __init__ = partialmethod(Mainsah2025.__init__, "M")
     METADATA = _make_study_metadata("M")
 
 
 class Mainsah2025_N(Mainsah2025):
     """BigP3BCI Study N — 9x8 dry/wet electrode comparison (8 ALS subjects)."""
+
+    nemar_id = "nm000187"
 
     __init__ = partialmethod(Mainsah2025.__init__, "N")
     METADATA = _make_study_metadata("N")
@@ -634,6 +652,8 @@ class Mainsah2025_R(Mainsah2025):
 
 class Mainsah2025_S1(Mainsah2025):
     """BigP3BCI Study S1 — 9x8 face/house paradigm (10 healthy subjects)."""
+
+    nemar_id = "nm000247"
 
     __init__ = partialmethod(Mainsah2025.__init__, "S1")
     METADATA = _make_study_metadata("S1")

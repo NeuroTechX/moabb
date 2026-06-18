@@ -284,6 +284,8 @@ class BNCI2014_001(MNEBNCI):
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
     """
 
+    nemar_id = "nm000139"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -524,6 +526,8 @@ class BNCI2014_002(MNEBNCI):
     BNCI2014_004 : 2-class motor imagery (Dataset B)
     """
 
+    nemar_id = "nm000171"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -722,6 +726,8 @@ class BNCI2014_004(MNEBNCI):
     BNCI2014_001 : 4-class motor imagery (Dataset 2a)
     BNCI2014_002 : 2-class motor imagery with Laplacian derivations
     """
+
+    nemar_id = "nm000135"
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

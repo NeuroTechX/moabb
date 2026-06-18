@@ -50,6 +50,8 @@ class Nakanishi2015(BaseDataset):
            `<http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0140703>`_
     """
 
+    nemar_id = "nm000118"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

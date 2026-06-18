@@ -506,6 +506,8 @@ class Lee2024_DL(Lee2024):
 class Lee2024_EL(Lee2024):
     """Electric light control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000223"
+
     __init__ = partialmethod(Lee2024.__init__, "EL")
 
 

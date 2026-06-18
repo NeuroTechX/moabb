@@ -62,6 +62,8 @@ class Cattan2019_PHMD(BaseDataset):
         Gipsa-Lab ; IHMTEK, Research Report 2, Mar. 2019. doi: 10.5281/zenodo.2617084.
     """
 
+    nemar_id = "nm000341"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

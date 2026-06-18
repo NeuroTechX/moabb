@@ -84,6 +84,8 @@ class BNCI2019_001(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
+    nemar_id = "nm000149"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

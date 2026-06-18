@@ -88,6 +88,8 @@ class Rozado2015(BaseDataset):
        DOI: 10.1371/journal.pone.0121262
     """
 
+    nemar_id = "nm000148"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

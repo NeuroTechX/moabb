@@ -714,10 +714,6 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.interval = interval
         self.paradigm = paradigm
         self.doi = doi
-        if self.nemar_id is None:
-            from moabb.datasets.nemar import NEMAR_ID_MAP
-
-            self.nemar_id = NEMAR_ID_MAP.get(type(self).__name__)
         self.unit_factor = unit_factor
 
     @property

@@ -200,6 +200,8 @@ class Zhang2017(BaseDataset):
        DOI: 10.1371/journal.pone.0188293
     """
 
+    nemar_id = "nm000152"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

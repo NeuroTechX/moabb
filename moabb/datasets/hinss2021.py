@@ -68,6 +68,8 @@ class Hinss2021(BaseDataset):
             https://doi.org/10.1038/s41597-022-01898-y
     """
 
+    nemar_id = "nm000343"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

@@ -97,6 +97,8 @@ class Zheng2020(BaseDataset):
            https://doi.org/10.3389/fnins.2020.579469
     """
 
+    nemar_id = "nm000205"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

@@ -68,6 +68,8 @@ class Zhou2016(BaseBIDSDataset):
            https://doi.org/10.1371/journal.pone.0162657
     """
 
+    nemar_id = "nm000115"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

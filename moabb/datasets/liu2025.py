@@ -100,6 +100,8 @@ class Liu2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-04618-4
     """
 
+    nemar_id = "nm000270"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

@@ -71,6 +71,8 @@ class Cho2017(BaseDataset):
            GigaScience. https://doi.org/10.1093/gigascience/gix034
     """
 
+    nemar_id = "nm000245"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

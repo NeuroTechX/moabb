@@ -793,6 +793,8 @@ class Dreyer2023(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
+    nemar_id = "nm000250"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(1, 88)),

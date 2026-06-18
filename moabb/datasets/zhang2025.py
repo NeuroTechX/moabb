@@ -98,6 +98,8 @@ class Zhang2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-05378-x
     """
 
+    nemar_id = "nm000211"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

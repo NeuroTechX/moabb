@@ -459,6 +459,8 @@ class BI2012(BaseDataset):
            arXiv preprint arXiv:1905.05182.
     """
 
+    nemar_id = "nm000260"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,
@@ -700,6 +702,8 @@ class BI2013a(BaseDataset):
            OpenViBE platform. Proc. IBCI Conf., Graz, Austria, 280-283.
     """
 
+    nemar_id = "nm000264"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -933,6 +937,8 @@ class BI2014a(BaseDataset):
            https://hal.archives-ouvertes.fr/hal-02171575
     """
 
+    nemar_id = "nm000244"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -1133,6 +1139,8 @@ class BI2014b(BaseDataset):
            Multi-User P300-Based Brain-Computer Interface Dataset (BI2014b).
            https://hal.archives-ouvertes.fr/hal-02173958
     """
+
+    nemar_id = "nm000215"
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
@@ -1346,6 +1354,8 @@ class BI2015a(BaseDataset):
            https://hal.archives-ouvertes.fr/hal-02172347
     """
 
+    nemar_id = "nm000216"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -1545,6 +1555,8 @@ class BI2015b(BaseDataset):
            Multi-User P300-based Brain-Computer Interface Dataset (BI2015b)
            https://hal.archives-ouvertes.fr/hal-02172347
     """
+
+    nemar_id = "nm000217"
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

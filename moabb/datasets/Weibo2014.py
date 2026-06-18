@@ -114,6 +114,8 @@ class Weibo2014(BaseDataset):
            PloS one 9.12 (2014). https://doi.org/10.1371/journal.pone.0114853
     """
 
+    nemar_id = "nm000146"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
