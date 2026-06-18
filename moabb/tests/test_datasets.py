@@ -273,7 +273,9 @@ class Test_Datasets:
         fallback_calls = []
 
         def nemar_dl(*args, **kwargs):
-            raise RuntimeError("NEMAR unavailable")
+            from moabb.datasets.download import NemarDownloadError
+
+            raise NemarDownloadError("NEMAR unavailable")
 
         def data_path(subject, path=None, force_update=False, update_path=None, verbose=None):
             fallback_calls.append((subject, path, force_update, update_path, verbose))

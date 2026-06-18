@@ -925,6 +925,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             subject_list = self.subject_list
         for subject in subject_list:
             if self.nemar_id is not None:
+                from moabb.datasets.download import NemarDownloadError
+
                 try:
                     self._download_nemar(
                         subject=subject,
@@ -934,7 +936,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                         verbose=verbose,
                     )
                     continue
-                except RuntimeError as exc:
+                except NemarDownloadError as exc:
                     warnings.warn(
                         f"Could not download {self.code} from NEMAR ({self.nemar_id}); "
                         "falling back to the dataset data_path downloader. "
@@ -966,7 +968,12 @@ class BaseDataset(metaclass=MetaclassDataset):
     def _nemar_subject(self, subject):
         if self.nemar_subject_template is None:
             return None
-        return self.nemar_subject_template.format(subject=subject)
+        try:
+            return self.nemar_subject_template.format(subject=subject)
+        except (IndexError, KeyError, ValueError) as exc:
+            raise RuntimeError(
+                f"Could not format NEMAR subject {subject!r} for {self.code}."
+            ) from exc
 
     def _download_nemar(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

@@ -225,7 +225,7 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
 @verbose
 def nemar_dl(
     nemar_id,
-    sign,
+    dataset_code,
     path=None,
     force_update=False,
     subject=None,
@@ -233,8 +233,8 @@ def nemar_dl(
     **bids_filters,
 ):
     """Download a NEMAR dataset and return the local BIDS root."""
-    root = Path(get_dataset_path(sign, path))
-    target_dir = root / f"MNE-{sign.lower()}-data" / nemar_id
+    root = Path(get_dataset_path(dataset_code, path))
+    target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
 
     if force_update and target_dir.exists():
         try:
@@ -246,7 +246,13 @@ def nemar_dl(
 
     try:
         import nemar
+        from nemar.errors import NemarError
+    except ImportError as exc:
+        raise NemarDownloadError(
+            "nemar-py is required to download datasets from NEMAR."
+        ) from exc
 
+    try:
         nemar.download(
             dataset=nemar_id,
             target_dir=target_dir,
@@ -254,7 +260,7 @@ def nemar_dl(
             trust_existing=not force_update,
             **bids_filters,
         )
-    except Exception as exc:
+    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
         raise NemarDownloadError(
             f"Could not download NEMAR dataset {nemar_id}."
         ) from exc
