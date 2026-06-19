@@ -23,6 +23,7 @@ Version 1.6  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add :class:`moabb.datasets.Schrag2026Pediatric` — open-access pediatric SSVEP-BCI dataset (47 children aged 5-18, g.tec g.GAMMAsys + g.USBamp at 256 Hz, 16 channels) covering both an online 4-target SSVEP game (6.25 / 10 / 11.11 / 14.28 Hz) and an opt-in 12-stimulus personalization recording (4 contrasts x 3 sizes at 10 Hz). XDF + Unity markers; trial labels are derived from the matching ``Movements/`` CSV (live fbCCA classifier output). Single 1.2 GB zip on Zenodo (``10.5281/zenodo.19440997``) extracted per-subject on first use; the SSVEP game is exposed as two runs (standard and personal stimulus) of a single session (by `Bruno Aristimunha`_ and `Emily Schrag`_)
 - Add 7 new imagined speech dataset adapters: :class:`moabb.datasets.AguileraRodriguez2025` (15 subjects, 4 Spanish words, traditional vs gamified paradigm), :class:`moabb.datasets.Nguyen2017_V`, :class:`moabb.datasets.Nguyen2017_S`, :class:`moabb.datasets.Nguyen2017_L`, and :class:`moabb.datasets.Nguyen2017_SL` (Nguyen et al. 2017 vowels / short words / long words / short-vs-long conditions), :class:`moabb.datasets.Nieto2022` (10 subjects, 4 directional tasks across inner / pronounced / visualized speech modalities, 128-ch BioSemi), and :class:`moabb.datasets.Pressel2016` (15 subjects, 11-class Spanish vowels and directional commands) (by `Bruno Aristimunha`_)
 - Welcome **imagined speech** as a distinct category of imagery datasets with a dedicated documentation section (see :doc:`dataset_summary`), a new ``moabb/datasets/summary_imagined_speech.csv`` summary table, and a grouped ``Imagined Speech Datasets`` listing in the API reference. The new datasets continue to use the existing ``paradigm="imagery"`` tag so all motor-imagery paradigm classes work unchanged (by `Bruno Aristimunha`_)
 - Add 2 new BCI Competition 2020 dataset adapters: :class:`moabb.datasets.BCIComp2020UpperLimb` (Track 4, 15 subjects, 3 grasping tasks on a single right arm, 3 recording days 7 days apart for session-to-session transfer evaluation) and :class:`moabb.datasets.BCIComp2020WalkingERP` (Track 5, 15 subjects, visual P300 oddball during walking at 1.6 m/s on a treadmill, simultaneous scalp-EEG + ear-EEG + EOG + IMU recording) (by `Bruno Aristimunha`_)
@@ -63,9 +64,10 @@ Bugs
 - Fix ``stim_trial`` content in :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary`: the channel was carrying the per-recording trial index instead of the attended command id, breaking multiclass classification across recordings. The marker is now the command id (resolved via the new :func:`moabb.datasets.utils.resolve_cvep_command_ids` helper), and the ``_trial_meta`` annotation extras gain a ``command_id`` key alongside ``trial_id`` (by `Bruno Aristimunha`_).
 - Cache Figshare's file listing in :func:`moabb.datasets.download.fs_get_file_list` (process-level ``lru_cache``) and persist it on disk next to the data for MAMEM (:class:`moabb.datasets.MAMEM1`/``MAMEM2``/``MAMEM3``). Once a dataset has been downloaded, subsequent calls never contact Figshare; pass ``force_update=True`` to bypass both layers (by `Bruno Aristimunha`_).
 - Fix Windows download path sanitization that changed absolute paths like ``C:\data`` into relative ``C-\data`` paths (:gh:`1079` by `Anton Andreev`_).
+- Fix missing electrode positions (NaN xyz) in six motor-imagery datasets so topographic maps, interpolation, and spatial methods work: :class:`moabb.datasets.Forenzo2023` and :class:`moabb.datasets.GuttmannFlury2025_MI`/``_ME`` normalize Neuroscan ALL_CAPS labels and apply ``standard_1005`` (CB1/CB2 kept as ``misc``); :class:`moabb.datasets.Dreyer2023` falls back to ``standard_1005`` when the BIDS archive ships no ``electrodes.tsv``; :class:`moabb.datasets.BNCI2003_004` maps its 26 legacy Berlin channel labels to their modern 10-5 equivalents for exact positions; :class:`moabb.datasets.BNCI2014_002` applies an approximate 3x5 grid for its unlabeled small-Laplacian channels; and :class:`moabb.datasets.Zhang2017` applies the ``GSN-HydroCel-32`` montage in EGI sensor order. Adds the shared :func:`moabb.datasets.utils.set_neuroscan_montage` helper (:gh:`1089` by `Bruno Aristimunha`_).
 Code health
 ~~~~~~~~~~~
-- None yet.
+- Install CPU-only PyTorch wheels in CI by setting ``UV_TORCH_BACKEND=cpu`` in the test, braindecode, and docs workflows, so runners no longer download multi-GB CUDA builds of ``torch`` (pulled transitively via the ``deeplearning`` extra / braindecode) (:gh:`1083` by `Bhargav Kowshik`_).
 
 Version 1.5.0  (Stable - PyPi)
 -------------------------------
@@ -891,3 +893,5 @@ API changes
 .. _Benedetto Leto: https://github.com/ben9809
 .. _Zach Munro: https://github.com/zmunro
 .. _sli930: https://github.com/sli930
+.. _Emily Schrag: https://github.com/emilyschrag
+.. _Bhargav Kowshik: https://github.com/bkowshik

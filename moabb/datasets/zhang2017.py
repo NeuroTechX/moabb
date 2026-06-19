@@ -33,6 +33,38 @@ log = logging.getLogger(__name__)
 
 _FIGSHARE_URL = "https://ndownloader.figshare.com/files/9700792"
 
+# Channel order for the released KI.rar files. They carry 17 channels with an
+# empty BCI2000 ``ChannelNames`` parameter (verified). The recording uses an
+# EGI Net Amps 400 with AmpServerPro, which transmits source channels in
+# ascending sensor index. The 17 non-facial scalp sensors of the 32-channel
+# HydroCel GSN are E1-E16 (the eight bilateral pairs) plus E28; the remaining
+# 15 (E17-E27 midline/peripheral, E29-E32 facial) are excluded, matching the
+# paper's "facial channels excluded" and its 17-site Fig 1. Each of these 17
+# sensors maps 1:1 (by spherical position) to a Fig-1 10-20 label, and the
+# data's front-to-back spectral signature (frontal low-frequency / occipital
+# alpha) confirms the ordering. Positions come from MNE's GSN-HydroCel-32.
+# Approximate 10-20 equivalents, in this order:
+#   Fp1 Fp2 F3 F4 C3 C4 P3 P4 O1 O2 F7 F8 T7 T8 P7 P8 Fz
+_EGI32_NONFACIAL_ORDER = [f"E{i}" for i in range(1, 17)] + ["E28"]
+
+
+def _bci2000_channel_names(parameters, n_channels):
+    """Return ``(names, source)`` for the BCI2000 channels.
+
+    ``source`` is ``"header"`` when read from the ``ChannelNames`` parameter,
+    ``"egi"`` for the assumed EGI sensor order (17-channel KI.rar files), or
+    ``"generic"`` for the ``EEG001`` fallback.
+    """
+    try:
+        names = [str(n).strip() for n in parameters["ChannelNames"]]
+    except (KeyError, TypeError):
+        names = []
+    if len(names) == n_channels and all(names):
+        return names, "header"
+    if n_channels == len(_EGI32_NONFACIAL_ORDER):
+        return list(_EGI32_NONFACIAL_ORDER), "egi"
+    return [f"EEG{i:03d}" for i in range(1, n_channels + 1)], "generic"
+
 
 def _read_bci2000_file(fpath):
     """Read a BCI2000 .dat file and return (signals, states, sfreq, parameters).
@@ -90,7 +122,10 @@ def _bci2000_to_raw(fpath, event_mapping):
 
     # Use all source channels — the BCI2000 files contain only the
     # transmitted EEG channels (17 in this dataset).
-    ch_names = [f"EEG{i:03d}" for i in range(1, n_channels + 1)]
+    #
+    # Prefer the channel labels stored in the BCI2000 header when present;
+    # otherwise use the assumed EGI sensor order (see _EGI32_NONFACIAL_ORDER).
+    ch_names, ch_source = _bci2000_channel_names(parameters, n_channels)
     ch_types = ["eeg"] * n_channels
     info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types)
 
@@ -106,6 +141,17 @@ def _bci2000_to_raw(fpath, event_mapping):
     raw = mne.io.RawArray(
         signals.astype(np.float64) * gain_uv * 1e-6, info, verbose=False
     )
+
+    # Attach electrode positions: standard_1005 for header-provided 10-20
+    # labels, or the EGI HydroCel-32 geometry for the assumed E# order.
+    if ch_source == "header":
+        raw.set_montage(
+            mne.channels.make_standard_montage("standard_1005"), on_missing="ignore"
+        )
+    elif ch_source == "egi":
+        raw.set_montage(
+            mne.channels.make_standard_montage("GSN-HydroCel-32"), on_missing="ignore"
+        )
 
     # Extract event annotations from StimulusCode state variable
     stim_key = None
@@ -205,7 +251,7 @@ class Zhang2017(BaseDataset):
             sampling_rate=1000.0,
             n_channels=17,
             channel_types={"eeg": 17},
-            montage=None,
+            montage="GSN-HydroCel-32",
             hardware="EGI Geodesic Net Amps 400 series (N400)",
             sensor_type="Ag/AgCl sponge",
             reference="Cz",

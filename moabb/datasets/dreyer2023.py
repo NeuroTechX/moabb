@@ -8,7 +8,9 @@ import warnings
 import zipfile
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+from mne.channels import make_standard_montage
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 from tqdm import tqdm
 
@@ -295,6 +297,16 @@ class _Dreyer2023Base(BaseDataset):
                         mapping[ch] = "emg"
 
                 raw.set_channel_types(mapping)
+
+                # The Zenodo BIDS archive ships no electrodes.tsv sidecar, so
+                # read_raw_bids leaves all EEG positions as NaN. The 27 EEG
+                # channels are standard 10-20 names, so fall back to the
+                # standard_1005 montage when positions are missing.
+                eeg_idx = [i for i, t in enumerate(raw.get_channel_types()) if t == "eeg"]
+                if any(np.isnan(raw.info["chs"][i]["loc"][:3]).any() for i in eeg_idx):
+                    raw.set_montage(
+                        make_standard_montage("standard_1005"), on_missing="ignore"
+                    )
 
                 # We are losting several annotations because there is no fuck
                 # place explaining what it is the events ids :)

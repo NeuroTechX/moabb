@@ -34,6 +34,16 @@ from .utils import validate_subject
 
 _map = {"T": "train", "E": "test"}
 
+# BNCI2014-002 (Steyrl et al.) ships 15 unlabeled channels: three small
+# Laplacian groups centered on C3, Cz, C4. Assumed 3x5 grid approximation
+# (anterior FC row / central C row / posterior CP row) so every channel gets
+# a standard_1005 position. See _load_data_002_2014 for caveats.
+_CH_NAMES_002_2014 = [
+    "FC3", "FC1", "FCz", "FC2", "FC4",
+    "C3", "C1", "Cz", "C2", "C4",
+    "CP3", "CP1", "CPz", "CP2", "CP4",
+]  # fmt: skip
+
 
 @verbose
 def _load_data_001_2014(
@@ -102,9 +112,23 @@ def _load_data_002_2014(
         filenames.append(filename)
         if only_filenames:
             continue
-        # FIXME: electrode position and name are not provided directly.
+        # The data file carries no channel labels or positions, and neither
+        # the paper nor the official BNCI description provides them (all three
+        # verified). Steyrl et al. (Fig 3) only describe the geometry: three
+        # small-Laplacian groups centered on C3, Cz, C4, each with four
+        # surrounding electrodes (anterior, posterior, left, right) at 2.5 cm.
+        # We *assume* the conventional 3x5 grid approximation of that layout
+        # (anterior FC row, central C row, posterior CP row), which maps every
+        # channel to a standard_1005 position so topomaps/interpolation work.
+        # The exact custom 2.5 cm positions and the true column order are not
+        # documented, so treat these labels as approximate. Passing real names
+        # (not None) makes _convert_run attach standard_1005 automatically.
         raws, _ = _convert_mi(
-            filename, None, ["eeg"] * 15, dataset_code="BNCI2014-002", subject_id=subject
+            filename,
+            _CH_NAMES_002_2014,
+            ["eeg"] * 15,
+            dataset_code="BNCI2014-002",
+            subject_id=subject,
         )
         runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
@@ -536,23 +560,10 @@ class BNCI2014_002(MNEBNCI):
             ground="right mastoid",
             software="BCI2000",
             filters="8th order Butterworth band-pass filters",
-            sensors=[
-                "EEG1",
-                "EEG2",
-                "EEG3",
-                "EEG4",
-                "EEG5",
-                "EEG6",
-                "EEG7",
-                "EEG8",
-                "EEG9",
-                "EEG10",
-                "EEG11",
-                "EEG12",
-                "EEG13",
-                "EEG14",
-                "EEG15",
-            ],
+            # Approximate 3x5 grid labels (see _CH_NAMES_002_2014); the data
+            # ships unlabeled and the exact custom Laplacian positions are
+            # undocumented.
+            sensors=list(_CH_NAMES_002_2014),
             line_freq=50.0,
             cap_manufacturer="Guger Technologies OG",
             cap_model="g.LADYbird",

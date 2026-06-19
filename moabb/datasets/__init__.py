@@ -132,6 +132,7 @@ from .pressel2016 import Pressel2016
 from .romani_bf2025_erp import RomaniBF2025ERP
 from .rozado2015 import Rozado2015
 from .schirrmeister2017 import Schirrmeister2017
+from .schrag2026 import Schrag2026Pediatric
 from .simoes2020 import Simoes2020
 from .sosulski2019 import Sosulski2019
 from .speier2017 import Speier2017

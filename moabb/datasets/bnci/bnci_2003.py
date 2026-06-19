@@ -1,5 +1,6 @@
 """BNCI 2003 datasets."""
 
+from mne.channels import make_dig_montage, make_standard_montage
 from mne.utils import verbose
 
 from moabb.datasets.metadata.schema import (
@@ -19,6 +20,55 @@ from moabb.datasets.metadata.schema import (
 
 from .base import MNEBNCI, _convert_bbci2003, _finalize_raw, data_path
 from .utils import validate_subject
+
+
+# BCI Competition III IVa labels 26 of its 118 channels with the legacy
+# Berlin nomenclature, which is absent from MNE's standard_1005 montage (so
+# those channels end up with NaN positions). Each legacy label is the same
+# physical 10-5 electrode under its modern Oostenveld (2001) name, so mapping
+# them recovers exact 3D positions. Verified against the dataset's own
+# nfo.xpos/ypos 2D layout (all 26 land on their nearest standard electrode).
+_IVA2003_LEGACY_TO_1005 = {
+    "FAF5": "AFF5h",
+    "FAF1": "AFF1h",
+    "FAF2": "AFF2h",
+    "FAF6": "AFF6h",
+    "FFC7": "FFT7h",
+    "FFC8": "FFT8h",
+    "CFC7": "FTT7h",
+    "CFC5": "FCC5h",
+    "CFC3": "FCC3h",
+    "CFC1": "FCC1h",
+    "CFC2": "FCC2h",
+    "CFC4": "FCC4h",
+    "CFC6": "FCC6h",
+    "CFC8": "FTT8h",
+    "CCP7": "TTP7h",
+    "CCP8": "TTP8h",
+    "PCP7": "TPP7h",
+    "PCP5": "CPP5h",
+    "PCP3": "CPP3h",
+    "PCP1": "CPP1h",
+    "PCP2": "CPP2h",
+    "PCP4": "CPP4h",
+    "PCP6": "CPP6h",
+    "PCP8": "TPP8h",
+    "OPO1": "POO1",
+    "OPO2": "POO2",
+}
+
+
+def _set_iva2003_montage(raw):
+    """Set positions for all 118 channels via the modern 10-5 equivalents."""
+    pos = make_standard_montage("standard_1005").get_positions()["ch_pos"]
+    ch_pos = {
+        ch: pos[mapped]
+        for ch in raw.ch_names
+        if (mapped := _IVA2003_LEGACY_TO_1005.get(ch, ch)) in pos
+    }
+    raw.set_montage(
+        make_dig_montage(ch_pos=ch_pos, coord_frame="head"), on_missing="ignore"
+    )
 
 
 @verbose
@@ -65,6 +115,7 @@ def _load_data_iva_2003(
         return filename
 
     runs, ev = _convert_bbci2003(filename[0], ch_names, ch_type)
+    _set_iva2003_montage(runs)
     _finalize_raw(runs, "BNCI2003-004", subject)
 
     session = {"0train": {"0": runs}}
