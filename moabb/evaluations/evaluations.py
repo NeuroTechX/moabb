@@ -7,10 +7,11 @@ from sklearn.model_selection import GroupKFold, LeaveOneGroupOut, StratifiedKFol
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
-from moabb.evaluations.base import BaseEvaluation
+from moabb.evaluations.base import BaseEvaluation, _route_transfer_metadata
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
+    TransferSplitter,
     WithinSessionSplitter,
     WithinSubjectSplitter,
 )
@@ -455,6 +456,19 @@ class CrossSubjectEvaluation(BaseEvaluation):
     n_splits : int or None
         Number of splits for cross-validation. If None, the number of splits
         is equal to the number of subjects. Defaults to ``None``.
+    calibration_size : float
+        Transfer-learning calibration. Fraction of each held-out target subject
+        made available for adaptation, in ``[0, 1]``. ``0.0`` (default) is the
+        ordinary cross-subject split. When ``> 0`` the splitter yields a
+        ``(train, calibration, test)`` fold and the calibration slice is routed
+        (raw) to the pipeline steps that request it via ``set_fit_request`` --
+        ``subjects`` plus ``X_target_unlabeled`` (or ``X_target_labeled`` /
+        ``y_target_labeled`` if ``calibration_labeled``). Steps that request
+        nothing are unaffected.
+    calibration_labeled : bool
+        If True, the calibration slice is offered with labels
+        (``X_target_labeled`` / ``y_target_labeled``); otherwise unlabeled
+        (``X_target_unlabeled``). Defaults to ``False``.
 
     Notes
     -----
@@ -466,8 +480,23 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _score_per_session = True
     _needs_all_subjects = True
 
+    def __init__(
+        self,
+        *args,
+        calibration_size: float = 0.0,
+        calibration_labeled: bool = False,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.calibration_size = calibration_size
+        self.calibration_labeled = calibration_labeled
+
     def _create_splitter(self):
-        """Create the CrossSubjectSplitter for parallel evaluation."""
+        """Create the CrossSubjectSplitter for parallel evaluation.
+
+        Wrapped in a :class:`~moabb.evaluations.splitters.TransferSplitter` when
+        ``calibration_size > 0`` so each fold yields a calibration slice.
+        """
         if self.n_splits is None:
             default_class = LeaveOneGroupOut
             default_kwargs = {}
@@ -476,9 +505,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
             default_kwargs = {"n_splits": self.n_splits}
 
         cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
-        return CrossSubjectSplitter(
+        splitter = CrossSubjectSplitter(
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
+        if self.calibration_size > 0:
+            return TransferSplitter(splitter, calibration_size=self.calibration_size)
+        return splitter
 
     # flake8: noqa: C901
     def evaluate(
@@ -533,13 +565,15 @@ class CrossSubjectEvaluation(BaseEvaluation):
             tracker.start()
 
         # Progressbar at subject level
-        for cv_ind, (train, test) in enumerate(
+        # ``*cal`` absorbs the optional calibration slice from a transfer split.
+        for cv_ind, (train, *cal, test) in enumerate(
             tqdm(
                 self.cv.split(y, metadata),
                 total=n_subjects,
                 desc=f"{dataset.code}-CrossSubject",
             )
         ):
+            calib = cal[0] if cal else train[:0]
             subject = groups[test[0]]
             # now we can check if this subject has results
             run_pipes = self.results.not_yet_computed(
@@ -552,8 +586,23 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 )
                 cvclf = clone(clf)
 
+                calib_md = None
+                if len(calib):
+                    if self.calibration_labeled:
+                        calib_md = {
+                            "X_target_labeled": X[calib],
+                            "y_target_labeled": y[calib],
+                        }
+                    else:
+                        calib_md = {"X_target_unlabeled": X[calib]}
+                fit_params = _route_transfer_metadata(cvclf, groups[train], calib_md)
+
                 duration, emissions, task_name = self._fit_cv(
-                    cvclf, X[train], y[train], tracker if _carbonfootprint else None
+                    cvclf,
+                    X[train],
+                    y[train],
+                    tracker if _carbonfootprint else None,
+                    fit_params=fit_params,
                 )
                 self._maybe_save_model_cv(
                     cvclf, dataset, subject, "", name, cv_ind, eval_type="CrossSubject"

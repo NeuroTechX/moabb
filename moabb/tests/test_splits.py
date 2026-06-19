@@ -23,6 +23,7 @@ from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     LearningCurveSplitter,
+    TransferSplitter,
     WithinSessionSplitter,
     WithinSubjectSplitter,
 )
@@ -673,3 +674,45 @@ def test_cross_dataset_requires_group_column(data):
     splitter = CrossDatasetSplitter(group_column="does_not_exist")
     with pytest.raises(ValueError):
         list(splitter.split(y, metadata))
+
+
+@pytest.mark.parametrize("calibration_size", [0.0, 0.3, 1.0])
+def test_transfer_splitter_generalizes_across_splits(calibration_size, data):
+    """TransferSplitter adds calibration to subject/session/dataset splits alike,
+    consumed uniformly with ``train, *cal, test``."""
+    _, y, metadata = data
+    dataset_meta = _metadata_with_dataset_column(metadata)
+    cases = {
+        "subject": (CrossSubjectSplitter(), metadata),
+        "session": (CrossSessionSplitter(), metadata),
+        "dataset": (CrossDatasetSplitter(), dataset_meta),
+    }
+
+    for _name, (base, meta) in cases.items():
+        wrapped = TransferSplitter(base, calibration_size=calibration_size)
+        base_folds = list(base.split(y, meta))
+        xfer_folds = list(wrapped.split(y, meta))
+
+        assert len(xfer_folds) == len(base_folds) == wrapped.get_n_splits(meta)
+
+        for (b_train, b_test), fold in zip(base_folds, xfer_folds):
+            train, *cal, test = fold  # generic consumption
+            calib = cal[0] if cal else test[:0]
+
+            assert np.array_equal(train, b_train)
+            assert np.intersect1d(train, b_test).size == 0
+
+            if calibration_size == 0.0:
+                assert calib.size == 0
+                assert np.array_equal(test, b_test)
+            elif calibration_size == 1.0:
+                assert np.array_equal(calib, b_test)
+                assert np.array_equal(test, b_test)
+            else:
+                assert calib.size >= 1 and test.size >= 1
+                assert np.array_equal(np.concatenate([calib, test]), b_test)
+
+
+def test_transfer_splitter_invalid_calibration_size():
+    with pytest.raises(ValueError):
+        TransferSplitter(CrossSubjectSplitter(), calibration_size=1.5)

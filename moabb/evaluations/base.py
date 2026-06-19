@@ -12,9 +12,11 @@ from warnings import warn
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from sklearn import config_context
 from sklearn.base import BaseEstimator, clone
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
+from sklearn.utils.metadata_routing import get_routing_for_object
 
 from moabb.analysis import Results
 from moabb.datasets.base import (  # noqa: F401 - CacheConfig used in type hints
@@ -43,6 +45,25 @@ from moabb.utils import verbose
 search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
+
+
+def _route_transfer_metadata(estimator, subjects, calib=None):
+    """Keep only the transfer metadata an estimator requests at ``fit``.
+
+    ``subjects`` is the per-trial source-subject array; ``calib`` is an optional
+    dict carrying the (raw) calibration slice, e.g.
+    ``{"X_target_unlabeled": X[calib_idx]}``. Steps opt in via
+    ``set_fit_request(...)``; plain pipelines request nothing, so this returns
+    ``{}`` and the fit is unchanged. The framework passes the slice raw -- the
+    estimator owns the target representation.
+    """
+    candidate = {"subjects": subjects}
+    if calib:
+        candidate.update(calib)
+    with config_context(enable_metadata_routing=True):
+        kept = get_routing_for_object(estimator).consumes("fit", set(candidate))
+    return {k: v for k, v in candidate.items() if k in kept}
+
 
 # Making the optuna soft dependency
 
@@ -100,6 +121,7 @@ def _evaluate_fold(
     session,
     cv_ind,
     split_metadata=None,
+    calib_idx=None,
 ):
     """Evaluate a single CV fold. Pure function, no shared mutable state.
 
@@ -174,6 +196,18 @@ def _evaluate_fold(
         tracker = emissions_obj.create_tracker()
         tracker.start()
 
+    # Optional transfer-learning calibration slice (raw), routed to the steps
+    # that request it. Empty for ordinary evaluations -> plain fit.
+    calib = None
+    if calib_idx is not None and len(calib_idx):
+        if config.get("calibration_labeled", False):
+            y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
+            calib = {"X_target_labeled": X[calib_idx], "y_target_labeled": y_calib}
+        else:
+            calib = {"X_target_unlabeled": X[calib_idx]}
+    subjects_train = metadata["subject"].to_numpy()[train_idx]
+    fit_params = _route_transfer_metadata(cvclf, subjects_train, calib)
+
     # Fit model
     task_name = None
     emissions = math.nan
@@ -181,7 +215,8 @@ def _evaluate_fold(
         task_name = str(uuid4())
         tracker.start_task(task_name)
     t_start = perf_counter()
-    cvclf.fit(X[train_idx], y_train)
+    with config_context(enable_metadata_routing=True):
+        cvclf.fit(X[train_idx], y_train, **fit_params)
     duration = perf_counter() - t_start
     if tracker is not None:
         emissions_data = tracker.stop_task()
@@ -565,7 +600,7 @@ class BaseEvaluation(ABC):
             res["score"] = self.error_score
             return res
 
-    def _fit_cv(self, model, X_train, y_train, tracker=None):
+    def _fit_cv(self, model, X_train, y_train, tracker=None, fit_params=None):
         """Fit a model for a CV fold with optional CodeCarbon tracking."""
         task_name = None
         emissions = math.nan
@@ -573,7 +608,8 @@ class BaseEvaluation(ABC):
             task_name = str(uuid4())
             tracker.start_task(task_name)
         t_start = perf_counter()
-        model.fit(X_train, y_train)
+        with config_context(enable_metadata_routing=True):
+            model.fit(X_train, y_train, **(fit_params or {}))
         duration = perf_counter() - t_start
         if tracker is not None:
             emissions_data = tracker.stop_task()
@@ -668,19 +704,23 @@ class BaseEvaluation(ABC):
             ),
             "score_per_session": self._score_per_session,
             "param_grid": None,  # overridden per-task below if needed
+            "calibration_labeled": getattr(self, "calibration_labeled", False),
         }
 
     @staticmethod
     def _preview_splits(splitter, y, metadata):
         """Materialize folds up front with optional splitter metadata."""
         preview = []
-        for cv_ind, (train_idx, test_idx) in enumerate(splitter.split(y, metadata)):
+        # ``*cal`` absorbs the optional calibration slice from a transfer
+        # splitter; a plain 2-tuple splitter gives cal == [] (no calibration).
+        for cv_ind, (train_idx, *cal, test_idx) in enumerate(splitter.split(y, metadata)):
+            calib_idx = cal[0] if cal else train_idx[:0]
             split_metadata = None
             if hasattr(splitter, "get_metadata"):
                 split_metadata = splitter.get_metadata()
                 if split_metadata is not None:
                     split_metadata = dict(split_metadata)
-            preview.append((cv_ind, train_idx, test_idx, split_metadata))
+            preview.append((cv_ind, train_idx, calib_idx, test_idx, split_metadata))
         return preview
 
     def _build_task_list(
@@ -691,7 +731,7 @@ class BaseEvaluation(ABC):
         config = self._build_eval_config(param_grid)
         fold_preview = self._preview_splits(splitter, y, metadata)
 
-        for cv_ind, train_idx, test_idx, split_meta in fold_preview:
+        for cv_ind, train_idx, calib_idx, test_idx, split_meta in fold_preview:
             test_meta = metadata.iloc[test_idx]
             subject = test_meta["subject"].iloc[0]
 
@@ -719,6 +759,7 @@ class BaseEvaluation(ABC):
                         "session": session,
                         "cv_ind": cv_ind,
                         "split_metadata": split_meta,
+                        "calib_idx": calib_idx,
                     }
                 )
         return tasks

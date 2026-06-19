@@ -1034,3 +1034,67 @@ class TestAggregateFoldResults:
         np.testing.assert_almost_equal(res["score_accuracy"], 0.4)
         # score_f1: avg(0.7, 0.0) = 0.35
         np.testing.assert_almost_equal(res["score_f1"], 0.35)
+
+
+# Transfer-learning calibration through the stock CrossSubjectEvaluation.
+_TRANSFER_CAPTURE = []
+
+
+class _TransferRecorder(sklearn.base.TransformerMixin, sklearn.base.BaseEstimator):
+    """A target-aware step that records the transfer metadata it is routed."""
+
+    def fit(self, X, y=None, subjects=None, X_target_unlabeled=None):
+        _TRANSFER_CAPTURE.append(
+            {
+                "n_subjects": 0 if subjects is None else len(subjects),
+                "n_target": 0 if X_target_unlabeled is None else len(X_target_unlabeled),
+            }
+        )
+        return self
+
+    def transform(self, X):
+        return X
+
+
+def test_cross_subject_calibration_routes_to_estimator():
+    """calibration_size>0 routes subjects + the (raw) calibration slice to the
+    steps that request it, via the unchanged CrossSubjectEvaluation."""
+    from sklearn import config_context
+
+    _TRANSFER_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _TransferRecorder().set_fit_request(subjects=True, X_target_unlabeled=True)
+    pipe = make_pipeline(Covariances("oas"), step, CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=9)
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        calibration_size=0.5,
+        overwrite=True,
+        n_jobs=1,
+        suffix="calibroute",
+    )
+    results = evaluation.process(pipelines=OrderedDict([("T", pipe)]))
+
+    assert len(results) > 0
+    assert _TRANSFER_CAPTURE, "transfer step was never fitted"
+    assert all(c["n_subjects"] > 0 for c in _TRANSFER_CAPTURE)
+    assert all(c["n_target"] > 0 for c in _TRANSFER_CAPTURE)
+
+
+def test_cross_subject_calibration_leaves_plain_pipeline_unaffected():
+    """A plain pipeline runs through calibration_size>0 unchanged (calib ignored)."""
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=9)
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        calibration_size=0.5,
+        overwrite=True,
+        n_jobs=1,
+        suffix="calibplain",
+    )
+    results = evaluation.process(pipelines=OrderedDict([("P", pipe)]))
+    assert len(results) > 0

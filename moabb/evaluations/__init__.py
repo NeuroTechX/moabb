@@ -15,6 +15,7 @@ from .splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     LearningCurveSplitter,
+    TransferSplitter,
     WithinSessionSplitter,
     WithinSubjectSplitter,
 )
