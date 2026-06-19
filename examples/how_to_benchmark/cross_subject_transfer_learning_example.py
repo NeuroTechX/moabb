@@ -40,23 +40,21 @@ from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd
-
+from pyriemann.estimation import Covariances
+from pyriemann.tangentspace import TangentSpace
+from pyriemann.utils.mean import mean_riemann
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from pyriemann.estimation import Covariances
-from pyriemann.tangentspace import TangentSpace
-from pyriemann.utils.mean import mean_riemann
-
-from moabb.datasets import BNCI2014_001, Weibo2014
-from moabb.paradigms import LeftRightImagery
-
+from moabb.datasets import Weibo2014
 from moabb.evaluations.cross_subject_target_aware_evaluation import (
     CrossSubjectTargetAwareEvaluation,
     CsMode,
 )
+from moabb.paradigms import LeftRightImagery
+
 
 # ---------------------------------------------------------------------
 # SPD helpers
@@ -77,8 +75,7 @@ def safe_mean_riemann(X: np.ndarray) -> np.ndarray:
 
     if X.ndim != 3 or len(X) == 0:
         raise ValueError(
-            "safe_mean_riemann expects shape "
-            "(n_matrices, n_channels, n_channels)."
+            "safe_mean_riemann expects shape (n_matrices, n_channels, n_channels)."
         )
 
     X = np.stack([nearest_spd_jitter(C) for C in X], axis=0)
@@ -89,16 +86,13 @@ def powerm_spd(C: np.ndarray, power: float, eps: float = 1e-12) -> np.ndarray:
     C = nearest_spd_jitter(C)
     vals, vecs = np.linalg.eigh(C)
     vals = np.maximum(vals, eps)
-    return symmetrize((vecs * (vals ** power)) @ vecs.T)
+    return symmetrize((vecs * (vals**power)) @ vecs.T)
 
 
 def batch_congruence(X: np.ndarray, A: np.ndarray) -> np.ndarray:
     X = np.asarray(X)
 
-    return np.stack(
-        [nearest_spd_jitter(A @ C @ A.T) for C in X],
-        axis=0,
-    )
+    return np.stack([nearest_spd_jitter(A @ C @ A.T) for C in X], axis=0)
 
 
 # ---------------------------------------------------------------------
@@ -160,10 +154,7 @@ class RiemannianProcrustesAlignment(BaseEstimator, TransformerMixin):
         if alpha == 0.0:
             return np.eye(M_ref.shape[0])
 
-        return (
-            powerm_spd(M_ref, 0.5 * alpha)
-            @ powerm_spd(M_source, -0.5 * alpha)
-        )
+        return powerm_spd(M_ref, 0.5 * alpha) @ powerm_spd(M_source, -0.5 * alpha)
 
     def fit(
         self,
@@ -271,14 +262,10 @@ class RiemannianProcrustesAlignment(BaseEstimator, TransformerMixin):
         self.source_transforms_: Dict[str, np.ndarray] = {}
 
         for s, M_s in self.source_means_.items():
-            self.source_transforms_[s] = self._make_transform(
-                self.reference_mean_,
-                M_s,
-            )
+            self.source_transforms_[s] = self._make_transform(self.reference_mean_, M_s)
 
         self.global_transform_ = self._make_transform(
-            self.reference_mean_,
-            self.global_source_mean_,
+            self.reference_mean_, self.global_source_mean_
         )
 
         # The evaluation mode decides which target data is provided.
@@ -321,8 +308,7 @@ class RiemannianProcrustesAlignment(BaseEstimator, TransformerMixin):
             target_mean = safe_mean_riemann(X_target_for_alignment)
 
             self.target_transform_ = self._make_transform(
-                self.reference_mean_,
-                target_mean,
+                self.reference_mean_, target_mean
             )
             self.has_target_data_ = True
 
@@ -435,9 +421,12 @@ class RiemannianProcrustesAlignment(BaseEstimator, TransformerMixin):
     def _check_is_fitted(self):
         if not hasattr(self, "reference_mean_"):
             raise RuntimeError("RiemannianProcrustesAlignment is not fitted.")
+
+
 # ---------------------------------------------------------------------
 # Demo pipelines
 # ---------------------------------------------------------------------
+
 
 def make_pipelines():
     ts_lr = make_pipeline(
@@ -445,37 +434,26 @@ def make_pipelines():
         TangentSpace(metric="riemann"),
         StandardScaler(),
         LogisticRegression(
-            C=1.0,
-            class_weight="balanced",
-            max_iter=5000,
-            random_state=42,
+            C=1.0, class_weight="balanced", max_iter=5000, random_state=42
         ),
     )
 
     rpa_ts_lr = make_pipeline(
         Covariances(estimator="oas"),
-        
         RiemannianProcrustesAlignment(
             reference_subject="auto",
             alignment_strength=1.0,
             use_global_transform_for_unseen=True,
             verbose=True,
         ),
-        
         TangentSpace(metric="riemann"),
         StandardScaler(),
         LogisticRegression(
-            C=1.0,
-            class_weight="balanced",
-            max_iter=5000,
-            random_state=42,
+            C=1.0, class_weight="balanced", max_iter=5000, random_state=42
         ),
     )
 
-    return {
-        "TS + LR": ts_lr,
-        "RPA + TS + LR": rpa_ts_lr,
-    }
+    return {"TS + LR": ts_lr, "RPA + TS + LR": rpa_ts_lr}
 
 
 # ---------------------------------------------------------------------
@@ -499,8 +477,7 @@ def summarize_per_dataset_pipeline(results: pd.DataFrame) -> pd.DataFrame:
     results = normalize_results(results)
 
     summary = (
-        results
-        .groupby(["dataset", "pipeline"], as_index=False)
+        results.groupby(["dataset", "pipeline"], as_index=False)
         .agg(
             n_folds=("score", "count"),
             mean_ROC_AUC=("score", "mean"),
@@ -521,8 +498,7 @@ def summarize_global_pipeline(summary: pd.DataFrame) -> pd.DataFrame:
     This avoids giving more weight to datasets with more subjects/sessions.
     """
     global_summary = (
-        summary
-        .groupby("pipeline", as_index=False)
+        summary.groupby("pipeline", as_index=False)
         .agg(
             n_datasets=("dataset", "nunique"),
             total_folds=("n_folds", "sum"),
@@ -542,13 +518,12 @@ def make_dataset_pipeline_table(summary: pd.DataFrame) -> pd.DataFrame:
     Useful for quick visual comparison.
     """
     table = summary.pivot(
-        index="dataset",
-        columns="pipeline",
-        values="mean_ROC_AUC",
+        index="dataset", columns="pipeline", values="mean_ROC_AUC"
     ).reset_index()
 
     table.columns.name = None
     return table
+
 
 # ---------------------------------------------------------------------
 # Main
@@ -556,18 +531,14 @@ def make_dataset_pipeline_table(summary: pd.DataFrame) -> pd.DataFrame:
 
 
 def main():
-    dataset = Weibo2014()#BNCI2014_001()
+    dataset = Weibo2014()  # BNCI2014_001()
 
     # Uncomment for a fast smoke test.
     # dataset.subject_list = [1, 2, 3, 4, 5]
 
     datasets = [dataset]
 
-    paradigm = LeftRightImagery(
-        fmin=8.0,
-        fmax=32.0,
-        resample=128,
-    )
+    paradigm = LeftRightImagery(fmin=8.0, fmax=32.0, resample=128)
 
     pipelines = make_pipelines()
 
@@ -587,16 +558,18 @@ def main():
     #     No target adaptation. This is closest to standard MOABB
     #     cross-subject block prediction.
     #
-    cs_mode = CsMode.HOS_UNLABELED_20P # RPA aligns using the first 20% target data without labels.
-    #cs_mode = CsMode.HOS_UNLABELED_50P # RPA aligns using the first 20% target data without labels.
-    #cs_mode = CsMode.HOS_LABELED_20P # RPA aligns using the first 20% target data, ignoring labels.
-    #cs_mode = CsMode.HOS_SOURCE_ONLY_BLOCKWISE # RPA uses source-subject alignment only; no target adaptation.
+    cs_mode = (
+        CsMode.HOS_UNLABELED_20P
+    )  # RPA aligns using the first 20% target data without labels.
+    # cs_mode = CsMode.HOS_UNLABELED_50P # RPA aligns using the first 20% target data without labels.
+    # cs_mode = CsMode.HOS_LABELED_20P # RPA aligns using the first 20% target data, ignoring labels.
+    # cs_mode = CsMode.HOS_SOURCE_ONLY_BLOCKWISE # RPA uses source-subject alignment only; no target adaptation.
 
     evaluation = CrossSubjectTargetAwareEvaluation(
         paradigm=paradigm,
         datasets=datasets,
         cs_mode=cs_mode,
-        n_jobs=4,          # 1 while debugging verbose RPA output
+        n_jobs=4,  # 1 while debugging verbose RPA output
         overwrite=True,
         random_state=42,
     )
@@ -604,13 +577,7 @@ def main():
     results = evaluation.process(pipelines=pipelines)
     results = normalize_results(results)
 
-    useful_cols = [
-        "dataset",
-        "subject",
-        "session",
-        "pipeline",
-        "score",
-    ]
+    useful_cols = ["dataset", "subject", "session", "pipeline", "score"]
 
     useful_cols = [c for c in useful_cols if c in results.columns]
 
@@ -626,6 +593,7 @@ def main():
 
     print("\nGlobal per-pipeline summary:")
     print(global_summary.to_string(index=False))
+
 
 if __name__ == "__main__":
     main()
