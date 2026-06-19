@@ -1070,7 +1070,7 @@ def test_cross_subject_calibration_routes_to_estimator():
     evaluation = ev.CrossSubjectEvaluation(
         paradigm=FakeImageryParadigm(),
         datasets=[ds],
-        calibration_size=0.5,
+        cv_kwargs={"calibration_size": 0.5},
         overwrite=True,
         n_jobs=1,
         suffix="calibroute",
@@ -1091,10 +1091,38 @@ def test_cross_subject_calibration_leaves_plain_pipeline_unaffected():
     evaluation = ev.CrossSubjectEvaluation(
         paradigm=FakeImageryParadigm(),
         datasets=[ds],
-        calibration_size=0.5,
+        cv_kwargs={"calibration_size": 0.5},
         overwrite=True,
         n_jobs=1,
         suffix="calibplain",
     )
     results = evaluation.process(pipelines=OrderedDict([("P", pipe)]))
     assert len(results) > 0
+
+
+def test_cross_subject_calibration_with_custom_cv():
+    """cv_class is exposed (like WithinSession) and composes with calibration."""
+    from sklearn import config_context
+    from sklearn.model_selection import GroupShuffleSplit
+
+    _TRANSFER_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _TransferRecorder().set_fit_request(subjects=True, X_target_unlabeled=True)
+    pipe = make_pipeline(Covariances("oas"), step, CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=5, n_sessions=2, seed=9)
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        cv_class=GroupShuffleSplit,
+        cv_kwargs={"calibration_size": 0.5, "n_splits": 2},
+        random_state=0,
+        overwrite=True,
+        n_jobs=1,
+        suffix="calibcv",
+    )
+    results = evaluation.process(pipelines=OrderedDict([("T", pipe)]))
+
+    assert len(results) > 0
+    assert _TRANSFER_CAPTURE, "transfer step was never fitted"
+    assert all(c["n_subjects"] > 0 and c["n_target"] > 0 for c in _TRANSFER_CAPTURE)

@@ -456,19 +456,24 @@ class CrossSubjectEvaluation(BaseEvaluation):
     n_splits : int or None
         Number of splits for cross-validation. If None, the number of splits
         is equal to the number of subjects. Defaults to ``None``.
-    calibration_size : float
-        Transfer-learning calibration. Fraction of each held-out target subject
-        made available for adaptation, in ``[0, 1]``. ``0.0`` (default) is the
-        ordinary cross-subject split. When ``> 0`` the splitter yields a
-        ``(train, calibration, test)`` fold and the calibration slice is routed
-        (raw) to the pipeline steps that request it via ``set_fit_request`` --
-        ``subjects`` plus ``X_target_unlabeled`` (or ``X_target_labeled`` /
-        ``y_target_labeled`` if ``calibration_labeled``). Steps that request
-        nothing are unaffected.
-    calibration_labeled : bool
-        If True, the calibration slice is offered with labels
-        (``X_target_labeled`` / ``y_target_labeled``); otherwise unlabeled
-        (``X_target_unlabeled``). Defaults to ``False``.
+    cv_class : type or None
+        Cross-validation strategy used to hold out subjects (e.g.
+        ``LeaveOneGroupOut``, ``GroupShuffleSplit``, ``GroupKFold``). Defaults to
+        ``None`` (``LeaveOneGroupOut``, or ``GroupKFold`` when ``n_splits`` is set).
+    cv_kwargs : dict
+        Keyword arguments for ``cv_class``. Two extra keys enable transfer learning:
+
+        - ``calibration_size`` (float, default ``0.0``): fraction of each held-out
+          target subject made available for adaptation, in ``[0, 1]``. ``0.0`` is
+          the ordinary cross-subject split; when ``> 0`` each fold becomes
+          ``(train, calibration, test)`` and the calibration slice is routed
+          (raw) to the pipeline steps that request it via ``set_fit_request`` --
+          ``subjects`` plus ``X_target_unlabeled`` (or ``X_target_labeled`` /
+          ``y_target_labeled`` when ``calibration_labeled``). Steps that request
+          nothing are unaffected.
+        - ``calibration_labeled`` (bool, default ``False``): offer the
+          calibration slice with labels (``X_target_labeled`` /
+          ``y_target_labeled``) instead of unlabeled (``X_target_unlabeled``).
 
     Notes
     -----
@@ -480,23 +485,15 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _score_per_session = True
     _needs_all_subjects = True
 
-    def __init__(
-        self,
-        *args,
-        calibration_size: float = 0.0,
-        calibration_labeled: bool = False,
-        **kwargs,
-    ):
-        super().__init__(*args, **kwargs)
-        self.calibration_size = calibration_size
-        self.calibration_labeled = calibration_labeled
-
     def _create_splitter(self):
         """Create the CrossSubjectSplitter for parallel evaluation.
 
-        Wrapped in a :class:`~moabb.evaluations.splitters.TransferSplitter` when
-        ``calibration_size > 0`` so each fold yields a calibration slice.
+        ``cv_kwargs["calibration_size"] > 0`` wraps it in a
+        :class:`~moabb.evaluations.splitters.TransferSplitter`, so each fold
+        yields a ``(train, calibration, test)`` transfer split.
         """
+        calibration_size = self.cv_kwargs.get("calibration_size", 0.0)
+
         if self.n_splits is None:
             default_class = LeaveOneGroupOut
             default_kwargs = {}
@@ -505,11 +502,14 @@ class CrossSubjectEvaluation(BaseEvaluation):
             default_kwargs = {"n_splits": self.n_splits}
 
         cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
+        # calibration_* configure the transfer wrapper, not the inner CV.
+        cv_kwargs.pop("calibration_size", None)
+        cv_kwargs.pop("calibration_labeled", None)
         splitter = CrossSubjectSplitter(
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
-        if self.calibration_size > 0:
-            return TransferSplitter(splitter, calibration_size=self.calibration_size)
+        if calibration_size > 0:
+            return TransferSplitter(splitter, calibration_size=calibration_size)
         return splitter
 
     # flake8: noqa: C901
@@ -588,7 +588,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                 calib_md = None
                 if len(calib):
-                    if self.calibration_labeled:
+                    if self.cv_kwargs.get("calibration_labeled", False):
                         calib_md = {
                             "X_target_labeled": X[calib],
                             "y_target_labeled": y[calib],

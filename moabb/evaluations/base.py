@@ -704,7 +704,7 @@ class BaseEvaluation(ABC):
             ),
             "score_per_session": self._score_per_session,
             "param_grid": None,  # overridden per-task below if needed
-            "calibration_labeled": getattr(self, "calibration_labeled", False),
+            "calibration_labeled": self.cv_kwargs.get("calibration_labeled", False),
         }
 
     @staticmethod
