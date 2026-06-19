@@ -196,15 +196,18 @@ def _evaluate_fold(
         tracker = emissions_obj.create_tracker()
         tracker.start()
 
-    # Optional transfer-learning calibration slice (raw), routed to the steps
-    # that request it. Empty for ordinary evaluations -> plain fit.
+    # Optional transfer-learning calibration slice (raw). Offer it under every
+    # name; _route_transfer_metadata keeps only what the estimator requests, so
+    # the estimator's set_fit_request decides labeled vs unlabeled. Empty for
+    # ordinary evaluations -> plain fit.
     calib = None
     if calib_idx is not None and len(calib_idx):
-        if config.get("calibration_labeled", False):
-            y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
-            calib = {"X_target_labeled": X[calib_idx], "y_target_labeled": y_calib}
-        else:
-            calib = {"X_target_unlabeled": X[calib_idx]}
+        y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
+        calib = {
+            "X_target_unlabeled": X[calib_idx],
+            "X_target_labeled": X[calib_idx],
+            "y_target_labeled": y_calib,
+        }
     subjects_train = metadata["subject"].to_numpy()[train_idx]
     fit_params = _route_transfer_metadata(cvclf, subjects_train, calib)
 
@@ -498,13 +501,14 @@ class BaseEvaluation(ABC):
         )
 
     def _resolve_cv(self, default_class, default_kwargs=None):
-        """Resolve the cross-validation class and kwargs for a splitter."""
-        if self.cv_class is None:
-            cv_class = default_class
-            cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
-        else:
-            cv_class = self.cv_class
-            cv_kwargs = dict(self.cv_kwargs)
+        """Resolve the cross-validation class and kwargs for a splitter.
+
+        ``self.cv_kwargs`` always overrides the defaults, whether or not a custom
+        ``cv_class`` is set -- so splitter options (e.g. ``calibration_size``)
+        passed via ``cv_kwargs`` are honored with the default ``cv_class`` too.
+        """
+        cv_class = default_class if self.cv_class is None else self.cv_class
+        cv_kwargs = {**(default_kwargs or {}), **self.cv_kwargs}
         return cv_class, cv_kwargs
 
     def _load_data(
@@ -704,7 +708,6 @@ class BaseEvaluation(ABC):
             ),
             "score_per_session": self._score_per_session,
             "param_grid": None,  # overridden per-task below if needed
-            "calibration_labeled": self.cv_kwargs.get("calibration_labeled", False),
         }
 
     @staticmethod

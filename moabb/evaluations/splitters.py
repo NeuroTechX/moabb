@@ -507,6 +507,13 @@ class CrossSubjectSplitter(BaseCrossValidator):
         Cross-validation strategy for splitting the subjects between train and test sets.
         By default, use LeaveOneGroupOut, which keeps one subject as a test.
         Defaults to ``LeaveOneGroupOut``.
+    calibration_size : float
+        Transfer-learning calibration, in ``[0, 1]``. ``0.0`` (default) is the
+        ordinary cross-subject split, yielding ``(train, test)``. When ``> 0``,
+        the first ``calibration_size`` fraction of each held-out subject's trials
+        is set aside for adaptation and the splitter yields
+        ``(train, calibration, test)`` instead; ``1.0`` is transductive
+        (calibration equals test).
     random_state : int or None
         Controls the randomness of the cross-validation.
         Pass an int for reproducible output across multiple calls.
@@ -519,6 +526,9 @@ class CrossSubjectSplitter(BaseCrossValidator):
     train : ndarray
         The training set indices for that split.
 
+    calibration : ndarray
+        The held-out calibration indices. Only yielded when ``calibration_size > 0``.
+
     test : ndarray
         The testing set indices for that split.
     """
@@ -526,10 +536,16 @@ class CrossSubjectSplitter(BaseCrossValidator):
     def __init__(
         self,
         cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
+        calibration_size: float = 0.0,
         random_state: int = None,
         **cv_kwargs,
     ):
+        if not 0.0 <= calibration_size <= 1.0:
+            raise ValueError(
+                f"calibration_size must be in [0, 1]. Got {calibration_size!r}."
+            )
         self.cv_class = cv_class
+        self.calibration_size = calibration_size
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
@@ -584,7 +600,17 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
             self._last_split_metadata = _splitter_metadata(splitter)
-            yield all_index[train_session_idx], all_index[test_session_idx]
+            train_idx = all_index[train_session_idx]
+            group_idx = all_index[test_session_idx]
+            if self.calibration_size > 0:
+                # Transfer learning: carve a calibration slice off the held-out
+                # subject -> (train, calibration, test).
+                calib_idx, test_idx = _split_target_fraction(
+                    group_idx, self.calibration_size
+                )
+                yield train_idx, calib_idx, test_idx
+            else:
+                yield train_idx, group_idx
 
     def get_metadata(self):
         """Return metadata for the most recent split."""
@@ -616,80 +642,6 @@ def _split_target_fraction(
     n_calib = int(round(calibration_size * len(target_idx)))
     n_calib = min(max(n_calib, 1), len(target_idx) - 1)
     return target_idx[:n_calib], target_idx[n_calib:]
-
-
-class TransferSplitter(BaseCrossValidator):
-    """Add an optional calibration/adaptation slice to any leave-one-group-out split.
-
-    This is the generic transfer-learning split. It wraps a base moabb splitter
-    (:class:`CrossSubjectSplitter`, :class:`CrossSessionSplitter`,
-    :class:`CrossDatasetSplitter`, ...) and, for each ``(train, test)`` fold the
-    base produces, carves the first ``calibration_size`` fraction off the held-out
-    *test* group as a calibration slice, yielding **three** index arrays::
-
-        train          everything the base splitter put in train (the sources)
-        calibration    the first ``calibration_size`` fraction of the held-out
-                       group -- the adaptation/calibration slice (may be empty)
-        test           the remaining held-out trials, to be scored
-
-    The same mechanism therefore expresses subject-transfer, session-transfer and
-    dataset-transfer. A split only decides *which trials go where*; whether the
-    calibration slice is consumed with or without labels, and how the test block is
-    predicted, are estimator/scoring concerns and stay out of scope here.
-
-    Consume it uniformly -- the ``*cal`` absorbs the (optional) calibration slice,
-    so the same loop also accepts a plain 2-tuple splitter::
-
-        for train, *cal, test in splitter.split(y, metadata):
-            calib = cal[0] if cal else test[:0]
-
-    Parameters
-    ----------
-    base_splitter : BaseCrossValidator
-        A moabb splitter exposing ``split(y, metadata) -> (train, test)`` and
-        ``get_n_splits(metadata)`` (typically a leave-one-group-out splitter).
-    calibration_size : float
-        Fraction of each held-out group reserved for calibration/adaptation, in
-        ``[0, 1]``. ``0.0`` keeps the base geometry with an empty calibration slice;
-        ``1.0`` is fully transductive (calibration and test are identical). For any
-        value strictly between 0 and 1, at least one trial is kept on each side.
-        Defaults to ``0.0``.
-
-    Yields
-    ------
-    train : ndarray
-        Source training indices.
-    calibration : ndarray
-        Held-out calibration/adaptation indices (empty when ``calibration_size`` is
-        ``0.0``; equal to ``test`` when ``1.0``).
-    test : ndarray
-        Held-out evaluation indices.
-    """
-
-    def __init__(self, base_splitter: BaseCrossValidator, calibration_size: float = 0.0):
-        if not 0.0 <= calibration_size <= 1.0:
-            raise ValueError(
-                f"calibration_size must be in [0, 1]. Got {calibration_size!r}."
-            )
-        self.base_splitter = base_splitter
-        self.calibration_size = calibration_size
-
-    def get_n_splits(self, metadata):
-        """Return the number of splits (delegated to the base splitter)."""
-        return self.base_splitter.get_n_splits(metadata)
-
-    def split(self, y, metadata):
-        # ``*_`` tolerates a base that yields more than (train, test); the held-out
-        # group to split is always the last element.
-        for train_idx, *_, group_idx in self.base_splitter.split(y, metadata):
-            calibration_idx, test_idx = _split_target_fraction(
-                group_idx, self.calibration_size
-            )
-            yield train_idx, calibration_idx, test_idx
-
-    def get_metadata(self):
-        """Return metadata for the most recent split (from the base splitter)."""
-        return _splitter_metadata(self.base_splitter)
 
 
 class CrossDatasetSplitter(BaseCrossValidator):
