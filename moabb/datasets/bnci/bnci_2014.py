@@ -436,7 +436,10 @@ class BNCI2014_001(MNEBNCI):
         preprocessing=PreprocessingMetadata(
             data_state="minimally preprocessed (bandpass and notch filtered)",
             preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering (0.5-100 Hz)", "50 Hz notch filtering"],
+            preprocessing_steps=[
+                "bandpass filtering (0.5-100 Hz)",
+                "50 Hz notch filtering",
+            ],
             highpass_hz=0.5,
             lowpass_hz=100,
             bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
