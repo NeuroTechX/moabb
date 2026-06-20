@@ -34,6 +34,16 @@ from .utils import validate_subject
 
 _map = {"T": "train", "E": "test"}
 
+# BNCI2014-002 (Steyrl et al.) ships 15 unlabeled channels: three small
+# Laplacian groups centered on C3, Cz, C4. Assumed 3x5 grid approximation
+# (anterior FC row / central C row / posterior CP row) so every channel gets
+# a standard_1005 position. See _load_data_002_2014 for caveats.
+_CH_NAMES_002_2014 = [
+    "FC3", "FC1", "FCz", "FC2", "FC4",
+    "C3", "C1", "Cz", "C2", "C4",
+    "CP3", "CP1", "CPz", "CP2", "CP4",
+]  # fmt: skip
+
 
 @verbose
 def _load_data_001_2014(
@@ -102,9 +112,23 @@ def _load_data_002_2014(
         filenames.append(filename)
         if only_filenames:
             continue
-        # FIXME: electrode position and name are not provided directly.
+        # The data file carries no channel labels or positions, and neither
+        # the paper nor the official BNCI description provides them (all three
+        # verified). Steyrl et al. (Fig 3) only describe the geometry: three
+        # small-Laplacian groups centered on C3, Cz, C4, each with four
+        # surrounding electrodes (anterior, posterior, left, right) at 2.5 cm.
+        # We *assume* the conventional 3x5 grid approximation of that layout
+        # (anterior FC row, central C row, posterior CP row), which maps every
+        # channel to a standard_1005 position so topomaps/interpolation work.
+        # The exact custom 2.5 cm positions and the true column order are not
+        # documented, so treat these labels as approximate. Passing real names
+        # (not None) makes _convert_run attach standard_1005 automatically.
         raws, _ = _convert_mi(
-            filename, None, ["eeg"] * 15, dataset_code="BNCI2014-002", subject_id=subject
+            filename,
+            _CH_NAMES_002_2014,
+            ["eeg"] * 15,
+            dataset_code="BNCI2014-002",
+            subject_id=subject,
         )
         runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
@@ -294,10 +318,10 @@ class BNCI2014_001(MNEBNCI):
             montage="custom",
             hardware="BrainAmp MR plus",
             sensor_type="Ag/AgCl",
-            reference="none",
-            ground="unknown",
+            reference="left mastoid",
+            ground="right mastoid",
             software="BCI2000",
-            filters="bandpass 0.05-200 Hz",
+            filters="bandpass 0.5-100 Hz, 50 Hz notch",
             sensors=[
                 "C1",
                 "C2",
@@ -331,21 +355,21 @@ class BNCI2014_001(MNEBNCI):
             impedance_threshold_kohm=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=4, health_status="healthy", species="human"
+            n_subjects=9, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
-            n_classes=2,
-            class_labels=["left_hand", "right_hand", "foot"],
+            n_classes=4,
+            class_labels=["left_hand", "right_hand", "feet", "tongue"],
             trial_duration=4.0,
-            study_design="Two-class motor imagery (selected from left hand, right hand, and foot) with asynchronous/continuous control periods",
+            study_design="Cue-based four-class motor imagery (left hand, right hand, both feet, tongue); two sessions per subject on different days, each with 6 runs of 48 trials (288 trials per session)",
             feedback_type="none",
             stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="multisensory",
-            synchronicity="asynchronous",
+            synchronicity="synchronous",
             mode="offline",
-            events={"left_hand": 1, "right_hand": 2, "foot": 3, "no_control": 0},
+            events={"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4},
             instructions="Subjects instructed to perform motor imagery during cued periods",
             stimulus_presentation={
                 "cross_onset": "0 s",
@@ -377,7 +401,7 @@ class BNCI2014_001(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2012.00055",
-            description="Review of the BCI competition IV - Data set 1: Asynchronous Motor Imagery",
+            description="BCI Competition IV - Data set 2a: cue-based four-class motor imagery (left hand, right hand, both feet, tongue)",
             investigators=[
                 "Michael Tangermann",
                 "Klaus-Robert Müller",
@@ -414,15 +438,18 @@ class BNCI2014_001(MNEBNCI):
         preprocessing=PreprocessingMetadata(
             data_state="minimally preprocessed (bandpass and notch filtered)",
             preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering"],
-            highpass_hz=0.05,
-            lowpass_hz=200,
-            bandpass={"low_cutoff_hz": 0.05, "high_cutoff_hz": 200.0},
+            preprocessing_steps=[
+                "bandpass filtering (0.5-100 Hz)",
+                "50 Hz notch filtering",
+            ],
+            highpass_hz=0.5,
+            lowpass_hz=100,
+            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
             filter_type="analog",
             filter_order=None,
             re_reference="none",
-            downsampled_to_hz=100.0,
-            notes="Data provided in two versions: original at 1000 Hz and downsampled to 100 Hz (with Chebyshev Type II filter order 10, stop band ripple 50 dB, stop band edge 49 Hz)",
+            downsampled_to_hz=None,
+            notes="Sampled at 250 Hz; bandpass filtered between 0.5 and 100 Hz with an additional 50 Hz notch filter to suppress line noise; amplifier sensitivity 100 uV",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -446,18 +473,18 @@ class BNCI2014_001(MNEBNCI):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
-            imagery_tasks=["left_hand", "right_hand", "foot"],
+            imagery_tasks=["left_hand", "right_hand", "feet", "tongue"],
             cue_duration_s=1.25,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"training": 200, "test": 240},
+            n_trials={"training": 288, "test": 288},
             n_blocks=6,
-            trials_context="per subject (2 training runs + 4 test runs)",
+            trials_context="per session: 6 runs of 48 trials (12 per class) = 288 trials; 2 sessions per subject (T = training, E = evaluation)",
         ),
         file_format="GDF",
         data_processed=True,
-        sessions_per_subject=1,
+        sessions_per_subject=2,
         runs_per_session=6,
     )
 
@@ -540,23 +567,10 @@ class BNCI2014_002(MNEBNCI):
             ground="right mastoid",
             software="BCI2000",
             filters="8th order Butterworth band-pass filters",
-            sensors=[
-                "EEG1",
-                "EEG2",
-                "EEG3",
-                "EEG4",
-                "EEG5",
-                "EEG6",
-                "EEG7",
-                "EEG8",
-                "EEG9",
-                "EEG10",
-                "EEG11",
-                "EEG12",
-                "EEG13",
-                "EEG14",
-                "EEG15",
-            ],
+            # Approximate 3x5 grid labels (see _CH_NAMES_002_2014); the data
+            # ships unlabeled and the exact custom Laplacian positions are
+            # undocumented.
+            sensors=list(_CH_NAMES_002_2014),
             line_freq=50.0,
             cap_manufacturer="Guger Technologies OG",
             cap_model="g.LADYbird",

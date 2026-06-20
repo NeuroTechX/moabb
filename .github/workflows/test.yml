@@ -9,6 +9,11 @@ on:
   pull_request:
     branches: [ develop, master ]
 
+env:
+  # Install CPU-only PyTorch wheels (torch arrives transitively via the
+  # deeplearning extra -> braindecode). Avoids pulling CUDA builds on CI.
+  UV_TORCH_BACKEND: cpu
+
 jobs:
   test:
     name: ${{ matrix.os }}, py-${{ matrix.python-version }}
