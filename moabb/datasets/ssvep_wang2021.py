@@ -139,6 +139,8 @@ class Wang2021Combined(BaseDataset):
         "41": "7.73",  # Direction 4 (left) -> 85/11 Hz
     }
 
+    nemar_id = "nm000131"
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 9)),

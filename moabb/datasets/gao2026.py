@@ -245,6 +245,8 @@ class Gao2026(BaseDataset):
         file_format="BDF",
     )
 
+    nemar_id = "nm000242"
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 23)),

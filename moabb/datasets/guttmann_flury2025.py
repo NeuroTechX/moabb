@@ -645,6 +645,8 @@ class GuttmannFlury2025_ME(BaseDataset):
 
     METADATA = GuttmannFlury2025_MI.METADATA
 
+    nemar_id = "nm000227"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 32)),

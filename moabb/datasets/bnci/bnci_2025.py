@@ -509,6 +509,8 @@ class BNCI2025_001(BNCIBaseDataset):
         methodology="Participants performed discrete reaching movements in four directions (up, down, left, right) with two speeds (quick: 0.4-0.8s cue duration, slow: 1.2-2.4s cue duration) and two distances (near: ~5cm/8.7cm actual, far: ~10cm/15.6cm actual). Each trial consisted of outward and inward movements. Visual cue moved from center to target position. Participants waited ≥1s after cue stop before mimicking movement with eyes fixated on cue. Hand position tracked via camera with pink marker on right index finger. 32 conditions (2 speed × 2 distance × 4 direction × 2 inward/outward) with 30 trials per class = 960 trials total per participant. After rejection, ~852 trials remained. EEG processed with EEGLAB on MATLAB R2019b. Signals epoched in two alignments: cue stop aligned (CStp: -3 to 4s) and movement onset aligned (MOn: -3 to 3s). Analysis included MRCP analysis, point-wise classification with instantaneous and windowed (500ms) features, encoding model using GLM, source localization using BEM with ICBM152 template and sLORETA inverse solution via Brainstorm, and source-space classification using data-driven ROIs derived from encoding model. Classification performed with shrinkage LDA. Permutation testing (1000 repetitions) used for significance. FDR controlled using Benjamini-Hochberg procedures.",
     )
 
+    nemar_id = "nm000162"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 21)),
@@ -1264,6 +1266,8 @@ class BNCI2025_002(BNCIBaseDataset):
         data_processed=True,
         file_format="gdf",
     )
+
+    nemar_id = "nm000170"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

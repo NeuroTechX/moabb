@@ -291,6 +291,8 @@ class Kim2025BetaRange(BaseDataset):
         file_format="MAT",
     )
 
+    nemar_id = "nm000127"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 41)),

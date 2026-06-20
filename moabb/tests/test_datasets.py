@@ -30,6 +30,7 @@ from moabb.datasets.base import (
 from moabb.datasets.braininvaders import BI2012, BI2013a
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
+from moabb.datasets.download import NemarDownloadError
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.kojima2024b import EVENTS
 from moabb.datasets.metadata import (
@@ -50,7 +51,7 @@ from moabb.utils import aliases_list
 
 
 _ = mne.set_log_level("CRITICAL")
-NEMAR_ID_PATTERN = r"(nm|ds)\d{6}"
+NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
 
 
 class TestRegex:
@@ -239,14 +240,10 @@ class Test_Datasets:
         assert dataset.nemar_id == nemar_id
 
     @pytest.mark.parametrize("dataset", dataset_list)
-    def test_all_datasets_have_nemar_id_attribute(self, dataset):
-        assert hasattr(dataset, "nemar_id")
-
-    @pytest.mark.parametrize("dataset", dataset_list)
-    def test_nemar_id_format(self, dataset):
+    def test_all_datasets_have_valid_nemar_id(self, dataset):
         nemar_id = dataset.nemar_id
-        if nemar_id is not None:
-            assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
+        assert nemar_id is not None, f"{dataset.__name__} has no NEMAR dataset ID"
+        assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
 
     def test_download_prefers_nemar(self, monkeypatch, tmp_path):
         dataset = FakeDataset(n_subjects=1)
@@ -257,7 +254,7 @@ class Test_Datasets:
             calls.append((args, kwargs))
             return str(tmp_path / "nemar")
 
-        monkeypatch.setattr("moabb.datasets.download.nemar_dl", nemar_dl)
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
         dataset.download(subject_list=[1], path=tmp_path)
 
         assert calls == [
@@ -266,7 +263,7 @@ class Test_Datasets:
                 {
                     "path": tmp_path,
                     "force_update": False,
-                    "subject": "001",
+                    "subject": "1",
                     "verbose": None,
                 },
             )
@@ -278,8 +275,6 @@ class Test_Datasets:
         fallback_calls = []
 
         def nemar_dl(*args, **kwargs):
-            from moabb.datasets.download import NemarDownloadError
-
             raise NemarDownloadError("NEMAR unavailable")
 
         def data_path(
@@ -287,7 +282,7 @@ class Test_Datasets:
         ):
             fallback_calls.append((subject, path, force_update, update_path, verbose))
 
-        monkeypatch.setattr("moabb.datasets.download.nemar_dl", nemar_dl)
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
         monkeypatch.setattr(dataset, "data_path", data_path)
 
         with pytest.warns(RuntimeWarning, match="falling back"):

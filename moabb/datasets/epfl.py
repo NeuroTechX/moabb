@@ -241,6 +241,8 @@ class EPFLP300(BaseDataset):
         file_format="MATLAB",
     )
 
+    nemar_id = "nm000231"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=[1, 2, 3, 4, 6, 7, 8, 9],

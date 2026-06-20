@@ -28,6 +28,7 @@ from moabb.datasets.bids_interface import (
     _interface_map,
     get_bids_root,
 )
+from moabb.datasets.download import NemarDownloadError, nemar_dl
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
@@ -608,7 +609,8 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     _summary_table: dict[str, Any]
     nemar_id: str | None = None
-    nemar_subject_template: str | None = "{subject:03d}"
+    nemar_subject_template: str | None = "{subject}"
+    nemar_bids_filters: dict[str, Any] | None = None
 
     def __init__(
         self,
@@ -926,8 +928,6 @@ class BaseDataset(metaclass=MetaclassDataset):
             subject_list = self.subject_list
         for subject in subject_list:
             if self.nemar_id is not None:
-                from moabb.datasets.download import NemarDownloadError
-
                 try:
                     self._download_nemar(
                         subject=subject,
@@ -1014,16 +1014,78 @@ class BaseDataset(metaclass=MetaclassDataset):
         moabb.datasets.download.NemarDownloadError
             If nemar-py is unavailable or the NEMAR download fails.
         """
-        from moabb.datasets import download as dl
-
-        return dl.nemar_dl(
+        return nemar_dl(
             self.nemar_id,
             self.code,
             path=path,
             force_update=force_update,
             subject=self._nemar_subject(subject),
             verbose=verbose,
+            **(self.nemar_bids_filters or {}),
         )
+
+    def _get_single_subject_data_from_nemar(self, subject, path=None):
+        """Download and load one subject from the NEMAR BIDS dataset."""
+        try:
+            root = self._download_nemar(subject=subject, path=path)
+            search_params = {
+                "root": root,
+                "subjects": self._nemar_subject(subject),
+                "datatypes": "eeg",
+                "extensions": _RAW_EXTENSIONS,
+            }
+            plural_filters = {
+                "acquisition": "acquisitions",
+                "run": "runs",
+                "session": "sessions",
+                "suffix": "suffixes",
+                "task": "tasks",
+            }
+            for key, value in (self.nemar_bids_filters or {}).items():
+                if key in plural_filters:
+                    search_params[plural_filters[key]] = value
+            bids_paths = mne_bids.find_matching_paths(**search_params)
+            if not bids_paths:
+                raise NemarDownloadError(
+                    f"NEMAR dataset {self.nemar_id} contains no EEG files for "
+                    f"subject {self._nemar_subject(subject)}."
+                )
+
+            session_labels = sorted({path.session for path in bids_paths}, key=str)
+            session_indexes = {label: index for index, label in enumerate(session_labels)}
+            data = {}
+            for bids_path in bids_paths:
+                raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+                raw.load_data()
+                session_index = session_indexes[bids_path.session]
+                session = bids_path.session or str(session_index)
+                if not re.fullmatch(session_run_pattern(), session):
+                    session_label = re.sub(r"[^a-zA-Z0-9]", "", session)
+                    session = f"{session_index}{session_label}"
+                run_index = len(data.setdefault(session, {}))
+                run = bids_path.run or str(run_index)
+                if not re.fullmatch(session_run_pattern(), run) or run in data[session]:
+                    run_label = re.sub(
+                        r"[^a-zA-Z0-9]",
+                        "",
+                        "".join(
+                            value or ""
+                            for value in (
+                                bids_path.task,
+                                bids_path.acquisition,
+                                bids_path.run,
+                            )
+                        ),
+                    )
+                    run = f"{run_index}{run_label}"
+                data[session][run] = raw
+            return data
+        except NemarDownloadError:
+            raise
+        except (KeyError, OSError, RuntimeError, TypeError, ValueError) as exc:
+            raise NemarDownloadError(
+                f"Could not load {self.code} from NEMAR dataset {self.nemar_id}."
+            ) from exc
 
     def convert_to_bids(
         self,

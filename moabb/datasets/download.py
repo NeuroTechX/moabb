@@ -8,14 +8,17 @@ import json
 import logging
 import os
 import os.path as osp
+import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 
+import nemar
 import pandas as pd
 import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
+from nemar.errors import NemarError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
@@ -265,22 +268,12 @@ def nemar_dl(
     target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
 
     if force_update and target_dir.exists():
-        import shutil
-
         try:
             shutil.rmtree(target_dir)
         except OSError as exc:
             raise NemarDownloadError(
                 f"Could not remove existing NEMAR download at {target_dir}: {exc}."
             ) from exc
-
-    try:
-        import nemar
-        from nemar.errors import NemarError
-    except ImportError as exc:
-        raise NemarDownloadError(
-            "nemar-py is required to download datasets from NEMAR."
-        ) from exc
 
     try:
         nemar.download(

@@ -191,6 +191,8 @@ class Chang2025(BaseDataset):
         file_format="SET (EEGLAB)",
     )
 
+    nemar_id = "nm000271"
+
     def __init__(
         self,
         paradigm_type="MI",

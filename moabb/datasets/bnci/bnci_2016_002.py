@@ -573,6 +573,8 @@ class BNCI2016_002(BNCIBaseDataset):
         ),
     )
 
+    nemar_id = "nm000243"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(_SUBJECT_VP_CODES.keys()),

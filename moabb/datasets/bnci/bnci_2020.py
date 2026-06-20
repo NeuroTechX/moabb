@@ -999,6 +999,8 @@ class BNCI2020_002(BNCIBaseDataset):
         data_processed=False,
     )
 
+    nemar_id = "nm000219"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 19)),

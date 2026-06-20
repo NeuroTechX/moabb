@@ -179,6 +179,8 @@ class MartinezCagigal2023Checker(BaseDataset):
         ),
     )
 
+    nemar_id = "nm000240"
+
     def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"Conditions": "conditions"}
         resolved = _handle_deprecated_kwargs(

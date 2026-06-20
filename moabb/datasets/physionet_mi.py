@@ -276,6 +276,8 @@ class PhysionetMI(BaseDataset):
         methodology="The BCI2000 system implements a four-module architecture: 1) Source module digitizes and stores brain signals without preprocessing, 2) Signal processing module performs feature extraction (calibration, spatial filtering, temporal filtering) and feature translation (linear classification, normalization), 3) User application module receives control signals and drives applications with visual/auditory/haptic feedback, 4) Operator module defines system parameters and operation timing. Signal processing uses cascaded signal operators for flexible feature extraction including autoregressive spectral estimation, FIR filtering, slow wave filtering, peak detection, and evoked response averaging. Translation algorithms use linear classifiers and normalizers with optional real-time adaptive parameter updates. All system variables (parameters, event markers, signals) are stored in documented file format with ASCII header and binary data for comprehensive offline analysis.",
     )
 
+    nemar_id = "on004362"
+
     def __init__(
         self,
         imagined=True,
@@ -403,3 +405,5 @@ class PhysionetMI(BaseDataset):
             p = data_dl(url, sign, path, force_update, verbose)
             data_paths.append(p)
         return data_paths
+
+    nemar_subject_template = "{subject:03d}"

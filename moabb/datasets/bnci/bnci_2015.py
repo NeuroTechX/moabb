@@ -831,6 +831,8 @@ class BNCI2015_003(MNEBNCI):
         methodology="Participants surrounded by six speakers at ear height in circle (60° spacing, 65 cm radius). Each direction associated with unique combination of tone (base frequency + harmonics) and band-pass filtered noise. Two-step hex-o-spell interface for character selection. Session 1: calibration (48 trials, 8 per direction, 15 iterations each) followed by online spelling with 15 fixed iterations. Session 2: calibration followed by online spelling with dynamic stopping method (4-15 iterations). Spatio-temporal feature extraction using r2 coefficient and interval selection (2-4 intervals for early and late components, 112-224 features total). Linear binary classifier with shrinkage regularization (Ledoit-Wolf). Decision making based on median classifier scores across iterations.",
     )
 
+    nemar_id = "nm000189"
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -1348,6 +1350,8 @@ class BNCI2015_006(MNEBNCI):
         methodology="Participants listened to 40-second polyphonic music clips with three concurrent instruments (Synth-Pop: bass, drums, keyboard; Jazz: double-bass, piano, flute). Each instrument had standard patterns and infrequent deviants (3-7 per clip). Participants were cued to attend to one instrument and count deviants. EEG recorded at 1000 Hz with 64 electrodes, downsampled to 250 Hz, lowpass filtered (Chebyshev, 42 Hz passband), epoched (-200 to 1200 ms), baseline corrected, and artifact rejected. Two classification approaches: (1) general binary classifier and (2) instrument-specific classifiers with posterior probabilities. Features: spatio-temporal (3 time intervals × 63 electrodes = 189 dimensions). LDA with shrinkage covariance. Leave-one-clip-out cross-validation. Main experiment: 10 blocks of 21 clips (7 clips per instrument as target). Total: 3 Synth-Pop mixed blocks, 3 Jazz mixed blocks, 2 Synth-Pop solo blocks, 2 Jazz solo blocks.",
     )
 
+    nemar_id = "nm000192"
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 12)),
@@ -1679,6 +1683,8 @@ class BNCI2015_007(MNEBNCI):
         file_format="gdf",
     )
 
+    nemar_id = "nm000212"
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 17)),
@@ -1972,6 +1978,8 @@ class BNCI2015_008(MNEBNCI):
         file_format="gdf",
     )
 
+    nemar_id = "nm000198"
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 14)),
@@ -2200,6 +2208,8 @@ class BNCI2015_009(MNEBNCI):
         data_processed=True,
         file_format="gdf",
     )
+
+    nemar_id = "nm000234"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -2447,6 +2457,8 @@ class BNCI2015_010(MNEBNCI):
         abstract="A Brain Computer Interface (BCI) speller using rapid serial visual presentation (RSVP) paradigm for gaze-independent mental typewriting. Twelve healthy participants successfully operated the RSVP speller with mean online spelling rate of 1.43 symb/min and mean symbol selection accuracy of 94.8%. The RSVP speller does not require gaze shifts and can be operated by non-spatial visual attention, making it suitable for patients with impaired oculo-motor control.",
         methodology="Three experimental conditions tested (NoColor 116ms, Color 116ms, Color 83ms SOA). Each condition included calibration, copy-spelling, and free-spelling phases. Vocabulary of 30 symbols presented one-by-one at screen center in pseudo-random order. EEG recorded at 1000 Hz with 63 channels, downsampled to 200 Hz for ERP analysis. Classification using LDA with shrinkage on spatio-temporal features from 5 individually selected time windows. Symbol selection based on averaged classifier output across 10 sequences.",
     )
+
+    nemar_id = "nm000194"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
@@ -2735,6 +2747,8 @@ class BNCI2015_012(MNEBNCI):
         methodology="Participants performed a single session lasting 3-4 hours consisting of calibration phase and online spelling task. Calibration: 3 runs (plus 1 practice run), each with 9 trials covering all 9 stimuli as targets. Each trial had 13-14 pseudo-random sequences of all 9 auditory stimuli (108 subtrials total, 12 target + 96 non-target). Online spelling: 2 runs spelling German sentences using T9-style predictive text system with 9-class decisions. Each trial consisted of 135 subtrials (15 iterations of 9 stimuli). Binary classification using linear FDA with shrinkage regularization on 2-4 amplitude values per channel from discriminative intervals (N200 at 230-300ms and P300 at 350+ ms). Multiclass decision based on one-sided t-test with unequal variances across 15 classifier outputs per key.",
     )
 
+    nemar_id = "nm000190"
+
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -2948,6 +2962,8 @@ class BNCI2015_013(MNEBNCI):
         data_processed=False,
         file_format="matlab",
     )
+
+    nemar_id = "nm000168"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

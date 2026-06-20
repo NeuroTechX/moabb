@@ -207,6 +207,8 @@ class Zhou2020(BaseDataset):
         file_format="NPZ",
     )
 
+    nemar_id = "nm000237"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 21)),
