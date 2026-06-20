@@ -316,10 +316,10 @@ class BNCI2014_001(MNEBNCI):
             montage="custom",
             hardware="BrainAmp MR plus",
             sensor_type="Ag/AgCl",
-            reference="none",
-            ground="unknown",
+            reference="left mastoid",
+            ground="right mastoid",
             software="BCI2000",
-            filters="bandpass 0.05-200 Hz",
+            filters="bandpass 0.5-100 Hz, 50 Hz notch",
             sensors=[
                 "C1",
                 "C2",
@@ -436,15 +436,15 @@ class BNCI2014_001(MNEBNCI):
         preprocessing=PreprocessingMetadata(
             data_state="minimally preprocessed (bandpass and notch filtered)",
             preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering"],
-            highpass_hz=0.05,
-            lowpass_hz=200,
-            bandpass={"low_cutoff_hz": 0.05, "high_cutoff_hz": 200.0},
+            preprocessing_steps=["bandpass filtering (0.5-100 Hz)", "50 Hz notch filtering"],
+            highpass_hz=0.5,
+            lowpass_hz=100,
+            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
             filter_type="analog",
             filter_order=None,
             re_reference="none",
-            downsampled_to_hz=100.0,
-            notes="Data provided in two versions: original at 1000 Hz and downsampled to 100 Hz (with Chebyshev Type II filter order 10, stop band ripple 50 dB, stop band edge 49 Hz)",
+            downsampled_to_hz=None,
+            notes="Sampled at 250 Hz; bandpass filtered between 0.5 and 100 Hz with an additional 50 Hz notch filter to suppress line noise; amplifier sensitivity 100 uV",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -468,18 +468,18 @@ class BNCI2014_001(MNEBNCI):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
-            imagery_tasks=["left_hand", "right_hand", "foot"],
+            imagery_tasks=["left_hand", "right_hand", "feet", "tongue"],
             cue_duration_s=1.25,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"training": 200, "test": 240},
+            n_trials={"training": 288, "test": 288},
             n_blocks=6,
-            trials_context="per subject (2 training runs + 4 test runs)",
+            trials_context="per session: 6 runs of 48 trials (12 per class) = 288 trials; 2 sessions per subject (T = training, E = evaluation)",
         ),
         file_format="GDF",
         data_processed=True,
-        sessions_per_subject=1,
+        sessions_per_subject=2,
         runs_per_session=6,
     )
 
