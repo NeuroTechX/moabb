@@ -120,7 +120,6 @@ class Brandl2020(BaseDataset):
     """
 
     nemar_id = "nm000329"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

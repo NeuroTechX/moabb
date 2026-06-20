@@ -93,7 +93,6 @@ class HefmiIch2025(BaseDataset):
     """
 
     nemar_id = "nm000347"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

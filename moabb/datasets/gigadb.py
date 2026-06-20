@@ -72,7 +72,6 @@ class Cho2017(BaseDataset):
     """
 
     nemar_id = "nm000245"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

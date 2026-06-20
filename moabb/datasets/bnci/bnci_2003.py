@@ -169,7 +169,6 @@ class BNCI2003_004(MNEBNCI):
     """
 
     nemar_id = "nm000143"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,

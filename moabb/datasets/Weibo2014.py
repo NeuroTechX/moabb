@@ -115,7 +115,6 @@ class Weibo2014(BaseDataset):
     """
 
     nemar_id = "nm000146"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,

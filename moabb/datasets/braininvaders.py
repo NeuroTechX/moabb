@@ -460,7 +460,6 @@ class BI2012(BaseDataset):
     """
 
     nemar_id = "nm000260"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,
@@ -703,7 +702,6 @@ class BI2013a(BaseDataset):
     """
 
     nemar_id = "nm000264"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -938,7 +936,6 @@ class BI2014a(BaseDataset):
     """
 
     nemar_id = "nm000244"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -1141,7 +1138,6 @@ class BI2014b(BaseDataset):
     """
 
     nemar_id = "nm000215"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -1355,7 +1351,6 @@ class BI2015a(BaseDataset):
     """
 
     nemar_id = "nm000216"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -1557,7 +1552,6 @@ class BI2015b(BaseDataset):
     """
 
     nemar_id = "nm000217"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -1903,7 +1897,6 @@ class Cattan2019_VR(BaseDataset):
         abstract="Dataset contains electroencephalographic recordings on 21 subjects doing a visual P300 experiment on PC and VR. The visual P300 is an event-related potential elicited by a visual stimulation, peaking 240–600 ms after stimulus onset. The experiment compares P300-based BCI on PC vs VR headset (passive HMD with smartphone) concerning physiological, subjective and performance aspects. EEG recorded with 16 electrodes. Experiment conducted at GIPSA-lab in 2018.",
         methodology="Two randomized sessions (PC and VR). Each session: 12 blocks of 5 repetitions. Each repetition: 12 flashes of groups of 6 symbols, ensuring each symbol flashes exactly 2 times. Target flashes twice per repetition (2 target flashes), non-target flashes 10 times. Random feedback given after each repetition (70% expected accuracy). P300 interface: 6x6 matrix of white flashing crosses with red-squared target. VR used passive HMD (VRElegiant) with Huawei Mate 7 smartphone. IMU deactivated to prevent drift. Unity engine used for identical visual stimulation across PC and VR.",
     )
-
     nemar_id = "nm000236"
 
     def __init__(

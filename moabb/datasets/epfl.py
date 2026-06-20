@@ -240,7 +240,6 @@ class EPFLP300(BaseDataset):
         data_processed=False,
         file_format="MATLAB",
     )
-
     nemar_id = "nm000231"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):

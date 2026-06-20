@@ -572,7 +572,6 @@ class BNCI2016_002(BNCIBaseDataset):
             trials_context="Emergency braking events with 20-40s inter-stimulus-interval, total ~225 events across 3 blocks per subject",
         ),
     )
-
     nemar_id = "nm000243"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):

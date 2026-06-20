@@ -69,7 +69,6 @@ class Schirrmeister2017(BaseDataset):
     """
 
     nemar_id = "nm000172"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

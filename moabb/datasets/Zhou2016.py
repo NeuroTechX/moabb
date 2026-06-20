@@ -69,7 +69,6 @@ class Zhou2016(BaseBIDSDataset):
     """
 
     nemar_id = "nm000115"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

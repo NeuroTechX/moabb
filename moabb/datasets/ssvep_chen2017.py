@@ -181,7 +181,6 @@ class Chen2017SingleFlicker(BaseDataset):
 
     # Marker strings in .xdf files -> event IDs
     _XDF_MARKER_MAP = {"N": 1, "E": 2, "W": 3, "S": 4}
-
     nemar_id = "nm000122"
 
     def __init__(self, subjects=None, sessions=None):

@@ -63,7 +63,6 @@ class Cattan2019_PHMD(BaseDataset):
     """
 
     nemar_id = "nm000341"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

@@ -52,7 +52,6 @@ class AlexMI(BaseDataset):
     """
 
     nemar_id = "nm000138"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

@@ -110,7 +110,6 @@ class Wang2016(BaseDataset):
     """
 
     nemar_id = "nm000126"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

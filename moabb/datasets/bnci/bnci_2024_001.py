@@ -529,7 +529,6 @@ class BNCI2024_001(BNCIBaseDataset):
         abstract="This study explores the classification of ten letters (a,d,e,f,j,n,o,s,t,v) from non-invasive neural signals of 20 participants. Letters were classified with direct classification from low-frequency and broadband EEG, and a two-step approach comprising continuous decoding of hand kinematics followed by classification. The two-step approach yielded significantly higher performances of 26.2% for ten letters and 46.7% for five letters. Hand kinematics could be reconstructed with correlation of 0.10 to 0.57 (average chance level: 0.04). Results suggest movement speed as the most informative kinematic for decoding short hand movements.",
         methodology="Participants wrote 10 letters using right index finger with motion capture tracking (30 Hz, 2D positions). Two-round session with 7 runs (round 1) and 8 runs (round 2), 40 trials per run, 8.5s per trial. Training phase included 4 steps: observation, guided following, unguided following, and execution without feedback. Classification using sliding-window approach with sLDA and EEGNet CNN. Trajectory decoding using EEGNet architecture adapted for regression of position-based (px, py, vx, vy), distance-based (d, ḋ, θ, θ̇), and speed-based (s) kinematics.",
     )
-
     nemar_id = "nm000161"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):

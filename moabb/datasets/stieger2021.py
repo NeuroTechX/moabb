@@ -136,7 +136,6 @@ class Stieger2021(BaseDataset):
     """
 
     nemar_id = "nm000339"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

@@ -193,7 +193,6 @@ class Han2024Fatigue(BaseDataset):
     )
 
     _events = _EVENTS
-
     nemar_id = "nm000124"
 
     def __init__(self, subjects=None, sessions=None):

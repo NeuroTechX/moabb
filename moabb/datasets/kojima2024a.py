@@ -95,7 +95,6 @@ class Kojima2024A(BaseDataset):
     """
 
     nemar_id = "nm000193"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

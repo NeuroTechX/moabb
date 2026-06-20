@@ -130,7 +130,6 @@ class Yi2025(BaseDataset):
     """
 
     nemar_id = "nm000160"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

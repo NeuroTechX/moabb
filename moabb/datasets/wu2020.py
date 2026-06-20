@@ -75,7 +75,6 @@ class Wu2020(BaseDataset):
     """
 
     nemar_id = "nm000142"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

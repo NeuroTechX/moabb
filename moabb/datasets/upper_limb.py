@@ -73,7 +73,6 @@ class Ofner2017(BaseDataset):
     """
 
     nemar_id = "nm000173"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

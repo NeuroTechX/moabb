@@ -72,7 +72,6 @@ class Kalunga2016(BaseDataset):
     """
 
     nemar_id = "nm000123"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

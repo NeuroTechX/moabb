@@ -51,7 +51,6 @@ class Nakanishi2015(BaseDataset):
     """
 
     nemar_id = "nm000118"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

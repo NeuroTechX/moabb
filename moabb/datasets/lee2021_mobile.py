@@ -381,7 +381,6 @@ class Lee2021Mobile_SSVEP(Lee2021Mobile):
     """
 
     nemar_id = "nm000125"
-
     __init__ = partialmethod(Lee2021Mobile.__init__, "SSVEP")
 
 
@@ -392,7 +391,6 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
     """
 
     nemar_id = "nm000201"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,

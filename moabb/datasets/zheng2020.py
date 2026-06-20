@@ -98,7 +98,6 @@ class Zheng2020(BaseDataset):
     """
 
     nemar_id = "nm000205"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

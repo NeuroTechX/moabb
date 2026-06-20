@@ -108,7 +108,6 @@ class Tavakolan2017(BaseDataset):
     """
 
     nemar_id = "nm000151"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

@@ -89,7 +89,6 @@ class Rozado2015(BaseDataset):
     """
 
     nemar_id = "nm000148"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

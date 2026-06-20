@@ -68,7 +68,6 @@ class GrosseWentrup2009(BaseDataset):
     """
 
     nemar_id = "nm000145"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

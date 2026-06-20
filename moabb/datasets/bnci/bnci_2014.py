@@ -309,7 +309,6 @@ class BNCI2014_001(MNEBNCI):
     """
 
     nemar_id = "nm000139"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -554,7 +553,6 @@ class BNCI2014_002(MNEBNCI):
     """
 
     nemar_id = "nm000171"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -742,7 +740,6 @@ class BNCI2014_004(MNEBNCI):
     """
 
     nemar_id = "nm000135"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -1114,7 +1111,6 @@ class BNCI2014_008(MNEBNCI):
         sessions_per_subject=1,
         runs_per_session=1,
     )
-
     nemar_id = "nm000169"
 
     def __init__(self, subjects=None, sessions=None):
@@ -1313,7 +1309,6 @@ class BNCI2014_009(MNEBNCI):
         abstract="This dataset represents a complete record of P300 evoked potentials recorded with BCI2000 using two different paradigms: a paradigm based on the P300 Speller originally described by Farwell and Donchin in overt attention condition and a paradigm based on the GeoSpell interface used in covert attention condition. In these sessions, 10 healthy subjects focused on one out of 36 different characters. The objective was to predict the correct character in each of the provided character selection epochs.",
         methodology="Ten healthy subjects (10 female, mean age = 26.8 ± 5.6) with previous experience with P300-based BCIs attended 4 recording sessions. Scalp EEG potentials were measured using 16 Ag/AgCl electrodes arranged on an elastic cap per the 10-10 standard. Each electrode was referenced to the linked earlobes and grounded to the right mastoid. The EEG was acquired using a g.USBamp amplifier (g.Tec, Austria), digitized at 256 Hz, high pass- and low pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively. The electrode impedance did not exceed 10 kΩ. Visual stimulation, acquisition and online classification were performed with BCI2000. Each subject attended 4 recording sessions. During each session, the subject performed three runs with each of the stimulation interfaces. Each trial consisted of eight stimulation sequences, and thus, 16 intensifications of the target character. Each stimulus was intensified for 125 ms, with an inter stimulus interval (ISI) of 125 ms, yielding a 250 ms lag between the appearance of two stimuli (SOA). Pseudorandom stimulation sequences were assembled so that each target intensification would not occur within 500 ms after the previous one to avoid the attentional blink phenomenon.",
     )
-
     nemar_id = "nm000188"
 
     def __init__(self, subjects=None, sessions=None):

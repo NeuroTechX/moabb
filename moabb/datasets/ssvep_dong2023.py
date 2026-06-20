@@ -73,7 +73,6 @@ class Dong2023(BaseDataset):
     """
 
     nemar_id = "nm000128"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

@@ -998,7 +998,6 @@ class BNCI2020_002(BNCIBaseDataset):
         file_format="MAT",
         data_processed=False,
     )
-
     nemar_id = "nm000219"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):

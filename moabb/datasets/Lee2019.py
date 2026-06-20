@@ -322,7 +322,6 @@ class Lee2019_MI(Lee2019):
     """
 
     nemar_id = "nm000338"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
@@ -608,7 +607,6 @@ class Lee2019_ERP(Lee2019):
     """
 
     nemar_id = "nm000323"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

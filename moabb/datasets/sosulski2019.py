@@ -90,7 +90,6 @@ class Sosulski2019(BaseDataset):
     """
 
     nemar_id = "nm000266"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

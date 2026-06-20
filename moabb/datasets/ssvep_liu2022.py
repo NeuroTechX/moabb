@@ -488,7 +488,6 @@ class Liu2022EldBETA(BaseDataset):
 
     # Derived from _TARGET_TO_FREQ: frequency string -> target index
     _events = {freq: int(idx) for idx, freq in _TARGET_TO_FREQ.items()}
-
     nemar_id = "nm000130"
 
     def __init__(self, subjects=None, sessions=None):

@@ -108,7 +108,6 @@ class Forenzo2023(BaseDataset):
     """
 
     nemar_id = "nm000209"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

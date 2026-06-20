@@ -108,7 +108,6 @@ class Wairagkar2018(BaseDataset):
     """
 
     nemar_id = "nm000141"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,

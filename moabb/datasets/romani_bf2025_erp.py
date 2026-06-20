@@ -128,7 +128,6 @@ class RomaniBF2025ERP(BaseDataset):
     """
 
     nemar_id = "nm000272"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

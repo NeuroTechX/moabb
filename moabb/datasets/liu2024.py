@@ -91,7 +91,6 @@ class Liu2024(BaseDataset):
     """
 
     nemar_id = "nm000158"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

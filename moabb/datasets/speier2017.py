@@ -258,7 +258,6 @@ class Speier2017(BaseDataset):
     """
 
     nemar_id = "nm000259"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

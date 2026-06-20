@@ -69,7 +69,6 @@ class Hinss2021(BaseDataset):
     """
 
     nemar_id = "nm000343"
-
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

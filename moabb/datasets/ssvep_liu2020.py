@@ -180,7 +180,6 @@ class Liu2020BETA(BaseDataset):
     )
 
     _events = _EVENTS
-
     nemar_id = "nm000129"
 
     def __init__(self, subjects=None, sessions=None):
