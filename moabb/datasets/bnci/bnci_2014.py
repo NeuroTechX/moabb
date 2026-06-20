@@ -353,21 +353,21 @@ class BNCI2014_001(MNEBNCI):
             impedance_threshold_kohm=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=4, health_status="healthy", species="human"
+            n_subjects=9, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
-            n_classes=2,
-            class_labels=["left_hand", "right_hand", "foot"],
+            n_classes=4,
+            class_labels=["left_hand", "right_hand", "feet", "tongue"],
             trial_duration=4.0,
-            study_design="Two-class motor imagery (selected from left hand, right hand, and foot) with asynchronous/continuous control periods",
+            study_design="Cue-based four-class motor imagery (left hand, right hand, both feet, tongue); two sessions per subject on different days, each with 6 runs of 48 trials (288 trials per session)",
             feedback_type="none",
             stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="multisensory",
-            synchronicity="asynchronous",
+            synchronicity="synchronous",
             mode="offline",
-            events={"left_hand": 1, "right_hand": 2, "foot": 3, "no_control": 0},
+            events={"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4},
             instructions="Subjects instructed to perform motor imagery during cued periods",
             stimulus_presentation={
                 "cross_onset": "0 s",
@@ -399,7 +399,7 @@ class BNCI2014_001(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2012.00055",
-            description="Review of the BCI competition IV - Data set 1: Asynchronous Motor Imagery",
+            description="BCI Competition IV - Data set 2a: cue-based four-class motor imagery (left hand, right hand, both feet, tongue)",
             investigators=[
                 "Michael Tangermann",
                 "Klaus-Robert Müller",
