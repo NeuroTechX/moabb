@@ -84,6 +84,7 @@ class Beetl2021_A(BaseDataset):
     .. [2] Competition: https://beetl.ai/introduction
     """
 
+    nemar_id = "nm000220"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -578,6 +579,7 @@ class Beetl2021_B(BaseDataset):
     .. [2] Competition: https://beetl.ai/introduction
     """
 
+    nemar_id = "nm000274"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,

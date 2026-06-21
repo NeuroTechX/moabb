@@ -191,6 +191,7 @@ class BCIComp2020UpperLimb(BaseDataset):
            16, 898300. https://doi.org/10.3389/fnhum.2022.898300
     """
 
+    nemar_id = "nm000233"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

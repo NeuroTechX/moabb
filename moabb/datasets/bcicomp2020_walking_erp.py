@@ -205,6 +205,7 @@ class BCIComp2020WalkingERP(BaseDataset):
            16, 898300. https://doi.org/10.3389/fnhum.2022.898300
     """
 
+    nemar_id = "nm000184"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,

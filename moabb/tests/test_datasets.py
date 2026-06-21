@@ -52,6 +52,8 @@ from moabb.utils import aliases_list
 
 _ = mne.set_log_level("CRITICAL")
 NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
+# Datasets without a NEMAR deposit: test fixtures and datasets not on NEMAR.
+NEMAR_ID_EXEMPT = {"FakeDataset", "FakeVirtualRealityDataset", "Schrag2026Pediatric"}
 
 
 class TestRegex:
@@ -241,6 +243,8 @@ class Test_Datasets:
 
     @pytest.mark.parametrize("dataset", dataset_list)
     def test_all_datasets_have_valid_nemar_id(self, dataset):
+        if dataset.__name__ in NEMAR_ID_EXEMPT:
+            pytest.skip(f"{dataset.__name__} has no NEMAR deposit")
         nemar_id = dataset.nemar_id
         assert nemar_id is not None, f"{dataset.__name__} has no NEMAR dataset ID"
         assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
