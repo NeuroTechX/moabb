@@ -482,42 +482,60 @@ class CrossSessionSplitter(BaseCrossValidator):
 
 
 class CrossSubjectSplitter(BaseCrossValidator):
-    """Data splitter for cross subject evaluation.
+    """Data splitter for cross-subject evaluation.
 
-    This splitter enables cross-subject evaluation by performing a Leave-One-Session-Out (LOSO)
-    cross-validation on the dataset.
+    This splitter enables cross-subject evaluation by splitting data according
+    to subject identity. It assumes that the entire metainformation across all
+    subjects is already loaded.
 
-    It assumes that the entire metainformation across all subjects is already loaded.
-
-    Unlike the `CrossSubjectEvaluation` class from `moabb.evaluation`, which manages
-    the complete evaluation process end-to-end, this splitter is solely responsible
-    for dividing the data into training and testing sets based on subjects.
+    Unlike the `CrossSubjectEvaluation` class from `moabb.evaluation`, which
+    manages the complete evaluation process end-to-end, this splitter is solely
+    responsible for dividing the data into training, optional calibration, and
+    testing sets based on subjects.
 
     .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/crosssubj.png
-        :alt: The schematic diagram of the CrossSubject split
-        :align: center
+       :alt: The schematic diagram of the CrossSubject split
+       :align: center
 
     The splitting strategy for the subjects can be changed by passing the
-    `cv_class` and `cv_kwargs` arguments. By default, it uses LeaveOneGroupOut,
-    which performs Leave-One-Subject-Out cross-validation.
+    `cv_class` and `cv_kwargs` arguments. By default, it uses
+    LeaveOneGroupOut, which performs leave-one-subject-out cross-validation.
 
     Parameters
     ----------
     cv_class : type
-        Cross-validation strategy for splitting the subjects between train and test sets.
-        By default, use LeaveOneGroupOut, which keeps one subject as a test.
-        Defaults to ``LeaveOneGroupOut``.
-    calibration_size : float
-        Transfer-learning calibration, in ``[0, 1]``. ``0.0`` (default) is the
-        ordinary cross-subject split, yielding ``(train, test)``. When ``> 0``,
-        the first ``calibration_size`` fraction of each held-out subject's trials
-        is set aside for adaptation and the splitter yields
-        ``(train, calibration, test)`` instead; ``1.0`` is transductive
-        (calibration equals test).
+        Cross-validation strategy for splitting subjects between train and
+        test sets. By default, use LeaveOneGroupOut, which keeps one subject
+        as test. Defaults to ``LeaveOneGroupOut``.
+
+    calibration_size : float, default=0.0
+        Transfer-learning calibration fraction, in ``[0, 1]``.
+
+        ``0.0`` is the ordinary cross-subject split and yields
+        ``(train, test)``.
+
+        When ``> 0``, the first ``calibration_size`` fraction of each held-out
+        subject's trials is set aside for adaptation/calibration and the
+        splitter yields ``(train, calibration, test)``.
+
+        ``1.0`` is transductive for unlabeled calibration: calibration and test
+        are the same target trials.
+
+    calibration_labeled : bool, default=False
+        Whether the calibration slice may be treated as labeled target
+        calibration data.
+
+        If ``False``, the calibration slice may only be used as unlabeled
+        target data.
+
+        If ``True``, labels may be routed together with the calibration slice,
+        but ``calibration_size`` must be at most ``0.5``. This prevents labeled
+        calibration from using most or all of the held-out target subject.
+
     random_state : int or None
-        Controls the randomness of the cross-validation.
-        Pass an int for reproducible output across multiple calls.
-        Defaults to ``None``.
+        Controls the randomness of the cross-validation. Pass an int for
+        reproducible output across multiple calls. Defaults to ``None``.
+
     cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
 
@@ -527,7 +545,8 @@ class CrossSubjectSplitter(BaseCrossValidator):
         The training set indices for that split.
 
     calibration : ndarray
-        The held-out calibration indices. Only yielded when ``calibration_size > 0``.
+        The held-out calibration indices. Only yielded when
+        ``calibration_size > 0``.
 
     test : ndarray
         The testing set indices for that split.
@@ -537,80 +556,112 @@ class CrossSubjectSplitter(BaseCrossValidator):
         self,
         cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
         calibration_size: float = 0.0,
+        calibration_labeled: bool = False,
         random_state: int = None,
         **cv_kwargs,
     ):
         if not 0.0 <= calibration_size <= 1.0:
             raise ValueError(
-                f"calibration_size must be in [0, 1]. Got {calibration_size!r}."
+                f"calibration_size must be in [0, 1]. "
+                f"Got {calibration_size!r}."
             )
+
+        if not isinstance(calibration_labeled, bool):
+            raise TypeError(
+                "calibration_labeled must be a bool. "
+                f"Got {type(calibration_labeled).__name__}."
+            )
+
+        if calibration_labeled and calibration_size > 0.5:
+            raise ValueError(
+                "calibration_labeled=True is only allowed with "
+                "calibration_size <= 0.5."
+            )
+
         self.cv_class = cv_class
         self.calibration_size = calibration_size
+        self.calibration_labeled = calibration_labeled
+        self.random_state = random_state
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
         params = inspect.signature(self.cv_class).parameters
+
         if "random_state" in params:
             self._cv_kwargs["random_state"] = random_state
 
-        # Detect whether the cv_class uses the groups parameter
+        # Detect whether the cv_class uses the groups parameter.
         self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+
         self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         """
         Return the number of splits for the cross-validation.
 
-        The number of splits is the number of subjects times the number of splits
-        of the inner cross-validation strategy.
-
-        We try to keep the same behaviour as the sklearn cross-validation classes.
-
         Parameters
         ----------
-        metadata: :class:`pandas.DataFrame`
-            The metadata containing the subject and session information.
+        metadata : pandas.DataFrame
+            Metadata containing subject and session information.
 
         Returns
         -------
-        n_splits: int
-            The number of splits for the cross-validation
+        n_splits : int
+            Number of splits.
         """
-
         splitter = self.cv_class(**self._cv_kwargs)
+
         get_n_splits_kwargs = {"X": metadata.index}
+
         if self._cv_uses_groups:
             get_n_splits_kwargs["groups"] = metadata["subject"]
-        n_splits = splitter.get_n_splits(**get_n_splits_kwargs)
-        return n_splits
+
+        return splitter.get_n_splits(**get_n_splits_kwargs)
 
     def split(self, y, metadata):
-        # here, I am getting the index across all the subject
         all_index = metadata.index.values
-
         splitter = self.cv_class(**self._cv_kwargs)
         self._last_split_metadata = None
 
         # Only pass groups to cv_classes that actually use them
         # (detected via GroupsConsumerMixin). This avoids the
         # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
-        split_kwargs = {"X": all_index, "y": y}
+        split_kwargs = {
+            "X": all_index,
+            "y": y,
+        }
+
         if self._cv_uses_groups:
             split_kwargs["groups"] = metadata["subject"]
 
-        for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
-            self._last_split_metadata = _splitter_metadata(splitter)
-            train_idx = all_index[train_session_idx]
-            group_idx = all_index[test_session_idx]
+        for train_subject_idx, test_subject_idx in splitter.split(**split_kwargs):
+            inner_metadata = _splitter_metadata(splitter)
+
+            split_metadata = {
+                "calibration_size": self.calibration_size,
+                "calibration_labeled": self.calibration_labeled,
+            }
+
+            if inner_metadata is not None:
+                split_metadata.update(inner_metadata)
+
+            self._last_split_metadata = split_metadata
+
+            train_idx = all_index[train_subject_idx]
+            target_idx = all_index[test_subject_idx]
+
             if self.calibration_size > 0:
-                # Transfer learning: carve a calibration slice off the held-out
-                # subject -> (train, calibration, test).
+                # Transfer learning: carve a calibration slice off the
+                # held-out target subject -> (train, calibration, test).
                 calib_idx, test_idx = _split_target_fraction(
-                    group_idx, self.calibration_size
+                    target_idx,
+                    self.calibration_size,
                 )
+
                 yield train_idx, calib_idx, test_idx
+
             else:
-                yield train_idx, group_idx
+                yield train_idx, target_idx
 
     def get_metadata(self):
         """Return metadata for the most recent split."""
@@ -618,29 +669,42 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
 
 def _split_target_fraction(
-    target_idx: np.ndarray, calibration_size: float
+    target_idx: np.ndarray,
+    calibration_size: float,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Slice a held-out target subject's trials into (calibration, test).
+    """Slice a held-out target subject's trials into calibration and test.
 
-    The first ``calibration_size`` fraction of ``target_idx`` (in trial order) is
-    the calibration/adaptation slice; the rest is evaluated. ``0.0`` yields no
-    calibration; ``1.0`` is transductive (calibration and test are identical).
-    For any fraction strictly between 0 and 1, at least one trial is kept on each
-    side.
+    The first ``calibration_size`` fraction of ``target_idx`` in trial order is
+    the calibration/adaptation slice; the rest is evaluated.
+
+    ``0.0`` yields no calibration.
+
+    ``1.0`` is transductive: calibration and test are identical. This is valid
+    only for unlabeled target adaptation at the evaluation level.
+
+    For any fraction strictly between 0 and 1, at least one trial is kept on
+    each side.
     """
     target_idx = np.asarray(target_idx, dtype=int)
+
     if len(target_idx) == 0:
         raise ValueError("Empty held-out target index.")
+
     if not 0.0 <= calibration_size <= 1.0:
-        raise ValueError(f"calibration_size must be in [0, 1]. Got {calibration_size!r}.")
+        raise ValueError(
+            f"calibration_size must be in [0, 1]. "
+            f"Got {calibration_size!r}."
+        )
 
     if calibration_size == 0.0:
         return np.array([], dtype=int), target_idx
+
     if calibration_size == 1.0:
         return target_idx, target_idx
 
     n_calib = int(round(calibration_size * len(target_idx)))
     n_calib = min(max(n_calib, 1), len(target_idx) - 1)
+
     return target_idx[:n_calib], target_idx[n_calib:]
 
 
