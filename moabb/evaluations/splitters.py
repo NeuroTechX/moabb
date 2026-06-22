@@ -13,6 +13,7 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection._split import GroupsConsumerMixin
 from sklearn.utils import check_random_state
+from moabb.evaluations.protocols import validate_transfer_protocol
 
 
 log = logging.getLogger(__name__)
@@ -560,23 +561,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         random_state: int = None,
         **cv_kwargs,
     ):
-        if not 0.0 <= calibration_size <= 1.0:
-            raise ValueError(
-                f"calibration_size must be in [0, 1]. "
-                f"Got {calibration_size!r}."
-            )
-
-        if not isinstance(calibration_labeled, bool):
-            raise TypeError(
-                "calibration_labeled must be a bool. "
-                f"Got {type(calibration_labeled).__name__}."
-            )
-
-        if calibration_labeled and calibration_size > 0.5:
-            raise ValueError(
-                "calibration_labeled=True is only allowed with "
-                "calibration_size <= 0.5."
-            )
+        validate_transfer_protocol(calibration_size, calibration_labeled)
 
         self.cv_class = cv_class
         self.calibration_size = calibration_size
@@ -702,7 +687,7 @@ def _split_target_fraction(
     if calibration_size == 1.0:
         return target_idx, target_idx
 
-    n_calib = int(round(calibration_size * len(target_idx)))
+    n_calib = int(np.floor(calibration_size * len(target_idx)))
     n_calib = min(max(n_calib, 1), len(target_idx) - 1)
 
     return target_idx[:n_calib], target_idx[n_calib:]

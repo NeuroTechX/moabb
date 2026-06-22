@@ -83,6 +83,7 @@ def _route_transfer_metadata(
 
     return {k: v for k, v in candidate.items() if k in kept}
 
+
 class TrialwisePredictWrapper(ClassifierMixin, BaseEstimator):
     """Wrap a fitted estimator and force one-trial-at-a-time prediction."""
 

@@ -56,6 +56,14 @@ _CS_MODE_MAP = {
 
 
 def validate_transfer_protocol(calibration_size, calibration_labeled):
+    if not isinstance(calibration_size, (int, float)):
+        raise TypeError(
+            "calibration_size must be a number. "
+            f"Got {type(calibration_size).__name__}."
+        )
+
+    calibration_size = float(calibration_size)
+
     if not 0.0 <= calibration_size <= 1.0:
         raise ValueError(
             f"calibration_size must be in [0, 1]. Got {calibration_size!r}."

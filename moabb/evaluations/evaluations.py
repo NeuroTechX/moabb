@@ -473,9 +473,19 @@ class CrossSubjectEvaluation(BaseEvaluation):
         ``[0, 1]``, default ``0.0``) enables transfer learning: when ``> 0`` each
         fold becomes ``(train, calibration, test)`` and the held-out calibration
         slice is routed (raw) to the pipeline steps that request it via
-        ``set_fit_request`` -- ``subjects`` plus either ``X_target_unlabeled``
-        or ``X_target_labeled`` / ``y_target_labeled``, depending on
-        ``calibration_labeled``.
+        ``set_fit_request``. With ``calibration_labeled=False``, only
+        ``X_target_unlabeled`` may be routed. With ``calibration_labeled=True``,
+        ``X_target_labeled`` and ``y_target_labeled`` may be routed.
+        Labeled calibration is only allowed with ``calibration_size <= 0.5``.
+    cs_mode : CsMode or str, optional
+        Named cross-subject protocol preset. If provided, it sets
+        ``calibration_size``, ``calibration_labeled``, and ``predict_mode``.
+        Cannot be combined with manual ``calibration_size`` or
+        ``calibration_labeled`` in ``cv_kwargs``.
+    predict_mode : {"blockwise", "trialwise"}, default="blockwise"
+        Whether prediction is done on the full test block or one trial at a time.
+        Cannot be combined with ``cs_mode`` because ``cs_mode`` already defines it.
+
 
     Notes
     -----
