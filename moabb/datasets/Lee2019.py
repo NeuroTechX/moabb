@@ -854,7 +854,7 @@ class Lee2019_SSVEP(Lee2019):
            https://doi.org/10.1093/gigascience/giz002
     """
 
-    nemar_id = "nm000273"
+    # nemar_id = "nm000273" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

@@ -81,7 +81,7 @@ class Chailloux2020(BaseDataset):
            https://doi.org/10.3390/s20247198
     """
 
-    nemar_id = "nm000262"
+    # nemar_id = "nm000262" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

@@ -118,7 +118,7 @@ class Pressel2016(BaseDataset):
            https://doi.org/10.1117/12.2255697
     """
 
-    nemar_id = "nm000258"
+    # nemar_id = "nm000258" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,

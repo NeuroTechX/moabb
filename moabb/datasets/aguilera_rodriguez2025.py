@@ -151,7 +151,7 @@ class AguileraRodriguez2025(BaseDataset):
         ``AguileraRodriguez2025(sessions=[1])``.
     """
 
-    nemar_id = "nm000174"
+    # nemar_id = "nm000174" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

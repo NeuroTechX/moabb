@@ -84,7 +84,7 @@ class Beetl2021_A(BaseDataset):
     .. [2] Competition: https://beetl.ai/introduction
     """
 
-    nemar_id = "nm000220"
+    # nemar_id = "nm000220" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -579,7 +579,7 @@ class Beetl2021_B(BaseDataset):
     .. [2] Competition: https://beetl.ai/introduction
     """
 
-    nemar_id = "nm000274"
+    # nemar_id = "nm000274" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,

@@ -251,7 +251,7 @@ class BNCI2020_001(BNCIBaseDataset):
     movement paradigms. Data is available under CC BY 4.0 license.
     """
 
-    nemar_id = "nm000178"
+    # nemar_id = "nm000178" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

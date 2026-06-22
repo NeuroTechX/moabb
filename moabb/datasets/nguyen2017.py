@@ -350,7 +350,7 @@ class _Nguyen2017Base(BaseDataset):
 class Nguyen2017_V(_Nguyen2017Base):
     """Nguyen 2017 Imagined Speech - Vowels condition."""
 
-    nemar_id = "nm000261"
+    # nemar_id = "nm000261" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
         participants=_nguyen_participants(8),
@@ -422,7 +422,7 @@ class Nguyen2017_V(_Nguyen2017Base):
 class Nguyen2017_S(_Nguyen2017Base):
     """Nguyen 2017 Imagined Speech - Short Words condition."""
 
-    nemar_id = "nm000257"
+    # nemar_id = "nm000257" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
         participants=_nguyen_participants(6),
@@ -479,7 +479,7 @@ class Nguyen2017_S(_Nguyen2017Base):
 class Nguyen2017_L(_Nguyen2017Base):
     """Nguyen 2017 Imagined Speech - Long Words condition."""
 
-    nemar_id = "nm000252"
+    # nemar_id = "nm000252" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
         participants=_nguyen_participants(6),
@@ -535,7 +535,7 @@ class Nguyen2017_L(_Nguyen2017Base):
 class Nguyen2017_SL(_Nguyen2017Base):
     """Nguyen 2017 Imagined Speech - Short vs Long Words condition."""
 
-    nemar_id = "nm000224"
+    # nemar_id = "nm000224" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
         participants=_nguyen_participants(6),
