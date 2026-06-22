@@ -318,6 +318,30 @@ class Test_Datasets:
 
         assert fallback_calls == [(1, tmp_path, True, None, None)]
 
+    def test_download_without_nemar_id_uses_fallback(self, monkeypatch, tmp_path):
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = None
+        nemar_calls = []
+        fallback_calls = []
+
+        def nemar_dl(*args, **kwargs):
+            nemar_calls.append((args, kwargs))
+            return str(tmp_path / "nemar")
+
+        def data_path(
+            subject, path=None, force_update=False, update_path=None, verbose=None
+        ):
+            fallback_calls.append((subject, path, force_update, update_path, verbose))
+
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        monkeypatch.setattr(dataset, "data_path", data_path)
+
+        dataset.download(subject_list=[1], path=tmp_path)
+
+        # No NEMAR id: NEMAR is never attempted, the dataset downloader is used.
+        assert nemar_calls == []
+        assert fallback_calls == [(1, tmp_path, False, None, None)]
+
     def test_datasets_init(self, caplog):
         codes = []
         deprecated_list = list(zip(*aliases_list))[0] if aliases_list else ()
