@@ -299,8 +299,7 @@ class ExampleBIDSDataset(BaseBIDSDataset):
 #     nemar dataset publish request nm00XXXX
 #     nemar dataset publish status  nm00XXXX
 #
-# Once the deposit is public, NEMAR assigns it an id (e.g. ``nm000123``;
-# datasets mirrored from OpenNeuro keep an ``on``-prefixed id). Add it to your
+# Once the deposit is public, NEMAR assigns it an id (e.g. ``nm000123``). Add it to your
 # dataset class so MOABB downloads from NEMAR by default:
 #
 # .. code-block:: python
