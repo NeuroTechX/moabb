@@ -8,7 +8,6 @@ import json
 import logging
 import os
 import os.path as osp
-import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -261,20 +260,15 @@ def nemar_dl(
     Raises
     ------
     NemarDownloadError
-        If nemar-py is unavailable, the existing download cannot be removed,
-        or nemar-py fails to download the selected files.
+        If nemar-py is unavailable or fails to download the selected files.
     """
     root = Path(get_dataset_path(dataset_code, path))
     target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
 
-    if force_update and target_dir.exists():
-        try:
-            shutil.rmtree(target_dir)
-        except OSError as exc:
-            raise NemarDownloadError(
-                f"Could not remove existing NEMAR download at {target_dir}: {exc}."
-            ) from exc
-
+    # ``force_update`` is handled by ``trust_existing=False`` below, which makes
+    # nemar-py re-fetch the requested subject. Do not delete ``target_dir``
+    # here: it is the shared BIDS root, and ``download()`` calls this once per
+    # subject, so removing it would wipe subjects fetched in earlier iterations.
     try:
         nemar.download(
             dataset=nemar_id,
