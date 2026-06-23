@@ -12,16 +12,16 @@ from moabb.evaluations.base import (
     _route_transfer_metadata,
     _wrap_predict_mode,
 )
+from moabb.evaluations.protocols import (
+    PredictMode,
+    resolve_cs_mode,
+    validate_transfer_protocol,
+)
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     WithinSessionSplitter,
     WithinSubjectSplitter,
-)
-from moabb.evaluations.protocols import (
-    PredictMode,
-    resolve_cs_mode,
-    validate_transfer_protocol,
 )
 
 
@@ -498,11 +498,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _needs_all_subjects = True
 
     def __init__(
-        self,
-        *args,
-        cs_mode=None,
-        predict_mode=PredictMode.BLOCKWISE.value,
-        **kwargs,
+        self, *args, cs_mode=None, predict_mode=PredictMode.BLOCKWISE.value, **kwargs
     ):
         cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
 
@@ -548,9 +544,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
         return CrossSubjectSplitter(
-            cv_class=cv_class,
-            random_state=self.random_state,
-            **cv_kwargs,
+            cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
 
     # flake8: noqa: C901
@@ -573,10 +567,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         for subject in dataset.subject_list:
             run_pipes.update(
                 self.results.not_yet_computed(
-                    pipelines,
-                    dataset,
-                    subject,
-                    process_pipeline,
+                    pipelines, dataset, subject, process_pipeline
                 )
             )
 
@@ -584,10 +575,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             return
 
         X, y, metadata = self._load_data(
-            dataset,
-            run_pipes,
-            process_pipeline,
-            postprocess_pipeline,
+            dataset, run_pipes, process_pipeline, postprocess_pipeline
         )
 
         le = LabelEncoder()
@@ -603,11 +591,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if self.n_splits is not None and self.cv_class is None:
             n_subjects = self.n_splits
 
-        inner_cv = StratifiedKFold(
-            3,
-            shuffle=True,
-            random_state=self.random_state,
-        )
+        inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
         if _carbonfootprint:
             tracker = self.emissions.create_tracker()
@@ -630,27 +614,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     split_metadata = dict(split_metadata)
 
             run_pipes = self.results.not_yet_computed(
-                pipelines,
-                dataset,
-                subject,
-                process_pipeline,
+                pipelines, dataset, subject, process_pipeline
             )
 
             for name, clf in run_pipes.items():
                 clf = self._grid_search(
-                    param_grid=param_grid,
-                    name=name,
-                    grid_clf=clf,
-                    inner_cv=inner_cv,
+                    param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
                 cvclf = clone(clf)
 
                 calib_md = None
                 if len(calib):
-                    calib_md = {
-                        "X": X[calib],
-                        "y": y[calib],
-                    }
+                    calib_md = {"X": X[calib], "y": y[calib]}
 
                 calibration_labeled = False
                 if split_metadata is not None:
@@ -674,13 +649,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 )
 
                 self._maybe_save_model_cv(
-                    cvclf,
-                    dataset,
-                    subject,
-                    "",
-                    name,
-                    cv_ind,
-                    eval_type="CrossSubject",
+                    cvclf, dataset, subject, "", name, cv_ind, eval_type="CrossSubject"
                 )
 
                 score_estimator = _wrap_predict_mode(cvclf, self.predict_mode)

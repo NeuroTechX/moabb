@@ -23,6 +23,7 @@ from moabb.datasets.base import (  # noqa: F401 - CacheConfig used in type hints
     BaseDataset,
     CacheConfig,
 )
+from moabb.evaluations.protocols import PredictMode
 from moabb.evaluations.utils import (
     Emissions,
     _carbonfootprint,
@@ -40,19 +41,14 @@ from moabb.evaluations.utils import (
 )
 from moabb.paradigms.base import BaseParadigm
 from moabb.utils import verbose
-from moabb.evaluations.protocols import PredictMode
+
 
 search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
 
-def _route_transfer_metadata(
-    estimator,
-    subjects,
-    calib=None,
-    calibration_labeled=False,
-):
+def _route_transfer_metadata(estimator, subjects, calib=None, calibration_labeled=False):
     """Keep only protocol-allowed transfer metadata requested at ``fit``.
 
     ``subjects`` is the per-trial source-subject array.
@@ -94,45 +90,32 @@ class TrialwisePredictWrapper(ClassifierMixin, BaseEstimator):
         self.classes_ = self._get_classes(fitted_estimator)
 
     def fit(self, X, y=None):
-        raise RuntimeError(
-            "TrialwisePredictWrapper wraps an already fitted estimator."
-        )
+        raise RuntimeError("TrialwisePredictWrapper wraps an already fitted estimator.")
 
     def predict(self, X):
         return np.asarray(
-            [
-                self.fitted_estimator.predict(X[i : i + 1])[0]
-                for i in range(len(X))
-            ]
+            [self.fitted_estimator.predict(X[i : i + 1])[0] for i in range(len(X))]
         )
 
     def predict_proba(self, X):
         if not hasattr(self.fitted_estimator, "predict_proba"):
-            raise AttributeError(
-                "Wrapped estimator does not provide predict_proba."
-            )
+            raise AttributeError("Wrapped estimator does not provide predict_proba.")
 
         return np.vstack(
             [
-                np.asarray(
-                    self.fitted_estimator.predict_proba(X[i : i + 1])
-                )[0]
+                np.asarray(self.fitted_estimator.predict_proba(X[i : i + 1]))[0]
                 for i in range(len(X))
             ]
         )
 
     def decision_function(self, X):
         if not hasattr(self.fitted_estimator, "decision_function"):
-            raise AttributeError(
-                "Wrapped estimator does not provide decision_function."
-            )
+            raise AttributeError("Wrapped estimator does not provide decision_function.")
 
         rows = []
 
         for i in range(len(X)):
-            out = np.asarray(
-                self.fitted_estimator.decision_function(X[i : i + 1])
-            )
+            out = np.asarray(self.fitted_estimator.decision_function(X[i : i + 1]))
 
             if out.ndim == 0:
                 rows.append(out.item())
@@ -158,9 +141,7 @@ class TrialwisePredictWrapper(ClassifierMixin, BaseEstimator):
             if hasattr(final_estimator, "classes_"):
                 return final_estimator.classes_
 
-        raise AttributeError(
-            "Wrapped estimator does not expose classes_."
-        )
+        raise AttributeError("Wrapped estimator does not expose classes_.")
 
 
 def _wrap_predict_mode(estimator, predict_mode):
@@ -173,6 +154,7 @@ def _wrap_predict_mode(estimator, predict_mode):
         return TrialwisePredictWrapper(estimator)
 
     raise ValueError(f"Unknown predict_mode={predict_mode!r}.")
+
 
 # Making the optuna soft dependency
 
@@ -314,10 +296,7 @@ def _evaluate_fold(
     calib = None
     if calib_idx is not None and len(calib_idx):
         y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
-        calib = {
-            "X": X[calib_idx],
-            "y": y_calib,
-        }
+        calib = {"X": X[calib_idx], "y": y_calib}
 
     calibration_labeled = False
     if split_metadata is not None:
@@ -325,10 +304,7 @@ def _evaluate_fold(
 
     subjects_train = metadata["subject"].to_numpy()[train_idx]
     fit_params = _route_transfer_metadata(
-        cvclf,
-        subjects_train,
-        calib=calib,
-        calibration_labeled=calibration_labeled,
+        cvclf, subjects_train, calib=calib, calibration_labeled=calibration_labeled
     )
 
     # Fit model

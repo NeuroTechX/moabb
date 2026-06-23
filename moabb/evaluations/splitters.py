@@ -13,6 +13,7 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection._split import GroupsConsumerMixin
 from sklearn.utils import check_random_state
+
 from moabb.evaluations.protocols import validate_transfer_protocol
 
 
@@ -611,10 +612,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # Only pass groups to cv_classes that actually use them
         # (detected via GroupsConsumerMixin). This avoids the
         # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
-        split_kwargs = {
-            "X": all_index,
-            "y": y,
-        }
+        split_kwargs = {"X": all_index, "y": y}
 
         if self._cv_uses_groups:
             split_kwargs["groups"] = metadata["subject"]
@@ -639,8 +637,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
                 # Transfer learning: carve a calibration slice off the
                 # held-out target subject -> (train, calibration, test).
                 calib_idx, test_idx = _split_target_fraction(
-                    target_idx,
-                    self.calibration_size,
+                    target_idx, self.calibration_size
                 )
 
                 yield train_idx, calib_idx, test_idx
@@ -654,8 +651,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
 
 def _split_target_fraction(
-    target_idx: np.ndarray,
-    calibration_size: float,
+    target_idx: np.ndarray, calibration_size: float
 ) -> tuple[np.ndarray, np.ndarray]:
     """Slice a held-out target subject's trials into calibration and test.
 
@@ -676,10 +672,7 @@ def _split_target_fraction(
         raise ValueError("Empty held-out target index.")
 
     if not 0.0 <= calibration_size <= 1.0:
-        raise ValueError(
-            f"calibration_size must be in [0, 1]. "
-            f"Got {calibration_size!r}."
-        )
+        raise ValueError(f"calibration_size must be in [0, 1]. Got {calibration_size!r}.")
 
     if calibration_size == 0.0:
         return np.array([], dtype=int), target_idx

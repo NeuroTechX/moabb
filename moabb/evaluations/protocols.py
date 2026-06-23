@@ -58,16 +58,13 @@ _CS_MODE_MAP = {
 def validate_transfer_protocol(calibration_size, calibration_labeled):
     if not isinstance(calibration_size, (int, float)):
         raise TypeError(
-            "calibration_size must be a number. "
-            f"Got {type(calibration_size).__name__}."
+            f"calibration_size must be a number. Got {type(calibration_size).__name__}."
         )
 
     calibration_size = float(calibration_size)
 
     if not 0.0 <= calibration_size <= 1.0:
-        raise ValueError(
-            f"calibration_size must be in [0, 1]. Got {calibration_size!r}."
-        )
+        raise ValueError(f"calibration_size must be in [0, 1]. Got {calibration_size!r}.")
 
     if not isinstance(calibration_labeled, bool):
         raise TypeError(
@@ -77,15 +74,11 @@ def validate_transfer_protocol(calibration_size, calibration_labeled):
 
     if calibration_labeled and calibration_size > 0.5:
         raise ValueError(
-            "calibration_labeled=True is only allowed with "
-            "calibration_size <= 0.5."
+            "calibration_labeled=True is only allowed with calibration_size <= 0.5."
         )
 
 
 def resolve_cs_mode(cs_mode):
     params = dict(_CS_MODE_MAP[CsMode(cs_mode)])
-    validate_transfer_protocol(
-        params["calibration_size"],
-        params["calibration_labeled"],
-    )
+    validate_transfer_protocol(params["calibration_size"], params["calibration_labeled"])
     return params
