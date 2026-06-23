@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from sklearn import config_context
-from sklearn.base import BaseEstimator, clone
+from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.metadata_routing import get_routing_for_object
@@ -40,30 +40,139 @@ from moabb.evaluations.utils import (
 )
 from moabb.paradigms.base import BaseParadigm
 from moabb.utils import verbose
-
+from moabb.evaluations.protocols import PredictMode
 
 search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
 
-def _route_transfer_metadata(estimator, subjects, calib=None):
-    """Keep only the transfer metadata an estimator requests at ``fit``.
+def _route_transfer_metadata(
+    estimator,
+    subjects,
+    calib=None,
+    calibration_labeled=False,
+):
+    """Keep only protocol-allowed transfer metadata requested at ``fit``.
 
-    ``subjects`` is the per-trial source-subject array; ``calib`` is an optional
-    dict carrying the (raw) calibration slice, e.g.
-    ``{"X_target_unlabeled": X[calib_idx]}``. Steps opt in via
-    ``set_fit_request(...)``; plain pipelines request nothing, so this returns
-    ``{}`` and the fit is unchanged. The framework passes the slice raw -- the
-    estimator owns the target representation.
+    ``subjects`` is the per-trial source-subject array.
+
+    ``calib`` is an optional dict with raw calibration data:
+    ``{"X": X[calib_idx], "y": y_calib}``.
+
+    If ``calibration_labeled`` is False, calibration can only be routed as
+    ``X_target_unlabeled``.
+
+    If ``calibration_labeled`` is True, calibration can be routed as
+    ``X_target_labeled`` and ``y_target_labeled``.
+
+    Steps opt in via ``set_fit_request(...)``. Plain pipelines request nothing,
+    so this returns ``{}`` and the fit is unchanged.
     """
     candidate = {"subjects": subjects}
-    if calib:
-        candidate.update(calib)
+
+    if calib is not None:
+        if calibration_labeled:
+            candidate["X_target_labeled"] = calib["X"]
+            candidate["y_target_labeled"] = calib["y"]
+        else:
+            candidate["X_target_unlabeled"] = calib["X"]
+
     with config_context(enable_metadata_routing=True):
         kept = get_routing_for_object(estimator).consumes("fit", set(candidate))
+
     return {k: v for k, v in candidate.items() if k in kept}
 
+
+class TrialwisePredictWrapper(ClassifierMixin, BaseEstimator):
+    """Wrap a fitted estimator and force one-trial-at-a-time prediction."""
+
+    _estimator_type = "classifier"
+
+    def __init__(self, fitted_estimator):
+        self.fitted_estimator = fitted_estimator
+        self.classes_ = self._get_classes(fitted_estimator)
+
+    def fit(self, X, y=None):
+        raise RuntimeError(
+            "TrialwisePredictWrapper wraps an already fitted estimator."
+        )
+
+    def predict(self, X):
+        return np.asarray(
+            [
+                self.fitted_estimator.predict(X[i : i + 1])[0]
+                for i in range(len(X))
+            ]
+        )
+
+    def predict_proba(self, X):
+        if not hasattr(self.fitted_estimator, "predict_proba"):
+            raise AttributeError(
+                "Wrapped estimator does not provide predict_proba."
+            )
+
+        return np.vstack(
+            [
+                np.asarray(
+                    self.fitted_estimator.predict_proba(X[i : i + 1])
+                )[0]
+                for i in range(len(X))
+            ]
+        )
+
+    def decision_function(self, X):
+        if not hasattr(self.fitted_estimator, "decision_function"):
+            raise AttributeError(
+                "Wrapped estimator does not provide decision_function."
+            )
+
+        rows = []
+
+        for i in range(len(X)):
+            out = np.asarray(
+                self.fitted_estimator.decision_function(X[i : i + 1])
+            )
+
+            if out.ndim == 0:
+                rows.append(out.item())
+            elif out.shape[0] == 1:
+                rows.append(out[0])
+            else:
+                rows.append(out)
+
+        out = np.asarray(rows)
+
+        if out.ndim == 2 and out.shape[1] == 1:
+            return out.ravel()
+
+        return out
+
+    @staticmethod
+    def _get_classes(estimator):
+        if hasattr(estimator, "classes_"):
+            return estimator.classes_
+
+        if hasattr(estimator, "steps"):
+            final_estimator = estimator.steps[-1][1]
+            if hasattr(final_estimator, "classes_"):
+                return final_estimator.classes_
+
+        raise AttributeError(
+            "Wrapped estimator does not expose classes_."
+        )
+
+
+def _wrap_predict_mode(estimator, predict_mode):
+    predict_mode = PredictMode(predict_mode)
+
+    if predict_mode == PredictMode.BLOCKWISE:
+        return estimator
+
+    if predict_mode == PredictMode.TRIALWISE:
+        return TrialwisePredictWrapper(estimator)
+
+    raise ValueError(f"Unknown predict_mode={predict_mode!r}.")
 
 # Making the optuna soft dependency
 
@@ -162,11 +271,15 @@ def _evaluate_fold(
     score_per_session = config["score_per_session"]
     mne_labels = config["mne_labels"]
     codecarbon_config = config["codecarbon_config"]
+    predict_mode = config.get("predict_mode", PredictMode.BLOCKWISE.value)
 
     # Label encode per fold (matching old per-session/per-subject scoping)
     if not mne_labels:
         le = LabelEncoder()
-        combined_y = np.concatenate([y[train_idx], y[test_idx]])
+        if calib_idx is not None and len(calib_idx):
+            combined_y = np.concatenate([y[train_idx], y[test_idx], y[calib_idx]])
+        else:
+            combined_y = np.concatenate([y[train_idx], y[test_idx]])
         le.fit(combined_y)
         y_train = le.transform(y[train_idx])
         y_test = le.transform(y[test_idx])
@@ -196,20 +309,27 @@ def _evaluate_fold(
         tracker = emissions_obj.create_tracker()
         tracker.start()
 
-    # Optional transfer-learning calibration slice (raw). Offer it under every
-    # name; _route_transfer_metadata keeps only what the estimator requests, so
-    # the estimator's set_fit_request decides labeled vs unlabeled. Empty for
-    # ordinary evaluations -> plain fit.
+    # Optional transfer-learning calibration slice (raw). The protocol decides
+    # whether it is offered as unlabeled or labeled target metadata.
     calib = None
     if calib_idx is not None and len(calib_idx):
         y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
         calib = {
-            "X_target_unlabeled": X[calib_idx],
-            "X_target_labeled": X[calib_idx],
-            "y_target_labeled": y_calib,
+            "X": X[calib_idx],
+            "y": y_calib,
         }
+
+    calibration_labeled = False
+    if split_metadata is not None:
+        calibration_labeled = bool(split_metadata.get("calibration_labeled", False))
+
     subjects_train = metadata["subject"].to_numpy()[train_idx]
-    fit_params = _route_transfer_metadata(cvclf, subjects_train, calib)
+    fit_params = _route_transfer_metadata(
+        cvclf,
+        subjects_train,
+        calib=calib,
+        calibration_labeled=calibration_labeled,
+    )
 
     # Fit model
     task_name = None
@@ -244,7 +364,8 @@ def _evaluate_fold(
         )
         _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
 
-    scorer = _create_scorer(cvclf, scoring)
+    score_estimator = _wrap_predict_mode(cvclf, predict_mode)
+    scorer = _create_scorer(score_estimator, scoring)
 
     # Build score groups: per-session or full test set
     if score_per_session:
@@ -260,7 +381,7 @@ def _evaluate_fold(
     for group_idx, group_y, group_session in score_groups:
         is_error = False
         try:
-            score = scorer(cvclf, X[group_idx], group_y)
+            score = scorer(score_estimator, X[group_idx], group_y)
         except ValueError as err:
             if error_score == "raise":
                 raise err
@@ -707,6 +828,7 @@ class BaseEvaluation(ABC):
                 self.emissions.codecarbon_config if _carbonfootprint else None
             ),
             "score_per_session": self._score_per_session,
+            "predict_mode": getattr(self, "predict_mode", PredictMode.BLOCKWISE.value),
             "param_grid": None,  # overridden per-task below if needed
         }
 
