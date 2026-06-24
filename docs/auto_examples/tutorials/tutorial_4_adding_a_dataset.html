@@ -819,9 +819,12 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <section id="pushing-on-moabb-github">
 <h3>Pushing on MOABB Github<a class="headerlink" href="#pushing-on-moabb-github" title="Link to this heading">#</a></h3>
 <p>If you want to make your dataset available to everyone, you could upload
-your data on public server (like Zenodo or Figshare) and signal that you
+your data on a public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a></p>
+<p>For new datasets, the preferred host is <a class="reference external" href="https://nemar.org">NEMAR</a>, which
+MOABB uses as the default download source — see
+<em>Publishing your dataset on NEMAR</em> below.</p>
 </section>
 </section>
 <section id="creating-a-bids-dataset-class-basebidsdataset">
@@ -887,7 +890,51 @@ It auto-discovers subjects and sessions from the BIDS directory structure:</p>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">meta</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.883 seconds)</p>
+</section>
+</section>
+<section id="publishing-your-dataset-on-nemar">
+<h2>Publishing your dataset on NEMAR<a class="headerlink" href="#publishing-your-dataset-on-nemar" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://nemar.org">NEMAR</a> is the default download source for MOABB
+datasets. Hosting your (BIDS-formatted) data there lets MOABB fetch it
+directly through <a class="reference external" href="https://pypi.org/project/nemar-py/">nemar-py</a>, while the
+dataset’s own <code class="docutils literal notranslate"><span class="pre">data_path</span></code> is kept as an automatic fallback.</p>
+<p>Pushing a dataset is done with the <code class="docutils literal notranslate"><span class="pre">nemar</span></code> command-line tool:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Install the CLI and sign in</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>nemar-cli<span class="w">          </span><span class="c1"># or: bun add -g nemar-cli</span>
+nemar<span class="w"> </span>signup<span class="w">                      </span><span class="c1"># first time only</span>
+nemar<span class="w"> </span>login
+
+<span class="c1"># 2. One-time sandbox training (required before your first upload)</span>
+nemar<span class="w"> </span>sandbox
+
+<span class="c1"># 3. Upload your BIDS dataset (runs BIDS validation and collects</span>
+<span class="c1">#    co-author ORCIDs); use --dry-run first to preview</span>
+nemar<span class="w"> </span>dataset<span class="w"> </span>upload<span class="w"> </span>/path/to/bids/dataset<span class="w"> </span>--dry-run
+nemar<span class="w"> </span>dataset<span class="w"> </span>upload<span class="w"> </span>/path/to/bids/dataset
+
+<span class="c1"># 4. Request publication, then track its status</span>
+nemar<span class="w"> </span>dataset<span class="w"> </span>publish<span class="w"> </span>request<span class="w"> </span>nm00XXXX
+nemar<span class="w"> </span>dataset<span class="w"> </span>publish<span class="w"> </span>status<span class="w">  </span>nm00XXXX
+</pre></div>
+</div>
+<p>Once the deposit is public, NEMAR assigns it an id (e.g. <code class="docutils literal notranslate"><span class="pre">nm000123</span></code>). Add it to your
+dataset class so MOABB downloads from NEMAR by default:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyDataset</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">BaseBIDSDataset</span></a><span class="p">):</span>
+    <span class="n">nemar_id</span> <span class="o">=</span> <span class="s2">&quot;nm000123&quot;</span>
+    <span class="c1"># Only if NEMAR subject labels are zero-padded (sub-001, sub-002, ...)</span>
+    <span class="n">nemar_subject_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{subject:03d}</span><span class="s2">&quot;</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Fallback behaviour:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">nemar_id</span></code> is left unset (<code class="docutils literal notranslate"><span class="pre">None</span></code>) — for example while the deposit is
+still private/pending publication — MOABB skips NEMAR entirely and uses the
+dataset’s own <code class="docutils literal notranslate"><span class="pre">data_path</span></code> downloader.</p></li>
+<li><p>If a NEMAR download fails at runtime, MOABB emits a warning and
+automatically falls back to <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
+</ul>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.864 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>
@@ -900,7 +947,6 @@ It auto-discovers subjects and sessions from the BIDS directory structure:</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
 </section>
 </section>
 
@@ -962,6 +1008,7 @@ It auto-discovers subjects and sessions from the BIDS directory structure:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-localbidsdataset-for-local-private-bids-datasets">Using LocalBIDSDataset for local/private BIDS datasets</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#publishing-your-dataset-on-nemar">Publishing your dataset on NEMAR</a></li>
 </ul>
   </nav></div>
 

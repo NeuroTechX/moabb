@@ -646,10 +646,8 @@ sharing of neuroimaging data between researchers.</p>
 <p>The MOABB library allows to convert any MOABB dataset to
 BIDS <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
 <p>In this example, we will convert the AlexMI dataset to BIDS using the
-option <code class="docutils literal notranslate"><span class="pre">cache_config=dict(path=temp_dir,</span> <span class="pre">save_raw=True)</span></code> of the <code class="docutils literal notranslate"><span class="pre">get_data</span></code>
-method from the dataset object.</p>
-<p>This will automatically save the raw data in the BIDS format and allow to use
-a cache for the next time the dataset is used.</p>
+<code class="docutils literal notranslate"><span class="pre">convert_to_bids</span></code> method from the dataset object.</p>
+<p>This will automatically save the raw data in the BIDS format.</p>
 <p>We will use the AlexMI dataset <a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, one of the smallest in
 people and one that can be downloaded quickly.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel &lt;pierre.guetschel@gmail.com&gt;</span>
@@ -674,13 +672,11 @@ people and one that can be downloaded quickly.</p>
 <p>Here, we will save the BIDS version of the dataset in a temporary folder</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp" title="tempfile.mkdtemp" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span></a><span class="p">())</span>
 <span class="c1"># The conversion of any MOABB dataset to a BIDS-compliant structure can be done</span>
-<span class="c1"># by simply calling its ``get_data`` method and using the ``cache_config``</span>
-<span class="c1"># parameter. This parameter is a dictionary.</span>
+<span class="c1"># by simply calling its ``convert_to_bids`` method.</span>
 <a href="../../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">AlexMI</span></a><span class="p">()</span>
 <span class="c1"># Reducing the number of subjects to speed up the example</span>
-
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI.get_data" title="moabb.datasets.AlexMI.get_data" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">cache_config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span> <span class="s2">&quot;save_raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="../../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI.convert_to_bids" title="moabb.datasets.AlexMI.convert_to_bids" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">convert_to_bids</span></a><span class="p">(</span><span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -728,7 +724,7 @@ sessions and runs) is stored in a single folder. This follows no particular
 standard and can vary from one dataset to another.</p>
 <p>After conversion, the data is stored in a BIDS-compliant way:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;After conversion:&quot;</span><span class="p">)</span>
-<span class="n">print_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a> <span class="o">/</span> <span class="s2">&quot;MNE-BIDS-alexandre-motor-imagery&quot;</span><span class="p">)</span>
+<span class="n">print_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>After conversion:
@@ -738,20 +734,19 @@ standard and can vary from one dataset to another.</p>
    ├──sub-1
    │  └──ses-0
    │     ├──eeg
-   │     │  ├──sub-1_ses-0_task-imagery_run-0_desc-ee95e5bcd4d74216f233f1a8b1bd1c85_events.tsv
-   │     │  ├──sub-1_ses-0_task-imagery_run-0_desc-ee95e5bcd4d74216f233f1a8b1bd1c85_eeg.json
-   │     │  ├──sub-1_ses-0_task-imagery_run-0_desc-ee95e5bcd4d74216f233f1a8b1bd1c85_channels.json
-   │     │  ├──sub-1_ses-0_task-imagery_run-0_desc-ee95e5bcd4d74216f233f1a8b1bd1c85_eeg.edf
-   │     │  ├──sub-1_ses-0_task-imagery_run-0_desc-ee95e5bcd4d74216f233f1a8b1bd1c85_events.json
-   │     │  └──sub-1_ses-0_task-imagery_run-0_desc-ee95e5bcd4d74216f233f1a8b1bd1c85_channels.tsv
+   │     │  ├──sub-1_ses-0_task-imagery_run-0_channels.tsv
+   │     │  ├──sub-1_ses-0_task-imagery_run-0_events.json
+   │     │  ├──sub-1_ses-0_task-imagery_run-0_eeg.json
+   │     │  ├──sub-1_ses-0_task-imagery_run-0_channels.json
+   │     │  ├──sub-1_ses-0_task-imagery_run-0_eeg.edf
+   │     │  └──sub-1_ses-0_task-imagery_run-0_events.tsv
    │     ├──sub-1_ses-0_scans.json
    │     └──sub-1_ses-0_scans.tsv
    ├──README
    ├──dataset_description.json
    ├──.bidsignore
    └──code
-      ├──AlexMI.metadata.yaml
-      └──sub-1_ses-0_desc-ee95e5bcd4d74216f233f1a8b1bd1c85_lockfile.json
+      └──AlexMI.metadata.yaml
 </pre></div>
 </div>
 <p>In the BIDS version of our dataset, the raw files are saved in EDF.
@@ -760,14 +755,7 @@ starting with the subjects, then the sessions, and then the runs. Metadata
 files are stored to describe the data. For more details on the BIDS
 structure, please refer to the <a class="reference external" href="https://bids.neuroimaging.io">BIDS website</a>
 and the <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/">BIDS spec</a>.</p>
-<p>Under the hood, saving datasets to BIDS is done through the caching system
-of MOABB. Only raw EEG files are officially supported by the BIDS
-specification.
-However, MOABB’s caching mechanism also offers the possibility to save
-the data in a pseudo-BIDS after different preprocessing steps.
-In particular, we can save <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> and <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> objects.
-For more details on the caching system,
-please refer to the tutorial <a class="reference internal" href="plot_disk_cache.html"><span class="doc">Cache on disk intermediate data processing states</span></a>.</p>
+<p>Only raw EEG files are officially supported by the BIDS specification.</p>
 </section>
 <section id="cleanup">
 <h2>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">#</a></h2>
@@ -801,7 +789,7 @@ Université de Grenoble).
 <a class="reference external" href="https://tel.archives-ouvertes.fr/tel-01196752">https://tel.archives-ouvertes.fr/tel-01196752</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.295 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.258 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-plot-bids-conversion-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/c3ebeb9988635652b155b2686d2f88b7/plot_bids_conversion.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bids_conversion.ipynb</span></code></a></p>
