@@ -158,6 +158,7 @@ class Jeong2020(BaseDataset):
            https://doi.org/10.1093/gigascience/giaa098
     """
 
+    nemar_id = "nm000311"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

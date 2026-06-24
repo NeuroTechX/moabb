@@ -507,6 +507,7 @@ class GuttmannFlury2025_MI(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000265"
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
@@ -656,6 +657,7 @@ class GuttmannFlury2025_ME(BaseDataset):
     """
 
     METADATA = GuttmannFlury2025_MI.METADATA
+    nemar_id = "nm000227"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -724,6 +726,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000310"
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
@@ -887,6 +890,7 @@ class GuttmannFlury2025_P300(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000136"
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,

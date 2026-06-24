@@ -90,6 +90,7 @@ class Thielen2015(BaseDataset):
 
     """
 
+    nemar_id = "nm000196"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=2048.0,

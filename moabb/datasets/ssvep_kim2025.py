@@ -290,6 +290,7 @@ class Kim2025BetaRange(BaseDataset):
         sessions_per_subject=6,
         file_format="MAT",
     )
+    nemar_id = "nm000127"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

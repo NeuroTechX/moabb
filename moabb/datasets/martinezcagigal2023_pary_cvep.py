@@ -213,6 +213,7 @@ class MartinezCagigal2023Pary(BaseDataset):
             ),
         ),
     )
+    nemar_id = "nm000239"
 
     def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"Conditions": "conditions"}

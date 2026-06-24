@@ -173,6 +173,7 @@ class Rodrigues2017(BaseDataset):
         data_structure=DataStructureMetadata(n_trials=10),
         data_processed=False,
     )
+    nemar_id = "nm000221"
 
     def __init__(self, subjects=None, sessions=None):
         subject_list = list(range(1, 6 + 1)) + list(range(8, 20 + 1))

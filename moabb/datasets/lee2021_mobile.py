@@ -380,6 +380,7 @@ class Lee2021Mobile_SSVEP(Lee2021Mobile):
     See :class:`~moabb.datasets.lee2021_mobile.Lee2021Mobile` for full documentation.
     """
 
+    nemar_id = "nm000125"
     __init__ = partialmethod(Lee2021Mobile.__init__, "SSVEP")
 
 
@@ -389,6 +390,7 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
     See :class:`~moabb.datasets.lee2021_mobile.Lee2021Mobile` for full documentation.
     """
 
+    nemar_id = "nm000201"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,
