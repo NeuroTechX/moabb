@@ -1034,3 +1034,17 @@ class TestAggregateFoldResults:
         np.testing.assert_almost_equal(res["score_accuracy"], 0.4)
         # score_f1: avg(0.7, 0.0) = 0.35
         np.testing.assert_almost_equal(res["score_f1"], 0.35)
+
+    def test_non_numeric_score_fold_does_not_abort(self):
+        """A fold with a non-numeric score becomes NaN, not a fatal TypeError."""
+        from moabb.evaluations.base import BaseEvaluation
+
+        folds = [
+            self._make_fold(1, "0", "csp", 0.7),
+            # A degenerate/error fold may leave a non-numeric value in "score".
+            self._make_fold(1, "0", "csp", "failed", is_error=True),
+        ]
+        agg = BaseEvaluation._aggregate_fold_results(folds)
+        assert len(agg) == 1
+        # Non-numeric fold is coerced to NaN and skipped by mean -> only 0.7 left.
+        np.testing.assert_almost_equal(agg[0]["score"], 0.7)

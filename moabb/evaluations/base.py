@@ -848,6 +848,13 @@ class BaseEvaluation(ABC):
 
         has_carbon = "carbon_emission" in df.columns
 
+        # A single error fold may put a non-numeric value (e.g. "failed") in an
+        # aggregation column, making pandas infer the whole column as object and
+        # mean() raise. Coerce so bad folds become NaN and are skipped by mean.
+        for col in agg_ops:
+            if df[col].dtype == object:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+
         grouped = df.groupby(group_keys, sort=False)
         agg_df = grouped.agg(agg_ops)
 
