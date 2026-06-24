@@ -169,7 +169,7 @@ Zenodo. https://doi.org/10.5281/zenodo.10034223
 #### BibTeX Format
 
 ```bibtex
-@software{Aristimunha_Mother_of_all,
+@misc{Aristimunha_Mother_of_all,
   author       = {Aristimunha, Bruno and
                   Carrara, Igor and
                   Guetschel, Pierre and
