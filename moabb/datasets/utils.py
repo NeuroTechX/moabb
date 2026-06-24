@@ -198,6 +198,22 @@ def find_intersecting_channels(datasets, verbose=False):
     return allchans, keep_datasets
 
 
+def set_neuroscan_montage(raw, montage_name="standard_1005"):
+    """Normalize Neuroscan ALL_CAPS labels and apply a standard montage.
+
+    Neuroscan caps label channels in upper case (``FP1``, ``FPZ``, ``CZ``)
+    whereas MNE's standard montages use mixed case (``Fp1``, ``Fpz``, ``Cz``);
+    without the rename :meth:`set_montage` silently matches no channels.
+    Non-EEG channels (stim/EOG/misc) are unaffected by the transform.
+
+    Modifies ``raw`` in place.
+    """
+    raw.rename_channels(
+        {ch: ch.replace("Z", "z").replace("FP", "Fp") for ch in raw.ch_names}
+    )
+    raw.set_montage(make_standard_montage(montage_name), on_missing="ignore")
+
+
 def _download_all(update_path=True, verbose=None):
     """Download all data.
 

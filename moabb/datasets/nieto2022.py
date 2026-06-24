@@ -60,6 +60,7 @@ class Nieto2022(BaseDataset):
     8 external EXG channels.
     """
 
+    nemar_id = "ds003626"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,

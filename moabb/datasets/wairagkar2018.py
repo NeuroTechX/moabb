@@ -107,6 +107,7 @@ class Wairagkar2018(BaseDataset):
            https://doi.org/10.1371/journal.pone.0193722
     """
 
+    nemar_id = "nm000141"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,

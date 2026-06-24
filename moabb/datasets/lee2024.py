@@ -494,28 +494,33 @@ class Lee2024(BaseDataset):
 class Lee2024_TV(Lee2024):
     """Television control experiment (30 subjects, 4 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000213"
     __init__ = partialmethod(Lee2024.__init__, "TV")
 
 
 class Lee2024_DL(Lee2024):
     """Door lock control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000208"
     __init__ = partialmethod(Lee2024.__init__, "DL")
 
 
 class Lee2024_EL(Lee2024):
     """Electric light control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000223"
     __init__ = partialmethod(Lee2024.__init__, "EL")
 
 
 class Lee2024_BS(Lee2024):
     """Bluetooth speaker experiment (14 subjects, 6 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000204"
     __init__ = partialmethod(Lee2024.__init__, "BS")
 
 
 class Lee2024_AC(Lee2024):
     """Air conditioner control experiment (10 subjects, 4 classes, 25 EEG ch)."""
 
+    nemar_id = "nm000222"
     __init__ = partialmethod(Lee2024.__init__, "AC")

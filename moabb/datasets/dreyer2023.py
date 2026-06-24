@@ -8,7 +8,9 @@ import warnings
 import zipfile
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+from mne.channels import make_standard_montage
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 from tqdm import tqdm
 
@@ -296,6 +298,16 @@ class _Dreyer2023Base(BaseDataset):
 
                 raw.set_channel_types(mapping)
 
+                # The Zenodo BIDS archive ships no electrodes.tsv sidecar, so
+                # read_raw_bids leaves all EEG positions as NaN. The 27 EEG
+                # channels are standard 10-20 names, so fall back to the
+                # standard_1005 montage when positions are missing.
+                eeg_idx = [i for i, t in enumerate(raw.get_channel_types()) if t == "eeg"]
+                if any(np.isnan(raw.info["chs"][i]["loc"][:3]).any() for i in eeg_idx):
+                    raw.set_montage(
+                        make_standard_montage("standard_1005"), on_missing="ignore"
+                    )
+
                 # We are losting several annotations because there is no fuck
                 # place explaining what it is the events ids :)
                 raw.annotations.rename({"769": "left_hand", "770": "right_hand"})
@@ -519,6 +531,8 @@ class Dreyer2023A(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
+    nemar_id = "nm000250"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(1, 61)),
@@ -612,6 +626,8 @@ class Dreyer2023B(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
+    nemar_id = "nm000250"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(61, 82)),
@@ -700,6 +716,8 @@ class Dreyer2023C(_Dreyer2023Base):
         When should MI-BCI feature optimization include prior knowledge, and which one?.
         Brain-Computer Interfaces, 9(2), 115-128.
     """
+
+    nemar_id = "nm000250"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -792,6 +810,8 @@ class Dreyer2023(_Dreyer2023Base):
         When should MI-BCI feature optimization include prior knowledge, and which one?.
         Brain-Computer Interfaces, 9(2), 115-128.
     """
+
+    nemar_id = "nm000250"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

@@ -109,6 +109,7 @@ class Wang2016(BaseDataset):
            doi: 10.1109/TNSRE.2016.2627556.
     """
 
+    nemar_id = "nm000126"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

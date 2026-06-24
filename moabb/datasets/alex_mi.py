@@ -51,6 +51,7 @@ class AlexMI(BaseDataset):
            https://tel.archives-ouvertes.fr/tel-01196752
     """
 
+    nemar_id = "nm000138"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

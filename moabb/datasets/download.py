@@ -11,17 +11,23 @@ import os.path as osp
 from pathlib import Path
 from urllib.parse import urlparse
 
+import nemar
 import pandas as pd
 import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
+from nemar.errors import NemarError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
 
 
 logger = logging.getLogger(__name__)
+
+
+class NemarDownloadError(RuntimeError):
+    """Raised when a NEMAR download cannot be completed."""
 
 
 def get_user_agent():
@@ -215,6 +221,65 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
         downloader=downloader,
     )
     return dlpath
+
+
+@verbose
+def nemar_dl(
+    nemar_id,
+    dataset_code,
+    path=None,
+    force_update=False,
+    subject=None,
+    verbose=None,
+    **bids_filters,
+):
+    """Download a NEMAR dataset and return the local BIDS root.
+
+    Parameters
+    ----------
+    nemar_id : str
+        NEMAR dataset identifier.
+    dataset_code : str
+        MOABB dataset code used to choose the local dataset directory.
+    path : None | str
+        Base path where MOABB stores datasets.
+    force_update : bool
+        Remove an existing NEMAR download before downloading again.
+    subject : str | list of str | None
+        BIDS subject label(s) to pass to :func:`nemar.download`.
+    verbose : bool, str, int, or None
+        If not None, override default verbose level.
+    **bids_filters
+        Additional BIDS filters forwarded to :func:`nemar.download`.
+
+    Returns
+    -------
+    str
+        Local BIDS root for the downloaded NEMAR dataset.
+
+    Raises
+    ------
+    NemarDownloadError
+        If nemar-py is unavailable or fails to download the selected files.
+    """
+    root = Path(get_dataset_path(dataset_code, path))
+    target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
+
+    # ``force_update`` is handled by ``trust_existing=False`` below, which makes
+    # nemar-py re-fetch the requested subject. Do not delete ``target_dir``
+    # here: it is the shared BIDS root, and ``download()`` calls this once per
+    # subject, so removing it would wipe subjects fetched in earlier iterations.
+    try:
+        nemar.download(
+            dataset=nemar_id,
+            target_dir=target_dir,
+            subject=subject,
+            trust_existing=not force_update,
+            **bids_filters,
+        )
+    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        raise NemarDownloadError(f"Could not download NEMAR dataset {nemar_id}.") from exc
+    return str(target_dir)
 
 
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)
