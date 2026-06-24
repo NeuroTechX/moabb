@@ -400,6 +400,9 @@ class ErpCore2021_N170(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "N170"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "N170")
 
     @staticmethod
@@ -446,6 +449,9 @@ class ErpCore2021_MMN(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "MMN"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "MMN")
 
     @staticmethod
@@ -484,6 +490,9 @@ class ErpCore2021_N2pc(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "N2pc"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "N2pc")
 
     @staticmethod
@@ -549,6 +558,9 @@ class ErpCore2021_P3(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "P3"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "P3")
 
     @staticmethod
@@ -661,6 +673,9 @@ class ErpCore2021_N400(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "N400"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "N400")
 
     @staticmethod
@@ -715,6 +730,9 @@ class ErpCore2021_ERN(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "flankers"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "ERN")
 
     @staticmethod
@@ -800,6 +818,9 @@ class ErpCore2021_LRP(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "flankers"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "LRP")
 
     @staticmethod

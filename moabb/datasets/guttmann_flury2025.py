@@ -30,7 +30,11 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import safe_extract_zip, stim_channels_with_selected_ids
+from .utils import (
+    safe_extract_zip,
+    set_neuroscan_montage,
+    stim_channels_with_selected_ids,
+)
 
 
 log = logging.getLogger(__name__)
@@ -406,8 +410,18 @@ def _fix_channel_types(raw):
             type_mapping[name] = "eog"
         elif upper in ("M1", "M2"):
             type_mapping[name] = "misc"
+        elif upper in ("CB1", "CB2"):
+            # Neuroscan Quik-Cap cerebellar electrodes; absent from every
+            # MNE built-in montage (need the proprietary .elp). Same handling
+            # as PR #781 for Wang2016: keep them as misc with NaN positions.
+            type_mapping[name] = "misc"
     if type_mapping:
         raw.set_channel_types(type_mapping)
+
+    # BDF headers use Neuroscan ALL_CAPS labels; normalize and apply
+    # standard_1005 so the 60 scalp channels get 3D positions. CB1/CB2 (now
+    # misc) and the other non-EEG channels are left unpositioned.
+    set_neuroscan_montage(raw)
     return raw
 
 
@@ -493,6 +507,7 @@ class GuttmannFlury2025_MI(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000265"
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
@@ -642,6 +657,7 @@ class GuttmannFlury2025_ME(BaseDataset):
     """
 
     METADATA = GuttmannFlury2025_MI.METADATA
+    nemar_id = "nm000227"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -710,6 +726,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000310"
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
@@ -873,6 +890,7 @@ class GuttmannFlury2025_P300(BaseDataset):
            Data, 12, 587. https://doi.org/10.1038/s41597-025-04861-9
     """
 
+    nemar_id = "nm000136"
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,

@@ -1,5 +1,7 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
+import inspect
+
 import mne
 import pytest
 
@@ -15,6 +17,42 @@ def _get_events(raw):
     else:
         events, _ = mne.events_from_annotations(raw, verbose=False)
     return events
+
+
+@pytest.mark.download
+@pytest.mark.parametrize(
+    "dataset_class",
+    [pytest.param(dataset, id=dataset.__name__) for dataset in dataset_list],
+)
+def test_nemar_download_equivalence(dl_data, tmp_path, dataset_class):
+    if not dl_data:
+        pytest.skip(
+            "Skipping NEMAR download test by default. "
+            "Run the test with option --dl-data to execute it."
+        )
+
+    kwargs = {}
+    if "accept" in inspect.signature(dataset_class).parameters:
+        kwargs["accept"] = True
+    dataset = dataset_class(**kwargs)
+    assert dataset.nemar_id is not None, (
+        f"{dataset_class.__name__} has no NEMAR dataset ID"
+    )
+    subject = dataset.subject_list[0]
+    dataset.download(subject_list=[subject], path=tmp_path)
+
+    bids_root = tmp_path / f"MNE-{dataset.code.lower()}-data" / dataset.nemar_id
+    description = bids_root / "dataset_description.json"
+    assert description.is_file()
+    assert dataset.nemar_id in description.read_text(encoding="utf-8")
+
+    sessions = dataset._get_single_subject_data_from_nemar(subject, path=tmp_path)
+    assert sessions
+    for runs in sessions.values():
+        assert runs
+        for raw in runs.values():
+            assert isinstance(raw, mne.io.BaseRaw)
+            assert len(_get_events(raw)) > 0
 
 
 @pytest.mark.parametrize("dataset", dataset_list)

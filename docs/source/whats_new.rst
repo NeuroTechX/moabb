@@ -36,6 +36,7 @@ Enhancements
 - Add resting state annotations and EMG channel support to :class:`moabb.datasets.Lee2019` resting state runs for BIDS export compatibility (by `Bruno Aristimunha`_)
 - Skip zip extraction in :class:`moabb.datasets.GuttmannFlury2025` when files are already extracted, with ``/scratch`` fallback for NFS filesystems on compute nodes (by `Bruno Aristimunha`_)
 - Re-enable auto-execution of the Riemannian Artifact Rejection tutorial (``examples/advanced_examples/plot_riemannian_artifact_rejection.py``) now that pyRiemann 0.11 is on PyPI with per-potato metrics and ``method_combination`` support on ``PotatoField`` (by `Bruno Aristimunha`_)
+- Use NEMAR as the default download source for datasets with an assigned ``nemar_id``, while preserving existing dataset-specific downloaders as a fallback (by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
@@ -47,6 +48,8 @@ Requirements
 
 Bugs
 ~~~~
+- Add ``age_median`` field to :class:`moabb.datasets.metadata.schema.ParticipantMetadata` and populate ``age_std`` / ``age_median`` / ``n_blocks`` metadata for :class:`moabb.datasets.Rodrigues2017` (Alphawaves), fixing a ``TypeError`` at import time (by `Grace Xu`_)
+- Fix :class:`moabb.datasets.BNCI2014_001` descriptive ``METADATA``, which had many fields copied from BCI Competition IV Data set 1. Correct ``n_subjects`` (4 → 9), ``n_classes`` (2 → 4), ``class_labels`` / ``events`` / ``imagery_tasks`` (now ``left_hand`` / ``right_hand`` / ``feet`` / ``tongue``), ``synchronicity`` (asynchronous → synchronous), ``sessions_per_subject`` (1 → 2), the per-session trial structure (288 trials, 6 runs of 48), the acquisition ``reference`` / ``ground`` / ``filters`` and the ``preprocessing`` band (0.5–100 Hz with a 50 Hz notch, no 100 Hz downsampling), and the dataset ``description`` so they all match the dataset's own constructor and docstring (by `YG-paaleee`_)
 - Fix :class:`moabb.datasets.BNCI2014_001` stimulus protocol timing in the generated documentation figure to show 2 s fixation, 1.25 s cue, and motor imagery through t=6 s (by `Bruno Aristimunha`_)
 - Fix stim-marker placement in :class:`moabb.datasets.BCIComp2020WalkingERP` (Track 5): ``build_raw_from_epochs`` was called with ``onset_sample=0``, which placed the event at sample 0 of each trial — the start of the pre-stim baseline (t=-190 ms), not the actual stimulus onset. With ``interval=[-0.19, 0.8]``, the paradigm was therefore reading the leading zero buffer as "pre-stim data" and missing the last 180 ms of real post-stim data. Now the loader passes ``onset_sample=19`` so the marker lands on t=0 and the interval picks the real 100-sample epoch as published (by `Bruno Aristimunha`_)
 - Fix session key off-by-one in :class:`moabb.datasets.Lee2019` that caused silent data loss when filtering sessions, and improve session filtering in :class:`moabb.datasets.base.BaseDataset` to match compound session keys (e.g., ``"0train"``) by integer prefix (:gh:`1046` by `Benedetto Leto`_ and `Bruno Aristimunha`_).
@@ -64,6 +67,7 @@ Bugs
 - Fix ``stim_trial`` content in :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary`: the channel was carrying the per-recording trial index instead of the attended command id, breaking multiclass classification across recordings. The marker is now the command id (resolved via the new :func:`moabb.datasets.utils.resolve_cvep_command_ids` helper), and the ``_trial_meta`` annotation extras gain a ``command_id`` key alongside ``trial_id`` (by `Bruno Aristimunha`_).
 - Cache Figshare's file listing in :func:`moabb.datasets.download.fs_get_file_list` (process-level ``lru_cache``) and persist it on disk next to the data for MAMEM (:class:`moabb.datasets.MAMEM1`/``MAMEM2``/``MAMEM3``). Once a dataset has been downloaded, subsequent calls never contact Figshare; pass ``force_update=True`` to bypass both layers (by `Bruno Aristimunha`_).
 - Fix Windows download path sanitization that changed absolute paths like ``C:\data`` into relative ``C-\data`` paths (:gh:`1079` by `Anton Andreev`_).
+- Fix missing electrode positions (NaN xyz) in six motor-imagery datasets so topographic maps, interpolation, and spatial methods work: :class:`moabb.datasets.Forenzo2023` and :class:`moabb.datasets.GuttmannFlury2025_MI`/``_ME`` normalize Neuroscan ALL_CAPS labels and apply ``standard_1005`` (CB1/CB2 kept as ``misc``); :class:`moabb.datasets.Dreyer2023` falls back to ``standard_1005`` when the BIDS archive ships no ``electrodes.tsv``; :class:`moabb.datasets.BNCI2003_004` maps its 26 legacy Berlin channel labels to their modern 10-5 equivalents for exact positions; :class:`moabb.datasets.BNCI2014_002` applies an approximate 3x5 grid for its unlabeled small-Laplacian channels; and :class:`moabb.datasets.Zhang2017` applies the ``GSN-HydroCel-32`` montage in EGI sensor order. Adds the shared :func:`moabb.datasets.utils.set_neuroscan_montage` helper (:gh:`1089` by `Bruno Aristimunha`_).
 Code health
 ~~~~~~~~~~~
 - Install CPU-only PyTorch wheels in CI by setting ``UV_TORCH_BACKEND=cpu`` in the test, braindecode, and docs workflows, so runners no longer download multi-GB CUDA builds of ``torch`` (pulled transitively via the ``deeplearning`` extra / braindecode) (:gh:`1083` by `Bhargav Kowshik`_).
@@ -894,3 +898,5 @@ API changes
 .. _sli930: https://github.com/sli930
 .. _Emily Schrag: https://github.com/emilyschrag
 .. _Bhargav Kowshik: https://github.com/bkowshik
+.. _YG-paaleee: https://github.com/YG-paaleee
+.. _Grace Xu: https://github.com/grookymonster
