@@ -107,6 +107,7 @@ class Forenzo2023(BaseDataset):
            https://doi.org/10.1109/TBME.2023.3298957
     """
 
+    nemar_id = "nm000209"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

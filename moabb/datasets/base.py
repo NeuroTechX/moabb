@@ -28,6 +28,7 @@ from moabb.datasets.bids_interface import (
     _interface_map,
     get_bids_root,
 )
+from moabb.datasets.download import NemarDownloadError, nemar_dl
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
@@ -590,6 +591,11 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     doi : str, optional
         DOI for the dataset.
+    nemar_id : str | None
+        NEMAR dataset identifier used by :meth:`download` when available.
+    nemar_subject_template : str | None
+        Template for formatting subject IDs for NEMAR downloads. For example,
+        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``.
 
     return_all_modalities : bool | dict, optional
         Controls which channel types are retained when data is picked:
@@ -602,6 +608,9 @@ class BaseDataset(metaclass=MetaclassDataset):
     """
 
     _summary_table: dict[str, Any]
+    nemar_id: str | None = None
+    nemar_subject_template: str | None = "{subject}"
+    nemar_bids_filters: dict[str, Any] | None = None
 
     def __init__(
         self,
@@ -918,6 +927,24 @@ class BaseDataset(metaclass=MetaclassDataset):
         if subject_list is None:
             subject_list = self.subject_list
         for subject in subject_list:
+            if self.nemar_id is not None:
+                try:
+                    self._download_nemar(
+                        subject=subject,
+                        path=path,
+                        force_update=force_update,
+                        update_path=update_path,
+                        verbose=verbose,
+                    )
+                    continue
+                except NemarDownloadError as exc:
+                    warnings.warn(
+                        f"Could not download {self.code} from NEMAR ({self.nemar_id}); "
+                        "falling back to the dataset data_path downloader. "
+                        f"Original error: {exc}",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
             # check if accept is needed
             sig = signature(self.data_path)
             if "accept" in [str(p) for p in sig.parameters]:
@@ -938,6 +965,127 @@ class BaseDataset(metaclass=MetaclassDataset):
                     update_path=update_path,
                     verbose=verbose,
                 )
+
+    def _nemar_subject(self, subject):
+        """Format a MOABB subject identifier for NEMAR downloads.
+
+        Parameters
+        ----------
+        subject : int | str
+            MOABB subject identifier.
+
+        Returns
+        -------
+        str | None
+            Formatted NEMAR subject label, or None when subject filtering is
+            disabled.
+
+        Raises
+        ------
+        RuntimeError
+            If ``nemar_subject_template`` cannot format the subject value.
+        """
+        if self.nemar_subject_template is None:
+            return None
+        try:
+            return self.nemar_subject_template.format(subject=subject)
+        except (IndexError, KeyError, ValueError) as exc:
+            raise RuntimeError(
+                f"Could not format NEMAR subject {subject!r} for {self.code} "
+                f"with template {self.nemar_subject_template!r}: {exc}"
+            ) from exc
+
+    def _download_nemar(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        """Download one subject from NEMAR through :func:`moabb.datasets.download.nemar_dl`.
+
+        Parameters mirror :meth:`data_path` for compatibility with
+        :meth:`download`. ``update_path`` is accepted for API compatibility but
+        is not used by NEMAR.
+
+        Returns
+        -------
+        str
+            Local BIDS root returned by ``nemar_dl``.
+
+        Raises
+        ------
+        moabb.datasets.download.NemarDownloadError
+            If nemar-py is unavailable or the NEMAR download fails.
+        """
+        return nemar_dl(
+            self.nemar_id,
+            self.code,
+            path=path,
+            force_update=force_update,
+            subject=self._nemar_subject(subject),
+            verbose=verbose,
+            **(self.nemar_bids_filters or {}),
+        )
+
+    def _get_single_subject_data_from_nemar(self, subject, path=None):
+        """Download and load one subject from the NEMAR BIDS dataset."""
+        try:
+            root = self._download_nemar(subject=subject, path=path)
+            search_params = {
+                "root": root,
+                "subjects": self._nemar_subject(subject),
+                "datatypes": "eeg",
+                "extensions": _RAW_EXTENSIONS,
+            }
+            plural_filters = {
+                "acquisition": "acquisitions",
+                "run": "runs",
+                "session": "sessions",
+                "suffix": "suffixes",
+                "task": "tasks",
+            }
+            for key, value in (self.nemar_bids_filters or {}).items():
+                if key in plural_filters:
+                    search_params[plural_filters[key]] = value
+            bids_paths = mne_bids.find_matching_paths(**search_params)
+            if not bids_paths:
+                raise NemarDownloadError(
+                    f"NEMAR dataset {self.nemar_id} contains no EEG files for "
+                    f"subject {self._nemar_subject(subject)}."
+                )
+
+            session_labels = sorted({path.session for path in bids_paths}, key=str)
+            session_indexes = {label: index for index, label in enumerate(session_labels)}
+            data = {}
+            for bids_path in bids_paths:
+                raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+                raw.load_data()
+                session_index = session_indexes[bids_path.session]
+                session = bids_path.session or str(session_index)
+                if not re.fullmatch(session_run_pattern(), session):
+                    session_label = re.sub(r"[^a-zA-Z0-9]", "", session)
+                    session = f"{session_index}{session_label}"
+                run_index = len(data.setdefault(session, {}))
+                run = bids_path.run or str(run_index)
+                if not re.fullmatch(session_run_pattern(), run) or run in data[session]:
+                    run_label = re.sub(
+                        r"[^a-zA-Z0-9]",
+                        "",
+                        "".join(
+                            value or ""
+                            for value in (
+                                bids_path.task,
+                                bids_path.acquisition,
+                                bids_path.run,
+                            )
+                        ),
+                    )
+                    run = f"{run_index}{run_label}"
+                data[session][run] = raw
+            return data
+        except NemarDownloadError:
+            raise
+        except (KeyError, OSError, RuntimeError, TypeError, ValueError) as exc:
+            raise NemarDownloadError(
+                f"Could not load {self.code} from NEMAR dataset {self.nemar_id}."
+            ) from exc
 
     def convert_to_bids(
         self,

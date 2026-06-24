@@ -36,6 +36,7 @@ Enhancements
 - Add resting state annotations and EMG channel support to :class:`moabb.datasets.Lee2019` resting state runs for BIDS export compatibility (by `Bruno Aristimunha`_)
 - Skip zip extraction in :class:`moabb.datasets.GuttmannFlury2025` when files are already extracted, with ``/scratch`` fallback for NFS filesystems on compute nodes (by `Bruno Aristimunha`_)
 - Re-enable auto-execution of the Riemannian Artifact Rejection tutorial (``examples/advanced_examples/plot_riemannian_artifact_rejection.py``) now that pyRiemann 0.11 is on PyPI with per-potato metrics and ``method_combination`` support on ``PotatoField`` (by `Bruno Aristimunha`_)
+- Use NEMAR as the default download source for datasets with an assigned ``nemar_id``, while preserving existing dataset-specific downloaders as a fallback (by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
@@ -47,6 +48,7 @@ Requirements
 
 Bugs
 ~~~~
+- Add ``age_median`` field to :class:`moabb.datasets.metadata.schema.ParticipantMetadata` and populate ``age_std`` / ``age_median`` / ``n_blocks`` metadata for :class:`moabb.datasets.Rodrigues2017` (Alphawaves), fixing a ``TypeError`` at import time (by `Grace Xu`_)
 - Fix :class:`moabb.datasets.BNCI2014_001` descriptive ``METADATA``, which had many fields copied from BCI Competition IV Data set 1. Correct ``n_subjects`` (4 → 9), ``n_classes`` (2 → 4), ``class_labels`` / ``events`` / ``imagery_tasks`` (now ``left_hand`` / ``right_hand`` / ``feet`` / ``tongue``), ``synchronicity`` (asynchronous → synchronous), ``sessions_per_subject`` (1 → 2), the per-session trial structure (288 trials, 6 runs of 48), the acquisition ``reference`` / ``ground`` / ``filters`` and the ``preprocessing`` band (0.5–100 Hz with a 50 Hz notch, no 100 Hz downsampling), and the dataset ``description`` so they all match the dataset's own constructor and docstring (by `YG-paaleee`_)
 - Fix :class:`moabb.datasets.BNCI2014_001` stimulus protocol timing in the generated documentation figure to show 2 s fixation, 1.25 s cue, and motor imagery through t=6 s (by `Bruno Aristimunha`_)
 - Fix stim-marker placement in :class:`moabb.datasets.BCIComp2020WalkingERP` (Track 5): ``build_raw_from_epochs`` was called with ``onset_sample=0``, which placed the event at sample 0 of each trial — the start of the pre-stim baseline (t=-190 ms), not the actual stimulus onset. With ``interval=[-0.19, 0.8]``, the paradigm was therefore reading the leading zero buffer as "pre-stim data" and missing the last 180 ms of real post-stim data. Now the loader passes ``onset_sample=19`` so the marker lands on t=0 and the interval picks the real 100-sample epoch as published (by `Bruno Aristimunha`_)
@@ -898,3 +900,4 @@ API changes
 .. _Emily Schrag: https://github.com/emilyschrag
 .. _Bhargav Kowshik: https://github.com/bkowshik
 .. _YG-paaleee: https://github.com/YG-paaleee
+.. _Grace Xu: https://github.com/grookymonster

@@ -99,6 +99,7 @@ class Yang2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-04826-y
     """
 
+    nemar_id = "nm000348"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

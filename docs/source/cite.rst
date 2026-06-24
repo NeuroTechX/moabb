@@ -14,7 +14,7 @@ and here is the Bibtex version:
 
 .. code-block:: bibtex
 
-    @software{Aristimunha_Mother_of_all,
+    @misc{Aristimunha_Mother_of_all,
       author       = {Aristimunha, Bruno and
                       Carrara, Igor and
                       Guetschel, Pierre and

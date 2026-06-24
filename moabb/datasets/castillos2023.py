@@ -370,6 +370,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000344"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -664,6 +665,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000345"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -931,6 +933,7 @@ class CastillosCVEP100(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000346"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -1189,6 +1192,7 @@ class CastillosCVEP40(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000342"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

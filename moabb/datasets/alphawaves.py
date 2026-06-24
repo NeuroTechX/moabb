@@ -122,6 +122,8 @@ class Rodrigues2017(BaseDataset):
             health_status="healthy",
             gender={"female": 7, "male": 13},
             age_mean=25.8,
+            age_std=5.27,
+            age_median=25.5,
         ),
         experiment=ExperimentMetadata(
             events={"closed": 1, "open": 2},
@@ -170,9 +172,10 @@ class Rodrigues2017(BaseDataset):
         ),
         bci_application=BCIApplicationMetadata(applications=None),
         paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="rstate"),
-        data_structure=DataStructureMetadata(n_trials=10),
+        data_structure=DataStructureMetadata(n_trials=10, n_blocks=10),
         data_processed=False,
     )
+    nemar_id = "nm000221"
 
     def __init__(self, subjects=None, sessions=None):
         subject_list = list(range(1, 6 + 1)) + list(range(8, 20 + 1))

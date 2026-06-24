@@ -531,6 +531,8 @@ class Dreyer2023A(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
+    nemar_id = "nm000250"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(1, 61)),
@@ -624,6 +626,8 @@ class Dreyer2023B(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
+    nemar_id = "nm000250"
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             all_subjects=list(range(61, 82)),
@@ -712,6 +716,8 @@ class Dreyer2023C(_Dreyer2023Base):
         When should MI-BCI feature optimization include prior knowledge, and which one?.
         Brain-Computer Interfaces, 9(2), 115-128.
     """
+
+    nemar_id = "nm000250"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -804,6 +810,8 @@ class Dreyer2023(_Dreyer2023Base):
         When should MI-BCI feature optimization include prior knowledge, and which one?.
         Brain-Computer Interfaces, 9(2), 115-128.
     """
+
+    nemar_id = "nm000250"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

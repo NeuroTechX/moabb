@@ -325,6 +325,7 @@ class Shin2017A(BaseShin2017):
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
 
+    nemar_id = "nm000267"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
@@ -652,6 +653,7 @@ class Shin2017B(BaseShin2017):
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
 
+    nemar_id = "nm000268"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
