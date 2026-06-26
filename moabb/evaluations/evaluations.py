@@ -9,11 +9,12 @@ from tqdm import tqdm
 
 from moabb.evaluations.base import (
     BaseEvaluation,
+    _one_shot_estimator,
     _route_transfer_metadata,
-    _wrap_predict_mode,
 )
 from moabb.evaluations.protocols import (
-    PredictMode,
+    CsMode,
+    is_one_shot_mode,
     resolve_cs_mode,
     validate_transfer_protocol,
 )
@@ -477,15 +478,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
         ``X_target_unlabeled`` may be routed. With ``calibration_labeled=True``,
         ``X_target_labeled`` and ``y_target_labeled`` may be routed.
         Labeled calibration is only allowed with ``calibration_size <= 0.5``.
-    cs_mode : CsMode or str, optional
-        Named cross-subject protocol preset. If provided, it sets
-        ``calibration_size``, ``calibration_labeled``, and ``predict_mode``.
-        Cannot be combined with manual ``calibration_size`` or
-        ``calibration_labeled`` in ``cv_kwargs``.
-    predict_mode : {"blockwise", "trialwise"}, default="blockwise"
-        Whether prediction is done on the full test block or one trial at a time.
-        Cannot be combined with ``cs_mode`` because ``cs_mode`` already defines it.
-
+    cs_mode : CsMode or str, default=CsMode.HOS_SOURCE_ONLY
+        Named cross-subject protocol preset. By default, this is the standard
+        source-only cross-subject evaluation with no target calibration. The
+        ``HOS_SOURCE_ONLY_TRIALWISE`` mode additionally enforces one-trial-at-a-time
+        prediction during scoring. Cannot be combined with manual
+        ``calibration_size`` or ``calibration_labeled`` in ``cv_kwargs``, except
+        for the default ``HOS_SOURCE_ONLY`` mode.
 
     Notes
     -----
@@ -497,34 +496,40 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _score_per_session = True
     _needs_all_subjects = True
 
-    def __init__(
-        self, *args, cs_mode=None, predict_mode=PredictMode.BLOCKWISE.value, **kwargs
-    ):
+    def __init__(self, *args, cs_mode=CsMode.HOS_SOURCE_ONLY, **kwargs):
         cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
+        self.one_shot_predict = False
 
-        if cs_mode is not None:
-            if "calibration_size" in cv_kwargs or "calibration_labeled" in cv_kwargs:
-                raise ValueError(
-                    "Pass either cs_mode or calibration_size/calibration_labeled, "
-                    "not both."
-                )
+        if cs_mode is None:
+            cs_mode = CsMode.HOS_SOURCE_ONLY
 
-            if PredictMode(predict_mode) != PredictMode.BLOCKWISE:
-                raise ValueError("Pass either cs_mode or predict_mode, not both.")
+        cs_mode = CsMode(cs_mode)
 
+        # manual cv_kwargs still work when the
+        # default source-only blockwise mode is used.
+        has_manual_calibration = (
+            "calibration_size" in cv_kwargs or "calibration_labeled" in cv_kwargs
+        )
+
+        if has_manual_calibration and cs_mode != CsMode.HOS_SOURCE_ONLY:
+            raise ValueError(
+                "Pass either cs_mode or calibration_size/calibration_labeled, "
+                "not both."
+            )
+
+        if not has_manual_calibration:
             params = resolve_cs_mode(cs_mode)
             cv_kwargs["calibration_size"] = params["calibration_size"]
             cv_kwargs["calibration_labeled"] = params["calibration_labeled"]
-            predict_mode = params["predict_mode"]
+
+        self.one_shot_predict = is_one_shot_mode(cs_mode)
 
         validate_transfer_protocol(
             cv_kwargs.get("calibration_size", 0.0),
             cv_kwargs.get("calibration_labeled", False),
         )
 
-        self.predict_mode = PredictMode(predict_mode).value
         kwargs["cv_kwargs"] = cv_kwargs
-
         super().__init__(*args, **kwargs)
 
     def _create_splitter(self):
@@ -652,7 +657,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     cvclf, dataset, subject, "", name, cv_ind, eval_type="CrossSubject"
                 )
 
-                score_estimator = _wrap_predict_mode(cvclf, self.predict_mode)
+                score_estimator = (
+                    _one_shot_estimator(cvclf) if self.one_shot_predict else cvclf
+                )
                 scorer = _create_scorer(score_estimator, self.paradigm.scoring)
 
                 for session in np.unique(sessions[test]):
