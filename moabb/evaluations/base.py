@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from sklearn import config_context
-from sklearn.base import BaseEstimator, ClassifierMixin, clone
+from sklearn.base import BaseEstimator, clone
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.metadata_routing import get_routing_for_object
@@ -23,7 +23,6 @@ from moabb.datasets.base import (  # noqa: F401 - CacheConfig used in type hints
     BaseDataset,
     CacheConfig,
 )
-from moabb.evaluations.protocols import PredictMode
 from moabb.evaluations.utils import (
     Emissions,
     _carbonfootprint,
@@ -48,6 +47,49 @@ search_methods, optuna_available = check_search_available()
 log = logging.getLogger(__name__)
 
 
+def _one_shot_estimator(estimator):
+    class _OneShotEstimator:
+        def __init__(self, estimator):
+            self.estimator = estimator
+            if hasattr(estimator, "classes_"):
+                self.classes_ = estimator.classes_
+            elif hasattr(estimator, "steps") and hasattr(estimator.steps[-1][1], "classes_"):
+                self.classes_ = estimator.steps[-1][1].classes_
+
+        def predict(self, X):
+            return np.asarray(
+                [self.estimator.predict(X[i : i + 1])[0] for i in range(len(X))]
+            )
+
+        def __getattr__(self, name):
+            if name == "predict_proba" and hasattr(self.estimator, "predict_proba"):
+                def predict_proba(X):
+                    return np.vstack(
+                        [
+                            self.estimator.predict_proba(X[i : i + 1])
+                            for i in range(len(X))
+                        ]
+                    )
+
+                return predict_proba
+
+            if name == "decision_function" and hasattr(
+                self.estimator, "decision_function"
+            ):
+                def decision_function(X):
+                    values = [
+                        self.estimator.decision_function(X[i : i + 1])
+                        for i in range(len(X))
+                    ]
+                    return np.asarray([v[0] for v in values])
+
+                return decision_function
+
+            raise AttributeError(name)
+
+    return _OneShotEstimator(estimator)
+
+    
 def _route_transfer_metadata(estimator, subjects, calib=None, calibration_labeled=False):
     """Keep only protocol-allowed transfer metadata requested at ``fit``.
 
@@ -78,82 +120,6 @@ def _route_transfer_metadata(estimator, subjects, calib=None, calibration_labele
         kept = get_routing_for_object(estimator).consumes("fit", set(candidate))
 
     return {k: v for k, v in candidate.items() if k in kept}
-
-
-class TrialwisePredictWrapper(ClassifierMixin, BaseEstimator):
-    """Wrap a fitted estimator and force one-trial-at-a-time prediction."""
-
-    _estimator_type = "classifier"
-
-    def __init__(self, fitted_estimator):
-        self.fitted_estimator = fitted_estimator
-        self.classes_ = self._get_classes(fitted_estimator)
-
-    def fit(self, X, y=None):
-        raise RuntimeError("TrialwisePredictWrapper wraps an already fitted estimator.")
-
-    def predict(self, X):
-        return np.asarray(
-            [self.fitted_estimator.predict(X[i : i + 1])[0] for i in range(len(X))]
-        )
-
-    def predict_proba(self, X):
-        if not hasattr(self.fitted_estimator, "predict_proba"):
-            raise AttributeError("Wrapped estimator does not provide predict_proba.")
-
-        return np.vstack(
-            [
-                np.asarray(self.fitted_estimator.predict_proba(X[i : i + 1]))[0]
-                for i in range(len(X))
-            ]
-        )
-
-    def decision_function(self, X):
-        if not hasattr(self.fitted_estimator, "decision_function"):
-            raise AttributeError("Wrapped estimator does not provide decision_function.")
-
-        rows = []
-
-        for i in range(len(X)):
-            out = np.asarray(self.fitted_estimator.decision_function(X[i : i + 1]))
-
-            if out.ndim == 0:
-                rows.append(out.item())
-            elif out.shape[0] == 1:
-                rows.append(out[0])
-            else:
-                rows.append(out)
-
-        out = np.asarray(rows)
-
-        if out.ndim == 2 and out.shape[1] == 1:
-            return out.ravel()
-
-        return out
-
-    @staticmethod
-    def _get_classes(estimator):
-        if hasattr(estimator, "classes_"):
-            return estimator.classes_
-
-        if hasattr(estimator, "steps"):
-            final_estimator = estimator.steps[-1][1]
-            if hasattr(final_estimator, "classes_"):
-                return final_estimator.classes_
-
-        raise AttributeError("Wrapped estimator does not expose classes_.")
-
-
-def _wrap_predict_mode(estimator, predict_mode):
-    predict_mode = PredictMode(predict_mode)
-
-    if predict_mode == PredictMode.BLOCKWISE:
-        return estimator
-
-    if predict_mode == PredictMode.TRIALWISE:
-        return TrialwisePredictWrapper(estimator)
-
-    raise ValueError(f"Unknown predict_mode={predict_mode!r}.")
 
 
 # Making the optuna soft dependency
@@ -253,7 +219,7 @@ def _evaluate_fold(
     score_per_session = config["score_per_session"]
     mne_labels = config["mne_labels"]
     codecarbon_config = config["codecarbon_config"]
-    predict_mode = config.get("predict_mode", PredictMode.BLOCKWISE.value)
+    one_shot_predict = config.get("one_shot_predict", False)
 
     # Label encode per fold (matching old per-session/per-subject scoping)
     if not mne_labels:
@@ -340,7 +306,7 @@ def _evaluate_fold(
         )
         _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
 
-    score_estimator = _wrap_predict_mode(cvclf, predict_mode)
+    score_estimator = _one_shot_estimator(cvclf) if one_shot_predict else cvclf
     scorer = _create_scorer(score_estimator, scoring)
 
     # Build score groups: per-session or full test set
@@ -804,7 +770,7 @@ class BaseEvaluation(ABC):
                 self.emissions.codecarbon_config if _carbonfootprint else None
             ),
             "score_per_session": self._score_per_session,
-            "predict_mode": getattr(self, "predict_mode", PredictMode.BLOCKWISE.value),
+            "one_shot_predict": getattr(self, "one_shot_predict", False),
             "param_grid": None,  # overridden per-task below if needed
         }
 
