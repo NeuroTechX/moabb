@@ -1016,6 +1016,10 @@ class NamedFunctionTransformer(FunctionTransformer):
         )
 
 
+def _identity(raw):
+    return raw
+
+
 def get_filter_pipeline(fmin, fmax):
     """Return a pipeline step that applies MNE band-pass filtering to ``Raw``.
 
@@ -1030,6 +1034,9 @@ def get_filter_pipeline(fmin, fmax):
     fmax : float
         High cutoff frequency (Hz) passed as ``h_freq``.
     """
+    if fmin is None and fmax is None:
+        return NamedFunctionTransformer(func=_identity, display_name="No Filter")
+
     # methodcaller: forwards to mne.io.BaseRaw.filter when the pipeline passes a Raw.
     return NamedFunctionTransformer(
         func=methodcaller(

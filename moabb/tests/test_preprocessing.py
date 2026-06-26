@@ -642,6 +642,18 @@ def test_pipeline_helpers(factory, args, label):
     assert isinstance(t, NamedFunctionTransformer) and label in repr(t)
 
 
+def test_filter_pipeline_no_bandpass_is_noop():
+    raw = _raw()
+    data = raw.get_data().copy()
+    transformer = get_filter_pipeline(None, None)
+
+    transformed = transformer.fit_transform(raw)
+
+    assert repr(transformer) == "No Filter"
+    assert transformed is raw
+    np.testing.assert_allclose(transformed.get_data(), data)
+
+
 def test_fixed_pipeline_repr_html_with_steptype_keys():
     """FixedPipeline._repr_html_ must work with StepType enum keys."""
     pipeline = FixedPipeline(
