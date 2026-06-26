@@ -121,3 +121,28 @@ if __name__ == "__main__":
     )
     results = evaluation.process({"RA+TS+LR": make_transfer_pipeline()})
     print(results[["subject", "session", "pipeline", "score"]].to_string(index=False))
+
+    # ------------------------------------------------------------------
+    # Trialwise / one-shot prediction with pure scikit-learn: freeze the
+    # source-trained model and predict each held-out trial in isolation via
+    # LeaveOneOut (test fold size == 1). No custom wrapper.
+    # ------------------------------------------------------------------
+    from sklearn.frozen import FrozenEstimator
+    from sklearn.model_selection import LeaveOneOut, cross_val_predict
+
+    X, y, meta = paradigm.get_data(dataset=dataset)
+    target = meta["subject"].to_numpy() == np.unique(meta["subject"])[-1]
+    source_model = make_pipeline(
+        Covariances_("oas"), TangentSpace("riemann"), LogisticRegression(max_iter=500)
+    ).fit(X[~target], y[~target])
+    trialwise = cross_val_predict(
+        FrozenEstimator(source_model),
+        X[target],
+        y[target],
+        cv=LeaveOneOut(),
+        method="predict",
+    )
+    print(
+        "trialwise == blockwise (inductive):",
+        np.array_equal(trialwise, source_model.predict(X[target])),
+    )
