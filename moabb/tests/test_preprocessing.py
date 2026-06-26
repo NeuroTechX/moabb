@@ -645,9 +645,11 @@ def test_pipeline_helpers(factory, args, label):
 def test_filter_pipeline_no_bandpass_is_noop():
     raw = _raw()
     data = raw.get_data().copy()
+    transformer = get_filter_pipeline(None, None)
 
-    transformed = get_filter_pipeline(None, None).fit_transform(raw)
+    transformed = transformer.fit_transform(raw)
 
+    assert repr(transformer) == "No Filter"
     assert transformed is raw
     np.testing.assert_allclose(transformed.get_data(), data)
 

@@ -1035,9 +1035,7 @@ def get_filter_pipeline(fmin, fmax):
         High cutoff frequency (Hz) passed as ``h_freq``.
     """
     if fmin is None and fmax is None:
-        return NamedFunctionTransformer(
-            func=_identity, display_name=f"Band Pass Filter ({fmin}–{fmax} Hz)"
-        )
+        return NamedFunctionTransformer(func=_identity, display_name="No Filter")
 
     # methodcaller: forwards to mne.io.BaseRaw.filter when the pipeline passes a Raw.
     return NamedFunctionTransformer(
