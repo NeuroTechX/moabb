@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
 from sklearn.utils import Bunch
+from sklearn.utils.validation import check_is_fitted
 
 from moabb.datasets._channel_pick import pick_channels_for_modalities
 
@@ -1102,3 +1103,116 @@ def get_resample_pipeline(sfreq):
         func=methodcaller("resample", sfreq=sfreq, verbose=False),
         display_name=f"Resample ({sfreq} Hz)",
     )
+
+
+class EuclideanAlignment(TransformerMixin, BaseEstimator):
+    r"""Euclidean Alignment of trials (He & Wu, 2020).
+
+    Euclidean Alignment (EA) removes the per-domain (subject / session /
+    recording) covariance shift that makes a model trained on one set of
+    recordings transfer poorly to another. It is the simplest member of a
+    larger family of trial-alignment methods — others recenter on the
+    Riemannian or log-Euclidean mean — and is the one most used with deep
+    networks because it is cheap, label-free, and leaves the data as raw trials
+    a network can ingest [He2020]_ [Junqueira2024]_.
+
+    Each trial is whitened by the inverse square root of a single reference
+    covariance,
+
+    .. math::
+
+        \bar{C} = \frac{1}{N} \sum_{i=1}^{N} C_i, \qquad
+        \tilde{X}_i = \bar{C}^{-1/2} X_i ,
+
+    where :math:`C_i` is the spatial covariance of trial :math:`X_i` and
+    :math:`\bar{C}` is their **arithmetic (Euclidean) mean**. After alignment
+    the trials share an identity-like average covariance, so the domain shift
+    that lived in the second-order statistics is gone.
+
+    The transformer is **inductive** by default: :meth:`fit` learns
+    :math:`\bar{C}^{-1/2}` from the *training* trials and :meth:`transform`
+    re-applies that same whitener to unseen trials, so no test information leaks
+    into the alignment (the leakage that the transductive, fit-on-everything
+    form silently introduces). Calling :meth:`fit_transform` on a single
+    recording recovers the usual transductive, per-recording EA people
+    hand-roll — same object, no second class.
+
+    Unlike :class:`pyriemann.transfer.TLCenter` (with ``metric="euclid"``),
+    which recenters covariance *matrices* for a Riemannian classifier, this
+    operates directly on the ``(n_trials, n_channels, n_times)`` trials, so it
+    drops in front of any time-series model (CSP, EEGNet, ...).
+
+    Parameters
+    ----------
+    estimator : str, default "lwf"
+        Covariance estimator passed to
+        :func:`pyriemann.utils.covariance.covariances`. The shrinkage default
+        ``"lwf"`` (Ledoit-Wolf) keeps the per-trial covariances symmetric
+        positive-definite — and hence the reference mean invertible — even on
+        short or noisy trials, where the plain sample covariance (``"scm"`` /
+        ``"cov"``) can be ill-conditioned.
+
+    Attributes
+    ----------
+    inv_sqrt_ref_ : ndarray, shape (n_channels, n_channels)
+        Inverse square root :math:`\bar{C}^{-1/2}` of the reference mean
+        covariance learned in :meth:`fit`; the whitening matrix applied in
+        :meth:`transform`.
+
+    See Also
+    --------
+    pyriemann.transfer.TLCenter
+
+    Notes
+    -----
+    Accepts an :class:`mne.BaseEpochs` (read via ``get_data``) or an ndarray of
+    shape ``(n_trials, n_channels, n_times)``; :meth:`transform` returns an
+    ndarray of the same shape. ``pyriemann >= 0.11`` is already a hard moabb
+    dependency, so this adds no new requirement.
+
+    References
+    ----------
+    .. [He2020] He, H., & Wu, D. (2020). Transfer learning for brain-computer
+       interfaces: A Euclidean space data alignment approach. *IEEE
+       Transactions on Biomedical Engineering*, 67(2), 399-410.
+       https://doi.org/10.1109/TBME.2019.2913914
+    .. [Junqueira2024] Junqueira, B., Aristimunha, B., Chevallier, S., &
+       de Camargo, R. Y. (2024). A systematic evaluation of Euclidean alignment
+       with deep learning for EEG decoding. *Journal of Neural Engineering*,
+       21(3), 036038. https://doi.org/10.1088/1741-2552/ad4f18
+    """
+
+    def __init__(self, estimator="lwf"):
+        self.estimator = estimator
+
+    @staticmethod
+    def _array(X):
+        """Return trials as a float ``(n_trials, n_channels, n_times)`` ndarray."""
+        if hasattr(X, "get_data"):  # mne Epochs
+            X = X.get_data(copy=False)
+        X = np.asarray(X, dtype=float)
+        if X.ndim != 3:
+            raise ValueError(
+                "EuclideanAlignment expects trials shaped "
+                f"(n_trials, n_channels, n_times), got a {X.ndim}D input."
+            )
+        return X
+
+    def fit(self, X, y=None):
+        # Lazy import: pyriemann.utils.base emits a DeprecationWarning at import
+        # time and this core module is imported almost everywhere, so only
+        # EuclideanAlignment users pay it. These paths are valid for the declared
+        # pyriemann >= 0.11 floor and match the rest of moabb (pipelines.csp,
+        # pipelines.classification). The Euclidean mean is the arithmetic mean of
+        # the per-trial covariances, so no mean_covariance() call is needed.
+        from pyriemann.utils.base import invsqrtm
+        from pyriemann.utils.covariance import covariances
+
+        covs = covariances(self._array(X), estimator=self.estimator)
+        self.inv_sqrt_ref_ = invsqrtm(covs.mean(axis=0))
+        return self
+
+    def transform(self, X):
+        check_is_fitted(self, "inv_sqrt_ref_")
+        # (n_chans, n_chans) @ (n_trials, n_chans, n_times) -> (n_trials, n_chans, n_times)
+        return np.matmul(self.inv_sqrt_ref_, self._array(X))
