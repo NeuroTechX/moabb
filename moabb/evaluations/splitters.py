@@ -59,6 +59,9 @@ class WithinSessionSplitter(BaseCrossValidator):
         Defaults to ``StratifiedKFold``.
     cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
+        Values explicitly provided here for ``n_splits``, ``shuffle`` or
+        ``random_state`` take precedence over the ``n_folds``, ``shuffle`` and
+        ``random_state`` arguments.
 
     """
 
@@ -95,7 +98,7 @@ class WithinSessionSplitter(BaseCrossValidator):
             ("shuffle", shuffle),
             ("random_state", self._rng),
         ]:
-            if p in params:
+            if p in params and p not in cv_kwargs:
                 self._cv_kwargs[p] = v
         self._last_split_metadata = None
 
@@ -199,6 +202,9 @@ class WithinSubjectSplitter(BaseCrossValidator):
         Defaults to ``StratifiedKFold``.
     cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
+        Values explicitly provided here for ``n_splits``, ``shuffle`` or
+        ``random_state`` take precedence over the ``n_folds``, ``shuffle`` and
+        ``random_state`` arguments.
 
     """
 
@@ -235,7 +241,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
             ("shuffle", shuffle),
             ("random_state", self._rng),
         ]:
-            if p in params:
+            if p in params and p not in cv_kwargs:
                 self._cv_kwargs[p] = v
         self._last_split_metadata = None
 

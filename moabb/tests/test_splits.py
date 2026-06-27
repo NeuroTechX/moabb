@@ -487,6 +487,31 @@ def test_within_subject_get_n_splits(data):
     assert n_splits == 5 * 5  # 5 subjects, 5 folds each
 
 
+@pytest.mark.parametrize("splitter", [WithinSessionSplitter, WithinSubjectSplitter])
+def test_cv_kwargs_n_splits_not_overwritten(data, splitter):
+    """Explicit n_splits in cv_kwargs must not be overwritten by n_folds."""
+    _, y, metadata = data
+
+    split = splitter(
+        cv_class=StratifiedShuffleSplit,
+        n_splits=1,
+        test_size=0.25,
+        shuffle=True,
+        random_state=42,
+    )
+
+    # The inner cv should keep the explicitly requested single split.
+    assert split._cv_kwargs["n_splits"] == 1
+
+    if splitter == WithinSessionSplitter:
+        num_groups = metadata.groupby(["subject", "session"]).ngroups
+    else:
+        num_groups = metadata["subject"].nunique()
+
+    splits = list(split.split(y, metadata))
+    assert len(splits) == num_groups  # one split per group, not n_folds per group
+
+
 @pytest.mark.parametrize(
     "splitter", [CrossSessionSplitter, CrossSubjectSplitter, CrossDatasetSplitter]
 )
