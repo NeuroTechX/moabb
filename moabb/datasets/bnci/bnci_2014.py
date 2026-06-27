@@ -546,6 +546,7 @@ class BNCI2014_001(MNEBNCI):
             force_update=force_update,
             update_path=update_path,
             only_filenames=True,
+            artifact_handling=self.artifact_handling,
             verbose=verbose,
         )
 

@@ -375,9 +375,9 @@ def _add_artifact_annotations(
         return
 
     artifacts = np.asarray(run.artifacts).ravel()
-    trials = np.asarray(run.trial).ravel()
     if len(artifacts) == 0:
         return
+    trials = np.asarray(run.trial).ravel()
     if len(artifacts) != len(trials):
         raise ValueError("run.artifacts must contain one flag per trial")
 
