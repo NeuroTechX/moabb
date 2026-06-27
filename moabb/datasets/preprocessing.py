@@ -587,6 +587,25 @@ def _compute_events_desc(event_id):
     return ret
 
 
+def _is_preserved_annotation(description) -> bool:
+    """Return True for annotations that must survive event re-derivation.
+
+    :class:`SetRawAnnotations` rebuilds annotations from the trial triggers and
+    therefore drops every annotation already present on the raw. Some
+    annotations, however, carry information that is *not* encoded in the
+    triggers and must be kept:
+
+    - any "bad" segment (description starting with ``"bad"``, case-insensitive),
+      which is MNE's convention for spans excluded by ``reject_by_annotation``
+      (e.g. ``"BAD_artifact"`` from the BNCI loaders, ``"BAD boundary"`` from
+      run concatenation);
+    - the non-rejecting ``"bnci_artifact"`` marker added in ``annotate`` mode,
+      kept so downstream code can still inspect flagged trials.
+    """
+    desc = str(description)
+    return desc.lower().startswith("bad") or desc == "bnci_artifact"
+
+
 class SetRawAnnotations(FixedTransformer):
     """Derive trial markers on ``Raw`` and set them as MNE :class:`mne.Annotations`.
 
@@ -633,6 +652,21 @@ class SetRawAnnotations(FixedTransformer):
                 sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
                 extras_by_sample[sample] = extra
 
+        # Preserve artifact / bad-segment annotations (e.g. per-trial BNCI
+        # artifact flags). ``set_annotations`` below replaces every annotation
+        # with the event-derived ones, so capture these first (keeping their
+        # onset, duration, description and extras) and re-attach them afterwards
+        # so ``reject_by_annotation`` still sees them at epoching time.
+        preserved = None
+        if raw.annotations is not None and len(raw.annotations):
+            keep_idx = [
+                i
+                for i, desc in enumerate(raw.annotations.description)
+                if _is_preserved_annotation(desc)
+            ]
+            if keep_idx:
+                preserved = raw.annotations[keep_idx]
+
         if len(stim_channels) == 0:
             if raw.annotations is None:
                 log.warning(
@@ -670,6 +704,11 @@ class SetRawAnnotations(FixedTransformer):
                 annotations.extras = new_extras
 
             raw.set_annotations(annotations)
+            # Re-attach the preserved artifact / bad-segment annotations. Both
+            # share the raw's ``orig_time`` (its measurement date), so the
+            # onsets stay aligned with the event annotations just set.
+            if preserved is not None:
+                raw.set_annotations(raw.annotations + preserved)
         else:
             log.warning("No events found, skipping setting annotations.")
         return raw

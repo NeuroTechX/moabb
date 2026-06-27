@@ -33,6 +33,7 @@ class BaseSSVEP(BaseParadigm):
         channels=None,
         resample=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         """Init the BaseSSVEP function."""
 
@@ -45,6 +46,7 @@ class BaseSSVEP(BaseParadigm):
             tmin=tmin,
             tmax=tmax,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
         self.n_classes = n_classes
@@ -177,6 +179,7 @@ class SSVEP(BaseSSVEP):
         channels=None,
         resample=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         if filters is not None:
             raise ValueError("SSVEP does not take argument filters")
@@ -190,6 +193,7 @@ class SSVEP(BaseSSVEP):
             channels=channels,
             resample=resample,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
 
@@ -217,6 +221,7 @@ class FilterBankSSVEP(BaseSSVEP):
         channels=None,
         resample=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=filters,
@@ -228,6 +233,7 @@ class FilterBankSSVEP(BaseSSVEP):
             channels=channels,
             resample=resample,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
 
