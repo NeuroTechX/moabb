@@ -7,6 +7,13 @@ from moabb.datasets.bnci.base import _convert_run
 
 
 def _fake_mi_run():
+    """Return a minimal Graz MI run.
+
+    The fake run mirrors the fields used by ``_convert_run``: ``X`` is samples by
+    channels, ``fs`` is the sampling frequency, ``trial`` contains source
+    1-indexed event sample positions, ``y`` contains class codes, ``classes``
+    contains class names, and ``artifacts`` contains one flag per trial.
+    """
     return SimpleNamespace(
         X=np.zeros((2500, 2)),
         fs=250,

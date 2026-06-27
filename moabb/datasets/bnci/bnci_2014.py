@@ -21,6 +21,7 @@ from moabb.datasets.metadata.schema import (
 from moabb.utils import depreciated_alias
 
 from .base import (
+    BNCI_ARTIFACT_HANDLING,
     BNCI_URL,
     MNEBNCI,
     _convert_mi,
@@ -506,11 +507,8 @@ class BNCI2014_001(MNEBNCI):
         return_all_modalities=False,
         artifact_handling="ignore",
     ):
-        valid_artifact_handling = ("ignore", "annotate", "annotate_bad", "reject")
-        if artifact_handling not in valid_artifact_handling:
-            raise ValueError(
-                f"artifact_handling must be one of {valid_artifact_handling}"
-            )
+        if artifact_handling not in BNCI_ARTIFACT_HANDLING:
+            raise ValueError(f"artifact_handling must be one of {BNCI_ARTIFACT_HANDLING}")
         self.artifact_handling = artifact_handling
         super().__init__(
             subjects=list(range(1, 10)),

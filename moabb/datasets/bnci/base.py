@@ -20,6 +20,7 @@ from .utils import convert_units
 
 BNCI_URL = "https://lampx.tugraz.at/~bci/database/"
 BBCI_URL = "http://doc.ml.tu-berlin.de/bbci/"
+BNCI_ARTIFACT_HANDLING = ("ignore", "annotate", "annotate_bad", "reject")
 
 
 def data_path(url, path=None, force_update=False, update_path=None, verbose=None):
@@ -367,10 +368,27 @@ def standardize_keys(d):
 def _add_artifact_annotations(
     raw, run, artifact_handling="ignore", artifact_interval=None
 ):
-    """Attach trial-level artifact flags as MNE annotations."""
-    valid = ("ignore", "annotate", "annotate_bad", "reject")
-    if artifact_handling not in valid:
-        raise ValueError(f"artifact_handling must be one of {valid}")
+    """Attach trial-level BNCI artifact flags as MNE annotations.
+
+    Parameters
+    ----------
+    raw : instance of RawArray
+        Raw object created from a BNCI run.
+    run : mat_struct
+        BNCI run object. ``run.trial`` is expected to contain the source
+        1-indexed sample positions used for the stim channel, and
+        ``run.artifacts`` is expected to contain one artifact flag per trial.
+    artifact_handling : {"ignore", "annotate", "annotate_bad", "reject"}
+        ``"ignore"`` leaves annotations unchanged. ``"annotate"`` adds
+        non-rejecting ``"bnci_artifact"`` annotations. ``"annotate_bad"`` and
+        ``"reject"`` add ``"BAD_artifact"`` annotations for MNE epoch-time
+        rejection.
+    artifact_interval : tuple of float, optional
+        Time interval, relative to each trial event, covered by artifact
+        annotations. If None, zero-duration annotations are added at the event.
+    """
+    if artifact_handling not in BNCI_ARTIFACT_HANDLING:
+        raise ValueError(f"artifact_handling must be one of {BNCI_ARTIFACT_HANDLING}")
     if artifact_handling == "ignore" or not hasattr(run, "artifacts"):
         return
 
@@ -380,6 +398,8 @@ def _add_artifact_annotations(
     trials = np.asarray(run.trial).ravel()
     if len(artifacts) != len(trials):
         raise ValueError("run.artifacts must contain one flag per trial")
+    if np.any(trials < 1):
+        raise ValueError("run.trial must contain 1-indexed sample positions")
 
     flagged = np.nonzero(artifacts)[0]
     if len(flagged) == 0:
