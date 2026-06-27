@@ -226,6 +226,9 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         is used, windows may cross event boundaries; such windows are kept and
         labeled using a majority vote over the events they cover.
         Defaults to ``None``.
+    reject_by_annotation : bool
+        If True, reject epochs overlapping annotations whose description starts
+        with ``bad``. Defaults to ``True``.
     """
 
     def __init__(
@@ -237,6 +240,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         channels: Optional[List[str]] = None,
         resample: Optional[float] = None,
         overlap: Optional[float] = None,
+        reject_by_annotation: bool = True,
     ):
         if tmax is not None:
             if tmin >= tmax:
@@ -249,6 +253,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         self.tmax = tmax
         self.interpolate_missing_channels = False
         self.overlap = overlap
+        self.reject_by_annotation = reject_by_annotation
 
     @property
     @abc.abstractmethod
@@ -654,6 +659,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                                 channels=self.channels,
                                 interpolate_missing_channels=self.interpolate_missing_channels,
                                 return_all_modalities=dataset.return_all_modalities,
+                                reject_by_annotation=self.reject_by_annotation,
                             ),
                         ),
                     ]
@@ -802,6 +808,7 @@ class BaseParadigm(BaseProcessing):
         resample=None,
         overlap=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=filters,
@@ -811,6 +818,7 @@ class BaseParadigm(BaseProcessing):
             tmin=tmin,
             tmax=tmax,
             overlap=overlap,
+            reject_by_annotation=reject_by_annotation,
         )
         self.events = events
 

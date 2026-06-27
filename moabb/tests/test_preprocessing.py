@@ -27,6 +27,7 @@ from moabb.datasets.preprocessing import (
     _get_event_id_values,
     _insert_rest_events,
     _is_none_pipeline,
+    _is_preserved_annotation,
     _unsafe_pick_events,
     get_crop_pipeline,
     get_filter_pipeline,
@@ -395,6 +396,80 @@ def test_set_raw_annotations_extras():
     assert len(raw.annotations) >= 1
 
 
+@pytest.mark.parametrize(
+    "description, preserved",
+    [
+        ("BAD_artifact", True),
+        ("bad_artifact", True),
+        ("BAD boundary", True),
+        ("bnci_artifact", True),
+        ("left_hand", False),
+        ("Target", False),
+        ("rest", False),
+    ],
+)
+def test_is_preserved_annotation(description, preserved):
+    assert _is_preserved_annotation(description) is preserved
+
+
+def test_set_raw_annotations_preserves_bad_artifact():
+    """BAD_artifact survives event re-derivation (stim-channel dataset)."""
+    raw = _raw(stim_events=[(500, 1), (1500, 1), (2500, 1)], duration=15.0)
+    raw.set_annotations(
+        mne.Annotations(
+            onset=[6.0], duration=[1.0], description=["BAD_artifact"], extras=[{"t": 2}]
+        )
+    )
+    SetRawAnnotations(event_id={"l": 1}, interval=(0, 1)).transform(raw)
+
+    descs = list(map(str, raw.annotations.description))
+    assert descs.count("l") == 3  # event annotations re-derived
+    assert "BAD_artifact" in descs  # artifact flag kept
+    # the preserved annotation still carries its extras
+    bad_idx = descs.index("BAD_artifact")
+    assert raw.annotations.extras[bad_idx] == {"t": 2}
+
+
+def test_set_raw_annotations_preserves_bnci_artifact_no_stim():
+    """Non-rejecting bnci_artifact survives for annotation-based datasets."""
+    raw = _ann_raw(
+        descriptions=["left", "right"],
+        onsets=[1.0, 3.0],
+        event_id={"left": 1, "right": 2},
+    )
+    raw.set_annotations(
+        raw.annotations
+        + mne.Annotations(onset=[2.0], duration=[0.0], description=["bnci_artifact"])
+    )
+    SetRawAnnotations(event_id={"left": 1, "right": 2}, interval=(0, 1)).transform(raw)
+    assert "bnci_artifact" in list(map(str, raw.annotations.description))
+
+
+def test_set_raw_annotations_then_reject_by_annotation():
+    """End-to-end: SetRawAnnotations must keep BAD_artifact so RawToEpochs can drop it.
+
+    This is the exact pipeline order (raw annotations -> events -> epochs) that
+    silently dropped the artifact flags before the fix, making
+    ``reject_by_annotation`` a no-op.
+    """
+    raw = _raw(stim_events=[(500, 1), (1500, 1), (2500, 1)], duration=15.0)
+    # BAD span overlapping only the 2nd trial window (sample 1500 == 6.0 s)
+    raw.set_annotations(mne.Annotations([6.0], [0.5], ["BAD_artifact"]))
+
+    SetRawAnnotations(event_id={"l": 1}, interval=(0, 1)).transform(raw)
+    events = RawToEvents(event_id={"l": 1}, interval=(0, 1)).transform(raw)
+
+    kept = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=False
+    ).transform({"raw": raw, "events": events})
+    dropped = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=True
+    ).transform({"raw": raw, "events": events})
+
+    assert len(kept) == 3
+    assert len(dropped) == 2  # the artifact-flagged trial is rejected
+
+
 # ── RawToEvents ───────────────────────────────────────────────────────────────
 
 
@@ -559,6 +634,23 @@ def test_raw_to_epochs_with_channels():
         event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, channels=["EEG1", "EEG2"]
     ).transform({"raw": raw, "events": ev})
     assert len(result.ch_names) == 2
+
+
+def test_raw_to_epochs_reject_by_annotation():
+    raw = _raw(stim_events=[(500, 1), (1500, 1)])
+    raw.set_annotations(mne.Annotations([6.0], [0.5], ["BAD_artifact"]))
+    ev = np.array([[500, 0, 1], [1500, 0, 1]], dtype="int32")
+
+    rejected = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=True
+    ).transform({"raw": raw, "events": ev})
+    kept = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=False
+    ).transform({"raw": raw, "events": ev})
+
+    assert len(rejected) == 1
+    assert len(kept) == 2
+    assert kept.annotations.description.tolist() == ["BAD_artifact"]
 
 
 @pytest.mark.parametrize(

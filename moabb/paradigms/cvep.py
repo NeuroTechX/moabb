@@ -54,6 +54,7 @@ class BaseCVEP(BaseParadigm):
         channels=None,
         resample=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=filters,
@@ -64,6 +65,7 @@ class BaseCVEP(BaseParadigm):
             tmin=tmin,
             tmax=tmax,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
         self.n_classes = n_classes
@@ -175,6 +177,7 @@ class CVEP(BaseCVEP):
         channels=None,
         resample=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         if filters is not None:
             raise ValueError("c-VEP does not take argument filters")
@@ -188,6 +191,7 @@ class CVEP(BaseCVEP):
             channels=channels,
             resample=resample,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
 
@@ -225,6 +229,7 @@ class FilterBankCVEP(BaseCVEP):
         channels=None,
         resample=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=filters,
@@ -236,6 +241,7 @@ class FilterBankCVEP(BaseCVEP):
             channels=channels,
             resample=resample,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
 

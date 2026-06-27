@@ -21,6 +21,8 @@ from moabb.datasets.metadata.schema import (
 from moabb.utils import depreciated_alias
 
 from .base import (
+    BNCI_ARTIFACT_HANDLING,
+    BNCI_ARTIFACT_HANDLING_OPTIONS,
     BNCI_URL,
     MNEBNCI,
     _convert_mi,
@@ -53,6 +55,7 @@ def _load_data_001_2014(
     update_path=None,
     base_url=BNCI_URL,
     only_filenames=False,
+    artifact_handling="ignore",
     verbose=None,
 ):
     """Load data for 001-2014 dataset."""
@@ -81,6 +84,8 @@ def _load_data_001_2014(
             ch_types,
             dataset_code="BNCI2014-001",
             subject_id=subject,
+            artifact_handling=artifact_handling,
+            artifact_interval=(2, 6),
         )
         # FIXME: deal with run with no event (1:3) and name them
         sessions[f"{session_idx}{_map[r]}"] = {
@@ -300,6 +305,15 @@ class BNCI2014_001(MNEBNCI):
     BNCI2014_004 : BCI Competition 2008 2-class motor imagery (Dataset B)
     BNCI2003_004 : BCI Competition III 2-class motor imagery
 
+    Parameters
+    ----------
+    artifact_handling : {"ignore", "annotate", "annotate_bad", "reject"}
+        How to preserve source per-trial artifact flags. ``"ignore"`` keeps
+        the historical behavior. ``"annotate"`` adds non-rejecting
+        ``"bnci_artifact"`` annotations. ``"annotate_bad"`` and ``"reject"``
+        both add ``"BAD_artifact"`` annotations; actual rejection happens at
+        epoch generation when ``reject_by_annotation=True``.
+
     Examples
     --------
     >>> from moabb.datasets import BNCI2014_001
@@ -487,7 +501,19 @@ class BNCI2014_001(MNEBNCI):
         runs_per_session=6,
     )
 
-    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
+    def __init__(
+        self,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        artifact_handling="ignore",
+    ):
+        if artifact_handling not in BNCI_ARTIFACT_HANDLING:
+            raise ValueError(
+                f"artifact_handling must be one of: {BNCI_ARTIFACT_HANDLING_OPTIONS}"
+            )
+        self.artifact_handling = artifact_handling
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -499,6 +525,31 @@ class BNCI2014_001(MNEBNCI):
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
+        )
+
+    def _get_single_subject_data(self, subject):
+        """Return data for a single subject."""
+        return _load_data_001_2014(
+            subject=subject,
+            path=None,
+            force_update=False,
+            update_path=None,
+            only_filenames=False,
+            artifact_handling=self.artifact_handling,
+            verbose=False,
+        )
+
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        return _load_data_001_2014(
+            subject=subject,
+            path=path,
+            force_update=force_update,
+            update_path=update_path,
+            only_filenames=True,
+            artifact_handling=self.artifact_handling,
+            verbose=verbose,
         )
 
 
