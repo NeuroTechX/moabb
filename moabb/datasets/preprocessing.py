@@ -892,6 +892,7 @@ class RawToEpochs(FixedTransformer):
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
         return_all_modalities=False,
+        reject_by_annotation: bool = True,
     ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
@@ -902,6 +903,7 @@ class RawToEpochs(FixedTransformer):
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
         self.return_all_modalities = return_all_modalities
+        self.reject_by_annotation = reject_by_annotation
 
     def __repr__(self):
         return f"RawToEpochs(tmin={self.tmin}, tmax={self.tmax})"
@@ -984,6 +986,7 @@ class RawToEpochs(FixedTransformer):
             picks=picks,
             event_repeated="drop",
             on_missing="ignore",
+            reject_by_annotation=self.reject_by_annotation,
         )
         return epochs
 

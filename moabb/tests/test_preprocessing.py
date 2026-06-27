@@ -561,6 +561,31 @@ def test_raw_to_epochs_with_channels():
     assert len(result.ch_names) == 2
 
 
+def test_raw_to_epochs_reject_by_annotation():
+    raw = _raw(stim_events=[(500, 1), (1500, 1)])
+    raw.set_annotations(mne.Annotations([6.0], [0.5], ["BAD_artifact"]))
+    ev = np.array([[500, 0, 1], [1500, 0, 1]], dtype="int32")
+
+    rejected = RawToEpochs(
+        event_id={"l": 1},
+        tmin=0,
+        tmax=0.5,
+        baseline=None,
+        reject_by_annotation=True,
+    ).transform({"raw": raw, "events": ev})
+    kept = RawToEpochs(
+        event_id={"l": 1},
+        tmin=0,
+        tmax=0.5,
+        baseline=None,
+        reject_by_annotation=False,
+    ).transform({"raw": raw, "events": ev})
+
+    assert len(rejected) == 1
+    assert len(kept) == 2
+    assert kept.annotations.description.tolist() == ["BAD_artifact"]
+
+
 @pytest.mark.parametrize(
     "raw_val, events, match",
     [

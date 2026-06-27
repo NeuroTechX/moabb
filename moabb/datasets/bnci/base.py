@@ -281,7 +281,15 @@ def _enrich_run_with_metadata(raw, run, dataset_code, subject_id):
     _finalize_raw(raw, dataset_code, subject_id)
 
 
-def _convert_mi(filename, ch_names, ch_types, dataset_code=None, subject_id=None):
+def _convert_mi(
+    filename,
+    ch_names,
+    ch_types,
+    dataset_code=None,
+    subject_id=None,
+    artifact_handling="ignore",
+    artifact_interval=None,
+):
     """Process (Graz) motor imagery data from MAT files.
 
     Parameters
@@ -296,6 +304,10 @@ def _convert_mi(filename, ch_names, ch_types, dataset_code=None, subject_id=None
         Dataset code for metadata extraction.
     subject_id : int, optional
         Subject number for BIDS compliance.
+    artifact_handling : {"ignore", "annotate", "annotate_bad", "reject"}
+        How to preserve trial-level artifact flags.
+    artifact_interval : tuple of float, optional
+        Time interval, relative to each trial event, covered by artifact annotations.
 
     Returns
     -------
@@ -311,7 +323,14 @@ def _convert_mi(filename, ch_names, ch_types, dataset_code=None, subject_id=None
         run_array = [data["data"]]
 
     for run in run_array:
-        raw, evd = _convert_run(run, ch_names, ch_types, None)
+        raw, evd = _convert_run(
+            run,
+            ch_names,
+            ch_types,
+            None,
+            artifact_handling=artifact_handling,
+            artifact_interval=artifact_interval,
+        )
         if raw is None:
             continue
 
@@ -345,8 +364,60 @@ def standardize_keys(d):
             d[new] = d.pop(old)
 
 
+def _add_artifact_annotations(
+    raw, run, artifact_handling="ignore", artifact_interval=None
+):
+    """Attach trial-level artifact flags as MNE annotations."""
+    valid = ("ignore", "annotate", "annotate_bad", "reject")
+    if artifact_handling not in valid:
+        raise ValueError(f"artifact_handling must be one of {valid}")
+    if artifact_handling == "ignore" or not hasattr(run, "artifacts"):
+        return
+
+    artifacts = np.asarray(run.artifacts).ravel()
+    trials = np.asarray(run.trial).ravel()
+    if len(artifacts) == 0:
+        return
+    if len(artifacts) != len(trials):
+        raise ValueError("run.artifacts must contain one flag per trial")
+
+    flagged = np.nonzero(artifacts)[0]
+    if len(flagged) == 0:
+        return
+
+    if artifact_interval is None:
+        artifact_interval = (0.0, 0.0)
+    onset_offset, stop_offset = artifact_interval
+    duration = stop_offset - onset_offset
+    description = (
+        "bnci_artifact" if artifact_handling == "annotate" else "BAD_artifact"
+    )
+    onsets = (trials[flagged] - 1) / raw.info["sfreq"] + onset_offset
+    annotations = Annotations(
+        onset=onsets,
+        duration=np.repeat(duration, len(flagged)),
+        description=np.repeat(description, len(flagged)),
+        extras=[
+            {
+                "trial": int(trial_idx + 1),
+                "sample": int(trials[trial_idx]),
+                "artifact": int(artifacts[trial_idx]),
+            }
+            for trial_idx in flagged
+        ],
+    )
+    raw.set_annotations(raw.annotations + annotations)
+
+
 @verbose
-def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
+def _convert_run(
+    run,
+    ch_names=None,
+    ch_types=None,
+    verbose=None,
+    artifact_handling="ignore",
+    artifact_interval=None,
+):
     """Convert one run to raw."""
 
     # parse eeg data
@@ -378,6 +449,7 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
     raw.set_montage(montage)
+    _add_artifact_annotations(raw, run, artifact_handling, artifact_interval)
 
     # Set line frequency (50 Hz for European datasets)
     raw.info["line_freq"] = 50.0
