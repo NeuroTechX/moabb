@@ -435,6 +435,26 @@ class TestWithinSubj(TestWithinSess):
         )
 
 
+@pytest.mark.parametrize(
+    "klass", [ev.WithinSessionEvaluation, ev.WithinSubjectEvaluation]
+)
+def test_within_n_splits_drives_n_folds(klass):
+    """n_splits sets the inner splitter's n_folds (defaults to 5 when unset)."""
+    kw = {
+        "paradigm": FakeImageryParadigm(),
+        "datasets": [dataset],
+        "hdf5_path": "res_test",
+    }
+    evals = {None: klass(**kw), 3: klass(n_splits=3, **kw)}
+    try:
+        for n, e in evals.items():
+            assert e._create_splitter().n_folds == (n or 5)
+    finally:
+        for e in evals.values():
+            if os.path.isfile(e.results.filepath):
+                os.remove(e.results.filepath)
+
+
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
         self.eval = ev.CrossSubjectEvaluation(
