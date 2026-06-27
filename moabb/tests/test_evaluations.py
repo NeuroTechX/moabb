@@ -440,7 +440,11 @@ class TestWithinSubj(TestWithinSess):
 )
 def test_within_n_splits_drives_n_folds(klass):
     """n_splits sets the inner splitter's n_folds (defaults to 5 when unset)."""
-    kw = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], hdf5_path="res_test")
+    kw = {
+        "paradigm": FakeImageryParadigm(),
+        "datasets": [dataset],
+        "hdf5_path": "res_test",
+    }
     evals = {None: klass(**kw), 3: klass(n_splits=3, **kw)}
     try:
         for n, e in evals.items():
