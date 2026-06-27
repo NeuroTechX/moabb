@@ -389,9 +389,7 @@ def _add_artifact_annotations(
         artifact_interval = (0.0, 0.0)
     onset_offset, stop_offset = artifact_interval
     duration = stop_offset - onset_offset
-    description = (
-        "bnci_artifact" if artifact_handling == "annotate" else "BAD_artifact"
-    )
+    description = "bnci_artifact" if artifact_handling == "annotate" else "BAD_artifact"
     onsets = (trials[flagged] - 1) / raw.info["sfreq"] + onset_offset
     annotations = Annotations(
         onset=onsets,

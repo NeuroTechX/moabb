@@ -567,18 +567,10 @@ def test_raw_to_epochs_reject_by_annotation():
     ev = np.array([[500, 0, 1], [1500, 0, 1]], dtype="int32")
 
     rejected = RawToEpochs(
-        event_id={"l": 1},
-        tmin=0,
-        tmax=0.5,
-        baseline=None,
-        reject_by_annotation=True,
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=True
     ).transform({"raw": raw, "events": ev})
     kept = RawToEpochs(
-        event_id={"l": 1},
-        tmin=0,
-        tmax=0.5,
-        baseline=None,
-        reject_by_annotation=False,
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=False
     ).transform({"raw": raw, "events": ev})
 
     assert len(rejected) == 1
