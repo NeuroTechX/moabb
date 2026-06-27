@@ -21,6 +21,9 @@ from .utils import convert_units
 BNCI_URL = "https://lampx.tugraz.at/~bci/database/"
 BBCI_URL = "http://doc.ml.tu-berlin.de/bbci/"
 BNCI_ARTIFACT_HANDLING = ("ignore", "annotate", "annotate_bad", "reject")
+BNCI_ARTIFACT_HANDLING_OPTIONS = ", ".join(
+    repr(option) for option in BNCI_ARTIFACT_HANDLING
+)
 _BNCI_ARTIFACT_ANNOTATION_DESCRIPTION = {
     "annotate": "bnci_artifact",
     "annotate_bad": "BAD_artifact",
@@ -393,7 +396,9 @@ def _add_artifact_annotations(
         annotations. If None, zero-duration annotations are added at the event.
     """
     if artifact_handling not in BNCI_ARTIFACT_HANDLING:
-        raise ValueError(f"artifact_handling must be one of {BNCI_ARTIFACT_HANDLING}")
+        raise ValueError(
+            f"artifact_handling must be one of: {BNCI_ARTIFACT_HANDLING_OPTIONS}"
+        )
     if artifact_handling == "ignore":
         return
     if not hasattr(run, "artifacts"):

@@ -22,6 +22,7 @@ from moabb.utils import depreciated_alias
 
 from .base import (
     BNCI_ARTIFACT_HANDLING,
+    BNCI_ARTIFACT_HANDLING_OPTIONS,
     BNCI_URL,
     MNEBNCI,
     _convert_mi,
@@ -509,7 +510,9 @@ class BNCI2014_001(MNEBNCI):
         artifact_handling="ignore",
     ):
         if artifact_handling not in BNCI_ARTIFACT_HANDLING:
-            raise ValueError(f"artifact_handling must be one of {BNCI_ARTIFACT_HANDLING}")
+            raise ValueError(
+                f"artifact_handling must be one of: {BNCI_ARTIFACT_HANDLING_OPTIONS}"
+            )
         self.artifact_handling = artifact_handling
         super().__init__(
             subjects=list(range(1, 10)),
