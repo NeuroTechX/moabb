@@ -310,7 +310,8 @@ class BNCI2014_001(MNEBNCI):
         How to preserve source per-trial artifact flags. ``"ignore"`` keeps
         the historical behavior. ``"annotate"`` adds non-rejecting
         ``"bnci_artifact"`` annotations. ``"annotate_bad"`` and ``"reject"``
-        add ``"BAD_artifact"`` annotations for MNE epoch-time rejection.
+        both add ``"BAD_artifact"`` annotations; actual rejection happens at
+        epoch generation when ``reject_by_annotation=True``.
 
     Examples
     --------

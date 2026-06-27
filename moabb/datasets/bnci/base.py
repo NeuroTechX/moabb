@@ -21,6 +21,11 @@ from .utils import convert_units
 BNCI_URL = "https://lampx.tugraz.at/~bci/database/"
 BBCI_URL = "http://doc.ml.tu-berlin.de/bbci/"
 BNCI_ARTIFACT_HANDLING = ("ignore", "annotate", "annotate_bad", "reject")
+_BNCI_ARTIFACT_ANNOTATION_DESCRIPTION = {
+    "annotate": "bnci_artifact",
+    "annotate_bad": "BAD_artifact",
+    "reject": "BAD_artifact",
+}
 
 
 def data_path(url, path=None, force_update=False, update_path=None, verbose=None):
@@ -381,15 +386,17 @@ def _add_artifact_annotations(
     artifact_handling : {"ignore", "annotate", "annotate_bad", "reject"}
         ``"ignore"`` leaves annotations unchanged. ``"annotate"`` adds
         non-rejecting ``"bnci_artifact"`` annotations. ``"annotate_bad"`` and
-        ``"reject"`` add ``"BAD_artifact"`` annotations for MNE epoch-time
-        rejection.
+        ``"reject"`` both add ``"BAD_artifact"`` annotations; actual rejection
+        happens at epoch generation when ``reject_by_annotation=True``.
     artifact_interval : tuple of float, optional
         Time interval, relative to each trial event, covered by artifact
         annotations. If None, zero-duration annotations are added at the event.
     """
     if artifact_handling not in BNCI_ARTIFACT_HANDLING:
         raise ValueError(f"artifact_handling must be one of {BNCI_ARTIFACT_HANDLING}")
-    if artifact_handling == "ignore" or not hasattr(run, "artifacts"):
+    if artifact_handling == "ignore":
+        return
+    if not hasattr(run, "artifacts"):
         return
 
     artifacts = np.asarray(run.artifacts).ravel()
@@ -409,7 +416,7 @@ def _add_artifact_annotations(
         artifact_interval = (0.0, 0.0)
     onset_offset, stop_offset = artifact_interval
     duration = stop_offset - onset_offset
-    description = "bnci_artifact" if artifact_handling == "annotate" else "BAD_artifact"
+    description = _BNCI_ARTIFACT_ANNOTATION_DESCRIPTION[artifact_handling]
     onsets = (trials[flagged] - 1) / raw.info["sfreq"] + onset_offset
     annotations = Annotations(
         onset=onsets,
