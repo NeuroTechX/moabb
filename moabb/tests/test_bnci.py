@@ -3,7 +3,8 @@ from types import SimpleNamespace
 import numpy as np
 
 from moabb.datasets import BNCI2014_001, BNCI2014_008
-from moabb.datasets.bnci.base import _convert_run
+from moabb.datasets.bnci.base import _BNCI_ARTIFACT_ANNOTATION_DESCRIPTION, _convert_run
+from moabb.datasets.preprocessing import _is_preserved_annotation
 
 
 def _fake_mi_run():
@@ -64,6 +65,18 @@ def test_convert_run_adds_bad_artifact_annotations():
     )
 
     assert raw.annotations.description.tolist() == ["BAD_artifact", "BAD_artifact"]
+
+
+def test_bnci_artifact_markers_survive_event_rederivation():
+    """Every BNCI artifact marker must satisfy the pipeline's preservation rule.
+
+    Ties the producer (``bnci/base.py`` artifact descriptions) to the consumer
+    (``SetRawAnnotations`` via :func:`_is_preserved_annotation`). If a marker is
+    ever renamed to something not preserved, ``SetRawAnnotations`` would silently
+    drop it and ``reject_by_annotation`` would become a no-op again.
+    """
+    for description in _BNCI_ARTIFACT_ANNOTATION_DESCRIPTION.values():
+        assert _is_preserved_annotation(description)
 
 
 def test_bnci2014_001_metadata():

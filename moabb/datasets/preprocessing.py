@@ -658,7 +658,7 @@ class SetRawAnnotations(FixedTransformer):
         # onset, duration, description and extras) and re-attach them afterwards
         # so ``reject_by_annotation`` still sees them at epoching time.
         preserved = None
-        if raw.annotations is not None and len(raw.annotations):
+        if raw.annotations:
             keep_idx = [
                 i
                 for i, desc in enumerate(raw.annotations.description)
