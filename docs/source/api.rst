@@ -324,6 +324,21 @@ Utilities
     utils.plot_datasets_grid
     utils.plot_datasets_cluster
 
+-------------
+Preprocessing
+-------------
+.. currentmodule:: moabb.datasets
+
+Trial-level transformers applied to the epoched/array data, usable as
+pipeline steps (inductive in a cross-validation, transductive via
+``fit_transform`` on a single recording).
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    preprocessing.EuclideanAlignment
+
 Paradigms
 ---------
 .. currentmodule:: moabb.paradigms
