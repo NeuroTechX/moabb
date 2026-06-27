@@ -59,9 +59,8 @@ class WithinSessionSplitter(BaseCrossValidator):
         Defaults to ``StratifiedKFold``.
     cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
-        Values explicitly provided here for ``n_splits``, ``shuffle`` or
-        ``random_state`` take precedence over the ``n_folds``, ``shuffle`` and
-        ``random_state`` arguments.
+        An explicit ``n_splits`` provided here takes precedence over the
+        ``n_folds`` argument.
 
     """
 
@@ -202,9 +201,8 @@ class WithinSubjectSplitter(BaseCrossValidator):
         Defaults to ``StratifiedKFold``.
     cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
-        Values explicitly provided here for ``n_splits``, ``shuffle`` or
-        ``random_state`` take precedence over the ``n_folds``, ``shuffle`` and
-        ``random_state`` arguments.
+        An explicit ``n_splits`` provided here takes precedence over the
+        ``n_folds`` argument.
 
     """
 
@@ -286,8 +284,18 @@ class WithinSubjectSplitter(BaseCrossValidator):
         # Shuffle subjects if required
         # Convert to numpy array to avoid ArrowStringArray shuffle warning
         subjects = np.array(metadata["subject"].unique())
+        # Reseed the RNG at each split() call so repeated calls are
+        # reproducible. A single RNG is shared across subjects (instead of a
+        # fresh per-subject one) to keep the fold sequence identical to the
+        # legacy within-subject behaviour.
+        rng = check_random_state(self.random_state) if self.shuffle else None
         if self.shuffle:
-            self._rng.shuffle(subjects)
+            rng.shuffle(subjects)
+
+        cv_kwargs = dict(self._cv_kwargs)
+        params = inspect.signature(self.cv_class).parameters
+        if self.shuffle and "random_state" in params:
+            cv_kwargs["random_state"] = rng
 
         for subject in subjects:
             subject_mask = metadata["subject"] == subject
@@ -295,7 +303,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
             y_subject = y[subject_mask]
 
             # Instantiate a new internal splitter for each subject
-            splitter = self.cv_class(**self._cv_kwargs)
+            splitter = self.cv_class(**cv_kwargs)
 
             # Split using the cross-validation strategy across all sessions of the subject
             for train_ix, test_ix in splitter.split(subject_indices, y_subject):

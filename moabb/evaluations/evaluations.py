@@ -84,7 +84,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         """Create the WithinSessionSplitter for parallel evaluation."""
         cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
         return WithinSessionSplitter(
-            n_folds=5,
+            n_folds=self.n_splits or 5,
             shuffle=True,
             random_state=self.random_state,
             cv_class=cv_class,
@@ -658,7 +658,7 @@ class WithinSubjectEvaluation(BaseEvaluation):
         """Create the WithinSubjectSplitter for parallel evaluation."""
         cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
         return WithinSubjectSplitter(
-            n_folds=5,
+            n_folds=self.n_splits or 5,
             shuffle=True,
             random_state=self.random_state,
             cv_class=cv_class,

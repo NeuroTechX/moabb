@@ -512,6 +512,19 @@ def test_cv_kwargs_n_splits_not_overwritten(data, splitter):
     assert len(splits) == num_groups  # one split per group, not n_folds per group
 
 
+@pytest.mark.parametrize("splitter", [WithinSessionSplitter, WithinSubjectSplitter])
+def test_within_split_is_reproducible(data, splitter):
+    """Repeated split() calls with a fixed seed must yield identical folds."""
+    _, y, metadata = data
+    split = splitter(shuffle=True, random_state=42)
+    first = list(split.split(y, metadata))
+    second = list(split.split(y, metadata))
+    assert len(first) == len(second)
+    for (train, test), (train_2, test_2) in zip(first, second):
+        assert np.array_equal(train, train_2)
+        assert np.array_equal(test, test_2)
+
+
 @pytest.mark.parametrize(
     "splitter", [CrossSessionSplitter, CrossSubjectSplitter, CrossDatasetSplitter]
 )
