@@ -136,6 +136,20 @@ class Test_Datasets:
         with pytest.raises(ValueError):
             ds.get_data([1000])
 
+    def test_repr_shows_code(self):
+        """Datasets should print their code, not the default object repr."""
+        ds = FakeDataset(code="FakeRepr")
+
+        # readable instead of "<...FakeDataset object at 0x...>"
+        assert "FakeRepr" in repr(ds)
+        assert "object at 0x" not in repr(ds)
+
+        # str() falls back to repr, so f-strings/print stay readable too
+        assert "FakeRepr" in f"{ds}"
+
+        # the repr is what shows when a dataset is printed inside a list
+        assert "FakeRepr" in repr([ds])
+
     @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep"])
     def test_fake_dataset_seed(self, paradigm):
         """this test will insure the fake dataset's random seed works"""
