@@ -83,6 +83,8 @@ class WithinSessionEvaluation(BaseEvaluation):
     def _create_splitter(self):
         """Create the WithinSessionSplitter for parallel evaluation."""
         cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
+        if self.groups is not None:
+            cv_kwargs = {**cv_kwargs, "groups": self.groups}
         return WithinSessionSplitter(
             n_folds=self.n_splits or 5,
             shuffle=True,
@@ -296,6 +298,8 @@ class CrossSessionEvaluation(BaseEvaluation):
     def _create_splitter(self):
         """Create the CrossSessionSplitter for parallel evaluation."""
         cv_class, cv_kwargs = self._resolve_cv(LeaveOneGroupOut)
+        if self.groups is not None:
+            cv_kwargs = {**cv_kwargs, "groups": self.groups}
         return CrossSessionSplitter(
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
@@ -476,6 +480,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
             default_kwargs = {"n_splits": self.n_splits}
 
         cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
+        if self.groups is not None:
+            cv_kwargs = {**cv_kwargs, "groups": self.groups}
         return CrossSubjectSplitter(
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
@@ -657,6 +663,8 @@ class WithinSubjectEvaluation(BaseEvaluation):
     def _create_splitter(self):
         """Create the WithinSubjectSplitter for parallel evaluation."""
         cv_class, cv_kwargs = self._resolve_cv(StratifiedKFold)
+        if self.groups is not None:
+            cv_kwargs = {**cv_kwargs, "groups": self.groups}
         return WithinSubjectSplitter(
             n_folds=self.n_splits or 5,
             shuffle=True,
