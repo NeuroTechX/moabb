@@ -551,6 +551,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/noplot_mne_features_pipeline.html">Pipelines using the mne-features library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dataset_bubbles.html">Dataset bubble plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
@@ -702,43 +703,43 @@ obtaining a pandas dataframe containing the results of the evaluation.</p>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 17:49:11] Multiple instances of codecarbon are allowed to run at the same time.
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 1test: Score 0.996
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 3 | 1test: Score 0.996
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 3 | 1test: Score 0.993
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 0train: Score 0.996
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 3 | 0train: Score 0.991
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 3 | 0train: Score 0.984
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 1test: Score 0.662
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 2 | 1test: Score 0.691
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 2 | 1test: Score 0.544
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 0train: Score 0.581
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 2 | 0train: Score 0.708
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 2 | 0train: Score 0.575
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 0train: Score 0.940
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 1 | 0train: Score 0.943
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 1 | 0train: Score 0.952
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 1test: Score 0.960
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 1 | 1test: Score 0.971
-2026-06-27 17:54:00,426 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 1 | 1test: Score 0.946
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 3 | 1: Score 0.986
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 3 | 1: Score 0.854
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 3 | 2: Score 1.000
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 3 | 2: Score 0.954
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 3 | 0: Score 0.994
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 3 | 0: Score 0.960
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 2 | 0: Score 0.908
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 2 | 0: Score 0.884
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 2 | 1: Score 0.736
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 2 | 1: Score 0.669
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 2 | 2: Score 0.884
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 2 | 2: Score 0.884
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 1 | 0: Score 0.915
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 1 | 0: Score 0.841
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 1 | 1: Score 0.896
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 1 | 1: Score 0.890
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 1 | 2: Score 0.960
-2026-06-27 17:58:45,012 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 1 | 2: Score 0.956
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 23:16:00] Multiple instances of codecarbon are allowed to run at the same time.
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 0train: Score 0.997
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 3 | 0train: Score 0.996
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 3 | 0train: Score 0.985
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 1test: Score 0.999
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 3 | 1test: Score 0.999
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 3 | 1test: Score 0.992
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 0train: Score 0.621
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 2 | 0train: Score 0.696
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 2 | 0train: Score 0.575
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 1test: Score 0.709
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 2 | 1test: Score 0.644
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 2 | 1test: Score 0.552
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 0train: Score 0.938
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 1 | 0train: Score 0.933
+2026-06-27 23:20:50,764 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 1 | 0train: Score 0.923
+2026-06-27 23:20:50,765 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 1test: Score 0.961
+2026-06-27 23:20:50,765 INFO MainThread moabb.evaluations.base tgsp+svm | BNCI2014-001 | 1 | 1test: Score 0.964
+2026-06-27 23:20:50,765 INFO MainThread moabb.evaluations.base MDM | BNCI2014-001 | 1 | 1test: Score 0.938
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 3 | 1: Score 0.988
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 3 | 1: Score 0.874
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 3 | 0: Score 0.998
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 3 | 0: Score 0.974
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 3 | 2: Score 1.000
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 3 | 2: Score 0.956
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 1 | 0: Score 0.940
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 1 | 0: Score 0.807
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 1 | 2: Score 0.956
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 1 | 2: Score 0.946
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 1 | 1: Score 0.914
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 1 | 1: Score 0.904
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 2 | 0: Score 0.896
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 2 | 0: Score 0.894
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 2 | 2: Score 0.896
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 2 | 2: Score 0.938
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base tgsp+svm | Zhou2016 | 2 | 1: Score 0.785
+2026-06-27 23:25:36,369 INFO MainThread moabb.evaluations.base MDM | Zhou2016 | 2 | 1: Score 0.684
 </pre></div>
 </div>
 <p>As <cite>overwrite</cite> is set to False, the results from the previous tutorial are reused and
@@ -765,11 +766,11 @@ for each subject of each dataset.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" srcset="../../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" alt="dataset = BNCI2014-001, dataset = Zhou2016" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-06-27 17:58:45,153 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
-2026-06-27 17:58:45,159 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+<img src="../../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" srcset="../../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" alt="dataset = BNCI2014-001, dataset = Zhou2016" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-06-27 23:25:36,512 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-06-27 23:25:36,519 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (9 minutes 45.547 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (9 minutes 47.522 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-3-benchmarking-multiple-pipelines-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b1ef6679c42641a93a2c91dca426f94f/tutorial_3_benchmarking_multiple_pipelines.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_3_benchmarking_multiple_pipelines.ipynb</span></code></a></p>

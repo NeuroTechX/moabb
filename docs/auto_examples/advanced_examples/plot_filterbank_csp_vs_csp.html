@@ -110,7 +110,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="GridSearch within a session" href="plot_grid_search_withinsession.html" />
-    <link rel="prev" title="Examples of analysis of a Dreyer2023 A dataset." href="plot_dreyer_clf_scores_vs_subj_info.html" />
+    <link rel="prev" title="Euclidean Alignment for cross-subject transfer" href="plot_euclidean_alignment.html" />
     <link rel="canonical" href="https://moabb.neurotechx.com/docs/auto_examples/advanced_examples/plot_filterbank_csp_vs_csp.html" />
 
     
@@ -551,6 +551,7 @@
 <li class="toctree-l2"><a class="reference internal" href="noplot_mne_features_pipeline.html">Pipelines using the mne-features library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_dataset_bubbles.html">Dataset bubble plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">FilterBank CSP versus CSP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
@@ -723,7 +724,11 @@ from 8 to 35 Hz.</p>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results_fb</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-06-27 23:38:23,622 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.928
+2026-06-27 23:38:23,622 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.940
+2026-06-27 23:38:23,622 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 2 | 0train: Score 0.581
+2026-06-27 23:38:23,622 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 2 | 1test: Score 0.503
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
   dset.create_dataset(
 </pre></div>
 </div>
@@ -781,7 +786,7 @@ Passing `palette` without assigning `hue` is deprecated and will be removed in v
   sns.pointplot(data=results, y=&quot;score&quot;, x=&quot;pipeline&quot;, ax=axes[0], palette=&quot;Set1&quot;)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 19.688 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.878 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cd325bfe64e15ce23db3b200e83ba9a2/plot_filterbank_csp_vs_csp.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_filterbank_csp_vs_csp.ipynb</span></code></a></p>
@@ -808,12 +813,12 @@ Passing `palette` without assigning `hue` is deprecated and will be removed in v
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_dreyer_clf_scores_vs_subj_info.html"
+       href="plot_euclidean_alignment.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Examples of analysis of a Dreyer2023 A dataset.</p>
+        <p class="prev-next-title">Euclidean Alignment for cross-subject transfer</p>
       </div>
     </a>
     <a class="right-next"

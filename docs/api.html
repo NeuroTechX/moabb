@@ -1237,6 +1237,20 @@ tag with motor imagery and can be decoded with the existing
 </table>
 </div>
 </section>
+<section id="preprocessing">
+<h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">#</a></h3>
+<p>Trial-level transformers applied to the epoched/array data, usable as
+pipeline steps (inductive in a cross-validation, transductive via
+<code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> on a single recording).</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.preprocessing.EuclideanAlignment.html#moabb.datasets.preprocessing.EuclideanAlignment" title="moabb.datasets.preprocessing.EuclideanAlignment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preprocessing.EuclideanAlignment</span></code></a>([estimator])</p></td>
+<td><p>Euclidean Alignment of trials (He &amp; Wu, 2020).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 <section id="paradigms">
 <h2>Paradigms<a class="headerlink" href="#paradigms" title="Link to this heading">#</a></h2>
@@ -1636,6 +1650,7 @@ the easiest way to run a benchmark.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utilities">Utilities</a><ul class="nav section-nav flex-column">
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preprocessing">Preprocessing</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#paradigms">Paradigms</a><ul class="nav section-nav flex-column">

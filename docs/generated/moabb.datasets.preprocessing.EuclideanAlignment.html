@@ -1,0 +1,1180 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="moabb icon" sizes="180x180" href="../_static/_static/moabb_logo.png" type="image/png">
+    <link rel="icon" href="../_static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" sizes="144x144" href="../_static/favicon-144.png" type="image/png">
+    <link rel="mask-icon" href="../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="500x500" href="../_static/favicon-500.png" type="image/png"><meta property="og:title" content="moabb.datasets.preprocessing.EuclideanAlignment" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://moabb.neurotechx.com/docs/generated/moabb.datasets.preprocessing.EuclideanAlignment.html" />
+<meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
+<meta property="og:description" content="Examples using moabb.datasets.preprocessing.EuclideanAlignment: Euclidean Alignment for cross-subject transfer" />
+<meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
+<meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
+<meta name="description" content="Examples using moabb.datasets.preprocessing.EuclideanAlignment: Euclidean Alignment for cross-subject transfer" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@NeuroTechX" />
+
+    <title>moabb.datasets.preprocessing.EuclideanAlignment &#8212; MOABB Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.0/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/3.2.6/css/buttons.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/2.3.5/css/searchPanes.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/3.1.3/css/select.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=1558bf76"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.preprocessing.EuclideanAlignment';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.0/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.html5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.colVis.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.print.js"></script>
+    <script src="https://cdn.datatables.net/select/3.1.3/js/dataTables.select.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/dataTables.searchPanes.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/searchPanes.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/4.0.6/js/dataTables.fixedHeader.js"></script>
+    <script src="../_static/js/section-nav-hierarchy.js?v=c53969c2"></script>
+    <script src="../_static/js/macro-table.js?v=c799a707"></script>
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.datasets.preprocessing.EuclideanAlignment.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="moabb.paradigms.Imagery" href="moabb.paradigms.Imagery.html" />
+    <link rel="prev" title="moabb.datasets.utils.plot_datasets_cluster" href="moabb.datasets.utils.plot_datasets_cluster.html" />
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.datasets.preprocessing.EuclideanAlignment.html" />
+
+    
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": "preprocessing.EuclideanAlignment",
+      "description": "EEG dataset for brain-computer interface research, part of the MOABB benchmark suite.",
+      "url": "https://moabb.neurotechx.com/docs/generated/moabb.datasets.preprocessing.EuclideanAlignment.html",
+      "license": "https://opensource.org/licenses/BSD-3-Clause",
+      "isPartOf": {
+        "@type": "DataCatalog",
+        "name": "MOABB Dataset Catalog",
+        "url": "https://moabb.neurotechx.com/docs/dataset_summary.html"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "NeuroTechX",
+        "url": "https://neurotechx.com"
+      }
+    }
+    </script>
+    
+
+    
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "MOABB",
+          "item": "https://moabb.neurotechx.com/docs/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "moabb.datasets.preprocessing.EuclideanAlignment",
+          "item": "https://moabb.neurotechx.com/docs/generated/moabb.datasets.preprocessing.EuclideanAlignment.html"
+        }
+      ]
+    }
+    </script>
+    
+
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.5.0dev0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><strong>Using MOABB in academic work?</strong> <a class='moabb-announcement-cta' href='cite.html'>Cite MOABB</a> <span class='moabb-announcement-secondary'>DOI: <a href='https://doi.org/10.5281/zenodo.10034223'>10.5281/zenodo.10034223</a> · Explore <a href='paper_results.html'>benchmark results</a></span></div>
+</aside>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/moabb_light.svg" class="logo__image only-light" alt="MOABB Documentation - Home"/>
+    <img src="../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="MOABB Documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="External Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="External Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.AlexMI.html">moabb.datasets.AlexMI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2003_004.html">moabb.datasets.BNCI2003_004</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_001.html">moabb.datasets.BNCI2014_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_002.html">moabb.datasets.BNCI2014_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_004.html">moabb.datasets.BNCI2014_004</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_001.html">moabb.datasets.BNCI2015_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_004.html">moabb.datasets.BNCI2015_004</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2019_001.html">moabb.datasets.BNCI2019_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2020_001.html">moabb.datasets.BNCI2020_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2022_001.html">moabb.datasets.BNCI2022_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_001.html">moabb.datasets.BNCI2025_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_002.html">moabb.datasets.BNCI2025_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cho2017.html">moabb.datasets.Cho2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023.html">moabb.datasets.Dreyer2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023A.html">moabb.datasets.Dreyer2023A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023B.html">moabb.datasets.Dreyer2023B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dreyer2023C.html">moabb.datasets.Dreyer2023C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019_MI.html">moabb.datasets.Lee2019_MI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GrosseWentrup2009.html">moabb.datasets.GrosseWentrup2009</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Ofner2017.html">moabb.datasets.Ofner2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.PhysionetMI.html">moabb.datasets.PhysionetMI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Schirrmeister2017.html">moabb.datasets.Schirrmeister2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017A.html">moabb.datasets.Shin2017A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Weibo2014.html">moabb.datasets.Weibo2014</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhou2016.html">moabb.datasets.Zhou2016</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Stieger2021.html">moabb.datasets.Stieger2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2024.html">moabb.datasets.Liu2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Beetl2021_A.html">moabb.datasets.Beetl2021_A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Beetl2021_B.html">moabb.datasets.Beetl2021_B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BCIComp2020UpperLimb.html">moabb.datasets.BCIComp2020UpperLimb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Brandl2020.html">moabb.datasets.Brandl2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Chang2025.html">moabb.datasets.Chang2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Forenzo2023.html">moabb.datasets.Forenzo2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Gao2026.html">moabb.datasets.Gao2026</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_ME.html">moabb.datasets.GuttmannFlury2025_ME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_MI.html">moabb.datasets.GuttmannFlury2025_MI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.HefmiIch2025.html">moabb.datasets.HefmiIch2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Jeong2020.html">moabb.datasets.Jeong2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kaya2018.html">moabb.datasets.Kaya2018</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kumar2024.html">moabb.datasets.Kumar2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2025.html">moabb.datasets.Liu2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Ma2020.html">moabb.datasets.Ma2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Rozado2015.html">moabb.datasets.Rozado2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Tavakolan2017.html">moabb.datasets.Tavakolan2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.TrianaGuzman2024.html">moabb.datasets.TrianaGuzman2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wairagkar2018.html">moabb.datasets.Wairagkar2018</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wu2020.html">moabb.datasets.Wu2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Yang2025.html">moabb.datasets.Yang2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Yi2025.html">moabb.datasets.Yi2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhang2017.html">moabb.datasets.Zhang2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhou2020.html">moabb.datasets.Zhou2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zuo2025.html">moabb.datasets.Zuo2025</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.AguileraRodriguez2025.html">moabb.datasets.AguileraRodriguez2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_L.html">moabb.datasets.Nguyen2017_L</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_S.html">moabb.datasets.Nguyen2017_S</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_SL.html">moabb.datasets.Nguyen2017_SL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_V.html">moabb.datasets.Nguyen2017_V</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nieto2022.html">moabb.datasets.Nieto2022</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Pressel2016.html">moabb.datasets.Pressel2016</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2012.html">moabb.datasets.BI2012</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2013a.html">moabb.datasets.BI2013a</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2014a.html">moabb.datasets.BI2014a</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2014b.html">moabb.datasets.BI2014b</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2015a.html">moabb.datasets.BI2015a</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2015b.html">moabb.datasets.BI2015b</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cattan2019_VR.html">moabb.datasets.Cattan2019_VR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_008.html">moabb.datasets.BNCI2014_008</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2014_009.html">moabb.datasets.BNCI2014_009</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_003.html">moabb.datasets.BNCI2015_003</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_006.html">moabb.datasets.BNCI2015_006</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_007.html">moabb.datasets.BNCI2015_007</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_008.html">moabb.datasets.BNCI2015_008</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_009.html">moabb.datasets.BNCI2015_009</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_010.html">moabb.datasets.BNCI2015_010</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_012.html">moabb.datasets.BNCI2015_012</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2015_013.html">moabb.datasets.BNCI2015_013</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2016_002.html">moabb.datasets.BNCI2016_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2020_002.html">moabb.datasets.BNCI2020_002</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.EPFLP300.html">moabb.datasets.EPFLP300</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Huebner2017.html">moabb.datasets.Huebner2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Huebner2018.html">moabb.datasets.Huebner2018</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019_ERP.html">moabb.datasets.Lee2019_ERP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Sosulski2019.html">moabb.datasets.Sosulski2019</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_ERN.html">moabb.datasets.ErpCore2021_ERN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_LRP.html">moabb.datasets.ErpCore2021_LRP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_MMN.html">moabb.datasets.ErpCore2021_MMN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N2pc.html">moabb.datasets.ErpCore2021_N2pc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N170.html">moabb.datasets.ErpCore2021_N170</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_N400.html">moabb.datasets.ErpCore2021_N400</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ErpCore2021_P3.html">moabb.datasets.ErpCore2021_P3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.RomaniBF2025ERP.html">moabb.datasets.RomaniBF2025ERP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kojima2024A.html">moabb.datasets.Kojima2024A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kojima2024B.html">moabb.datasets.Kojima2024B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2021Mobile_ERP.html">moabb.datasets.Lee2021Mobile_ERP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Chailloux2020.html">moabb.datasets.Chailloux2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_P300.html">moabb.datasets.GuttmannFlury2025_P300</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kaneshiro2015.html">moabb.datasets.Kaneshiro2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_AC.html">moabb.datasets.Lee2024_AC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_BS.html">moabb.datasets.Lee2024_BS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_DL.html">moabb.datasets.Lee2024_DL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_EL.html">moabb.datasets.Lee2024_EL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2024_TV.html">moabb.datasets.Lee2024_TV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_A.html">moabb.datasets.Mainsah2025_A</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_B.html">moabb.datasets.Mainsah2025_B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_C.html">moabb.datasets.Mainsah2025_C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_D.html">moabb.datasets.Mainsah2025_D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_E.html">moabb.datasets.Mainsah2025_E</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_F.html">moabb.datasets.Mainsah2025_F</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_G.html">moabb.datasets.Mainsah2025_G</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_H.html">moabb.datasets.Mainsah2025_H</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_I.html">moabb.datasets.Mainsah2025_I</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_J.html">moabb.datasets.Mainsah2025_J</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_K.html">moabb.datasets.Mainsah2025_K</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_L.html">moabb.datasets.Mainsah2025_L</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_M.html">moabb.datasets.Mainsah2025_M</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_N.html">moabb.datasets.Mainsah2025_N</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_O.html">moabb.datasets.Mainsah2025_O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_P.html">moabb.datasets.Mainsah2025_P</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_Q.html">moabb.datasets.Mainsah2025_Q</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_R.html">moabb.datasets.Mainsah2025_R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_S1.html">moabb.datasets.Mainsah2025_S1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_S2.html">moabb.datasets.Mainsah2025_S2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Simoes2020.html">moabb.datasets.Simoes2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Speier2017.html">moabb.datasets.Speier2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhang2025.html">moabb.datasets.Zhang2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zheng2020.html">moabb.datasets.Zheng2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BCIComp2020WalkingERP.html">moabb.datasets.BCIComp2020WalkingERP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kalunga2016.html">moabb.datasets.Kalunga2016</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nakanishi2015.html">moabb.datasets.Nakanishi2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wang2016.html">moabb.datasets.Wang2016</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MAMEM1.html">moabb.datasets.MAMEM1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MAMEM2.html">moabb.datasets.MAMEM2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MAMEM3.html">moabb.datasets.MAMEM3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Chen2017SingleFlicker.html">moabb.datasets.Chen2017SingleFlicker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Dong2023.html">moabb.datasets.Dong2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Han2024Fatigue.html">moabb.datasets.Han2024Fatigue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Kim2025BetaRange.html">moabb.datasets.Kim2025BetaRange</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2021Mobile_SSVEP.html">moabb.datasets.Lee2021Mobile_SSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2020BETA.html">moabb.datasets.Liu2020BETA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Liu2022EldBETA.html">moabb.datasets.Liu2022EldBETA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wang2021Combined.html">moabb.datasets.Wang2021Combined</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.GuttmannFlury2025_SSVEP.html">moabb.datasets.GuttmannFlury2025_SSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Schrag2026Pediatric.html">moabb.datasets.Schrag2026Pediatric</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Thielen2015.html">moabb.datasets.Thielen2015</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Thielen2021.html">moabb.datasets.Thielen2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosBurstVEP40.html">moabb.datasets.CastillosBurstVEP40</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosBurstVEP100.html">moabb.datasets.CastillosBurstVEP100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MartinezCagigal2023Checker.html">moabb.datasets.MartinezCagigal2023Checker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MartinezCagigal2023Pary.html">moabb.datasets.MartinezCagigal2023Pary</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Hinss2021.html">moabb.datasets.Hinss2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Rodrigues2017.html">moabb.datasets.Rodrigues2017</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2014a_Il.html">moabb.datasets.compound_dataset.BI2014a_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2014b_Il.html">moabb.datasets.compound_dataset.BI2014b_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2015a_Il.html">moabb.datasets.compound_dataset.BI2015a_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI2015b_Il.html">moabb.datasets.compound_dataset.BI2015b_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.Cattan2019_VR_Il.html">moabb.datasets.compound_dataset.Cattan2019_VR_Il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.BI_Il.html">moabb.datasets.compound_dataset.BI_Il</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.BaseBIDSDataset.html">moabb.datasets.base.BaseBIDSDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.LocalBIDSDataset.html">moabb.datasets.base.LocalBIDSDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.bnci.base.MNEBNCI.html">moabb.datasets.bnci.base.MNEBNCI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.bnci.base.BNCIBaseDataset.html">moabb.datasets.bnci.base.BNCIBaseDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.erpcore2021.ErpCore2021.html">moabb.datasets.erpcore2021.ErpCore2021</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.mainsah2025.Mainsah2025.html">moabb.datasets.mainsah2025.Mainsah2025</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.lee2024.Lee2024.html">moabb.datasets.lee2024.Lee2024</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Lee2019.Lee2019.html">moabb.datasets.Lee2019.Lee2019</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.castillos2023.BaseCastillos2023.html">moabb.datasets.castillos2023.BaseCastillos2023</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.ssvep_mamem.BaseMAMEM.html">moabb.datasets.ssvep_mamem.BaseMAMEM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.lee2021_mobile.Lee2021Mobile.html">moabb.datasets.lee2021_mobile.Lee2021Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.bbci_eeg_fnirs.BaseShin2017.html">moabb.datasets.bbci_eeg_fnirs.BaseShin2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.dreyer2023._Dreyer2023Base.html">moabb.datasets.dreyer2023._Dreyer2023Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.huebner_llp._BaseVisualMatrixSpellerDataset.html">moabb.datasets.huebner_llp._BaseVisualMatrixSpellerDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.base.CompoundDataset.html">moabb.datasets.compound_dataset.base.CompoundDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.compound_dataset.bi_illiteracy._base_bi_il.html">moabb.datasets.compound_dataset.bi_illiteracy._base_bi_il</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.data_dl.html">moabb.datasets.download.data_dl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_issue_request.html">moabb.datasets.download.fs_issue_request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_list.html">moabb.datasets.download.fs_get_file_list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_hash.html">moabb.datasets.download.fs_get_file_hash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_id.html">moabb.datasets.download.fs_get_file_id</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_name.html">moabb.datasets.download.fs_get_file_name</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.dataset_search.html">moabb.datasets.utils.dataset_search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.find_intersecting_channels.html">moabb.datasets.utils.find_intersecting_channels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.plot_datasets_grid.html">moabb.datasets.utils.plot_datasets_grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.plot_datasets_cluster.html">moabb.datasets.utils.plot_datasets_cluster</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">moabb.datasets.preprocessing.EuclideanAlignment</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.Imagery.html">moabb.paradigms.Imagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.SpeechImagery.html">moabb.paradigms.SpeechImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.MotorImagery.html">moabb.paradigms.MotorImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.LeftRightImagery.html">moabb.paradigms.LeftRightImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankLeftRightImagery.html">moabb.paradigms.FilterBankLeftRightImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankMotorImagery.html">moabb.paradigms.FilterBankMotorImagery</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.SSVEP.html">moabb.paradigms.SSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.CVEP.html">moabb.paradigms.CVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankCVEP.html">moabb.paradigms.FilterBankCVEP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.RestingStateToP300Adapter.html">moabb.paradigms.RestingStateToP300Adapter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.p300.BaseP300.html">moabb.paradigms.p300.BaseP300</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.ssvep.BaseSSVEP.html">moabb.paradigms.ssvep.BaseSSVEP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.BaseFixedIntervalWindowsProcessing.html">moabb.paradigms.BaseFixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.base.BaseParadigm.html">moabb.paradigms.base.BaseParadigm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.base.BaseProcessing.html">moabb.paradigms.base.BaseProcessing</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSessionSplitter.html">moabb.evaluations.WithinSessionSplitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSubjectSplitter.html">moabb.evaluations.WithinSubjectSplitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSessionSplitter.html">moabb.evaluations.CrossSessionSplitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSubjectSplitter.html">moabb.evaluations.CrossSubjectSplitter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.base.BaseEvaluation.html">moabb.evaluations.base.BaseEvaluation</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.LogVariance.html">moabb.pipelines.features.LogVariance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.FM.html">moabb.pipelines.features.FM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.ExtendedSSVEPSignal.html">moabb.pipelines.features.ExtendedSSVEPSignal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.AugmentedDataset.html">moabb.pipelines.features.AugmentedDataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.features.StandardScaler_Epoch.html">moabb.pipelines.features.StandardScaler_Epoch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.csp.TRCSP.html">moabb.pipelines.csp.TRCSP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_CCA.html">moabb.pipelines.classification.SSVEP_CCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_TRCA.html">moabb.pipelines.classification.SSVEP_TRCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_MsetCCA.html">moabb.pipelines.classification.SSVEP_MsetCCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_itCCA.html">moabb.pipelines.classification.SSVEP_itCCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_eCCA.html">moabb.pipelines.classification.SSVEP_eCCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_TRCA_R.html">moabb.pipelines.classification.SSVEP_TRCA_R</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_SSCOR.html">moabb.pipelines.classification.SSVEP_SSCOR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.pipelines.classification.SSVEP_TDCA.html">moabb.pipelines.classification.SSVEP_TDCA</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.score_plot.html">moabb.analysis.plotting.score_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.paired_plot.html">moabb.analysis.plotting.paired_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.summary_plot.html">moabb.analysis.plotting.summary_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.meta_analysis_plot.html">moabb.analysis.plotting.meta_analysis_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.dataset_bubble_plot.html">moabb.analysis.plotting.dataset_bubble_plot</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.find_significant_differences.html">moabb.analysis.meta_analysis.find_significant_differences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.compute_dataset_statistics.html">moabb.analysis.meta_analysis.compute_dataset_statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.combine_effects.html">moabb.analysis.meta_analysis.combine_effects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.combine_pvalues.html">moabb.analysis.meta_analysis.combine_pvalues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.collapse_session_scores.html">moabb.analysis.meta_analysis.collapse_session_scores</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.set_log_level.html">moabb.set_log_level</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.setup_seed.html">moabb.setup_seed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.set_download_dir.html">moabb.set_download_dir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.make_process_pipelines.html">moabb.make_process_pipelines</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.benchmark.html">moabb.benchmark</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API and Main Concepts</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">moabb.datasets.preprocessing.EuclideanAlignment</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<div>
+  
+  
+  <section id="moabb-datasets-preprocessing-euclideanalignment">
+<h1>moabb.datasets.preprocessing.EuclideanAlignment<a class="headerlink" href="#moabb-datasets-preprocessing-euclideanalignment" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.preprocessing.</span></span><span class="sig-name descname"><span class="pre">EuclideanAlignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lwf'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/preprocessing.py#L1108-L1218"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="(in scikit-learn v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></a>, <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="(in scikit-learn v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a></p>
+<p>Euclidean Alignment of trials (He &amp; Wu, 2020).</p>
+<p>Euclidean Alignment (EA) removes the per-domain (subject / session /
+recording) covariance shift that makes a model trained on one set of
+recordings transfer poorly to another. It is the simplest member of a
+larger family of trial-alignment methods — others recenter on the
+Riemannian or log-Euclidean mean — and is the one most used with deep
+networks because it is cheap, label-free, and leaves the data as raw trials
+a network can ingest <a class="reference internal" href="#r177582113b21-he2020" id="id1">[He2020]</a> <a class="reference internal" href="#r177582113b21-junqueira2024" id="id2">[Junqueira2024]</a>.</p>
+<p>Each trial is whitened by the inverse square root of a single reference
+covariance,</p>
+<div class="math notranslate nohighlight">
+\[\bar{C} = \frac{1}{N} \sum_{i=1}^{N} C_i, \qquad
+\tilde{X}_i = \bar{C}^{-1/2} X_i ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_i\)</span> is the spatial covariance of trial <span class="math notranslate nohighlight">\(X_i\)</span> and
+<span class="math notranslate nohighlight">\(\bar{C}\)</span> is their <strong>arithmetic (Euclidean) mean</strong>. After alignment
+the trials share an identity-like average covariance, so the domain shift
+that lived in the second-order statistics is gone.</p>
+<p>The transformer is <strong>inductive</strong> by default: <code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code> learns
+<span class="math notranslate nohighlight">\(\bar{C}^{-1/2}\)</span> from the <em>training</em> trials and <code class="xref py py-meth docutils literal notranslate"><span class="pre">transform()</span></code>
+re-applies that same whitener to unseen trials, so no test information leaks
+into the alignment (the leakage that the transductive, fit-on-everything
+form silently introduces). Calling <a class="reference internal" href="#moabb.datasets.preprocessing.EuclideanAlignment.fit_transform" title="moabb.datasets.preprocessing.EuclideanAlignment.fit_transform"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit_transform()</span></code></a> on a single
+recording recovers the usual transductive, per-recording EA people
+hand-roll — same object, no second class.</p>
+<p>Unlike <code class="xref py py-class docutils literal notranslate"><span class="pre">pyriemann.transfer.TLCenter</span></code> (with <code class="docutils literal notranslate"><span class="pre">metric=&quot;euclid&quot;</span></code>),
+which recenters covariance <em>matrices</em> for a Riemannian classifier, this
+operates directly on the <code class="docutils literal notranslate"><span class="pre">(n_trials,</span> <span class="pre">n_channels,</span> <span class="pre">n_times)</span></code> trials, so it
+drops in front of any time-series model (CSP, EEGNet, …).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>estimator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default &quot;lwf&quot;</em>) – Covariance estimator passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">pyriemann.utils.covariance.covariances()</span></code>. The shrinkage default
+<code class="docutils literal notranslate"><span class="pre">&quot;lwf&quot;</span></code> (Ledoit-Wolf) keeps the per-trial covariances symmetric
+positive-definite — and hence the reference mean invertible — even on
+short or noisy trials, where the plain sample covariance (<code class="docutils literal notranslate"><span class="pre">&quot;scm&quot;</span></code> /
+<code class="docutils literal notranslate"><span class="pre">&quot;cov&quot;</span></code>) can be ill-conditioned.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment.inv_sqrt_ref_">
+<span class="sig-name descname"><span class="pre">inv_sqrt_ref_</span></span><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment.inv_sqrt_ref_" title="Link to this definition">#</a></dt>
+<dd><p>Inverse square root <span class="math notranslate nohighlight">\(\bar{C}^{-1/2}\)</span> of the reference mean
+covariance learned in <code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code>; the whitening matrix applied in
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">transform()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray, shape (n_channels, n_channels)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyriemann.transfer.TLCenter</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Accepts an <a class="reference external" href="https://mne.tools/stable/generated/mne.BaseEpochs.html#mne.BaseEpochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.BaseEpochs</span></code></a> (read via <code class="docutils literal notranslate"><span class="pre">get_data</span></code>) or an ndarray of
+shape <code class="docutils literal notranslate"><span class="pre">(n_trials,</span> <span class="pre">n_channels,</span> <span class="pre">n_times)</span></code>; <code class="xref py py-meth docutils literal notranslate"><span class="pre">transform()</span></code> returns an
+ndarray of the same shape. <code class="docutils literal notranslate"><span class="pre">pyriemann</span> <span class="pre">&gt;=</span> <span class="pre">0.11</span></code> is already a hard moabb
+dependency, so this adds no new requirement.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r177582113b21-he2020" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">He2020</a><span class="fn-bracket">]</span></span>
+<p>He, H., &amp; Wu, D. (2020). Transfer learning for brain-computer
+interfaces: A Euclidean space data alignment approach. <em>IEEE
+Transactions on Biomedical Engineering</em>, 67(2), 399-410.
+<a class="reference external" href="https://doi.org/10.1109/TBME.2019.2913914">https://doi.org/10.1109/TBME.2019.2913914</a></p>
+</div>
+<div class="citation" id="r177582113b21-junqueira2024" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">Junqueira2024</a><span class="fn-bracket">]</span></span>
+<p>Junqueira, B., Aristimunha, B., Chevallier, S., &amp;
+de Camargo, R. Y. (2024). A systematic evaluation of Euclidean alignment
+with deep learning for EEG decoding. <em>Journal of Neural Engineering</em>,
+21(3), 036038. <a class="reference external" href="https://doi.org/10.1088/1741-2552/ad4f18">https://doi.org/10.1088/1741-2552/ad4f18</a></p>
+</div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lwf'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/preprocessing.py#L1185-L1186"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment.fit_transform">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.10/site-packages/sklearn/utils/_set_output.py#L839-L897"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment.fit_transform" title="Link to this definition">#</a></dt>
+<dd><p>Fit to data, then transform it.</p>
+<p>Fits transformer to <cite>X</cite> and <cite>y</cite> with optional parameters <cite>fit_params</cite>
+and returns a transformed version of <cite>X</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Input samples.</p></li>
+<li><p><strong>y</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>) or </em><em>(</em><em>n_samples</em><em>, </em><em>n_outputs</em><em>)</em><em>,                 </em><em>default=None</em>) – Target values (None for unsupervised transformations).</p></li>
+<li><p><strong>**fit_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional fit parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>X_new</strong> – Transformed array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray array of shape (n_samples, n_features_new)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment.get_metadata_routing">
+<span class="sig-name descname"><span class="pre">get_metadata_routing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.10/site-packages/sklearn/utils/_metadata_requests.py#L1532-L1544"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment.get_metadata_routing" title="Link to this definition">#</a></dt>
+<dd><p>Get metadata routing of this object.</p>
+<p>Please check <a class="reference external" href="https://scikit-learn.org/stable/metadata_routing.html#metadata-routing" title="(in scikit-learn v1.9)"><span class="xref std std-ref">User Guide</span></a> on how the routing
+mechanism works.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>routing</strong> – A <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.metadata_routing.MetadataRequest.html#sklearn.utils.metadata_routing.MetadataRequest" title="(in scikit-learn v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataRequest</span></code></a> encapsulating
+routing information.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>MetadataRequest</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment.get_params">
+<span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.10/site-packages/sklearn/base.py#L233-L255"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment.get_params" title="Link to this definition">#</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>params</strong> – Parameter names mapped to their values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment.set_output">
+<span class="sig-name descname"><span class="pre">set_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.10/site-packages/sklearn/utils/_available_if.py#L389-L421"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment.set_output" title="Link to this definition">#</a></dt>
+<dd><p>Set output container.</p>
+<p>See <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/miscellaneous/plot_set_output.html#sphx-glr-auto-examples-miscellaneous-plot-set-output-py" title="(in scikit-learn v1.9)"><span>Introducing the set_output API</span></a>
+for an example on how to use the API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transform</strong> (<em>{&quot;default&quot;</em><em>, </em><em>&quot;pandas&quot;</em><em>, </em><em>&quot;polars&quot;}</em><em>, </em><em>default=None</em>) – <p>Configure output of <cite>transform</cite> and <cite>fit_transform</cite>.</p>
+<ul class="simple">
+<li><p><cite>”default”</cite>: Default output format of a transformer</p></li>
+<li><p><cite>”pandas”</cite>: DataFrame output</p></li>
+<li><p><cite>”polars”</cite>: Polars output</p></li>
+<li><p><cite>None</cite>: Transform configuration is unchanged</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.4: </span><cite>“polars”</cite> option was added.</p>
+</div>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – Estimator instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>estimator instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.preprocessing.EuclideanAlignment.set_params">
+<span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.10/site-packages/sklearn/base.py#L317-L359"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.preprocessing.EuclideanAlignment.set_params" title="Link to this definition">#</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>). The latter have
+parameters of the form <code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s
+possible to update each component of a nested object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Estimator parameters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – Estimator instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>estimator instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="examples-using-moabb-datasets-preprocessing-euclideanalignment">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.preprocessing.EuclideanAlignment</span></code><a class="headerlink" href="#examples-using-moabb-datasets-preprocessing-euclideanalignment" title="Link to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="EEG covariance statistics drift from subject to subject (and session to session): the same mental task produces differently-shaped data on each recording. That domain shift is the main reason a decoder trained on one set of subjects transfers poorly to a new one. Euclidean Alignment (EA) removes it with a single, label-free whitening step — cheap enough to put in front of any model, deep or classical [1]_."><img alt="" src="../_images/sphx_glr_plot_euclidean_alignment_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_euclidean_alignment.html"><span class="doc">Euclidean Alignment for cross-subject transfer</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Euclidean Alignment for cross-subject transfer</div>
+</div></div><div style='clear:both'></div></section>
+</section>
+
+
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="moabb.datasets.utils.plot_datasets_cluster.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">moabb.datasets.utils.plot_datasets_cluster</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="moabb.paradigms.Imagery.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">moabb.paradigms.Imagery</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026 MOABB contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -723,6 +723,9 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.utils.plot_datasets_cluster.html">moabb.datasets.utils.plot_datasets_cluster</a></li>
 </ul>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.preprocessing.EuclideanAlignment.html">moabb.datasets.preprocessing.EuclideanAlignment</a></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.Imagery.html">moabb.paradigms.Imagery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.SpeechImagery.html">moabb.paradigms.SpeechImagery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.MotorImagery.html">moabb.paradigms.MotorImagery</a></li>
@@ -870,7 +873,7 @@
 <h1>moabb.evaluations.WithinSubjectSplitter<a class="headerlink" href="#moabb-evaluations-withinsubjectsplitter" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.evaluations.WithinSubjectSplitter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.evaluations.</span></span><span class="sig-name descname"><span class="pre">WithinSubjectSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_folds:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv_class:</span> <span class="pre">type[~sklearn.model_selection._split.BaseCrossValidator]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'sklearn.model_selection._split.StratifiedKFold'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**cv_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L172-L301"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.evaluations.</span></span><span class="sig-name descname"><span class="pre">WithinSubjectSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_folds:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv_class:</span> <span class="pre">type[~sklearn.model_selection._split.BaseCrossValidator]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'sklearn.model_selection._split.StratifiedKFold'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**cv_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L174-L315"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter" title="Link to this definition">#</a></dt>
 <dd><p>Data splitter for within subject evaluation.</p>
 <p>Within-subject evaluation uses k-fold cross-validation to determine train
 and test sets for each subject across all their sessions. This splitter
@@ -891,19 +894,21 @@ Pass an int for reproducible output across multiple function calls.
 Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>cv_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – Inner cross-validation strategy for splitting within each subject.
 Defaults to <code class="docutils literal notranslate"><span class="pre">StratifiedKFold</span></code>.</p></li>
-<li><p><strong>cv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional arguments to pass to the inner cross-validation strategy.</p></li>
+<li><p><strong>cv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional arguments to pass to the inner cross-validation strategy.
+An explicit <code class="docutils literal notranslate"><span class="pre">n_splits</span></code> provided here takes precedence over the
+<code class="docutils literal notranslate"><span class="pre">n_folds</span></code> argument.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.evaluations.WithinSubjectSplitter.get_metadata">
-<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L299-L301"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter.get_metadata" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L313-L315"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter.get_metadata" title="Link to this definition">#</a></dt>
 <dd><p>Return metadata for the most recent split.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.evaluations.WithinSubjectSplitter.get_n_splits">
-<span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L242-L274"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter.get_n_splits" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L246-L278"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter.get_n_splits" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of splits for the cross-validation.</p>
 <p>The number of splits is the number of subjects times the number of folds.</p>
 <p>We try to keep the same behaviour as the sklearn cross-validation classes.</p>
@@ -922,7 +927,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">Stratif
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.evaluations.WithinSubjectSplitter.split">
-<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L276-L297"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter.split" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L280-L311"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSubjectSplitter.split" title="Link to this definition">#</a></dt>
 <dd><p>Generate indices to split data into training and test set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

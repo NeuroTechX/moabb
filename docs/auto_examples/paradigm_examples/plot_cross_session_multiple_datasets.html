@@ -551,6 +551,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/noplot_mne_features_pipeline.html">Pipelines using the mne-features library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dataset_bubbles.html">Dataset bubble plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
@@ -735,27 +736,27 @@ each subject / session of the dataset, and for each pipeline.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 17:58:52] Multiple instances of codecarbon are allowed to run at the same time.
-2026-06-27 17:59:12,674 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 0: Score 0.851
-2026-06-27 17:59:12,674 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 1: Score 0.936
-2026-06-27 17:59:12,674 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 2: Score 0.940
-2026-06-27 17:59:12,674 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 0: Score 0.908
-2026-06-27 17:59:12,674 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 1: Score 0.770
-2026-06-27 17:59:12,674 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 2: Score 0.936
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 23:25:43] Multiple instances of codecarbon are allowed to run at the same time.
+2026-06-27 23:26:04,370 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 0: Score 0.851
+2026-06-27 23:26:04,371 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 1: Score 0.936
+2026-06-27 23:26:04,371 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 2: Score 0.940
+2026-06-27 23:26:04,371 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 0: Score 0.908
+2026-06-27 23:26:04,371 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 1: Score 0.770
+2026-06-27 23:26:04,371 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 2: Score 0.936
 /home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
   dset.create_dataset(
-2026-06-27 17:59:30,048 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.931
-2026-06-27 17:59:30,048 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.957
-2026-06-27 17:59:30,048 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 0train: Score 0.527
-2026-06-27 17:59:30,048 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 1test: Score 0.650
+2026-06-27 23:26:21,929 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.931
+2026-06-27 23:26:21,929 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.957
+2026-06-27 23:26:21,929 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 0train: Score 0.527
+2026-06-27 23:26:21,930 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 1test: Score 0.650
 /home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
   dset.create_dataset(
      score      time  ...  pipeline                  codecarbon_task_name
-0  0.85113  0.177783  ...   CSP+LDA  d90815bc-9e47-44ff-9406-8cd38fb7cbb7
-1  0.93640  0.191625  ...   CSP+LDA  a64df001-64b3-4b5a-9c9a-79c08a3362a3
-2  0.93960  0.178288  ...   CSP+LDA  6f4c0e2c-80df-4067-aeed-7df2fafc03b1
-3  0.90800  0.149807  ...   CSP+LDA  5a40288c-2a3a-4fab-8d40-4dea3db14736
-4  0.77037  0.160114  ...   CSP+LDA  022696b8-7f95-4d7c-b3a1-f24eeaeb9ac6
+0  0.85113  0.177187  ...   CSP+LDA  0d72c788-76c1-4843-b156-1b12121126ac
+1  0.93640  0.203197  ...   CSP+LDA  ee436a4c-42ca-4141-b7bc-6a5ff87edcbb
+2  0.93960  0.190244  ...   CSP+LDA  13376989-2764-4da0-9612-5c6c25e74bab
+3  0.90800  0.152519  ...   CSP+LDA  9bc82b41-c1b8-499a-803b-048518ba0c25
+4  0.77037  0.176766  ...   CSP+LDA  fbdcd35c-67ed-48aa-9575-5020d078ad19
 
 [5 rows x 13 columns]
 </pre></div>
@@ -776,7 +777,7 @@ each subject / session of the dataset, and for each pipeline.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 43.855 seconds)</p>
+<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 44.397 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a236a554370961344b575283a1efbb02/plot_cross_session_multiple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_multiple_datasets.ipynb</span></code></a></p>
