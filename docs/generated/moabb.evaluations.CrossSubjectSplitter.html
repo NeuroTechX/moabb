@@ -873,7 +873,7 @@
 <h1>moabb.evaluations.CrossSubjectSplitter<a class="headerlink" href="#moabb-evaluations-crosssubjectsplitter" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.evaluations.</span></span><span class="sig-name descname"><span class="pre">CrossSubjectSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cv_class:</span> <span class="pre">type[~sklearn.model_selection._split.BaseCrossValidator]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'sklearn.model_selection._split.LeaveOneGroupOut'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**cv_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L498-L605"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.evaluations.</span></span><span class="sig-name descname"><span class="pre">CrossSubjectSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cv_class:</span> <span class="pre">type[~sklearn.model_selection._split.BaseCrossValidator]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'sklearn.model_selection._split.LeaveOneGroupOut'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups='subject'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**cv_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L594-L713"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter" title="Link to this definition">#</a></dt>
 <dd><p>Data splitter for cross subject evaluation.</p>
 <p>This splitter enables cross-subject evaluation by performing a Leave-One-Session-Out (LOSO)
 cross-validation on the dataset.</p>
@@ -891,10 +891,16 @@ which performs Leave-One-Subject-Out cross-validation.</p>
 <li><p><strong>cv_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – Cross-validation strategy for splitting the subjects between train and test sets.
 By default, use LeaveOneGroupOut, which keeps one subject as a test.
 Defaults to <code class="docutils literal notranslate"><span class="pre">LeaveOneGroupOut</span></code>.</p></li>
+<li><p><strong>groups</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, or </em><em>callable</em>) – What defines a fold: a metadata column name (<code class="docutils literal notranslate"><span class="pre">&quot;subject&quot;</span></code>), a list of
+column names combined into a compound key (<code class="docutils literal notranslate"><span class="pre">[&quot;subject&quot;,</span> <span class="pre">&quot;session&quot;]</span></code>),
+or a callable <code class="docutils literal notranslate"><span class="pre">metadata</span> <span class="pre">-&gt;</span> <span class="pre">array</span></code>. Passed straight to the stock
+scikit-learn <code class="docutils literal notranslate"><span class="pre">cv_class</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;subject&quot;</span></code>.</p></li>
 <li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>None</em>) – Controls the randomness of the cross-validation.
 Pass an int for reproducible output across multiple calls.
 Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>cv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional arguments to pass to the inner cross-validation strategy.</p></li>
+<li><p><strong>cv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional arguments to pass to the inner cross-validation strategy.
+A callable value is resolved against the metadata at <code class="docutils literal notranslate"><span class="pre">split</span></code> time
+(e.g. <code class="docutils literal notranslate"><span class="pre">cv_class=PredefinedSplit</span></code> with a <code class="docutils literal notranslate"><span class="pre">test_fold</span></code> callable).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
@@ -906,13 +912,13 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter.get_metadata">
-<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L603-L605"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.get_metadata" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L711-L713"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.get_metadata" title="Link to this definition">#</a></dt>
 <dd><p>Return metadata for the most recent split.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter.get_n_splits">
-<span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L558-L583"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.get_n_splits" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L666-L691"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.get_n_splits" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of splits for the cross-validation.</p>
 <p>The number of splits is the number of subjects times the number of splits
 of the inner cross-validation strategy.</p>
@@ -932,7 +938,7 @@ of the inner cross-validation strategy.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter.split">
-<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L585-L601"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.split" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L693-L709"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.split" title="Link to this definition">#</a></dt>
 <dd><p>Generate indices to split data into training and test set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
