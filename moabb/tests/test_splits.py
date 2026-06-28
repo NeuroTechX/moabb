@@ -7,6 +7,7 @@ from sklearn.model_selection import (
     LeaveOneOut,
     LeavePGroupsOut,
     LeavePOut,
+    PredefinedSplit,
     RepeatedKFold,
     RepeatedStratifiedKFold,
     ShuffleSplit,
@@ -711,3 +712,146 @@ def test_cross_dataset_requires_group_column(data):
     splitter = CrossDatasetSplitter(group_column="does_not_exist")
     with pytest.raises(ValueError):
         list(splitter.split(y, metadata))
+
+
+# ---------------------------------------------------------------------------
+# Metadata-driven ``groups`` and callable ``cv_kwargs`` across the splitters.
+# ---------------------------------------------------------------------------
+
+
+def test_cross_subject_groups_compound_key(data):
+    """groups=["subject", "session"] yields one fold per (subject, session)."""
+    _, y, metadata = data
+    split = CrossSubjectSplitter(cv_class=LeaveOneGroupOut, groups=["subject", "session"])
+    n_groups = metadata.groupby(["subject", "session"]).ngroups
+    folds = list(split.split(y, metadata))
+    assert len(folds) == n_groups
+    assert split.get_n_splits(metadata) == n_groups
+    for train, test in folds:
+        test_meta = metadata.loc[test]
+        assert test_meta.groupby(["subject", "session"]).ngroups == 1
+        train_keys = set(map(tuple, metadata.loc[train][["subject", "session"]].values))
+        test_keys = set(map(tuple, test_meta[["subject", "session"]].values))
+        assert train_keys.isdisjoint(test_keys)
+
+
+def test_cross_subject_predefined_split_single_fold(data):
+    """cv_class=PredefinedSplit with a callable test_fold targets one fold."""
+    _, y, metadata = data
+    split = CrossSubjectSplitter(
+        cv_class=PredefinedSplit,
+        test_fold=lambda md: np.where(
+            (md["subject"] == 1) & (md["session"] == "0"), 0, -1
+        ),
+    )
+    folds = list(split.split(y, metadata))
+    assert len(folds) == 1
+    assert split.get_n_splits(metadata) == 1
+    train, test = folds[0]
+    test_meta = metadata.loc[test]
+    assert set(test_meta["subject"]) == {1}
+    assert set(test_meta["session"]) == {"0"}
+    assert len(train) + len(test) == len(metadata)
+
+
+def test_cross_dataset_groups_callable_and_list(data):
+    """CrossDatasetSplitter accepts groups as a list of columns or a callable."""
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    n_datasets = metadata["dataset"].nunique()
+
+    split_list = CrossDatasetSplitter(groups=["dataset"])
+    folds_list = list(split_list.split(y, metadata))
+    assert len(folds_list) == n_datasets
+
+    split_call = CrossDatasetSplitter(groups=lambda md: md["dataset"].to_numpy())
+    folds_call = list(split_call.split(y, metadata))
+    assert len(folds_call) == n_datasets
+    for train, test in folds_call:
+        train_ds = set(metadata.loc[train, "dataset"])
+        test_ds = set(metadata.loc[test, "dataset"])
+        assert train_ds.isdisjoint(test_ds)
+
+
+def test_cross_dataset_group_column_backcompat(data):
+    """The deprecated group_column= keyword still drives the folds."""
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    with pytest.warns(DeprecationWarning):
+        split = CrossDatasetSplitter(group_column="dataset")
+    folds = list(split.split(y, metadata))
+    assert len(folds) == metadata["dataset"].nunique()
+    # Per-fold metadata is preserved.
+    meta = split.get_metadata()
+    assert "test_dataset" in meta
+    assert "train_datasets" in meta
+
+
+def test_cross_session_groups_default_and_callable(data):
+    """Default groups='session' is unchanged; a callable reproduces it."""
+    _, y, metadata = data
+    default_folds = list(CrossSessionSplitter().split(y, metadata))
+    call_split = CrossSessionSplitter(groups=lambda md: md["session"].to_numpy())
+    call_folds = list(call_split.split(y, metadata))
+    assert len(call_folds) == len(default_folds)
+    for (tr1, te1), (tr2, te2) in zip(default_folds, call_folds):
+        assert np.array_equal(tr1, tr2)
+        assert np.array_equal(te1, te2)
+
+
+@pytest.mark.parametrize("splitter_cls", [WithinSessionSplitter, WithinSubjectSplitter])
+def test_within_groups_none_is_unchanged(splitter_cls, data):
+    """groups=None reproduces the splits produced without the argument."""
+    _, y, metadata = data
+    base = list(splitter_cls(n_folds=5, shuffle=False).split(y, metadata))
+    with_none = list(
+        splitter_cls(n_folds=5, shuffle=False, groups=None).split(y, metadata)
+    )
+    assert len(base) == len(with_none)
+    for (tr1, te1), (tr2, te2) in zip(base, with_none):
+        assert np.array_equal(tr1, tr2)
+        assert np.array_equal(te1, te2)
+
+
+def test_within_session_groups_routes_through(data):
+    """A group-aware cv_class receives groups resolved per (subject, session)."""
+    _, y, metadata = data
+    split = WithinSessionSplitter(shuffle=False, cv_class=LeaveOneGroupOut, groups="run")
+    folds = list(split.split(y, metadata))
+    n_subjects = metadata["subject"].nunique()
+    n_sessions = metadata["session"].nunique()
+    n_runs = metadata["run"].nunique()
+    assert len(folds) == n_subjects * n_sessions * n_runs
+    for train, test in folds:
+        test_meta = metadata.loc[test]
+        assert test_meta.groupby(["subject", "session"]).ngroups == 1
+        assert test_meta["run"].nunique() == 1
+        subj = test_meta["subject"].iloc[0]
+        sess = test_meta["session"].iloc[0]
+        held_out_run = test_meta["run"].iloc[0]
+        same_partition = metadata.loc[train]
+        same_partition = same_partition[
+            (same_partition["subject"] == subj) & (same_partition["session"] == sess)
+        ]
+        assert held_out_run not in set(same_partition["run"])
+
+
+def test_within_subject_groups_routes_through(data):
+    """A group-aware cv_class receives groups resolved per subject."""
+    _, y, metadata = data
+    split = WithinSubjectSplitter(
+        shuffle=False, cv_class=LeaveOneGroupOut, groups="session"
+    )
+    folds = list(split.split(y, metadata))
+    n_subjects = metadata["subject"].nunique()
+    n_sessions = metadata["session"].nunique()
+    assert len(folds) == n_subjects * n_sessions
+    for train, test in folds:
+        test_meta = metadata.loc[test]
+        assert test_meta["subject"].nunique() == 1
+        assert test_meta["session"].nunique() == 1
+        subj = test_meta["subject"].iloc[0]
+        held_out_session = test_meta["session"].iloc[0]
+        same_subject_train = metadata.loc[train]
+        same_subject_train = same_subject_train[same_subject_train["subject"] == subj]
+        assert held_out_session not in set(same_subject_train["session"])
