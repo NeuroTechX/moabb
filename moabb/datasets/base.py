@@ -718,6 +718,9 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.doi = doi
         self.unit_factor = unit_factor
 
+    def __repr__(self):
+        return self.code
+
     @property
     def all_subjects(self):
         """Full list of subjects available in this dataset (unfiltered)."""

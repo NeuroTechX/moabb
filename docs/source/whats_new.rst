@@ -51,6 +51,7 @@ Requirements
 
 Bugs
 ~~~~
+- Add a ``__repr__`` to :class:`moabb.datasets.base.BaseDataset` so datasets display by their code (e.g. ``BNCI2014-001``) when printed, instead of the verbose default ``<...object at 0x...>``. This declutters the output of ``print(paradigm.datasets)`` in the tutorials and of the paradigm and evaluation compatibility warnings (by `Danae`_)
 - Add ``age_median`` field to :class:`moabb.datasets.metadata.schema.ParticipantMetadata` and populate ``age_std`` / ``age_median`` / ``n_blocks`` metadata for :class:`moabb.datasets.Rodrigues2017` (Alphawaves), fixing a ``TypeError`` at import time (by `Grace Xu`_)
 - Fix :class:`moabb.datasets.BNCI2014_001` descriptive ``METADATA``, which had many fields copied from BCI Competition IV Data set 1. Correct ``n_subjects`` (4 → 9), ``n_classes`` (2 → 4), ``class_labels`` / ``events`` / ``imagery_tasks`` (now ``left_hand`` / ``right_hand`` / ``feet`` / ``tongue``), ``synchronicity`` (asynchronous → synchronous), ``sessions_per_subject`` (1 → 2), the per-session trial structure (288 trials, 6 runs of 48), the acquisition ``reference`` / ``ground`` / ``filters`` and the ``preprocessing`` band (0.5–100 Hz with a 50 Hz notch, no 100 Hz downsampling), and the dataset ``description`` so they all match the dataset's own constructor and docstring (by `YG-paaleee`_)
 - Fix :class:`moabb.datasets.BNCI2014_001` stimulus protocol timing in the generated documentation figure to show 2 s fixation, 1.25 s cue, and motor imagery through t=6 s (by `Bruno Aristimunha`_)
@@ -906,3 +907,4 @@ API changes
 .. _YG-paaleee: https://github.com/YG-paaleee
 .. _Grace Xu: https://github.com/grookymonster
 .. _copilot-swe-agent: https://github.com/apps/copilot-swe-agent
+.. _Danae: https://github.com/dnplchrn
