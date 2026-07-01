@@ -504,6 +504,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             cs_mode = CrossSubjectMode.TRAIN
     
         cs_mode = CrossSubjectMode(cs_mode)
+        self.cs_mode = cs_mode
     
         # Manual cv_kwargs still work when the default train-only blockwise
         # mode is used.
@@ -643,6 +644,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     groups[train],
                     calib=calib_md,
                     calibration_labeled=calibration_labeled,
+                    cs_mode=self.cs_mode,
                 )
 
                 duration, emissions, task_name = self._fit_cv(

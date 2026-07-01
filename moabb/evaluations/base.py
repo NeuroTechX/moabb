@@ -91,7 +91,13 @@ def _one_shot_estimator(estimator):
     return _OneShotEstimator(estimator)
 
     
-def _route_transfer_metadata(estimator, subjects, calib=None, calibration_labeled=False):
+def _route_transfer_metadata(
+    estimator,
+    subjects,
+    calib=None,
+    calibration_labeled=False,
+    cs_mode=None,
+):
     """Keep only protocol-allowed transfer metadata requested at ``fit``.
 
     ``subjects`` is the per-trial source-subject array.
@@ -109,6 +115,9 @@ def _route_transfer_metadata(estimator, subjects, calib=None, calibration_labele
     so this returns ``{}`` and the fit is unchanged.
     """
     candidate = {"subjects": subjects}
+
+    if cs_mode is not None:
+        candidate["cs_mode"] = cs_mode
 
     if calib is not None:
         if calibration_labeled:
@@ -221,6 +230,7 @@ def _evaluate_fold(
     mne_labels = config["mne_labels"]
     codecarbon_config = config["codecarbon_config"]
     one_shot_predict = config.get("one_shot_predict", False)
+    cs_mode = config.get("cs_mode", None)
 
     # Label encode per fold (matching old per-session/per-subject scoping)
     if not mne_labels:
@@ -271,7 +281,11 @@ def _evaluate_fold(
 
     subjects_train = metadata["subject"].to_numpy()[train_idx]
     fit_params = _route_transfer_metadata(
-        cvclf, subjects_train, calib=calib, calibration_labeled=calibration_labeled
+        cvclf,
+        subjects_train,
+        calib=calib,
+        calibration_labeled=calibration_labeled,
+        cs_mode=cs_mode,
     )
 
     # Fit model
@@ -772,6 +786,7 @@ class BaseEvaluation(ABC):
             ),
             "score_per_session": self._score_per_session,
             "one_shot_predict": getattr(self, "one_shot_predict", False),
+            "cs_mode": getattr(self, "cs_mode", None),
             "param_grid": None,  # overridden per-task below if needed
         }
 
