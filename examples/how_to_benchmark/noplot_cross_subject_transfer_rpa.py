@@ -26,10 +26,6 @@ protocol modes that are not appropriate or not currently supported by the
 example, such as source-only, labeled target-calibration modes, or standalone
 ``TRAIN_TRIALWISE``.
 
-Modes combining unlabeled target calibration with trialwise scoring could be
-meaningful for RPA, but they are not currently represented by the available
-``CrossSubjectMode`` presets.
-
 """
 
 import numpy as np

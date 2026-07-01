@@ -28,6 +28,12 @@ block at scoring time, as in the standard MOABB CrossSubjectEvaluation path.
 Trialwise prediction means that the estimator is scored one target trial at a
 time. This prevents methods from using statistics of the full target test block
 during prediction.
+
+Alternatively, the protocol can be configured manually with
+``calibration_size`` and ``calibration_labeled``. For publications and
+benchmarks, however, a predefined ``CrossSubjectMode`` preset is strongly
+recommended.
+
 """
 
 from enum import Enum
