@@ -13,9 +13,9 @@ from moabb.evaluations.base import (
     _route_transfer_metadata,
 )
 from moabb.evaluations.protocols import (
-    CsMode,
-    is_one_shot_mode,
-    resolve_cs_mode,
+    CrossSubjectMode,
+    is_trialwise_mode,
+    resolve_cross_subject_mode,
     validate_transfer_protocol,
 )
 from moabb.evaluations.splitters import (
@@ -478,13 +478,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
         ``X_target_unlabeled`` may be routed. With ``calibration_labeled=True``,
         ``X_target_labeled`` and ``y_target_labeled`` may be routed.
         Labeled calibration is only allowed with ``calibration_size <= 0.5``.
-    cs_mode : CsMode or str, default=CsMode.HOS_SOURCE_ONLY
+    cs_mode : CrossSubjectMode or str, default=CrossSubjectMode.TRAIN
         Named cross-subject protocol preset. By default, this is the standard
-        source-only cross-subject evaluation with no target calibration. The
-        ``HOS_SOURCE_ONLY_TRIALWISE`` mode additionally enforces one-trial-at-a-time
+        train-only cross-subject evaluation with no target calibration. The
+        ``TRAIN_TRIALWISE`` mode additionally enforces one-trial-at-a-time
         prediction during scoring. Cannot be combined with manual
         ``calibration_size`` or ``calibration_labeled`` in ``cv_kwargs``, except
-        for the default ``HOS_SOURCE_ONLY`` mode.
+        for the default ``TRAIN`` mode.
 
     Notes
     -----
@@ -496,42 +496,42 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _score_per_session = True
     _needs_all_subjects = True
 
-    def __init__(self, *args, cs_mode=CsMode.HOS_SOURCE_ONLY, **kwargs):
+    def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
         cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
         self.one_shot_predict = False
-
+    
         if cs_mode is None:
-            cs_mode = CsMode.HOS_SOURCE_ONLY
-
-        cs_mode = CsMode(cs_mode)
-
-        # manual cv_kwargs still work when the
-        # default source-only blockwise mode is used.
+            cs_mode = CrossSubjectMode.TRAIN
+    
+        cs_mode = CrossSubjectMode(cs_mode)
+    
+        # Manual cv_kwargs still work when the default train-only blockwise
+        # mode is used.
         has_manual_calibration = (
             "calibration_size" in cv_kwargs or "calibration_labeled" in cv_kwargs
         )
-
-        if has_manual_calibration and cs_mode != CsMode.HOS_SOURCE_ONLY:
+    
+        if has_manual_calibration and cs_mode != CrossSubjectMode.TRAIN:
             raise ValueError(
                 "Pass either cs_mode or calibration_size/calibration_labeled, "
                 "not both."
             )
-
+    
         if not has_manual_calibration:
-            params = resolve_cs_mode(cs_mode)
+            params = resolve_cross_subject_mode(cs_mode)
             cv_kwargs["calibration_size"] = params["calibration_size"]
             cv_kwargs["calibration_labeled"] = params["calibration_labeled"]
-
-        self.one_shot_predict = is_one_shot_mode(cs_mode)
-
+    
+        self.one_shot_predict = is_trialwise_mode(cs_mode)
+    
         validate_transfer_protocol(
             cv_kwargs.get("calibration_size", 0.0),
             cv_kwargs.get("calibration_labeled", False),
         )
-
+    
         kwargs["cv_kwargs"] = cv_kwargs
         super().__init__(*args, **kwargs)
-
+    
     def _create_splitter(self):
         """Create the CrossSubjectSplitter for parallel evaluation.
 

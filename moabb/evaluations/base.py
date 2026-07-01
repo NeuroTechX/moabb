@@ -48,6 +48,7 @@ log = logging.getLogger(__name__)
 
 
 def _one_shot_estimator(estimator):
+    """Wrap an estimator so predictions are made one sample at a time."""
     class _OneShotEstimator:
         def __init__(self, estimator):
             self.estimator = estimator
@@ -85,7 +86,7 @@ def _one_shot_estimator(estimator):
 
                 return decision_function
 
-            raise AttributeError(name)
+            return getattr(self.estimator, name)
 
     return _OneShotEstimator(estimator)
 
