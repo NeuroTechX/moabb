@@ -101,6 +101,8 @@ def _route_transfer_metadata(
     """Keep only protocol-allowed transfer metadata requested at ``fit``.
 
     ``subjects`` is the per-trial source-subject array.
+    
+    ``cs_mode`` is the selected cross-subject protocol preset.
 
     ``calib`` is an optional dict with raw calibration data:
     ``{"X": X[calib_idx], "y": y_calib}``.
