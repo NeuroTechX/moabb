@@ -8,7 +8,9 @@ The presets describe what information from the held-out target subject is
 allowed to be used by an estimator, and how the remaining target data are
 scored. They make the evaluation protocol explicit, so that different
 cross-subject and transfer-learning methods can be compared under controlled
-and reproducible conditions.
+and reproducible conditions. 
+
+These presets are designed specifically to be used in publications. 
 
 A preset controls two related aspects of the evaluation:
 
@@ -34,6 +36,7 @@ from enum import Enum
 class CrossSubjectMode(str, Enum):
     # Train only on training/source subjects; no target calibration data is used.
     # The held-out target test data is predicted blockwise.
+    # This is the DEFAULT mode and it is not transfer learning aware.
     TRAIN = "train"
 
     # Train only on training/source subjects; no target calibration data is used.
