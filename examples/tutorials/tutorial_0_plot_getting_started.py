@@ -29,9 +29,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 
-##########################################################################
-# If you would like to specify the logging level when it is running, you can
-# use the standard python logging commands through the top-level moabb module
 import moabb
 from moabb.datasets import BNCI2014_001, utils
 from moabb.evaluations import CrossSessionEvaluation
@@ -40,16 +37,19 @@ from moabb.pipelines.features import LogVariance
 
 
 ##########################################################################
-# In order to create pipelines within a script, you will likely need at least
-# the make_pipeline function. They can also be specified via a .yml file. Here
-# we will make a couple pipelines just for convenience
-
+# If you would like to specify the logging level when it is running, you can
+# use the standard python logging commands through the top-level moabb module
 
 moabb.set_log_level("info")
+
 
 ##############################################################################
 # Create pipelines
 # ----------------
+#
+# In order to create pipelines within a script, you will likely need at least
+# the make_pipeline function. They can also be specified via a .yml file. Here
+# we will make a couple pipelines just for convenience.
 #
 # We create two pipelines: channel-wise log variance followed by LDA, and
 # channel-wise log variance followed by a cross-validated SVM (note that a
