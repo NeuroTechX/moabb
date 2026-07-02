@@ -39,6 +39,7 @@ Enhancements
 - Re-enable auto-execution of the Riemannian Artifact Rejection tutorial (``examples/advanced_examples/plot_riemannian_artifact_rejection.py``) now that pyRiemann 0.11 is on PyPI with per-potato metrics and ``method_combination`` support on ``PotatoField`` (by `Bruno Aristimunha`_)
 - Use NEMAR as the default download source for datasets with an assigned ``nemar_id``, while preserving existing dataset-specific downloaders as a fallback (by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.preprocessing.EuclideanAlignment`, a trial-level Euclidean Alignment transformer (He & Wu 2020; Junqueira et al. 2024) that whitens each trial by the inverse square root of the Euclidean mean covariance to remove per-domain covariance shift before a (deep) model sees the data. Inductive and leakage-free by default (``fit`` learns the reference from training trials, ``transform`` re-applies it to unseen trials); ``fit_transform`` gives the transductive, per-recording form. Accepts an :class:`mne.BaseEpochs` or an ``(n_trials, n_channels, n_times)`` ndarray, uses a shrinkage covariance estimator (``"lwf"``) for robustness, and adds no new dependency (``pyriemann >= 0.11`` is already required). Distinct from :class:`pyriemann.transfer.TLCenter`, which recenters covariance *matrices* (:gh:`1108` by `Bruno Aristimunha`_).
+- Add :file:`examples/advanced_examples/plot_geometry_aware_recentering.py`, reproducing the within/cross double dissociation showing unsupervised test-time tangent-space recentering (``TangentSpace(tsupdate=True)``) drives the cross-session gain in EEG motor-imagery decoding, with no corresponding within-session effect (Rahimipour et al., in preparation) (by `Meysam Rahimipour`_).
 - Drive cross-validation folds with any stock scikit-learn cross-validator passed as ``cv_class``, controlled by a ``groups`` argument — a metadata column name, a list of column names (compound key, e.g. ``["subject", "session"]``), or a callable ``metadata -> array`` — together with callable ``cv_kwargs`` resolved against the metadata (e.g. ``cv_class=PredefinedSplit`` with a ``test_fold`` callable to target a single fold). ``groups`` is exposed on :class:`moabb.evaluations.WithinSessionEvaluation`, :class:`moabb.evaluations.WithinSubjectEvaluation`, :class:`moabb.evaluations.CrossSessionEvaluation` and :class:`moabb.evaluations.CrossSubjectEvaluation` and threaded to their splitters; each splitter keeps its default grouping (``"subject"`` / ``"session"`` / labels) when ``groups`` is ``None``. :class:`moabb.evaluations.splitters.CrossDatasetSplitter` gains ``groups`` (its ``group_column`` argument is now a deprecated alias) (:gh:`1104` by `Bruno Aristimunha`_).
 
 API changes
@@ -852,6 +853,7 @@ API changes
 .. _Anton Andreev: https://github.com/toncho11
 .. _Igor Carrara: https://github.com/carraraig
 .. _Bruno Aristimunha: https://github.com/bruAristimunha
+.. _Meysam Rahimipour: https://github.com/rahimipour-meysam-NeurIPS
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
 .. _Quentin Barthelemy: https://github.com/qbarthelemy
 .. _Erik Bjäreholt: https://github.com/ErikBjare
