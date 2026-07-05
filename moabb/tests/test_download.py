@@ -203,6 +203,9 @@ def _resolve_dataset_path(dataset_class, download_dir):
             continue
         if name == "path":
             break
+        # ``session``-like parameters need an integer (they are often used in
+        # f-strings before the path is resolved); anything else only appears
+        # after the probe fires, so an empty string is a safe placeholder.
         extra_args.append(1 if "session" in name else "")
 
     try:
