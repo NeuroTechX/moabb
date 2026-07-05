@@ -183,6 +183,29 @@ def verbose(function):
     return wrapper
 
 
+def _propagate_download_dir(old_path, new_path):
+    """Update per-dataset MNE config keys after changing ``MNE_DATA``.
+
+    ``moabb.datasets.download.get_dataset_path`` persists a per-dataset
+    ``MNE_DATASETS_<SIGN>_PATH`` config entry (mirroring ``MNE_DATA``) the first
+    time a dataset is accessed. These entries are otherwise never refreshed, so
+    changing the download directory would leave datasets pointing at the old
+    location. Here we realign every per-dataset key that still mirrors the old
+    ``MNE_DATA`` value so that a configuration change is honoured by all
+    datasets, while leaving keys the user configured to a different location
+    untouched.
+    """
+    if new_path is None or old_path == new_path:
+        return
+    for key, value in (get_config() or {}).items():
+        if (
+            key.startswith("MNE_DATASETS_")
+            and key.endswith("_PATH")
+            and value == old_path
+        ):
+            set_config(key, new_path)
+
+
 def set_download_dir(path):
     """Set the download directory if required to change from default mne path.
 
@@ -194,6 +217,7 @@ def set_download_dir(path):
         a warning is raised and the storage location is set to the MNE
         default directory.
     """
+    old_path = get_config("MNE_DATA")
     if path is None:
         if get_config("MNE_DATA") is None:
             log.info(
@@ -204,13 +228,16 @@ def set_download_dir(path):
                 "already downloaded, please move manually to this location"
             )
 
-            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
+            new_path = osp.join(osp.expanduser("~"), "mne_data")
+            set_config("MNE_DATA", new_path)
+            _propagate_download_dir(old_path, new_path)
     else:
         # Check if the path exists, if not, create it
         if not osp.isdir(path):
             log.info("The path given does not exist, creating it..")
-            os.makedirs(path)
+            os.makedirs(path, exist_ok=True)
         set_config("MNE_DATA", path)
+        _propagate_download_dir(old_path, path)
 
 
 def make_process_pipelines(

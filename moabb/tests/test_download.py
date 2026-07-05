@@ -1,12 +1,26 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
+import importlib
 import inspect
+import sys
 
 import mne
 import pytest
+from mne import get_config, set_config
 
+import moabb.datasets.download as dl
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 from moabb.datasets.utils import dataset_list
+from moabb.utils import set_download_dir
+
+
+# Datasets that legitimately do not resolve their storage location through the
+# shared ``get_dataset_path``/``MNE_DATA`` mechanism, so the config-change
+# recovery guarantee does not apply to them:
+#   * the fake datasets generate synthetic data and never download anything;
+#   * ``RomaniBF2025ERP`` manages its own ``data_folder`` (temporary directory
+#     or user-provided path) instead of the MNE config path system.
+_PATH_RECOVERY_EXEMPT = {"FakeDataset", "FakeVirtualRealityDataset", "RomaniBF2025ERP"}
 
 
 def _get_events(raw):
@@ -114,3 +128,134 @@ def test_dataset_download(dl_data, dataset):
                 assert len(events) != 0, (
                     f"No events found in run {run} of session {session}."
                 )
+
+
+class _ProbeStop(Exception):
+    """Sentinel raised to abort a download once the storage path is resolved."""
+
+    def __init__(self, sign, resolved):
+        super().__init__(sign)
+        self.sign = sign
+        self.resolved = resolved
+
+
+@pytest.fixture
+def _restore_mne_config():
+    """Isolate the MNE config touched by the path tests.
+
+    Snapshot the current config, clear any pre-existing
+    ``MNE_DATASETS_*_PATH`` entries so each dataset starts from a clean
+    "first access" state, then restore everything afterwards.
+    """
+    before = dict(get_config() or {})
+    for key in list(before):
+        if key.startswith("MNE_DATASETS_") and key.endswith("_PATH"):
+            set_config(key, None)
+    try:
+        yield
+    finally:
+        after = dict(get_config() or {})
+        # Reset keys that were added and restore keys that were modified.
+        for key in set(after) | set(before):
+            if before.get(key) != after.get(key):
+                set_config(key, before.get(key))
+
+
+def _install_path_probe(monkeypatch, dataset_class):
+    """Replace ``get_dataset_path`` so it records the sign and aborts.
+
+    The real ``get_dataset_path`` is still invoked (so the per-dataset config
+    key is persisted exactly as in production) but a :class:`_ProbeStop` is
+    raised immediately afterwards to avoid any network access.
+    """
+    real = dl.get_dataset_path
+
+    def probe(sign, path):
+        resolved = real(sign, path)
+        raise _ProbeStop(sign, str(resolved))
+
+    monkeypatch.setattr(dl, "get_dataset_path", probe)
+    # Datasets that used ``from .download import get_dataset_path`` hold their
+    # own reference to the original function, so patch those bindings too.
+    for cls in dataset_list:
+        module = sys.modules.get(cls.__module__) or importlib.import_module(
+            cls.__module__
+        )
+        if getattr(module, "get_dataset_path", None) is real:
+            monkeypatch.setattr(module, "get_dataset_path", probe, raising=False)
+
+
+def _resolve_dataset_path(dataset_class, download_dir):
+    """Resolve a dataset's storage location for the given download directory."""
+    set_download_dir(str(download_dir))
+    kwargs = {}
+    if "accept" in inspect.signature(dataset_class).parameters:
+        kwargs["accept"] = True
+    dataset = dataset_class(**kwargs)
+    subject = dataset.subject_list[0]
+
+    # Fill any required positional parameters that come before ``path`` in the
+    # ``data_path`` signature (e.g. ``session`` or ``paradigm_type``) so that we
+    # reach the path-resolution call for datasets with custom signatures.
+    extra_args = []
+    for name in inspect.signature(dataset.data_path).parameters:
+        if name in ("self", "subject"):
+            continue
+        if name == "path":
+            break
+        extra_args.append(1 if "session" in name else "")
+
+    try:
+        dataset.data_path(subject, *extra_args)
+    except _ProbeStop as stop:
+        return stop.resolved
+    return None
+
+
+@pytest.mark.parametrize(
+    "dataset_class",
+    [pytest.param(dataset, id=dataset.__name__) for dataset in dataset_list],
+)
+def test_download_dir_change_is_respected(
+    dataset_class, tmp_path, monkeypatch, _restore_mne_config
+):
+    """A change of download directory must be honoured by every dataset.
+
+    ``get_dataset_path`` persists a ``MNE_DATASETS_<SIGN>_PATH`` config entry the
+    first time a dataset is accessed. If that entry is not refreshed when the
+    download directory changes, the dataset keeps pointing at the old location
+    (see issue #1115). This integration test iterates over all datasets, mocks
+    the download mechanism, and asserts that switching the download directory
+    moves the resolved storage location instead of reverting to the old one.
+    """
+    if dataset_class.__name__ in _PATH_RECOVERY_EXEMPT:
+        pytest.skip(
+            f"{dataset_class.__name__} does not use the shared MNE_DATA path mechanism."
+        )
+
+    _install_path_probe(monkeypatch, dataset_class)
+
+    old_dir = tmp_path / "old"
+    new_dir = tmp_path / "new"
+    old_dir.mkdir()
+    new_dir.mkdir()
+
+    resolved_old = _resolve_dataset_path(dataset_class, old_dir)
+    if resolved_old is None:
+        pytest.skip(
+            f"{dataset_class.__name__} does not resolve its path through "
+            "get_dataset_path with a subject-only call."
+        )
+    resolved_new = _resolve_dataset_path(dataset_class, new_dir)
+
+    assert resolved_old.startswith(str(old_dir)), (
+        f"{dataset_class.__name__} did not resolve under the configured directory."
+    )
+    assert resolved_new is not None
+    assert resolved_new.startswith(str(new_dir)), (
+        f"{dataset_class.__name__} did not follow the new download directory; "
+        f"resolved {resolved_new!r} instead of a path under {new_dir}."
+    )
+    assert not resolved_new.startswith(str(old_dir)), (
+        f"{dataset_class.__name__} reverted to the old download directory."
+    )
