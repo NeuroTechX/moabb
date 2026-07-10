@@ -53,7 +53,12 @@ from moabb.utils import aliases_list
 _ = mne.set_log_level("CRITICAL")
 NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
 # Datasets without a NEMAR deposit: test fixtures and datasets not on NEMAR.
-NEMAR_ID_EXEMPT = {"FakeDataset", "FakeVirtualRealityDataset", "Schrag2026Pediatric"}
+NEMAR_ID_EXEMPT = {
+    "FakeDataset",
+    "FakeVirtualRealityDataset",
+    "Schrag2026Pediatric",
+    "Lenaig2026",
+}
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
 # so we know which deposits remain to be published.

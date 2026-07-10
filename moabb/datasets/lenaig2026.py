@@ -153,8 +153,10 @@ class Lenaig2026(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=500,
             n_channels=28,
-            channel_types=["eeg"] * 24 + ["misc"] * 3 + ["stim"],
-            sensor_type="Wet",
+            channel_types={"eeg": 24, "misc": 3},
+            sensor_type="EEG",
+            electrode_material="Ag/AgCl",
+            electrode_type="Wet - Passive",
             software="OpenVIBE",
             line_freq=50,
             montage="standard_1020",
