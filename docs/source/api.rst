@@ -227,6 +227,7 @@ SSVEP Datasets
     Han2024Fatigue
     Kim2025BetaRange
     Lee2021Mobile_SSVEP
+    Lenaig2026
     Liu2020BETA
     Liu2022EldBETA
     Wang2021Combined
