@@ -1,6 +1,9 @@
 import numpy as np
 from pyriemann.spatialfilters import CSP
-from pyriemann.utils.mean import mean_covariance
+try:
+    from pyriemann.geometry.mean import mean_covariance
+except ImportError:
+    from pyriemann.utils.mean import mean_covariance  # pyriemann < 0.12
 from scipy import linalg
 
 

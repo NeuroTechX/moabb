@@ -1146,7 +1146,7 @@ class EuclideanAlignment(TransformerMixin, BaseEstimator):
     ----------
     estimator : str, default "lwf"
         Covariance estimator passed to
-        :func:`pyriemann.utils.covariance.covariances`. The shrinkage default
+        :func:`pyriemann.geometry.covariance.covariances`. The shrinkage default
         ``"lwf"`` (Ledoit-Wolf) keeps the per-trial covariances symmetric
         positive-definite — and hence the reference mean invertible — even on
         short or noisy trials, where the plain sample covariance (``"scm"`` /
@@ -1199,14 +1199,16 @@ class EuclideanAlignment(TransformerMixin, BaseEstimator):
         return X
 
     def fit(self, X, y=None):
-        # Lazy import: pyriemann.utils.base emits a DeprecationWarning at import
-        # time and this core module is imported almost everywhere, so only
-        # EuclideanAlignment users pay it. These paths are valid for the declared
-        # pyriemann >= 0.11 floor and match the rest of moabb (pipelines.csp,
-        # pipelines.classification). The Euclidean mean is the arithmetic mean of
-        # the per-trial covariances, so no mean_covariance() call is needed.
-        from pyriemann.utils.base import invsqrtm
-        from pyriemann.utils.covariance import covariances
+        # Lazy import: prefer pyriemann.geometry (0.12+); fall back to
+        # pyriemann.utils for older installs (>= 0.11).  The Euclidean mean is
+        # the arithmetic mean of the per-trial covariances, so no
+        # mean_covariance() call is needed.
+        try:
+            from pyriemann.geometry.base import invsqrtm
+            from pyriemann.geometry.covariance import covariances
+        except ImportError:  # pyriemann < 0.12
+            from pyriemann.utils.base import invsqrtm
+            from pyriemann.utils.covariance import covariances
 
         covs = covariances(self._array(X), estimator=self.estimator)
         self.inv_sqrt_ref_ = invsqrtm(covs.mean(axis=0))

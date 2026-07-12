@@ -5,8 +5,13 @@ import scipy.linalg as linalg
 from joblib import Parallel, delayed
 from mne import BaseEpochs
 from pyriemann.estimation import Covariances, Shrinkage
-from pyriemann.utils.covariance import covariances, normalize
-from pyriemann.utils.mean import mean_covariance
+
+try:
+    from pyriemann.geometry.covariance import covariances, normalize
+    from pyriemann.geometry.mean import mean_covariance
+except ImportError:  # pyriemann < 0.12
+    from pyriemann.utils.covariance import covariances, normalize
+    from pyriemann.utils.mean import mean_covariance
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
 from sklearn.preprocessing import LabelEncoder
