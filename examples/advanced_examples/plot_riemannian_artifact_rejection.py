@@ -85,8 +85,8 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pyriemann.artifact_detection import Potato, PotatoField
 from pyriemann.classification import MDM
-from pyriemann.clustering import Potato, PotatoField
 from pyriemann.estimation import Covariances, ERPCovariances
 from pyriemann.geometry.covariance import normalize
 from scipy.stats import combine_pvalues, norm
