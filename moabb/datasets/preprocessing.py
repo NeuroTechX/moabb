@@ -1199,16 +1199,11 @@ class EuclideanAlignment(TransformerMixin, BaseEstimator):
         return X
 
     def fit(self, X, y=None):
-        # Lazy import: prefer pyriemann.geometry (0.12+); fall back to
-        # pyriemann.utils for older installs (>= 0.11).  The Euclidean mean is
-        # the arithmetic mean of the per-trial covariances, so no
-        # mean_covariance() call is needed.
-        try:
-            from pyriemann.geometry.base import invsqrtm
-            from pyriemann.geometry.covariance import covariances
-        except ImportError:  # pyriemann < 0.12
-            from pyriemann.utils.base import invsqrtm
-            from pyriemann.utils.covariance import covariances
+        # Lazy import so only EuclideanAlignment users pay the import cost. The
+        # Euclidean mean is the arithmetic mean of the per-trial covariances, so
+        # no mean_covariance() call is needed.
+        from pyriemann.geometry.base import invsqrtm
+        from pyriemann.geometry.covariance import covariances
 
         covs = covariances(self._array(X), estimator=self.estimator)
         self.inv_sqrt_ref_ = invsqrtm(covs.mean(axis=0))

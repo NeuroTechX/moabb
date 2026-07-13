@@ -88,11 +88,7 @@ import pandas as pd
 from pyriemann.classification import MDM
 from pyriemann.clustering import Potato, PotatoField
 from pyriemann.estimation import Covariances, ERPCovariances
-
-try:
-    from pyriemann.geometry.covariance import normalize
-except ImportError:  # pyriemann < 0.12
-    from pyriemann.utils.covariance import normalize
+from pyriemann.geometry.covariance import normalize
 from scipy.stats import combine_pvalues, norm
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer

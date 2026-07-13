@@ -782,10 +782,7 @@ def _epochs_from_array(X):
 
 def _euclid_mean_cov(X, estimator="lwf"):
     """Euclidean (arithmetic) mean of the per-trial covariances."""
-    try:
-        from pyriemann.geometry.covariance import covariances
-    except ImportError:  # pyriemann < 0.12
-        from pyriemann.utils.covariance import covariances
+    from pyriemann.geometry.covariance import covariances
 
     return covariances(X, estimator=estimator).mean(axis=0)
 
