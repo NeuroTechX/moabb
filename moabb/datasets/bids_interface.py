@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING, Dict, Type
 import mne
 import mne_bids
 import pandas as pd
+from mne_bids._fileio import _open_lock as _bids_lock
 from numpy import load as np_load
 from numpy import save as np_save
 
@@ -908,6 +909,14 @@ def _update_participants_tsv(root, subject, metadata, raw=None):
     if not tsv_path.exists():
         return
 
+    # Lock the shared participants files for the whole read-modify-write so
+    # concurrent per-subject workers (get_data(n_jobs>1)) can't lose rows or
+    # read a half-written file. mne-bids locks its own writes but not ours.
+    with _bids_lock(tsv_path):
+        _update_participants_tsv_locked(tsv_path, root, subject, participants, raw)
+
+
+def _update_participants_tsv_locked(tsv_path, root, subject, participants, raw):
     subject_idx = subject - 1  # MOABB subjects are 1-based
     age = _resolve_subject_age(participants, subject_idx, raw=raw)
 
@@ -1294,23 +1303,26 @@ def _update_dataset_description_extra(root, metadata):
         if kw:
             keywords = list(dict.fromkeys(kw))  # deduplicate, preserve order
 
-    with open(desc_path) as f:
-        desc = json.load(f)
+    # Lock the read-modify-write so concurrent per-subject workers
+    # (get_data(n_jobs>1)) can't read a half-written file or clobber each other.
+    with _bids_lock(desc_path):
+        with open(desc_path) as f:
+            desc = json.load(f)
 
-    changed = False
-    if keywords and "Keywords" not in desc:
-        desc["Keywords"] = keywords
-        changed = True
+        changed = False
+        if keywords and "Keywords" not in desc:
+            desc["Keywords"] = keywords
+            changed = True
 
-    # PublicationYear is a MOABB extension (not standard BIDS); we write it
-    # directly because mne_bids.make_dataset_description() rejects unknown keys.
-    if doc and doc.publication_year and "PublicationYear" not in desc:
-        desc["PublicationYear"] = doc.publication_year
-        changed = True
+        # PublicationYear is a MOABB extension (not standard BIDS); we write it
+        # directly because mne_bids.make_dataset_description() rejects unknown keys.
+        if doc and doc.publication_year and "PublicationYear" not in desc:
+            desc["PublicationYear"] = doc.publication_year
+            changed = True
 
-    if changed:
-        with open(desc_path, "w") as f:
-            json.dump(desc, f, indent="\t")
+        if changed:
+            with open(desc_path, "w") as f:
+                json.dump(desc, f, indent="\t")
 
 
 def _write_metadata_yaml(root, dataset):
