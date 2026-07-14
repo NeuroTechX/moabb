@@ -2201,8 +2201,8 @@
       "last30": 0,
       "weekly_12": [
         0,
-        1,
-        1,
+        2,
+        0,
         0,
         0,
         0,
@@ -2737,7 +2737,7 @@
       ]
     }
   },
-  "generated_at_utc": "2026-07-13T17:59:47+00:00",
+  "generated_at_utc": "2026-07-14T19:48:04+00:00",
   "property_id": "355435362",
   "reason": "ga4 export successful",
   "source": "ga4-data-api",

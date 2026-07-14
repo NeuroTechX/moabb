@@ -669,6 +669,10 @@ session.</p>
 <a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f&quot;{msg} Use `optuna_integration.sklearn` instead.&quot;, FutureWarning)
+</pre></div>
+</div>
 <section id="loading-dataset">
 <h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Link to this heading">#</a></h2>
 <p>Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each</p>
@@ -732,12 +736,27 @@ each subject / session of the dataset, and for each pipeline.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>     score      time  ...  pipeline                  codecarbon_task_name
-0  0.85113  0.245357  ...   CSP+LDA  0ddbb46b-248b-4c38-b566-e7fb61e2f23a
-1  0.93640  0.269790  ...   CSP+LDA  6d620471-597c-440d-8543-e76787178cf9
-2  0.93960  0.214570  ...   CSP+LDA  f0d35f8f-4e45-42ca-89bf-bc6e79e7d76b
-3  0.90800  0.182663  ...   CSP+LDA  9c1708ee-8be9-4cec-8bd0-985a409006d0
-4  0.77037  0.167408  ...   CSP+LDA  f852eafa-78cb-4e1b-b734-4eb5060d3c42
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 19:58:32] Multiple instances of codecarbon are allowed to run at the same time.
+2026-07-14 19:58:53,418 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 0: Score 0.851
+2026-07-14 19:58:53,418 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 1: Score 0.936
+2026-07-14 19:58:53,418 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 1 | 2: Score 0.940
+2026-07-14 19:58:53,418 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 0: Score 0.908
+2026-07-14 19:58:53,418 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 1: Score 0.770
+2026-07-14 19:58:53,418 INFO MainThread moabb.evaluations.base CSP+LDA | Zhou2016 | 2 | 2: Score 0.936
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
+  dset.create_dataset(
+2026-07-14 19:59:10,577 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.931
+2026-07-14 19:59:10,577 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.957
+2026-07-14 19:59:10,577 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 0train: Score 0.527
+2026-07-14 19:59:10,577 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 1test: Score 0.650
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
+  dset.create_dataset(
+     score      time  ...  pipeline                  codecarbon_task_name
+0  0.85113  0.162665  ...   CSP+LDA  56fe770a-1957-43c2-9bf9-18b494fa1236
+1  0.93640  0.205039  ...   CSP+LDA  935b1d50-ac5c-429e-9778-8bdf2d056453
+2  0.93960  0.188211  ...   CSP+LDA  4fcf5a44-0725-4167-8112-1b99bc2aca3f
+3  0.90800  0.159915  ...   CSP+LDA  d57ea785-a44f-4f29-a16c-ba126f7d847f
+4  0.77037  0.159175  ...   CSP+LDA  9d7e72aa-84a7-4df4-b068-1233ca04a244
 
 [5 rows x 13 columns]
 </pre></div>
@@ -758,7 +777,7 @@ each subject / session of the dataset, and for each pipeline.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 40.532 seconds)</p>
+<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 45.037 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a236a554370961344b575283a1efbb02/plot_cross_session_multiple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_multiple_datasets.ipynb</span></code></a></p>

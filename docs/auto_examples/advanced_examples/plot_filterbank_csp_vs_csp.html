@@ -665,10 +665,6 @@ very popular dataset 2a from the BCI competition IV.</p>
 <a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
-  optuna_warn(f&quot;{msg} Use `optuna_integration.sklearn` instead.&quot;, FutureWarning)
-</pre></div>
-</div>
 <section id="create-pipelines">
 <h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Link to this heading">#</a></h2>
 <p>The CSP implementation from MNE is used. We selected 8 CSP components, as
@@ -728,12 +724,7 @@ from 8 to 35 Hz.</p>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results_fb</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 18:23:50] Multiple instances of codecarbon are allowed to run at the same time.
-2026-07-13 18:24:05,945 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.928
-2026-07-13 18:24:05,945 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.940
-2026-07-13 18:24:05,945 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 2 | 0train: Score 0.581
-2026-07-13 18:24:05,945 INFO MainThread moabb.evaluations.base FBCSP+LDA | BNCI2014-001 | 2 | 1test: Score 0.503
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
   dset.create_dataset(
 </pre></div>
 </div>
@@ -791,7 +782,7 @@ Passing `palette` without assigning `hue` is deprecated and will be removed in v
   sns.pointplot(data=results, y=&quot;score&quot;, x=&quot;pipeline&quot;, ax=axes[0], palette=&quot;Set1&quot;)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.396 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.035 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cd325bfe64e15ce23db3b200e83ba9a2/plot_filterbank_csp_vs_csp.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_filterbank_csp_vs_csp.ipynb</span></code></a></p>

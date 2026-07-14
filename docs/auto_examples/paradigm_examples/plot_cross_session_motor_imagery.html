@@ -677,10 +677,6 @@ session.</p>
 <a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.10/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
-  optuna_warn(f&quot;{msg} Use `optuna_integration.sklearn` instead.&quot;, FutureWarning)
-</pre></div>
-</div>
 <section id="create-pipelines">
 <h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Link to this heading">#</a></h2>
 <p>Pipelines must be a dict of sklearn pipeline transformer.</p>
@@ -721,23 +717,12 @@ be overwritten if necessary.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 18:10:28] Multiple instances of codecarbon are allowed to run at the same time.
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 0train: Score 0.932
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 0train: Score 0.950
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 1 | 1test: Score 0.955
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 1 | 1test: Score 0.963
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 0train: Score 0.527
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 2 | 0train: Score 0.574
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base CSP+LDA | BNCI2014-001 | 2 | 1test: Score 0.646
-2026-07-13 18:10:55,992 INFO MainThread moabb.evaluations.base RG+LR | BNCI2014-001 | 2 | 1test: Score 0.586
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
-  dset.create_dataset(
-      score      time  ...  pipeline                  codecarbon_task_name
-0  0.931713  0.202540  ...   CSP+LDA  489efd64-3d4a-4b11-ba12-e0a4051d8ae9
-1  0.955440  0.205348  ...   CSP+LDA  f73eaa16-695b-456f-af57-b57a02969787
-2  0.527199  0.280195  ...   CSP+LDA  b97912d0-c498-48d4-9d5c-e54251e018e4
-3  0.646219  0.211093  ...   CSP+LDA  0fd1b77c-5de4-4628-975d-bd9ea4370d39
-4  0.950424  0.110146  ...     RG+LR  3f0181a2-d747-4054-a0cc-cb1a6d617c07
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
+0  0.931713  0.203780  ...   CSP+LDA  310dd4b5-8e09-4666-a5f3-5a8b912b3055
+1  0.955440  0.151230  ...   CSP+LDA  781ba74f-0102-4303-808f-f19c4ed31519
+2  0.527199  0.152629  ...   CSP+LDA  850eebf8-3f42-45a6-9fb7-cd4c968b7247
+3  0.646219  0.170565  ...   CSP+LDA  b9283f73-0395-4fec-82b5-73455e40ab59
+4  0.950424  0.102279  ...     RG+LR  16c2c2db-c8e0-447e-ae17-abdf5b124ff1
 
 [5 rows x 13 columns]
 </pre></div>
@@ -755,19 +740,14 @@ compares two algorithms head-to-head.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-07-13 18:10:56,042 WARNING MainThread moabb.analysis.plotting Dataset names are too similar, turning off name shortening
-/home/runner/work/moabb/moabb/moabb/analysis/plotting.py:434: UserWarning: The palette list has more values (6) than needed (2), which may not be intended.
-  sea.stripplot(
-</pre></div>
-</div>
-<p>The paired plot compares CSP+LDA versus RG+LR. Each point represents the
+<img src="../../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><p>The paired plot compares CSP+LDA versus RG+LR. Each point represents the
 score of a single session. An algorithm outperforms the other when most
 points fall in its quadrant.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a> <span class="o">=</span> <a href="../../generated/moabb.analysis.plotting.paired_plot.html#moabb.analysis.plotting.paired_plot" title="moabb.analysis.plotting.paired_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">moabb_plt</span><span class="o">.</span><span class="n">paired_plot</span></a><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">,</span> <span class="s2">&quot;CSP+LDA&quot;</span><span class="p">,</span> <span class="s2">&quot;RG+LR&quot;</span><span class="p">,</span> <span class="n">chance_level</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">chance_levels</span></a><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" srcset="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 37.227 seconds)</p>
+<img src="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" srcset="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 32.070 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/846c627146b8b580609ce7662075b0e9/plot_cross_session_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_motor_imagery.ipynb</span></code></a></p>
