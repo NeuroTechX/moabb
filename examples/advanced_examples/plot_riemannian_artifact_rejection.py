@@ -85,10 +85,10 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pyriemann.artifact_detection import Potato, PotatoField
 from pyriemann.classification import MDM
-from pyriemann.clustering import Potato, PotatoField
 from pyriemann.estimation import Covariances, ERPCovariances
-from pyriemann.utils.covariance import normalize
+from pyriemann.geometry.covariance import normalize
 from scipy.stats import combine_pvalues, norm
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
@@ -195,8 +195,8 @@ covs = Covariances(estimator="lwf").transform(data)
 
 # Fit potato and get z-scores.
 # The metric parameter accepts a string or a dict with "mean" and "distance"
-# keys (see pyriemann.utils.mean.mean_covariance and
-# pyriemann.utils.distance.distance). Using the dict form makes explicit
+# keys (see pyriemann.geometry.mean.mean_covariance and
+# pyriemann.geometry.distance.distance). Using the dict form makes explicit
 # which metric is used for barycenter estimation vs distance computation.
 potato = Potato(metric={"mean": "riemann", "distance": "riemann"}, threshold=3)
 potato.fit(covs)
