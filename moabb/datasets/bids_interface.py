@@ -45,52 +45,9 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-# ---------------------------------------------------------------------------
-# Monkey-patch mne_bids to produce BIDS-compliant output by default.
-#
-# BIDS validator v2.4.0 requires a SpatialReference key in the JSON sidecar
-# for *_electrodes.tsv (when a ``space`` entity is present, e.g.
-# space-CapTrak).  mne_bids does not create this sidecar, so we wrap
-# ``_write_dig_bids`` to produce the missing ``*_electrodes.json`` file.
-#
-# For standard scalp EEG, electrode positions are in CapTrak coordinates
-# (defined by nasion, LPA, RPA landmarks on the individual's head).  There
-# is no external template image, so SpatialReference is ``"n/a"``.
-# ---------------------------------------------------------------------------
-
-import mne_bids.dig as _mne_bids_dig  # noqa: E402
-
-
-_orig_write_dig_bids = _mne_bids_dig._write_dig_bids
-
-
-def _write_dig_bids_with_electrodes_json(*args, **kwargs):
-    """Wrap mne_bids _write_dig_bids to also create electrodes.json sidecar."""
-    _orig_write_dig_bids(*args, **kwargs)
-    # Extract what we need for the electrodes.json sidecar
-    bids_path = args[0]
-    overwrite = kwargs.get("overwrite", False)
-    # Create electrodes.json sidecar next to every electrodes.tsv that was
-    # written.  The filenames include the space entity (e.g. space-CapTrak),
-    # so we glob for them.
-    sub_dir = Path(bids_path.root) / f"sub-{bids_path.subject}"
-    if bids_path.session is not None:
-        sub_dir = sub_dir / f"ses-{bids_path.session}"
-    eeg_dir = sub_dir / bids_path.datatype
-    if eeg_dir.is_dir():
-        for elec_tsv in eeg_dir.glob("*_electrodes.tsv"):
-            elec_json = elec_tsv.with_suffix(".json")
-            if not elec_json.exists() or overwrite:
-                with open(elec_json, "w") as f:
-                    json.dump({"SpatialReference": "n/a"}, f, indent="\t")
-
-
-# Apply patch so write_raw_bids() creates electrodes.json automatically.
-_mne_bids_dig._write_dig_bids = _write_dig_bids_with_electrodes_json
-import mne_bids.write as _mne_bids_write  # noqa: E402
-
-
-_mne_bids_write._write_dig_bids = _write_dig_bids_with_electrodes_json
+# mne-bids >= 0.19 writes the ``*_electrodes.json`` sidecar (with the
+# validator-required ``SpatialReference``, "n/a" for CapTrak scalp EEG) itself
+# in ``mne_bids.dig._write_dig_bids``, so no monkey-patch is needed anymore.
 
 # ---------------------------------------------------------------------------
 
@@ -880,6 +837,29 @@ def _build_dataset_description_kwargs(dataset):
         if doc.ethics_approval:
             kwargs["ethics_approvals"] = doc.ethics_approval
 
+    # Keywords: explicit > derived from tags (mne-bids >= 0.19 writes the
+    # BIDS ``Keywords`` field from this kwarg).
+    keywords = None
+    if doc and doc.keywords:
+        keywords = doc.keywords
+    elif metadata.tags:
+        kw = []
+        if metadata.tags.pathology:
+            kw.extend(metadata.tags.pathology)
+        if metadata.tags.modality:
+            kw.extend(metadata.tags.modality)
+        if metadata.tags.type:
+            kw.extend(metadata.tags.type)
+        if metadata.experiment:
+            kw.append(metadata.experiment.paradigm)
+        bci = metadata.bci_application
+        if bci and bci.applications:
+            kw.extend(bci.applications)
+        if kw:
+            keywords = list(dict.fromkeys(kw))  # deduplicate, preserve order
+    if keywords:
+        kwargs["keywords"] = keywords
+
     return kwargs
 
 
@@ -1263,10 +1243,12 @@ def _update_events_json_sidecar(bids_path, hed_tags, metadata):
 
 
 def _update_dataset_description_extra(root, metadata):
-    """Merge extra fields into ``dataset_description.json``.
+    """Merge the MOABB-only ``PublicationYear`` field into ``dataset_description.json``.
 
-    Adds BIDS fields (like ``Keywords``) that ``mne_bids.make_dataset_description()``
-    does not support as kwargs.
+    ``Keywords`` is written by ``mne_bids.make_dataset_description(keywords=...)``
+    (see :func:`_build_dataset_description_kwargs`). ``PublicationYear`` is a
+    MOABB extension (not standard BIDS), which mne-bids rejects as a kwarg, so
+    it is still patched in here.
 
     Parameters
     ----------
@@ -1278,30 +1260,13 @@ def _update_dataset_description_extra(root, metadata):
     if metadata is None:
         return
 
+    doc = metadata.documentation
+    if not (doc and doc.publication_year):
+        return
+
     desc_path = Path(root) / "dataset_description.json"
     if not desc_path.exists():
         return
-
-    # Determine keywords: explicit > derived from tags
-    keywords = None
-    doc = metadata.documentation
-    if doc and doc.keywords:
-        keywords = doc.keywords
-    elif metadata.tags:
-        kw = []
-        if metadata.tags.pathology:
-            kw.extend(metadata.tags.pathology)
-        if metadata.tags.modality:
-            kw.extend(metadata.tags.modality)
-        if metadata.tags.type:
-            kw.extend(metadata.tags.type)
-        if metadata.experiment:
-            kw.append(metadata.experiment.paradigm)
-        bci = metadata.bci_application
-        if bci and bci.applications:
-            kw.extend(bci.applications)
-        if kw:
-            keywords = list(dict.fromkeys(kw))  # deduplicate, preserve order
 
     # Lock the read-modify-write so concurrent per-subject workers
     # (get_data(n_jobs>1)) can't read a half-written file or clobber each other.
@@ -1309,20 +1274,12 @@ def _update_dataset_description_extra(root, metadata):
         with open(desc_path) as f:
             desc = json.load(f)
 
-        changed = False
-        if keywords and "Keywords" not in desc:
-            desc["Keywords"] = keywords
-            changed = True
+        if "PublicationYear" in desc:
+            return
+        desc["PublicationYear"] = doc.publication_year
 
-        # PublicationYear is a MOABB extension (not standard BIDS); we write it
-        # directly because mne_bids.make_dataset_description() rejects unknown keys.
-        if doc and doc.publication_year and "PublicationYear" not in desc:
-            desc["PublicationYear"] = doc.publication_year
-            changed = True
-
-        if changed:
-            with open(desc_path, "w") as f:
-                json.dump(desc, f, indent="\t")
+        with open(desc_path, "w") as f:
+            json.dump(desc, f, indent="\t")
 
 
 def _write_metadata_yaml(root, dataset):
@@ -2715,8 +2672,8 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             # Patch electrodes.tsv with material and type
             _update_electrodes_tsv(bids_path, metadata)
 
-        # SpatialReference in electrodes.json sidecars is handled by the
-        # monkey-patched _write_dig_bids function at module level.
+        # SpatialReference in electrodes.json sidecars is written by mne-bids
+        # (>= 0.19) itself.
 
         # FiducialsCoordinates is RECOMMENDED in coordsystem.json — add if missing
         FIFF = mne.io.constants.FIFF
