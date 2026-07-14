@@ -405,6 +405,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         postprocess_pipeline=None,
         process_pipelines=None,
         additional_metadata: Literal["all"] | list[str] = None,
+        n_jobs=1,
     ):
         """
         Return the data for a list of subject.
@@ -452,6 +453,11 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             select these columns in addition to the three default values mentioned
             before. This parameter works regardless of the return type
             (epochs, raws, or array).
+        n_jobs: int
+            Number of jobs to run in parallel over subjects when loading and
+            preprocessing the data. Default ``1`` (sequential). Per-subject
+            processing is independent, so this gives a near-linear speedup for
+            datasets with many subjects, with identical numerical results.
 
         Returns
         -------
@@ -498,6 +504,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                 subjects=subjects,
                 cache_config=cache_config,
                 process_pipeline=process_pipeline,
+                n_jobs=n_jobs,
             )
             for process_pipeline in process_pipelines
         ]

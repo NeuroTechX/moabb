@@ -2,7 +2,9 @@
 
 import csv
 import dataclasses
+import importlib.util
 import json
+import re
 import typing
 from pathlib import Path
 from types import SimpleNamespace
@@ -29,6 +31,7 @@ from moabb.datasets.metadata import (
     get_dataset_metadata,
 )
 from moabb.datasets.utils import _init_dataset, build_raw_from_epochs, dataset_dict
+from scripts.generate_macro_table import _format_cell
 
 
 class TestAcquisitionMetadata:
@@ -922,3 +925,71 @@ class TestParticipantsResolutionOrdering:
         total = cache["_metadata"]["total"]
         actual = sum(1 for key in cache if key != "_metadata")
         assert total == actual
+
+
+# ------------------------------------------------------------------------
+# Dataset country metadata must render as a flag in the docs macro table.
+# A missing/NaN country crashed the docs build (``country_flag`` called
+# ``len()`` on a float) because a new dataset shipped without one. These tests
+# guard both the data (every dataset resolves to a valid code) and the renderer.
+# ------------------------------------------------------------------------
+
+# Every dataset that carries metadata, listed from the catalog.
+DATASETS_WITH_METADATA = sorted(DATASET_METADATA_CATALOG)
+
+
+@pytest.fixture(scope="module")
+def country_constants():
+    """Load ``normalize_country``/``country_flag`` from the docs sphinxext."""
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "docs"
+        / "source"
+        / "sphinxext"
+        / "dataset_constants.py"
+    )
+    spec = importlib.util.spec_from_file_location("dataset_constants", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="module")
+def dataset_metadata():
+    """All MOABB dataset metadata, keyed by dataset name."""
+    return DATASET_METADATA_CATALOG
+
+
+@pytest.mark.parametrize("name", DATASETS_WITH_METADATA)
+def test_dataset_has_resolvable_country(name, dataset_metadata, country_constants):
+    # country may be a name ("France"), alpha-2 ("FR"), or alpha-3 ("USA"); it
+    # must resolve to a valid alpha-2 code (None means missing/unknown, which is
+    # what crashed the docs macro table).
+    meta = dataset_metadata[name]
+    assert meta.documentation is not None, f"{name} has no documentation metadata"
+    raw = meta.documentation.country
+    code = country_constants.normalize_country(raw)
+    assert code and re.fullmatch(r"[A-Z]{2}", code), (
+        f"{name} country {raw!r} does not resolve to an alpha-2 code"
+    )
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        (float("nan"), ""),  # crashed the docs build (len() on a float)
+        (None, ""),
+        ("USA", ""),  # not pre-normalized: country_flag wants a 2-char code
+        ("MX", "\U0001f1f2\U0001f1fd"),
+        ("fr", "\U0001f1eb\U0001f1f7"),  # lower-cased 2-letter still renders
+    ],
+)
+def test_country_flag_handles_bad_input(value, expected, country_constants):
+    assert country_constants.country_flag(value) == expected
+
+
+# A missing value arrives from the DataFrame as NaN (a truthy float), which
+# slipped past ``if not url`` guards and crashed html.escape in the docs build.
+@pytest.mark.parametrize("fmt", ["data_url", "doi_link", "country", "str", "num"])
+def test_format_cell_handles_nan(fmt):
+    assert _format_cell(float("nan"), fmt) == ""
