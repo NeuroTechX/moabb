@@ -31,6 +31,7 @@ from moabb.datasets.metadata import (
     get_dataset_metadata,
 )
 from moabb.datasets.utils import _init_dataset, build_raw_from_epochs, dataset_dict
+from scripts.generate_macro_table import _format_cell
 
 
 class TestAcquisitionMetadata:
@@ -385,7 +386,9 @@ class TestMetadataCatalog:
     def test_all_catalog_entries_are_dataset_metadata(self):
         """Test that all catalog entries are DatasetMetadata instances."""
         for name, metadata in DATASET_METADATA_CATALOG.items():
-            assert isinstance(metadata, DatasetMetadata), f"{name} is not DatasetMetadata"
+            assert isinstance(
+                metadata, DatasetMetadata
+            ), f"{name} is not DatasetMetadata"
 
     def test_get_dataset_metadata_valid(self):
         """Test retrieving valid dataset metadata."""
@@ -488,19 +491,21 @@ class TestMetadataCatalog:
         """Test that datasets have correct paradigm assignment."""
         for name in expected_datasets:
             metadata = get_dataset_metadata(name)
-            assert metadata.experiment.paradigm == paradigm, (
-                f"{name} should have paradigm '{paradigm}'"
-            )
+            assert (
+                metadata.experiment.paradigm == paradigm
+            ), f"{name} should have paradigm '{paradigm}'"
 
     def test_all_datasets_have_required_fields(self):
         """Test that all catalog datasets have required metadata fields."""
         for name, metadata in DATASET_METADATA_CATALOG.items():
             # Acquisition required fields
-            assert metadata.acquisition.sampling_rate > 0, f"{name} missing sampling_rate"
+            assert (
+                metadata.acquisition.sampling_rate > 0
+            ), f"{name} missing sampling_rate"
             assert metadata.acquisition.n_channels > 0, f"{name} missing n_channels"
-            assert len(metadata.acquisition.channel_types) > 0, (
-                f"{name} missing channel_types"
-            )
+            assert (
+                len(metadata.acquisition.channel_types) > 0
+            ), f"{name} missing channel_types"
             # Participants required field
             assert metadata.participants.n_subjects > 0, f"{name} missing n_subjects"
             # Experiment required field
@@ -744,9 +749,9 @@ class TestMetadataCatalog:
                 v = getattr(metadata, f.name)
                 if v is not None:
                     all_errors.extend(_check_type(v, f.type, f"{name}.{f.name}"))
-        assert all_errors == [], (
-            f"Found {len(all_errors)} type violations:\n" + "\n".join(all_errors[:20])
-        )
+        assert (
+            all_errors == []
+        ), f"Found {len(all_errors)} type violations:\n" + "\n".join(all_errors[:20])
 
 
 class TestBuildRawFromEpochsValidation:
@@ -899,7 +904,10 @@ class TestParticipantsResolutionOrdering:
 
         # Subject 1: metadata list has priority over raw sex.
         _update_participants_tsv(
-            tmp_path, 1, metadata, raw=self._make_raw(subject_info={"sex": 2, "hand": 2})
+            tmp_path,
+            1,
+            metadata,
+            raw=self._make_raw(subject_info={"sex": 2, "hand": 2}),
         )
         # Subject 2: fallback to raw subject_info with numeric strings.
         _update_participants_tsv(
@@ -968,9 +976,9 @@ def test_dataset_has_resolvable_country(name, dataset_metadata, country_constant
     assert meta.documentation is not None, f"{name} has no documentation metadata"
     raw = meta.documentation.country
     code = country_constants.normalize_country(raw)
-    assert code and re.fullmatch(r"[A-Z]{2}", code), (
-        f"{name} country {raw!r} does not resolve to an alpha-2 code"
-    )
+    assert code and re.fullmatch(
+        r"[A-Z]{2}", code
+    ), f"{name} country {raw!r} does not resolve to an alpha-2 code"
 
 
 @pytest.mark.parametrize(
@@ -985,3 +993,10 @@ def test_dataset_has_resolvable_country(name, dataset_metadata, country_constant
 )
 def test_country_flag_handles_bad_input(value, expected, country_constants):
     assert country_constants.country_flag(value) == expected
+
+
+# A missing value arrives from the DataFrame as NaN (a truthy float), which
+# slipped past ``if not url`` guards and crashed html.escape in the docs build.
+@pytest.mark.parametrize("fmt", ["data_url", "doi_link", "country", "str", "num"])
+def test_format_cell_handles_nan(fmt):
+    assert _format_cell(float("nan"), fmt) == ""
