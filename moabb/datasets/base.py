@@ -806,9 +806,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         return X_select, labels_select, meta_select
 
-    def get_data(
-        self, subjects=None, cache_config=None, process_pipeline=None, n_jobs=1
-    ):
+    def get_data(self, subjects=None, cache_config=None, process_pipeline=None, n_jobs=1):
         """
         Return the data corresponding to a list of subjects.
 
