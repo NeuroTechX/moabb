@@ -922,3 +922,58 @@ class TestParticipantsResolutionOrdering:
         total = cache["_metadata"]["total"]
         actual = sum(1 for key in cache if key != "_metadata")
         assert total == actual
+
+
+class TestDatasetCountry:
+    """Country metadata must render as a flag in the docs macro table.
+
+    A missing/NaN country crashed the docs build (``country_flag`` called
+    ``len()`` on a float); a new dataset shipped without one. These tests guard
+    both the data (every catalogued dataset has a valid code) and the renderer.
+    """
+
+    @staticmethod
+    def _load_constants():
+        import importlib.util
+
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "docs"
+            / "source"
+            / "sphinxext"
+            / "dataset_constants.py"
+        )
+        spec = importlib.util.spec_from_file_location("dataset_constants", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    @pytest.mark.parametrize("name", sorted(DATASET_METADATA_CATALOG))
+    def test_catalog_dataset_has_resolvable_country(self, name):
+        import re
+
+        normalize_country = self._load_constants().normalize_country
+        # country may be a name ("France"), alpha-2 ("FR"), or alpha-3 ("USA");
+        # it must resolve to a valid alpha-2 code (None means missing/unknown,
+        # which is what crashed the docs macro table).
+        meta = DATASET_METADATA_CATALOG[name]
+        assert meta.documentation is not None, f"{name} has no documentation metadata"
+        raw = meta.documentation.country
+        code = normalize_country(raw)
+        assert code and re.fullmatch(r"[A-Z]{2}", code), (
+            f"{name} country {raw!r} does not resolve to an alpha-2 code"
+        )
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [
+            (float("nan"), ""),  # crashed the docs build (len() on a float)
+            (None, ""),
+            ("USA", ""),  # not pre-normalized: country_flag wants a 2-char code
+            ("MX", "\U0001f1f2\U0001f1fd"),
+            ("fr", "\U0001f1eb\U0001f1f7"),  # lower-cased 2-letter still renders
+        ],
+    )
+    def test_country_flag_handles_bad_input(self, value, expected):
+        country_flag = self._load_constants().country_flag
+        assert country_flag(value) == expected
