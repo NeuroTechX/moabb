@@ -17,6 +17,7 @@ from pathlib import Path
 
 import pandas as pd
 
+
 # Ensure the repo root and sphinxext dir are importable
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
@@ -29,6 +30,7 @@ from dataset_constants import (  # noqa: E402
     normalize_country,
     normalize_health,
 )
+
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -382,9 +384,7 @@ def _doi_link(doi: str | None) -> str:
 def _dataset_link(name: str) -> str:
     """Link to the auto-generated dataset documentation page."""
     url = f"generated/moabb.datasets.{name}.html"
-    return (
-        f'<a class="mt-dataset-link" href="{html.escape(url)}">{html.escape(name)}</a>'
-    )
+    return f'<a class="mt-dataset-link" href="{html.escape(url)}">{html.escape(name)}</a>'
 
 
 def _fmt(val, fmt=None):
