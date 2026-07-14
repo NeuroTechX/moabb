@@ -50,6 +50,7 @@ API changes
 Requirements
 ~~~~~~~~~~~~
 - Bump minimum ``pyriemann`` to ``0.11`` to use :class:`pyriemann.clustering.PotatoField` per-potato metrics and the ``method_combination`` parameter (pyRiemann `PR #423 <https://github.com/pyRiemann/pyRiemann/pull/423>`_) used by the Riemannian Artifact Rejection tutorial (by `Bruno Aristimunha`_)
+- Bump minimum supported Python to ``3.11`` (required by ``mne-bids >= 0.18``) (:gh:`1124` by `Bruno Aristimunha`_)
 - Bump minimum ``mne-bids`` to ``0.19`` for its cross-process file lock (``mne_bids._fileio._open_lock``), used to keep parallel BIDS caching (``get_data(n_jobs>1)``) consistent. This also lets the BIDS cache drop the module-level monkey-patch of ``mne_bids.dig._write_dig_bids`` (mne-bids >= 0.19 writes the ``*_electrodes.json`` ``SpatialReference`` sidecar itself) and derive the ``Keywords`` field via ``make_dataset_description(keywords=...)`` instead of a post-write patch (:gh:`1124` by `Bruno Aristimunha`_)
 
 Bugs
