@@ -42,8 +42,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -62,16 +62,16 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/documentation_options.js?v=1558bf76"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -579,6 +579,7 @@
 <li><p>Re-enable auto-execution of the Riemannian Artifact Rejection tutorial (<code class="docutils literal notranslate"><span class="pre">examples/advanced_examples/plot_riemannian_artifact_rejection.py</span></code>) now that pyRiemann 0.11 is on PyPI with per-potato metrics and <code class="docutils literal notranslate"><span class="pre">method_combination</span></code> support on <code class="docutils literal notranslate"><span class="pre">PotatoField</span></code> (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Use NEMAR as the default download source for datasets with an assigned <code class="docutils literal notranslate"><span class="pre">nemar_id</span></code>, while preserving existing dataset-specific downloaders as a fallback (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <a class="reference internal" href="generated/moabb.datasets.preprocessing.EuclideanAlignment.html#moabb.datasets.preprocessing.EuclideanAlignment" title="moabb.datasets.preprocessing.EuclideanAlignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.preprocessing.EuclideanAlignment</span></code></a>, a trial-level Euclidean Alignment transformer (He &amp; Wu 2020; Junqueira et al. 2024) that whitens each trial by the inverse square root of the Euclidean mean covariance to remove per-domain covariance shift before a (deep) model sees the data. Inductive and leakage-free by default (<code class="docutils literal notranslate"><span class="pre">fit</span></code> learns the reference from training trials, <code class="docutils literal notranslate"><span class="pre">transform</span></code> re-applies it to unseen trials); <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> gives the transductive, per-recording form. Accepts an <a class="reference external" href="https://mne.tools/stable/generated/mne.BaseEpochs.html#mne.BaseEpochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.BaseEpochs</span></code></a> or an <code class="docutils literal notranslate"><span class="pre">(n_trials,</span> <span class="pre">n_channels,</span> <span class="pre">n_times)</span></code> ndarray, uses a shrinkage covariance estimator (<code class="docutils literal notranslate"><span class="pre">&quot;lwf&quot;</span></code>) for robustness, and adds no new dependency (<code class="docutils literal notranslate"><span class="pre">pyriemann</span> <span class="pre">&gt;=</span> <span class="pre">0.11</span></code> is already required). Distinct from <code class="xref py py-class docutils literal notranslate"><span class="pre">pyriemann.transfer.TLCenter</span></code>, which recenters covariance <em>matrices</em> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1108">#1108</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Add an <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code> parameter to <code class="xref py py-meth docutils literal notranslate"><span class="pre">moabb.paradigms.base.BaseParadigm.get_data()</span></code> and <a class="reference internal" href="generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.get_data" title="moabb.datasets.base.BaseDataset.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">moabb.datasets.base.BaseDataset.get_data()</span></code></a> to load and preprocess subjects in parallel with <code class="xref py py-class docutils literal notranslate"><span class="pre">joblib.Parallel</span></code>. Per-subject processing (reading, filtering, resampling, epoching) is independent, so this gives a near-linear speedup on datasets with many subjects, with identical numerical results. moabb’s own patches to the shared BIDS cache files (<code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code>/<code class="docutils literal notranslate"><span class="pre">.json</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset_description.json</span></code>) now take the mne-bids cross-process file lock, so parallel caching stays consistent (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1124">#1124</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Drive cross-validation folds with any stock scikit-learn cross-validator passed as <code class="docutils literal notranslate"><span class="pre">cv_class</span></code>, controlled by a <code class="docutils literal notranslate"><span class="pre">groups</span></code> argument — a metadata column name, a list of column names (compound key, e.g. <code class="docutils literal notranslate"><span class="pre">[&quot;subject&quot;,</span> <span class="pre">&quot;session&quot;]</span></code>), or a callable <code class="docutils literal notranslate"><span class="pre">metadata</span> <span class="pre">-&gt;</span> <span class="pre">array</span></code> — together with callable <code class="docutils literal notranslate"><span class="pre">cv_kwargs</span></code> resolved against the metadata (e.g. <code class="docutils literal notranslate"><span class="pre">cv_class=PredefinedSplit</span></code> with a <code class="docutils literal notranslate"><span class="pre">test_fold</span></code> callable to target a single fold). <code class="docutils literal notranslate"><span class="pre">groups</span></code> is exposed on <a class="reference internal" href="generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.WithinSessionEvaluation</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.WithinSubjectEvaluation</span></code>, <a class="reference internal" href="generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.CrossSessionEvaluation</span></code></a> and <a class="reference internal" href="generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation" title="moabb.evaluations.CrossSubjectEvaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.CrossSubjectEvaluation</span></code></a> and threaded to their splitters; each splitter keeps its default grouping (<code class="docutils literal notranslate"><span class="pre">&quot;subject&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;session&quot;</span></code> / labels) when <code class="docutils literal notranslate"><span class="pre">groups</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>. <code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.splitters.CrossDatasetSplitter</span></code> gains <code class="docutils literal notranslate"><span class="pre">groups</span></code> (its <code class="docutils literal notranslate"><span class="pre">group_column</span></code> argument is now a deprecated alias) (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1104">#1104</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
@@ -592,6 +593,8 @@
 <h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Bump minimum <code class="docutils literal notranslate"><span class="pre">pyriemann</span></code> to <code class="docutils literal notranslate"><span class="pre">0.11</span></code> to use <code class="xref py py-class docutils literal notranslate"><span class="pre">pyriemann.clustering.PotatoField</span></code> per-potato metrics and the <code class="docutils literal notranslate"><span class="pre">method_combination</span></code> parameter (pyRiemann <a class="reference external" href="https://github.com/pyRiemann/pyRiemann/pull/423">PR #423</a>) used by the Riemannian Artifact Rejection tutorial (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Bump minimum supported Python to <code class="docutils literal notranslate"><span class="pre">3.11</span></code> (required by <code class="docutils literal notranslate"><span class="pre">mne-bids</span> <span class="pre">&gt;=</span> <span class="pre">0.18</span></code>) (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1124">#1124</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Bump minimum <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> to <code class="docutils literal notranslate"><span class="pre">0.19</span></code> for its cross-process file lock (<code class="docutils literal notranslate"><span class="pre">mne_bids._fileio._open_lock</span></code>), used to keep parallel BIDS caching (<code class="docutils literal notranslate"><span class="pre">get_data(n_jobs&gt;1)</span></code>) consistent. This also lets the BIDS cache drop the module-level monkey-patch of <code class="docutils literal notranslate"><span class="pre">mne_bids.dig._write_dig_bids</span></code> (mne-bids &gt;= 0.19 writes the <code class="docutils literal notranslate"><span class="pre">*_electrodes.json</span></code> <code class="docutils literal notranslate"><span class="pre">SpatialReference</span></code> sidecar itself) and derive the <code class="docutils literal notranslate"><span class="pre">Keywords</span></code> field via <code class="docutils literal notranslate"><span class="pre">make_dataset_description(keywords=...)</span></code> instead of a post-write patch (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1124">#1124</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="bugs">
@@ -1660,8 +1663,8 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1687,7 +1690,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
