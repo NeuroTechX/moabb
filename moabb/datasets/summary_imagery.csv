@@ -60,3 +60,7 @@ Nguyen2017_SL,6,64,2,100,5.0,256,1,1,1200
 Pressel2016,15,6,11,50,4.0,1024,1,1,8670
 Nieto2022,10,128,4,141,2.5,1024,3,1,5640
 BCIComp2020UpperLimb,15,60,3,50,4.0,250,3,1,6750
+Wang2026JointLearning,15,62,4,varies,5.0,1000,5,varies,varies
+Wang2026TactileControl,8,62,4,varies,5.0,1000,5,varies,varies
+Wang2026EEGNetControl,8,62,4,varies,5.0,1000,7,varies,varies
+Wang2026BCI2000Control,8,62,4,varies,5.0,1000,5,varies,varies
