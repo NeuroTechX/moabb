@@ -7,6 +7,7 @@ Paper DOI: 10.1038/s41467-026-75435-5
 import re
 import shutil
 import tempfile
+import warnings
 import zipfile
 from collections import defaultdict
 from pathlib import Path
@@ -426,10 +427,31 @@ def _make_raw(mat_path):
     data = np.zeros((len(_CHANNELS) + 1, total_samples), dtype=np.float64)
 
     offset = 1
-    for trial, event_code, segment_length in zip(trials, event_codes, segment_lengths):
-        data[:-1, offset : offset + trial.shape[1]] = trial * _EEG_SCALE
+    nonfinite_counts = []
+    for trial_index, (trial, event_code, segment_length) in enumerate(
+        zip(trials, event_codes, segment_lengths)
+    ):
+        scaled_trial = trial * _EEG_SCALE
+        nonfinite = ~np.isfinite(scaled_trial)
+        if nonfinite.any():
+            nonfinite_counts.append((trial_index, int(nonfinite.sum())))
+            scaled_trial[nonfinite] = 0.0
+
+        data[:-1, offset : offset + trial.shape[1]] = scaled_trial
         data[-1, offset] = event_code
         offset += segment_length
+
+    if nonfinite_counts:
+        total_nonfinite = sum(count for _, count in nonfinite_counts)
+        affected_trials = ", ".join(
+            f"{trial_index} ({count})" for trial_index, count in nonfinite_counts
+        )
+        warnings.warn(
+            f"Replaced {total_nonfinite} non-finite EEG sample(s) with zero in "
+            f"{mat_path}; affected zero-based trial(s): {affected_trials}.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     info = mne.create_info(
         ch_names=[*_CHANNELS, "stim"],
