@@ -56,7 +56,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "numpy>=2.0",
     "scipy>=1.9.3",
@@ -66,7 +66,7 @@ dependencies = [
     "pymatreader>=1.2.2",
     "matplotlib>=3.6.2",
     "seaborn>=0.12.1",
-    "pyriemann>=0.11",
+    "pyriemann>=0.12",
     "PyYAML>=6.0",
     "nemar-py>=0.2.1",
     "pooch>=1.6.0",
@@ -78,7 +78,7 @@ dependencies = [
     "edflib-python>=1.0.6",
     "edfio>=0.4.2",
     "filelock>=3.18.0",
-    "mne-bids>=0.17",
+    "mne-bids>=0.19",
     "scikit-learn>=1.6",
     "pybv>=0.7.3",
     "pycountry>=24.6.1",

@@ -1,6 +1,18 @@
 {
     "_metadata": {
-        "total": 152
+        "total": 153
+    },
+    "10.1109/BCI69045.2026.11435072": {
+        "title": "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors.",
+        "authors": [
+            "Lena\u00efg Gu\u00e9ho",
+            "Laurent Bougrain",
+            "Cyril Plapous",
+            "Patrick H\u00e9naff",
+            "Rozenn Nicol"
+        ],
+        "year": 2026,
+        "doi": "10.1109/BCI69045.2026.11435072"
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",

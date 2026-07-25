@@ -490,12 +490,10 @@ def _truncate(text: str, max_len: int = _TRUNCATE_LEN) -> str:
 
 def _format_cell(value, fmt: str, row=None) -> str:
     """Format a single cell value according to its type."""
-    # pandas stores missing cells as float NaN, which is truthy and therefore
-    # slips past the ``if not value`` guards in the formatters below (country,
-    # _doi_link, _data_url_link, _health_tag), then crashes on str/len ops.
-    # Normalize it to "" once here so every formatter sees a clean empty value.
+    # Missing values arrive as NaN (a truthy float) from the DataFrame; collapse
+    # them to None so every branch below can treat "empty" uniformly.
     if isinstance(value, float) and pd.isna(value):
-        value = ""
+        value = None
     if fmt == "link":
         return _dataset_link(value)
     if fmt == "paradigm_tag":
