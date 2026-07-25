@@ -455,6 +455,38 @@ def test_within_n_splits_drives_n_folds(klass):
                 os.remove(e.results.filepath)
 
 
+def test_resolve_cv_honours_cv_kwargs_without_forcing_defaults():
+    """``cv_kwargs`` always reaches the splitter; ``default_kwargs`` never
+    reaches a user-supplied ``cv_class`` that cannot accept it."""
+    from sklearn.model_selection import LeaveOneGroupOut
+
+    kw = {
+        "paradigm": FakeImageryParadigm(),
+        "datasets": [dataset],
+        "hdf5_path": "res_test",
+    }
+    evals = []
+    try:
+        # Default cv_class: cv_kwargs must survive (this is how
+        # calibration_size is passed).
+        e = ev.CrossSubjectEvaluation(cv_kwargs={"calibration_size": 0.5}, **kw)
+        evals.append(e)
+        assert e._create_splitter().calibration_size == 0.5
+
+        # User-supplied cv_class: n_splits is a default of GroupKFold, not of
+        # LeaveOneGroupOut, which takes no arguments at all.
+        e = ev.CrossSubjectEvaluation(cv_class=LeaveOneGroupOut, n_splits=3, **kw)
+        evals.append(e)
+        splitter = e._create_splitter()
+        assert splitter._cv_kwargs == {}
+        _, y, metadata = FakeImageryParadigm().get_data(dataset)
+        assert splitter.get_n_splits(metadata) == metadata["subject"].nunique()
+    finally:
+        for e in evals:
+            if os.path.isfile(e.results.filepath):
+                os.remove(e.results.filepath)
+
+
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
         self.eval = ev.CrossSubjectEvaluation(

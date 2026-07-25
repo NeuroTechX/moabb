@@ -593,12 +593,18 @@ class BaseEvaluation(ABC):
     def _resolve_cv(self, default_class, default_kwargs=None):
         """Resolve the cross-validation class and kwargs for a splitter.
 
-        ``self.cv_kwargs`` always overrides the defaults, whether or not a custom
+        ``self.cv_kwargs`` is always honored, whether or not a custom
         ``cv_class`` is set -- so splitter options (e.g. ``calibration_size``)
-        passed via ``cv_kwargs`` are honored with the default ``cv_class`` too.
+        passed via ``cv_kwargs`` also reach the default ``cv_class``.
+
+        ``default_kwargs`` belongs to ``default_class`` only. A user-supplied
+        ``cv_class`` does not get it: e.g. ``n_splits`` is meaningless for
+        ``LeaveOneGroupOut``, which takes no arguments at all.
         """
         cv_class = default_class if self.cv_class is None else self.cv_class
-        cv_kwargs = {**(default_kwargs or {}), **self.cv_kwargs}
+        cv_kwargs = dict(self.cv_kwargs)
+        if self.cv_class is None and default_kwargs:
+            cv_kwargs = {**default_kwargs, **cv_kwargs}
         return cv_class, cv_kwargs
 
     def _load_data(
