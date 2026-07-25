@@ -490,6 +490,10 @@ def _truncate(text: str, max_len: int = _TRUNCATE_LEN) -> str:
 
 def _format_cell(value, fmt: str, row=None) -> str:
     """Format a single cell value according to its type."""
+    # Missing values arrive as NaN (a truthy float) from the DataFrame; collapse
+    # them to None so every branch below can treat "empty" uniformly.
+    if isinstance(value, float) and pd.isna(value):
+        value = None
     if fmt == "link":
         return _dataset_link(value)
     if fmt == "paradigm_tag":

@@ -168,6 +168,7 @@ class BNCI2003_004(MNEBNCI):
     BNCI2014_004 : BCI Competition 2008 2-class motor imagery dataset
     """
 
+    nemar_id = "nm000143"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,

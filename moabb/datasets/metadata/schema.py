@@ -474,6 +474,8 @@ class ParticipantMetadata:
         Mean age of participants in years.
     age_std : float, optional
         Standard deviation of participant ages.
+    age_median : float, optional
+        Median age of participants in years.
     age_min : float, optional
         Minimum age (EEGDash field).
     age_max : float, optional
@@ -503,6 +505,7 @@ class ParticipantMetadata:
     gender: Optional[Dict[str, int]] = None
     age_mean: Optional[float] = None
     age_std: Optional[float] = None
+    age_median: Optional[float] = None
     # EEGDash additional fields
     age_min: Optional[float] = None
     age_max: Optional[float] = None

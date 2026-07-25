@@ -21,6 +21,8 @@ from moabb.datasets.metadata.schema import (
 from moabb.utils import depreciated_alias
 
 from .base import (
+    BNCI_ARTIFACT_HANDLING,
+    BNCI_ARTIFACT_HANDLING_OPTIONS,
     BNCI_URL,
     MNEBNCI,
     _convert_mi,
@@ -53,6 +55,7 @@ def _load_data_001_2014(
     update_path=None,
     base_url=BNCI_URL,
     only_filenames=False,
+    artifact_handling="ignore",
     verbose=None,
 ):
     """Load data for 001-2014 dataset."""
@@ -81,6 +84,8 @@ def _load_data_001_2014(
             ch_types,
             dataset_code="BNCI2014-001",
             subject_id=subject,
+            artifact_handling=artifact_handling,
+            artifact_interval=(2, 6),
         )
         # FIXME: deal with run with no event (1:3) and name them
         sessions[f"{session_idx}{_map[r]}"] = {
@@ -300,6 +305,15 @@ class BNCI2014_001(MNEBNCI):
     BNCI2014_004 : BCI Competition 2008 2-class motor imagery (Dataset B)
     BNCI2003_004 : BCI Competition III 2-class motor imagery
 
+    Parameters
+    ----------
+    artifact_handling : {"ignore", "annotate", "annotate_bad", "reject"}
+        How to preserve source per-trial artifact flags. ``"ignore"`` keeps
+        the historical behavior. ``"annotate"`` adds non-rejecting
+        ``"bnci_artifact"`` annotations. ``"annotate_bad"`` and ``"reject"``
+        both add ``"BAD_artifact"`` annotations; actual rejection happens at
+        epoch generation when ``reject_by_annotation=True``.
+
     Examples
     --------
     >>> from moabb.datasets import BNCI2014_001
@@ -308,6 +322,7 @@ class BNCI2014_001(MNEBNCI):
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
     """
 
+    nemar_id = "nm000139"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -316,10 +331,10 @@ class BNCI2014_001(MNEBNCI):
             montage="custom",
             hardware="BrainAmp MR plus",
             sensor_type="Ag/AgCl",
-            reference="none",
-            ground="unknown",
+            reference="left mastoid",
+            ground="right mastoid",
             software="BCI2000",
-            filters="bandpass 0.05-200 Hz",
+            filters="bandpass 0.5-100 Hz, 50 Hz notch",
             sensors=[
                 "C1",
                 "C2",
@@ -353,21 +368,21 @@ class BNCI2014_001(MNEBNCI):
             impedance_threshold_kohm=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=4, health_status="healthy", species="human"
+            n_subjects=9, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
-            n_classes=2,
-            class_labels=["left_hand", "right_hand", "foot"],
+            n_classes=4,
+            class_labels=["left_hand", "right_hand", "feet", "tongue"],
             trial_duration=4.0,
-            study_design="Two-class motor imagery (selected from left hand, right hand, and foot) with asynchronous/continuous control periods",
+            study_design="Cue-based four-class motor imagery (left hand, right hand, both feet, tongue); two sessions per subject on different days, each with 6 runs of 48 trials (288 trials per session)",
             feedback_type="none",
             stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="multisensory",
-            synchronicity="asynchronous",
+            synchronicity="synchronous",
             mode="offline",
-            events={"left_hand": 1, "right_hand": 2, "foot": 3, "no_control": 0},
+            events={"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4},
             instructions="Subjects instructed to perform motor imagery during cued periods",
             stimulus_presentation={
                 "cross_onset": "0 s",
@@ -399,7 +414,7 @@ class BNCI2014_001(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2012.00055",
-            description="Review of the BCI competition IV - Data set 1: Asynchronous Motor Imagery",
+            description="BCI Competition IV - Data set 2a: cue-based four-class motor imagery (left hand, right hand, both feet, tongue)",
             investigators=[
                 "Michael Tangermann",
                 "Klaus-Robert Müller",
@@ -436,15 +451,18 @@ class BNCI2014_001(MNEBNCI):
         preprocessing=PreprocessingMetadata(
             data_state="minimally preprocessed (bandpass and notch filtered)",
             preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering"],
-            highpass_hz=0.05,
-            lowpass_hz=200,
-            bandpass={"low_cutoff_hz": 0.05, "high_cutoff_hz": 200.0},
+            preprocessing_steps=[
+                "bandpass filtering (0.5-100 Hz)",
+                "50 Hz notch filtering",
+            ],
+            highpass_hz=0.5,
+            lowpass_hz=100,
+            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
             filter_type="analog",
             filter_order=None,
             re_reference="none",
-            downsampled_to_hz=100.0,
-            notes="Data provided in two versions: original at 1000 Hz and downsampled to 100 Hz (with Chebyshev Type II filter order 10, stop band ripple 50 dB, stop band edge 49 Hz)",
+            downsampled_to_hz=None,
+            notes="Sampled at 250 Hz; bandpass filtered between 0.5 and 100 Hz with an additional 50 Hz notch filter to suppress line noise; amplifier sensitivity 100 uV",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -468,22 +486,34 @@ class BNCI2014_001(MNEBNCI):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
-            imagery_tasks=["left_hand", "right_hand", "foot"],
+            imagery_tasks=["left_hand", "right_hand", "feet", "tongue"],
             cue_duration_s=1.25,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"training": 200, "test": 240},
+            n_trials={"training": 288, "test": 288},
             n_blocks=6,
-            trials_context="per subject (2 training runs + 4 test runs)",
+            trials_context="per session: 6 runs of 48 trials (12 per class) = 288 trials; 2 sessions per subject (T = training, E = evaluation)",
         ),
         file_format="GDF",
         data_processed=True,
-        sessions_per_subject=1,
+        sessions_per_subject=2,
         runs_per_session=6,
     )
 
-    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
+    def __init__(
+        self,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        artifact_handling="ignore",
+    ):
+        if artifact_handling not in BNCI_ARTIFACT_HANDLING:
+            raise ValueError(
+                f"artifact_handling must be one of: {BNCI_ARTIFACT_HANDLING_OPTIONS}"
+            )
+        self.artifact_handling = artifact_handling
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -495,6 +525,31 @@ class BNCI2014_001(MNEBNCI):
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
+        )
+
+    def _get_single_subject_data(self, subject):
+        """Return data for a single subject."""
+        return _load_data_001_2014(
+            subject=subject,
+            path=None,
+            force_update=False,
+            update_path=None,
+            only_filenames=False,
+            artifact_handling=self.artifact_handling,
+            verbose=False,
+        )
+
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        return _load_data_001_2014(
+            subject=subject,
+            path=path,
+            force_update=force_update,
+            update_path=update_path,
+            only_filenames=True,
+            artifact_handling=self.artifact_handling,
+            verbose=verbose,
         )
 
 
@@ -548,6 +603,7 @@ class BNCI2014_002(MNEBNCI):
     BNCI2014_004 : 2-class motor imagery (Dataset B)
     """
 
+    nemar_id = "nm000171"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -734,6 +790,7 @@ class BNCI2014_004(MNEBNCI):
     BNCI2014_002 : 2-class motor imagery with Laplacian derivations
     """
 
+    nemar_id = "nm000135"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -1105,6 +1162,7 @@ class BNCI2014_008(MNEBNCI):
         sessions_per_subject=1,
         runs_per_session=1,
     )
+    nemar_id = "nm000169"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
@@ -1302,6 +1360,7 @@ class BNCI2014_009(MNEBNCI):
         abstract="This dataset represents a complete record of P300 evoked potentials recorded with BCI2000 using two different paradigms: a paradigm based on the P300 Speller originally described by Farwell and Donchin in overt attention condition and a paradigm based on the GeoSpell interface used in covert attention condition. In these sessions, 10 healthy subjects focused on one out of 36 different characters. The objective was to predict the correct character in each of the provided character selection epochs.",
         methodology="Ten healthy subjects (10 female, mean age = 26.8 ± 5.6) with previous experience with P300-based BCIs attended 4 recording sessions. Scalp EEG potentials were measured using 16 Ag/AgCl electrodes arranged on an elastic cap per the 10-10 standard. Each electrode was referenced to the linked earlobes and grounded to the right mastoid. The EEG was acquired using a g.USBamp amplifier (g.Tec, Austria), digitized at 256 Hz, high pass- and low pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively. The electrode impedance did not exceed 10 kΩ. Visual stimulation, acquisition and online classification were performed with BCI2000. Each subject attended 4 recording sessions. During each session, the subject performed three runs with each of the stimulation interfaces. Each trial consisted of eight stimulation sequences, and thus, 16 intensifications of the target character. Each stimulus was intensified for 125 ms, with an inter stimulus interval (ISI) of 125 ms, yielding a 250 ms lag between the appearance of two stimuli (SOA). Pseudorandom stimulation sequences were assembled so that each target intensification would not occur within 500 ms after the previous one to avoid the attentional blink phenomenon.",
     )
+    nemar_id = "nm000188"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

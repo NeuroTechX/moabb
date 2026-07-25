@@ -18,6 +18,7 @@ from moabb.datasets import (
     Kojima2024B,
     Shin2017A,
     Shin2017B,
+    Thielen2015,
 )
 from moabb.datasets.base import (
     BaseDataset,
@@ -29,6 +30,7 @@ from moabb.datasets.base import (
 from moabb.datasets.braininvaders import BI2012, BI2013a
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
+from moabb.datasets.download import NemarDownloadError
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.kojima2024b import EVENTS
 from moabb.datasets.metadata import (
@@ -49,6 +51,36 @@ from moabb.utils import aliases_list
 
 
 _ = mne.set_log_level("CRITICAL")
+NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
+# Datasets without a NEMAR deposit: test fixtures and datasets not on NEMAR.
+NEMAR_ID_EXEMPT = {
+    "FakeDataset",
+    "FakeVirtualRealityDataset",
+    "Schrag2026Pediatric",
+    "Lenaig2026",
+}
+# Datasets whose NEMAR deposit is assigned but not yet public (private,
+# pending publication). Their ids are valid and still checked; tracked here
+# so we know which deposits remain to be published.
+NEMAR_ID_PENDING = {
+    "AguileraRodriguez2025": "nm000174",
+    "BCIComp2020UpperLimb": "nm000233",
+    "BCIComp2020WalkingERP": "nm000184",
+    "BNCI2020_001": "nm000178",
+    "Beetl2021_A": "nm000220",
+    "Beetl2021_B": "nm000274",
+    "Chailloux2020": "nm000262",
+    "Kaneshiro2015": "nm000263",
+    "Kumar2024": "nm000177",
+    "Lee2019_SSVEP": "nm000273",
+    "Mainsah2025_A": "nm000269",
+    "Nguyen2017_L": "nm000252",
+    "Nguyen2017_S": "nm000257",
+    "Nguyen2017_SL": "nm000224",
+    "Nguyen2017_V": "nm000261",
+    "Pressel2016": "nm000258",
+    "TrianaGuzman2024": "nm000164",
+}
 
 
 class TestRegex:
@@ -108,6 +140,20 @@ class Test_Datasets:
         # bad subject id must raise error
         with pytest.raises(ValueError):
             ds.get_data([1000])
+
+    def test_repr_shows_code(self):
+        """Datasets should print their code, not the default object repr."""
+        ds = FakeDataset(code="FakeRepr")
+
+        # readable instead of "<...FakeDataset object at 0x...>"
+        assert "FakeRepr" in repr(ds)
+        assert "object at 0x" not in repr(ds)
+
+        # str() falls back to repr, so f-strings/print stay readable too
+        assert "FakeRepr" in f"{ds}"
+
+        # the repr is what shows when a dataset is printed inside a list
+        assert "FakeRepr" in repr([ds])
 
     @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep"])
     def test_fake_dataset_seed(self, paradigm):
@@ -224,6 +270,96 @@ class Test_Datasets:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 with pytest.raises(AttributeError):
                     ds.get_data([1])
+
+    @pytest.mark.parametrize(
+        ("dataset", "nemar_id"),
+        [
+            pytest.param(BNCI2014_001, "nm000139", id="BNCI2014_001"),
+            pytest.param(BI2012, "nm000260", id="BI2012"),
+            pytest.param(Thielen2015, "nm000196", id="Thielen2015"),
+        ],
+    )
+    def test_nemar_id_class_attributes(self, dataset, nemar_id):
+        assert dataset.nemar_id == nemar_id
+
+    @pytest.mark.parametrize("dataset", dataset_list)
+    def test_all_datasets_have_valid_nemar_id(self, dataset):
+        if dataset.__name__ in NEMAR_ID_EXEMPT:
+            pytest.skip(f"{dataset.__name__} has no NEMAR deposit")
+        if dataset.__name__ in NEMAR_ID_PENDING:
+            pytest.skip(f"{dataset.__name__} NEMAR deposit pending publication")
+        nemar_id = dataset.nemar_id
+        assert nemar_id is not None, f"{dataset.__name__} has no NEMAR dataset ID"
+        assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
+
+    def test_download_prefers_nemar(self, monkeypatch, tmp_path):
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = "nm000001"
+        calls = []
+
+        def nemar_dl(*args, **kwargs):
+            calls.append((args, kwargs))
+            return str(tmp_path / "nemar")
+
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        dataset.download(subject_list=[1], path=tmp_path)
+
+        assert calls == [
+            (
+                ("nm000001", dataset.code),
+                {
+                    "path": tmp_path,
+                    "force_update": False,
+                    "subject": "1",
+                    "verbose": None,
+                },
+            )
+        ]
+
+    def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = "nm000001"
+        fallback_calls = []
+
+        def nemar_dl(*args, **kwargs):
+            raise NemarDownloadError("NEMAR unavailable")
+
+        def data_path(
+            subject, path=None, force_update=False, update_path=None, verbose=None
+        ):
+            fallback_calls.append((subject, path, force_update, update_path, verbose))
+
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        monkeypatch.setattr(dataset, "data_path", data_path)
+
+        with pytest.warns(RuntimeWarning, match="falling back"):
+            dataset.download(subject_list=[1], path=tmp_path, force_update=True)
+
+        assert fallback_calls == [(1, tmp_path, True, None, None)]
+
+    def test_download_without_nemar_id_uses_fallback(self, monkeypatch, tmp_path):
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = None
+        nemar_calls = []
+        fallback_calls = []
+
+        def nemar_dl(*args, **kwargs):
+            nemar_calls.append((args, kwargs))
+            return str(tmp_path / "nemar")
+
+        def data_path(
+            subject, path=None, force_update=False, update_path=None, verbose=None
+        ):
+            fallback_calls.append((subject, path, force_update, update_path, verbose))
+
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        monkeypatch.setattr(dataset, "data_path", data_path)
+
+        dataset.download(subject_list=[1], path=tmp_path)
+
+        # No NEMAR id: NEMAR is never attempted, the dataset downloader is used.
+        assert nemar_calls == []
+        assert fallback_calls == [(1, tmp_path, False, None, None)]
 
     def test_datasets_init(self, caplog):
         codes = []

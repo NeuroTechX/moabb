@@ -28,6 +28,7 @@ class BaseMotorImagery(BaseParadigm):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         if overlap is not None and not (0 <= overlap < 100):
             raise ValueError("overlap must be in [0, 100)")
@@ -42,6 +43,7 @@ class BaseMotorImagery(BaseParadigm):
             tmax=tmax,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def is_valid(self, dataset):
@@ -106,6 +108,7 @@ class LeftRightImagery(BaseMotorImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -119,6 +122,7 @@ class LeftRightImagery(BaseMotorImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def used_events(self, dataset):
@@ -155,6 +159,7 @@ class FilterBankLeftRightImagery(LeftRightImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -169,6 +174,7 @@ class FilterBankLeftRightImagery(LeftRightImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def used_events(self, dataset):
@@ -218,6 +224,7 @@ class MotorImagery(BaseMotorImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=[[fmin, fmax]],
@@ -229,6 +236,7 @@ class MotorImagery(BaseMotorImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
         self.n_classes = n_classes
 
@@ -344,6 +352,7 @@ class SpeechImagery(MotorImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             n_classes=n_classes,
@@ -357,6 +366,7 @@ class SpeechImagery(MotorImagery):
             resample=resample,
             scorer=scorer,
             overlap=overlap,
+            reject_by_annotation=reject_by_annotation,
         )
 
 
@@ -389,6 +399,7 @@ class FilterBankMotorImagery(MotorImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         BaseMotorImagery.__init__(
             self,
@@ -401,6 +412,7 @@ class FilterBankMotorImagery(MotorImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
         self.n_classes = n_classes
 

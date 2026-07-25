@@ -118,6 +118,7 @@ class Kumar2024(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
+    # nemar_id = "nm000177" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

@@ -435,6 +435,26 @@ class TestWithinSubj(TestWithinSess):
         )
 
 
+@pytest.mark.parametrize(
+    "klass", [ev.WithinSessionEvaluation, ev.WithinSubjectEvaluation]
+)
+def test_within_n_splits_drives_n_folds(klass):
+    """n_splits sets the inner splitter's n_folds (defaults to 5 when unset)."""
+    kw = {
+        "paradigm": FakeImageryParadigm(),
+        "datasets": [dataset],
+        "hdf5_path": "res_test",
+    }
+    evals = {None: klass(**kw), 3: klass(n_splits=3, **kw)}
+    try:
+        for n, e in evals.items():
+            assert e._create_splitter().n_folds == (n or 5)
+    finally:
+        for e in evals.values():
+            if os.path.isfile(e.results.filepath):
+                os.remove(e.results.filepath)
+
+
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
         self.eval = ev.CrossSubjectEvaluation(
@@ -1034,6 +1054,20 @@ class TestAggregateFoldResults:
         np.testing.assert_almost_equal(res["score_accuracy"], 0.4)
         # score_f1: avg(0.7, 0.0) = 0.35
         np.testing.assert_almost_equal(res["score_f1"], 0.35)
+
+    def test_non_numeric_score_fold_does_not_abort(self):
+        """A fold with a non-numeric score becomes NaN, not a fatal TypeError."""
+        from moabb.evaluations.base import BaseEvaluation
+
+        folds = [
+            self._make_fold(1, "0", "csp", 0.7),
+            # A degenerate/error fold may leave a non-numeric value in "score".
+            self._make_fold(1, "0", "csp", "failed", is_error=True),
+        ]
+        agg = BaseEvaluation._aggregate_fold_results(folds)
+        assert len(agg) == 1
+        # Non-numeric fold is coerced to NaN and skipped by mean -> only 0.7 left.
+        np.testing.assert_almost_equal(agg[0]["score"], 0.7)
 
 
 # Transfer-learning calibration through the stock CrossSubjectEvaluation.

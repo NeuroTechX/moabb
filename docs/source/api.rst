@@ -227,6 +227,7 @@ SSVEP Datasets
     Han2024Fatigue
     Kim2025BetaRange
     Lee2021Mobile_SSVEP
+    Lenaig2026
     Liu2020BETA
     Liu2022EldBETA
     Wang2021Combined
@@ -323,6 +324,21 @@ Utilities
     utils.find_intersecting_channels
     utils.plot_datasets_grid
     utils.plot_datasets_cluster
+
+-------------
+Preprocessing
+-------------
+.. currentmodule:: moabb.datasets
+
+Trial-level transformers applied to the epoched/array data, usable as
+pipeline steps (inductive in a cross-validation, transductive via
+``fit_transform`` on a single recording).
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    preprocessing.EuclideanAlignment
 
 Paradigms
 ---------

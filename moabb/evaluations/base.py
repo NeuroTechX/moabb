@@ -419,6 +419,13 @@ class BaseEvaluation(ABC):
     cv_kwargs : dict or None
         Keyword arguments passed to cv_class when constructing the splitter.
         Defaults to ``None``.
+    groups : str, list of str, callable, or None
+        What defines the cross-validation folds, forwarded to the evaluation's
+        splitter as its ``groups`` argument: a metadata column name, a list of
+        column names combined into a compound key, or a callable
+        ``metadata -> array``. When ``None`` (the default), the splitter's own
+        default grouping applies (e.g. ``"subject"`` / ``"session"`` / labels).
+        Defaults to ``None``.
     save_model : bool
         Save model after training, for each fold of cross-validation if needed.
         Defaults to ``False``.
@@ -477,6 +484,7 @@ class BaseEvaluation(ABC):
         n_splits: Optional[int] = None,
         cv_class: Optional[type] = None,
         cv_kwargs: Optional[dict] = None,
+        groups=None,
         save_model: bool = False,
         cache_config: Optional["CacheConfig"] = None,
         optuna: bool = False,
@@ -494,6 +502,7 @@ class BaseEvaluation(ABC):
         self.n_splits = n_splits
         self.cv_class = cv_class
         self.cv_kwargs = {} if cv_kwargs is None else cv_kwargs
+        self.groups = groups
         self.save_model = save_model
         self.cache_config = cache_config
         self.optuna = optuna
@@ -973,6 +982,13 @@ class BaseEvaluation(ABC):
                 df[col] = df[col].fillna(df["score"])
 
         has_carbon = "carbon_emission" in df.columns
+
+        # A single error fold may put a non-numeric value (e.g. "failed") in an
+        # aggregation column, making pandas infer the whole column as object and
+        # mean() raise. Coerce so bad folds become NaN and are skipped by mean.
+        for col in agg_ops:
+            if df[col].dtype == object:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
 
         grouped = df.groupby(group_keys, sort=False)
         agg_df = grouped.agg(agg_ops)

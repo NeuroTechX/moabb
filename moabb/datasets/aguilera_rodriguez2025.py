@@ -151,6 +151,7 @@ class AguileraRodriguez2025(BaseDataset):
         ``AguileraRodriguez2025(sessions=[1])``.
     """
 
+    # nemar_id = "nm000174" pending: NEMAR deposit not yet public
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -221,6 +222,7 @@ class AguileraRodriguez2025(BaseDataset):
                 "Luz Maria Alonso-Valerdi",
             ],
             institution="Tecnologico de Monterrey",
+            country="MX",
             publication_year=2025,
             license="CC-BY-NC-ND-4.0",
             repository="Mendeley Data",
