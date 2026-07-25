@@ -11,6 +11,7 @@ import random
 import re
 import sys
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import filelock
@@ -183,6 +184,45 @@ def verbose(function):
     return wrapper
 
 
+def _paths_match(first, second):
+    """Return whether two path-like values refer to the same location."""
+    if first is None or second is None:
+        return first is second
+    try:
+        return Path(first).expanduser().resolve(strict=False) == Path(
+            second
+        ).expanduser().resolve(strict=False)
+    except (OSError, RuntimeError, TypeError):
+        return first == second
+
+
+def _clear_legacy_dataset_paths(old_path, new_path):
+    """Remove stale dataset keys created by older MOABB releases.
+
+    Older versions copied ``MNE_DATA`` into a
+    ``MNE_DATASETS_<SIGN>_PATH`` key on first access. Those copies prevented a
+    later change to the shared download directory from taking effect. Remove
+    only persisted keys that still mirror the previous shared path; explicit
+    per-dataset paths and environment overrides are preserved.
+    """
+    if old_path is None or new_path is None or _paths_match(old_path, new_path):
+        return
+    for key, value in (get_config(use_env=False) or {}).items():
+        if (
+            key.startswith("MNE_DATASETS_")
+            and key.endswith("_PATH")
+            and _paths_match(value, old_path)
+        ):
+            remove_environment_value = _paths_match(os.environ.get(key), old_path)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    message=r'Setting non-standard config type: "MNE_DATASETS_.*_PATH"',
+                    category=RuntimeWarning,
+                )
+                set_config(key, None, set_env=remove_environment_value)
+
+
 def set_download_dir(path):
     """Set the download directory if required to change from default mne path.
 
@@ -194,8 +234,9 @@ def set_download_dir(path):
         a warning is raised and the storage location is set to the MNE
         default directory.
     """
+    old_path = get_config("MNE_DATA")
     if path is None:
-        if get_config("MNE_DATA") is None:
+        if old_path is None:
             log.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
@@ -204,13 +245,17 @@ def set_download_dir(path):
                 "already downloaded, please move manually to this location"
             )
 
+            # No migration here: this branch only runs when MNE_DATA was
+            # unset, so there is no previous value for a per-dataset key to
+            # still be mirroring.
             set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
     else:
         # Check if the path exists, if not, create it
         if not osp.isdir(path):
             log.info("The path given does not exist, creating it..")
-            os.makedirs(path)
+            os.makedirs(path, exist_ok=True)
         set_config("MNE_DATA", path)
+        _clear_legacy_dataset_paths(old_path, path)
 
 
 def make_process_pipelines(

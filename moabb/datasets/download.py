@@ -106,7 +106,6 @@ def get_dataset_path(sign, path):
             if not path_def.is_dir():
                 path_def.mkdir(parents=True)
             set_config("MNE_DATA", str(Path.home() / "mne_data"))
-        set_config(key, get_config("MNE_DATA"))
     return _get_path(path, key, sign)
 
 
