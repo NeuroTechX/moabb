@@ -381,6 +381,9 @@ html_js_files = [
     "https://cdn.datatables.net/searchpanes/2.3.5/js/searchPanes.dataTables.js",
     # FixedHeader (sticky header on scroll)
     "https://cdn.datatables.net/fixedheader/4.0.6/js/dataTables.fixedHeader.js",
+    # Custom "num-varies" column type: numeric sort for columns that mix numbers
+    # with the "varies" sentinel (used by the .sortable paradigm tables).
+    "js/sortable-numeric.js",
     "js/section-nav-hierarchy.js",
     "js/macro-table.js",
 ]
