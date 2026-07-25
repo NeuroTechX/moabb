@@ -21,7 +21,7 @@ metadata fields:
 * ``subjects``: the source-subject label of each training trial;
 * ``cs_mode``: the selected cross-subject protocol preset.
 
-The subject-prototype feature extractor is intentionally restricted here to 
+The subject-prototype feature extractor is intentionally restricted here to
 TRAIN_TRIALWISE. The example also runs a standard source-only MDM baseline with
 TRAIN to compare against the subject-prototype method. Finally, it demonstrates
 how the subject-prototype feature extractor can reject a mode that is not
@@ -152,10 +152,7 @@ def run_mode(dataset, paradigm, mode, pipeline_name, pipeline):
 
 if __name__ == "__main__":
     dataset = FakeDataset(
-        ["left_hand", "right_hand"],
-        n_subjects=4,
-        n_sessions=2,
-        seed=42,
+        ["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42
     )
     paradigm = LeftRightImagery()
 
@@ -173,10 +170,7 @@ if __name__ == "__main__":
         paradigm=paradigm,
         mode=CrossSubjectMode.TRAIN,
         pipeline_name="SourceOnlyMDM",
-        pipeline=make_pipeline(
-            Covariances("oas"),
-            MDM(metric="riemann"),
-        ),
+        pipeline=make_pipeline(Covariances("oas"), MDM(metric="riemann")),
     )
     all_results.append(baseline_results)
 
@@ -189,8 +183,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
     with config_context(enable_metadata_routing=True):
         subject_prototype_features = SubjectPrototypeDistanceFeatures().set_fit_request(
-            subjects=True,
-            cs_mode=True,
+            subjects=True, cs_mode=True
         )
 
     prototype_svm_results = run_mode(
@@ -217,8 +210,7 @@ if __name__ == "__main__":
     try:
         with config_context(enable_metadata_routing=True):
             bad_mode_features = SubjectPrototypeDistanceFeatures().set_fit_request(
-                subjects=True,
-                cs_mode=True,
+                subjects=True, cs_mode=True
             )
 
         run_mode(

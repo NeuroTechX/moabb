@@ -88,8 +88,7 @@ class RiemannianAlignment(TransformerMixin, BaseEstimator):
 
         if cs_mode not in RPA_COMPATIBLE_MODES:
             allowed = ", ".join(
-                mode.value
-                for mode in sorted(RPA_COMPATIBLE_MODES, key=lambda m: m.value)
+                mode.value for mode in sorted(RPA_COMPATIBLE_MODES, key=lambda m: m.value)
             )
             raise ValueError(
                 "RiemannianAlignment / RPA supports only the currently implemented "
@@ -166,10 +165,7 @@ def run_mode(dataset, paradigm, mode, pipeline_name, pipeline):
 
 if __name__ == "__main__":
     dataset = FakeDataset(
-        ["left_hand", "right_hand"],
-        n_subjects=4,
-        n_sessions=2,
-        seed=42,
+        ["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42
     )
     paradigm = LeftRightImagery()
 
@@ -188,9 +184,7 @@ if __name__ == "__main__":
         mode=CrossSubjectMode.TRAIN,  # set benchmark mode
         pipeline_name="SourceOnly+TS+LR",
         pipeline=make_pipeline(
-            Covariances_("oas"),
-            TangentSpace("riemann"),
-            LogisticRegression(max_iter=500),
+            Covariances_("oas"), TangentSpace("riemann"), LogisticRegression(max_iter=500)
         ),
     )
     all_results.append(baseline_results)
@@ -204,9 +198,7 @@ if __name__ == "__main__":
     for mode in sorted(RPA_COMPATIBLE_MODES, key=lambda m: m.value):
         with config_context(enable_metadata_routing=True):
             align = RiemannianAlignment().set_fit_request(
-                subjects=True,
-                X_target_unlabeled=True,
-                cs_mode=True,
+                subjects=True, X_target_unlabeled=True, cs_mode=True
             )
 
         results = run_mode(
@@ -233,9 +225,7 @@ if __name__ == "__main__":
     try:
         with config_context(enable_metadata_routing=True):
             align = RiemannianAlignment().set_fit_request(
-                subjects=True,
-                X_target_unlabeled=True,
-                cs_mode=True,
+                subjects=True, X_target_unlabeled=True, cs_mode=True
             )
 
         run_mode(

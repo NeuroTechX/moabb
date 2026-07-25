@@ -503,40 +503,39 @@ class CrossSubjectEvaluation(BaseEvaluation):
     def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
         cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
         self.one_shot_predict = False
-    
+
         if cs_mode is None:
             cs_mode = CrossSubjectMode.TRAIN
-    
+
         cs_mode = CrossSubjectMode(cs_mode)
         self.cs_mode = cs_mode
-    
+
         # Manual cv_kwargs still work when the default train-only blockwise
         # mode is used.
         has_manual_calibration = (
             "calibration_size" in cv_kwargs or "calibration_labeled" in cv_kwargs
         )
-    
+
         if has_manual_calibration and cs_mode != CrossSubjectMode.TRAIN:
             raise ValueError(
-                "Pass either cs_mode or calibration_size/calibration_labeled, "
-                "not both."
+                "Pass either cs_mode or calibration_size/calibration_labeled, not both."
             )
-    
+
         if not has_manual_calibration:
             params = resolve_cross_subject_mode(cs_mode)
             cv_kwargs["calibration_size"] = params["calibration_size"]
             cv_kwargs["calibration_labeled"] = params["calibration_labeled"]
-    
+
         self.one_shot_predict = is_trialwise_mode(cs_mode)
-    
+
         validate_transfer_protocol(
             cv_kwargs.get("calibration_size", 0.0),
             cv_kwargs.get("calibration_labeled", False),
         )
-    
+
         kwargs["cv_kwargs"] = cv_kwargs
         super().__init__(*args, **kwargs)
-    
+
     def _create_splitter(self):
         """Create the CrossSubjectSplitter for parallel evaluation.
 

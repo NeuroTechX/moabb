@@ -8,9 +8,9 @@ The presets describe what information from the held-out target subject is
 allowed to be used by an estimator, and how the remaining target data are
 scored. They make the evaluation protocol explicit, so that different
 cross-subject and transfer-learning methods can be compared under controlled
-and reproducible conditions. 
+and reproducible conditions.
 
-These presets are designed specifically to be used in publications. 
+These presets are designed specifically to be used in publications.
 
 A preset controls two related aspects of the evaluation:
 
@@ -76,34 +76,31 @@ class CrossSubjectMode(str, Enum):
 
 
 _CROSS_SUBJECT_MODE_MAP = {
-    CrossSubjectMode.TRAIN: dict(
-        calibration_size=0.0,
-        calibration_labeled=False,
-    ),
-    CrossSubjectMode.TRAIN_TRIALWISE: dict(
-        calibration_size=0.0,
-        calibration_labeled=False,
-    ),
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P: dict(
-        calibration_size=0.2,
-        calibration_labeled=False,
-    ),
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_50P: dict(
-        calibration_size=0.5,
-        calibration_labeled=False,
-    ),
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_FULL: dict(
-        calibration_size=1.0,
-        calibration_labeled=False,
-    ),
-    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_20P: dict(
-        calibration_size=0.2,
-        calibration_labeled=True,
-    ),
-    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_50P: dict(
-        calibration_size=0.5,
-        calibration_labeled=True,
-    ),
+    CrossSubjectMode.TRAIN: {"calibration_size": 0.0, "calibration_labeled": False},
+    CrossSubjectMode.TRAIN_TRIALWISE: {
+        "calibration_size": 0.0,
+        "calibration_labeled": False,
+    },
+    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P: {
+        "calibration_size": 0.2,
+        "calibration_labeled": False,
+    },
+    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_50P: {
+        "calibration_size": 0.5,
+        "calibration_labeled": False,
+    },
+    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_FULL: {
+        "calibration_size": 1.0,
+        "calibration_labeled": False,
+    },
+    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_20P: {
+        "calibration_size": 0.2,
+        "calibration_labeled": True,
+    },
+    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_50P: {
+        "calibration_size": 0.5,
+        "calibration_labeled": True,
+    },
 }
 
 

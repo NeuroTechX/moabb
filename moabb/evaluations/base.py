@@ -49,12 +49,15 @@ log = logging.getLogger(__name__)
 
 def _one_shot_estimator(estimator):
     """Wrap an estimator so predictions are made one sample at a time."""
+
     class _OneShotEstimator:
         def __init__(self, estimator):
             self.estimator = estimator
             if hasattr(estimator, "classes_"):
                 self.classes_ = estimator.classes_
-            elif hasattr(estimator, "steps") and hasattr(estimator.steps[-1][1], "classes_"):
+            elif hasattr(estimator, "steps") and hasattr(
+                estimator.steps[-1][1], "classes_"
+            ):
                 self.classes_ = estimator.steps[-1][1].classes_
 
         def predict(self, X):
@@ -64,6 +67,7 @@ def _one_shot_estimator(estimator):
 
         def __getattr__(self, name):
             if name == "predict_proba" and hasattr(self.estimator, "predict_proba"):
+
                 def predict_proba(X):
                     return np.vstack(
                         [
@@ -77,6 +81,7 @@ def _one_shot_estimator(estimator):
             if name == "decision_function" and hasattr(
                 self.estimator, "decision_function"
             ):
+
                 def decision_function(X):
                     values = [
                         self.estimator.decision_function(X[i : i + 1])
@@ -90,18 +95,14 @@ def _one_shot_estimator(estimator):
 
     return _OneShotEstimator(estimator)
 
-    
+
 def _route_transfer_metadata(
-    estimator,
-    subjects,
-    calib=None,
-    calibration_labeled=False,
-    cs_mode=None,
+    estimator, subjects, calib=None, calibration_labeled=False, cs_mode=None
 ):
     """Keep only protocol-allowed transfer metadata requested at ``fit``.
 
     ``subjects`` is the per-trial source-subject array.
-    
+
     ``cs_mode`` is the selected cross-subject protocol preset.
 
     ``calib`` is an optional dict with raw calibration data:
