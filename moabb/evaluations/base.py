@@ -47,52 +47,81 @@ search_methods, optuna_available = check_search_available()
 log = logging.getLogger(__name__)
 
 
+class _OneShotEstimator:
+    """Wrap a fitted estimator so predictions are made one trial at a time.
+
+    This is what makes ``CrossSubjectMode.TRAIN_TRIALWISE`` meaningful: the
+    wrapped estimator never sees more than a single target trial at once, so it
+    cannot exploit statistics of the whole target test block.
+
+    ``predict_proba`` / ``decision_function`` / ``predict_log_proba`` are
+    proxied one trial at a time, but only when the wrapped estimator actually
+    has them -- a scorer such as ``roc_auc`` inspects which of them exist to
+    decide how to score, so they must not be advertised unconditionally.
+    """
+
+    # Methods proxied one trial at a time, with how to stack the results.
+    _PROXIED = {
+        "predict_proba": np.vstack,
+        "predict_log_proba": np.vstack,
+        "decision_function": lambda values: np.asarray([v[0] for v in values]),
+    }
+
+    def __init__(self, estimator):
+        self.estimator = estimator
+        if hasattr(estimator, "classes_"):
+            self.classes_ = estimator.classes_
+        elif hasattr(estimator, "steps") and hasattr(estimator.steps[-1][1], "classes_"):
+            self.classes_ = estimator.steps[-1][1].classes_
+
+    def predict(self, X):
+        return np.asarray(
+            [self.estimator.predict(X[i : i + 1])[0] for i in range(len(X))]
+        )
+
+    def score(self, X, y):
+        """Refuse to score, rather than silently scoring the whole block.
+
+        ``check_scoring(estimator, scoring=None)`` returns a passthrough scorer
+        that calls ``estimator.score(X, y)``. Delegating that to the wrapped
+        estimator would push the entire target test block through it in one
+        call and quietly void the trialwise guarantee, so it is an error
+        instead.
+        """
+        raise TypeError(
+            "Trialwise scoring needs an explicit metric: the paradigm's "
+            "`scoring` is None, and an estimator's own `score` method would "
+            "see the whole target test block at once. Set `scoring` on the "
+            "paradigm (e.g. 'accuracy', 'roc_auc') or use a blockwise "
+            "CrossSubjectMode."
+        )
+
+    def __getattr__(self, name):
+        # ``__getattr__`` runs before ``__init__`` has set ``estimator`` during
+        # unpickling/copying, so look it up without recursing back in here.
+        estimator = self.__dict__.get("estimator")
+        if estimator is None:
+            raise AttributeError(name)
+
+        stack = self._PROXIED.get(name)
+        if stack is not None and hasattr(estimator, name):
+            method = getattr(estimator, name)
+
+            def one_shot(X):
+                return stack([method(X[i : i + 1]) for i in range(len(X))])
+
+            # sklearn's scorers dispatch on ``prediction_method.__name__``
+            # (sklearn.utils._response._get_response_values), so the proxy has
+            # to answer to the name it is standing in for.
+            one_shot.__name__ = name
+            one_shot.__qualname__ = f"{type(self).__name__}.{name}"
+            return one_shot
+
+        return getattr(estimator, name)
+
+
 def _one_shot_estimator(estimator):
     """Wrap an estimator so predictions are made one sample at a time."""
-
-    class _OneShotEstimator:
-        def __init__(self, estimator):
-            self.estimator = estimator
-            if hasattr(estimator, "classes_"):
-                self.classes_ = estimator.classes_
-            elif hasattr(estimator, "steps") and hasattr(
-                estimator.steps[-1][1], "classes_"
-            ):
-                self.classes_ = estimator.steps[-1][1].classes_
-
-        def predict(self, X):
-            return np.asarray(
-                [self.estimator.predict(X[i : i + 1])[0] for i in range(len(X))]
-            )
-
-        def __getattr__(self, name):
-            if name == "predict_proba" and hasattr(self.estimator, "predict_proba"):
-
-                def predict_proba(X):
-                    return np.vstack(
-                        [
-                            self.estimator.predict_proba(X[i : i + 1])
-                            for i in range(len(X))
-                        ]
-                    )
-
-                return predict_proba
-
-            if name == "decision_function" and hasattr(
-                self.estimator, "decision_function"
-            ):
-
-                def decision_function(X):
-                    values = [
-                        self.estimator.decision_function(X[i : i + 1])
-                        for i in range(len(X))
-                    ]
-                    return np.asarray([v[0] for v in values])
-
-                return decision_function
-
-            return getattr(self.estimator, name)
-
     return _OneShotEstimator(estimator)
 
 

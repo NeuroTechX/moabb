@@ -1192,3 +1192,78 @@ def test_cross_subject_calibration_with_custom_cv():
     assert len(results) > 0
     assert _TRANSFER_CAPTURE, "transfer step was never fitted"
     assert all(c["n_subjects"] > 0 and c["n_target"] > 0 for c in _TRANSFER_CAPTURE)
+
+
+# ---------------------------------------------------------------------------
+# CrossSubjectMode presets and the trialwise scoring guarantee.
+# ---------------------------------------------------------------------------
+
+
+class _PredictSpy(sklearn.base.ClassifierMixin, sklearn.base.BaseEstimator):
+    """Records the batch size of every predict/score call."""
+
+    def __init__(self):
+        self.calls = []
+
+    def fit(self, X, y):
+        self.classes_ = np.unique(y)
+        return self
+
+    def predict(self, X):
+        self.calls.append(("predict", len(X)))
+        return np.zeros(len(X), dtype=int)
+
+    def score(self, X, y):
+        self.calls.append(("score", len(X)))
+        return 1.0
+
+
+def test_one_shot_estimator_scores_one_trial_at_a_time():
+    """The trialwise wrapper never hands the estimator more than one trial."""
+    from moabb.evaluations.base import _create_scorer, _one_shot_estimator
+
+    X = np.random.RandomState(0).randn(8, 3)
+    y = np.array([0, 1] * 4)
+
+    spy = _PredictSpy().fit(X, y)
+    wrapped = _one_shot_estimator(spy)
+    _create_scorer(wrapped, "accuracy")(wrapped, X, y)
+    assert spy.calls, "the wrapped estimator was never called"
+    assert {n for _, n in spy.calls} == {1}
+
+
+def test_one_shot_estimator_refuses_passthrough_scoring():
+    """scoring=None must not silently fall back to whole-block scoring.
+
+    ``check_scoring(estimator, scoring=None)`` returns a passthrough scorer that
+    calls ``estimator.score(X, y)``. If that is delegated to the wrapped
+    estimator, the whole target test block goes through in one call and the
+    trialwise guarantee is void.
+    """
+    from moabb.evaluations.base import _create_scorer, _one_shot_estimator
+
+    X = np.random.RandomState(0).randn(8, 3)
+    y = np.array([0, 1] * 4)
+
+    spy = _PredictSpy().fit(X, y)
+    wrapped = _one_shot_estimator(spy)
+    with pytest.raises(TypeError, match="Trialwise scoring needs an explicit metric"):
+        _create_scorer(wrapped, None)(wrapped, X, y)
+    assert spy.calls == []
+
+
+def test_one_shot_estimator_proxies_only_available_methods():
+    """A probability scorer still works, and absent methods stay absent."""
+    from moabb.evaluations.base import _create_scorer, _one_shot_estimator
+
+    X = np.random.RandomState(0).randn(8, 3)
+    y = np.array([0, 1] * 4)
+
+    wrapped = _one_shot_estimator(LDA().fit(X, y))
+    # sklearn dispatches on the proxy's __name__, so it must keep the real name.
+    assert wrapped.predict_proba.__name__ == "predict_proba"
+    assert wrapped.predict_proba(X).shape == (8, 2)
+    assert _create_scorer(wrapped, "roc_auc")(wrapped, X, y)["score"] > 0
+
+    # _PredictSpy has no predict_proba; the wrapper must not invent one.
+    assert not hasattr(_one_shot_estimator(_PredictSpy().fit(X, y)), "predict_proba")
