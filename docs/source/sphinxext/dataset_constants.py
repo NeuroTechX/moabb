@@ -74,7 +74,7 @@ def country_flag(code: str | None) -> str:
     str
         Flag emoji string, or empty string if code is invalid.
     """
-    if not code or len(code) != 2:
+    if not isinstance(code, str) or len(code) != 2:
         return ""
     return "".join(chr(0x1F1E6 + ord(c) - ord("A")) for c in code.upper())
 

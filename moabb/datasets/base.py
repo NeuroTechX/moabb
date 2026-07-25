@@ -18,6 +18,7 @@ from urllib.parse import quote
 import mne_bids
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
 from mne_bids import events_file_to_annotation_kwargs
 
 from moabb.datasets.bids_interface import (
@@ -805,7 +806,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         return X_select, labels_select, meta_select
 
-    def get_data(self, subjects=None, cache_config=None, process_pipeline=None):
+    def get_data(self, subjects=None, cache_config=None, process_pipeline=None, n_jobs=1):
         """
         Return the data corresponding to a list of subjects.
 
@@ -845,6 +846,12 @@ class BaseDataset(metaclass=MetaclassDataset):
             :class:`numpy.ndarray`.
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
+        n_jobs: int
+            Number of jobs to run in parallel over subjects (passed to
+            :class:`joblib.Parallel`). Default ``1`` (sequential). Per-subject
+            processing (reading, filtering, resampling, epoching) is
+            independent, so this gives a near-linear speedup for datasets with
+            many subjects.
 
         Returns
         -------
@@ -870,25 +877,41 @@ class BaseDataset(metaclass=MetaclassDataset):
         else:
             str_sessions = pat = None
 
-        data = {}
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
-            subject_data = self._get_single_subject_data_using_cache(
-                subject, cache_config, process_pipeline
+
+        results = Parallel(n_jobs=n_jobs)(
+            delayed(self._get_selected_subject_data)(
+                subject, cache_config, process_pipeline, str_sessions, pat
             )
-            if str_sessions is not None:
-                subject_data = {
-                    k: v
-                    for k, v in subject_data.items()
-                    if k in str_sessions
-                    or ((m := re.fullmatch(pat, k)) and m.group(1) in str_sessions)
-                }
-            data[subject] = subject_data
+            for subject in subjects
+        )
+        data = dict(zip(subjects, results))
         check_subject_names(data)
         check_session_names(data)
         check_run_names(data)
         return data
+
+    def _get_selected_subject_data(
+        self, subject, cache_config, process_pipeline, str_sessions, pat
+    ):
+        """Load one subject and keep only the selected sessions.
+
+        Split out of :meth:`get_data` so it can be dispatched to
+        :class:`joblib.Parallel` workers.
+        """
+        subject_data = self._get_single_subject_data_using_cache(
+            subject, cache_config, process_pipeline
+        )
+        if str_sessions is not None:
+            subject_data = {
+                k: v
+                for k, v in subject_data.items()
+                if k in str_sessions
+                or ((m := re.fullmatch(pat, k)) and m.group(1) in str_sessions)
+            }
+        return subject_data
 
     def download(
         self,
