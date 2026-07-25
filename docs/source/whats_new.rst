@@ -82,8 +82,11 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
+- Bump the ``ruff-pre-commit`` hook from ``v0.15.9`` to ``v0.15.20`` (quarterly ``pre-commit.ci`` autoupdate). The bump is lint-neutral on the current tree: ``ruff check`` and ``ruff format --check`` return identical results at both pins across all 229 tracked ``*.py`` / ``*.pyi`` files, and ``pre-commit run --all-files`` rewrites no file (:gh:`1119` by `pre-commit-ci`_).
 - Fix deprecated ``pyriemann.utils.{mean,covariance,base}`` import paths: bump the minimum ``pyriemann`` to ``0.12`` and update all import sites in ``moabb/pipelines/csp.py``, ``moabb/pipelines/classification.py``, ``moabb/datasets/preprocessing.py``, and the Riemannian artifact rejection example to use ``pyriemann.geometry.*`` (introduced in pyriemann 0.12, removal of the old paths scheduled for 0.14), and import ``Potato``/``PotatoField`` from ``pyriemann.artifact_detection`` (moved from ``pyriemann.clustering`` in 0.12) (by `copilot-swe-agent`_).
-- Install CPU-only PyTorch wheels in CI by setting ``UV_TORCH_BACKEND=cpu`` in the test, braindecode, and docs workflows, so runners no longer download multi-GB CUDA builds of ``torch`` (pulled transitively via the ``deeplearning`` extra / braindecode) (:gh:`1083` by `Bhargav Kowshik`_).
+- Install CPU-only PyTorch wheels in CI by setting ``UV_TORCH_BACKEND=cpu`` in the test, braindecode, and docs workflows, so runners no longer download multi-GB CUDA builds of ``torch`` (pulled transitively via the ``deeplearning`` extra / braindecode) (:gh:`1083` by `
+
+`_).
 
 Version 1.5.0  (Stable - PyPi)
 -------------------------------
@@ -916,3 +919,4 @@ API changes
 .. _copilot-swe-agent: https://github.com/apps/copilot-swe-agent
 .. _Danae: https://github.com/dnplchrn
 .. _Henrique Lefundes: https://github.com/HenriqueLefundes
+.. _pre-commit-ci: https://github.com/apps/pre-commit-ci
