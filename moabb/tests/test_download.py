@@ -262,3 +262,43 @@ def test_download_dir_change_is_respected(
     assert not resolved_new.startswith(str(old_dir)), (
         f"{dataset_class.__name__} reverted to the old download directory."
     )
+
+
+def test_set_download_dir_propagates_to_dataset_keys(tmp_path):
+    """Changing the download dir must update per-dataset MNE config keys.
+
+    ``get_dataset_path`` persists a ``MNE_DATASETS_<SIGN>_PATH`` entry mirroring
+    ``MNE_DATA`` the first time a dataset is accessed. Changing the download
+    directory afterwards must realign those entries, otherwise datasets keep
+    pointing at the old location (see issue #1115).
+    """
+    keys = (
+        "MNE_DATA",
+        "MNE_DATASETS_WEIBO_PATH",
+        "MNE_DATASETS_BBCIFNIRS_PATH",
+        "MNE_DATASETS_CUSTOM_PATH",
+    )
+    original = {key: get_config(key) for key in keys}
+    try:
+        old_dir = tmp_path / "old"
+        new_dir = tmp_path / "new"
+        old_dir.mkdir()
+
+        set_download_dir(str(old_dir))
+        # Simulate two datasets that mirrored MNE_DATA on first access ...
+        set_config("MNE_DATASETS_WEIBO_PATH", str(old_dir))
+        set_config("MNE_DATASETS_BBCIFNIRS_PATH", str(old_dir))
+        # ... and a key that the user deliberately configured elsewhere.
+        custom = str(tmp_path / "custom")
+        set_config("MNE_DATASETS_CUSTOM_PATH", custom)
+
+        set_download_dir(str(new_dir))
+
+        assert get_config("MNE_DATA") == str(new_dir)
+        assert get_config("MNE_DATASETS_WEIBO_PATH") == str(new_dir)
+        assert get_config("MNE_DATASETS_BBCIFNIRS_PATH") == str(new_dir)
+        # Independently-configured keys must be left untouched.
+        assert get_config("MNE_DATASETS_CUSTOM_PATH") == custom
+    finally:
+        for key, value in original.items():
+            set_config(key, value)
