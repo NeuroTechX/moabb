@@ -24,11 +24,11 @@ from moabb.datasets.wang2026 import (
     _EEGNET_EVENT_MAP,
     _EVENTS,
     _SUBJECT_FILE_COUNTS,
-    _RangeReader,
     Wang2026JointLearning,
     _event_mapping,
     _mode_label,
     _path_sort_key,
+    _RangeReader,
 )
 
 
@@ -139,9 +139,7 @@ def test_range_reader_sizes_and_slices_a_remote_file(monkeypatch):
 
 def test_range_reader_rejects_a_server_without_range_support(monkeypatch):
     monkeypatch.setattr(
-        wang2026,
-        "requests",
-        SimpleNamespace(get=lambda *a, **k: _FakeResponse(b"", {})),
+        wang2026, "requests", SimpleNamespace(get=lambda *a, **k: _FakeResponse(b"", {}))
     )
     with pytest.raises(OSError, match="does not support range requests"):
         _RangeReader("https://example.invalid/file")
@@ -180,9 +178,7 @@ def test_data_path_reuses_the_local_cache(monkeypatch, tmp_path, joint_learning_
 
 def test_data_path_rejects_an_incomplete_archive(monkeypatch, tmp_path):
     """A member-count mismatch must fail loudly rather than load partial data."""
-    _patch_transport(
-        monkeypatch, _build_archive("JointLearning", {1: (3, 64)}), tmp_path
-    )
+    _patch_transport(monkeypatch, _build_archive("JointLearning", {1: (3, 64)}), tmp_path)
     with pytest.raises(RuntimeError, match="MAT files for S001"):
         Wang2026JointLearning(subjects=[1]).data_path(1)
 
