@@ -219,7 +219,7 @@ def set_download_dir(path):
     """
     old_path = get_config("MNE_DATA")
     if path is None:
-        if get_config("MNE_DATA") is None:
+        if old_path is None:
             log.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
@@ -228,9 +228,10 @@ def set_download_dir(path):
                 "already downloaded, please move manually to this location"
             )
 
-            new_path = osp.join(osp.expanduser("~"), "mne_data")
-            set_config("MNE_DATA", new_path)
-            _propagate_download_dir(old_path, new_path)
+            # No propagation here: this branch only runs when MNE_DATA was
+            # unset, so there is no previous value for a per-dataset key to
+            # still be mirroring.
+            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
     else:
         # Check if the path exists, if not, create it
         if not osp.isdir(path):
