@@ -895,3 +895,60 @@ def test_cross_subject_calibration(calibration_size, data):
 def test_cross_subject_calibration_invalid_size():
     with pytest.raises(ValueError):
         CrossSubjectSplitter(calibration_size=1.5)
+
+
+@pytest.mark.parametrize("calibration_labeled", [False, True])
+def test_cross_subject_calibration_leakage_boundary(calibration_labeled, data):
+    """Pin the leakage contract of the transfer split.
+
+    The held-out fold is a single target subject. The calibration slice is
+    carved out of that target subject and reaches the estimator only through
+    ``fit`` metadata routing -- never through ``train_idx`` -- and it is
+    removed from the scored test set. Train, calibration and test are
+    pairwise trial-disjoint.
+    """
+    _, y, metadata = data
+    splitter = CrossSubjectSplitter(
+        calibration_size=0.2, calibration_labeled=calibration_labeled
+    )
+    folds = list(splitter.split(y, metadata))
+    assert len(folds) == metadata["subject"].nunique()
+
+    for train_idx, calib_idx, test_idx in folds:
+        target = set(metadata.loc[test_idx, "subject"])
+        # Exactly one held-out target subject per fold.
+        assert len(target) == 1
+        # The calibration slice belongs to that same target subject...
+        assert set(metadata.loc[calib_idx, "subject"]) == target
+        assert calib_idx.size > 0
+        # ...and no trial of the target subject is in the training fold.
+        assert target.isdisjoint(set(metadata.loc[train_idx, "subject"]))
+        # Pairwise trial-disjoint: nothing is scored that was also fitted.
+        assert np.intersect1d(train_idx, test_idx).size == 0
+        assert np.intersect1d(train_idx, calib_idx).size == 0
+        assert np.intersect1d(calib_idx, test_idx).size == 0
+        # Calibration + test partition the target subject exactly.
+        target_idx = metadata.index[metadata["subject"].isin(target)].to_numpy()
+        assert np.array_equal(np.union1d(calib_idx, test_idx), target_idx)
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="_split_target_fraction slices the first N trials of the target "
+    "subject in index order, with no per-session and no class-stratified "
+    "draw, so whole sessions of the target subject are swallowed by the "
+    "calibration slice. CrossSubjectEvaluation scores per session, so the "
+    "affected sessions silently disappear from the results and the remaining "
+    "per-session scores are not comparable to the calibration_size=0 "
+    "baseline.",
+)
+def test_cross_subject_calibration_keeps_every_target_session_scorable(data):
+    """Every session of the target subject should still be scored."""
+    _, y, metadata = data
+    baseline = list(CrossSubjectSplitter().split(y, metadata))
+    calibrated = list(CrossSubjectSplitter(calibration_size=0.2).split(y, metadata))
+
+    for (_, base_test), (_, _calib, test) in zip(baseline, calibrated):
+        assert set(metadata.loc[test, "session"]) == set(
+            metadata.loc[base_test, "session"]
+        )
