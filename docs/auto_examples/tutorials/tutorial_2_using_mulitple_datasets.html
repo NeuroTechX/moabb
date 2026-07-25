@@ -104,6 +104,7 @@
     <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/dataTables.searchPanes.js"></script>
     <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/searchPanes.dataTables.js"></script>
     <script src="https://cdn.datatables.net/fixedheader/4.0.6/js/dataTables.fixedHeader.js"></script>
+    <script src="../../_static/js/sortable-numeric.js?v=9b328e85"></script>
     <script src="../../_static/js/section-nav-hierarchy.js?v=c53969c2"></script>
     <script src="../../_static/js/macro-table.js?v=c799a707"></script>
     <link rel="canonical" href="https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_2_using_mulitple_datasets.html" />
@@ -668,10 +669,6 @@ we begin by importing all relevant libraries.</p>
 <a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
-  optuna_warn(f&quot;{msg} Use `optuna_integration.sklearn` instead.&quot;, FutureWarning)
-</pre></div>
-</div>
 <section id="initializing-datasets">
 <h2>Initializing Datasets<a class="headerlink" href="#initializing-datasets" title="Link to this heading">#</a></h2>
 <p>We instantiate the two different datasets that follow the MI paradigm
@@ -695,18 +692,6 @@ the evaluation from scratch if a problem occurs.</p>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">({</span><span class="s2">&quot;csp+lda&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">})</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 23:35:37] Multiple instances of codecarbon are allowed to run at the same time.
-2026-07-14 23:37:59,720 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 2: Score 0.994
-2026-07-14 23:37:59,720 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 1: Score 0.982
-2026-07-14 23:37:59,720 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 0: Score 0.952
-2026-07-14 23:37:59,720 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 0: Score 0.853
-2026-07-14 23:37:59,720 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 1: Score 0.906
-2026-07-14 23:37:59,721 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 2: Score 0.948
-2026-07-14 23:37:59,721 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 0: Score 0.910
-2026-07-14 23:37:59,721 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 2: Score 0.906
-2026-07-14 23:37:59,721 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 1: Score 0.760
-</pre></div>
-</div>
 </section>
 <section id="plotting-results">
 <h2>Plotting Results<a class="headerlink" href="#plotting-results" title="Link to this heading">#</a></h2>
@@ -725,11 +710,8 @@ is to plot the results from the three datasets with just one line.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" srcset="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-07-14 23:37:59,841 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
-2026-07-14 23:37:59,845 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 32.733 seconds)</p>
+<img src="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" srcset="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 10.944 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  681 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-2-using-mulitple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/84cd0e0e206f46e9ff11a482df8a9b57/tutorial_2_using_mulitple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_2_using_mulitple_datasets.ipynb</span></code></a></p>

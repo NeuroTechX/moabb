@@ -104,6 +104,7 @@
     <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/dataTables.searchPanes.js"></script>
     <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/searchPanes.dataTables.js"></script>
     <script src="https://cdn.datatables.net/fixedheader/4.0.6/js/dataTables.fixedHeader.js"></script>
+    <script src="../../_static/js/sortable-numeric.js?v=9b328e85"></script>
     <script src="../../_static/js/section-nav-hierarchy.js?v=c53969c2"></script>
     <script src="../../_static/js/macro-table.js?v=c799a707"></script>
     <link rel="canonical" href="https://moabb.neurotechx.com/docs/auto_examples/learning_curve/plot_learning_curve_motor_imagery.html" />
@@ -725,14 +726,12 @@ be overwritten if necessary.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
-  dset.create_dataset(
-      score      time  ...  pipeline                  codecarbon_task_name
-0  0.976190  0.020579  ...   CSP+LDA  92448a16-0da2-419c-b6bc-758c7f4547dd
-1  0.919048  0.028685  ...   CSP+LDA  a72352ca-c560-4b0c-ad7f-14400a3b2237
-2  0.985714  0.061791  ...   CSP+LDA  adac7eef-72dd-408f-b251-4179e7160405
-3  0.985714  0.097766  ...   CSP+LDA  8fd90f02-efe9-4fe1-8c69-77fb880fc9c0
-4  0.728571  0.021135  ...   CSP+LDA  a1206ce8-a206-45e1-8172-eaffe758cfe3
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
+0  0.828571  0.146563  ...   CSP+LDA  ec543a3c-d4ec-42d7-b1b6-3395e155f034
+1  0.871429  0.048014  ...   CSP+LDA  a0404889-562a-4137-a7d6-8956fb37dfcf
+2  0.938095  0.121726  ...   CSP+LDA  51cd00e2-2958-469c-a837-8116191873a9
+3  0.971429  0.180649  ...   CSP+LDA  6da8a7ed-5eed-4107-985c-4fc50ab9520d
+4  0.752381  0.023232  ...   CSP+LDA  f4b6d0fa-1c7b-4340-b85a-4a612c954520
 
 [5 rows x 15 columns]
 </pre></div>
@@ -762,7 +761,8 @@ each pipeline</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 17.012 seconds)</p>
+<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 25.846 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  831 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5b1f506cd53838de0dd70e569a36f198/plot_learning_curve_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_learning_curve_motor_imagery.ipynb</span></code></a></p>
