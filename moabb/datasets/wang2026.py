@@ -4,6 +4,7 @@ Data DOI: 10.1184/R1/32293995.v1
 Paper DOI: 10.1038/s41467-026-75435-5
 """
 
+import io
 import re
 import shutil
 import tempfile
@@ -15,7 +16,7 @@ from pathlib import Path
 import h5py
 import mne
 import numpy as np
-import pooch
+import requests
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -37,10 +38,20 @@ from moabb.datasets.utils import safe_extract_zip
 
 _DATASET_DOI = "10.1184/R1/32293995.v1"
 _PAPER_DOI = "10.1038/s41467-026-75435-5"
-_FIGSHARE_BASE = "https://ndownloader.figshare.com/files/"
+_FIGSHARE_FILE = "https://ndownloader.figshare.com/files/{file_id}"
 
-# Figshare article 32293995, version 1. The supplied hashes are pinned so that
-# an upstream replacement cannot silently change benchmark data.
+# Figshare article 32293995, version 1. The release publishes one monolithic
+# archive per experimental arm (8.7-25.3 GB each, 63.7 GB in total) with no
+# per-subject files, so a single subject is extracted from the *remote* archive
+# over HTTP range requests -- see :class:`_RangeReader`. Downloading a whole arm
+# to obtain one of its subjects would cost tens of gigabytes of transfer and
+# permanent local storage.
+#
+# ``md5`` records the published version-1 whole-archive hash for provenance, so
+# an upstream replacement can be detected by hand. It is deliberately not
+# verified here: selective range extraction never reads the whole archive.
+# Integrity is instead enforced per member, since :meth:`zipfile.ZipFile.read`
+# checks every member against the CRC-32 stored in the central directory.
 _ARCHIVES = {
     "BCI2000Control": {
         "file_id": 64710750,
@@ -479,6 +490,59 @@ def _path_sort_key(path):
     )
 
 
+class _RangeReader(io.RawIOBase):
+    """Read-only file object backed by HTTP range requests.
+
+    The release is published as four monolithic archives (8.7-25.3 GB, 63.7 GB
+    total) with no per-subject files, so fetching one subject would otherwise
+    mean downloading its whole group. figshare's storage honours range requests,
+    which lets us pull just that subject's members out of the remote zip.
+    Each request is re-resolved because figshare presigns the redirect target
+    with a very short expiry.
+    """
+
+    def __init__(self, url):
+        self.url = url
+        self.pos = 0
+        r = requests.get(
+            url, headers={"Range": "bytes=0-0"}, allow_redirects=True, timeout=60
+        )
+        r.raise_for_status()
+        if "Content-Range" not in r.headers:
+            raise OSError(f"server does not support range requests for {url}")
+        self.size = int(r.headers["Content-Range"].split("/")[-1])
+
+    def seek(self, off, whence=0):
+        self.pos = {0: off, 1: self.pos + off, 2: self.size + off}[whence]
+        return self.pos
+
+    def tell(self):
+        return self.pos
+
+    def seekable(self):
+        return True
+
+    def readable(self):
+        return True
+
+    def read(self, n=-1):
+        if n < 0:
+            n = self.size - self.pos
+        if n == 0:
+            return b""
+        end = min(self.pos + n - 1, self.size - 1)
+        r = requests.get(
+            self.url,
+            headers={"Range": f"bytes={self.pos}-{end}"},
+            allow_redirects=True,
+            timeout=300,
+        )
+        r.raise_for_status()
+        data = r.content
+        self.pos += len(data)
+        return data
+
+
 class _Wang2026Base(BaseDataset):
     """Shared implementation for one experimental arm."""
 
@@ -527,7 +591,13 @@ class _Wang2026Base(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download the group archive and extract only one subject."""
+        """Extract one subject's runs out of the remote group archive.
+
+        Only the archive members belonging to ``subject`` are transferred, using
+        HTTP range requests against the published ZIP (see :class:`_RangeReader`
+        and the note on :data:`_ARCHIVES`). The whole-archive download is
+        deliberately avoided: one subject would otherwise cost 8.7-25.3 GB.
+        """
         if subject not in self.subject_list:
             raise ValueError(
                 f"Invalid subject {subject}. Valid subjects: {self.subject_list}"
@@ -546,48 +616,39 @@ class _Wang2026Base(BaseDataset):
             return [str(file_path) for file_path in existing]
 
         archive = _ARCHIVES[self._group]
-        archive_path = root / archive["filename"]
-        if force_update and archive_path.exists():
-            archive_path.unlink()
-
-        url = f"{_FIGSHARE_BASE}{archive['file_id']}"
-        downloaded = Path(
-            pooch.retrieve(
-                url=url,
-                known_hash=f"md5:{archive['md5']}",
-                fname=archive["filename"],
-                path=root,
-                progressbar=verbose is not False,
-            )
-        )
-
+        url = _FIGSHARE_FILE.format(file_id=archive["file_id"])
         prefix = f"{self._group}/{subject_name}/"
-        with zipfile.ZipFile(downloaded) as zip_file:
-            members = [
-                member
-                for member in zip_file.infolist()
-                if member.filename.startswith(prefix) and member.filename.endswith(".mat")
-            ]
-            if len(members) != expected_count:
-                raise RuntimeError(
-                    f"{archive['filename']} contains {len(members)} MAT files for "
-                    f"{subject_name}, expected {expected_count}."
-                )
 
-            with tempfile.TemporaryDirectory(prefix="wang2026-", dir=root) as tmp:
-                tmp_root = Path(tmp)
-                safe_extract_zip(zip_file, tmp_root, members=members)
-                extracted_dir = tmp_root / self._group / subject_name
-                extracted = sorted(extracted_dir.glob("*.mat"))
-                if len(extracted) != expected_count:
+        # Extract into a temporary directory and move into place only once every
+        # expected run is present, so an interrupted transfer cannot leave behind
+        # a partial subject that the cache check above would accept as complete.
+        with tempfile.TemporaryDirectory(prefix="wang2026-", dir=root) as tmp:
+            tmp_root = Path(tmp)
+            with zipfile.ZipFile(_RangeReader(url)) as zip_file:
+                members = [
+                    member
+                    for member in zip_file.infolist()
+                    if member.filename.startswith(prefix)
+                    and member.filename.endswith(".mat")
+                ]
+                if len(members) != expected_count:
                     raise RuntimeError(
-                        f"Incomplete extraction for {self._group}/{subject_name}: "
-                        f"found {len(extracted)} files, expected {expected_count}."
+                        f"{archive['filename']} contains {len(members)} MAT files for "
+                        f"{subject_name}, expected {expected_count}."
                     )
-                subject_dir.parent.mkdir(parents=True, exist_ok=True)
-                if subject_dir.exists():
-                    shutil.rmtree(subject_dir)
-                shutil.move(str(extracted_dir), str(subject_dir))
+                safe_extract_zip(zip_file, tmp_root, members=members)
+
+            extracted_dir = tmp_root / self._group / subject_name
+            extracted = sorted(extracted_dir.glob("*.mat"))
+            if len(extracted) != expected_count:
+                raise RuntimeError(
+                    f"Incomplete extraction for {self._group}/{subject_name}: "
+                    f"found {len(extracted)} files, expected {expected_count}."
+                )
+            subject_dir.parent.mkdir(parents=True, exist_ok=True)
+            if subject_dir.exists():
+                shutil.rmtree(subject_dir)
+            shutil.move(str(extracted_dir), str(subject_dir))
 
         return [str(file_path) for file_path in sorted(subject_dir.glob("*.mat"))]
 
@@ -605,6 +666,11 @@ class Wang2026JointLearning(_Wang2026Base):
     The public release contains trial-segmented data. Variable-length BCI2000
     baseline trials are zero-padded only after their recorded endpoint so that
     MOABB can expose the nominal five-second imagery interval.
+
+    Each experimental arm is published as one monolithic archive (8.7-25.3 GB),
+    so requesting a single subject transfers only that subject's members out of
+    the remote ZIP using HTTP range requests rather than downloading the whole
+    arm.
 
     References
     ----------
