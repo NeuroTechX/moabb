@@ -14,8 +14,8 @@
  *
  * This plugin registers a column type that treats a column as numeric when
  * every cell is EITHER a number OR a known sentinel, ordering the sentinel
- * rows as -Infinity so they sink to the bottom of a largest-first sort while
- * still DISPLAYING their original text ("varies") to the reader.
+ * rows AFTER every real number in BOTH sort directions while still DISPLAYING
+ * their original text ("varies") to the reader.
  */
 (function () {
   "use strict";
@@ -40,7 +40,37 @@
     return parseFloat(text.replace(/,/g, ""));
   }
 
+  // Ordering key for a sentinel cell. `null` cannot collide with any value
+  // asNumber() can return, so the comparators below can recognise it exactly.
+  var SENTINEL_KEY = null;
+
+  function sortKey(value) {
+    var text = clean(value);
+    if (isSentinel(text)) {
+      return SENTINEL_KEY;
+    }
+    var n = asNumber(text);
+    return isNaN(n) ? SENTINEL_KEY : n;
+  }
+
+  // Sentinel rows sort AFTER every real number in both directions. A bare
+  // -Infinity ordering key would only sink them on a descending sort, and
+  // DataTables' default `asSorting` is ["asc", "desc", ""] — the FIRST click on
+  // a header sorts ascending, which is precisely where "varies" must not
+  // outrank a real trial count.
+  function compare(a, b, sign) {
+    if (a === SENTINEL_KEY || b === SENTINEL_KEY) {
+      return a === b ? 0 : a === SENTINEL_KEY ? 1 : -1;
+    }
+    return a < b ? -sign : a > b ? sign : 0;
+  }
+
   DataTable.type("num-varies", {
+    // Match the built-in "num" type's right alignment. DataTable.type() UNSHIFTS
+    // this detector to the front of DataTable.ext.type.detect, ahead of "num",
+    // so every plain numeric column in the docs resolves to "num-varies" too;
+    // without this class they would all silently lose numeric alignment.
+    className: "dt-type-numeric",
     // Claim a column only if EVERY cell is a number or a known sentinel.
     // A named custom type is always checked before the built-in "string"
     // fallback, so a mixed number/"varies" column lands here rather than being
@@ -49,15 +79,13 @@
       var text = clean(value);
       return isSentinel(text) || !isNaN(asNumber(text));
     },
-    // Ordering key: real numbers sort normally; sentinels pin to the bottom.
     order: {
-      pre: function (value) {
-        var text = clean(value);
-        if (isSentinel(text)) {
-          return -Infinity;
-        }
-        var n = asNumber(text);
-        return isNaN(n) ? -Infinity : n;
+      pre: sortKey,
+      asc: function (a, b) {
+        return compare(a, b, 1);
+      },
+      desc: function (a, b) {
+        return compare(a, b, -1);
       },
     },
   });
