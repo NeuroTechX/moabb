@@ -1,6 +1,5 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
-import importlib
 import inspect
 import sys
 
@@ -161,7 +160,18 @@ def _restore_mne_config():
                 set_config(key, before.get(key))
 
 
-def _install_path_probe(monkeypatch, dataset_class):
+# Dataset modules that did ``from .download import get_dataset_path`` hold their
+# own reference to the original function, so the probe has to replace those
+# bindings too. Which modules those are is static, so resolve it once at import
+# instead of re-scanning all of ``dataset_list`` inside every parametrization.
+_REBOUND_MODULES = tuple(
+    module
+    for module in {sys.modules[cls.__module__] for cls in dataset_list}
+    if getattr(module, "get_dataset_path", None) is dl.get_dataset_path
+)
+
+
+def _install_path_probe(monkeypatch):
     """Replace ``get_dataset_path`` so it records the sign and aborts.
 
     The real ``get_dataset_path`` is still invoked (so the per-dataset config
@@ -175,14 +185,8 @@ def _install_path_probe(monkeypatch, dataset_class):
         raise _ProbeStop(sign, str(resolved))
 
     monkeypatch.setattr(dl, "get_dataset_path", probe)
-    # Datasets that used ``from .download import get_dataset_path`` hold their
-    # own reference to the original function, so patch those bindings too.
-    for cls in dataset_list:
-        module = sys.modules.get(cls.__module__) or importlib.import_module(
-            cls.__module__
-        )
-        if getattr(module, "get_dataset_path", None) is real:
-            monkeypatch.setattr(module, "get_dataset_path", probe, raising=False)
+    for module in _REBOUND_MODULES:
+        monkeypatch.setattr(module, "get_dataset_path", probe)
 
 
 def _resolve_dataset_path(dataset_class, download_dir):
@@ -236,7 +240,7 @@ def test_download_dir_change_is_respected(
             f"{dataset_class.__name__} does not use the shared MNE_DATA path mechanism."
         )
 
-    _install_path_probe(monkeypatch, dataset_class)
+    _install_path_probe(monkeypatch)
 
     old_dir = tmp_path / "old"
     new_dir = tmp_path / "new"
