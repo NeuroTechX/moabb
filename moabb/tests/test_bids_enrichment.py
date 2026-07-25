@@ -1205,12 +1205,18 @@ class TestUpdateElectrodesTsv:
 # ============================================================
 
 
-class TestUpdateDatasetDescriptionExtra:
-    def test_adds_keywords(self, tmp_path):
-        desc_path = tmp_path / "dataset_description.json"
-        with open(desc_path, "w") as f:
-            json.dump({"Name": "Test", "BIDSVersion": "1.11.0"}, f)
+class TestBuildDatasetDescriptionKeywords:
+    """Keywords are written by ``make_dataset_description(keywords=...)``,
+    derived in :func:`_build_dataset_description_kwargs`."""
 
+    def _make_dataset(self, metadata):
+        ds = MagicMock()
+        ds.code = "TestDataset"
+        ds.doi = "10.1234/test"
+        ds.metadata = metadata
+        return ds
+
+    def test_adds_keywords(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
@@ -1219,19 +1225,10 @@ class TestUpdateDatasetDescriptionExtra:
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(keywords=["BCI", "EEG", "imagery"]),
         )
-        _update_dataset_description_extra(tmp_path, metadata)
+        kwargs = _build_dataset_description_kwargs(self._make_dataset(metadata))
+        assert kwargs["keywords"] == ["BCI", "EEG", "imagery"]
 
-        with open(desc_path) as f:
-            desc = json.load(f)
-        assert desc["Keywords"] == ["BCI", "EEG", "imagery"]
-        # Should preserve existing fields
-        assert desc["Name"] == "Test"
-
-    def test_keywords_from_tags(self, tmp_path):
-        desc_path = tmp_path / "dataset_description.json"
-        with open(desc_path, "w") as f:
-            json.dump({"Name": "Test"}, f)
-
+    def test_keywords_from_tags(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
@@ -1240,55 +1237,16 @@ class TestUpdateDatasetDescriptionExtra:
             experiment=ExperimentMetadata(paradigm="imagery"),
             tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
         )
-        _update_dataset_description_extra(tmp_path, metadata)
+        kwargs = _build_dataset_description_kwargs(self._make_dataset(metadata))
+        assert "healthy" in kwargs["keywords"]
+        assert "motor" in kwargs["keywords"]
+        assert "imagery" in kwargs["keywords"]
 
-        with open(desc_path) as f:
-            desc = json.load(f)
-        assert "Keywords" in desc
-        assert "healthy" in desc["Keywords"]
-        assert "motor" in desc["Keywords"]
-        assert "imagery" in desc["Keywords"]
+    def test_no_keywords_without_metadata(self):
+        ds = self._make_dataset(metadata=None)
+        assert "keywords" not in _build_dataset_description_kwargs(ds)
 
-    def test_no_overwrite_existing(self, tmp_path):
-        desc_path = tmp_path / "dataset_description.json"
-        with open(desc_path, "w") as f:
-            json.dump({"Name": "Test", "Keywords": ["existing_keyword"]}, f)
-
-        metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
-            participants=ParticipantMetadata(n_subjects=1),
-            experiment=ExperimentMetadata(paradigm="imagery"),
-            documentation=DocumentationMetadata(keywords=["new_keyword"]),
-        )
-        _update_dataset_description_extra(tmp_path, metadata)
-
-        with open(desc_path) as f:
-            desc = json.load(f)
-        # Should preserve existing keywords, not overwrite
-        assert desc["Keywords"] == ["existing_keyword"]
-
-    def test_none_metadata(self, tmp_path):
-        _update_dataset_description_extra(tmp_path, None)
-
-    def test_no_description_file(self, tmp_path):
-        metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
-            participants=ParticipantMetadata(n_subjects=1),
-            experiment=ExperimentMetadata(paradigm="imagery"),
-            documentation=DocumentationMetadata(keywords=["BCI"]),
-        )
-        # Should not crash
-        _update_dataset_description_extra(tmp_path, metadata)
-
-    def test_bci_applications_merged_into_keywords(self, tmp_path):
-        desc_path = tmp_path / "dataset_description.json"
-        with open(desc_path, "w") as f:
-            json.dump({"Name": "Test"}, f)
-
+    def test_bci_applications_merged_into_keywords(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
@@ -1300,20 +1258,13 @@ class TestUpdateDatasetDescriptionExtra:
                 applications=["speller", "wheelchair"]
             ),
         )
-        _update_dataset_description_extra(tmp_path, metadata)
+        kwargs = _build_dataset_description_kwargs(self._make_dataset(metadata))
+        assert "speller" in kwargs["keywords"]
+        assert "wheelchair" in kwargs["keywords"]
+        assert "healthy" in kwargs["keywords"]
+        assert "motor" in kwargs["keywords"]
 
-        with open(desc_path) as f:
-            desc = json.load(f)
-        assert "speller" in desc["Keywords"]
-        assert "wheelchair" in desc["Keywords"]
-        assert "healthy" in desc["Keywords"]
-        assert "motor" in desc["Keywords"]
-
-    def test_bci_applications_not_merged_when_explicit_keywords(self, tmp_path):
-        desc_path = tmp_path / "dataset_description.json"
-        with open(desc_path, "w") as f:
-            json.dump({"Name": "Test"}, f)
-
+    def test_bci_applications_not_merged_when_explicit_keywords(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
@@ -1323,12 +1274,26 @@ class TestUpdateDatasetDescriptionExtra:
             documentation=DocumentationMetadata(keywords=["BCI", "EEG"]),
             bci_application=BCIApplicationMetadata(applications=["speller"]),
         )
-        _update_dataset_description_extra(tmp_path, metadata)
+        kwargs = _build_dataset_description_kwargs(self._make_dataset(metadata))
+        assert kwargs["keywords"] == ["BCI", "EEG"]
+        assert "speller" not in kwargs["keywords"]
 
-        with open(desc_path) as f:
-            desc = json.load(f)
-        assert desc["Keywords"] == ["BCI", "EEG"]
-        assert "speller" not in desc["Keywords"]
+
+class TestUpdateDatasetDescriptionExtra:
+    def test_none_metadata(self, tmp_path):
+        _update_dataset_description_extra(tmp_path, None)
+
+    def test_no_description_file(self, tmp_path):
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(publication_year=2020),
+        )
+        # Should not crash
+        _update_dataset_description_extra(tmp_path, metadata)
 
     def test_publication_year_added(self, tmp_path):
         desc_path = tmp_path / "dataset_description.json"
