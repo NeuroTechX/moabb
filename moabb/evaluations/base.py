@@ -126,7 +126,7 @@ def _one_shot_estimator(estimator):
 
 
 def _route_transfer_metadata(
-    estimator, subjects, calib=None, calibration_labeled=False, cs_mode=None
+    estimator, subjects, X_calib=None, y_calib=None, split_metadata=None, cs_mode=None
 ):
     """Keep only protocol-allowed transfer metadata requested at ``fit``.
 
@@ -134,14 +134,16 @@ def _route_transfer_metadata(
 
     ``cs_mode`` is the selected cross-subject protocol preset.
 
-    ``calib`` is an optional dict with raw calibration data:
-    ``{"X": X[calib_idx], "y": y_calib}``.
+    ``X_calib`` / ``y_calib`` are the raw calibration trials of the held-out
+    target subject, or ``None`` when the protocol grants no target access.
 
-    If ``calibration_labeled`` is False, calibration can only be routed as
-    ``X_target_unlabeled``.
+    Whether the calibration slice may carry labels is read off the splitter's
+    own ``split_metadata["calibration_labeled"]``, so the protocol decision
+    lives in exactly one place:
 
-    If ``calibration_labeled`` is True, calibration can be routed as
-    ``X_target_labeled`` and ``y_target_labeled``.
+    * ``False`` -> calibration is offered only as ``X_target_unlabeled``;
+    * ``True``  -> calibration is offered as ``X_target_labeled`` and
+      ``y_target_labeled``.
 
     Steps opt in via ``set_fit_request(...)``. Plain pipelines request nothing,
     so this returns ``{}`` and the fit is unchanged.
@@ -151,12 +153,14 @@ def _route_transfer_metadata(
     if cs_mode is not None:
         candidate["cs_mode"] = cs_mode
 
-    if calib is not None:
-        if calibration_labeled:
-            candidate["X_target_labeled"] = calib["X"]
-            candidate["y_target_labeled"] = calib["y"]
+    if X_calib is not None and len(X_calib):
+        if split_metadata is not None and split_metadata.get(
+            "calibration_labeled", False
+        ):
+            candidate["X_target_labeled"] = X_calib
+            candidate["y_target_labeled"] = y_calib
         else:
-            candidate["X_target_unlabeled"] = calib["X"]
+            candidate["X_target_unlabeled"] = X_calib
 
     with config_context(enable_metadata_routing=True):
         kept = get_routing_for_object(estimator).consumes("fit", set(candidate))
@@ -302,21 +306,17 @@ def _evaluate_fold(
 
     # Optional transfer-learning calibration slice (raw). The protocol decides
     # whether it is offered as unlabeled or labeled target metadata.
-    calib = None
+    X_calib = y_calib = None
     if calib_idx is not None and len(calib_idx):
+        X_calib = X[calib_idx]
         y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
-        calib = {"X": X[calib_idx], "y": y_calib}
 
-    calibration_labeled = False
-    if split_metadata is not None:
-        calibration_labeled = bool(split_metadata.get("calibration_labeled", False))
-
-    subjects_train = metadata["subject"].to_numpy()[train_idx]
     fit_params = _route_transfer_metadata(
         cvclf,
-        subjects_train,
-        calib=calib,
-        calibration_labeled=calibration_labeled,
+        metadata["subject"].to_numpy()[train_idx],
+        X_calib=X_calib,
+        y_calib=y_calib,
+        split_metadata=split_metadata,
         cs_mode=cs_mode,
     )
 

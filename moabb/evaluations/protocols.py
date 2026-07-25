@@ -98,32 +98,15 @@ class CrossSubjectMode(str, Enum):
     TRAIN_AND_TARGET_LABELED_50P = "train_and_target_labeled_50p"
 
 
+# mode -> (calibration_size, calibration_labeled)
 _CROSS_SUBJECT_MODE_MAP = {
-    CrossSubjectMode.TRAIN: {"calibration_size": 0.0, "calibration_labeled": False},
-    CrossSubjectMode.TRAIN_TRIALWISE: {
-        "calibration_size": 0.0,
-        "calibration_labeled": False,
-    },
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P: {
-        "calibration_size": 0.2,
-        "calibration_labeled": False,
-    },
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_50P: {
-        "calibration_size": 0.5,
-        "calibration_labeled": False,
-    },
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_FULL: {
-        "calibration_size": 1.0,
-        "calibration_labeled": False,
-    },
-    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_20P: {
-        "calibration_size": 0.2,
-        "calibration_labeled": True,
-    },
-    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_50P: {
-        "calibration_size": 0.5,
-        "calibration_labeled": True,
-    },
+    CrossSubjectMode.TRAIN: (0.0, False),
+    CrossSubjectMode.TRAIN_TRIALWISE: (0.0, False),
+    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P: (0.2, False),
+    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_50P: (0.5, False),
+    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_FULL: (1.0, False),
+    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_20P: (0.2, True),
+    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_50P: (0.5, True),
 }
 
 
@@ -153,9 +136,9 @@ def validate_transfer_protocol(calibration_size, calibration_labeled):
 
 
 def resolve_cross_subject_mode(cross_subject_mode):
-    params = dict(_CROSS_SUBJECT_MODE_MAP[CrossSubjectMode(cross_subject_mode)])
-    validate_transfer_protocol(params["calibration_size"], params["calibration_labeled"])
-    return params
+    size, labeled = _CROSS_SUBJECT_MODE_MAP[CrossSubjectMode(cross_subject_mode)]
+    validate_transfer_protocol(size, labeled)
+    return {"calibration_size": size, "calibration_labeled": labeled}
 
 
 def is_trialwise_mode(cross_subject_mode):

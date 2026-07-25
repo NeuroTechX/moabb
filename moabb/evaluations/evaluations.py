@@ -634,21 +634,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 )
                 cvclf = clone(clf)
 
-                calib_md = None
-                if len(calib):
-                    calib_md = {"X": X[calib], "y": y[calib]}
-
-                calibration_labeled = False
-                if split_metadata is not None:
-                    calibration_labeled = bool(
-                        split_metadata.get("calibration_labeled", False)
-                    )
-
                 fit_params = _route_transfer_metadata(
                     cvclf,
                     groups[train],
-                    calib=calib_md,
-                    calibration_labeled=calibration_labeled,
+                    X_calib=X[calib] if len(calib) else None,
+                    y_calib=y[calib] if len(calib) else None,
+                    split_metadata=split_metadata,
                     cs_mode=self.cs_mode,
                 )
 
