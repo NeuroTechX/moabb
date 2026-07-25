@@ -76,7 +76,8 @@ mne.set_log_level("WARNING")  # keep the gallery output readable
 # fixed isolates recentering as the only difference between the two.
 
 
-def make_geometry_aware(tsupdate):
+def make_ts_pipeline(tsupdate):
+    """Build the tangent-space pipeline, with recentering on (``True``) or off."""
     return make_pipeline(
         Covariances(estimator="oas"),
         TangentSpace(metric="riemann", tsupdate=tsupdate),
@@ -85,8 +86,8 @@ def make_geometry_aware(tsupdate):
 
 
 pipelines = {
-    "Geometry-Aware (recenter)": make_geometry_aware(tsupdate=True),
-    "TS + LR (no recenter)": make_geometry_aware(tsupdate=False),
+    "Geometry-Aware (recenter)": make_ts_pipeline(tsupdate=True),
+    "TS + LR (no recenter)": make_ts_pipeline(tsupdate=False),
 }
 
 ###############################################################################
@@ -146,7 +147,7 @@ x = np.arange(2)
 width = 0.35
 names = list(pipelines.keys())
 for i, name in enumerate(names):
-    vals = [within_means.get(name, np.nan), cross_means.get(name, np.nan)]
+    vals = [within_means[name], cross_means[name]]
     ax.bar(x + i * width, vals, width, label=name)
 ax.set_xticks(x + width / 2)
 ax.set_xticklabels(["Within-session\n(no drift)", "Cross-session\n(drift)"])
@@ -157,7 +158,7 @@ fig.tight_layout()
 plt.show()
 
 print("Within-session means:\n", within_means)
-print("\nCross-session means:\n", cross_results.groupby("pipeline")["score"].mean())
+print("\nCross-session means:\n", cross_means)
 
 ###############################################################################
 # Using it inside your own evaluation
