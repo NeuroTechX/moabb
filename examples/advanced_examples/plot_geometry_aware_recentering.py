@@ -103,7 +103,11 @@ dataset.subject_list = dataset.subject_list[:4]  # keep the example fast
 paradigm = LeftRightImagery(fmin=8, fmax=32)
 
 cross_session_eval = CrossSessionEvaluation(
-    paradigm=paradigm, datasets=[dataset], overwrite=True, random_state=42
+    paradigm=paradigm,
+    datasets=[dataset],
+    suffix="geometry_aware",
+    overwrite=True,
+    random_state=42,
 )
 cross_results = cross_session_eval.process(pipelines)
 
@@ -118,7 +122,11 @@ cross_results = cross_session_eval.process(pipelines)
 # cross-session result above.
 
 within_session_eval = WithinSessionEvaluation(
-    paradigm=paradigm, datasets=[dataset], overwrite=True, random_state=42
+    paradigm=paradigm,
+    datasets=[dataset],
+    suffix="geometry_aware",
+    overwrite=True,
+    random_state=42,
 )
 within_results = within_session_eval.process(pipelines)
 
