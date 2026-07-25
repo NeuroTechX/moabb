@@ -156,12 +156,7 @@ from .triana_guzman2024 import TrianaGuzman2024
 from .upper_limb import Ofner2017
 from .utils import _init_dataset, dataset_dict
 from .wairagkar2018 import Wairagkar2018
-from .wang2026 import (
-    Wang2026BCI2000Control,
-    Wang2026EEGNetControl,
-    Wang2026JointLearning,
-    Wang2026TactileControl,
-)
+from .wang2026 import Wang2026
 from .Weibo2014 import Weibo2014
 from .wu2020 import Wu2020
 from .yang2025 import Yang2025

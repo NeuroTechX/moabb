@@ -101,10 +101,7 @@ Motor Imagery Datasets
     Tavakolan2017
     TrianaGuzman2024
     Wairagkar2018
-    Wang2026BCI2000Control
-    Wang2026EEGNetControl
-    Wang2026JointLearning
-    Wang2026TactileControl
+    Wang2026
     Wu2020
     Yang2025
     Yi2025
