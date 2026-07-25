@@ -31,9 +31,9 @@ example, such as source-only, labeled target-calibration modes, or standalone
 import numpy as np
 import pandas as pd
 from pyriemann.estimation import Covariances
+from pyriemann.geometry.base import invsqrtm
+from pyriemann.geometry.mean import mean_riemann
 from pyriemann.tangentspace import TangentSpace
-from pyriemann.utils.base import invsqrtm
-from pyriemann.utils.mean import mean_riemann
 from sklearn import config_context
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.linear_model import LogisticRegression

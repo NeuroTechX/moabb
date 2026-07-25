@@ -40,6 +40,29 @@ from enum import Enum
 
 
 class CrossSubjectMode(str, Enum):
+    """Named cross-subject transfer protocol.
+
+    Each member fixes two things: how much of the held-out target subject the
+    estimator may see while fitting (``calibration_size``) and whether those
+    trials come with labels (``calibration_labeled``). ``TRAIN_TRIALWISE``
+    additionally scores one target trial at a time.
+
+    ==================================== ================ ==================
+    Member                               calibration_size calibration_labeled
+    ==================================== ================ ==================
+    ``TRAIN``                            0.0              False
+    ``TRAIN_TRIALWISE``                  0.0              False
+    ``TRAIN_AND_TARGET_UNLABELED_20P``   0.2              False
+    ``TRAIN_AND_TARGET_UNLABELED_50P``   0.5              False
+    ``TRAIN_AND_TARGET_UNLABELED_FULL``  1.0              False
+    ``TRAIN_AND_TARGET_LABELED_20P``     0.2              True
+    ``TRAIN_AND_TARGET_LABELED_50P``     0.5              True
+    ==================================== ================ ==================
+
+    Pass a member as ``cs_mode`` to
+    :class:`moabb.evaluations.CrossSubjectEvaluation`.
+    """
+
     # Train only on training/source subjects; no target calibration data is used.
     # The held-out target test data is predicted blockwise.
     # This is the DEFAULT mode and it is not transfer learning aware.

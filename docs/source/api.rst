@@ -466,6 +466,16 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     CrossSessionSplitter
     CrossSubjectSplitter
 
+A cross-subject transfer protocol additionally states what the estimator is
+allowed to see of the held-out target subject, and how the rest of that
+subject is scored.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    CrossSubjectMode
+
 ---------
 Utilities
 ---------

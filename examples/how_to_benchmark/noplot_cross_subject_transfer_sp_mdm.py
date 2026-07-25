@@ -36,8 +36,8 @@ import numpy as np
 import pandas as pd
 from pyriemann.classification import MDM
 from pyriemann.estimation import Covariances
-from pyriemann.utils.distance import distance_riemann
-from pyriemann.utils.mean import mean_riemann
+from pyriemann.geometry.distance import distance_riemann
+from pyriemann.geometry.mean import mean_riemann
 from sklearn import config_context
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
