@@ -1267,3 +1267,105 @@ def test_one_shot_estimator_proxies_only_available_methods():
 
     # _PredictSpy has no predict_proba; the wrapper must not invent one.
     assert not hasattr(_one_shot_estimator(_PredictSpy().fit(X, y)), "predict_proba")
+
+
+@pytest.mark.parametrize(
+    "mode,calibration_size,calibration_labeled,trialwise",
+    [
+        ("TRAIN", 0.0, False, False),
+        ("TRAIN_TRIALWISE", 0.0, False, True),
+        ("TRAIN_AND_TARGET_UNLABELED_20P", 0.2, False, False),
+        ("TRAIN_AND_TARGET_UNLABELED_50P", 0.5, False, False),
+        ("TRAIN_AND_TARGET_UNLABELED_FULL", 1.0, False, False),
+        ("TRAIN_AND_TARGET_LABELED_20P", 0.2, True, False),
+        ("TRAIN_AND_TARGET_LABELED_50P", 0.5, True, False),
+    ],
+)
+def test_cs_mode_resolves_to_splitter_kwargs(
+    mode, calibration_size, calibration_labeled, trialwise
+):
+    """Every CrossSubjectMode maps to the documented calibration settings."""
+    from moabb.evaluations import CrossSubjectMode
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path="res_test",
+        cs_mode=getattr(CrossSubjectMode, mode),
+    )
+    try:
+        splitter = evaluation._create_splitter()
+        assert splitter.calibration_size == calibration_size
+        assert splitter.calibration_labeled is calibration_labeled
+        assert evaluation.one_shot_predict is trialwise
+        # A plain string is accepted and normalised to the enum member.
+        by_value = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
+            cs_mode=getattr(CrossSubjectMode, mode).value,
+        )
+        assert by_value.cs_mode is getattr(CrossSubjectMode, mode)
+    finally:
+        if os.path.isfile(evaluation.results.filepath):
+            os.remove(evaluation.results.filepath)
+
+
+def test_cs_mode_rejects_manual_calibration_kwargs():
+    """cs_mode and manual calibration kwargs are mutually exclusive."""
+    from moabb.evaluations import CrossSubjectMode
+
+    with pytest.raises(ValueError, match="not both"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
+            cs_mode=CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P,
+            cv_kwargs={"calibration_size": 0.5},
+        )
+
+
+def test_cs_mode_rejects_labeled_calibration_above_half():
+    """calibration_labeled=True is capped at calibration_size <= 0.5."""
+    with pytest.raises(ValueError, match="calibration_labeled"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
+            cv_kwargs={"calibration_size": 1.0, "calibration_labeled": True},
+        )
+
+
+def test_cs_mode_trialwise_runs_end_to_end():
+    """TRAIN_TRIALWISE scores through the one-shot wrapper and still reports
+    per-session rows, matching the blockwise TRAIN baseline."""
+    from moabb.evaluations import CrossSubjectMode
+
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=9)
+
+    scores = {}
+    for mode, suffix in [
+        (CrossSubjectMode.TRAIN, "csmodetrain"),
+        (CrossSubjectMode.TRAIN_TRIALWISE, "csmodetrialwise"),
+    ]:
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[ds],
+            cs_mode=mode,
+            overwrite=True,
+            n_jobs=1,
+            suffix=suffix,
+        )
+        results = evaluation.process(pipelines=OrderedDict([("P", pipe)]))
+        scores[mode] = results
+
+    assert len(scores[CrossSubjectMode.TRAIN_TRIALWISE]) == len(
+        scores[CrossSubjectMode.TRAIN]
+    )
+    # Trialwise vs blockwise only changes the batching, not the predictions,
+    # for a pipeline that treats trials independently.
+    np.testing.assert_allclose(
+        scores[CrossSubjectMode.TRAIN_TRIALWISE]["score"].to_numpy(),
+        scores[CrossSubjectMode.TRAIN]["score"].to_numpy(),
+    )
