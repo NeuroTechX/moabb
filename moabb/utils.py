@@ -11,6 +11,7 @@ import random
 import re
 import sys
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import filelock
@@ -183,27 +184,43 @@ def verbose(function):
     return wrapper
 
 
-def _propagate_download_dir(old_path, new_path):
-    """Update per-dataset MNE config keys after changing ``MNE_DATA``.
+def _paths_match(first, second):
+    """Return whether two path-like values refer to the same location."""
+    if first is None or second is None:
+        return first is second
+    try:
+        return Path(first).expanduser().resolve(strict=False) == Path(
+            second
+        ).expanduser().resolve(strict=False)
+    except (OSError, RuntimeError, TypeError):
+        return first == second
 
-    ``moabb.datasets.download.get_dataset_path`` persists a per-dataset
-    ``MNE_DATASETS_<SIGN>_PATH`` config entry (mirroring ``MNE_DATA``) the first
-    time a dataset is accessed. These entries are otherwise never refreshed, so
-    changing the download directory would leave datasets pointing at the old
-    location. Here we realign every per-dataset key that still mirrors the old
-    ``MNE_DATA`` value so that a configuration change is honoured by all
-    datasets, while leaving keys the user configured to a different location
-    untouched.
+
+def _clear_legacy_dataset_paths(old_path, new_path):
+    """Remove stale dataset keys created by older MOABB releases.
+
+    Older versions copied ``MNE_DATA`` into a
+    ``MNE_DATASETS_<SIGN>_PATH`` key on first access. Those copies prevented a
+    later change to the shared download directory from taking effect. Remove
+    only persisted keys that still mirror the previous shared path; explicit
+    per-dataset paths and environment overrides are preserved.
     """
-    if new_path is None or old_path == new_path:
+    if old_path is None or new_path is None or _paths_match(old_path, new_path):
         return
-    for key, value in (get_config() or {}).items():
+    for key, value in (get_config(use_env=False) or {}).items():
         if (
             key.startswith("MNE_DATASETS_")
             and key.endswith("_PATH")
-            and value == old_path
+            and _paths_match(value, old_path)
         ):
-            set_config(key, new_path)
+            remove_environment_value = _paths_match(os.environ.get(key), old_path)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    message=r'Setting non-standard config type: "MNE_DATASETS_.*_PATH"',
+                    category=RuntimeWarning,
+                )
+                set_config(key, None, set_env=remove_environment_value)
 
 
 def set_download_dir(path):
@@ -228,7 +245,7 @@ def set_download_dir(path):
                 "already downloaded, please move manually to this location"
             )
 
-            # No propagation here: this branch only runs when MNE_DATA was
+            # No migration here: this branch only runs when MNE_DATA was
             # unset, so there is no previous value for a per-dataset key to
             # still be mirroring.
             set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
@@ -238,7 +255,7 @@ def set_download_dir(path):
             log.info("The path given does not exist, creating it..")
             os.makedirs(path, exist_ok=True)
         set_config("MNE_DATA", path)
-        _propagate_download_dir(old_path, path)
+        _clear_legacy_dataset_paths(old_path, path)
 
 
 def make_process_pipelines(

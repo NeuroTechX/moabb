@@ -1,13 +1,16 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
 import inspect
+import os
 import sys
+from pathlib import Path
 
 import mne
 import pytest
 from mne import get_config, set_config
 
 import moabb.datasets.download as dl
+import moabb.datasets.romani_bf2025_erp as romani
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 from moabb.datasets.utils import dataset_list
 from moabb.utils import set_download_dir
@@ -16,10 +19,8 @@ from moabb.utils import set_download_dir
 # Datasets that legitimately do not resolve their storage location through the
 # shared ``get_dataset_path``/``MNE_DATA`` mechanism, so the config-change
 # recovery guarantee does not apply to them:
-#   * the fake datasets generate synthetic data and never download anything;
-#   * ``RomaniBF2025ERP`` manages its own ``data_folder`` (temporary directory
-#     or user-provided path) instead of the MNE config path system.
-_PATH_RECOVERY_EXEMPT = {"FakeDataset", "FakeVirtualRealityDataset", "RomaniBF2025ERP"}
+#   * the fake datasets generate synthetic data and never download anything.
+_PATH_RECOVERY_EXEMPT = {"FakeDataset", "FakeVirtualRealityDataset"}
 
 
 def _get_events(raw):
@@ -139,25 +140,14 @@ class _ProbeStop(Exception):
 
 
 @pytest.fixture
-def _restore_mne_config():
-    """Isolate the MNE config touched by the path tests.
-
-    Snapshot the current config, clear any pre-existing
-    ``MNE_DATASETS_*_PATH`` entries so each dataset starts from a clean
-    "first access" state, then restore everything afterwards.
-    """
-    before = dict(get_config() or {})
-    for key in list(before):
-        if key.startswith("MNE_DATASETS_") and key.endswith("_PATH"):
-            set_config(key, None)
-    try:
-        yield
-    finally:
-        after = dict(get_config() or {})
-        # Reset keys that were added and restore keys that were modified.
-        for key in set(after) | set(before):
-            if before.get(key) != after.get(key):
-                set_config(key, before.get(key))
+def _isolated_mne_config(tmp_path, monkeypatch):
+    """Redirect MNE configuration writes to a temporary home directory."""
+    fake_home = tmp_path / "mne-home"
+    fake_home.mkdir()
+    monkeypatch.setenv("_MNE_FAKE_HOME_DIR", str(fake_home))
+    for key in tuple(os.environ):
+        if key == "MNE_DATA" or key.startswith("MNE_DATASETS_"):
+            monkeypatch.delenv(key)
 
 
 # Dataset modules that did ``from .download import get_dataset_path`` hold their
@@ -174,9 +164,8 @@ _REBOUND_MODULES = tuple(
 def _install_path_probe(monkeypatch):
     """Replace ``get_dataset_path`` so it records the sign and aborts.
 
-    The real ``get_dataset_path`` is still invoked (so the per-dataset config
-    key is persisted exactly as in production) but a :class:`_ProbeStop` is
-    raised immediately afterwards to avoid any network access.
+    The real ``get_dataset_path`` is still invoked, but a :class:`_ProbeStop`
+    is raised immediately afterwards to avoid any network access.
     """
     real = dl.get_dataset_path
 
@@ -224,16 +213,16 @@ def _resolve_dataset_path(dataset_class, download_dir):
     [pytest.param(dataset, id=dataset.__name__) for dataset in dataset_list],
 )
 def test_download_dir_change_is_respected(
-    dataset_class, tmp_path, monkeypatch, _restore_mne_config
+    dataset_class, tmp_path, monkeypatch, _isolated_mne_config
 ):
     """A change of download directory must be honoured by every dataset.
 
-    ``get_dataset_path`` persists a ``MNE_DATASETS_<SIGN>_PATH`` config entry the
-    first time a dataset is accessed. If that entry is not refreshed when the
-    download directory changes, the dataset keeps pointing at the old location
-    (see issue #1115). This integration test iterates over all datasets, mocks
-    the download mechanism, and asserts that switching the download directory
-    moves the resolved storage location instead of reverting to the old one.
+    Legacy MOABB releases persisted a ``MNE_DATASETS_<SIGN>_PATH`` config entry
+    the first time a dataset was accessed. If that stale entry is not handled
+    when the download directory changes, the dataset keeps pointing at the old
+    location (see issue #1115). This integration test iterates over all
+    datasets, mocks the download mechanism, and asserts that switching the
+    download directory moves the resolved storage location.
     """
     if dataset_class.__name__ in _PATH_RECOVERY_EXEMPT:
         pytest.skip(
@@ -268,41 +257,99 @@ def test_download_dir_change_is_respected(
     )
 
 
-def test_set_download_dir_propagates_to_dataset_keys(tmp_path):
-    """Changing the download dir must update per-dataset MNE config keys.
+def test_get_dataset_path_does_not_persist_shared_path(tmp_path, _isolated_mne_config):
+    """Dataset paths should inherit ``MNE_DATA`` without copying its value."""
+    old_dir = tmp_path / "old"
+    new_dir = tmp_path / "new"
+    old_dir.mkdir()
+    new_dir.mkdir()
+    key = "MNE_DATASETS_WEIBO_PATH"
 
-    ``get_dataset_path`` persists a ``MNE_DATASETS_<SIGN>_PATH`` entry mirroring
-    ``MNE_DATA`` the first time a dataset is accessed. Changing the download
-    directory afterwards must realign those entries, otherwise datasets keep
-    pointing at the old location (see issue #1115).
-    """
-    keys = (
-        "MNE_DATA",
-        "MNE_DATASETS_WEIBO_PATH",
-        "MNE_DATASETS_BBCIFNIRS_PATH",
-        "MNE_DATASETS_CUSTOM_PATH",
-    )
-    original = {key: get_config(key) for key in keys}
-    try:
-        old_dir = tmp_path / "old"
-        new_dir = tmp_path / "new"
-        old_dir.mkdir()
+    set_download_dir(str(old_dir))
+    assert dl.get_dataset_path("WEIBO", None) == old_dir
+    assert get_config(key, use_env=False) is None
+    assert key not in os.environ
 
-        set_download_dir(str(old_dir))
-        # Simulate two datasets that mirrored MNE_DATA on first access ...
-        set_config("MNE_DATASETS_WEIBO_PATH", str(old_dir))
-        set_config("MNE_DATASETS_BBCIFNIRS_PATH", str(old_dir))
-        # ... and a key that the user deliberately configured elsewhere.
-        custom = str(tmp_path / "custom")
-        set_config("MNE_DATASETS_CUSTOM_PATH", custom)
+    set_download_dir(str(new_dir))
+    assert dl.get_dataset_path("WEIBO", None) == new_dir
+    assert get_config(key, use_env=False) is None
+    assert key not in os.environ
 
-        set_download_dir(str(new_dir))
 
-        assert get_config("MNE_DATA") == str(new_dir)
-        assert get_config("MNE_DATASETS_WEIBO_PATH") == str(new_dir)
-        assert get_config("MNE_DATASETS_BBCIFNIRS_PATH") == str(new_dir)
-        # Independently-configured keys must be left untouched.
-        assert get_config("MNE_DATASETS_CUSTOM_PATH") == custom
-    finally:
-        for key, value in original.items():
-            set_config(key, value)
+def test_set_download_dir_removes_only_legacy_mirrors(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """Changing ``MNE_DATA`` should remove stale mirrors, not explicit paths."""
+    old_dir = tmp_path / "old"
+    new_dir = tmp_path / "new"
+    custom_dir = tmp_path / "custom"
+    env_dir = tmp_path / "environment-override"
+    old_dir.mkdir()
+
+    set_download_dir(str(old_dir))
+    legacy_key = "MNE_DATASETS_WEIBO_PATH"
+    set_config(legacy_key, str(old_dir) + os.sep)
+
+    custom_key = "MNE_DATASETS_CUSTOM_PATH"
+    set_config(custom_key, str(custom_dir))
+
+    env_key = "MNE_DATASETS_BBCIFNIRS_PATH"
+    set_config(env_key, str(old_dir), set_env=False)
+    monkeypatch.setenv(env_key, str(env_dir))
+
+    set_download_dir(str(new_dir))
+
+    assert get_config("MNE_DATA") == str(new_dir)
+    assert get_config(legacy_key, use_env=False) is None
+    assert legacy_key not in os.environ
+    assert dl.get_dataset_path("WEIBO", None) == new_dir
+
+    assert get_config(custom_key, use_env=False) == str(custom_dir)
+    assert get_config(custom_key) == str(custom_dir)
+
+    assert get_config(env_key, use_env=False) is None
+    assert get_config(env_key) == str(env_dir)
+    assert os.environ[env_key] == str(env_dir)
+
+    independent_dir = tmp_path / "independent"
+    set_config(legacy_key, str(independent_dir), set_env=False)
+    assert get_config(legacy_key) == str(independent_dir)
+
+
+def test_romani_follows_download_dir_changes(tmp_path, monkeypatch, _isolated_mne_config):
+    """Romani should use the shared path and forward ``force_update``."""
+    calls = []
+
+    def fake_fetch_dataset(
+        *, dataset_params, path, processor, force_update, update_path=True
+    ):
+        calls.append(
+            {
+                "dataset_params": dataset_params,
+                "path": path,
+                "processor": processor,
+                "force_update": force_update,
+                "update_path": update_path,
+            }
+        )
+        root = Path(path) if path is not None else tmp_path / "legacy-default"
+        destination = root / romani.BF_folder_name
+        destination.mkdir(parents=True, exist_ok=True)
+        return destination
+
+    monkeypatch.setattr(romani, "fetch_dataset", fake_fetch_dataset)
+    dataset = romani.RomaniBF2025ERP()
+    old_dir = tmp_path / "old"
+    new_dir = tmp_path / "new"
+
+    set_download_dir(str(old_dir))
+    resolved_old = dataset.data_path(0)
+    set_download_dir(str(new_dir))
+    resolved_new = dataset.data_path(0, force_update=True)
+
+    assert resolved_old == str(old_dir / romani.BF_folder_name)
+    assert resolved_new == str(new_dir / romani.BF_folder_name)
+    assert [Path(call["path"]) for call in calls] == [old_dir, new_dir]
+    assert [call["force_update"] for call in calls] == [False, True]
+    assert all(call["update_path"] is False for call in calls)
+    assert all("config_key" not in call["dataset_params"] for call in calls)
