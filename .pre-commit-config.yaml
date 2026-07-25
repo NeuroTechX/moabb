@@ -27,15 +27,13 @@ repos:
       - id: trailing-whitespace
       - id: check-case-conflict
       - id: mixed-line-ending
-      - id: end-of-file-fixer
-      - id: check-case-conflict
       - id: forbid-new-submodules
       - id: pretty-format-json
         args: [ "--autofix", "--no-sort-keys", "--indent=4" ]
 
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.9
+    rev: v0.15.20
     hooks:
       - id: ruff
         args: [ --fix, --exit-non-zero-on-fix ]
@@ -47,7 +45,7 @@ repos:
       - id: codespell
         args:
           - --ignore-words-list=assertIn,additionals,alle,alot,bund,currenty,datas,farenheit,falsy,fo,haa,hass,iif,incomfort,ines,ist,nam,nd,pres,pullrequests,resset,rime,ser,serie,te,technik,ue,unsecure,withing,zar,crate,Perfomances,Aline,aline,ALS,covert,Buss,GES,pary,theses,sems
-          - --skip="./.*,*.csv,*.json,*.ambr"
+          - --skip=./.*,*.csv,*.json,*.ambr
           - --quiet-level=2
         exclude_types: [ csv, json, svg, pdf ]
         exclude: ^tests/|generated/|social_card_gen\.html$
