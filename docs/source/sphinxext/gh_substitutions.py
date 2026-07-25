@@ -25,4 +25,4 @@ def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):  # no
 
 def setup(app):
     app.add_role("gh", gh_role)
-    return
+    return {"parallel_read_safe": True}

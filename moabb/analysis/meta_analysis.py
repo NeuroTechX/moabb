@@ -17,12 +17,12 @@ def collapse_session_scores(df):
 
     Parameters
     ----------
-    df: DataFrame
+    df: :class:`pandas.DataFrame`
         results from evaluation
 
     Returns
     -------
-    df: DataFrame
+    df: :class:`pandas.DataFrame`
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
     """
@@ -41,7 +41,7 @@ def compute_pvals_wilcoxon(df, order=None):
 
     Parameters
     ----------
-    df: DataFrame
+    df: :class:`pandas.DataFrame`
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
     order: list
@@ -55,8 +55,8 @@ def compute_pvals_wilcoxon(df, order=None):
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe"
-        assert set(order) == set(df.columns), errormsg
+        if set(order) != set(df.columns):  # was assert, now raises properly
+            raise ValueError("provided order does not have all columns of dataframe")
 
     out = np.zeros((len(df.columns), len(df.columns)))
     for i in range(len(order)):
@@ -154,7 +154,7 @@ def compute_pvals_perm(df, order=None, seed=None):
 
     Parameters
     ----------
-    df: DataFrame
+    df: :class:`pandas.DataFrame`
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
     order: list of length (n_pipelines)
@@ -170,8 +170,8 @@ def compute_pvals_perm(df, order=None, seed=None):
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe"
-        assert set(order) == set(df.columns), errormsg
+        if set(order) != set(df.columns):  # was assert, now raises properly
+            raise ValueError("provided order does not have all columns of dataframe")
     # reshape df into matrix (sub, k, k) of differences
     data = np.zeros((df.shape[0], len(order), len(order)))
     for i in range(len(order) - 1):
@@ -194,7 +194,7 @@ def compute_effect(df, order=None):
 
     Parameters
     ----------
-    df: DataFrame
+    df: :class:`pandas.DataFrame`
         Aggregated results, samples are index, columns are pipelines, and values are
         scores
     order: list
@@ -208,8 +208,8 @@ def compute_effect(df, order=None):
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe"
-        assert set(order) == set(df.columns), errormsg
+        if set(order) != set(df.columns):  # was assert, now raises properly
+            raise ValueError("provided order does not have all columns of dataframe")
 
     out = np.zeros((len(df.columns), len(df.columns)))
     for i, pipe1 in enumerate(order):
@@ -227,14 +227,14 @@ def compute_dataset_statistics(df, perm_cutoff=20):
 
     Parameters
     ----------
-    df: DataFrame
+    df: :class:`pandas.DataFrame`
         results obtained by an evaluation
     perm_cutoff: int, default=20
         threshold value for using permutation or Wilcoxon tests
 
     Returns
     -------
-    stats: DataFrame
+    stats: :class:`pandas.DataFrame`
         Table of effect and p-values for each dataset and all pipelines
     """
     df = collapse_session_scores(df)
@@ -268,7 +268,7 @@ def combine_effects(effects, nsubs):
 
     Parameters
     ----------
-    effects: DataFrame
+    effects: :class:`pandas.DataFrame`
         effects for 2 pipelines computed on different datasets
     nsubs: float
         average number of subject per datasets
@@ -291,7 +291,7 @@ def combine_pvalues(p, nsubs):
 
     Parameters
     ----------
-    p: DataFrame
+    p: :class:`pandas.DataFrame`
         p-values for 2 pipelines computed on different datasets
     nsubs: float
         average number of subject per datasets
@@ -317,7 +317,7 @@ def find_significant_differences(df, perm_cutoff=20):
 
     Parameters
     ----------
-    df: DataFrame
+    df: :class:`pandas.DataFrame`
         Table of effect and p-values for each dataset and all pipelines, returned by
         compute_dataset_statistics
     perm_cutoff: int, default=20
@@ -326,9 +326,9 @@ def find_significant_differences(df, perm_cutoff=20):
 
     Returns
     -------
-    dfP: DataFrame of shape (n_pipelines, n_pipelines)
+    dfP: :class:`pandas.DataFrame` of shape (n_pipelines, n_pipelines)
         p-values per algorithm pairs
-    dfT: DataFrame of shape (n_pipelines, n_pipelines)
+    dfT: :class:`pandas.DataFrame` of shape (n_pipelines, n_pipelines)
         signed standardized mean differences
     """
     dsets = df.dataset.unique()

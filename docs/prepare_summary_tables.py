@@ -5,15 +5,21 @@ from pathlib import Path
 import pandas as pd
 
 
+# Classes that are not exported at the top-level ``moabb.datasets`` namespace
+# and therefore need a fully-qualified module path for Sphinx cross-references.
+_FULL_PATH_CLASSES = {
+    "ErpCore2021": "moabb.datasets.erpcore2021.ErpCore2021",
+}
+
+
 def prepare_table(df: pd.DataFrame):
-    # Convert column to string dtype first to avoid FutureWarning
-    df["PapersWithCode leaderboard"] = df["PapersWithCode leaderboard"].astype("object")
-    no_pwc = df["PapersWithCode leaderboard"].isna()
-    df.loc[no_pwc, "PapersWithCode leaderboard"] = "No"
-    df.loc[~no_pwc, "PapersWithCode leaderboard"] = df.loc[
-        ~no_pwc, "PapersWithCode leaderboard"
-    ].apply(lambda x: f"`Yes <{x}>`__")
-    df["Dataset"] = df["Dataset"].apply(lambda x: f":class:`{x}`")
+    def _class_ref(name):
+        full = _FULL_PATH_CLASSES.get(name)
+        if full:
+            return f":class:`~{full}`"
+        return f":class:`{name}`"
+
+    df["Dataset"] = df["Dataset"].apply(_class_ref)
 
 
 def main(source_dir: str, target_dir: str):

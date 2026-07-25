@@ -14,6 +14,11 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  # Install CPU-only PyTorch wheels (torch arrives transitively via the
+  # deeplearning extra -> braindecode). Avoids pulling CUDA builds on CI.
+  UV_TORCH_BACKEND: cpu
+
 jobs:
   build_docs:
     runs-on: ${{ matrix.os }}
@@ -23,7 +28,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.10" ]
+        python-version: [ "3.11" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -41,12 +46,13 @@ jobs:
           path: |
             mne_data
             ~/.mne
-          key: doc-${{ runner.os }}-mne-data-v3-${{ github.run_id }}
+          key: doc-${{ runner.os }}-mne-data-v3
           restore-keys: |
             doc-${{ runner.os }}-mne-data-v3-
 
       - name: Clean up corrupted cache
         run: |
+          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
           echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
           mkdir -p mne_data
           # Remove any incomplete extractions (e.g., BIDS.zip.unzip alongside final folder)
@@ -57,6 +63,12 @@ jobs:
           if [ -d mne_data/MNE-RomaniBF2025ERP-data ] && [ -f mne_data/MNE-RomaniBF2025ERP-data/.cache-incomplete ]; then
             echo "Removing incomplete BrainForm dataset"
             rm -rf mne_data/MNE-RomaniBF2025ERP-data
+          fi
+          # Remove stale evaluation results to avoid race conditions
+          # between parallel sphinx-gallery examples sharing HDF5 files
+          if [ -d ~/mne_data/results ]; then
+            echo "Removing stale evaluation results"
+            rm -rf ~/mne_data/results
           fi
 
       - name: Cache docs build
@@ -69,6 +81,15 @@ jobs:
       - name: Install moabb
         run: |
           uv pip install -e .[docs,deeplearning,optuna,external,carbonemission]
+          uv pip install google-auth requests
+
+      - name: Export GA4 page views snapshot
+        env:
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python .github/scripts/export_ga4_pageviews.py \
+            --output docs/source/_static/analytics/pageviews.json
 
       - name: Configure MOABB download directory
         run: |
@@ -90,7 +111,6 @@ jobs:
           import os
           import sys
           import time
-
           from moabb.utils import set_download_dir
           set_download_dir(os.environ["MNE_DATA"])
 
@@ -164,6 +184,7 @@ jobs:
           # Signal whether this is a dev (develop branch) or stable (master) build
           BUILD_DEV_HTML: ${{ github.ref == 'refs/heads/develop' && '1' || '0' }}
         run: |
+          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
           echo "Cache matched key: ${{ steps.cache-mne_data.outputs.cache-matched-key }}"
           echo "Parallel gallery builds: $SPHINX_GALLERY_PARALLEL"
           echo "Sphinx jobs: $SPHINX_JOBS"
@@ -187,13 +208,13 @@ jobs:
           done
 
       - name: Save MNE Data Cache
-        if: success()
+        if: success() && steps.cache-mne_data.outputs.cache-hit != 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
         uses: actions/cache/save@v4
         with:
           path: |
             mne_data
             ~/.mne
-          key: doc-${{ runner.os }}-mne-data-v3-${{ github.run_id }}
+          key: doc-${{ runner.os }}-mne-data-v3
 
       # Create an artifact of the html output.
       - uses: actions/upload-artifact@v4

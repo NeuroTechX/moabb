@@ -11,6 +11,7 @@ from sklearn.model_selection import (
     StratifiedKFold,
     StratifiedShuffleSplit,
 )
+from sklearn.model_selection._split import GroupsConsumerMixin
 from sklearn.utils import check_random_state
 
 
@@ -18,6 +19,43 @@ log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
+
+
+def _splitter_metadata(splitter):
+    """Return metadata from an inner splitter when available."""
+    if hasattr(splitter, "get_metadata"):
+        return splitter.get_metadata()
+    return None
+
+
+def _resolve_groups(groups, metadata):
+    """Turn a ``groups`` spec into a per-sample group-label array.
+
+    ``groups`` may be a metadata column name, a list of column names (combined
+    into a compound key, e.g. ``["subject", "session"]`` for
+    leave-one-(subject, session)-out), or a callable ``metadata -> array`` for
+    fully custom grouping. This is the single hook that lets any stock
+    scikit-learn group cross-validator be driven from the metadata.
+    """
+    if callable(groups):
+        return np.asarray(groups(metadata))
+    if isinstance(groups, (list, tuple)):
+        return metadata[list(groups)].astype(str).agg("-".join, axis=1).to_numpy()
+    return metadata[groups].to_numpy()
+
+
+def _materialize_cv_kwargs(cv_kwargs, metadata):
+    """Resolve any callable ``cv_kwargs`` against the metadata.
+
+    Lets a stock CV whose configuration is per-sample be parameterised from
+    metadata, e.g. a single-target fold with
+    ``cv_class=PredefinedSplit,
+    cv_kwargs={"test_fold": lambda md: np.where(<predicate>, 0, -1)}``.
+    """
+    return {
+        key: (np.asarray(value(metadata)) if callable(value) else value)
+        for key, value in cv_kwargs.items()
+    }
 
 
 class WithinSessionSplitter(BaseCrossValidator):
@@ -36,18 +74,30 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     Parameters
     ----------
-    n_folds : int, default=5
-        Number of folds. Must be at least 2. If
-    shuffle : bool, default=True
+    n_folds : int
+        Number of folds. Must be at least 2. Defaults to ``5``.
+    shuffle : bool
         Whether to shuffle each class's samples before splitting into batches.
         Note that the samples within each split will not be shuffled.
-    random_state: int, RandomState instance or None, default=None
+        Defaults to ``True``.
+    random_state : int or None
         Controls the randomness of splits. Only used when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
-    cv_class: cross-validation class, default=StratifiedKFold
+        Defaults to ``None``.
+    cv_class : type
         Inner cross-validation strategy for splitting the sessions.
-    cv_kwargs: dict
+        Defaults to ``StratifiedKFold``.
+    groups : str, list of str, callable, or None
+        Optional grouping passed to a group-aware ``cv_class`` (one that
+        consumes ``groups``). Resolved per (subject, session) partition as a
+        metadata column name, a list of column names, or a callable
+        ``metadata -> array``. ``None`` (the default) reproduces the legacy
+        behaviour (no ``groups`` argument is forwarded to the inner cv).
+    cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
+        An explicit ``n_splits`` provided here takes precedence over the
+        ``n_folds`` argument. A callable value is resolved against each
+        partition's metadata slice.
 
     """
 
@@ -57,16 +107,25 @@ class WithinSessionSplitter(BaseCrossValidator):
         shuffle: bool = True,
         random_state: int = None,
         cv_class: type[BaseCrossValidator] = StratifiedKFold,
+        groups=None,
         **cv_kwargs,
     ):
         self.cv_class = cv_class
         self.n_folds = n_folds
         self.shuffle = shuffle
+        # ``groups`` is only forwarded to a group-aware inner cv; ``None`` keeps
+        # the legacy (StratifiedKFold on labels) behaviour.
+        self.groups = groups
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
-        self.random_state = random_state
-        self._rng = check_random_state(random_state) if shuffle else None
+        # Normalize RandomState to int seed so check_random_state() always
+        # creates independent instances in split().
+        if isinstance(random_state, np.random.RandomState):
+            self.random_state = int(random_state.randint(0, 2**31))
+        else:
+            self.random_state = random_state
+        self._rng = check_random_state(self.random_state) if shuffle else None
 
         if not shuffle and random_state is not None:
             raise ValueError("random_state should be None when shuffle is False")
@@ -79,8 +138,11 @@ class WithinSessionSplitter(BaseCrossValidator):
             ("shuffle", shuffle),
             ("random_state", self._rng),
         ]:
-            if p in params:
+            if p in params and p not in cv_kwargs:
                 self._cv_kwargs[p] = v
+        # Detect whether the cv_class consumes the groups parameter
+        self._cv_uses_groups = issubclass(self.cv_class, GroupsConsumerMixin)
+        self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
@@ -101,12 +163,17 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         all_index = metadata.index.values
+        self._last_split_metadata = None
 
         # Shuffle subjects if required
         # Convert to numpy array to avoid ArrowStringArray shuffle warning
         subjects = np.array(metadata["subject"].unique())
         if self.shuffle:
-            self._rng.shuffle(subjects)
+            # Use a separate RNG for shuffling to avoid advancing the
+            # per-session RNG state, which would make folds depend on the
+            # number of subjects/sessions.
+            shuffle_rng = check_random_state(self.random_state)
+            shuffle_rng.shuffle(subjects)
 
         for subject in subjects:
             subject_mask = metadata["subject"] == subject
@@ -119,23 +186,45 @@ class WithinSessionSplitter(BaseCrossValidator):
             sessions = np.array(subject_metadata["session"].unique())
 
             if self.shuffle:
-                self._rng.shuffle(sessions)
+                shuffle_rng.shuffle(sessions)
 
             for session in sessions:
                 session_mask = subject_metadata["session"] == session
                 indices = subject_indices[session_mask]
                 y_session = y_subject[session_mask]
+                partition_metadata = subject_metadata[session_mask]
 
-                # Instantiate a new internal splitter for each session
-                splitter = self.cv_class(**self._cv_kwargs)
+                # Create a fresh, independent RNG per session so that fold
+                # splits are deterministic and independent of how many
+                # subjects/sessions exist (matching legacy per-subject behavior).
+                cv_kwargs = dict(self._cv_kwargs)
+                params = inspect.signature(self.cv_class).parameters
+                if "random_state" in params and self.shuffle:
+                    cv_kwargs["random_state"] = check_random_state(self.random_state)
 
-                # Store reference to the current inner splitter for metadata access
-                self._current_splitter = splitter
+                # Instantiate a new internal splitter for each session, resolving
+                # any callable cv_kwargs against this partition's metadata.
+                splitter = self.cv_class(
+                    **_materialize_cv_kwargs(cv_kwargs, partition_metadata)
+                )
 
-                # Split using the current instance of StratifiedKFold by default
-                for train_ix, test_ix in splitter.split(indices, y_session):
+                # Forward groups only to a group-aware cv_class when requested;
+                # otherwise reproduce the legacy StratifiedKFold-on-labels split.
+                split_kwargs = {}
+                if self.groups is not None and self._cv_uses_groups:
+                    split_kwargs["groups"] = _resolve_groups(
+                        self.groups, partition_metadata
+                    )
 
+                for train_ix, test_ix in splitter.split(
+                    indices, y_session, **split_kwargs
+                ):
+                    self._last_split_metadata = _splitter_metadata(splitter)
                     yield indices[train_ix], indices[test_ix]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
 
 class WithinSubjectSplitter(BaseCrossValidator):
@@ -153,18 +242,30 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
     Parameters
     ----------
-    n_folds : int, default=5
-        Number of folds. Must be at least 2.
-    shuffle : bool, default=True
+    n_folds : int
+        Number of folds. Must be at least 2. Defaults to ``5``.
+    shuffle : bool
         Whether to shuffle each class's samples before splitting into batches.
         Note that the samples within each split will not be shuffled.
-    random_state: int, RandomState instance or None, default=None
+        Defaults to ``True``.
+    random_state : int or None
         Controls the randomness of splits. Only used when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
-    cv_class: cross-validation class, default=StratifiedKFold
+        Defaults to ``None``.
+    cv_class : type
         Inner cross-validation strategy for splitting within each subject.
-    cv_kwargs: dict
+        Defaults to ``StratifiedKFold``.
+    groups : str, list of str, callable, or None
+        Optional grouping passed to a group-aware ``cv_class`` (one that
+        consumes ``groups``). Resolved per subject as a metadata column name,
+        a list of column names, or a callable ``metadata -> array``. ``None``
+        (the default) reproduces the legacy behaviour (no ``groups`` argument
+        is forwarded to the inner cv).
+    cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
+        An explicit ``n_splits`` provided here takes precedence over the
+        ``n_folds`` argument. A callable value is resolved against each
+        subject's metadata slice.
 
     """
 
@@ -174,16 +275,25 @@ class WithinSubjectSplitter(BaseCrossValidator):
         shuffle: bool = True,
         random_state: int = None,
         cv_class: type[BaseCrossValidator] = StratifiedKFold,
+        groups=None,
         **cv_kwargs,
     ):
         self.cv_class = cv_class
         self.n_folds = n_folds
         self.shuffle = shuffle
+        # ``groups`` is only forwarded to a group-aware inner cv; ``None`` keeps
+        # the legacy (StratifiedKFold on labels) behaviour.
+        self.groups = groups
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
-        self.random_state = random_state
-        self._rng = check_random_state(random_state) if shuffle else None
+        # Normalize RandomState to int seed so check_random_state() always
+        # creates independent instances in split().
+        if isinstance(random_state, np.random.RandomState):
+            self.random_state = int(random_state.randint(0, 2**31))
+        else:
+            self.random_state = random_state
+        self._rng = check_random_state(self.random_state) if shuffle else None
 
         if not shuffle and random_state is not None:
             raise ValueError("random_state should be None when shuffle is False")
@@ -196,8 +306,11 @@ class WithinSubjectSplitter(BaseCrossValidator):
             ("shuffle", shuffle),
             ("random_state", self._rng),
         ]:
-            if p in params:
+            if p in params and p not in cv_kwargs:
                 self._cv_kwargs[p] = v
+        # Detect whether the cv_class consumes the groups parameter
+        self._cv_uses_groups = issubclass(self.cv_class, GroupsConsumerMixin)
+        self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         """
@@ -209,7 +322,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
         Parameters
         ----------
-        metadata: pd.DataFrame
+        metadata: :class:`pandas.DataFrame`
             The metadata containing the subject and session information.
 
         Returns
@@ -235,27 +348,50 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         all_index = metadata.index.values
+        self._last_split_metadata = None
 
         # Shuffle subjects if required
         # Convert to numpy array to avoid ArrowStringArray shuffle warning
         subjects = np.array(metadata["subject"].unique())
+        # Reseed the RNG at each split() call so repeated calls are
+        # reproducible. A single RNG is shared across subjects (instead of a
+        # fresh per-subject one) to keep the fold sequence identical to the
+        # legacy within-subject behaviour.
+        rng = check_random_state(self.random_state) if self.shuffle else None
         if self.shuffle:
-            self._rng.shuffle(subjects)
+            rng.shuffle(subjects)
+
+        params = inspect.signature(self.cv_class).parameters
 
         for subject in subjects:
             subject_mask = metadata["subject"] == subject
             subject_indices = all_index[subject_mask]
+            subject_metadata = metadata[subject_mask]
             y_subject = y[subject_mask]
 
-            # Instantiate a new internal splitter for each subject
-            splitter = self.cv_class(**self._cv_kwargs)
+            # Instantiate a new internal splitter for each subject, resolving any
+            # callable cv_kwargs against this subject's metadata slice and
+            # sharing the reseeded RNG (reproducible across subjects, per #1107).
+            cv_kwargs = _materialize_cv_kwargs(self._cv_kwargs, subject_metadata)
+            if self.shuffle and "random_state" in params:
+                cv_kwargs["random_state"] = rng
+            splitter = self.cv_class(**cv_kwargs)
 
-            # Store reference to the current inner splitter for metadata access
-            self._current_splitter = splitter
+            # Forward groups only to a group-aware cv_class when requested.
+            split_kwargs = {}
+            if self.groups is not None and self._cv_uses_groups:
+                split_kwargs["groups"] = _resolve_groups(self.groups, subject_metadata)
 
             # Split using the cross-validation strategy across all sessions of the subject
-            for train_ix, test_ix in splitter.split(subject_indices, y_subject):
+            for train_ix, test_ix in splitter.split(
+                subject_indices, y_subject, **split_kwargs
+            ):
+                self._last_split_metadata = _splitter_metadata(splitter)
                 yield subject_indices[train_ix], subject_indices[test_ix]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
 
 class CrossSessionSplitter(BaseCrossValidator):
@@ -280,18 +416,28 @@ class CrossSessionSplitter(BaseCrossValidator):
 
     Parameters
     ----------
-    cv_class: cross-validation class, default=LeaveOneGroupOut
+    cv_class : type
         Inner cross-validation strategy for splitting the sessions of one subject.
         LeaveOneGroupOut is the most common default.
-    shuffle: bool, default=False
+        Defaults to ``LeaveOneGroupOut``.
+    shuffle : bool
         Whether to shuffle the session order for each subject. It can only be
         used when changing the `cv_class` to a class compatible with `shuffle`.
-    random_state: int, RandomState instance or None, default=None
+        Defaults to ``False``.
+    random_state : int or None
         Controls the randomness of the inner cross-validation when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
         For `cv_class` accepting `random_state`, they are provided with a shared rng.
-    cv_kwargs: dict
+        Defaults to ``None``.
+    groups : str, list of str, or callable
+        What defines the held-out axis within each subject: a metadata column
+        name (``"session"``), a list of column names combined into a compound
+        key, or a callable ``metadata -> array``. Resolved against each
+        subject's metadata slice and passed to the stock scikit-learn
+        ``cv_class``. Defaults to ``"session"``.
+    cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
+        A callable value is resolved against each subject's metadata slice.
 
     Yields
     ------
@@ -307,9 +453,13 @@ class CrossSessionSplitter(BaseCrossValidator):
         cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
         shuffle: bool = False,
         random_state: int = None,
+        groups="session",
         **cv_kwargs,
     ):
         self.cv_class = cv_class
+        # ``groups`` is the within-subject held-out axis (default: sessions),
+        # resolved per subject and fed to the stock sklearn cv_class.
+        self.groups = groups
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
@@ -340,6 +490,10 @@ class CrossSessionSplitter(BaseCrossValidator):
         if "shuffle" in params:
             self._cv_kwargs["shuffle"] = shuffle
 
+        # Detect whether the cv_class uses the groups parameter
+        self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+        self._last_split_metadata = None
+
     def get_n_splits(self, metadata):
         """
         Return the number of splits for the cross-validation.
@@ -351,7 +505,7 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         Parameters
         ----------
-        metadata: pd.DataFrame
+        metadata: :class:`pandas.DataFrame`
             The metadata containing the subject and session information.
 
         Returns
@@ -361,22 +515,28 @@ class CrossSessionSplitter(BaseCrossValidator):
         """
         subjects = metadata["subject"].unique()
         n_splits = 0
-        for subject in subjects:
+        for subject in subjects:  # noqa: B007 — referenced via @subject in pandas query below
             subject_metadata = metadata.query("subject == @subject")
             sessions = subject_metadata["session"].unique()
 
             if len(sessions) <= 1:
                 continue  # Skip subjects with only one session
 
-            splitter = self.cv_class(**self._cv_kwargs)
-            n_splits += splitter.get_n_splits(
-                subject_metadata, groups=subject_metadata["session"]
+            splitter = self.cv_class(
+                **_materialize_cv_kwargs(self._cv_kwargs, subject_metadata)
             )
+            get_n_splits_kwargs = {"X": subject_metadata}
+            if self._cv_uses_groups:
+                get_n_splits_kwargs["groups"] = _resolve_groups(
+                    self.groups, subject_metadata
+                )
+            n_splits += splitter.get_n_splits(**get_n_splits_kwargs)
         return n_splits
 
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
         all_index = metadata.index.values
+        self._last_split_metadata = None
         # I check how many subjects are here:
         subjects = metadata["subject"].unique()
 
@@ -408,17 +568,27 @@ class CrossSessionSplitter(BaseCrossValidator):
                 continue  # Skip subjects with only one session
 
             # by default, I am using LeaveOneGroupOut
-            splitter = self.cv_class(**cv_kwargs)
-            self._current_splitter = splitter
+            splitter = self.cv_class(
+                **_materialize_cv_kwargs(cv_kwargs, subject_metadata)
+            )
 
-            # Yield the splits for a given subject
-            for train_session_idx, test_session_idx in splitter.split(
-                X=subject_indices, y=y_subject, groups=subject_metadata["session"]
-            ):
-                # returning the index
-                yield subject_indices[train_session_idx], subject_indices[
-                    test_session_idx
-                ]
+            # Only pass groups to cv_classes that actually use them
+            # (detected via GroupsConsumerMixin). This avoids the
+            # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
+            split_kwargs = {"X": subject_indices, "y": y_subject}
+            if self._cv_uses_groups:
+                split_kwargs["groups"] = _resolve_groups(self.groups, subject_metadata)
+
+            for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
+                self._last_split_metadata = _splitter_metadata(splitter)
+                yield (
+                    subject_indices[train_session_idx],
+                    subject_indices[test_session_idx],
+                )
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
 
 class CrossSubjectSplitter(BaseCrossValidator):
@@ -443,14 +613,23 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
     Parameters
     ----------
-    cv_class: cross-validation class, default=LeaveOneGroupOut
+    cv_class : type
         Cross-validation strategy for splitting the subjects between train and test sets.
         By default, use LeaveOneGroupOut, which keeps one subject as a test.
-    random_state: int, RandomState instance or None, default=None
+        Defaults to ``LeaveOneGroupOut``.
+    groups : str, list of str, or callable
+        What defines a fold: a metadata column name (``"subject"``), a list of
+        column names combined into a compound key (``["subject", "session"]``),
+        or a callable ``metadata -> array``. Passed straight to the stock
+        scikit-learn ``cv_class``. Defaults to ``"subject"``.
+    random_state : int or None
         Controls the randomness of the cross-validation.
         Pass an int for reproducible output across multiple calls.
-    cv_kwargs: dict
+        Defaults to ``None``.
+    cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
+        A callable value is resolved against the metadata at ``split`` time
+        (e.g. ``cv_class=PredefinedSplit`` with a ``test_fold`` callable).
 
     Yields
     ------
@@ -464,16 +643,25 @@ class CrossSubjectSplitter(BaseCrossValidator):
     def __init__(
         self,
         cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
+        groups="subject",
         random_state: int = None,
         **cv_kwargs,
     ):
         self.cv_class = cv_class
+        # ``groups`` selects what defines a fold: a metadata column ("subject"),
+        # a list of columns (["subject", "session"]), or a callable
+        # ``metadata -> array``. Fed straight to the stock sklearn cv_class.
+        self.groups = groups
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
         params = inspect.signature(self.cv_class).parameters
         if "random_state" in params:
             self._cv_kwargs["random_state"] = random_state
+
+        # Detect whether the cv_class uses the groups parameter
+        self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+        self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         """
@@ -486,7 +674,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         Parameters
         ----------
-        metadata: pd.DataFrame
+        metadata: :class:`pandas.DataFrame`
             The metadata containing the subject and session information.
 
         Returns
@@ -495,28 +683,165 @@ class CrossSubjectSplitter(BaseCrossValidator):
             The number of splits for the cross-validation
         """
 
-        splitter = self.cv_class(**self._cv_kwargs)
-        n_splits = splitter.get_n_splits(metadata.index, groups=metadata["subject"])
+        splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
+        get_n_splits_kwargs = {"X": metadata.index}
+        if self._cv_uses_groups:
+            get_n_splits_kwargs["groups"] = _resolve_groups(self.groups, metadata)
+        n_splits = splitter.get_n_splits(**get_n_splits_kwargs)
         return n_splits
 
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
         all_index = metadata.index.values
 
-        splitter = self.cv_class(**self._cv_kwargs)
+        splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
+        self._last_split_metadata = None
 
-        # Store reference to the current inner splitter for metadata access
-        self._current_splitter = splitter
+        # Only pass groups to cv_classes that actually use them
+        # (detected via GroupsConsumerMixin). This avoids the
+        # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
+        split_kwargs = {"X": all_index, "y": y}
+        if self._cv_uses_groups:
+            split_kwargs["groups"] = _resolve_groups(self.groups, metadata)
 
-        # Yield the splits for the entire dataset
-        for train_session_idx, test_session_idx in splitter.split(
-            X=all_index, y=y, groups=metadata["subject"]
-        ):
-            # returning the index
+        for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
+            self._last_split_metadata = _splitter_metadata(splitter)
             yield all_index[train_session_idx], all_index[test_session_idx]
 
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
 
-class LearningCurveSplitter(BaseCrossValidator):
+
+class CrossDatasetSplitter(BaseCrossValidator):
+    """Data splitter for leave-dataset-out style evaluation.
+
+    This splitter works like CrossSubjectSplitter, but defaults to grouping by
+    the ``"dataset"`` metadata column to define train/test groups.
+
+    Parameters
+    ----------
+    cv_class : type
+        Cross-validation strategy for splitting train/test dataset groups.
+        Defaults to ``LeaveOneGroupOut``.
+    groups : str, list of str, or callable
+        What defines a fold: a metadata column name (``"dataset"``), a list of
+        column names combined into a compound key, or a callable
+        ``metadata -> array``. Passed straight to the stock scikit-learn
+        ``cv_class``. Defaults to ``"dataset"``.
+    group_column : str or None
+        Deprecated alias for ``groups``. If provided, it overrides ``groups``.
+        Defaults to ``None``.
+    random_state : int or None
+        Controls randomness for ``cv_class`` when supported.
+        Defaults to ``None``.
+    cv_kwargs : dict
+        Additional arguments passed to ``cv_class``. A callable value is
+        resolved against the metadata at ``split`` time.
+
+    Yields
+    ------
+    train : ndarray
+        Training indices for the split.
+    test : ndarray
+        Test indices for the split.
+    """
+
+    metadata_columns = ("test_dataset", "train_datasets")
+
+    def __init__(
+        self,
+        cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
+        groups="dataset",
+        group_column: str = None,
+        random_state: int = None,
+        **cv_kwargs,
+    ):
+        self.cv_class = cv_class
+        # ``group_column`` is the legacy name for ``groups``. When supplied it
+        # takes precedence so existing callers keep working.
+        if group_column is not None:
+            warn(
+                "`group_column` is deprecated in favor of `groups`; "
+                "pass groups=<column/list/callable> instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            groups = group_column
+        self.groups = groups
+        # Preserve the historical attribute for backward compatibility.
+        self.group_column = groups if isinstance(groups, str) else group_column
+        self.cv_kwargs = cv_kwargs
+        self._cv_kwargs = dict(**cv_kwargs)
+        self.random_state = random_state
+        self._last_split_metadata = None
+
+        params = inspect.signature(self.cv_class).parameters
+        if "random_state" in params:
+            self._cv_kwargs["random_state"] = random_state
+
+        # Detect whether the cv_class uses the groups parameter
+        self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
+
+    def _resolve_checked_groups(self, metadata):
+        """Resolve ``self.groups`` against the metadata, validating columns.
+
+        Keeps the historical ``ValueError`` (rather than a raw ``KeyError``)
+        when a requested metadata column is missing.
+        """
+        groups = self.groups
+        if isinstance(groups, str):
+            if groups not in metadata.columns:
+                raise ValueError(f"Column '{groups}' was not found in metadata.")
+        elif isinstance(groups, (list, tuple)):
+            missing = [c for c in groups if c not in metadata.columns]
+            if missing:
+                raise ValueError(f"Column(s) {missing} were not found in metadata.")
+        return _resolve_groups(groups, metadata)
+
+    def get_n_splits(self, metadata):
+        """Return number of splits for cross-validation."""
+        groups = self._resolve_checked_groups(metadata)
+        splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
+        get_n_splits_kwargs = {"X": metadata.index}
+        if self._cv_uses_groups:
+            get_n_splits_kwargs["groups"] = groups
+        return splitter.get_n_splits(**get_n_splits_kwargs)
+
+    def split(self, y, metadata):
+        # here, I am getting the index across all entries
+        all_index = metadata.index.values
+        groups = self._resolve_checked_groups(metadata)
+        splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
+        self._last_split_metadata = None
+
+        # Only pass groups to cv_classes that actually use them
+        split_kwargs = {"X": all_index, "y": y}
+        if self._cv_uses_groups:
+            split_kwargs["groups"] = groups
+
+        for train_group_idx, test_group_idx in splitter.split(**split_kwargs):
+            train_groups = np.unique(groups[train_group_idx]).tolist()
+            test_groups = np.unique(groups[test_group_idx]).tolist()
+
+            split_metadata = {
+                "train_datasets": tuple(train_groups),
+                "test_dataset": (
+                    test_groups[0] if len(test_groups) == 1 else tuple(test_groups)
+                ),
+            }
+            inner_metadata = _splitter_metadata(splitter)
+            if inner_metadata:
+                split_metadata.update(inner_metadata)
+            self._last_split_metadata = split_metadata
+            yield all_index[train_group_idx], all_index[test_group_idx]
+
+    def get_metadata(self):
+        """Return metadata for the most recent split."""
+        return self._last_split_metadata
+
+
+class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
     """Learning curve splitter following sklearn CV interface.
 
     This splitter creates train/test splits for learning curve evaluation,
@@ -532,16 +857,17 @@ class LearningCurveSplitter(BaseCrossValidator):
         (array of sizes). For 'ratio', values should be floats between 0 and 1
         representing the fraction of training data to use. For 'per_class',
         values should be integers representing the number of samples per class.
-    n_perms : int or array-like
+    n_perms : int or list
         Number of permutations per data_size value. If an int, the same number
         of permutations is used for all data sizes. If an array, it should have
         the same length as data_size['value'] and values should be monotonically
         decreasing (more permutations for smaller data sizes).
-    test_size : float, default=0.2
-        Fraction of data to use for testing.
-    random_state : int, RandomState instance, or None, default=None
+    test_size : float
+        Fraction of data to use for testing. Defaults to ``0.2``.
+    random_state : int or None
         Controls the randomness of the permutations. Pass an int for
         reproducible output across multiple function calls.
+        Defaults to ``None``.
 
     Attributes
     ----------
@@ -557,13 +883,14 @@ class LearningCurveSplitter(BaseCrossValidator):
     Using LearningCurveSplitter with WithinSessionSplitter:
 
     >>> from moabb.evaluations.splitters import (
-    ...     WithinSessionSplitter, LearningCurveSplitter
+    ...     WithinSessionSplitter,
+    ...     LearningCurveSplitter,
     ... )
     >>> import numpy as np
     >>> splitter = WithinSessionSplitter(
     ...     n_folds=1,  # LearningCurveSplitter handles its own permutations
     ...     cv_class=LearningCurveSplitter,
-    ...     data_size={'policy': 'ratio', 'value': np.array([0.1, 0.5, 1.0])},
+    ...     data_size={"policy": "ratio", "value": np.array([0.1, 0.5, 1.0])},
     ...     n_perms=10,
     ...     test_size=0.2,
     ... )
@@ -646,11 +973,11 @@ class LearningCurveSplitter(BaseCrossValidator):
 
         Parameters
         ----------
-        X : array-like, optional
+        X : object
             Ignored.
-        y : array-like, optional
+        y : object
             Ignored.
-        groups : array-like, optional
+        groups : object
             Ignored.
 
         Returns
@@ -666,7 +993,7 @@ class LearningCurveSplitter(BaseCrossValidator):
 
         Parameters
         ----------
-        y : array-like
+        y : :class:`numpy.ndarray`
             Target labels for the training set.
 
         Returns
@@ -710,13 +1037,13 @@ class LearningCurveSplitter(BaseCrossValidator):
 
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
-            Training data.
-        y : array-like of shape (n_samples,)
-            Target labels.
-        groups : array-like of shape (n_samples,), optional
-            Group labels. If provided, splits are made on groups (no group
-            appears in both train and test).
+        X : :class:`numpy.ndarray`
+            Training data, of shape ``(n_samples, n_features)``.
+        y : :class:`numpy.ndarray`
+            Target labels, of shape ``(n_samples,)``.
+        groups : :class:`numpy.ndarray` or None
+            Group labels, of shape ``(n_samples,)``. If provided, splits are
+            made on groups (no group appears in both train and test).
 
         Yields
         ------
@@ -791,7 +1118,4 @@ class LearningCurveSplitter(BaseCrossValidator):
             Dictionary with 'permutation' and 'data_size' keys.
             Only valid during or after iteration.
         """
-        return {
-            "permutation": self._current_perm,
-            "data_size": self._current_data_size,
-        }
+        return {"permutation": self._current_perm, "data_size": self._current_data_size}

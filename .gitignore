@@ -112,11 +112,11 @@ ENV/
 *.hd5
 *.hdf5
 analysis/*
-/moabb/tests/barplot.pdf
-/moabb/tests/orderplot.pdf
-/moabb/tests/orderplot_full.pdf
 /test_context.yml
 res_test/
+
+# Local validation/utility scripts
+scripts/validation/
 
 # mac os x stuff
 *DS_store*
@@ -139,4 +139,14 @@ examples/tutorials/*.mat
 .vscode/
 
 results/results*
-/moabb/tests/test_pipelines/*.lock
+
+# Binary and generated files
+*.lock
+*.zip
+*.html
+*.pdf
+
+# Auto-generated dataset SVGs (built during doc build)
+docs/source/_static/timelines/
+docs/source/_static/viz/
+.env

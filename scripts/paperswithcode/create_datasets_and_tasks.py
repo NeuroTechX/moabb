@@ -76,38 +76,38 @@ def create_tasks(client: PapersWithCodeClient):
         paradigm_fullname,
     ) in _paradigms.items():
         description = f"Classification of examples recorded under the {paradigm_fullname} paradigm, as part of Brain-Computer Interfaces (BCI)."
-        d = dict(
-            name=paradigm_name,
-            description=description,
-            area="Medical",
-            parent_task="Brain Computer Interface",
-        )
+        d = {
+            "name": paradigm_name,
+            "description": description,
+            "area": "Medical",
+            "parent_task": "Brain Computer Interface",
+        }
         # task = client.task_add(TaskCreateRequest(**d))
         task = Task.make(**d)
         tasks[paradigm_class] = task
         for evaluation_class, evaluation in _evaluations.items():
-            eval_url = f'http://moabb.neurotechx.com/docs/generated/moabb.evaluations.{evaluation.replace("-", "")}Evaluation.html'
-            d = dict(
-                name=f"{evaluation} {paradigm_name}",
-                description=f"""MOABB's {evaluation} evaluation for the {paradigm_name} paradigm.
+            eval_url = f"http://moabb.neurotechx.com/docs/generated/moabb.evaluations.{evaluation.replace('-', '')}Evaluation.html"
+            d = {
+                "name": f"{evaluation} {paradigm_name}",
+                "description": f"""MOABB's {evaluation} evaluation for the {paradigm_name} paradigm.
 
 Evaluation details: [{eval_url}]({eval_url})""",
-                area="medical",
-                parent_task=task.id,
-            )
+                "area": "medical",
+                "parent_task": task.id,
+            }
             # subtask = client.task_add(TaskCreateRequest(**d))
             subtask = Task.make(**d)
             tasks[(paradigm_class, evaluation_class)] = subtask
             if subparadigms is not None:
                 for subparadigm in subparadigms:
-                    d = dict(
-                        name=f"{evaluation} {paradigm_name} ({subparadigm})",
-                        description=f"""MOABB's {evaluation} evaluation for the {paradigm_name} paradigm ({subparadigm}).
+                    d = {
+                        "name": f"{evaluation} {paradigm_name} ({subparadigm})",
+                        "description": f"""MOABB's {evaluation} evaluation for the {paradigm_name} paradigm ({subparadigm}).
 
 Evaluation details: [{eval_url}]({eval_url})""",
-                        area="medical",
-                        parent_task=subtask.id,
-                    )
+                        "area": "medical",
+                        "parent_task": subtask.id,
+                    }
                     # subsubtask = client.task_add(TaskCreateRequest(**d))
                     subsubtask = Task.make(**d)
                     tasks[(paradigm_class, evaluation_class, subparadigm)] = subsubtask

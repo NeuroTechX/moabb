@@ -3,6 +3,7 @@
 #         Bruno Aristimunha <b.aristimunha@gmail.com>
 # License: BSD Style.
 
+import functools
 import json
 import logging
 import os
@@ -10,17 +11,23 @@ import os.path as osp
 from pathlib import Path
 from urllib.parse import urlparse
 
+import nemar
 import pandas as pd
 import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
+from nemar.errors import NemarError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
 
 
 logger = logging.getLogger(__name__)
+
+
+class NemarDownloadError(RuntimeError):
+    """Raised when a NEMAR download cannot be completed."""
 
 
 def get_user_agent():
@@ -40,8 +47,13 @@ def _set_user_agent(downloader):
 
 
 def _sanitize_path(path: Path) -> Path:
+    path = Path(path)
     table = {ord(c): "-" for c in ':*?"<>|'}
-    return Path(str(path).translate(table))
+
+    if path.anchor:
+        return Path(path.anchor, *(part.translate(table) for part in path.parts[1:]))
+
+    return Path(*(part.translate(table) for part in path.parts))
 
 
 def _normalize_destination(url: str, root: Path) -> Path:
@@ -211,6 +223,65 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     return dlpath
 
 
+@verbose
+def nemar_dl(
+    nemar_id,
+    dataset_code,
+    path=None,
+    force_update=False,
+    subject=None,
+    verbose=None,
+    **bids_filters,
+):
+    """Download a NEMAR dataset and return the local BIDS root.
+
+    Parameters
+    ----------
+    nemar_id : str
+        NEMAR dataset identifier.
+    dataset_code : str
+        MOABB dataset code used to choose the local dataset directory.
+    path : None | str
+        Base path where MOABB stores datasets.
+    force_update : bool
+        Remove an existing NEMAR download before downloading again.
+    subject : str | list of str | None
+        BIDS subject label(s) to pass to :func:`nemar.download`.
+    verbose : bool, str, int, or None
+        If not None, override default verbose level.
+    **bids_filters
+        Additional BIDS filters forwarded to :func:`nemar.download`.
+
+    Returns
+    -------
+    str
+        Local BIDS root for the downloaded NEMAR dataset.
+
+    Raises
+    ------
+    NemarDownloadError
+        If nemar-py is unavailable or fails to download the selected files.
+    """
+    root = Path(get_dataset_path(dataset_code, path))
+    target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
+
+    # ``force_update`` is handled by ``trust_existing=False`` below, which makes
+    # nemar-py re-fetch the requested subject. Do not delete ``target_dir``
+    # here: it is the shared BIDS root, and ``download()`` calls this once per
+    # subject, so removing it would wipe subjects fetched in earlier iterations.
+    try:
+        nemar.download(
+            dataset=nemar_id,
+            target_dir=target_dir,
+            subject=subject,
+            trust_existing=not force_update,
+            **bids_filters,
+        )
+    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        raise NemarDownloadError(f"Could not download NEMAR dataset {nemar_id}.") from exc
+    return str(target_dir)
+
+
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)
 def fs_issue_request(method, url, headers, data=None, binary=False):
     """Wrapper for HTTP request.
@@ -274,14 +345,18 @@ def _fs_paginated_file_list(base_url, headers, page_size=1000):
     return files
 
 
+@functools.lru_cache(maxsize=None)
 def fs_get_file_list(article_id, version=None):
     """List all the files associated with a given article.
+
+    Cached in-process by ``(article_id, version)`` to avoid Figshare's 403
+    rate limit when callers iterate (clear with ``cache_clear()``).
 
     Parameters
     ----------
     article_id : str or int
         Figshare article ID
-    version : str or id, default is None
+    version : str or int, default is None
         Figshare article version. If None, selects the most recent version.
 
     Returns

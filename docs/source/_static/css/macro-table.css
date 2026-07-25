@@ -1,0 +1,626 @@
+/* ===================================================================
+   MOABB Macro Table — Refined Scientific Dashboard
+   Aesthetic: editorial precision, authoritative data presentation
+   =================================================================== */
+
+/* Fonts loaded via conf.py html_css_files to avoid render-blocking @import */
+
+/* --------------- Design Tokens --------------- */
+
+.mt-container {
+  --mt-surface: #ffffff;
+  --mt-surface-raised: #f7f8fa;
+  --mt-surface-hover: #f0f4f8;
+  --mt-border: #e2e8f0;
+  --mt-border-subtle: #edf2f7;
+  --mt-text: #1a202c;
+  --mt-text-secondary: #64748b;
+  --mt-text-muted: #94a3b8;
+  --mt-accent: #0f4c81;
+  --mt-accent-light: #e8f0fe;
+  --mt-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --mt-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --mt-radius: 6px;
+  --mt-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.06);
+  --mt-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
+  margin: 0 0 2.5rem;
+}
+
+html[data-theme="dark"] .mt-container {
+  --mt-surface: #0f172a;
+  --mt-surface-raised: #1e293b;
+  --mt-surface-hover: #334155;
+  --mt-border: #334155;
+  --mt-border-subtle: #1e293b;
+  --mt-text: #e2e8f0;
+  --mt-text-secondary: #94a3b8;
+  --mt-text-muted: #64748b;
+  --mt-accent: #60a5fa;
+  --mt-accent-light: rgba(96, 165, 250, 0.1);
+  --mt-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --mt-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* --------------- Experimental Banner --------------- */
+
+.mt-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #f0ad4e;
+  border-left: 4px solid #f0ad4e;
+  background: linear-gradient(135deg, #fef9ee, #fff8e6);
+  color: #7a5a00;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.mt-banner-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  color: #d4930a;
+  margin-top: 1px;
+}
+
+.mt-banner-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mt-banner-body strong {
+  color: #8b6914;
+}
+
+.mt-banner-body a {
+  color: #7a5a00;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mt-banner-body a:hover {
+  color: #543d00;
+}
+
+html[data-theme="dark"] .mt-banner {
+  background: linear-gradient(135deg, #2a2210, #2a2515);
+  border-color: #a07620;
+  color: #e8c76a;
+}
+
+html[data-theme="dark"] .mt-banner-icon {
+  color: #d4a520;
+}
+
+html[data-theme="dark"] .mt-banner-body strong {
+  color: #f0d060;
+}
+
+html[data-theme="dark"] .mt-banner-body a {
+  color: #e8c76a;
+}
+
+/* --------------- Hero Section --------------- */
+
+.mt-hero {
+  background: var(--mt-surface);
+  border: 1px solid var(--mt-border);
+  border-radius: 12px;
+  padding: 1.75rem 2rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--mt-shadow-sm);
+}
+
+/* --------------- Summary Cards --------------- */
+
+.mt-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--mt-border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.mt-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.25rem;
+  background: var(--mt-surface);
+  animation: mt-fade-up 0.4s ease both;
+}
+
+@keyframes mt-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mt-card-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--mt-accent-light);
+  color: var(--mt-accent);
+}
+
+.mt-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mt-card-body {
+  min-width: 0;
+}
+
+.mt-card-value {
+  font-family: var(--mt-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--mt-text);
+  letter-spacing: -0.02em;
+}
+
+.mt-card-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mt-text-secondary);
+  margin-top: 0.1rem;
+}
+
+.mt-card-sub {
+  font-size: 0.68rem;
+  color: var(--mt-text-muted);
+  margin-top: 0.05rem;
+}
+
+/* --------------- Paradigm Distribution Bar --------------- */
+
+.mt-bar-container {
+  padding-top: 0.25rem;
+}
+
+.mt-bar {
+  display: flex;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  gap: 2px;
+}
+
+.mt-bar-seg {
+  border-radius: 3px;
+  transition: opacity 0.2s;
+  cursor: default;
+}
+
+.mt-bar-seg:hover {
+  opacity: 0.75;
+}
+
+.mt-bar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin-top: 0.55rem;
+}
+
+.mt-bar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--mt-text-secondary);
+  white-space: nowrap;
+}
+
+.mt-bar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* --------------- Tags --------------- */
+
+.mt-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  color: var(--tag-color, #757575);
+  background: color-mix(in srgb, var(--tag-color, #757575) 10%, transparent);
+}
+
+.mt-tag--health {
+  font-size: 0.68rem;
+  font-weight: 500;
+  border-radius: 3px;
+  padding: 0.15em 0.5em;
+}
+
+/* --------------- Table Wrapper --------------- */
+
+.mt-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--mt-border);
+  border-radius: 10px;
+  box-shadow: var(--mt-shadow-sm);
+  background: var(--mt-surface);
+}
+
+/* --------------- DataTables — Table Core --------------- */
+
+#moabb-macro-table {
+  font-size: 0.82rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100% !important;
+  color: var(--mt-text);
+}
+
+/* Header */
+#moabb-macro-table thead th {
+  background: var(--mt-surface-raised);
+  color: var(--mt-text-secondary);
+  font-family: var(--mt-mono);
+  font-weight: 500;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 2px solid var(--mt-border);
+  padding: 0.7rem 0.65rem;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Sorting arrows — make them subtler */
+#moabb-macro-table thead th.dt-orderable-asc span.dt-column-order,
+#moabb-macro-table thead th.dt-orderable-desc span.dt-column-order {
+  opacity: 0.35;
+}
+
+#moabb-macro-table thead th.dt-ordering-asc span.dt-column-order,
+#moabb-macro-table thead th.dt-ordering-desc span.dt-column-order {
+  opacity: 1;
+  color: var(--mt-accent);
+}
+
+/* Body cells */
+#moabb-macro-table tbody td {
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid var(--mt-border-subtle);
+  vertical-align: middle;
+  transition: background 0.1s;
+}
+
+/* Row hover */
+#moabb-macro-table tbody tr:hover td {
+  background: var(--mt-surface-hover) !important;
+}
+
+/* Zebra striping — very subtle */
+#moabb-macro-table tbody tr:nth-child(even) td {
+  background: var(--mt-surface-raised);
+}
+
+/* Paradigm left-border stripe on rows */
+#moabb-macro-table tbody tr {
+  border-left: 3px solid var(--row-paradigm-color, transparent);
+}
+
+/* Dataset link — editorial serif feel */
+.mt-dataset-link {
+  font-family: var(--mt-serif);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--mt-accent) !important;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.mt-dataset-link:hover {
+  border-bottom-color: var(--mt-accent);
+  text-decoration: none !important;
+}
+
+/* DOI badge */
+.mt-doi {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  font-family: var(--mt-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 0.15em 0.45em;
+  border-radius: 4px;
+  background: var(--mt-surface-raised);
+  color: var(--mt-text-muted) !important;
+  text-decoration: none !important;
+  border: 1px solid var(--mt-border-subtle);
+  transition: all 0.15s;
+}
+
+.mt-doi:hover {
+  background: var(--mt-accent);
+  color: #fff !important;
+  border-color: var(--mt-accent);
+}
+
+.mt-doi svg {
+  opacity: 0.6;
+}
+.mt-doi:hover svg {
+  opacity: 1;
+  stroke: #fff;
+}
+
+/* Numeric columns: tabular numbers + right-align */
+#moabb-macro-table td:nth-child(3),
+#moabb-macro-table td:nth-child(4),
+#moabb-macro-table td:nth-child(5),
+#moabb-macro-table td:nth-child(6),
+#moabb-macro-table td:nth-child(7),
+#moabb-macro-table td:nth-child(8),
+#moabb-macro-table td:nth-child(9),
+#moabb-macro-table td:nth-child(10),
+#moabb-macro-table td:nth-child(15),
+#moabb-macro-table th:nth-child(3),
+#moabb-macro-table th:nth-child(4),
+#moabb-macro-table th:nth-child(5),
+#moabb-macro-table th:nth-child(6),
+#moabb-macro-table th:nth-child(7),
+#moabb-macro-table th:nth-child(8),
+#moabb-macro-table th:nth-child(9),
+#moabb-macro-table th:nth-child(10),
+#moabb-macro-table th:nth-child(15) {
+  text-align: right;
+  font-family: var(--mt-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+}
+
+/* Empty cells: show a subtle dash */
+#moabb-macro-table tbody td:empty::after {
+  content: '\2014';
+  color: var(--mt-border);
+  font-size: 0.7rem;
+}
+
+/* Truncated text with CSS tooltip */
+.mt-truncated {
+  cursor: help;
+  border-bottom: 1px dotted var(--mt-text-muted);
+  position: relative;
+}
+
+.mt-truncated::after {
+  content: attr(data-full);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 10;
+  max-width: 360px;
+  padding: 0.5em 0.7em;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  word-break: break-word;
+  color: #fff;
+  background: #1e293b;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.mt-truncated:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+html[data-theme="dark"] .mt-truncated::after {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* --------------- DataTables Controls --------------- */
+
+.dataTables_wrapper {
+  font-size: 0.82rem;
+  color: var(--mt-text-secondary);
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+  margin: 0.6rem 0;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid var(--mt-border);
+  border-radius: var(--mt-radius);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.82rem;
+  background: var(--mt-surface);
+  color: var(--mt-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+  outline: none;
+  border-color: var(--mt-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mt-accent) 15%, transparent);
+}
+
+/* Buttons */
+.dataTables_wrapper .dt-buttons {
+  margin-bottom: 0.75rem;
+}
+
+.dataTables_wrapper .dt-buttons .dt-button {
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--mt-radius);
+  border: 1px solid var(--mt-border);
+  background: var(--mt-surface);
+  color: var(--mt-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-right: 0.4rem;
+}
+
+.dataTables_wrapper .dt-buttons .dt-button:hover {
+  background: var(--mt-accent);
+  color: #fff;
+  border-color: var(--mt-accent);
+  box-shadow: var(--mt-shadow-sm);
+}
+
+.dataTables_wrapper .dt-buttons .dt-button:active,
+.dataTables_wrapper .dt-buttons .dt-button.dt-button-active {
+  background: var(--mt-accent);
+  color: #fff;
+  border-color: var(--mt-accent);
+}
+
+/* Pagination */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--mt-radius);
+  border: 1px solid transparent;
+  margin: 0 1px;
+  transition: all 0.1s;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: var(--mt-surface-hover) !important;
+  border-color: var(--mt-border);
+  color: var(--mt-text) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: var(--mt-accent) !important;
+  color: #fff !important;
+  border-color: var(--mt-accent) !important;
+  font-weight: 600;
+}
+
+/* Length selector */
+.dataTables_wrapper .dataTables_length select {
+  border: 1px solid var(--mt-border);
+  border-radius: var(--mt-radius);
+  padding: 0.3rem 0.5rem;
+  background: var(--mt-surface);
+  color: var(--mt-text);
+  font-size: 0.82rem;
+}
+
+/* --------------- SearchPanes --------------- */
+
+div.dtsp-searchPane {
+  border: 1px solid var(--mt-border) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  background: var(--mt-surface);
+}
+
+div.dtsp-searchPane table.dataTable thead th {
+  font-family: var(--mt-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.45rem 0.55rem;
+  background: var(--mt-surface-raised);
+  color: var(--mt-text-secondary);
+}
+
+div.dtsp-searchPane table.dataTable tbody td {
+  font-size: 0.78rem;
+  padding: 0.35rem 0.55rem;
+  color: var(--mt-text);
+}
+
+div.dtsp-searchPane table.dataTable tbody tr.selected td {
+  background: var(--mt-accent-light) !important;
+  color: var(--mt-accent) !important;
+  font-weight: 600;
+}
+
+div.dtsp-topRow {
+  margin-bottom: 1rem;
+}
+
+/* --------------- FixedHeader Override --------------- */
+
+table.dataTable.fixedHeader-floating {
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+}
+
+/* --------------- Responsive --------------- */
+
+@media (max-width: 1000px) {
+  .mt-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .mt-hero {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  .mt-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .mt-card {
+    padding: 0.75rem 0.85rem;
+    gap: 0.6rem;
+  }
+  .mt-card-icon {
+    width: 30px;
+    height: 30px;
+  }
+  .mt-card-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+  .mt-card-value {
+    font-size: 1.2rem;
+  }
+  .mt-table-wrapper {
+    border-radius: 8px;
+  }
+  #moabb-macro-table {
+    font-size: 0.75rem;
+  }
+}

@@ -9,6 +9,21 @@ import numpy as np
 from tqdm import tqdm
 
 from moabb.datasets import download as dl
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
+    Tags,
+)
 
 from .base import BaseDataset
 
@@ -87,6 +102,14 @@ class Kojima2024B(BaseDataset):
     Each run included 4 trials, each with a different target stimulus.
     In each trial, all deviant stimuli (D1--D4) were presented 15 times.
 
+    .. figure:: /_static/paper_figures/Kojima2024.png
+       :alt: Kojima2024 ASME-BCI — auditory streams with oddball
+             sequences; subject attends to one target stream.
+       :width: 100%
+
+       Figure 1 of [2]_ (CC-BY-4.0). Kojima2024B adds 4-stream and
+       2-stream conditions described above.
+
     Notes
     -----
     - EEG signals were recorded using a BrainAmp system (Brain Products, Germany)
@@ -133,12 +156,286 @@ class Kojima2024B(BaseDataset):
         Frontiers in Human Neuroscience 18:1461960. DOI: https://doi.org/10.3389/fnhum.2024.1461960
     """
 
+    nemar_id = "nm000207"
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1000.0,
+            n_channels=64,
+            channel_types={"eeg": 64, "eog": 2},
+            sensors=[
+                "AF3",
+                "AF4",
+                "AF7",
+                "AF8",
+                "AFz",
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6",
+                "CP1",
+                "CP2",
+                "CP3",
+                "CP4",
+                "CP5",
+                "CP6",
+                "CPz",
+                "Cz",
+                "F1",
+                "F2",
+                "F3",
+                "F4",
+                "F5",
+                "F6",
+                "F7",
+                "F8",
+                "FC1",
+                "FC2",
+                "FC3",
+                "FC4",
+                "FC5",
+                "FC6",
+                "FCz",
+                "FT10",
+                "FT7",
+                "FT8",
+                "FT9",
+                "Fp1",
+                "Fp2",
+                "Fz",
+                "O1",
+                "O2",
+                "Oz",
+                "P1",
+                "P2",
+                "P3",
+                "P4",
+                "P5",
+                "P6",
+                "P7",
+                "P8",
+                "PO3",
+                "PO4",
+                "PO7",
+                "PO8",
+                "POz",
+                "Pz",
+                "T7",
+                "T8",
+                "TP10",
+                "TP7",
+                "TP8",
+                "TP9",
+                "hEOG",
+                "vEOG",
+            ],
+            sensor_type="EEG",
+            reference="right mastoid",
+            ground="left mastoid",
+            hardware="BrainAmp",
+            software=None,
+            filters=None,
+            line_freq=50.0,
+            montage="standard_1020",
+            impedance_threshold_kohm=None,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=2,
+                eog_type=["vertical", "horizontal"],
+                has_emg=False,
+                emg_channels=0,
+                other_physiological=None,
+            ),
+            cap_manufacturer="EasyCap",
+            cap_model=None,
+            electrode_type="passive Ag/AgCl",
+            electrode_material="Ag/AgCl",
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=15,
+            health_status="healthy",
+            gender={"male": 13, "female": 2},
+            age_mean=22.8,
+            age_std=None,
+            age_min=21.0,
+            age_max=24.0,
+            ages=None,
+            handedness=None,
+            clinical_population=None,
+            bci_experience=None,
+            sexes=None,
+            handedness_list=None,
+            species="human",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="p300",
+            task_type="auditory stream segregation with oddball",
+            events={
+                "ASME-4stream_S1": 1,
+                "ASME-4stream_D1": 1,
+                "ASME-4stream_S2": 1,
+                "ASME-4stream_D2": 1,
+                "ASME-4stream_S3": 1,
+                "ASME-4stream_D3": 1,
+                "ASME-4stream_S4": 1,
+                "ASME-4stream_D4": 1,
+                "ASME-2stream_S1": 1,
+                "ASME-2stream_D1": 1,
+                "ASME-2stream_D2": 1,
+                "ASME-2stream_S2": 1,
+                "ASME-2stream_D3": 1,
+                "ASME-2stream_D4": 1,
+            },
+            n_classes=4,
+            class_labels=["D1", "D2", "D3", "D4"],
+            trials_per_class=None,
+            trial_duration=90.0,
+            tasks=["ASME-4stream", "ASME-2stream"],
+            study_design="within-subject comparison",
+            study_domain="auditory BCI",
+            feedback_type="none",
+            stimulus_type="auditory tones",
+            stimulus_modalities=["auditory"],
+            primary_modality="auditory",
+            synchronicity="synchronous",
+            mode="offline",
+            has_training_test_split=False,
+            instructions="focus selectively on deviant stimuli in one of the streams and count target deviant stimuli",
+            cog_atlas_id=None,
+            cog_po_id=None,
+            stimulus_presentation=None,
+            hed_tags={
+                "Target": (
+                    "(Sensory-event, Experimental-stimulus, "
+                    "Auditory-presentation, (Oddball, Target)), "
+                    "(Agent-action, (Hear, Discriminate))"
+                ),
+                "NonTarget": (
+                    "(Sensory-event, Experimental-stimulus, "
+                    "Auditory-presentation, (Oddball, Non-target)), "
+                    "(Agent-action, (Hear, Discriminate))"
+                ),
+            },
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.3389/fnhum.2024.1461960",
+            description="Four-class ASME BCI investigation comparing two strategies for multiclassing: ASME-4stream (four streams with single target stimulus each) vs ASME-2stream (two streams with two target stimuli each)",
+            investigators=["Simon Kojima", "Shin'ichiro Kanoh"],
+            institution="Shibaura Institute of Technology",
+            country="JP",
+            repository=None,
+            data_url="https://doi.org/10.7910/DVN/1UJDV6",
+            license="CC BY",
+            publication_year=2024,
+            senior_author="Shin'ichiro Kanoh",
+            contact_info=["simon.kojima@ieee.org"],
+            associated_paper_doi="10.3389/fnhum.2024.1461960",
+            funding=["JSPS KAKENHI (Grant Number JP23K11811 to Shin'ichiro Kanoh)"],
+            institution_address="Tokyo, Japan",
+            institution_department="Graduate School of Engineering and Science (Simon Kojima); College of Engineering (Shin'ichiro Kanoh)",
+            ethics_approval=[
+                "Review Board on Bioengineering Research Ethics of the Shibaura Institute of Technology"
+            ],
+            acknowledgements=None,
+            how_to_acknowledge=None,
+            keywords=[
+                "brain-computer interface",
+                "electroencephalogram",
+                "event-related potential",
+                "auditory scene analysis",
+                "stream segregation",
+                "machine learning",
+                "NASA-TLX",
+            ],
+        ),
+        sessions_per_subject=1,
+        runs_per_session=12,
+        sessions=None,
+        contributing_labs=None,
+        n_contributing_labs=1,
+        data_processed=False,
+        file_format="BrainVision",
+        external_links=None,
+        tags=Tags(pathology=["Healthy"], modality=["auditory"], type=["ERP", "P300"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw",
+            preprocessing_applied=False,
+            preprocessing_steps=None,
+            highpass_hz=None,
+            lowpass_hz=None,
+            bandpass=None,
+            notch_hz=None,
+            filter_type=None,
+            filter_order=None,
+            artifact_methods=None,
+            re_reference=None,
+            downsampled_to_hz=None,
+            epoch_window=None,
+            notes=None,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["Linear Discriminant Analysis (LDA)", "shrinkage-LDA"],
+            feature_extraction=[
+                "mean amplitudes in 10 intervals (0.1s non-overlapping, 0-1.0s)"
+            ],
+            frequency_bands={"analyzed_range": [0.1, 8.0]},
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="3-fold chronological cross-validation (BCI simulation); 4-fold chronological cross-validation (binary classification)",
+            cv_folds=None,
+            evaluation_type=["offline simulation"],
+        ),
+        performance={"ASME-4stream_accuracy": 0.83, "ASME-2stream_accuracy": 0.86},
+        bci_application=BCIApplicationMetadata(
+            applications=["communication"],
+            environment="laboratory",
+            online_feedback=False,
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300",
+            stimulus_frequencies_hz=None,
+            frequency_resolution_hz=None,
+            code_type=None,
+            code_length=None,
+            n_targets=4,
+            n_repetitions=15,
+            isi_ms=None,
+            soa_ms={
+                "ASME-4stream_overall": 150.0,
+                "ASME-2stream_overall": 300.0,
+                "within_stream": 600.0,
+            },
+            imagery_tasks=None,
+            cue_duration_s=None,
+            imagery_duration_s=None,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials={
+                "ASME-4stream": "600 stimuli per trial (4 trials per run, 6 runs)",
+                "ASME-2stream": "300 stimuli per trial (4 trials per run, 6 runs)",
+            },
+            n_trials_per_class=None,
+            n_blocks=12,
+            block_duration_s=90.0,
+            trials_context="12 runs alternating between ASME-4stream and ASME-2stream, 4 trials per run",
+        ),
+        abstract="The ASME (Auditory Stream segregation Multiclass ERP) paradigm is used for an auditory brain-computer interface (BCI). Two approaches for achieving four-class ASME were investigated: ASME-4stream (four streams with a single target stimulus each) and ASME-2stream (two streams with two target stimuli each). Fifteen healthy subjects participated. ERPs were analyzed, and binary classification and BCI simulation were conducted offline using linear discriminant analysis. Average accuracies were 0.83 (ASME-4stream) and 0.86 (ASME-2stream). The ASME-2stream paradigm showed shorter latency and larger amplitude of P300, higher binary classification accuracy, and smaller workload. Both paradigms achieved sufficiently high accuracy (over 80%) for practical auditory BCI.",
+        methodology="Subjects performed 12 runs alternating between ASME-4stream and ASME-2stream paradigms. Each run contained 4 trials with ~90s duration. ASME-4stream presented 4 streams (SOA=0.15s, 600 stimuli/trial, ratio 9:1 standard:deviant). ASME-2stream presented 2 streams with 2 deviant stimuli each (SOA=0.3s, 300 stimuli/trial, ratio 8:1:1). EEG recorded at 1000 Hz from 64 channels. EOG artifacts removed using ICA on 15 PCs. Data filtered (1-40 Hz for ERP, 0.1-8 Hz for classification), epoched (-0.1 to 1.2s), downsampled to 250 Hz. Classification used shrinkage-LDA with mean amplitudes from 10 intervals (0-1.0s) as features. Performance evaluated using 4-fold chronological cross-validation. Usability assessed via NASA-TLX questionnaire.",
+    )
+
     def __init__(
         self,
-        events={"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]},
+        events=None,
         task="all",
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
     ):
-        self.subject_list = list(range(1, 16))
+        if events is None:
+            events = {"Target": EVENTS["Target"], "NonTarget": EVENTS["NonTarget"]}
         self.n_channels = 64
 
         if task == "all":
@@ -154,13 +451,16 @@ class Kojima2024B(BaseDataset):
             )
 
         super().__init__(
-            self.subject_list,
+            list(range(1, 16)),
             sessions_per_subject=1,
             events=events,
             code="Kojima2024B",
             interval=[-0.5, 1.2],
             paradigm="p300",
             doi="10.7910/DVN/1UJDV6",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _block_rep(self, task, run):
@@ -178,7 +478,6 @@ class Kojima2024B(BaseDataset):
         files_to_load = []
 
         for file in manifest_files:
-
             if (
                 (f"sub-{subject_id}" not in file["label"])
                 or ("stream_" not in file["label"])
@@ -296,9 +595,7 @@ class Kojima2024B(BaseDataset):
         for file in tqdm(files):
             download_url = _api_base_url + str(file["file_id"])
             dl.download_if_missing(
-                path / file["directory"] / file["fname"],
-                download_url,
-                warn_missing=False,
+                path / file["directory"] / file["fname"], download_url, warn_missing=False
             )
 
         return path
@@ -321,9 +618,7 @@ class Kojima2024B(BaseDataset):
         files_path = self.data_path(subject)
         runs = {}
         for file in files_path:
-
             for task in self.tasks:
-
                 fname = file.name
 
                 run = int(fname.split("_")[2].split("-")[1])

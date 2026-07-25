@@ -1,8 +1,16 @@
 """Tests for the metadata schema module."""
 
+import csv
 import dataclasses
+import importlib.util
+import json
+import re
 import typing
+from pathlib import Path
+from types import SimpleNamespace
 
+import mne
+import numpy as np
 import pytest
 
 # Module-level imports used as monkeypatch targets (setattr requires the module object)
@@ -11,6 +19,8 @@ import moabb.datasets.metadata as metadata_module  # noqa: F401
 import moabb.datasets.utils as dataset_utils  # noqa: F401
 
 # Named imports for direct use in test assertions and setup
+from moabb.datasets.bids_interface import _update_participants_tsv
+from moabb.datasets.lee2021_mobile import Lee2021Mobile
 from moabb.datasets.metadata import (
     DATASET_METADATA_CATALOG,
     AcquisitionMetadata,
@@ -20,7 +30,8 @@ from moabb.datasets.metadata import (
     ParticipantMetadata,
     get_dataset_metadata,
 )
-from moabb.datasets.utils import _init_dataset, dataset_dict
+from moabb.datasets.utils import _init_dataset, build_raw_from_epochs, dataset_dict
+from scripts.generate_macro_table import _format_cell
 
 
 class TestAcquisitionMetadata:
@@ -29,9 +40,7 @@ class TestAcquisitionMetadata:
     def test_required_fields_only(self):
         """Test instantiation with only required fields."""
         acq = AcquisitionMetadata(
-            sampling_rate=512.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
+            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
         )
         assert acq.sampling_rate == 512.0
         assert acq.n_channels == 64
@@ -205,9 +214,7 @@ class TestDatasetMetadata:
     def minimal_acquisition(self):
         """Create minimal AcquisitionMetadata for testing."""
         return AcquisitionMetadata(
-            sampling_rate=512.0,
-            n_channels=64,
-            channel_types={"eeg": 60, "eog": 4},
+            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
         )
 
     @pytest.fixture
@@ -240,10 +247,7 @@ class TestDatasetMetadata:
         self, minimal_acquisition, minimal_participants, minimal_experiment
     ):
         """Test instantiation with all fields."""
-        doc = DocumentationMetadata(
-            doi="10.1234/example",
-            description="Test dataset",
-        )
+        doc = DocumentationMetadata(doi="10.1234/example", description="Test dataset")
         meta = DatasetMetadata(
             acquisition=minimal_acquisition,
             participants=minimal_participants,
@@ -335,10 +339,7 @@ class TestMetadataIntegration:
                 hardware="BioSemi ActiveTwo",
                 reference="CMS/DRL",
             ),
-            participants=ParticipantMetadata(
-                n_subjects=8,
-                health_status="healthy",
-            ),
+            participants=ParticipantMetadata(n_subjects=8, health_status="healthy"),
             experiment=ExperimentMetadata(
                 paradigm="p300",
                 task_type="row_col_speller",
@@ -361,18 +362,10 @@ class TestMetadataIntegration:
                 channel_types={"eeg": 8},
                 sensors=["PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2"],
             ),
-            participants=ParticipantMetadata(
-                n_subjects=35,
-                health_status="healthy",
-            ),
+            participants=ParticipantMetadata(n_subjects=35, health_status="healthy"),
             experiment=ExperimentMetadata(
                 paradigm="ssvep",
-                events={
-                    "8Hz": 1,
-                    "10Hz": 2,
-                    "12Hz": 3,
-                    "14Hz": 4,
-                },
+                events={"8Hz": 1, "10Hz": 2, "12Hz": 3, "14Hz": 4},
                 n_classes=4,
                 trial_duration=5.0,
             ),
@@ -413,7 +406,7 @@ class TestMetadataCatalog:
         """Test BNCI2014_001 metadata has expected fields."""
         metadata = get_dataset_metadata("BNCI2014_001")
         # Acquisition
-        assert metadata.acquisition.n_channels == 22
+        assert metadata.acquisition.n_channels == 25
         assert metadata.acquisition.reference == "left mastoid"
         assert "eeg" in metadata.acquisition.channel_types
         # Participants
@@ -496,9 +489,9 @@ class TestMetadataCatalog:
         """Test that datasets have correct paradigm assignment."""
         for name in expected_datasets:
             metadata = get_dataset_metadata(name)
-            assert (
-                metadata.experiment.paradigm == paradigm
-            ), f"{name} should have paradigm '{paradigm}'"
+            assert metadata.experiment.paradigm == paradigm, (
+                f"{name} should have paradigm '{paradigm}'"
+            )
 
     def test_all_datasets_have_required_fields(self):
         """Test that all catalog datasets have required metadata fields."""
@@ -506,9 +499,9 @@ class TestMetadataCatalog:
             # Acquisition required fields
             assert metadata.acquisition.sampling_rate > 0, f"{name} missing sampling_rate"
             assert metadata.acquisition.n_channels > 0, f"{name} missing n_channels"
-            assert (
-                len(metadata.acquisition.channel_types) > 0
-            ), f"{name} missing channel_types"
+            assert len(metadata.acquisition.channel_types) > 0, (
+                f"{name} missing channel_types"
+            )
             # Participants required field
             assert metadata.participants.n_subjects > 0, f"{name} missing n_subjects"
             # Experiment required field
@@ -522,7 +515,7 @@ class TestMetadataCatalog:
 
     def test_catalog_dataset_count(self):
         """Test that catalog contains expected number of datasets."""
-        assert len(DATASET_METADATA_CATALOG) == 84
+        assert len(DATASET_METADATA_CATALOG) == 159
 
     def test_bnci2015_006_metadata(self):
         """Test BNCI2015_006 music BCI metadata."""
@@ -583,26 +576,37 @@ class TestMetadataCatalog:
             assert metadata.experiment.paradigm == "p300"
             assert "10.1016/j.neuroimage.2020.117465" in metadata.documentation.doi
 
-    @pytest.mark.parametrize(
-        "paradigm,expected_count",
-        [
-            ("imagery", 31),
-            ("p300", 35),
-            ("ssvep", 7),
-            ("cvep", 8),
-            ("rstate", 3),
-        ],
-    )
-    def test_paradigm_counts(self, paradigm, expected_count):
-        """Test that each paradigm has expected number of datasets."""
-        count = sum(
-            1
-            for m in DATASET_METADATA_CATALOG.values()
-            if m.experiment.paradigm == paradigm
+    @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep", "cvep", "rstate"])
+    def test_paradigm_counts(self, paradigm):
+        """Cross-check catalog paradigm counts against summary CSV rows."""
+        catalog_names = {
+            name
+            for name, meta in DATASET_METADATA_CATALOG.items()
+            if meta.experiment.paradigm == paradigm
+        }
+
+        summary_path = (
+            Path(__file__).resolve().parents[1] / "datasets" / f"summary_{paradigm}.csv"
         )
-        assert (
-            count == expected_count
-        ), f"Expected {expected_count} {paradigm} datasets, found {count}"
+        with open(summary_path, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            summary_names = {
+                row["Dataset"].strip() for row in reader if row.get("Dataset")
+            }
+
+        # Every summary entry should correspond to a catalog entry.
+        assert summary_names <= catalog_names
+
+        # Catalog entries omitted from summary must be umbrella datasets
+        # represented by one or more explicit variants (e.g., Name_*).
+        missing_from_summary = catalog_names - summary_names
+        allowed_omissions = {
+            name
+            for name in missing_from_summary
+            if any(candidate.startswith(f"{name}_") for candidate in catalog_names)
+        }
+        assert missing_from_summary == allowed_omissions
+        assert len(catalog_names) == len(summary_names) + len(allowed_omissions)
 
     def test_detected_paradigm_matches_experiment(self):
         """Test that detected_paradigm agrees with experiment.paradigm."""
@@ -741,6 +745,251 @@ class TestMetadataCatalog:
                 v = getattr(metadata, f.name)
                 if v is not None:
                     all_errors.extend(_check_type(v, f.type, f"{name}.{f.name}"))
-        assert (
-            all_errors == []
-        ), f"Found {len(all_errors)} type violations:\n" + "\n".join(all_errors[:20])
+        assert all_errors == [], (
+            f"Found {len(all_errors)} type violations:\n" + "\n".join(all_errors[:20])
+        )
+
+
+class TestBuildRawFromEpochsValidation:
+    def test_valid_build_raw_from_epochs(self):
+        data = np.arange(2 * 3 * 4, dtype=float).reshape(2, 3, 4)
+        raw = build_raw_from_epochs(
+            data=data,
+            ch_names=["C3", "Cz", "C4"],
+            sfreq=128.0,
+            event_ids=[1, 2],
+            montage_name="standard_1005",
+            onset_sample=1,
+            buffer_samples=0,
+        )
+
+        stim = raw.get_data(picks=[raw.ch_names.index("STI")])[0]
+        assert raw.info["nchan"] == 4
+        assert np.where(stim > 0)[0].tolist() == [1, 5]
+        assert stim[1] == 1
+        assert stim[5] == 2
+
+    def test_rejects_invalid_data_shape(self):
+        with pytest.raises(ValueError, match="data must have shape"):
+            build_raw_from_epochs(
+                data=np.zeros((3, 4)),
+                ch_names=["C3", "Cz", "C4"],
+                sfreq=128.0,
+                event_ids=[1, 2, 3],
+                montage_name="standard_1005",
+            )
+
+    def test_rejects_scalar_event_ids(self):
+        with pytest.raises(ValueError, match="event_ids must be a 1D array-like"):
+            build_raw_from_epochs(
+                data=np.zeros((2, 3, 4)),
+                ch_names=["C3", "Cz", "C4"],
+                sfreq=128.0,
+                event_ids=1,
+                montage_name="standard_1005",
+            )
+
+    def test_rejects_negative_onset_sample(self):
+        with pytest.raises(ValueError, match="onset_sample .* must be between 0"):
+            build_raw_from_epochs(
+                data=np.zeros((2, 3, 4)),
+                ch_names=["C3", "Cz", "C4"],
+                sfreq=128.0,
+                event_ids=[1, 2],
+                montage_name="standard_1005",
+                onset_sample=-1,
+            )
+
+
+class TestLee2021MobileSessionNormalization:
+    @staticmethod
+    def _make_mock_raw():
+        info = mne.create_info(["Oz"], sfreq=500.0, ch_types=["eeg"])
+        raw = mne.io.RawArray(np.zeros((1, 50)), info, verbose=False)
+        raw.set_annotations(
+            mne.Annotations(
+                onset=[0.0, 0.01, 0.02],
+                duration=[0.0, 0.0, 0.0],
+                description=["Stimulus/S 11", "Stimulus/S 12", "Stimulus/S 13"],
+            )
+        )
+        return raw
+
+    def test_selected_sessions_accept_unpadded_integer(self, monkeypatch):
+        dataset = Lee2021Mobile(paradigm="ssvep", subjects=[1], sessions=[2])
+        fake_files = [
+            "/tmp/sub-01_ses-02_task-SSVEP_eeg.vhdr",
+            "/tmp/sub-01_ses-03_task-SSVEP_eeg.vhdr",
+        ]
+        monkeypatch.setattr(dataset, "data_path", lambda subject: fake_files)
+        monkeypatch.setattr(
+            "moabb.datasets.lee2021_mobile.mne.io.read_raw_brainvision",
+            lambda *args, **kwargs: self._make_mock_raw(),
+        )
+
+        subject_sessions = dataset._get_single_subject_data(1)
+        assert set(subject_sessions) == {"2", "3"}
+
+        monkeypatch.setattr(
+            dataset,
+            "_get_single_subject_data_using_cache",
+            lambda subject, cache_config, process_pipeline: subject_sessions,
+        )
+        data = dataset.get_data(subjects=[1])
+        assert set(data[1]) == {"2"}
+
+
+class TestParticipantsResolutionOrdering:
+    @staticmethod
+    def _write_participants_tsv(tmp_path, participant_ids):
+        tsv_path = tmp_path / "participants.tsv"
+        with open(tsv_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=["participant_id"], delimiter="\t")
+            writer.writeheader()
+            for pid in participant_ids:
+                writer.writerow({"participant_id": pid})
+        return tsv_path
+
+    @staticmethod
+    def _read_participants_tsv(tsv_path):
+        with open(tsv_path, newline="", encoding="utf-8") as f:
+            return list(csv.DictReader(f, delimiter="\t"))
+
+    @staticmethod
+    def _make_raw(subject_info=None, age=None):
+        raw = SimpleNamespace(info={})
+        if subject_info is not None:
+            raw.info["subject_info"] = subject_info
+        if age is not None:
+            raw._moabb_subject_age = age
+        return raw
+
+    def test_age_resolution_priority(self, tmp_path):
+        tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=2, ages=[25, None], age_mean=44.0
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+
+        _update_participants_tsv(tmp_path, 1, metadata, raw=self._make_raw(age=31))
+        _update_participants_tsv(tmp_path, 2, metadata, raw=self._make_raw(age=31))
+        rows = self._read_participants_tsv(tsv_path)
+
+        assert rows[0]["age"] == "25"
+        assert rows[1]["age"] == "31"
+
+    def test_sex_and_hand_resolution_priority_and_parsing(self, tmp_path):
+        tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+            ),
+            participants=ParticipantMetadata(
+                n_subjects=2,
+                sexes=["male", None],
+                handedness_list=[None, None],
+                handedness={"left": 2},
+            ),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+
+        # Subject 1: metadata list has priority over raw sex.
+        _update_participants_tsv(
+            tmp_path, 1, metadata, raw=self._make_raw(subject_info={"sex": 2, "hand": 2})
+        )
+        # Subject 2: fallback to raw subject_info with numeric strings.
+        _update_participants_tsv(
+            tmp_path,
+            2,
+            metadata,
+            raw=self._make_raw(subject_info={"sex": "2", "hand": "1"}),
+        )
+        rows = self._read_participants_tsv(tsv_path)
+
+        assert rows[0]["sex"] == "male"
+        assert rows[0]["hand"] == "left"
+        assert rows[1]["sex"] == "female"
+        assert rows[1]["hand"] == "right"
+
+    def test_doi_cache_metadata_total_matches_entries(self):
+        cache_path = Path(__file__).resolve().parent / "doi_cache.json"
+        with open(cache_path, encoding="utf-8") as f:
+            cache = json.load(f)
+        assert "_metadata" in cache
+        assert "total" in cache["_metadata"]
+        total = cache["_metadata"]["total"]
+        actual = sum(1 for key in cache if key != "_metadata")
+        assert total == actual
+
+
+# ------------------------------------------------------------------------
+# Dataset country metadata must render as a flag in the docs macro table.
+# A missing/NaN country crashed the docs build (``country_flag`` called
+# ``len()`` on a float) because a new dataset shipped without one. These tests
+# guard both the data (every dataset resolves to a valid code) and the renderer.
+# ------------------------------------------------------------------------
+
+# Every dataset that carries metadata, listed from the catalog.
+DATASETS_WITH_METADATA = sorted(DATASET_METADATA_CATALOG)
+
+
+@pytest.fixture(scope="module")
+def country_constants():
+    """Load ``normalize_country``/``country_flag`` from the docs sphinxext."""
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "docs"
+        / "source"
+        / "sphinxext"
+        / "dataset_constants.py"
+    )
+    spec = importlib.util.spec_from_file_location("dataset_constants", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="module")
+def dataset_metadata():
+    """All MOABB dataset metadata, keyed by dataset name."""
+    return DATASET_METADATA_CATALOG
+
+
+@pytest.mark.parametrize("name", DATASETS_WITH_METADATA)
+def test_dataset_has_resolvable_country(name, dataset_metadata, country_constants):
+    # country may be a name ("France"), alpha-2 ("FR"), or alpha-3 ("USA"); it
+    # must resolve to a valid alpha-2 code (None means missing/unknown, which is
+    # what crashed the docs macro table).
+    meta = dataset_metadata[name]
+    assert meta.documentation is not None, f"{name} has no documentation metadata"
+    raw = meta.documentation.country
+    code = country_constants.normalize_country(raw)
+    assert code and re.fullmatch(r"[A-Z]{2}", code), (
+        f"{name} country {raw!r} does not resolve to an alpha-2 code"
+    )
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        (float("nan"), ""),  # crashed the docs build (len() on a float)
+        (None, ""),
+        ("USA", ""),  # not pre-normalized: country_flag wants a 2-char code
+        ("MX", "\U0001f1f2\U0001f1fd"),
+        ("fr", "\U0001f1eb\U0001f1f7"),  # lower-cased 2-letter still renders
+    ],
+)
+def test_country_flag_handles_bad_input(value, expected, country_constants):
+    assert country_constants.country_flag(value) == expected
+
+
+# A missing value arrives from the DataFrame as NaN (a truthy float), which
+# slipped past ``if not url`` guards and crashed html.escape in the docs build.
+@pytest.mark.parametrize("fmt", ["data_url", "doi_link", "country", "str", "num"])
+def test_format_cell_handles_nan(fmt):
+    assert _format_cell(float("nan"), fmt) == ""

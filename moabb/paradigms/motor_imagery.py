@@ -28,6 +28,7 @@ class BaseMotorImagery(BaseParadigm):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         if overlap is not None and not (0 <= overlap < 100):
             raise ValueError("overlap must be in [0, 100)")
@@ -42,6 +43,7 @@ class BaseMotorImagery(BaseParadigm):
             tmax=tmax,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def is_valid(self, dataset):
@@ -106,6 +108,7 @@ class LeftRightImagery(BaseMotorImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -119,6 +122,7 @@ class LeftRightImagery(BaseMotorImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def used_events(self, dataset):
@@ -155,6 +159,7 @@ class FilterBankLeftRightImagery(LeftRightImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         if events is not None:
             raise ValueError("LeftRightImagery dont accept events")
@@ -169,6 +174,7 @@ class FilterBankLeftRightImagery(LeftRightImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def used_events(self, dataset):
@@ -218,6 +224,7 @@ class MotorImagery(BaseMotorImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=[[fmin, fmax]],
@@ -229,13 +236,17 @@ class MotorImagery(BaseMotorImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
         self.n_classes = n_classes
 
         if self.events is None:
             log.warning("Choosing from all possible events")
         elif self.n_classes is not None:
-            assert n_classes <= len(self.events), "More classes than events specified"
+            if n_classes > len(self.events):  # was assert, now raises properly
+                raise ValueError(
+                    f"n_classes ({n_classes}) exceeds number of events ({len(self.events)})"
+                )
 
     def is_valid(self, dataset):
         ret = True
@@ -296,6 +307,69 @@ class MotorImagery(BaseMotorImagery):
         return "accuracy"
 
 
+class Imagery(MotorImagery):
+    """N-class imagery paradigm (motor imagery and imagined speech).
+
+    Thin alias for :class:`MotorImagery` that signals the umbrella
+    ``paradigm="imagery"`` tag covers both motor imagery and imagined
+    speech datasets. Defaults match :class:`MotorImagery` (8-32 Hz
+    bandpass), so existing motor-imagery scripts can swap names without
+    behavior changes. For imagined-speech-tuned defaults, use
+    :class:`SpeechImagery` instead.
+    """
+
+
+class SpeechImagery(MotorImagery):
+    """Imagined speech paradigm with broadband defaults.
+
+    Imagined speech (silently rehearsing words, phonemes, or phrases)
+    shares the ``paradigm="imagery"`` tag with motor imagery and is
+    decoded with the same pipeline machinery, but the relevant spectral
+    content extends well beyond the motor mu/beta band. Defaults follow
+    Aguilera-Rodriguez et al. (2025), *Sci Data* 12:1543, who report a
+    1-100 Hz bandpass with a 60 Hz notch on a 4-class Spanish vowel set.
+
+    Parameters
+    ----------
+    fmin: float (default 1)
+        cutoff frequency (Hz) for the high pass filter.
+    fmax: float (default 100)
+        cutoff frequency (Hz) for the low pass filter.
+
+    See :class:`MotorImagery` for the remaining parameters.
+    """
+
+    def __init__(
+        self,
+        n_classes=None,
+        fmin=1,
+        fmax=100,
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+        scorer=None,
+        overlap=None,
+        reject_by_annotation=True,
+    ):
+        super().__init__(
+            n_classes=n_classes,
+            fmin=fmin,
+            fmax=fmax,
+            events=events,
+            tmin=tmin,
+            tmax=tmax,
+            baseline=baseline,
+            channels=channels,
+            resample=resample,
+            scorer=scorer,
+            overlap=overlap,
+            reject_by_annotation=reject_by_annotation,
+        )
+
+
 class FilterBankMotorImagery(MotorImagery):
     """Filter bank n-class motor imagery.
 
@@ -325,6 +399,7 @@ class FilterBankMotorImagery(MotorImagery):
         resample=None,
         scorer=None,
         overlap=None,
+        reject_by_annotation=True,
     ):
         BaseMotorImagery.__init__(
             self,
@@ -337,13 +412,17 @@ class FilterBankMotorImagery(MotorImagery):
             resample=resample,
             overlap=overlap,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
         self.n_classes = n_classes
 
         if self.events is None:
             log.warning("Choosing from all possible events")
         else:
-            assert n_classes <= len(self.events), "More classes than events specified"
+            if n_classes > len(self.events):  # was assert, now raises properly
+                raise ValueError(
+                    f"n_classes ({n_classes}) exceeds number of events ({len(self.events)})"
+                )
 
     def is_valid(self, dataset):
         ret = True

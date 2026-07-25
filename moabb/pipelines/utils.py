@@ -91,14 +91,12 @@ def parse_pipelines_from_directory(dir_path):
         'paradigms': list of class names that are compatible with said pipeline
     """
     if dir_path.endswith(".yml"):
-        assert os.path.isfile(dir_path), "Given pipeline path {} is not valid".format(
-            dir_path
-        )
+        if not os.path.isfile(dir_path):  # was assert, now raises properly
+            raise ValueError(f"Given pipeline path {dir_path} is not valid")
         yaml_files = [dir_path]
     else:
-        assert os.path.isdir(
-            os.path.abspath(dir_path)
-        ), "Given pipeline path {} is not valid".format(dir_path)
+        if not os.path.isdir(os.path.abspath(dir_path)):  # was assert
+            raise ValueError(f"Given pipeline path {dir_path} is not valid")
 
         # get list of config files
         yaml_files = glob(os.path.join(dir_path, "*.yml"))
@@ -192,7 +190,11 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
             if paradigm not in paradigms.keys():
                 paradigms[paradigm] = {}
 
-            # FIXME name are not unique
+            if config["name"] in paradigms[paradigm]:  # detect name collisions
+                raise ValueError(
+                    f"duplicate pipeline name '{config['name']}' for paradigm "
+                    f"'{paradigm}'. each pipeline must have a unique name."
+                )
             logger.debug("Pipeline: \n\n {} \n".format(get_string_rep(pipeline)))
             paradigms[paradigm][config["name"]] = pipeline
 
@@ -239,14 +241,16 @@ class FilterBank(BaseEstimator, TransformerMixin):
         self.flatten = flatten
 
     def fit(self, X, y=None):
-        assert X.ndim == 4
+        if X.ndim != 4:  # was assert, now raises properly
+            raise ValueError(f"X must be 4-dimensional, got {X.ndim}")
         self.models = [
             deepcopy(self.estimator).fit(X[..., i], y) for i in range(X.shape[-1])
         ]
         return self
 
     def transform(self, X):
-        assert X.ndim == 4
+        if X.ndim != 4:  # was assert
+            raise ValueError(f"X must be 4-dimensional, got {X.ndim}")
         out = [self.models[i].transform(X[..., i]) for i in range(X.shape[-1])]
         assert out[0].ndim == 2, (
             "Each band must return a two dimensional "
@@ -400,34 +404,23 @@ def filterbank(X, sfreq, idx_fb, peaks):
         Wp = Wp_relaxed
         Ws = Ws_relaxed
 
-    B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
+    # Cap filter order to avoid numerical instability
+    N = min(N, 10)
+
+    # Use SOS (second-order sections) form for numerical stability
+    # Transfer function (B, A) form is numerically unstable for high-order filters
+    sos = scp.cheby1(N, 0.5, Wn, btype="bandpass", output="sos")
 
     y = np.zeros(X.shape)
     if num_trials == 1:  # For testdata
         for ch_i in range(num_chans):
             try:
-                # The arguments 'axis=0, padtype='odd', padlen=3*(max(len(B),len(A))-1)' correspond
-                # to Matlab filtfilt (https://dsp.stackexchange.com/a/47945)
-                y[ch_i, :] = scp.filtfilt(
-                    B,
-                    A,
-                    X[ch_i, :],
-                    axis=0,
-                    padtype="odd",
-                    padlen=3 * (max(len(B), len(A)) - 1),
-                )
+                y[ch_i, :] = scp.sosfiltfilt(sos, X[ch_i, :])
             except Exception as e:
                 log.error(e)
                 log.info(num_chans)
     else:
         for trial_i in range(num_trials):  # Filter each trial sequentially
             for ch_i in range(num_chans):  # Filter each channel sequentially
-                y[trial_i, ch_i, :] = scp.filtfilt(
-                    B,
-                    A,
-                    X[trial_i, ch_i, :],
-                    axis=0,
-                    padtype="odd",
-                    padlen=3 * (max(len(B), len(A)) - 1),
-                )
+                y[trial_i, ch_i, :] = scp.sosfiltfilt(sos, X[trial_i, ch_i, :])
     return y

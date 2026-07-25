@@ -15,7 +15,8 @@ class LogVariance(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         """transform."""
-        assert X.ndim == 3
+        if X.ndim != 3:  # was assert, now raises properly
+            raise ValueError(f"X must be 3-dimensional, got {X.ndim}")
         return np.log(np.var(X, -1))
 
 

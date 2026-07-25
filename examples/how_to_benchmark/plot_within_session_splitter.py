@@ -126,7 +126,7 @@ pipe = make_pipeline(
     CSP(n_components=6, reg=None),  # reduce to 6 CSP components
     LDA(),  # classify based on these features
 )
-pipe
+pipe  # noqa: B018  # shown as the last expression in a Sphinx-gallery cell
 
 
 ###############################################################################
@@ -232,18 +232,10 @@ def plot_subject_split(ax, df):
     subject_counts = df.groupby(["subject", "split"]).size().unstack(fill_value=0)
 
     # Plot the train and test counts for each subject
-    subject_counts.plot(
-        kind="barh",
-        stacked=True,
-        color=colors,
-        ax=ax,
-        width=0.7,
-    )
+    subject_counts.plot(kind="barh", stacked=True, color=colors, ax=ax, width=0.7)
 
     ax.set(
-        xlabel="Number of samples",
-        ylabel="Subject",
-        title="Train-Test Split by Subject",
+        xlabel="Number of samples", ylabel="Subject", title="Train-Test Split by Subject"
     )
     ax.legend(["Train", "Test"], loc="lower right")
     ax.invert_yaxis()

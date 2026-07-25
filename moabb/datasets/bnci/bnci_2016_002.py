@@ -2,9 +2,10 @@
 
 from datetime import datetime, timezone
 
-import h5py
+import numpy as np
 from mne import Annotations
 from mne.utils import verbose
+from pymatreader import read_mat
 
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -15,7 +16,6 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
@@ -49,12 +49,6 @@ _SUBJECT_VP_CODES = {
     14: "ii",
     15: "ja",
 }
-
-
-def _read_hdf5_string(f, ref):
-    """Read a string from HDF5 object reference."""
-    data = f[ref][:]
-    return "".join(chr(c) for c in data.flatten())
 
 
 @verbose
@@ -107,29 +101,21 @@ def _load_data_002_2016(
     if only_filenames:
         return [filename]
 
-    # Load HDF5 file (MATLAB v7.3 format)
-    with h5py.File(filename, "r") as f:
-        # Get sampling rate
-        sfreq = float(f["cnt"]["fs"][0, 0])
+    # Load HDF5 file (MATLAB v7.3 format) via pymatreader
+    mat = read_mat(filename)
 
-        # Get channel labels
-        clab_refs = f["cnt"]["clab"][:]
-        ch_names = []
-        for ref in clab_refs.flatten():
-            ch_names.append(_read_hdf5_string(f, ref))
-
-        # Get continuous data (channels x samples)
-        data = f["cnt"]["x"][:]
-
-        # Get class names
-        className_refs = f["mrk"]["className"][:]
-        class_names = []
-        for ref in className_refs.flatten():
-            class_names.append(_read_hdf5_string(f, ref))
-
-        # Get marker times (in samples) and labels
-        marker_times = f["mrk"]["time"][:].flatten()
-        marker_labels = f["mrk"]["y"][:]  # shape: (n_events, n_classes)
+    sfreq = float(np.asarray(mat["cnt"]["fs"]).flat[0])
+    ch_names = mat["cnt"]["clab"]
+    if isinstance(ch_names, str):
+        ch_names = [ch_names]
+    # pymatreader returns MATLAB's (n_samples, n_channels); transpose to
+    # (n_channels, n_samples) expected by MNE RawArray.
+    data = np.asarray(mat["cnt"]["x"]).T
+    class_names = mat["mrk"]["className"]
+    if isinstance(class_names, str):
+        class_names = [class_names]
+    marker_times = np.asarray(mat["mrk"]["time"]).flatten()
+    marker_labels = np.asarray(mat["mrk"]["y"])
 
     # Determine channel types based on channel names
     # 59 EEG + 2 EOG + 1 EMG + 7 other (gas, brake, wheel, distance, etc.)
@@ -191,10 +177,12 @@ def _load_data_002_2016(
     onset_times = []
     descriptions = []
 
+    # marker_labels has shape (n_classes, n_events); each column is an event
+    # and the row index with a positive value indicates the class.
     for i, time_ms in enumerate(marker_times):
         # Find which class this event belongs to
-        event_row = marker_labels[i, :]
-        for class_idx, value in enumerate(event_row):
+        event_col = marker_labels[:, i]
+        for class_idx, value in enumerate(event_col):
             if value > 0:
                 # Marker times are in milliseconds, convert to seconds
                 onset_times.append(time_ms / 1000.0)
@@ -203,9 +191,7 @@ def _load_data_002_2016(
 
     if onset_times:
         annotations = Annotations(
-            onset=onset_times,
-            duration=[0.0] * len(onset_times),
-            description=descriptions,
+            onset=onset_times, duration=[0.0] * len(onset_times), description=descriptions
         )
         raw.set_annotations(annotations)
 
@@ -331,116 +317,196 @@ class BNCI2016_002(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=64,
-            channel_types={"eeg": 64},
-            montage="10-20",
+            n_channels=59,
+            channel_types={"eeg": 59, "emg": 1, "eog": 2, "misc": 7},
+            montage="extended 10-20",
             hardware="BrainAmp",
             sensor_type="Ag/AgCl",
-            reference="Car",
-            software="Matlab",
+            reference="nose",
+            software="TORCS",
             filters={"highpass_hz": 0.1, "lowpass_hz": 250},
             impedance_threshold_kohm={"eeg": 20, "emg": 50},
             sensors=[
-                "Fp1",
-                "Fpz",
-                "Fp2",
-                "AF7",
                 "AF3",
-                "AFz",
                 "AF4",
-                "AF8",
-                "F7",
-                "F5",
-                "F3",
-                "F1",
-                "Fz",
-                "F2",
-                "F4",
-                "F6",
-                "F8",
-                "FT7",
-                "FC5",
-                "FC3",
-                "FC1",
-                "FCz",
-                "FC2",
-                "FC4",
-                "FC6",
-                "FT8",
-                "T7",
-                "C5",
-                "C3",
                 "C1",
-                "Cz",
                 "C2",
+                "C3",
                 "C4",
+                "C5",
                 "C6",
+                "CP1",
+                "CP2",
+                "CP3",
+                "CP4",
+                "CP5",
+                "CP6",
+                "CPz",
+                "Cz",
+                "EMGf",
+                "EOGh",
+                "EOGv",
+                "F1",
+                "F2",
+                "F3",
+                "F4",
+                "F5",
+                "F6",
+                "F7",
+                "F8",
+                "FC1",
+                "FC2",
+                "FC3",
+                "FC4",
+                "FC5",
+                "FC6",
+                "FCz",
+                "FT7",
+                "FT8",
+                "Fp1",
+                "Fp2",
+                "Fz",
+                "O1",
+                "O2",
+                "Oz",
+                "P1",
+                "P10",
+                "P2",
+                "P3",
+                "P4",
+                "P5",
+                "P6",
+                "P7",
+                "P8",
+                "P9",
+                "PO3",
+                "PO4",
+                "PO7",
+                "PO8",
+                "POz",
+                "Pz",
+                "T7",
                 "T8",
                 "TP7",
-                "CP5",
-                "CP3",
-                "CP1",
-                "CPz",
-                "CP2",
-                "CP4",
-                "CP6",
                 "TP8",
-                "P7",
-                "P5",
-                "P3",
-                "P1",
-                "Pz",
-                "P2",
-                "P4",
-                "P6",
-                "P8",
-                "PO7",
-                "PO3",
-                "POz",
-                "PO4",
-                "PO8",
-                "O1",
-                "Oz",
-                "O2",
-                "Iz",
+                "brake",
+                "dist_to_lead",
+                "gas",
+                "lead_brake",
+                "lead_gas",
+                "wheel_X",
+                "wheel_Y",
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=2,
+                eog_type=["vertical", "horizontal"],
                 has_emg=True,
-                emg_channels=2,
-                other_physiological=["gsr"],
+                emg_channels=1,
+                other_physiological=["technical_markers"],
             ),
+            cap_manufacturer="Easycap",
+            cap_model="Easycap",
         ),
         participants=ParticipantMetadata(
             n_subjects=18,
             health_status="healthy",
             gender={"male": 14, "female": 4},
             age_mean=30.6,
+            age_std=5.4,
             handedness="right-handed",
             bci_experience="naive",
+            species="human",
         ),
         experiment=ExperimentMetadata(
-            paradigm="p300",
+            paradigm="emergency_braking",
+            task_type="driving_simulation",
+            events={
+                "car_brake": 1,
+                "car_hold": 2,
+                "react_emg": 3,
+                "car_accelerate": 4,
+                "car_collision": 5,
+            },
             n_classes=2,
-            class_labels=["rest", "feet"],
-            trial_duration=5.0,
-            study_design="to drive a virtual racing car\nusing the steering wheel and gas/brake pedals (automatic\nclutch), and to tightly follow a computer-controlled lead\nvehicle at a driving speed of 100 km h-1.",
+            class_labels=["normal_driving", "emergency_braking"],
+            trial_duration=3.0,
+            study_design="Participants drove a virtual racing car using steering wheel and gas/brake pedals, tightly following a computer-controlled lead vehicle at 100 km/h. The lead vehicle occasionally decelerated abruptly (20-40s inter-stimulus-interval) to 60-80 km/h, requiring immediate emergency braking. Three blocks of 45 min each with 10-15 min rest between blocks.",
             feedback_type="visual (colored circle indicating distance: green <20m, yellow otherwise; brakelight flashing)",
-            stimulus_type="oddball",
+            stimulus_type="emergency_braking_scenario",
             stimulus_modalities=["visual", "multisensory"],
-            primary_modality="multisensory",
-            synchronicity="synchronous",
+            primary_modality="visual",
+            synchronicity="asynchronous",
             mode="online",
             has_training_test_split=True,
+            instructions="Drive a virtual racing car using steering wheel and gas/brake pedals, tightly follow the lead vehicle within 20m at 100 km/h. Perform immediate emergency braking when the lead vehicle decelerates abruptly to avoid a crash.",
+            stimulus_presentation={
+                "isi_range": "20-40 seconds",
+                "deceleration_range": "60-80 km/h",
+                "brakelight": "flashing",
+                "oncoming_traffic": "present",
+                "sharp_curves": "present",
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1088/1741-2560/8/5/056001",
-            funding=["DFG grant", "grant nos s", "BMBF grant", "grant no MU MU"],
+            description="Emergency braking detection during simulated driving using EEG and EMG to predict driver's braking intention before behavioral response.",
+            investigators=[
+                "Stefan Haufe",
+                "Matthias S Treder",
+                "Manfred F Gugler",
+                "Max Sagebaum",
+                "Gabriel Curio",
+                "Benjamin Blankertz",
+            ],
+            institution="Berlin Institute of Technology",
+            country="Germany",
+            publication_year=2011,
+            senior_author="Benjamin Blankertz",
+            contact_info=["stefan.haufe@tu-berlin.de"],
+            associated_paper_doi="10.1088/1741-2560/8/5/056001",
+            funding=[
+                "DFG grant",
+                "BMBF grant",
+                "Bernstein Focus Neurotechnology, Berlin",
+            ],
+            institution_address="Franklinstraße 28/29, D-10587 Berlin, Germany",
+            institution_department="Machine Learning Group, Department of Computer Science",
+            ethics_approval=[
+                "IRB of Charité University Medicine, Berlin",
+                "Declaration of Helsinki",
+                "Written informed consent from all participants",
+            ],
+            keywords=[
+                "emergency braking",
+                "driving simulation",
+                "EEG",
+                "EMG",
+                "brain-computer interface",
+                "neuroergonomics",
+                "event-related potentials",
+                "machine learning",
+                "driver assistance",
+            ],
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
         ),
+        sessions_per_subject=3,
+        runs_per_session=1,
+        contributing_labs=[
+            "Machine Learning Group, Berlin Institute of Technology",
+            "Bernstein Focus Neurotechnology, Berlin",
+            "Neurophysics Group, Charité University Medicine Berlin",
+            "Intelligent Data Analysis Group, Fraunhofer Institute FIRST",
+        ],
+        n_contributing_labs=4,
+        data_processed=True,
+        file_format=".mat",
         tags=Tags(
-            pathology=["Other"],
-            modality=["Visual"],
-            type=["Clinical/Intervention"],
+            pathology=["Healthy"],
+            modality=["Visual", "Multisensory"],
+            type=["Driving", "Neuroergonomics"],
         ),
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
@@ -452,34 +518,63 @@ class BNCI2016_002(BNCIBaseDataset):
                 "rectification",
                 "downsampling/upsampling",
                 "baseline correction",
+                "synchronization",
             ],
-            artifact_methods=["ICA"],
-            re_reference="car",
+            highpass_hz=0.1,
+            lowpass_hz=45.0,
+            bandpass=[15.0, 90.0],
+            notch_hz=50.0,
+            filter_type="Chebychev type II (EEG lowpass), Elliptic (EMG bandpass), digital (notch)",
+            filter_order="tenth-order (EEG), sixth-order (EMG), second-order (notch)",
+            re_reference="nose",
+            downsampled_to_hz=200.0,
+            epoch_window=[-0.3, 1.2],
+            notes="EEG lowpass filtered at 45 Hz (causal). EMG bandpass filtered 15-90 Hz with 50 Hz notch and rectified. All signals synchronized and resampled to 200 Hz. Baseline correction using first 100 ms.",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA", "Shrinkage LDA"],
-            feature_extraction=["Bandpower", "Covariance/Riemannian", "ICA"],
-            frequency_bands=FrequencyBands(
-                theta=[4, 8],
-            ),
+            classifiers=[
+                "RLDA",
+                "Regularized Linear Discriminant Analysis",
+                "Shrinkage LDA",
+            ],
+            feature_extraction=[
+                "Event-Related Potentials",
+                "Spatio-temporal features",
+                "Bi-serial correlation",
+                "Area Under Curve",
+            ],
+            spatial_filters=["Artifact rejection based on spectral power"],
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["cross_subject"],
+            cv_method="sequential temporal split", evaluation_type=["temporal_validation"]
         ),
+        performance={
+            "auc": 0.5,
+            "braking_time_reduction_ms": 130,
+            "braking_distance_reduction_m": 3.66,
+        },
         bci_application=BCIApplicationMetadata(
-            applications=["vr_ar", "communication"],
+            applications=[
+                "driving_assistance",
+                "emergency_braking_detection",
+                "neuroergonomics",
+            ],
             environment="laboratory",
+            online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
+            detected_paradigm="emergency_braking_erp"
         ),
         data_structure=DataStructureMetadata(
-            n_trials=225,
+            n_trials="~99 emergency braking events per subject (test set)",
+            n_blocks=3,
+            block_duration_s=2700.0,
+            trials_context="Emergency braking events with 20-40s inter-stimulus-interval, total ~225 events across 3 blocks per subject",
         ),
-        data_processed=True,
     )
+    nemar_id = "nm000243"
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(_SUBJECT_VP_CODES.keys()),
             sessions_per_subject=1,
@@ -493,4 +588,7 @@ class BNCI2016_002(BNCIBaseDataset):
             doi="10.1088/1741-2560/8/5/056001",
             load_fn=_load_data_002_2016,
             base_url=BBCI_URL,
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )

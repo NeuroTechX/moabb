@@ -21,6 +21,7 @@ from sklearn.linear_model import LogisticRegression as LR
 from sklearn.pipeline import make_pipeline
 
 import moabb.analysis.plotting as moabb_plt
+from moabb.analysis.chance_level import chance_by_chance
 from moabb.datasets import BNCI2014_001, Zhou2016
 from moabb.datasets.utils import find_intersecting_channels
 from moabb.evaluations import WithinSessionEvaluation
@@ -86,5 +87,7 @@ print(results.head())
 # Compare the obtained results with the two pipelines, CSP+LDA and logistic
 # regression computed in the tangent space of the covariance matrices.
 
-fig = moabb_plt.paired_plot(results, "csp+lda", "ts+lr")
+chance_levels = chance_by_chance(results, alpha=[0.05, 0.01])
+
+fig = moabb_plt.paired_plot(results, "csp+lda", "ts+lr", chance_level=chance_levels)
 plt.show()

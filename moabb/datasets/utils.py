@@ -5,6 +5,11 @@ from __future__ import annotations
 import abc
 import inspect
 import logging
+import shutil
+import stat
+import subprocess
+import tarfile
+import zipfile
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -12,6 +17,7 @@ import mne
 import mne_bids
 import numpy as np
 from mne import create_info
+from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 import moabb.datasets as db
@@ -20,6 +26,8 @@ from moabb.analysis.plotting import (
     dataset_bubble_plot,
     get_dataset_area,
 )
+from moabb.datasets import download as dl
+from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
 
@@ -40,10 +48,11 @@ def _init_dataset():
         if issubclass(ds[1], BaseDataset):
             dataset_list.append(ds[1])
 
+    deprecated_names = list(zip(*aliases_list))[0] if aliases_list else ()
     dataset_class = {
         dataset.__name__: dataset
         for dataset in dataset_list
-        if dataset.__name__ not in list(zip(*aliases_list))[0]
+        if dataset.__name__ not in deprecated_names
     }
 
     dataset_dict.update(dataset_class)
@@ -91,7 +100,7 @@ def dataset_search(  # noqa: C901
     if not dataset_dict:
         _init_dataset()
 
-    deprecated_names, _, _ = zip(*aliases_list)
+    deprecated_names = list(zip(*aliases_list))[0] if aliases_list else ()
 
     channels = set(channels)
     out_data = []
@@ -99,7 +108,11 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep", "cvep", None]
+    if paradigm not in ["imagery", "p300", "ssvep", "cvep", None]:  # was assert
+        raise ValueError(
+            f"paradigm must be one of 'imagery', 'p300', 'ssvep', 'cvep', or None, "
+            f"got '{paradigm}'"
+        )
 
     for type_d in dataset_list:
         if type_d.__name__ in deprecated_names:
@@ -139,7 +152,8 @@ def dataset_search(  # noqa: C901
                 s1 = d.get_data([1])[1]
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
-                raw.pick_types(eeg=True)
+                picks = pick_channels_for_modalities(raw.info, d.return_all_modalities)
+                raw.pick(picks)
                 if channels <= set(raw.info["ch_names"]):
                     out_data.append(d)
             else:
@@ -161,7 +175,8 @@ def find_intersecting_channels(datasets, verbose=False):
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
-        raw.pick_types(eeg=True)
+        picks = pick_channels_for_modalities(raw.info, d.return_all_modalities)
+        raw.pick(picks)
         processed = []
         for ch in raw.info["ch_names"]:
             ch = ch.upper()
@@ -181,6 +196,22 @@ def find_intersecting_channels(datasets, verbose=False):
     allchans.intersection_update(*dset_chans)
     allchans = [s.replace("Z", "z") for s in allchans]
     return allchans, keep_datasets
+
+
+def set_neuroscan_montage(raw, montage_name="standard_1005"):
+    """Normalize Neuroscan ALL_CAPS labels and apply a standard montage.
+
+    Neuroscan caps label channels in upper case (``FP1``, ``FPZ``, ``CZ``)
+    whereas MNE's standard montages use mixed case (``Fp1``, ``Fpz``, ``Cz``);
+    without the rename :meth:`set_montage` silently matches no channels.
+    Non-EEG channels (stim/EOG/misc) are unaffected by the transform.
+
+    Modifies ``raw`` in place.
+    """
+    raw.rename_channels(
+        {ch: ch.replace("Z", "z").replace("FP", "Fp") for ch in raw.ch_names}
+    )
+    raw.set_montage(make_standard_montage(montage_name), on_missing="ignore")
 
 
 def _download_all(update_path=True, verbose=None):
@@ -204,6 +235,25 @@ def blocks_reps(blocks: list, reps: list, n_rep: int):
     return [block_rep(b, r, n_rep) for b in blocks for r in reps]
 
 
+def resolve_cvep_command_ids(cvep_data, trial_idx, first_idx, true_labels=None):
+    """Return the attended command id for each unique trial in ``trial_idx``.
+
+    Resolves train mode from ``cvep_data["command_idx"]`` and test mode from
+    ``cvep_data["commands_info"]`` + ``true_labels``.  ``first_idx`` is the
+    output of ``np.unique(trial_idx, return_index=True)`` (the row of the
+    first occurrence of each unique trial); callers compute it once and reuse
+    it for ``first_trial_onsets``.
+    """
+    if cvep_data["mode"] == "train":
+        return np.asarray(cvep_data["command_idx"], dtype=int)[first_idx]
+    assert true_labels is not None
+    label_to_cmd = {
+        item["label"]: int(c) for c, item in cvep_data["commands_info"][0].items()
+    }
+    unique_trials = np.asarray(trial_idx)[first_idx]
+    return np.array([label_to_cmd[true_labels[int(t)]] for t in unique_trials], dtype=int)
+
+
 def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"):
     """
     Add a stimulus channel with trial onsets and their labels.
@@ -216,11 +266,11 @@ def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"
         The onsets of the trials in sample numbers.
     labels: List | np.ndarray
         The labels of the trials.
-    offset: int (default: 200)
+    offset : int
         The integer value to start markers with. For instance, if 200, then label 0 will be marker 200, label 1
-        will be marker 201, etc.
-    ch_name: str (default: "stim_trial")
-        The name of the added stimulus channel.
+        will be marker 201, etc. Defaults to ``200``.
+    ch_name : str
+        The name of the added stimulus channel. Defaults to ``"stim_trial"``.
 
     Returns
     -------
@@ -235,10 +285,7 @@ def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"
     for onset, label in zip(onsets, labels):
         stim_chan[0, onset] = offset + label
     info = create_info(
-        ch_names=[ch_name],
-        ch_types=["stim"],
-        sfreq=raw.info["sfreq"],
-        verbose=False,
+        ch_names=[ch_name], ch_types=["stim"], sfreq=raw.info["sfreq"], verbose=False
     )
     raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
     return raw
@@ -265,17 +312,18 @@ def add_stim_channel_epoch(
         The onsets of the trials in sample numbers.
     labels: List | np.ndarray
         The labels of the trials.
-    codes: np.ndarray (default: None)
-        The codebook containing each presented code of shape (nr_bits, nr_codes), sampled at the presentation rate.
-        If None, the labels information is used directly.
-    presentation_rate: int (default: None):
+    codes : np.ndarray or None
+        The codebook containing each presented code, of shape ``(nr_bits, nr_codes)``,
+        sampled at the presentation rate.
+        If None, the labels information is used directly. Defaults to ``None``.
+    presentation_rate : int or None
         The presentation rate (e.g., frame rate) at which the codes were presented in Hz.
-        If None, the raw object's sampling frequency is used.
-    offset: int (default: 100)
+        If None, the raw object's sampling frequency is used. Defaults to ``None``.
+    offset : int
         The integer value to start markers with. For instance, if 100, then label 0 will be marker 100, label 1
-        will be marker 101, etc.
-    ch_name: str (default: "stim_epoch")
-        The name of the added stimulus channel.
+        will be marker 101, etc. Defaults to ``100``.
+    ch_name : str
+        The name of the added stimulus channel. Defaults to ``"stim_epoch"``.
 
     Returns
     -------
@@ -299,10 +347,7 @@ def add_stim_channel_epoch(
             stim_chan[0, idx] = offset + codes[:, label]
 
     info = create_info(
-        ch_names=[ch_name],
-        ch_types=["stim"],
-        sfreq=raw.info["sfreq"],
-        verbose=False,
+        ch_names=[ch_name], ch_types=["stim"], sfreq=raw.info["sfreq"], verbose=False
     )
     raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
     return raw
@@ -365,15 +410,12 @@ def bids_metainfo(bids_path: Path) -> dict:
 
     Parameters
     ----------
-    bids_path : Path
+    bids_path : pathlib.Path
         The path to the BIDS dataset.
     """
     json_data = {}
 
-    paths = mne_bids.find_matching_paths(
-        root=bids_path,
-        datatypes="eeg",
-    )
+    paths = mne_bids.find_matching_paths(root=bids_path, datatypes="eeg")
 
     for path in paths:
         uid = path.fpath.name
@@ -381,6 +423,259 @@ def bids_metainfo(bids_path: Path) -> dict:
         json_data[uid]["fpath"] = str(path.fpath)
 
     return json_data
+
+
+FIGSHARE_DL_URL = "https://ndownloader.figshare.com/files/"
+
+# Tsinghua/Neuroscan 64-channel layout used by Wang2016, Liu2020BETA,
+# Liu2022EldBETA, and Han2024Fatigue. Includes non-standard CB1/CB2 channels.
+# fmt: off
+TSINGHUA_64CH_NAMES = [
+    "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6",
+    "F8", "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8", "T7", "C5",
+    "C3", "C1", "Cz", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1", "CPz",
+    "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6",
+    "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
+    "CB2",
+]
+# fmt: on
+
+
+def _validate_member_destination(dest_dir: Path, member_name: str):
+    """Ensure archive member extraction stays within destination directory."""
+    target = (dest_dir / member_name).resolve()
+    try:
+        target.relative_to(dest_dir)
+    except ValueError as exc:
+        raise ValueError(
+            f"Unsafe archive member path {member_name!r} escapes {dest_dir}."
+        ) from exc
+    return target
+
+
+def safe_extract_zip(zf: zipfile.ZipFile, dest_dir: Path, members=None):
+    """Safely extract a ZIP archive into ``dest_dir`` (path traversal protected)."""
+    dest_dir = Path(dest_dir).resolve()
+    selected = members if members is not None else zf.infolist()
+
+    for member in selected:
+        info = member if isinstance(member, zipfile.ZipInfo) else zf.getinfo(member)
+        _validate_member_destination(dest_dir, info.filename)
+        # Reject symlink entries when present in UNIX mode bits.
+        mode = info.external_attr >> 16
+        if mode and stat.S_ISLNK(mode):
+            raise ValueError(
+                f"Unsafe ZIP member {info.filename!r}: symbolic links are not allowed."
+            )
+
+    zf.extractall(dest_dir, members=selected)
+
+
+def safe_extract_tar(tf: tarfile.TarFile, dest_dir: Path, members=None):
+    """Safely extract a TAR archive into ``dest_dir`` (path traversal protected)."""
+    dest_dir = Path(dest_dir).resolve()
+    selected = members if members is not None else tf.getmembers()
+
+    for member in selected:
+        _validate_member_destination(dest_dir, member.name)
+        if member.issym() or member.islnk():
+            raise ValueError(f"Unsafe TAR member {member.name!r}: links are not allowed.")
+
+    tf.extractall(dest_dir, members=selected)
+
+
+def build_raw_from_epochs(
+    data,
+    ch_names,
+    sfreq,
+    event_ids,
+    montage_name,
+    *,
+    ch_types=None,
+    scale=1e-6,
+    buffer_samples=50,
+    onset_sample=0,
+):
+    """Convert (n_trials, n_channels, n_samples) epoched data to continuous Raw.
+
+    Parameters
+    ----------
+    data : ndarray
+        Epoched EEG data (in original units, e.g. microvolts),
+        of shape ``(n_trials, n_channels, n_samples)``.
+    ch_names : list of str
+        EEG channel names (without "stim").
+    sfreq : float
+        Sampling frequency in Hz.
+    event_ids : ndarray
+        Integer event code for each trial, of shape ``(n_trials,)``.
+    montage_name : str
+        Name of a standard MNE montage (e.g. "standard_1005", "biosemi32").
+    ch_types : list of str or None
+        Channel types for each signal channel in ``ch_names``. If None, all
+        channels are treated as ``"eeg"``.
+    scale : float
+        Scale factor to convert data to Volts. Defaults to ``1e-6``
+        (for microvolts).
+    buffer_samples : int
+        Number of zero-padding samples between trials. Defaults to ``50``.
+    onset_sample : int
+        Sample index within each epoch to place the event marker.
+        Defaults to ``0``.
+
+    Returns
+    -------
+    raw : mne.io.RawArray
+        Continuous raw data with EEG + stim channels.
+    """
+    data = np.asarray(data)
+    if data.ndim != 3:
+        raise ValueError(
+            "data must have shape (n_trials, n_channels, n_samples), "
+            f"got array with shape {data.shape}."
+        )
+    n_trials, n_channels, n_samples = data.shape
+
+    if isinstance(ch_names, str):
+        raise ValueError(
+            "ch_names must be a sequence of channel names, not a single string."
+        )
+    if len(ch_names) != n_channels:
+        raise ValueError(
+            f"ch_names length ({len(ch_names)}) must match n_channels ({n_channels})."
+        )
+
+    if ch_types is None:
+        ch_types = ["eeg"] * n_channels
+    if isinstance(ch_types, str):
+        raise ValueError(
+            "ch_types must be a sequence of channel types, not a single string."
+        )
+    if len(ch_types) != n_channels:
+        raise ValueError(
+            f"ch_types length ({len(ch_types)}) must match n_channels ({n_channels})."
+        )
+
+    event_ids = np.asarray(event_ids)
+    if event_ids.ndim != 1:
+        raise ValueError(
+            "event_ids must be a 1D array-like of length n_trials; "
+            f"got shape {event_ids.shape}."
+        )
+    if len(event_ids) != n_trials:
+        raise ValueError(
+            f"event_ids length ({len(event_ids)}) must match n_trials ({n_trials})."
+        )
+
+    if isinstance(onset_sample, bool) or not isinstance(onset_sample, (int, np.integer)):
+        raise ValueError(
+            f"onset_sample must be an integer in [0, {n_samples - 1}], got "
+            f"{onset_sample!r} ({type(onset_sample).__name__})."
+        )
+    if onset_sample < 0 or onset_sample >= n_samples:
+        raise ValueError(
+            f"onset_sample ({onset_sample}) must be between 0 and {n_samples - 1}."
+        )
+
+    # De-mean and scale each trial in-place (callers pass freshly created arrays)
+    data = data - data.mean(axis=2, keepdims=True)
+    data *= scale
+
+    # Build stim channel
+    stim = np.zeros((n_trials, 1, n_samples))
+    stim[:, 0, onset_sample] = event_ids
+
+    # Combine EEG + stim, add zero-padding buffers
+    combined = np.concatenate([data, stim], axis=1)
+    n_total_ch = n_channels + 1
+
+    if buffer_samples > 0:
+        buff = np.zeros((n_trials, n_total_ch, buffer_samples))
+        combined = np.concatenate([buff, combined, buff], axis=2)
+
+    # Flatten trials into continuous data: (n_trials, n_ch, n_time) -> (n_ch, n_trials*n_time)
+    continuous = combined.transpose(1, 0, 2).reshape(n_total_ch, -1)
+
+    ch_names_full = list(ch_names) + ["STI"]
+    ch_types_full = list(ch_types) + ["stim"]
+    info = create_info(ch_names_full, sfreq, ch_types_full)
+    raw = RawArray(data=continuous, info=info, verbose=False)
+    montage = make_standard_montage(montage_name)
+    raw.set_montage(montage, on_missing="ignore")
+    return raw
+
+
+def download_and_extract_subject_zip(
+    url, sign, extract_dir, path=None, force_update=False, verbose=None
+):
+    """Download a per-subject ZIP and safely extract it.
+
+    Handles the common pattern: ``dl.data_dl()`` → rename to ``.zip`` →
+    ``safe_extract_zip()``.
+
+    Parameters
+    ----------
+    url : str
+        Direct download URL for the ZIP file.
+    sign : str
+        Dataset code passed to :func:`dl.data_dl` (e.g., ``"Wu2020"``).
+    extract_dir : pathlib.Path | str
+        Directory to extract ZIP contents into.
+    path : str | None
+        Download path passed to :func:`dl.data_dl`.
+    force_update : bool
+        Force re-download even if file exists locally.
+    verbose : bool | None
+        Verbosity level.
+    """
+    dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+
+    # Rename to .zip if dl.data_dl() stripped the extension.
+    zip_path = dl_path.with_suffix(".zip")
+    if dl_path != zip_path:
+        dl_path.rename(zip_path)
+
+    extract_dir = Path(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path) as zf:
+        safe_extract_zip(zf, extract_dir)
+
+
+def extract_rar(rar_path, dest_dir):
+    """Extract a RAR archive using available system tools.
+
+    Tries ``unrar``, ``unar``, and ``7z`` in order.
+
+    Parameters
+    ----------
+    rar_path : str or pathlib.Path
+        Path to the RAR archive.
+    dest_dir : str or pathlib.Path
+        Directory to extract files into.
+    """
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    rar_path = str(rar_path)
+
+    for tool, cmd_fn in [
+        ("unrar", lambda d, r: ["unrar", "x", "-o+", r, str(d) + "/"]),
+        ("unar", lambda d, r: ["unar", "-f", "-o", str(d), r]),
+        ("7z", lambda d, r: ["7z", "x", "-y", f"-o{d}", r]),
+    ]:
+        if shutil.which(tool) is not None:
+            cmd = cmd_fn(dest_dir, rar_path)
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode != 0:
+                raise RuntimeError(
+                    f"RAR extraction failed with {tool} "
+                    f"(exit {result.returncode}):\n{result.stderr}"
+                )
+            return
+
+    raise RuntimeError(
+        "No RAR extraction tool found. Install one of: unrar, unar, or 7z. "
+        "For example: 'brew install unar' (macOS) or 'apt install unrar' (Linux)."
+    )
 
 
 class _BubbleChart:
@@ -394,8 +689,9 @@ class _BubbleChart:
         ----------
         area : array-like
             Area of the bubbles.
-        bubble_spacing : float, default: 0
+        bubble_spacing : float
             Minimal spacing between bubbles after collapsing.
+            Defaults to ``0``.
 
         Notes
         -----
@@ -444,8 +740,8 @@ class _BubbleChart:
 
         Parameters
         ----------
-        n_iterations : int, default: 50
-            Number of moves to perform.
+        n_iterations : int
+            Number of moves to perform. Defaults to ``50``.
         """
         for _i in range(n_iterations):
             moves = 0
@@ -534,7 +830,6 @@ class _BaseDatasetPlotter:
         pass
 
     def plot(self):
-
         centers = self._get_centers()
 
         rm = self.radii + self.meta_gap
@@ -626,22 +921,17 @@ def plot_datasets_grid(
 
     Returns
     -------
-    fig: Figure
+    fig: :class:`matplotlib.figure.Figure`
         Pyplot handle
     """
     plotter = _GridDatasetPlotter(
-        datasets=datasets,
-        meta_gap=margin,
-        n_col=n_col,
-        kwargs=kwargs,
+        datasets=datasets, meta_gap=margin, n_col=n_col, kwargs=kwargs
     )
     return plotter.plot()
 
 
 def plot_datasets_cluster(
-    datasets: list[BaseDataset | dict] | None = None,
-    meta_gap: float = 10.0,
-    **kwargs,
+    datasets: list[BaseDataset | dict] | None = None, meta_gap: float = 10.0, **kwargs
 ):
     """Plots all the MOABB datasets in one figure, grouped in one cluster.
 
@@ -677,12 +967,8 @@ def plot_datasets_cluster(
 
     Returns
     -------
-    fig: Figure
+    fig: :class:`matplotlib.figure.Figure`
         Pyplot handle
     """
-    plotter = _ClusterDatasetPlotter(
-        datasets=datasets,
-        meta_gap=meta_gap,
-        kwargs=kwargs,
-    )
+    plotter = _ClusterDatasetPlotter(datasets=datasets, meta_gap=meta_gap, kwargs=kwargs)
     return plotter.plot()

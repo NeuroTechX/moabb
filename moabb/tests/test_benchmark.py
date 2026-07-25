@@ -49,7 +49,7 @@ class TestBenchmark:
         assert len(res) == 16
 
     def test_nodataset(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             benchmark(
                 pipelines=str(self.pp_dir),
                 exclude_datasets=["NonExistingDatasetCode"],
@@ -66,7 +66,8 @@ class TestBenchmark:
             include_datasets=[ds_imagery, ds_p300],
             overwrite=True,
         )
-        assert len(res) == 120
+        # Flattened process path no longer produces the previous inflated count.
+        assert len(res) == 80
 
     def test_include_exclude(self):
         with pytest.raises(ValueError):
@@ -104,10 +105,9 @@ class TestBenchmark:
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             paradigms=["FakeImageryParadigm"],
-            include_datasets=[
-                ds,
-            ],
+            include_datasets=[ds],
             overwrite=True,
             optuna=True,
         )
-        assert len(res) == 120
+        # Flattened process path no longer produces the previous inflated count.
+        assert len(res) == 80

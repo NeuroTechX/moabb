@@ -21,10 +21,7 @@ class Task:
     parent_task: str
 
 
-_metrics = {
-    "time": "training time (s)",
-    "carbon_emission": "CO2 Emission (g)",
-}
+_metrics = {"time": "training time (s)", "carbon_emission": "CO2 Emission (g)"}
 
 
 def make_table(results_csv_list: list[str], metric: str):
@@ -37,9 +34,7 @@ def make_table(results_csv_list: list[str], metric: str):
         if "carbon_emission" in df.columns:
             columns.append("carbon_emission")
         df = (
-            df.groupby(
-                ["dataset", "paradigm", "evaluation", "pipeline"],
-            )[columns]
+            df.groupby(["dataset", "paradigm", "evaluation", "pipeline"])[columns]
             .mean()
             .reset_index()
         )
@@ -55,13 +50,13 @@ def make_table(results_csv_list: list[str], metric: str):
 
 
 def upload_subtable(client, df, dataset, task, paper, evaluated_on):
-    kwargs = dict(
-        task=task.id,
-        dataset=dataset.id,
-        description=task.description,
-        external_id=f"{dataset.id}-{task.id}",
-        mirror_url="http://moabb.neurotechx.com/docs/benchmark_summary.html",
-    )
+    kwargs = {
+        "task": task.id,
+        "dataset": dataset.id,
+        "description": task.description,
+        "external_id": f"{dataset.id}-{task.id}",
+        "mirror_url": "http://moabb.neurotechx.com/docs/benchmark_summary.html",
+    }
     print(f"Uploading {kwargs=}")
     # client.evaluation_create(EvaluationTableCreateRequest(**kwargs))
 

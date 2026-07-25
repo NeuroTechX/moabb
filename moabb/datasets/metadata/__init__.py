@@ -18,35 +18,19 @@ DatasetMetadata
 
 Additional Classes
 ------------------
-Demographics
-    Extended subject demographics (subjects_count, ages, age_min, age_max)
-ExternalLinks
-    URLs and data source links
-Timestamps
-    Dataset creation and modification dates
 Tags
     Classification tags
-ChannelCount
-    Channel count distribution entry
-SamplingRateCount
-    Sampling rate distribution entry
 
 New Classes (from RALPH extraction)
 -----------------------------------
 AuxiliaryChannelsMetadata
     EOG, EMG, and other physiological channel information
-FilterDetails
-    Filter configuration details (highpass, lowpass, notch, etc.)
 PreprocessingMetadata
-    Preprocessing and artifact handling details
-FrequencyBands
-    Frequency band definitions for analysis
+    Preprocessing and artifact handling details (includes filter fields)
 SignalProcessingMetadata
     Feature extraction and classification methods
 CrossValidationMetadata
     Cross-validation methodology details
-PerformanceMetadata
-    Reported performance metrics
 BCIApplicationMetadata
     BCI application context and environment
 ParadigmSpecificMetadata
@@ -66,14 +50,14 @@ get_dataset_description
 Example
 -------
 >>> from moabb.datasets.metadata import (
-...     DatasetMetadata, AcquisitionMetadata,
-...     ParticipantMetadata, ExperimentMetadata
+...     DatasetMetadata,
+...     AcquisitionMetadata,
+...     ParticipantMetadata,
+...     ExperimentMetadata,
 ... )
 >>> metadata = DatasetMetadata(
 ...     acquisition=AcquisitionMetadata(
-...         sampling_rate=512.0,
-...         n_channels=64,
-...         channel_types={"eeg": 60, "eog": 4},
+...         sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
 ...     ),
 ...     participants=ParticipantMetadata(n_subjects=20),
 ...     experiment=ExperimentMetadata(paradigm="imagery"),
@@ -92,24 +76,16 @@ from .schema import (  # Core MOABB classes; Additional classes; New classes fro
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
-    ChannelCount,
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
-    Demographics,
     DocumentationMetadata,
     ExperimentMetadata,
-    ExternalLinks,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
-    SamplingRateCount,
     SignalProcessingMetadata,
     Tags,
-    Timestamps,
     get_dataset_description,
     validate_country_code,
     validate_metadata_against_dataset,
@@ -122,24 +98,54 @@ _MANUAL_METADATA_OVERRIDES = {
         "documentation": {"country": "AT"},
         "runs_per_session": 6,
     },
-    "BI2012": {
-        "experiment": {"task_type": "brain_invaders"},
-    },
+    "BI2012": {"experiment": {"task_type": "brain_invaders"}},
     # ERP CORE 2021 variants
-    "ErpCore2021_ERN": {},
-    "ErpCore2021_LRP": {},
-    "ErpCore2021_MMN": {},
-    "ErpCore2021_N170": {"participants": {"age_mean": 21.5}},
-    "ErpCore2021_N2pc": {},
-    "ErpCore2021_N400": {},
-    "ErpCore2021_P3": {},
+    "ErpCore2021_ERN": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_LRP": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_MMN": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_N170": {
+        "participants": {"age_mean": 21.5},
+        "documentation": {"license": "CC-BY-4.0", "repository": "Osf"},
+    },
+    "ErpCore2021_N2pc": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_N400": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
+    "ErpCore2021_P3": {"documentation": {"license": "CC-BY-4.0", "repository": "Osf"}},
     # cVEP datasets
-    "CastillosBurstVEP40": {},
-    "CastillosBurstVEP100": {},
-    "CastillosCVEP40": {},
-    "CastillosCVEP100": {},
-    "MartinezCagigal2023Checker": {"sessions_per_subject": 8},
-    "MartinezCagigal2023Pary": {"sessions_per_subject": 5},
+    "CastillosBurstVEP40": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
+    },
+    "CastillosBurstVEP100": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
+    },
+    "CastillosCVEP40": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
+    },
+    "CastillosCVEP100": {
+        "documentation": {"license": "CC-BY-4.0", "repository": "Zenodo"}
+    },
+    "MartinezCagigal2023Checker": {
+        "sessions_per_subject": 8,
+        "runs_per_session": 3,
+        "documentation": {"license": "CC-BY-NC-SA-4.0", "repository": "U Valladoid"},
+    },
+    "MartinezCagigal2023Pary": {
+        "sessions_per_subject": 5,
+        "runs_per_session": 8,
+        "documentation": {"license": "CC-BY-NC-SA-4.0", "repository": "U Valladoid"},
+    },
+    # Beetl datasets
+    "Beetl2021_A": {"documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"}},
+    "Beetl2021_B": {"documentation": {"license": "CC-BY-4.0", "repository": "beetl.ai"}},
+    # Kojima datasets
+    "Kojima2024A": {
+        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"}
+    },
+    "Kojima2024B": {
+        "documentation": {"license": "CC0-1.0", "repository": "Harvard dataverse"}
+    },
+    # Dreyer2023 variants (METADATA inherited from _Dreyer2023Base)
+    "Dreyer2023B": {"documentation": {"repository": "Osf"}},
+    "Dreyer2023C": {"documentation": {"repository": "Osf"}},
 }
 
 
@@ -234,9 +240,7 @@ def _build_fallback_metadata(dataset_name: str) -> DatasetMetadata:
     )
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=1.0,
-            n_channels=1,
-            channel_types={"eeg": 1},
+            sampling_rate=1.0, n_channels=1, channel_types={"eeg": 1}
         ),
         participants=ParticipantMetadata(n_subjects=1),
         experiment=ExperimentMetadata(paradigm="imagery"),
@@ -273,9 +277,7 @@ def _merge_with_dataset(metadata: DatasetMetadata, dataset) -> DatasetMetadata:
     if event_id:
         class_labels = list(event_id.keys())
         experiment = replace(
-            experiment,
-            n_classes=len(event_id),
-            class_labels=class_labels,
+            experiment, n_classes=len(event_id), class_labels=class_labels
         )
 
     # Acquisition
@@ -350,11 +352,54 @@ def _apply_dataset_family_defaults(
     # ERP CORE defaults
     if name.startswith("ErpCore2021"):
         documentation = metadata.documentation or DocumentationMetadata()
-        documentation = replace(documentation, doi="10.1016/j.neuroimage.2020.117465")
-        acquisition = metadata.acquisition or AcquisitionMetadata(
-            sampling_rate=256.0, n_channels=64, channel_types={"eeg": 64}
+        doc_updates = {
+            "doi": "10.1016/j.neuroimage.2020.117465",
+            "publication_year": 2021,
+            "investigators": [
+                "Emily S. Kappenman",
+                "Jaclyn L. Farrens",
+                "Wendy Zhang",
+                "Andrew X. Stewart",
+                "Steven J. Luck",
+            ],
+            "senior_author": "Steven J. Luck",
+            "institution": "San Diego State University",
+            "institution_department": "Department of Psychology",
+            "institution_address": "San Diego, CA, 92120, USA",
+            "country": "US",
+            "contact_info": ["emily.kappenman@sdsu.edu"],
+            "ethics_approval": [
+                "Approved by the Institutional Review Board at the University of California, Davis"
+            ],
+            "funding": ["NIH R01MH087450", "NIH R25MH080794"],
+            "acknowledgements": (
+                "We thank Mike Blank and David Woods at Neurobehavioral Systems, Inc. "
+                "for providing professional programming of the tasks in Presentation. "
+                "Programming, data analysis, and manuscript preparation were made possible "
+                "by NIH grants R01MH087450 and R25MH080794."
+            ),
+            "data_url": "https://doi.org/10.18115/D5JW4R",
+            "how_to_acknowledge": (
+                "Please cite: Kappenman et al. (2021). ERP CORE: An open resource "
+                "for human event-related potential research. NeuroImage, 225, 117465. "
+                "https://doi.org/10.1016/j.neuroimage.2020.117465"
+            ),
+        }
+        if not documentation.license:
+            doc_updates["license"] = "CC BY 4.0"
+        # Only set fields that are not already populated
+        for key, _value in list(doc_updates.items()):
+            if getattr(documentation, key, None):
+                del doc_updates[key]
+        documentation = replace(documentation, **doc_updates)
+        acquisition = metadata.acquisition or AcquisitionMetadata()
+        acquisition = replace(
+            acquisition,
+            sampling_rate=1024.0,
+            n_channels=30,
+            channel_types={"eeg": 30, "eog": 3},
+            hardware="Biosemi ActiveTwo",
         )
-        acquisition = replace(acquisition, hardware="Biosemi ActiveTwo")
         participants = metadata.participants or ParticipantMetadata(n_subjects=40)
         participants = replace(participants, n_subjects=40)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="p300")
@@ -370,7 +415,10 @@ def _apply_dataset_family_defaults(
     # Castillos cVEP defaults
     if name.startswith("Castillos"):
         documentation = metadata.documentation or DocumentationMetadata()
-        documentation = replace(documentation, doi="10.1016/j.neuroimage.2023.120446")
+        doc_updates = {"doi": "10.1016/j.neuroimage.2023.120446"}
+        if not documentation.license:
+            doc_updates["license"] = "CC BY 4.0"
+        documentation = replace(documentation, **doc_updates)
         participants = metadata.participants or ParticipantMetadata(n_subjects=12)
         participants = replace(participants, n_subjects=12)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
@@ -382,14 +430,19 @@ def _apply_dataset_family_defaults(
             experiment=experiment,
         )
 
-    # MartinezCagigal cVEP defaults
+    # MartinezCagigal cVEP defaults (documentation is set per-dataset in each class)
     if name.startswith("MartinezCagigal2023"):
+        acquisition = metadata.acquisition or AcquisitionMetadata()
+        acquisition = replace(
+            acquisition, sampling_rate=256.0, n_channels=16, channel_types={"eeg": 16}
+        )
         participants = metadata.participants or ParticipantMetadata(n_subjects=16)
         participants = replace(participants, n_subjects=16)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
         experiment = replace(experiment, paradigm="cvep")
         metadata = replace(
             metadata,
+            acquisition=acquisition,
             participants=participants,
             experiment=experiment,
         )
@@ -411,7 +464,7 @@ def canonicalize_dataset_class_metadata(dataset_name: str, dataset_cls) -> None:
     metadata = _merge_with_dataset(metadata, dataset)
     metadata = _apply_manual_overrides(dataset_name, metadata)
     metadata = _apply_dataset_family_defaults(dataset_name, metadata)
-    setattr(dataset_cls, "METADATA", metadata)
+    dataset_cls.METADATA = metadata
 
 
 def canonicalize_dataset_class_catalog(dataset_classes: dict[str, type]) -> None:
@@ -448,14 +501,17 @@ def _build_dataset_metadata_catalog():
             dataset = None
 
         metadata = getattr(dataset_cls, "METADATA", None)
+        # Also check instance attribute (e.g. Lee2024 sets self.METADATA in __init__)
+        if not isinstance(metadata, DatasetMetadata) and dataset is not None:
+            metadata = getattr(dataset, "METADATA", metadata)
         if not isinstance(metadata, DatasetMetadata):
             if dataset is None:
                 if name == "ErpCore2021":
                     metadata = DatasetMetadata(
                         acquisition=AcquisitionMetadata(
-                            sampling_rate=256.0,
-                            n_channels=64,
-                            channel_types={"eeg": 64},
+                            sampling_rate=1024.0,
+                            n_channels=30,
+                            channel_types={"eeg": 30, "eog": 3},
                             hardware="Biosemi ActiveTwo",
                         ),
                         participants=ParticipantMetadata(n_subjects=40),
@@ -531,20 +587,12 @@ __all__ = [
     "ExperimentMetadata",
     "DatasetMetadata",
     # Additional classes
-    "Demographics",
-    "ExternalLinks",
-    "Timestamps",
     "Tags",
-    "ChannelCount",
-    "SamplingRateCount",
     # New classes from RALPH extraction
     "AuxiliaryChannelsMetadata",
-    "FilterDetails",
     "PreprocessingMetadata",
-    "FrequencyBands",
     "SignalProcessingMetadata",
     "CrossValidationMetadata",
-    "PerformanceMetadata",
     "BCIApplicationMetadata",
     "ParadigmSpecificMetadata",
     "DataStructureMetadata",

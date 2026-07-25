@@ -1,16 +1,20 @@
+.. meta::
+   :description: How to cite MOABB in academic publications. BibTeX entries for the MOABB software (Zenodo DOI 10.5281/zenodo.10034223) and the MOABB benchmark paper.
+   :keywords: cite MOABB, MOABB BibTeX, MOABB DOI, BCI benchmark citation, MOABB paper
+
 Citing MOABB and related publications
 ============================================
 
 If you use MOABB in your experiments, please cite this library when
 publishing a paper to increase the visibility of open science initiatives:
 
--  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Andreev, A., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2025). Mother of all BCI Benchmarks (Version 1.4.3). Zenodo. `10.5281/zenodo.10034223 <https://doi.org/10.5281/zenodo.10034223>`__
+-  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Begany, K., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2026). Mother of all BCI Benchmarks (Version 1.5.0). Zenodo. `10.5281/zenodo.10034223 <https://doi.org/10.5281/zenodo.10034223>`__
 
 and here is the Bibtex version:
 
 .. code-block:: bibtex
 
-    @software{Aristimunha_Mother_of_all,
+    @misc{Aristimunha_Mother_of_all,
       author       = {Aristimunha, Bruno and
                       Carrara, Igor and
                       Guetschel, Pierre and
@@ -29,16 +33,20 @@ and here is the Bibtex version:
 	                      Gatti, Ramiro and
 	                      Goncharenko, Vladislav and
 	                      Andreev, Anton and
+	                      Tates, Alberto and
+	                      Kojima, Simon and
 	                      Thielen, Jordy and
+	                      Hajhassani, Davoud and
+	                      Begany, Katelyn and
 	                      Moreau, Thomas and
 	                      Roy, Yannick and
 	                      Jayaram, Vinay and
 	                      Barachant, Alexandre and
                       Chevallier, Sylvain},
             title        = {Mother of all BCI Benchmarks},
-            year         = 2025,
+            year         = 2026,
             publisher    = {Zenodo},
-            version      = {1.4.3},
+            version      = {1.5.0},
             url = {https://github.com/NeuroTechX/moabb},
             doi = {10.5281/zenodo.10034223},
     }

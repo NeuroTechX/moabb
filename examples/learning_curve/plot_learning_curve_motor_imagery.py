@@ -79,7 +79,7 @@ dataset.subject_list = dataset.subject_list[:1]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
 # Evaluate for a specific number of training samples per class
-data_size = dict(policy="per_class", value=np.array([5, 10, 30, 50]))
+data_size = {"policy": "per_class", "value": np.array([5, 10, 30, 50])}
 # When the training data is sparse, perform more permutations than when we have a lot of data
 n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
 evaluation = WithinSessionEvaluation(
@@ -88,7 +88,7 @@ evaluation = WithinSessionEvaluation(
     suffix="examples",
     overwrite=overwrite,
     cv_class=LearningCurveSplitter,
-    cv_kwargs=dict(data_size=data_size, n_perms=n_perms),
+    cv_kwargs={"data_size": data_size, "n_perms": n_perms},
 )
 
 results = evaluation.process(pipelines)

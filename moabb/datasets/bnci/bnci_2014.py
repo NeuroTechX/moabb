@@ -12,11 +12,8 @@ from moabb.datasets.metadata.schema import (
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -24,6 +21,8 @@ from moabb.datasets.metadata.schema import (
 from moabb.utils import depreciated_alias
 
 from .base import (
+    BNCI_ARTIFACT_HANDLING,
+    BNCI_ARTIFACT_HANDLING_OPTIONS,
     BNCI_URL,
     MNEBNCI,
     _convert_mi,
@@ -37,6 +36,16 @@ from .utils import validate_subject
 
 _map = {"T": "train", "E": "test"}
 
+# BNCI2014-002 (Steyrl et al.) ships 15 unlabeled channels: three small
+# Laplacian groups centered on C3, Cz, C4. Assumed 3x5 grid approximation
+# (anterior FC row / central C row / posterior CP row) so every channel gets
+# a standard_1005 position. See _load_data_002_2014 for caveats.
+_CH_NAMES_002_2014 = [
+    "FC3", "FC1", "FCz", "FC2", "FC4",
+    "C3", "C1", "Cz", "C2", "C4",
+    "CP3", "CP1", "CPz", "CP2", "CP4",
+]  # fmt: skip
+
 
 @verbose
 def _load_data_001_2014(
@@ -46,6 +55,7 @@ def _load_data_001_2014(
     update_path=None,
     base_url=BNCI_URL,
     only_filenames=False,
+    artifact_handling="ignore",
     verbose=None,
 ):
     """Load data for 001-2014 dataset."""
@@ -74,6 +84,8 @@ def _load_data_001_2014(
             ch_types,
             dataset_code="BNCI2014-001",
             subject_id=subject,
+            artifact_handling=artifact_handling,
+            artifact_interval=(2, 6),
         )
         # FIXME: deal with run with no event (1:3) and name them
         sessions[f"{session_idx}{_map[r]}"] = {
@@ -105,9 +117,23 @@ def _load_data_002_2014(
         filenames.append(filename)
         if only_filenames:
             continue
-        # FIXME: electrode position and name are not provided directly.
+        # The data file carries no channel labels or positions, and neither
+        # the paper nor the official BNCI description provides them (all three
+        # verified). Steyrl et al. (Fig 3) only describe the geometry: three
+        # small-Laplacian groups centered on C3, Cz, C4, each with four
+        # surrounding electrodes (anterior, posterior, left, right) at 2.5 cm.
+        # We *assume* the conventional 3x5 grid approximation of that layout
+        # (anterior FC row, central C row, posterior CP row), which maps every
+        # channel to a standard_1005 position so topomaps/interpolation work.
+        # The exact custom 2.5 cm positions and the true column order are not
+        # documented, so treat these labels as approximate. Passing real names
+        # (not None) makes _convert_run attach standard_1005 automatically.
         raws, _ = _convert_mi(
-            filename, None, ["eeg"] * 15, dataset_code="BNCI2014-002", subject_id=subject
+            filename,
+            _CH_NAMES_002_2014,
+            ["eeg"] * 15,
+            dataset_code="BNCI2014-002",
+            subject_id=subject,
         )
         runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
@@ -279,6 +305,15 @@ class BNCI2014_001(MNEBNCI):
     BNCI2014_004 : BCI Competition 2008 2-class motor imagery (Dataset B)
     BNCI2003_004 : BCI Competition III 2-class motor imagery
 
+    Parameters
+    ----------
+    artifact_handling : {"ignore", "annotate", "annotate_bad", "reject"}
+        How to preserve source per-trial artifact flags. ``"ignore"`` keeps
+        the historical behavior. ``"annotate"`` adds non-rejecting
+        ``"bnci_artifact"`` annotations. ``"annotate_bad"`` and ``"reject"``
+        both add ``"BAD_artifact"`` annotations; actual rejection happens at
+        epoch generation when ``reject_by_annotation=True``.
+
     Examples
     --------
     >>> from moabb.datasets import BNCI2014_001
@@ -287,143 +322,198 @@ class BNCI2014_001(MNEBNCI):
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
     """
 
+    nemar_id = "nm000139"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=22,
-            channel_types={"eeg": 22},
-            montage="10-20",
-            hardware="BrainAmp",
+            n_channels=25,
+            channel_types={"eeg": 22, "eog": 3},
+            montage="custom",
+            hardware="BrainAmp MR plus",
             sensor_type="Ag/AgCl",
-            reference="Car",
-            ground="mastoid",
+            reference="left mastoid",
+            ground="right mastoid",
             software="BCI2000",
-            filters="50 Hz notch",
+            filters="bandpass 0.5-100 Hz, 50 Hz notch",
             sensors=[
-                "Fz",
-                "FC3",
-                "FC1",
-                "FCz",
-                "FC2",
-                "FC4",
-                "C5",
-                "C3",
                 "C1",
-                "Cz",
                 "C2",
+                "C3",
                 "C4",
+                "C5",
                 "C6",
-                "CP3",
                 "CP1",
-                "CPz",
                 "CP2",
+                "CP3",
                 "CP4",
+                "CPz",
+                "Cz",
+                "EOG1",
+                "EOG2",
+                "EOG3",
+                "FC1",
+                "FC2",
+                "FC3",
+                "FC4",
+                "FCz",
+                "Fz",
                 "P1",
-                "Pz",
                 "P2",
                 "POz",
+                "Pz",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=3,
-                eog_type=["horizontal", "vertical"],
-                has_emg=True,
-                other_physiological=["gsr"],
-            ),
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False, has_emg=False),
+            cap_manufacturer="EASYCAP GmbH",
+            impedance_threshold_kohm=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=9,
-            health_status="healthy",
+            n_subjects=9, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=4,
-            class_labels=["right_hand", "tongue", "left_hand", "feet"],
-            trial_duration=5.0,
-            study_design="Four-class motor imagery: left hand, right hand, both feet, tongue",
+            class_labels=["left_hand", "right_hand", "feet", "tongue"],
+            trial_duration=4.0,
+            study_design="Cue-based four-class motor imagery (left hand, right hand, both feet, tongue); two sessions per subject on different days, each with 6 runs of 48 trials (288 trials per session)",
             feedback_type="none",
-            stimulus_type="cursor_feedback",
+            stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="multisensory",
             synchronicity="synchronous",
-            mode="online",
+            mode="offline",
+            events={"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4},
+            instructions="Subjects instructed to perform motor imagery during cued periods",
+            stimulus_presentation={
+                "cross_onset": "0 s",
+                "arrow_cue": "2 s",
+                "trial_duration": "6 s",
+            },
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+                "feet": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Downward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, Foot))"
+                ),
+                "tongue": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Upward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, Tongue))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnins.2012.00055",
-            funding=["Grant R31- R31-"],
+            description="BCI Competition IV - Data set 2a: cue-based four-class motor imagery (left hand, right hand, both feet, tongue)",
+            investigators=[
+                "Michael Tangermann",
+                "Klaus-Robert Müller",
+                "Ad Aertsen",
+                "Niels Birbaumer",
+                "Christoph Braun",
+                "Clemens Brunner",
+                "Robert Leeb",
+                "Carsten Mehring",
+                "Kai J. Miller",
+                "Gernot R. Müller-Putz",
+                "Guido Nolte",
+                "Gert Pfurtscheller",
+                "Hubert Preissl",
+                "Gerwin Schalk",
+                "Alois Schlögl",
+                "Carmen Vidaurre",
+                "Stephan Waldert",
+                "Benjamin Blankertz",
+            ],
+            institution="Berlin Institute of Technology",
+            country="Germany",
+            license="CC-BY-ND-4.0",
+            repository="BNCI Horizon",
+            data_url="http://www.bbci.de/competition/iv/",
+            publication_year=2012,
+            senior_author="Michael Tangermann",
+            contact_info=["michael.tangermann@tu-berlin.de"],
+            institution_address="FR 6-9, Franklinstr. 28/29, 10587 Berlin, Germany",
+            institution_department="Machine Learning Laboratory",
+            keywords=["brain-computer interface", "BCI", "competition"],
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
-            data_state="minimally preprocessed (online filtered)",
+            data_state="minimally preprocessed (bandpass and notch filtered)",
             preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering", "notch filtering"],
-            filter_details=FilterDetails(
-                highpass_hz=0.5,
-                lowpass_hz=100,
-                bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
-                notch_hz=[50],
-                filter_type="Chebyshev",
-                filter_order=10,
-            ),
-            artifact_methods=["trial rejection", "ICA"],
-            re_reference="car",
+            preprocessing_steps=[
+                "bandpass filtering (0.5-100 Hz)",
+                "50 Hz notch filtering",
+            ],
+            highpass_hz=0.5,
+            lowpass_hz=100,
+            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
+            filter_type="analog",
+            filter_order=None,
+            re_reference="none",
+            downsampled_to_hz=None,
+            notes="Sampled at 250 Hz; bandpass filtered between 0.5 and 100 Hz with an additional 50 Hz notch filter to suppress line noise; amplifier sensitivity 100 uV",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
                 "LDA",
                 "SVM",
                 "Neural Network",
-                "Shrinkage LDA",
                 "Naive Bayes",
-                "CCA",
+                "RBF Neural Network",
             ],
-            feature_extraction=[
-                "CSP",
-                "FBCSP",
-                "Bandpower",
-                "ERD",
-                "ERS",
-                "PSD",
-                "Wavelet",
-                "Time-Frequency",
-                "AR",
-                "ICA",
-            ],
-            frequency_bands=FrequencyBands(
-                alpha=[8, 13],
-                mu=[8, 12],
-            ),
+            feature_extraction=["CSP", "FBCSP", "Bandpower", "ERD", "ERS"],
+            frequency_bands={"mu": [8, 12], "beta": [16, 24]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="5-fold",
-            cv_folds=5,
-            evaluation_type=["cross_subject"],
+            cv_method="train-test split", evaluation_type=["within_session"]
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=62.0,
-        ),
+        performance={"MSE": 0.382},
         bci_application=BCIApplicationMetadata(
-            applications=["prosthetic", "vr_ar", "communication"],
-            environment="outdoor",
+            applications=["cursor_control", "communication"],
+            environment="laboratory",
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
+            imagery_tasks=["left_hand", "right_hand", "feet", "tongue"],
+            cue_duration_s=1.25,
+            imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=288,
-            n_blocks=3,
-            trials_context="total",
+            n_trials={"training": 288, "test": 288},
+            n_blocks=6,
+            trials_context="per session: 6 runs of 48 trials (12 per class) = 288 trials; 2 sessions per subject (T = training, E = evaluation)",
         ),
-        file_format="MAT",
+        file_format="GDF",
         data_processed=True,
+        sessions_per_subject=2,
+        runs_per_session=6,
     )
 
-    def __init__(self):
+    def __init__(
+        self,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+        artifact_handling="ignore",
+    ):
+        if artifact_handling not in BNCI_ARTIFACT_HANDLING:
+            raise ValueError(
+                f"artifact_handling must be one of: {BNCI_ARTIFACT_HANDLING_OPTIONS}"
+            )
+        self.artifact_handling = artifact_handling
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -432,6 +522,34 @@ class BNCI2014_001(MNEBNCI):
             interval=[2, 6],
             paradigm="imagery",
             doi="10.3389/fnins.2012.00055",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
+        )
+
+    def _get_single_subject_data(self, subject):
+        """Return data for a single subject."""
+        return _load_data_001_2014(
+            subject=subject,
+            path=None,
+            force_update=False,
+            update_path=None,
+            only_filenames=False,
+            artifact_handling=self.artifact_handling,
+            verbose=False,
+        )
+
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        return _load_data_001_2014(
+            subject=subject,
+            path=path,
+            force_update=force_update,
+            update_path=update_path,
+            only_filenames=True,
+            artifact_handling=self.artifact_handling,
+            verbose=verbose,
         )
 
 
@@ -485,133 +603,129 @@ class BNCI2014_002(MNEBNCI):
     BNCI2014_004 : 2-class motor imagery (Dataset B)
     """
 
+    nemar_id = "nm000171"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=1000.0,
-            n_channels=32,
-            channel_types={"eeg": 32},
-            montage="laplacian",
-            hardware="g.tec",
+            sampling_rate=512.0,
+            n_channels=15,
+            channel_types={"eeg": 15},
+            montage="Laplacian",
+            hardware="g.USBamp",
             sensor_type="Ag/AgCl",
             reference="left mastoid",
             ground="right mastoid",
-            filters="50 Hz notch",
-            sensors=[
-                "Fp1",
-                "Fp2",
-                "F7",
-                "F3",
-                "Fz",
-                "F4",
-                "F8",
-                "FC5",
-                "FC1",
-                "FC2",
-                "FC6",
-                "T7",
-                "C3",
-                "Cz",
-                "C4",
-                "T8",
-                "CP5",
-                "CP1",
-                "CP2",
-                "CP6",
-                "P7",
-                "P3",
-                "Pz",
-                "P4",
-                "P8",
-                "PO9",
-                "O1",
-                "Oz",
-                "O2",
-                "PO10",
-                "AF7",
-                "AF8",
-            ],
+            software="BCI2000",
+            filters="8th order Butterworth band-pass filters",
+            # Approximate 3x5 grid labels (see _CH_NAMES_002_2014); the data
+            # ships unlabeled and the exact custom Laplacian positions are
+            # undocumented.
+            sensors=list(_CH_NAMES_002_2014),
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                other_physiological=["gsr"],
-            ),
+            cap_manufacturer="Guger Technologies OG",
+            cap_model="g.LADYbird",
+            electrode_type="active",
+            electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
-            n_subjects=14,
+            n_subjects=13,
             health_status="healthy",
-            gender={"female": 5, "male": 9},
-            bci_experience="naive",
+            age_min=20.0,
+            age_max=30.0,
+            bci_experience="mixed",
+            species="human",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
-            n_classes=3,
-            class_labels=["right_hand", "left_hand", "feet"],
-            trial_duration=8.0,
-            study_design="MI",
-            feedback_type="none",
-            stimulus_type="cursor_feedback",
-            stimulus_modalities=["auditory"],
-            primary_modality="auditory",
-            mode="both",
+            n_classes=2,
+            class_labels=["right_hand", "feet"],
+            trial_duration=5.0,
+            study_design="Two-class motor imagery: right hand and feet. Cue-guided Graz-BCI training paradigm with recording, training, and feedback within a single session.",
+            feedback_type="continuous",
+            stimulus_type="bar_graph",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="online",
+            events={"right_hand": 769, "feet": 770},
         ),
         documentation=DocumentationMetadata(
             doi="10.1515/bmt-2014-0117",
-            associated_paper_doi="10.1007/s00500-012-0895-4",
-        ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
-        preprocessing=PreprocessingMetadata(
-            data_state="raw with online filtering applied",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "Bandpass filtering",
-                "Notch filtering",
-                "Automated outlier rejection",
-                "Laplacian spatial filtering",
-                "DFT for PSD estimation",
+            investigators=[
+                "David Steyrl",
+                "Reinhold Scherer",
+                "Oswin Förstner",
+                "Gernot R. Müller-Putz",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=0.1,
-                lowpass_hz=200,
-                bandpass="0.1-200 Hz",
-                notch_hz=[50],
-                filter_type="Butterworth",
-                filter_order=8,
-            ),
-            artifact_methods=["ICA"],
-            re_reference="car",
+            institution="Graz University of Technology",
+            institution_department="Institute for Knowledge Discovery, Laboratory of Brain-Computer Interfaces",
+            country="Austria",
+            license="CC-BY-ND-4.0",
+            repository="BNCI Horizon",
+            publication_year=2014,
+            funding=["FP7 BackHome (No. 288566)", "FP7 ABC (No. 287774)"],
+            contact_info=[
+                "david.steyrl@tugraz.at",
+                "reinhold.scherer@tugraz.at",
+                "oswin.foerstner@student.tugraz.at",
+                "gernot.mueller@tugraz.at",
+            ],
+            associated_paper_doi="10.3217/978-3-85125-378-8-61",
+            keywords=[
+                "brain-computer interfaces",
+                "machine learning",
+                "random forests",
+                "regularized linear discriminant analysis",
+                "sensorimotor rhythms",
+            ],
+        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="minimally preprocessed (online filtered)",
+            preprocessing_applied=True,
+            preprocessing_steps=["bandpass filtering"],
+            filter_type="Butterworth",
+            filter_order=8,
+            artifact_methods=None,
+            re_reference=None,
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA", "SVM", "Random Forest", "Shrinkage LDA"],
-            feature_extraction=["CSP", "FBCSP", "ERD", "PSD"],
-            frequency_bands=FrequencyBands(
-                alpha=[8, 13],
-                analyzed_range=[1.0, 40.0],
-            ),
+            classifiers=["Random Forest", "Shrinkage LDA"],
+            feature_extraction=["CSP", "DFT", "Bandpower"],
+            frequency_bands={"alpha": [6, 14], "beta": [14, 40]},
+            spatial_filters=["CSP", "Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold",
-            cv_folds=10,
+            cv_method="train-test split", evaluation_type=["within_subject"]
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=68.9,
-        ),
+        performance={
+            "accuracy_percent": 79.30,
+            "peak_accuracy": 89.67,
+            "median_accuracy": 80.42,
+        },
         bci_application=BCIApplicationMetadata(
-            applications=["speller", "prosthetic", "vr_ar", "communication"],
+            applications=["communication", "control"],
+            environment="laboratory",
+            online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
+            imagery_tasks=["right_hand", "feet"],
+            cue_duration_s=None,
+            imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=80,
-            trials_context="per_class",
+            n_trials=160,
+            n_trials_per_class={"right_hand": 80, "feet": 80},
+            n_blocks=8,
+            trials_context="total per subject",
         ),
+        sessions_per_subject=1,
+        runs_per_session=8,
+        file_format="MAT",
         data_processed=True,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
@@ -620,6 +734,8 @@ class BNCI2014_002(MNEBNCI):
             interval=[3, 8],
             paradigm="imagery",
             doi="10.1007/s00500-012-0895-4",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -674,126 +790,196 @@ class BNCI2014_004(MNEBNCI):
     BNCI2014_002 : 2-class motor imagery with Laplacian derivations
     """
 
+    nemar_id = "nm000135"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=22,
-            channel_types={"eeg": 22},
-            montage="10-20",
-            hardware="g.tec Guger Technologies OEG (two 16-channel biosignal amplifiers)",
-            sensor_type="Ag/AgCl",
-            reference="Car",
-            ground="right mastoid",
-            filters="50 Hz notch",
-            sensors=[
-                "Fz",
-                "FC3",
-                "FC1",
-                "FCz",
-                "FC2",
-                "FC4",
-                "C5",
-                "C3",
-                "C1",
-                "Cz",
-                "C2",
-                "C4",
-                "C6",
-                "CP3",
-                "CP1",
-                "CPz",
-                "CP2",
-                "CP4",
-                "P1",
-                "Pz",
-                "P2",
-                "POz",
-            ],
+            n_channels=3,
+            channel_types={"eeg": 3, "eog": 3},
+            montage="standard_1020",
+            hardware="g.tec",
+            sensor_type="EEG",
+            reference="left mastoid",
+            ground="Fz",
+            software="rtsBCI (MATLAB/Simulink)",
+            filters="0.5-100 Hz bandpass, 50 Hz notch",
+            sensors=["C3", "C4", "Cz", "EOG1", "EOG2", "EOG3"],
             line_freq=50.0,
+            impedance_threshold_kohm=None,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
                 eog_channels=3,
-                eog_type=["horizontal", "vertical"],
-                has_emg=True,
-                emg_channels=4,
+                eog_type=["horizontal", "vertical", "radial"],
+                has_emg=False,
+                emg_channels=None,
+                other_physiological=None,
             ),
+            cap_manufacturer="Easycap",
+            cap_model=None,
+            electrode_type=None,
+            electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
             n_subjects=9,
             health_status="healthy",
-            gender={"male": 6, "female": 4},
-            age_mean=24.6,
+            gender=None,
+            age_mean=24.7,
+            age_std=3.3,
+            age_min=None,
+            age_max=None,
+            ages=None,
             handedness="right",
+            clinical_population=None,
             bci_experience="naive",
+            sexes=None,
+            handedness_list=None,
+            species="human",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
-            n_classes=4,
-            class_labels=["right_hand", "right_arm", "left_hand", "feet"],
-            study_design="motor\nimagery",
-            feedback_type="none",
-            stimulus_type="avatar",
+            task_type="motor_imagery",
+            events={
+                "276": "Idling EEG (eyes open)",
+                "277": "Idling EEG (eyes closed)",
+                "768": "Start of a trial",
+                "769": "Cue onset left (class 1)",
+                "770": "Cue onset right (class 2)",
+                "781": "BCI feedback (continuous)",
+                "783": "Cue unknown",
+                "1023": "Rejected trial",
+                "1077": "Horizontal eye movement",
+                "1078": "Vertical eye movement",
+                "1079": "Eye rotation",
+                "1081": "Eye blinks",
+                "32766": "Start of a new run",
+            },
+            n_classes=2,
+            class_labels=["left_hand", "right_hand"],
+            trials_per_class=None,
+            trial_duration=7.5,
+            tasks=["left_hand_imagery", "right_hand_imagery"],
+            study_design="Two-class motor imagery: left hand and right hand. Screening sessions (01T, 02T) without feedback, feedback sessions (03T, 04E, 05E) with smiley feedback.",
+            study_domain="brain-computer interface",
+            feedback_type="visual",
+            stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
-            primary_modality="multisensory",
-            synchronicity="asynchronous",
+            primary_modality="visual",
+            synchronicity="cue_based",
             mode="both",
+            has_training_test_split=True,
+            instructions="Subjects selected their best motor imagery strategy (e.g., squeezing a ball or pulling a brake) and performed kinesthetic motor imagery of left or right hand movements.",
+            cog_atlas_id=None,
+            cog_po_id=None,
+            stimulus_presentation=None,
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2007.906956",
-        ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
-        preprocessing=PreprocessingMetadata(
-            data_state="preprocessed",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "EOG regression artifact reduction",
-                "bandpass filtering",
-                "notch filtering",
+            description="BCI Competition 2008 - Graz data set B: Two-class motor imagery dataset (left/right hand) with screening sessions (no feedback) and smiley feedback sessions. 9 subjects, 3 bipolar EEG channels (C3, Cz, C4) + 3 EOG channels, 250 Hz.",
+            investigators=[
+                "R. Leeb",
+                "C. Brunner",
+                "G. R. Müller-Putz",
+                "A. Schlögl",
+                "G. Pfurtscheller",
+                "F. Lee",
+                "C. Keinrath",
+                "R. Scherer",
+                "H. Bischof",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=0.5,
-                lowpass_hz=100,
-                bandpass=[0.5, 100],
-                notch_hz=[50],
-                filter_type="Butterworth",
-                filter_order=5,
-            ),
-            artifact_methods=["EOG correction", "ICA"],
-            re_reference="car",
+            institution="Graz University of Technology",
+            country="AT",
+            repository="BNCI Horizon",
+            data_url="http://biosig.sourceforge.net/",
+            license="CC-BY-ND-4.0",
+            publication_year=2007,
+            senior_author="G. Pfurtscheller",
+            institution_department="Institute for Knowledge Discovery",
+            keywords=[
+                "brain-computer interface",
+                "BCI",
+                "electroencephalogram",
+                "EEG",
+                "motor imagery",
+                "BCI competition",
+                "smiley feedback",
+            ],
+        ),
+        sessions_per_subject=5,
+        runs_per_session=1,
+        sessions=["01T", "02T", "03T", "04E", "05E"],
+        data_processed=False,
+        file_format="GDF",
+        external_links={"source": "http://biosig.sourceforge.net/"},
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw with online filtering",
+            preprocessing_applied=True,
+            preprocessing_steps=["bandpass filtering", "notch filtering"],
+            highpass_hz=0.5,
+            lowpass_hz=100.0,
+            bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
+            notch_hz=[50.0],
+            filter_type="analog",
+            filter_order=None,
+            artifact_methods=None,
+            re_reference=None,
+            downsampled_to_hz=None,
+            epoch_window=None,
+            notes="Online bandpass (0.5-100 Hz) and notch (50 Hz) filters applied during recording. Artifact trials marked with event type 1023. EOG channels provided for user-applied artifact correction.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
-            feature_extraction=["Bandpower", "ERD"],
-            frequency_bands=FrequencyBands(
-                mu=[8, 12],
-            ),
+            feature_extraction=["Bandpower", "BP"],
+            frequency_bands={},
+            spatial_filters=None,
         ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10x10 cross-validation",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
+        ),
+        performance={},
         bci_application=BCIApplicationMetadata(
-            applications=[
-                "wheelchair/navigation",
-                "prosthetic",
-                "vr_ar",
-                "communication",
-                "neurofeedback",
-            ],
-            environment="laboratory",
+            applications=["motor_control"], environment="laboratory", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
+            stimulus_frequencies_hz=None,
+            frequency_resolution_hz=None,
+            code_type=None,
+            code_length=None,
+            n_targets=None,
+            n_repetitions=None,
+            isi_ms=None,
+            soa_ms=None,
+            imagery_tasks=["left_hand", "right_hand"],
+            cue_duration_s=1.25,
+            imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=20,
-            n_blocks=1,
-            trials_context="per_run",
+            n_trials={"screening": 120, "feedback": 160},
+            n_trials_per_class=None,
+            n_blocks=None,
+            block_duration_s=None,
+            trials_context="per session",
         ),
-        data_processed=True,
+        abstract="BCI Competition 2008 Graz data set B. EEG data from 9 subjects performing two-class motor imagery (left hand vs right hand). Two screening sessions without feedback (120 trials each) and three feedback sessions with smiley feedback (160 trials each). Three bipolar EEG channels (C3, Cz, C4) and three EOG channels recorded at 250 Hz.",
+        methodology="Subjects performed kinesthetic motor imagery of left or right hand movements. Two screening sessions (01T, 02T) without feedback: 6 runs x 20 trials = 120 trials per session. Three feedback sessions (03T, 04E, 05E) with smiley feedback: 4 runs x 40 trials (20 per class) = 160 trials per session. Screening trials: fixation cross + beep at t=0, arrow cue at ~t=2 for 1.25s, imagery for 4s, break. Feedback trials: smiley at t=0, beep at t=2, cue from t=3 to t=7.5 with continuous smiley feedback. Three bipolar EEG channels (C3, Cz, C4) plus three monopolar EOG channels recorded at 250 Hz with 0.5-100 Hz bandpass and 50 Hz notch filter. EEG ground at Fz, EOG reference at left mastoid. Amplifier: g.tec. Software: rtsBCI (MATLAB/Simulink).",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
@@ -802,6 +988,9 @@ class BNCI2014_004(MNEBNCI):
             interval=[3, 7.5],
             paradigm="imagery",
             doi="10.1109/TNSRE.2007.906956",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
 
@@ -848,88 +1037,134 @@ class BNCI2014_008(MNEBNCI):
             n_channels=8,
             channel_types={"eeg": 8},
             montage="10-10",
-            hardware="BCI2000",
+            hardware="g.MOBILAB",
             sensor_type="active electrodes",
             reference="right earlobe",
             ground="left mastoid",
             software="BCI2000",
-            filters={"bandpass": [0.1, 30], "highpass_hz": 0.1, "lowpass_hz": 30},
+            filters="0.1-10 Hz bandpass, 50 Hz notch",
             sensors=["Fz", "Cz", "Pz", "Oz", "P3", "P4", "PO7", "PO8"],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                other_physiological=["ecg", "respiration", "gsr"],
-            ),
+            electrode_type="g.Ladybird",
+            electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
             n_subjects=8,
-            health_status="healthy",
-            gender={"male": 6, "female": 2},
-            age_mean=58,
+            health_status="ALS patients",
+            gender={"M": 5, "F": 3},
+            age_mean=58.0,
+            age_std=12.0,
+            age_min=40,
+            age_max=72,
+            clinical_population="amyotrophic lateral sclerosis",
             bci_experience="naive",
+            species="human",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
-            n_classes=1,
-            class_labels=["rest"],
-            trial_duration=0.8,
-            study_design="report if the orientation of the rectangles in the test array was\nidentical to the ones in the memory array.",
-            feedback_type="none",
-            stimulus_type="rsvp",
-            stimulus_modalities=["visual", "auditory"],
-            primary_modality="multisensory",
-            mode="both",
+            n_classes=2,
+            class_labels=["target", "non-target"],
+            trial_duration=None,
+            study_design="P300 speller with 6x6 matrix for copy-spelling task in ALS patients",
+            feedback_type="visual",
+            stimulus_type="row-column intensification",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="online",
+            has_training_test_split=True,
+            instructions="Copy spell seven predefined words of five characters each by focusing attention on desired letters",
+            events={"target": 1, "non-target": 2},
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnhum.2013.00732",
+            investigators=[
+                "Angela Riccio",
+                "Luca Simione",
+                "Francesca Schettini",
+                "Alessia Pizzimenti",
+                "Maurizio Inghilleri",
+                "Marta Olivetti Belardinelli",
+                "Donatella Mattia",
+                "Febo Cincotti",
+            ],
+            institution="Fondazione Santa Lucia",
+            country="Italy",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
+            publication_year=2013,
+            senior_author="Febo Cincotti",
+            contact_info=["a.riccio@hsantalucia.it"],
+            funding=[
+                "Italian Agency for Research on ALS-ARiSLA project 'Brindisys'",
+                "FARI project C26I12AJZZ at the Sapienza University of Rome",
+            ],
+            keywords=[
+                "brain computer interface",
+                "amyotrophic lateral sclerosis",
+                "P300",
+                "attention",
+                "working memory",
+            ],
+            institution_address="Via Ardeatina, 306, 00179 Rome, Italy",
+            institution_department="Neuroelectrical Imaging and BCI Laboratory",
+            ethics_approval=["Fondazione Santa Lucia ethic committee"],
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
+        tags=Tags(pathology=["ALS"], modality=["P300"], type=["ERP"]),
         preprocessing=PreprocessingMetadata(
-            data_state="epoched",
+            data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=[
                 "bandpass filtering",
                 "notch filtering",
-                "epoching",
                 "artifact rejection",
                 "baseline correction",
-                "decimation",
             ],
-            filter_details=FilterDetails(
-                highpass_hz=0.1,
-                lowpass_hz=10,
-                bandpass=[0.1, 10],
-                notch_hz=50,
-                filter_type="Butterworth",
-                filter_order=4,
-            ),
-            artifact_methods=["ICA"],
+            highpass_hz=0.1,
+            lowpass_hz=10.0,
+            bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 10.0},
+            notch_hz=[50],
+            filter_type="Butterworth",
+            filter_order=4,
+            artifact_methods=["amplitude threshold rejection"],
+            re_reference="right earlobe",
+            epoch_window=[0.0, 1.0],
+            notes="Epochs with peak amplitude >70 μV or <-70 μV were rejected. Baseline correction based on 200 ms preceding each epoch.",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA"],
-            frequency_bands=FrequencyBands(
-                theta=[4, 8],
-            ),
+            classifiers=["SWLDA"], feature_extraction=["temporal features", "decimation"]
         ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="7-fold", cv_folds=7, evaluation_type=["within_subject"]
+        ),
+        performance={
+            "accuracy_percent": 97.5,
+            "binary_accuracy_offline": 87.4,
+            "p300_amplitude_mean_uv": 3.3,
+        },
         bci_application=BCIApplicationMetadata(
-            applications=["speller", "prosthetic", "vr_ar", "communication"],
-            environment="outdoor",
+            applications=["communication"], environment="laboratory", online_feedback=True
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            n_repetitions=12,
+            n_targets=36,
+            n_repetitions=10,
+            isi_ms=125.0,
+            soa_ms=250.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=80,
-            trials_context="total",
+            n_trials=35,
+            n_blocks=7,
+            trials_context="per subject (7 words, 5 characters each)",
         ),
+        file_format="Unknown",
         data_processed=True,
+        sessions_per_subject=1,
+        runs_per_session=1,
     )
+    nemar_id = "nm000169"
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
@@ -938,6 +1173,8 @@ class BNCI2014_008(MNEBNCI):
             interval=[0, 1.0],
             paradigm="p300",
             doi="10.3389/fnhum.2013.00732",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
 
@@ -982,112 +1219,150 @@ class BNCI2014_009(MNEBNCI):
             n_channels=16,
             channel_types={"eeg": 16},
             montage="10-10",
-            hardware="g.tec",
+            hardware="g.USBamp",
             sensor_type="Ag/AgCl",
-            reference="earlobe",
+            reference="linked earlobes",
             ground="right mastoid",
             software="BCI2000",
-            filters={"highpass_hz": 0.1, "lowpass_hz": 20},
-            impedance_threshold_kohm=10,
+            filters="bandpass 0.1-20 Hz",
             sensors=[
-                "FC5",
-                "FC3",
-                "FC1",
-                "FCz",
-                "FC2",
-                "FC4",
-                "FC6",
-                "C3",
-                "C1",
+                "Fz",
                 "Cz",
-                "C2",
+                "Pz",
+                "Oz",
+                "P3",
+                "P4",
+                "PO7",
+                "PO8",
+                "F3",
+                "F4",
+                "FCz",
+                "C3",
                 "C4",
                 "CP3",
                 "CPz",
                 "CP4",
-                "Pz",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                other_physiological=["gsr"],
-            ),
+            impedance_threshold_kohm=10.0,
+            cap_manufacturer="Electro-Cap International, Inc.",
         ),
         participants=ParticipantMetadata(
-            n_subjects=15,
+            n_subjects=10,
             health_status="healthy",
-            gender={"male": 6, "female": 4},
-            age_mean=26.82,
-            bci_experience="previous experience with P300-based BCIs",
+            gender={"female": 10, "male": 0},
+            age_mean=26.8,
+            age_std=5.6,
+            ages=[22, 23, 27, 23, 23, 26, 40, 23, 26, 35],
+            bci_experience="experienced",
+            species="human",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
-            n_classes=1,
-            class_labels=["rest"],
-            trial_duration=0.8,
-            study_design="Subjects focused on one of 36 characters using two paradigms: P300 Speller (overt attention with 6x6 matrix) and GeoSpell (covert attention with hexagonal presentation)",
+            task_type="spelling",
+            events={"target": 1, "non_target": 5},
+            n_classes=2,
+            class_labels=["target", "non_target"],
+            trial_duration=16.0,
+            study_design="P300-based BCI with two interfaces: P300 Speller (overt attention) and GeoSpell (covert attention). 36 alphanumeric characters presented. Eight stimulation sequences per trial with 16 target intensifications.",
             feedback_type="none",
-            stimulus_type="oddball",
-            stimulus_modalities=["visual", "auditory"],
-            primary_modality="multisensory",
-            synchronicity="asynchronous",
-            mode="both",
-            has_training_test_split=True,
+            stimulus_type="visual_intensification",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="offline",
+            has_training_test_split=False,
+            instructions="Subject focused on one out of 36 different characters. At the beginning of each trial, the system prompted the subject with the character to attend. Target prompt appeared during a 2 s pre-trial interval.",
+            stimulus_presentation={
+                "stimulus_duration_ms": "125",
+                "isi_ms": "125",
+                "soa_ms": "250",
+                "n_sequences": "8",
+                "n_intensifications_per_target": "16",
+                "pre_trial_interval_s": "2.0",
+                "tti_min_ms": "500",
+            },
         ),
         documentation=DocumentationMetadata(
-            doi="10.1080/00140139.2012.661084",
+            doi="10.1088/1741-2560/11/3/035008",
+            description="Complete record of P300 evoked potentials recorded with BCI2000 using two different paradigms: P300 Speller (overt attention) and GeoSpell (covert attention). 10 healthy subjects focused on one out of 36 different characters.",
+            investigators=[
+                "P Aricò",
+                "F Aloise",
+                "F Schettini",
+                "S Salinari",
+                "D Mattia",
+                "F Cincotti",
+            ],
+            institution="Fondazione Santa Lucia IRCCS",
+            country="Italy",
+            license="CC-BY-NC-ND-4.0",
+            repository="BNCI Horizon",
+            publication_year=2014,
+            senior_author="F Cincotti",
+            contact_info=["p.arico@hsantalucia.it"],
+            institution_address="Rome, Italy",
+            institution_department="Neuroelectrical Imaging and BCI Lab",
+            ethics_approval=["Approved by local Ethics Committee"],
+            keywords=[
+                "P300 latency jitter",
+                "brain-computer interface",
+                "covert attention",
+                "wavelet analysis",
+                "single epoch",
+            ],
             associated_paper_doi="10.3389/fnhum.2013.00732",
-            funding=["EU grant FP7-", "grant FP7- FP7-"],
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Visual"],
-            type=["Perception"],
-        ),
+        sessions_per_subject=4,
+        runs_per_session=1,
         preprocessing=PreprocessingMetadata(
-            data_state="filtered",
+            data_state="preprocessed",
             preprocessing_applied=True,
             preprocessing_steps=["bandpass filtering"],
-            filter_details=FilterDetails(
-                highpass_hz=0.1,
-                lowpass_hz=20,
-                bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 20.0},
-                filter_type="Butterworth",
-                filter_order=8,
-            ),
-            artifact_methods=["ICA"],
-            re_reference="car",
+            highpass_hz=0.1,
+            lowpass_hz=20.0,
+            bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 20.0},
+            filter_type="Butterworth",
+            filter_order=8,
+            re_reference="linked earlobes",
+            epoch_window=[0.0, 0.8],
+            notes="EEG acquired using g.USBamp amplifier (g.Tec, Austria), digitized at 256 Hz",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA"],
-            feature_extraction=["Wavelet", "Time-Frequency"],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[1.0, 20.0],
-            ),
+            classifiers=["LDA", "SWLDA"],
+            feature_extraction=["Wavelet", "Time-Frequency", "CWT"],
+            frequency_bands={"analyzed_range": [1.0, 20.0]},
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="3-fold",
-            cv_folds=3,
-            evaluation_type=["cross_subject"],
+            cv_method="cross-validation", cv_folds=3, evaluation_type=["within_session"]
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=91.6,
-        ),
+        performance={
+            "p300_latency_jitter_correlation": "negative correlation with accuracy"
+        },
         bci_application=BCIApplicationMetadata(
-            applications=["speller", "prosthetic", "vr_ar", "communication"],
-            environment="outdoor",
+            applications=["communication", "spelling"],
+            environment="laboratory",
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300",
-            n_repetitions=16,
+            n_targets=36,
+            n_repetitions=8,
+            isi_ms=125.0,
+            soa_ms=250.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials="6 trials per run",
-            trials_context="per run",
+            n_trials=18, trials_context="6 trials × 3 runs per session", n_blocks=3
         ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["P300", "ERP"]),
+        file_format="MAT",
         data_processed=True,
+        abstract="This dataset represents a complete record of P300 evoked potentials recorded with BCI2000 using two different paradigms: a paradigm based on the P300 Speller originally described by Farwell and Donchin in overt attention condition and a paradigm based on the GeoSpell interface used in covert attention condition. In these sessions, 10 healthy subjects focused on one out of 36 different characters. The objective was to predict the correct character in each of the provided character selection epochs.",
+        methodology="Ten healthy subjects (10 female, mean age = 26.8 ± 5.6) with previous experience with P300-based BCIs attended 4 recording sessions. Scalp EEG potentials were measured using 16 Ag/AgCl electrodes arranged on an elastic cap per the 10-10 standard. Each electrode was referenced to the linked earlobes and grounded to the right mastoid. The EEG was acquired using a g.USBamp amplifier (g.Tec, Austria), digitized at 256 Hz, high pass- and low pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively. The electrode impedance did not exceed 10 kΩ. Visual stimulation, acquisition and online classification were performed with BCI2000. Each subject attended 4 recording sessions. During each session, the subject performed three runs with each of the stimulation interfaces. Each trial consisted of eight stimulation sequences, and thus, 16 intensifications of the target character. Each stimulus was intensified for 125 ms, with an inter stimulus interval (ISI) of 125 ms, yielding a 250 ms lag between the appearance of two stimuli (SOA). Pseudorandom stimulation sequences were assembled so that each target intensification would not occur within 500 ms after the previous one to avoid the attentional blink phenomenon.",
     )
+    nemar_id = "nm000188"
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 11)),
             sessions_per_subject=3,
@@ -1096,4 +1371,6 @@ class BNCI2014_009(MNEBNCI):
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1088/1741-2560/11/3/035008",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )

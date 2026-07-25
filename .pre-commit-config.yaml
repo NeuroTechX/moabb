@@ -34,59 +34,26 @@ repos:
         args: [ "--autofix", "--no-sort-keys", "--indent=4" ]
 
 
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 25.12.0
-    hooks:
-      - id: black
-        language_version: python3
-        args: [ --line-length=90, --target-version=py38 ]
-
-  -   repo: https://github.com/asottile/blacken-docs
-      rev: 1.20.0
-      hooks:
-      -   id: blacken-docs
-          additional_dependencies: [black==23.3.0]
-          exclude: ^.github/
-
-  - repo: https://github.com/PyCQA/isort
-    rev: 7.0.0
-    hooks:
-      - id: isort
-
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
-    hooks:
-      - id: flake8
-        additional_dependencies: [
-          'flake8-blind-except',
-          'flake8-docstrings',
-          'flake8-bugbear',
-          'flake8-comprehensions',
-          'flake8-docstrings',
-          'flake8-implicit-str-concat',
-          'pydocstyle>=5.0.0',
-        ]
-        exclude: ^docs/ | ^setup\.py$ |
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.10
+    rev: v0.15.9
     hooks:
       - id: ruff
-        args: [ --fix, --exit-non-zero-on-fix, --ignore, E501 ]
+        args: [ --fix, --exit-non-zero-on-fix ]
+      - id: ruff-format
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
         args:
-          - --ignore-words-list=assertIn,additionals,alle,alot,bund,currenty,datas,farenheit,falsy,fo,haa,hass,iif,incomfort,ines,ist,nam,nd,pres,pullrequests,resset,rime,ser,serie,te,technik,ue,unsecure,withing,zar,crate,Perfomances,Aline,ALS,covert,Buss,GES,pary
+          - --ignore-words-list=assertIn,additionals,alle,alot,bund,currenty,datas,farenheit,falsy,fo,haa,hass,iif,incomfort,ines,ist,nam,nd,pres,pullrequests,resset,rime,ser,serie,te,technik,ue,unsecure,withing,zar,crate,Perfomances,Aline,aline,ALS,covert,Buss,GES,pary,theses,sems
           - --skip="./.*,*.csv,*.json,*.ambr"
           - --quiet-level=2
         exclude_types: [ csv, json, svg, pdf ]
-        exclude: ^tests/|generated/
+        exclude: ^tests/|generated/|social_card_gen\.html$
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.37.1
+    rev: v1.38.0
     hooks:
       - id: yamllint
         exclude: >

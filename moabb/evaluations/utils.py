@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import functools
 import logging
+import warnings
 from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
@@ -87,7 +89,7 @@ def _ensure_fitted(estimator):
 
     # For Pipeline objects, also ensure all steps are marked
     if isinstance(estimator, Pipeline):
-        for name, step in estimator.steps:
+        for _name, step in estimator.steps:
             if step is not None:
                 _ensure_fitted(step)
 
@@ -278,7 +280,7 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
     """
     if not optuna_available:
         raise ImportError(
-            "Optuna is not available. Please install it optuna " "and optuna-integration."
+            "Optuna is not available. Please install it optuna and optuna-integration."
         )
     else:
         optuna_params = {}
@@ -289,7 +291,7 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
                 else:
                     optuna_params[key] = value
             except Exception as e:
-                raise ValueError(f"Conversion failed for parameter {key}: {e}")
+                raise ValueError(f"Conversion failed for parameter {key}: {e}") from e
         return optuna_params
 
 
@@ -302,7 +304,24 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
 # with locally scoped classes.
 
 try:
-    from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", "OptunaSearchCV is experimental")
+        # OptunaSearchCV emits an ExperimentalWarning (subclass of FutureWarning)
+        # on import; suppress it since MOABB intentionally uses this API.
+        from optuna.integration import OptunaSearchCV as _BaseOptunaSearchCV
+
+    # Monkey-patch _BaseOptunaSearchCV.__init__ to suppress the
+    # ExperimentalWarning on every instantiation (including sklearn clone).
+
+    _orig_init = _BaseOptunaSearchCV.__init__
+
+    @functools.wraps(_orig_init)
+    def _quiet_init(self, *args, **kwargs):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "OptunaSearchCV is experimental")
+            _orig_init(self, *args, **kwargs)
+
+    _BaseOptunaSearchCV.__init__ = _quiet_init
 
     class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
         _estimator_type = "classifier"
@@ -338,7 +357,11 @@ def check_search_available():
     if _classifier_wrapper_available and OptunaSearchCVClassifier is not None:
 
         def OptunaSearchCV(estimator, param_distributions, **kwargs):
-            return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore", "OptunaSearchCV is experimental", FutureWarning
+                )
+                return OptunaSearchCVClassifier(estimator, param_distributions, **kwargs)
 
         search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
         return search_methods, True
@@ -458,9 +481,9 @@ def _score_and_update(res, scorer, model, X, y_true):
         Scorer function that returns a dict of scores.
     model : estimator
         Fitted model to score.
-    X : array-like
+    X : :class:`numpy.ndarray`
         Test features.
-    y_true : array-like
+    y_true : :class:`numpy.ndarray`
         Test labels.
 
     Returns
@@ -480,7 +503,7 @@ def _pipeline_requires_epochs(pipeline):
     if not hasattr(pipeline, "steps"):
         return isinstance(pipeline, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA))
 
-    for name, step in pipeline.steps:
+    for _name, step in pipeline.steps:
         if isinstance(step, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA)):
             return True
     return False
@@ -498,7 +521,7 @@ class Emissions:
         self.codecarbon_config = codecarbon_config
         if codecarbon_config is None:
             # Default CodeCarbon configurations
-            self.codecarbon_config = dict(save_to_file=False, log_level="error")
+            self.codecarbon_config = {"save_to_file": False, "log_level": "error"}
             self.codecarbon_offline = False
         else:
             # Offline mode parameters are a superset of online mode parameters

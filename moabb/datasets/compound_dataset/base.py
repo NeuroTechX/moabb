@@ -14,27 +14,27 @@ class CompoundDataset(BaseDataset):
 
     Parameters
     ----------
-    subjects_list: List[Union[tuple, CompoundDataset]]
-        A list of subject or CompoundDataset (exclusive).
-        Example, with a list of selected subject:
-        [
-            (bi2013(), 1, "0", "0")   # dataset, subject 1, session 0, run 0
-            (bi2014(), 1, "0", None)  # dataset, subject 1, session 0, all runs
-        ]
-        Example of building a dataset compounded of CompoundDatasets:
-        [
-            CompoundDataset(subjects_list1),
-            CompoundDataset(subjects_list2)
-        ]
+    subjects_list : list of tuple or list of CompoundDataset
+        A list of subject tuples or CompoundDataset instances (exclusive).
+        Example with a list of selected subjects::
 
-    sessions_per_subject: int
-        Number of sessions per subject (if varying, take minimum)
+            [
+                (bi2013(), 1, "0", "0"),  # dataset, subject 1, session 0, run 0
+                (bi2014(), 1, "0", None),  # dataset, subject 1, session 0, all runs
+            ]
 
-    code: string
-        Unique identifier for dataset, used in all plots
+        Example of building a dataset compounded of CompoundDatasets::
 
-    interval: list with 2 entries
-        See `BaseDataset`.
+            [CompoundDataset(subjects_list1), CompoundDataset(subjects_list2)]
+
+    sessions_per_subject : int
+        Number of sessions per subject (if varying, take minimum).
+
+    code : str
+        Unique identifier for dataset, used in all plots.
+
+    interval : list
+        Epoch interval, see :class:`~moabb.datasets.base.BaseDataset`.
 
     """
 

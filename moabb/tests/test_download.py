@@ -1,5 +1,7 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
+import inspect
+
 import mne
 import pytest
 
@@ -15,6 +17,42 @@ def _get_events(raw):
     else:
         events, _ = mne.events_from_annotations(raw, verbose=False)
     return events
+
+
+@pytest.mark.download
+@pytest.mark.parametrize(
+    "dataset_class",
+    [pytest.param(dataset, id=dataset.__name__) for dataset in dataset_list],
+)
+def test_nemar_download_equivalence(dl_data, tmp_path, dataset_class):
+    if not dl_data:
+        pytest.skip(
+            "Skipping NEMAR download test by default. "
+            "Run the test with option --dl-data to execute it."
+        )
+
+    kwargs = {}
+    if "accept" in inspect.signature(dataset_class).parameters:
+        kwargs["accept"] = True
+    dataset = dataset_class(**kwargs)
+    assert dataset.nemar_id is not None, (
+        f"{dataset_class.__name__} has no NEMAR dataset ID"
+    )
+    subject = dataset.subject_list[0]
+    dataset.download(subject_list=[subject], path=tmp_path)
+
+    bids_root = tmp_path / f"MNE-{dataset.code.lower()}-data" / dataset.nemar_id
+    description = bids_root / "dataset_description.json"
+    assert description.is_file()
+    assert dataset.nemar_id in description.read_text(encoding="utf-8")
+
+    sessions = dataset._get_single_subject_data_from_nemar(subject, path=tmp_path)
+    assert sessions
+    for runs in sessions.values():
+        assert runs
+        for raw in runs.values():
+            assert isinstance(raw, mne.io.BaseRaw)
+            assert len(_get_events(raw)) > 0
 
 
 @pytest.mark.parametrize("dataset", dataset_list)
@@ -52,27 +90,27 @@ def test_dataset_download(dl_data, dataset):
     assert isinstance(data, dict), "Data returned by get_data is not a dict."
 
     # Check that the dictionary keys match the subject_list.
-    assert (
-        list(data.keys()) == obj.subject_list
-    ), "Data keys do not match the subject_list."
+    assert list(data.keys()) == obj.subject_list, (
+        "Data keys do not match the subject_list."
+    )
 
     # For each subject, check the structure of sessions and runs.
     for subject, sessions in data.items():
-        assert isinstance(
-            sessions, dict
-        ), f"Sessions for subject {subject} is not a dict."
-        assert (
-            len(sessions) >= obj.n_sessions
-        ), f"Number of sessions for subject {subject} is less than expected."
+        assert isinstance(sessions, dict), (
+            f"Sessions for subject {subject} is not a dict."
+        )
+        assert len(sessions) >= obj.n_sessions, (
+            f"Number of sessions for subject {subject} is less than expected."
+        )
 
         for session, runs in sessions.items():
             assert isinstance(runs, dict), f"Runs for session {session} is not a dict."
 
             for run, raw in runs.items():
-                assert isinstance(
-                    raw, mne.io.BaseRaw
-                ), f"Data for run {run} in session {session} is not an instance of mne.io.BaseRaw."
+                assert isinstance(raw, mne.io.BaseRaw), (
+                    f"Data for run {run} in session {session} is not an instance of mne.io.BaseRaw."
+                )
                 events = _get_events(raw)
-                assert (
-                    len(events) != 0
-                ), f"No events found in run {run} of session {session}."
+                assert len(events) != 0, (
+                    f"No events found in run {run} of session {session}."
+                )

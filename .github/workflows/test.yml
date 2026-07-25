@@ -9,6 +9,11 @@ on:
   pull_request:
     branches: [ develop, master ]
 
+env:
+  # Install CPU-only PyTorch wheels (torch arrives transitively via the
+  # deeplearning extra -> braindecode). Avoids pulling CUDA builds on CI.
+  UV_TORCH_BACKEND: cpu
+
 jobs:
   test:
     name: ${{ matrix.os }}, py-${{ matrix.python-version }}
@@ -17,7 +22,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        python-version: [ "3.11", "3.12", "3.13", "3.14" ]
         include:
           - os: macOS-latest
             python-version: "3.12"
@@ -41,7 +46,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}
+          key: ${{ runner.os }}-mne-data-v2
           restore-keys: |
             ${{ runner.os }}-mne-data-v2-
 
@@ -121,8 +126,8 @@ jobs:
           env_vars: OS,PYTHON
 
       - name: Save MNE Data Cache
-        if: success()
+        if: success() && steps.cache-mne_data.outputs.cache-hit != 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
         uses: actions/cache/save@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne-data-v2-${{ github.run_id }}
+          key: ${{ runner.os }}-mne-data-v2

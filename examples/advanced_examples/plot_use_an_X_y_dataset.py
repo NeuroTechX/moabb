@@ -16,6 +16,7 @@ classification is performed.
 The dataset provides the X y data as a single user and a single session.
 
 """
+
 # Authors: Anton ANDREEV
 
 import numpy as np
@@ -27,9 +28,7 @@ from sklearn.metrics import accuracy_score, make_scorer
 from sklearn.pipeline import make_pipeline
 
 from moabb.datasets.base import BaseDataset
-from moabb.evaluations import (
-    WithinSessionEvaluation,
-)
+from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms.base import BaseParadigm
 
 
@@ -105,7 +104,9 @@ class DummyRawEpochsDataset(BaseDataset):
     Minimal custom dataset compatible with RawEpochParadigm.
     """
 
-    def __init__(self, subjects=[1]):
+    def __init__(self, subjects=None):
+        if subjects is None:
+            subjects = [1]
         super().__init__(
             subjects=subjects,
             sessions_per_subject=1,

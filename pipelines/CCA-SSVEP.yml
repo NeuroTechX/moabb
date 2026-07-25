@@ -3,6 +3,9 @@ name: SSVEP CCA
 paradigms:
   - SSVEP
 
+citations:
+  - https://doi.org/10.1088/1741-2560/6/4/046002
+
 pipeline:
   - name: SSVEP_CCA
     from: moabb.pipelines.classification

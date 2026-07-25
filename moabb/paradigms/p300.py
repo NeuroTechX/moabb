@@ -38,6 +38,7 @@ class BaseP300(BaseParadigm):
         resample=None,
         ignore_relabelling=False,
         scorer=None,
+        reject_by_annotation=True,
     ):
         self.ignore_relabelling = ignore_relabelling
         super().__init__(
@@ -49,6 +50,7 @@ class BaseP300(BaseParadigm):
             tmin=tmin,
             tmax=tmax,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def is_valid(self, dataset):
@@ -111,8 +113,8 @@ class P300(BaseP300):
     fmax: float (default 24)
         cutoff frequency (Hz) for the low pass filter.
 
-    events: List of str (default ["Target", "NonTarget"])
-        event to use for epoching.
+    events : list of str
+        Event to use for epoching. Defaults to ``["Target", "NonTarget"]``.
     """
 
     def __init__(
@@ -127,6 +129,7 @@ class P300(BaseP300):
         resample=None,
         ignore_relabelling=False,
         scorer=None,
+        reject_by_annotation=True,
     ):
         if events is None:
             events = ["Target", "NonTarget"]
@@ -140,6 +143,7 @@ class P300(BaseP300):
             resample=resample,
             ignore_relabelling=ignore_relabelling,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def used_events(self, dataset):

@@ -10,6 +10,7 @@ import os.path as osp
 import random
 import re
 import sys
+import warnings
 from typing import TYPE_CHECKING
 
 import filelock
@@ -26,6 +27,41 @@ if TYPE_CHECKING:
     from moabb.paradigms.base import BaseProcessing
 
 log = logging.getLogger(__name__)
+
+
+def _handle_deprecated_kwargs(kwargs, renames, class_name):
+    """Handle deprecated PascalCase kwargs, returning resolved values.
+
+    Parameters
+    ----------
+    kwargs : dict
+        The **kwargs from the constructor.
+    renames : dict
+        Mapping of old PascalCase names to new snake_case names.
+    class_name : str
+        The class name for the warning message.
+
+    Returns
+    -------
+    resolved : dict
+        Mapping of new snake_case names to values from deprecated kwargs.
+    """
+    resolved = {}
+    for old_name, new_name in renames.items():
+        if old_name in kwargs:
+            warnings.warn(
+                f"Parameter '{old_name}' is deprecated and will be removed in "
+                f"version 2.0. Use '{new_name}' instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            resolved[new_name] = kwargs.pop(old_name)
+    if kwargs:
+        raise TypeError(
+            f"{class_name}.__init__() got unexpected keyword arguments: "
+            f"{list(kwargs.keys())}"
+        )
+    return resolved
 
 
 def _set_random_seed(seed: int) -> None:
@@ -113,9 +149,7 @@ def verbose(function):
                     verbose_val = bound.arguments["verbose"]
             except TypeError as exc:
                 log.debug(
-                    "Failed to bind 'verbose' argument for %s: %s",
-                    function.__name__,
-                    exc,
+                    "Failed to bind 'verbose' argument for %s: %s", function.__name__, exc
                 )
 
         # Check self.verbose
@@ -155,10 +189,10 @@ def set_download_dir(path):
     Parameters
     ----------
     path : None | str
-    The new storage location, if it does not exist, a warning is raised and the
-    path is created
-    If None, and MNE_DATA config does not exist, a warning is raised and the
-    storage location is set to the MNE default directory
+        The new storage location. If it does not exist, a warning is raised
+        and the path is created. If None and MNE_DATA config does not exist,
+        a warning is raised and the storage location is set to the MNE
+        default directory.
     """
     if path is None:
         if get_config("MNE_DATA") is None:
@@ -197,12 +231,8 @@ aliases_list = []  # list of tuples containing (old name, new name, expire versi
 
 def update_docstring_list(doc, section, msg):
     header = rf"{section}[ ]*\n[ ]*[\-]+[ ]*\n"
-    if section not in doc:
-        doc = doc + f"\n\n    {section}\n    {'-' * len(section)}\n"
     if re.search(rf"[ ]*{header}", doc) is None:
-        raise ValueError(
-            f"Incorrect formatting of section {section!r} in docstring {doc!r}"
-        )
+        doc = doc + f"\n\n    {section}\n    {'-' * len(section)}\n"
     doc = re.sub(rf"([ ]*)({header})", rf"\g<1>\g<2>\n\g<1>{msg}\n", doc)
     return doc
 
@@ -251,39 +281,47 @@ def depreciated_alias(name, expire_version):
 @contextlib.contextmanager
 def _open_lock_hdf5(path, *args, **kwargs):
     """
-    Context manager that opens a file with an optional file lock.
+    Context manager that opens an HDF5 file with a file lock.
 
-    If the `filelock` package is available, a lock is acquired on a lock file
-    based on the given path (by appending '.lock').
+    Acquires a lock on a lock file based on the given path (by appending
+    '.lock') before opening the HDF5 file. The lock timeout and fallback
+    behavior can be controlled via environment variables:
 
-    Otherwise, a null context is used. The path is then opened in the
-    specified mode.
+    - ``MOABB_HDF5_LOCK_TIMEOUT``: seconds to wait for the lock (default 30).
+    - ``MOABB_ALLOW_UNLOCKED_HDF5``: if ``"1"``/``"true"``/``"yes"``, fall
+      back to unlocked access on timeout instead of raising.
 
     Parameters
     ----------
     path : str
-        The path to the file to be opened.
+        The path to the HDF5 file to be opened.
     *args, **kwargs : optional
-        Additional arguments and keyword arguments to be passed to the
-        `open` function.
+        Additional arguments and keyword arguments to be passed to
+        ``h5py.File``.
 
     """
-    lock_context = contextlib.nullcontext()  # default to no lock
+    lock_timeout = float(os.environ.get("MOABB_HDF5_LOCK_TIMEOUT", "30"))
+    allow_unlocked = os.environ.get("MOABB_ALLOW_UNLOCKED_HDF5", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    lock_path = f"{path}.lock"
+    lock = filelock.FileLock(lock_path, timeout=lock_timeout)
 
-    if filelock:
-        lock_path = f"{path}.lock"
-        try:
-            lock_context = filelock.FileLock(lock_path, timeout=5)
-            lock_context.acquire()
-        except TimeoutError:
-            warn(
-                "Could not acquire lock file after 5 seconds, consider deleting it "
-                f"if you know the corresponding file is usable:\n{lock_path}"
-            )
-            lock_context = contextlib.nullcontext()
-
-    with lock_context, h5py.File(path, *args, **kwargs) as fid:
-        yield fid
+    try:
+        with lock, h5py.File(path, *args, **kwargs) as fid:
+            yield fid
+    except TimeoutError as err:
+        msg = f"Could not acquire lock file after {lock_timeout:g} seconds:\n{lock_path}"
+        if not allow_unlocked:
+            raise TimeoutError(msg) from err
+        warn(
+            msg + "\nProceeding without lock because "
+            "MOABB_ALLOW_UNLOCKED_HDF5 is enabled."
+        )
+        with h5py.File(path, *args, **kwargs) as fid:
+            yield fid
 
 
 class MoabbMetaClass(abc.ABCMeta, NumpyDocstringInheritanceInitMeta):

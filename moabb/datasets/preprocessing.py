@@ -1,5 +1,6 @@
 import logging
 from collections import OrderedDict
+from enum import Enum
 from operator import methodcaller
 from typing import Dict, List, Tuple, Union
 
@@ -7,6 +8,10 @@ import mne
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
+from sklearn.utils import Bunch
+from sklearn.utils.validation import check_is_fitted
+
+from moabb.datasets._channel_pick import pick_channels_for_modalities
 
 
 # Handle different scikit-learn versions for _VisualBlock import
@@ -37,6 +42,195 @@ class FixedPipeline(Pipeline):
     def __sklearn_is_fitted__(self):
         """Return True to indicate this pipeline is always considered fitted."""
         return True
+
+    def __repr__(self):
+        step_names = [
+            f"{self._step_label(n)}: {e.__class__.__name__}" for n, e in self.steps
+        ]
+        return f"FixedPipeline([{' -> '.join(step_names)}])"
+
+    @staticmethod
+    def _step_label(name):
+        """Convert a step name (possibly a StepType enum) to a display string."""
+        key = name.value if isinstance(name, Enum) else str(name)
+        return key.capitalize()
+
+    @property
+    def named_steps(self):
+        """Access the steps by name, converting non-string keys to strings.
+
+        Overrides :attr:`sklearn.pipeline.Pipeline.named_steps` so that
+        :class:`~moabb.datasets.bids_interface.StepType` enum keys (used
+        instead of plain strings) don't crash sklearn's ``Bunch(**dict(steps))``.
+        """
+        return Bunch(**{self._step_label(k): v for k, v in self.steps})
+
+    def get_params(self, deep=True):
+        # Temporarily convert enum keys to strings so super().get_params()
+        # generates consistent deep keys (e.g. "Raw__param" not "StepType.RAW__param").
+        orig_steps = self.steps
+        self.steps = [(self._step_label(n), e) for n, e in orig_steps]
+        try:
+            params = super().get_params(deep=deep)
+        finally:
+            self.steps = orig_steps
+        return params
+
+    def _sk_visual_block_(self):
+        if _VisualBlock is None:
+            return NotImplemented
+
+        # Flatten single-step wrappers: if this pipeline has exactly one step
+        # and that step is itself a pipeline, delegate to the inner pipeline's
+        # visual block so we don't show an empty nesting level.
+        if len(self.steps) == 1:
+            _, only_step = self.steps[0]
+            if isinstance(only_step, Pipeline) and hasattr(
+                only_step, "_sk_visual_block_"
+            ):
+                return only_step._sk_visual_block_()
+
+        def _step_short_name(est):
+            """One-line name for a step estimator."""
+            if est is None or est == "passthrough":
+                return "passthrough"
+            if hasattr(est, "_display_name"):
+                return est._display_name
+            return est.__class__.__name__
+
+        names = []
+        for n, e in self.steps:
+            label = self._step_label(n)
+            names.append(f"{label}: {_step_short_name(e)}")
+
+        estimators = [e for _, e in self.steps]
+        name_details = [_step_short_name(e) for e in estimators]
+        return _VisualBlock(
+            "serial",
+            estimators,
+            names=names,
+            name_details=name_details,
+            dash_wrapped=False,
+        )
+
+    def find_steps(self, step_type):
+        """Return ``(index, transformer)`` tuples for all steps matching *step_type*.
+
+        Parameters
+        ----------
+        step_type : StepType
+            The step type to search for.
+
+        Returns
+        -------
+        list of (int, transformer)
+            Matching steps. Empty list if none found.
+        """
+        return [
+            (i, transformer)
+            for i, (st, transformer) in enumerate(self.steps)
+            if st == step_type
+        ]
+
+    def insert_step(self, step_type, transformer, *, after=None, before=None, index=None):
+        """Insert a new step into the pipeline.
+
+        Exactly one of *after*, *before*, or *index* must be given.
+
+        Parameters
+        ----------
+        step_type : StepType
+            The type tag for the new step.
+        transformer : estimator
+            The transformer to insert.
+        after : StepType, optional
+            Insert after the **last** step of this type.
+        before : StepType, optional
+            Insert before the **first** step of this type.
+        index : int, optional
+            Insert at this position (same semantics as ``list.insert``).
+
+        Returns
+        -------
+        self
+            For chaining.
+
+        Raises
+        ------
+        ValueError
+            If zero or more than one positioning argument is given, or if
+            the referenced *after*/*before* StepType is not found.
+        """
+        n_pos = sum(x is not None for x in (after, before, index))
+        if n_pos != 1:
+            raise ValueError(
+                "Exactly one of 'after', 'before', or 'index' must be given."
+            )
+
+        if after is not None:
+            matches = self.find_steps(after)
+            if not matches:
+                raise ValueError(f"No steps of type {after!r} found in pipeline.")
+            pos = matches[-1][0] + 1
+        elif before is not None:
+            matches = self.find_steps(before)
+            if not matches:
+                raise ValueError(f"No steps of type {before!r} found in pipeline.")
+            pos = matches[0][0]
+        else:
+            pos = index
+
+        self.steps.insert(pos, (step_type, transformer))
+        return self
+
+    def remove_step(self, *, index=None, step_type=None):
+        """Remove one or more steps from the pipeline.
+
+        Exactly one of *index* or *step_type* must be given.
+
+        Parameters
+        ----------
+        index : int, optional
+            Remove the step at this position.
+        step_type : StepType, optional
+            Remove **all** steps of this type.
+
+        Returns
+        -------
+        self
+            For chaining.
+
+        Raises
+        ------
+        ValueError
+            If zero or more than one argument is given, if the referenced
+            *step_type* is not found, or if removal would empty the pipeline.
+        """
+        n_pos = sum(x is not None for x in (index, step_type))
+        if n_pos != 1:
+            raise ValueError("Exactly one of 'index' or 'step_type' must be given.")
+
+        if step_type is not None:
+            matches = self.find_steps(step_type)
+            if not matches:
+                raise ValueError(f"No steps of type {step_type!r} found in pipeline.")
+            if len(matches) == len(self.steps):
+                raise ValueError("Cannot remove all steps from the pipeline.")
+            for i, _ in reversed(matches):
+                del self.steps[i]
+        else:
+            if len(self.steps) == 1:
+                raise ValueError("Cannot remove all steps from the pipeline.")
+            if not isinstance(index, int):
+                raise ValueError(f"'index' must be an int, got {type(index).__name__}.")
+            n_steps = len(self.steps)
+            if not -n_steps <= index < n_steps:
+                raise ValueError(
+                    f"'index' {index} out of range for pipeline with {n_steps} steps."
+                )
+            del self.steps[index]
+
+        return self
 
 
 def make_fixed_pipeline(*steps, memory=None, verbose=False):
@@ -293,6 +487,10 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         self.transformers = transformers
         self._is_fitted = True
 
+    def __repr__(self):
+        branches = ", ".join(n for n, _ in self.transformers)
+        return f"ForkPipelines([{branches}])"
+
     def transform(self, X, y=None):
         return OrderedDict([(n, t.transform(X)) for n, t in self.transformers])
 
@@ -310,10 +508,19 @@ class ForkPipelines(TransformerMixin, BaseEstimator):
         if _VisualBlock is None:
             return NotImplemented
         names, estimators = zip(*self.transformers)
+        clean_estimators = []
+        display_names = []
+        for n, e in zip(names, estimators):
+            if _is_none_pipeline(e):
+                clean_estimators.append("passthrough")
+                display_names.append(f"{n} (passthrough)")
+            else:
+                clean_estimators.append(e)
+                display_names.append(n)
         return _VisualBlock(
             kind="parallel",
-            estimators=list(estimators),
-            names=list(names),
+            estimators=clean_estimators,
+            names=display_names,
             name_caption=self.__class__.__name__,
             dash_wrapped=True,
         )
@@ -333,16 +540,27 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
         """Return True to indicate this transformer is always considered fitted."""
         return True
 
+    def _get_visual_name(self):
+        """Short display name for sklearn pipeline diagrams."""
+        return self.__class__.__name__
+
+    def _get_visual_details(self):
+        """One-line summary for sklearn pipeline diagrams (shown below the name)."""
+        return None
+
     def _sk_visual_block_(self):
-        """Tell sklearn's diagrammer to lay us out in parallel."""
         if _VisualBlock is None:
             return NotImplemented
+        name = self._get_visual_name()
+        details = self._get_visual_details()
+        if details:
+            name = f"{name}\n{details}"
         return _VisualBlock(
-            kind="parallel",
-            name_caption=str(self.__class__.__name__),
-            estimators=[str(self.get_params())],
-            name_details=str(self.__class__.__name__),
-            dash_wrapped=True,
+            kind="single",
+            estimators=self,
+            names=name,
+            name_details=str(self.get_params()),
+            dash_wrapped=False,
         )
 
 
@@ -352,6 +570,11 @@ def _get_event_id_values(event_id):
         return []
     arrays = [np.atleast_1d(val) for val in event_id_values]
     return np.concatenate(arrays).tolist()
+
+
+def _format_event_names(event_id):
+    """Return a comma-separated string of event names from an event_id dict."""
+    return ", ".join(event_id.keys())
 
 
 def _compute_events_desc(event_id):
@@ -365,9 +588,31 @@ def _compute_events_desc(event_id):
     return ret
 
 
-class SetRawAnnotations(FixedTransformer):
+def _is_preserved_annotation(description) -> bool:
+    """Return True for annotations that must survive event re-derivation.
+
+    :class:`SetRawAnnotations` rebuilds annotations from the trial triggers and
+    therefore drops every annotation already present on the raw. Some
+    annotations, however, carry information that is *not* encoded in the
+    triggers and must be kept:
+
+    - any "bad" segment (description starting with ``"bad"``, case-insensitive),
+      which is MNE's convention for spans excluded by ``reject_by_annotation``
+      (e.g. ``"BAD_artifact"`` from the BNCI loaders, ``"BAD boundary"`` from
+      run concatenation);
+    - the non-rejecting ``"bnci_artifact"`` marker added in ``annotate`` mode,
+      kept so downstream code can still inspect flagged trials.
     """
-    Always sets the annotations, even if the events list is empty
+    desc = str(description)
+    return desc.lower().startswith("bad") or desc == "bnci_artifact"
+
+
+class SetRawAnnotations(FixedTransformer):
+    """Derive trial markers on ``Raw`` and set them as MNE :class:`mne.Annotations`.
+
+    Uses :func:`mne.find_events` or :func:`mne.events_from_annotations` to read triggers,
+    then :func:`mne.annotations_from_events` and :meth:`mne.io.BaseRaw.set_annotations`.
+    If no events remain after filtering, annotations are not set (see implementation).
     """
 
     def __init__(self, event_id, interval: Tuple[float, float]):
@@ -380,11 +625,49 @@ class SetRawAnnotations(FixedTransformer):
         self.event_desc = _compute_events_desc(self.event_id)
         self.interval = interval
 
+    def __repr__(self):
+        events = _format_event_names(self.event_id)
+        return f"SetRawAnnotations([{events}])"
+
+    def _get_visual_details(self):
+        events = _format_event_names(self.event_id)
+        return f"events: [{events}] | interval: {list(self.interval)}"
+
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
         offset = int(self.interval[0] * raw.info["sfreq"])
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         has_annotation_extras = False
+
+        # Check for annotation extras before events extraction potentially
+        # destroys the original annotations.  This works regardless of
+        # whether a stim channel is present.
+        orig_extras = (
+            getattr(raw.annotations, "extras", None) if raw.annotations else None
+        )
+        if orig_extras is not None and any(orig_extras):
+            has_annotation_extras = True
+            sfreq = raw.info["sfreq"]
+            extras_by_sample = {}
+            for ann, extra in zip(raw.annotations, orig_extras):
+                sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
+                extras_by_sample[sample] = extra
+
+        # Preserve artifact / bad-segment annotations (e.g. per-trial BNCI
+        # artifact flags). ``set_annotations`` below replaces every annotation
+        # with the event-derived ones, so capture these first (keeping their
+        # onset, duration, description and extras) and re-attach them afterwards
+        # so ``reject_by_annotation`` still sees them at epoching time.
+        preserved = None
+        if raw.annotations:
+            keep_idx = [
+                i
+                for i, desc in enumerate(raw.annotations.description)
+                if _is_preserved_annotation(desc)
+            ]
+            if keep_idx:
+                preserved = raw.annotations[keep_idx]
+
         if len(stim_channels) == 0:
             if raw.annotations is None:
                 log.warning(
@@ -395,16 +678,6 @@ class SetRawAnnotations(FixedTransformer):
                 raise ValueError(
                     "When no stim channel is present, event_id values must be integers (not lists)."
                 )
-            # Build lookup of extras by sample position before events extraction
-            # destroys the original annotations
-            orig_extras = getattr(raw.annotations, "extras", None)
-            if orig_extras is not None and any(orig_extras):
-                has_annotation_extras = True
-                sfreq = raw.info["sfreq"]
-                extras_by_sample = {}
-                for ann, extra in zip(raw.annotations, orig_extras):
-                    sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
-                    extras_by_sample[sample] = extra
 
             events, _ = mne.events_from_annotations(
                 raw, event_id=self.event_id, verbose=False
@@ -432,6 +705,11 @@ class SetRawAnnotations(FixedTransformer):
                 annotations.extras = new_extras
 
             raw.set_annotations(annotations)
+            # Re-attach the preserved artifact / bad-segment annotations. Both
+            # share the raw's ``orig_time`` (its measurement date), so the
+            # onsets stay aligned with the event annotations just set.
+            if preserved is not None:
+                raw.set_annotations(raw.annotations + preserved)
         else:
             log.warning("No events found, skipping setting annotations.")
         return raw
@@ -439,6 +717,9 @@ class SetRawAnnotations(FixedTransformer):
 
 class RawToEvents(FixedTransformer):
     """
+    Extract an ``(n_events, 3)`` MNE events array from ``Raw`` via :func:`mne.find_events`
+    or :func:`mne.events_from_annotations` (see ``_find_events``).
+
     Always returns an array for shape (n_events, 3), even if no events found.
 
     When ``overlap`` and ``window_length`` are provided, generates overlapping
@@ -476,13 +757,25 @@ class RawToEvents(FixedTransformer):
         if self.overlap is not None:
             try:
                 overlap_value = float(self.overlap)
-            except (TypeError, ValueError):
+            except (TypeError, ValueError) as err:
                 raise TypeError(
                     f"overlap must be a number in [0, 100), got {self.overlap!r}"
-                )
+                ) from err
             if not (0.0 <= overlap_value < 100.0):
                 raise ValueError(f"overlap must be in [0, 100), got {self.overlap!r}")
             self.overlap = overlap_value
+
+    def __repr__(self):
+        extra = f", overlap={self.overlap}%" if self.overlap is not None else ""
+        return f"RawToEvents({list(self.interval)}{extra})"
+
+    def _get_visual_details(self):
+        events = _format_event_names(self.event_id)
+        parts = [f"[{events}]", f"interval: {list(self.interval)}"]
+        if self.overlap is not None:
+            parts.append(f"overlap: {self.overlap}%")
+            parts.append(f"window: {self.window_length}s")
+        return " | ".join(parts)
 
     def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
@@ -520,9 +813,14 @@ class RawToEvents(FixedTransformer):
 
 
 class RawToEventsP300(RawToEvents):
+    """P300-specific :class:`RawToEvents` that may merge stimulus codes with :func:`mne.merge_events`."""
+
     def __init__(self, event_id, interval, ignore_relabelling=False):
         self.ignore_relabelling = ignore_relabelling
         super().__init__(event_id, interval)
+
+    def __repr__(self):
+        return f"RawToEventsP300({list(self.interval)})"
 
     def transform(self, raw, y=None):
         events = self._find_events(raw)
@@ -534,7 +832,7 @@ class RawToEventsP300(RawToEvents):
             and isinstance(event_id["Target"], list)
             and isinstance(event_id["NonTarget"], list)
         ):
-            event_id_new = dict(Target=1, NonTarget=0)
+            event_id_new = {"Target": 1, "NonTarget": 0}
             events = mne.merge_events(events, event_id["Target"], 1)
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
@@ -543,20 +841,21 @@ class RawToEventsP300(RawToEvents):
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
-    def __init__(
-        self,
-        length,
-        stride,
-        start_offset,
-        stop_offset,
-        marker=1,
-    ):
+    """Build synthetic events on a fixed grid (no MNE event finder); output is standard MNE ``events``."""
+
+    def __init__(self, length, stride, start_offset, stop_offset, marker=1):
         super().__init__()
         self.length = length
         self.stride = stride
         self.start_offset = start_offset
         self.stop_offset = stop_offset
         self.marker = marker
+
+    def __repr__(self):
+        return f"RawToFixedIntervalEvents(length={self.length}, stride={self.stride})"
+
+    def _get_visual_details(self):
+        return f"length={self.length}s | stride={self.stride}s"
 
     def transform(self, raw: mne.io.BaseRaw, y=None):
         if not isinstance(raw, mne.io.BaseRaw):
@@ -570,9 +869,7 @@ class RawToFixedIntervalEvents(FixedTransformer):
         )
         stop_samples = stop_offset_samples - length_samples + raw.first_samp
         onset = np.arange(
-            raw.first_samp + start_offset_samples,
-            stop_samples,
-            stride_samples,
+            raw.first_samp + start_offset_samples, stop_samples, stride_samples
         )
         if len(onset) == 0:
             # skip raw if no event found
@@ -585,17 +882,33 @@ class RawToFixedIntervalEvents(FixedTransformer):
 
 
 class EpochsToEvents(FixedTransformer):
+    """Pass through :attr:`mne.Epochs.events` (the ``(n_epochs, 3)`` integer event array)."""
+
     def __init__(self):
         super().__init__()
+
+    def __repr__(self):
+        return "EpochsToEvents"
+
+    def _get_visual_name(self):
+        return "Extract Labels (y)"
 
     def transform(self, epochs, y=None):
         return epochs.events
 
 
 class EventsToLabels(FixedTransformer):
+    """Map event type column ``events[:, 2]`` to string labels using ``event_id`` (pure Python / NumPy)."""
+
     def __init__(self, event_id):
         super().__init__()
         self.event_id = event_id
+
+    def __repr__(self):
+        return "EventsToLabels"
+
+    def _get_visual_details(self):
+        return _format_event_names(self.event_id)
 
     def transform(self, events, y=None):
         inv_events = _compute_events_desc(self.event_id)
@@ -604,6 +917,12 @@ class EventsToLabels(FixedTransformer):
 
 
 class RawToEpochs(FixedTransformer):
+    """Cut trials from continuous ``Raw`` using the :class:`mne.Epochs` constructor.
+
+    ``transform`` calls :class:`mne.Epochs` with the given ``tmin``/``tmax``/``baseline``,
+    channel picks, and optional bad-channel interpolation (:meth:`mne.io.BaseRaw.interpolate_bads`).
+    """
+
     def __init__(
         self,
         event_id: Dict[str, int],
@@ -612,6 +931,8 @@ class RawToEpochs(FixedTransformer):
         baseline: Tuple[float, float],
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
+        return_all_modalities=False,
+        reject_by_annotation: bool = True,
     ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
@@ -621,6 +942,20 @@ class RawToEpochs(FixedTransformer):
         self.baseline = baseline
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
+        self.return_all_modalities = return_all_modalities
+        self.reject_by_annotation = reject_by_annotation
+
+    def __repr__(self):
+        return f"RawToEpochs(tmin={self.tmin}, tmax={self.tmax})"
+
+    def _get_visual_details(self):
+        events = _format_event_names(self.event_id)
+        parts = [f"[{events}]", f"tmin={self.tmin}", f"tmax={self.tmax}"]
+        if self.baseline is not None:
+            parts.append(f"baseline={self.baseline}")
+        if self.channels is not None:
+            parts.append(f"{len(self.channels)} ch")
+        return " | ".join(parts)
 
     def transform(self, X, y=None):
         raw = X["raw"]
@@ -631,13 +966,18 @@ class RawToEpochs(FixedTransformer):
             raise ValueError("raw must be a mne.io.BaseRaw")
 
         if self.channels is None:
-            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+            picks = pick_channels_for_modalities(raw.info, self.return_all_modalities)
         else:
             available_channels = raw.info["ch_names"]
             if self.interpolate_missing_channels:
                 missing_channels = list(set(self.channels).difference(available_channels))
 
-                # add missing channels (contains only zeros by default)
+                # Remove montage before adding channels to avoid
+                # "Location for this channel is unknown" warning,
+                # then re-apply it after.
+                existing_montage = raw.get_montage()
+                raw.set_montage(None)
+
                 try:
                     raw.add_reference_channels(missing_channels)
                 except IndexError:
@@ -649,8 +989,13 @@ class RawToEpochs(FixedTransformer):
                     )
                     # and disable the montage
                     raw.info.pop("dig")
+                    existing_montage = None
                     # run again with montage disabled
                     raw.add_reference_channels(missing_channels)
+
+                # Re-apply montage so channels that exist in it get positions
+                if existing_montage is not None:
+                    raw.set_montage(existing_montage, on_missing="ignore")
 
                 # Trick: mark these channels as bad
                 raw.info["bads"].extend(missing_channels)
@@ -681,11 +1026,18 @@ class RawToEpochs(FixedTransformer):
             picks=picks,
             event_repeated="drop",
             on_missing="ignore",
+            reject_by_annotation=self.reject_by_annotation,
         )
         return epochs
 
 
 class NamedFunctionTransformer(FunctionTransformer):
+    """Like :class:`sklearn.preprocessing.FunctionTransformer` but with a readable ``repr``.
+
+    Used here mainly to wrap **MNE** methods on ``BaseRaw`` (e.g. ``filter``, ``crop``,
+    ``resample``) passed via :class:`operator.methodcaller`, so pipeline diagrams stay legible.
+    """
+
     def __init__(self, func, *, display_name=None, validate=False, **kwargs):
         super().__init__(func=func, validate=validate, **kwargs)
         self.display_name = display_name
@@ -707,38 +1059,157 @@ class NamedFunctionTransformer(FunctionTransformer):
         )
 
 
+def _identity(raw):
+    return raw
+
+
 def get_filter_pipeline(fmin, fmax):
+    """Return a pipeline step that applies MNE band-pass filtering to ``Raw``.
+
+    At transform time this invokes :meth:`mne.io.BaseRaw.filter` on the object
+    (via :class:`operator.methodcaller`), i.e. ``raw.filter(l_freq=fmin, h_freq=fmax, ...)`` —
+    not a sklearn or numpy implementation.
+
+    Parameters
+    ----------
+    fmin : float
+        Low cutoff frequency (Hz) passed as ``l_freq``.
+    fmax : float
+        High cutoff frequency (Hz) passed as ``h_freq``.
+    """
+    if fmin is None and fmax is None:
+        return NamedFunctionTransformer(func=_identity, display_name="No Filter")
+
+    # methodcaller: forwards to mne.io.BaseRaw.filter when the pipeline passes a Raw.
     return NamedFunctionTransformer(
         func=methodcaller(
-            "filter",
-            l_freq=fmin,
-            h_freq=fmax,
-            method="iir",
-            picks="data",
-            verbose=False,
+            "filter", l_freq=fmin, h_freq=fmax, method="iir", picks="data", verbose=False
         ),
         display_name=f"Band Pass Filter ({fmin}–{fmax} Hz)",
     )
 
 
 def get_crop_pipeline(tmin, tmax):
+    """Return a pipeline step that applies MNE temporal cropping: :meth:`mne.io.BaseRaw.crop`."""
     return NamedFunctionTransformer(
-        func=methodcaller(
-            "crop",
-            tmin=tmin,
-            tmax=tmax,
-            verbose=False,
-        ),
+        func=methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
         display_name=f"Crop ({tmin}–{tmax} s)",
     )
 
 
 def get_resample_pipeline(sfreq):
+    """Return a pipeline step that applies MNE resampling: :meth:`mne.io.BaseRaw.resample`."""
     return NamedFunctionTransformer(
-        func=methodcaller(
-            "resample",
-            sfreq=sfreq,
-            verbose=False,
-        ),
+        func=methodcaller("resample", sfreq=sfreq, verbose=False),
         display_name=f"Resample ({sfreq} Hz)",
     )
+
+
+class EuclideanAlignment(TransformerMixin, BaseEstimator):
+    r"""Euclidean Alignment of trials (He & Wu, 2020).
+
+    Euclidean Alignment (EA) removes the per-domain (subject / session /
+    recording) covariance shift that makes a model trained on one set of
+    recordings transfer poorly to another. It is the simplest member of a
+    larger family of trial-alignment methods — others recenter on the
+    Riemannian or log-Euclidean mean — and is the one most used with deep
+    networks because it is cheap, label-free, and leaves the data as raw trials
+    a network can ingest [He2020]_ [Junqueira2024]_.
+
+    Each trial is whitened by the inverse square root of a single reference
+    covariance,
+
+    .. math::
+
+        \bar{C} = \frac{1}{N} \sum_{i=1}^{N} C_i, \qquad
+        \tilde{X}_i = \bar{C}^{-1/2} X_i ,
+
+    where :math:`C_i` is the spatial covariance of trial :math:`X_i` and
+    :math:`\bar{C}` is their **arithmetic (Euclidean) mean**. After alignment
+    the trials share an identity-like average covariance, so the domain shift
+    that lived in the second-order statistics is gone.
+
+    The transformer is **inductive** by default: :meth:`fit` learns
+    :math:`\bar{C}^{-1/2}` from the *training* trials and :meth:`transform`
+    re-applies that same whitener to unseen trials, so no test information leaks
+    into the alignment (the leakage that the transductive, fit-on-everything
+    form silently introduces). Calling :meth:`fit_transform` on a single
+    recording recovers the usual transductive, per-recording EA people
+    hand-roll — same object, no second class.
+
+    Unlike :class:`pyriemann.transfer.TLCenter` (with ``metric="euclid"``),
+    which recenters covariance *matrices* for a Riemannian classifier, this
+    operates directly on the ``(n_trials, n_channels, n_times)`` trials, so it
+    drops in front of any time-series model (CSP, EEGNet, ...).
+
+    Parameters
+    ----------
+    estimator : str, default "lwf"
+        Covariance estimator passed to
+        :func:`pyriemann.geometry.covariance.covariances`. The shrinkage default
+        ``"lwf"`` (Ledoit-Wolf) keeps the per-trial covariances symmetric
+        positive-definite — and hence the reference mean invertible — even on
+        short or noisy trials, where the plain sample covariance (``"scm"`` /
+        ``"cov"``) can be ill-conditioned.
+
+    Attributes
+    ----------
+    inv_sqrt_ref_ : ndarray, shape (n_channels, n_channels)
+        Inverse square root :math:`\bar{C}^{-1/2}` of the reference mean
+        covariance learned in :meth:`fit`; the whitening matrix applied in
+        :meth:`transform`.
+
+    See Also
+    --------
+    pyriemann.transfer.TLCenter
+
+    Notes
+    -----
+    Accepts an :class:`mne.BaseEpochs` (read via ``get_data``) or an ndarray of
+    shape ``(n_trials, n_channels, n_times)``; :meth:`transform` returns an
+    ndarray of the same shape. ``pyriemann >= 0.11`` is already a hard moabb
+    dependency, so this adds no new requirement.
+
+    References
+    ----------
+    .. [He2020] He, H., & Wu, D. (2020). Transfer learning for brain-computer
+       interfaces: A Euclidean space data alignment approach. *IEEE
+       Transactions on Biomedical Engineering*, 67(2), 399-410.
+       https://doi.org/10.1109/TBME.2019.2913914
+    .. [Junqueira2024] Junqueira, B., Aristimunha, B., Chevallier, S., &
+       de Camargo, R. Y. (2024). A systematic evaluation of Euclidean alignment
+       with deep learning for EEG decoding. *Journal of Neural Engineering*,
+       21(3), 036038. https://doi.org/10.1088/1741-2552/ad4f18
+    """
+
+    def __init__(self, estimator="lwf"):
+        self.estimator = estimator
+
+    @staticmethod
+    def _array(X):
+        """Return trials as a float ``(n_trials, n_channels, n_times)`` ndarray."""
+        if hasattr(X, "get_data"):  # mne Epochs
+            X = X.get_data(copy=False)
+        X = np.asarray(X, dtype=float)
+        if X.ndim != 3:
+            raise ValueError(
+                "EuclideanAlignment expects trials shaped "
+                f"(n_trials, n_channels, n_times), got a {X.ndim}D input."
+            )
+        return X
+
+    def fit(self, X, y=None):
+        # Lazy import so only EuclideanAlignment users pay the import cost. The
+        # Euclidean mean is the arithmetic mean of the per-trial covariances, so
+        # no mean_covariance() call is needed.
+        from pyriemann.geometry.base import invsqrtm
+        from pyriemann.geometry.covariance import covariances
+
+        covs = covariances(self._array(X), estimator=self.estimator)
+        self.inv_sqrt_ref_ = invsqrtm(covs.mean(axis=0))
+        return self
+
+    def transform(self, X):
+        check_is_fitted(self, "inv_sqrt_ref_")
+        # (n_chans, n_chans) @ (n_trials, n_chans, n_times) -> (n_trials, n_chans, n_times)
+        return np.matmul(self.inv_sqrt_ref_, self._array(X))

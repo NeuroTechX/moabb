@@ -96,7 +96,7 @@ def load_bson(file_path):
 
     Parameters
     ----------
-    file_path : str or Path
+    file_path : str or pathlib.Path
         Path to the BSON file.
 
     Returns

@@ -89,9 +89,7 @@ pipelines["GridSearchEN"] = Pipeline(
 # name of the estimator and the parameter name as a key.
 
 param_grid = {}
-param_grid["GridSearchEN"] = {
-    "LogistReg__l1_ratio": [0.15, 0.30, 0.45, 0.60, 0.75],
-}
+param_grid["GridSearchEN"] = {"LogistReg__l1_ratio": [0.15, 0.30, 0.45, 0.60, 0.75]}
 
 ##############################################################################
 # Running the Evaluation

@@ -20,6 +20,7 @@ from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.utils import _handle_deprecated_kwargs
 
 
 OSF_BASE_URL = "https://files.osf.io/v1/resources/"
@@ -32,10 +33,10 @@ _manifest_link = (
 )
 
 DATASET_PARAMS = {
-    task: dict(
-        archive_name=f"ERPCORE2021_{task}.zip",
-        folder_name=f"MNE-erpcore{task.lower()}2021-data",
-    )
+    task: {
+        "archive_name": f"ERPCORE2021_{task}.zip",
+        "folder_name": f"MNE-erpcore{task.lower()}2021-data",
+    }
     for task in _ERPCORE_TASKS
 }
 
@@ -114,7 +115,13 @@ class ErpCore2021(BaseDataset):
     {_docstring_tail}
     """
 
-    def __init__(self, task):
+    def __init__(
+        self, task, subjects=None, sessions=None, *, return_all_modalities=False, **kwargs
+    ):
+        deprecated_renames = {"Task": "task"}
+        resolved = _handle_deprecated_kwargs(kwargs, deprecated_renames, "ErpCore2021")
+        task = resolved.get("task", task)
+
         if task == "N170":
             interval = (-0.2, 0.8)
             events = {"Target": 1, "NonTarget": 2}
@@ -149,6 +156,9 @@ class ErpCore2021(BaseDataset):
             interval=interval,
             paradigm="p300",
             doi="10.1016/j.neuroimage.2020.117465",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
         )
 
     def _get_single_subject_data(self, subject):
@@ -353,7 +363,7 @@ class ErpCore2021(BaseDataset):
 
         Parameters
         ----------
-        row : pd.Series
+        row : :class:`pandas.Series`
             A row of the events DataFrame.
 
         Returns
@@ -363,13 +373,13 @@ class ErpCore2021(BaseDataset):
         """
 
     @abstractmethod
-    def encoding(self, events_df: pd.DataFrame):
+    def encoding(self, events_df):
         """
         Encode the column value in the events DataFrame.
 
         Parameters
         ----------
-        events_df : DataFrame
+        events_df : :class:`pandas.DataFrame`
             DataFrame containing the events information.
 
         Returns
@@ -390,6 +400,9 @@ class ErpCore2021_N170(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "N170"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "N170")
 
     @staticmethod
@@ -436,6 +449,9 @@ class ErpCore2021_MMN(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "MMN"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "MMN")
 
     @staticmethod
@@ -474,6 +490,9 @@ class ErpCore2021_N2pc(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "N2pc"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "N2pc")
 
     @staticmethod
@@ -539,6 +558,9 @@ class ErpCore2021_P3(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "P3"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "P3")
 
     @staticmethod
@@ -651,6 +673,9 @@ class ErpCore2021_N400(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "N400"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "N400")
 
     @staticmethod
@@ -705,6 +730,9 @@ class ErpCore2021_ERN(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "flankers"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "ERN")
 
     @staticmethod
@@ -790,6 +818,9 @@ class ErpCore2021_LRP(ErpCore2021):
     {_docstring_tail}
     """
 
+    nemar_id = "nm000132"
+    nemar_bids_filters = {"task": "flankers"}
+    nemar_subject_template = "{subject:03d}"
     __init__ = partialmethod(ErpCore2021.__init__, "LRP")
 
     @staticmethod

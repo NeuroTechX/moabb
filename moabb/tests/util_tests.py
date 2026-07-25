@@ -26,11 +26,8 @@ class TestDownload(unittest.TestCase):
         set_download_dir(original_path)
 
 
-@pytest.mark.skip(
-    reason="This test is only when you have already " "download the datasets."
-)
+@pytest.mark.skip(reason="This test is only when you have already download the datasets.")
 class Test_Utils(unittest.TestCase):
-
     def test_channel_intersection_fun(self):
         print(utils.find_intersecting_channels([d() for d in utils.dataset_list])[0])
 
@@ -49,7 +46,7 @@ class Test_Utils(unittest.TestCase):
             "imagery", events=["right_hand", "feet"], has_all_events=True
         )
         for out in res:
-            self.assertTrue(set(["right_hand", "feet"]) <= set(out.event_id.keys()))
+            self.assertTrue({"right_hand", "feet"} <= set(out.event_id.keys()))
 
     def test_dataset_channel_search(self):
         chans = ["C3", "Cz"]
@@ -61,7 +58,7 @@ class Test_Utils(unittest.TestCase):
             events=["right_hand", "left_hand", "feet", "tongue", "rest"],
             channels=chans,
         )
-        has_types = set([type(x) for x in has_chans])
+        has_types = {type(x) for x in has_chans}
         for d in has_chans:
             s1 = d.get_data([1])[1]
             sess1 = s1[list(s1.keys())[0]]

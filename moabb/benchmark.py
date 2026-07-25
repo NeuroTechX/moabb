@@ -36,7 +36,16 @@ log = logging.getLogger(__name__)
 
 def _ppl_needs_epochs(pn):
     """Check if the pipeline needs MNE epochs as input."""
-    ppl_with_epochs = ["SSVEP CCA", "TRCA-SSVEP", "MsetCCA-SSVEP"]
+    ppl_with_epochs = [
+        "SSVEP CCA",
+        "TRCA-SSVEP",
+        "MsetCCA-SSVEP",
+        "itCCA-SSVEP",
+        "eCCA-SSVEP",
+        "TRCA-R-SSVEP",
+        "SSCOR-SSVEP",
+        "TDCA-SSVEP",
+    ]
     if any(s in pn for s in ppl_with_epochs):
         return True
     else:
@@ -91,7 +100,9 @@ def benchmark(  # noqa: C901
            pipelines = [
                {
                    "paradigms": ["SomeParadigm"],
-                   "pipeline": make_pipeline(Transformer1(), Transformer2(), Classifier()),
+                   "pipeline": make_pipeline(
+                       Transformer1(), Transformer2(), Classifier()
+                   ),
                    "name": "PipelineName",
                },
                {
@@ -110,7 +121,7 @@ def benchmark(  # noqa: C901
     paradigms : list of str
         To restrict the paradigms on which evaluations should be run.
         Can be a list of these elements ['LeftRightImagery', 'MotorImagery', 'FilterBankSSVEP', 'SSVEP',
-        'FilterBankMotorImagery'].
+        'FilterBankMotorImagery', 'P300'].
 
     results : str
         Folder to store the results.
@@ -128,10 +139,11 @@ def benchmark(  # noqa: C901
     n_jobs : int
         Number of threads to use for running parallel jobs.
 
-    n_splits : int or None, default=None
+    n_splits : int or None
         This parameter only works for CrossSubjectEvaluation. It defines the
         number of splits to be done in the cross-validation. If None,
         the number of splits is equal to the number of subjects in the dataset.
+        Defaults to ``None``.
 
     plot : bool
         Plot results after computing.
@@ -152,9 +164,10 @@ def benchmark(  # noqa: C901
     optuna : bool
         Enable Optuna for the hyperparameter search.
 
-    codecarbon_config : dict, default=None
+    codecarbon_config : dict or None
         Configuration dictionary for CodeCarbon emissions tracking.
-        If None, uses CodeCarbon defaults. Available options include:
+        If None, uses CodeCarbon defaults. Defaults to ``None``.
+        Available options include:
         - save_to_file (bool): Save emissions to CSV file
         - log_level (str): Logging level ('debug', 'info', 'warning', 'error')
         - save_to_api (bool): Send data to CodeCarbon API
@@ -164,7 +177,7 @@ def benchmark(  # noqa: C901
 
     Returns
     -------
-    eval_results: DataFrame
+    eval_results: :class:`pandas.DataFrame`
         Results of benchmark for all considered paradigms
 
     Notes
@@ -180,7 +193,7 @@ def benchmark(  # noqa: C901
         evaluations = ["WithinSession", "CrossSession", "CrossSubject"]
 
     if codecarbon_config is None:
-        codecarbon_config = dict(save_to_file=False, log_level="error")
+        codecarbon_config = {"save_to_file": False, "log_level": "error"}
 
     eval_type = {
         "WithinSession": WithinSessionEvaluation,
@@ -192,8 +205,7 @@ def benchmark(  # noqa: C901
     # logging.basicConfig(level=logging.WARNING)
 
     output = Path(output)
-    if not osp.isdir(output):
-        os.makedirs(output)
+    os.makedirs(output, exist_ok=True)
 
     if isinstance(pipelines, str):
         pipeline_configs = parse_pipelines_from_directory(pipelines)
@@ -229,7 +241,7 @@ def benchmark(  # noqa: C901
     # Looping over the evaluations to be done
     df_eval = []
     for evaluation in evaluations:
-        eval_results = dict()
+        eval_results = {}
 
         processed_paradigms = 0
         for paradigm in prdgms_from_pipelines:
@@ -273,6 +285,7 @@ def benchmark(  # noqa: C901
                     overwrite=overwrite,
                     suffix=suffix,
                     return_epochs=True,
+                    mne_labels=True,
                     n_splits=n_splits,
                     cache_config=cache_config,
                     optuna=optuna,
@@ -361,12 +374,12 @@ def _combine_paradigms(prdgm_results):
 
     Parameters
     ----------
-    prdgm_results: dict of DataFrame
+    prdgm_results: dict of :class:`pandas.DataFrame`
         Results of benchmark for all considered paradigms
 
     Returns
     -------
-    eval_results: dict of DataFrame
+    eval_results: dict of :class:`pandas.DataFrame`
         Results with filterbank and direct paradigms combined
     """
     eval_results = prdgm_results.copy()
@@ -385,9 +398,9 @@ def _save_results(eval_results, output, plot):
 
     Parameters
     ----------
-    eval_results: dict of DataFrame
+    eval_results: dict of :class:`pandas.DataFrame`
         Results of benchmark for all considered paradigms
-    output: str or Path
+    output: str or pathlib.Path
         Folder to store the analysis results
     plot: bool
         Plot results after computing

@@ -23,6 +23,19 @@ import moabb  # noqa
 sys.path.insert(0, os.path.abspath("../"))
 sys.path.insert(0, os.path.abspath("../../"))
 
+# Check that the imported moabb matches the local source tree.
+_local_init = op.join(op.dirname(__file__), "..", "..", "moabb", "__init__.py")
+if op.isfile(_local_init):
+    import re as _re
+
+    with open(_local_init) as _f:
+        _match = _re.search(r'^__version__\s*=\s*["\']([^"\']+)', _f.read(), _re.M)
+    if _match and _match.group(1) != moabb.__version__:
+        print(
+            f"WARNING: Building docs with moabb v{moabb.__version__} but "
+            f"source tree is v{_match.group(1)}. "
+            f"Run 'pip install -e .' from the project root first."
+        )
 
 matplotlib.use("Agg")
 # -- Project information -----------------------------------------------------
@@ -39,6 +52,10 @@ _is_dev_build = bool(int(os.environ.get("BUILD_DEV_HTML", "0")))
 version = moabb.__version__
 # The full version, including alpha/beta/rc tags
 release = f"{version}.dev0" if _is_dev_build else version
+
+# Control the page title suffix in <title> tags for SEO
+html_title = "MOABB Documentation"
+html_short_title = "MOABB"
 
 
 # -- General configuration ---------------------------------------------------
@@ -62,24 +79,32 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.ifconfig",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.imgmath",
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
-    "sphinx.ext.mathjax",
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
+    "dataset_timeline_ext",
+    "macro_table_ext",
     "myst_parser",
     "numpydoc",
     "sphinx_favicon",
     "sphinxcontrib.jquery",
     "sphinx_sitemap",
+    "sphinxext.opengraph",
 ]
 
 _build_sitemap = os.environ.get("MOABB_BUILD_SITEMAP", "1").strip().lower()
 if _build_sitemap in {"0", "false", "no"}:
     extensions = [ext for ext in extensions if ext != "sphinx_sitemap"]
+
+# Dataset card extension settings.
+# SVG auto-generation is on by default so stimulus protocol plots render in
+# the published docs; disable via env var if needed for faster local builds.
+dataset_card_generate_svgs = os.environ.get(
+    "MOABB_DATASET_CARD_GENERATE_SVGS", "1"
+).strip().lower() in {"1", "true", "yes"}
 
 
 def linkcode_resolve(domain, info):  # noqa: C901
@@ -189,8 +214,8 @@ sphinx_gallery_conf = {
 }
 
 
-autodoc_default_options = {"inherited-members": False}
-autodoc_default_flags = {"inherited-members": None}
+autodoc_default_options = {}
+autodoc_default_flags = {}
 autosummary_generate = True
 
 numpydoc_show_class_members = False
@@ -307,15 +332,69 @@ html_baseurl = (
 
 # Sitemap configuration
 sitemap_url_scheme = "{link}"
+sitemap_excludes = [
+    "genindex",
+    "py-modindex",
+    "search",
+    "auto_examples/*/sg_execution_times",
+    "auto_examples/sg_execution_times",
+]
+
+# -- OpenGraph / social sharing meta tags (sphinxext-opengraph) -----------
+ogp_site_url = "https://moabb.neurotechx.com/docs/"
+ogp_site_name = "MOABB - Mother of all BCI Benchmarks"
+ogp_image = "https://moabb.neurotechx.com/docs/_static/moabb_og_card.png"
+ogp_image_alt = (
+    "MOABB - Mother of all BCI Benchmarks: "
+    "158 open EEG datasets for reproducible BCI research"
+)
+ogp_description_length = 200
+ogp_type = "website"
+ogp_custom_meta_tags = [
+    '<meta name="twitter:card" content="summary_large_image" />',
+    '<meta name="twitter:site" content="@NeuroTechX" />',
+]
+
+# Auto-generate unique social preview cards per page (uses matplotlib).
+# Each page gets its own card with the page title, site name, and description.
+# The static moabb_og_card.png is the fallback for pages without auto-generated cards.
+ogp_social_cards = {
+    "image": "_static/moabb_logo.png",
+    "line_color": "#4a90d9",
+}
+
+# Extra files to copy to build output root (robots.txt, llms.txt, etc.)
+html_extra_path = ["robots.txt", "llms.txt", "llms-full.txt", "google07a8f2e31a591297.html"]
 
 html_css_files = [
     "css/custom.css",
-    "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css",
+    "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap",
+    "css/macro-table.css",
+    # DataTables core + extensions (all from CDN)
+    "https://cdn.datatables.net/2.2.0/css/dataTables.dataTables.css",
+    "https://cdn.datatables.net/buttons/3.2.6/css/buttons.dataTables.css",
+    "https://cdn.datatables.net/searchpanes/2.3.5/css/searchPanes.dataTables.css",
+    "https://cdn.datatables.net/select/3.1.3/css/select.dataTables.css",
+    "https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css",
 ]
 
 html_js_files = [
     "https://code.jquery.com/jquery-3.7.1.min.js",
-    "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js",
+    # DataTables core
+    "https://cdn.datatables.net/2.2.0/js/dataTables.js",
+    # Buttons (core + HTML5 export + column visibility + print)
+    "https://cdn.datatables.net/buttons/3.2.6/js/dataTables.buttons.js",
+    "https://cdn.datatables.net/buttons/3.2.6/js/buttons.html5.js",
+    "https://cdn.datatables.net/buttons/3.2.6/js/buttons.colVis.js",
+    "https://cdn.datatables.net/buttons/3.2.6/js/buttons.print.js",
+    # SearchPanes + Select (required by SearchPanes)
+    "https://cdn.datatables.net/select/3.1.3/js/dataTables.select.js",
+    "https://cdn.datatables.net/searchpanes/2.3.5/js/dataTables.searchPanes.js",
+    "https://cdn.datatables.net/searchpanes/2.3.5/js/searchPanes.dataTables.js",
+    # FixedHeader (sticky header on scroll)
+    "https://cdn.datatables.net/fixedheader/4.0.6/js/dataTables.fixedHeader.js",
+    "js/section-nav-hierarchy.js",
+    "js/macro-table.js",
 ]
 
 # If true, links to the reST sources are added to the pages.
@@ -356,7 +435,7 @@ html_context = {
     "carousel": [
         dict(
             title="Datasets",
-            text="Access 67+ open EEG datasets for motor imagery, P300, and SSVEP paradigms.",
+            text="Access 158 open EEG datasets for motor imagery, P300, SSVEP, and c-VEP paradigms.",
             url="dataset_summary.html",
             img="datasets_overview.png",
             alt="Datasets overview",
@@ -521,11 +600,39 @@ intersphinx_mapping = {
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),
-    "sklearn": ("http://scikit-learn.org/stable", None),
-    "mne": ("http://mne.tools/stable", None),
+    "sklearn": ("https://scikit-learn.org/stable/", None),
+    "mne": ("https://mne.tools/stable/", None),
     "skorch": ("https://skorch.readthedocs.io/en/stable/", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
 }
+
+# -- Nitpick: sklearn-inherited docstrings -----------------------------------
+# sklearn generates docstrings at runtime for set_params(), get_params(),
+# set_*_request() (metadata routing) etc.  These use numpydoc conventions
+# (array-like, shape, default=…) that Sphinx nitpicky mode cannot resolve.
+# We cannot fix these at source because the docstrings live in sklearn, not
+# in this project.
+nitpick_ignore_regex = [
+    # sklearn numpydoc conventions used in auto-generated method docstrings
+    (r"py:class", r"default.*"),
+    (r"py:class", r"optional"),
+    (r"py:class", r"shape"),
+    (r"py:class", r"array-like"),
+    (r"py:class", r"n_\w+"),
+    (r"py:class", r"True"),
+    (r"py:class", r"False"),
+    (r"py:class", r"numeric"),
+    (r"py:class", r"RandomState instance"),
+    (r"py:class", r"\d+\.?"),
+    (r"py:class", r"string"),
+    (r"py:class", r"strings"),
+    (r"py:class", r"boolean"),
+    (r"py:class", r"Unused"),
+    (r"py:class", r"ignored"),
+    (r"py:class", r"callable"),
+    (r"py:class", r"length.*"),
+]
 
 # -- Options for sphinx-gallery ----------------------------------------------
 favicons = [

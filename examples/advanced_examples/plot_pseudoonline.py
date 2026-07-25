@@ -47,7 +47,7 @@ pipelines = {}
 pipelines["MDM"] = Pipeline(
     steps=[
         ("Covariances", Covariances("cov")),
-        ("MDM", MDM(metric=dict(mean="riemann", distance="riemann"))),
+        ("MDM", MDM(metric={"mean": "riemann", "distance": "riemann"})),
     ]
 )
 

@@ -6,24 +6,35 @@ import abc
 import logging
 import re
 import traceback
+import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import cached_property
 from inspect import signature
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Union
+from urllib.parse import quote
 
 import mne_bids
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
 from mne_bids import events_file_to_annotation_kwargs
 
-from moabb.datasets.bids_interface import StepType, _interface_map
+from moabb.datasets.bids_interface import (
+    _FORMAT_EXTENSION_MAP,
+    StepType,
+    _BIDSInterfaceRawEDFNoDesc,
+    _enrich_raw_info_from_metadata,
+    _interface_map,
+    get_bids_root,
+)
+from moabb.datasets.download import NemarDownloadError, nemar_dl
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 
 
 if TYPE_CHECKING:
-    from moabb.datasets.metadata import DatasetMetadata
+    pass
 
 
 log = logging.getLogger(__name__)
@@ -50,13 +61,7 @@ def get_summary_table(paradigm: str, dir_name: str | None = None):
     if dir_name is None:
         dir_name = Path(__file__).parent
     path = Path(dir_name) / f"summary_{paradigm}.csv"
-    df = pd.read_csv(
-        path,
-        header=0,
-        index_col="Dataset",
-        skipinitialspace=True,
-        dtype={"PapersWithCode leaderboard": str},
-    )
+    df = pd.read_csv(path, header=0, index_col="Dataset", skipinitialspace=True)
     return df
 
 
@@ -72,7 +77,7 @@ _summary_table = pd.concat(
         _summary_table_ssvep,
         _summary_table_cvep,
         _summary_table_rstate,
-    ],
+    ]
 )
 
 
@@ -138,7 +143,7 @@ class CacheConfig:
 
         From a dict:
 
-        >>> dic = {'save': False}
+        >>> dic = {"save": False}
         >>> CacheConfig.make(dic)
         CacheConfig(save=False, use=True, overwrite=True, path=None)
         """
@@ -178,6 +183,16 @@ def is_abbrev(abbrev_name: str, full_name: str):
     return re.fullmatch(pattern, full_name) is not None
 
 
+def _is_event_int(v):
+    """Return True if v is int or np.integer but not bool."""
+    return not isinstance(v, bool) and isinstance(v, (int, np.integer))
+
+
+_KWARG_HINT = (
+    "Check that keyword arguments were not accidentally included inside the events dict."
+)
+
+
 def check_subject_names(data):
     for subject in data.keys():
         if not isinstance(subject, (int, str)):
@@ -201,7 +216,7 @@ constraint_message = (
 
 def check_session_names(data):
     pattern = session_run_pattern()
-    for subject, sessions in data.items():
+    for _subject, sessions in data.items():
         indexes = []
         for session in sessions.keys():
             match = re.fullmatch(pattern, session)
@@ -219,8 +234,8 @@ def check_session_names(data):
 
 def check_run_names(data):
     pattern = session_run_pattern()
-    for subject, sessions in data.items():
-        for session, runs in sessions.items():
+    for _subject, sessions in data.items():
+        for _session, runs in sessions.items():
             indexes = []
             for run in runs.keys():
                 match = re.fullmatch(pattern, run)
@@ -246,13 +261,9 @@ def _transfer_unit(key: str, value: str):
 
 
 def format_row(row: pd.Series, horizontal: bool = True):
-    pwc_key = "PapersWithCode leaderboard"
     tab_prefix = " " * 8
     tab_sep = "="
     row = row[~row.isna()]
-    pwc_link = row.get(pwc_key, None)
-    if pwc_link is not None:
-        row = row.drop(pwc_key)
 
     def to_int(x):
         try:
@@ -287,9 +298,6 @@ def format_row(row: pd.Series, horizontal: bool = True):
     rows_str = "\n".join([f"{tab_prefix}{' '.join(row)}" for row in rows])
     # add the header:
     out = f"    .. admonition:: Dataset summary\n\n{rows_str}"
-    # add the PapersWithCode link if it exists:
-    if pwc_link is not None:
-        out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
     return out, row
 
 
@@ -341,11 +349,7 @@ def _format_age(participants) -> str | None:
 
 
 def _format_bandpass(preprocessing) -> str | None:
-    filter_details = getattr(preprocessing, "filter_details", None)
-    if filter_details is None:
-        return None
-
-    bandpass = getattr(filter_details, "bandpass", None)
+    bandpass = getattr(preprocessing, "bandpass", None)
     if isinstance(bandpass, dict):
         low = bandpass.get(
             "low",
@@ -367,8 +371,8 @@ def _format_bandpass(preprocessing) -> str | None:
             f"-{_format_metadata_value(bandpass[1])} Hz"
         )
 
-    highpass = getattr(filter_details, "highpass_hz", None)
-    lowpass = getattr(filter_details, "lowpass_hz", None)
+    highpass = getattr(preprocessing, "highpass_hz", None)
+    lowpass = getattr(preprocessing, "lowpass_hz", None)
     if highpass is not None and lowpass is not None:
         return f"{_format_metadata_value(highpass)}-{_format_metadata_value(lowpass)} Hz"
     return None
@@ -440,7 +444,9 @@ def _metadata_doc_sections(metadata: Any, existing_doc: str) -> str:
     if documentation is not None:
         data_url = getattr(documentation, "data_url", None)
     if data_url is None and external_links is not None:
-        data_url = getattr(external_links, "source_url", None)
+        data_url = (
+            external_links.get("source") if isinstance(external_links, dict) else None
+        )
 
     if documentation is not None or _has_nonempty(data_url):
         blocks.append(
@@ -484,6 +490,39 @@ def _metadata_doc_sections(metadata: Any, existing_doc: str) -> str:
     return "\n\n".join(blocks)
 
 
+def _format_feedback_section(dataset_id: str) -> str:
+    """Generate a feedback section with a button to report issues on GitHub."""
+    issue_title = quote(f"[Dataset] Issue with {dataset_id}")
+    issue_body = quote(
+        f"## Dataset\n\n"
+        f"- **Dataset ID:** {dataset_id}\n\n"
+        f"## Issue Description\n\n"
+        f"Please describe the issue you encountered with this dataset:\n\n"
+        f"## Steps to Reproduce\n\n"
+        f"1. \n2. \n3. \n\n"
+        f"## Expected Behavior\n\n\n"
+        f"## Additional Context\n\n"
+    )
+    github_url = (
+        f"https://github.com/NeuroTechX/moabb/issues/new"
+        f"?title={issue_title}&body={issue_body}&labels=dataset"
+    )
+
+    return (
+        f"    .. admonition:: Found an issue with this dataset?\n"
+        f"       :class: tip\n"
+        f"\n"
+        f"       If you encounter any problems with this dataset (missing files,\n"
+        f"       incorrect metadata, loading errors, etc.), please let us know!\n"
+        f"\n"
+        f"       .. button-link:: {github_url}\n"
+        f"          :color: primary\n"
+        f"          :outline:\n"
+        f"\n"
+        f"          Report an Issue on GitHub"
+    )
+
+
 class MetaclassDataset(abc.ABCMeta):
     def __new__(cls, name, bases, attrs):
         doc = attrs.get("__doc__", "") or ""
@@ -504,6 +543,10 @@ class MetaclassDataset(abc.ABCMeta):
         if metadata_sections:
             insert_blocks.append(metadata_sections)
 
+        # Note: feedback "Report Issue" button is now part of the enhanced
+        # dataset card header injected by dataset_timeline_ext.py, so the
+        # standalone feedback admonition is no longer injected here.
+
         if insert_blocks:
             if doc.strip():
                 doc_list = doc.split("\n\n")
@@ -518,45 +561,57 @@ class MetaclassDataset(abc.ABCMeta):
 class BaseDataset(metaclass=MetaclassDataset):
     """Abstract Moabb BaseDataset.
 
-    Parameters required for all datasets
+    Parameters required for all datasets.
 
-    parameters
+    Parameters
     ----------
-    subjects: List of int
-        List of subject number (or tuple or numpy array)
+    subjects : list of int
+        List of subject number (or tuple or numpy array).
 
-    sessions_per_subject: int
-        Number of sessions per subject (if varying, take minimum)
+    sessions_per_subject : int
+        Number of sessions per subject (if varying, take minimum).
 
-    events: dict of strings
+    events : dict of str
         String codes for events matched with labels in the stim channel.
-        Currently imagery codes codes can include:
-        - left_hand
-        - right_hand
-        - hands
-        - feet
-        - rest
-        - left_hand_right_foot
-        - right_hand_left_foot
-        - tongue
-        - navigation
-        - subtraction
-        - word_ass (for word association)
+        Currently imagery codes can include:
+        ``left_hand``, ``right_hand``, ``hands``, ``feet``, ``rest``,
+        ``left_hand_right_foot``, ``right_hand_left_foot``, ``tongue``,
+        ``navigation``, ``subtraction``, ``word_ass`` (for word association).
 
-    code: string
+    code : str
         Unique identifier for dataset, used in all plots.
         The code should be in CamelCase.
 
-    interval: list with 2 entries
-        Imagery interval as defined in the dataset description
+    interval : list
+        Imagery interval as defined in the dataset description,
+        with 2 entries.
 
-    paradigm: ['p300','imagery', 'ssvep']
-        Defines what sort of dataset this is
+    paradigm : str
+        Defines what sort of dataset this is.
+        One of ``'p300'``, ``'imagery'``, or ``'ssvep'``.
 
-    doi: DOI for dataset, optional (for now)
+    doi : str, optional
+        DOI for the dataset.
+    nemar_id : str | None
+        NEMAR dataset identifier used by :meth:`download` when available.
+    nemar_subject_template : str | None
+        Template for formatting subject IDs for NEMAR downloads. For example,
+        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``.
+
+    return_all_modalities : bool | dict, optional
+        Controls which channel types are retained when data is picked:
+
+        - ``False`` (default): only EEG channels are kept.
+        - ``True``: all channels except stim are kept.
+        - ``dict``: keyword arguments forwarded to :func:`mne.pick_types`,
+          e.g. ``dict(eeg=True, eog=True)`` keeps EEG and EOG channels.
+          ``stim`` is always forced to ``False``.
     """
 
     _summary_table: dict[str, Any]
+    nemar_id: str | None = None
+    nemar_subject_template: str | None = "{subject}"
+    nemar_bids_filters: dict[str, Any] | None = None
 
     def __init__(
         self,
@@ -568,6 +623,10 @@ class BaseDataset(metaclass=MetaclassDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        *,
+        selected_subjects=None,
+        selected_sessions=None,
+        return_all_modalities=False,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -589,8 +648,70 @@ class BaseDataset(metaclass=MetaclassDataset):
                 "See moabb.datasets.base.is_abbrev for more information."
             )
 
-        self.subject_list = subjects
+        self.return_all_modalities = return_all_modalities
+
+        self._all_subjects = list(subjects)
+        if selected_subjects is not None:
+            selected_subjects = list(selected_subjects)
+            # Warn on duplicate subjects and deduplicate preserving order
+            if len(selected_subjects) != len(set(selected_subjects)):
+                unique = dict.fromkeys(selected_subjects)
+                dupes = [s for s in unique if selected_subjects.count(s) > 1]
+                warnings.warn(
+                    f"Duplicate subjects detected: {dupes}. "
+                    "Duplicates will be removed, preserving order.",
+                    stacklevel=2,
+                )
+                selected_subjects = list(unique)
+            invalid = [s for s in selected_subjects if s not in self._all_subjects]
+            if invalid:
+                raise ValueError(
+                    f"Invalid subjects: {invalid}. "
+                    f"Valid subjects are: {self._all_subjects}"
+                )
+            self.subject_list = selected_subjects
+        else:
+            self.subject_list = list(subjects)
         self.n_sessions = sessions_per_subject
+
+        # Validate selected_sessions
+        if selected_sessions is not None:
+            try:
+                selected_sessions = list(selected_sessions)
+            except TypeError:
+                raise TypeError(
+                    f"selected_sessions must be an iterable, "
+                    f"got {type(selected_sessions).__name__}"
+                ) from None
+            bad = [s for s in selected_sessions if not isinstance(s, (int, str))]
+            if bad:
+                raise TypeError(
+                    f"selected_sessions elements must be int or str, "
+                    f"got: {[(type(s).__name__, s) for s in bad]}"
+                )
+        self._selected_sessions = selected_sessions
+
+        # Validate events dict integrity
+        if not isinstance(events, dict):
+            raise TypeError(f"events must be a dict, got {type(events).__name__}")
+        for key, value in events.items():
+            if not isinstance(key, str):
+                raise TypeError(
+                    f"All event dict keys must be strings, but got "
+                    f"{type(key).__name__}: {key!r}. {_KWARG_HINT}"
+                )
+            if isinstance(value, (list, tuple)):
+                for i, v in enumerate(value):
+                    if not _is_event_int(v):
+                        raise TypeError(
+                            f"Event {key!r} list element {i} is {v!r} "
+                            f"({type(v).__name__}), expected int. {_KWARG_HINT}"
+                        )
+            elif not _is_event_int(value):
+                raise TypeError(
+                    f"Event {key!r} has value {value!r} ({type(value).__name__}), "
+                    f"expected int or list of int. {_KWARG_HINT}"
+                )
         self.event_id = events
         self.code = code
         self.interval = interval
@@ -598,8 +719,16 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.doi = doi
         self.unit_factor = unit_factor
 
+    def __repr__(self):
+        return self.code
+
+    @property
+    def all_subjects(self):
+        """Full list of subjects available in this dataset (unfiltered)."""
+        return list(self._all_subjects)
+
     @cached_property
-    def metadata(self) -> "DatasetMetadata | None":
+    def metadata(self):
         """Return structured metadata for this dataset.
 
         Returns the DatasetMetadata object from the centralized catalog,
@@ -607,7 +736,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         Returns
         -------
-        DatasetMetadata | None
+        ``DatasetMetadata`` | None
             The metadata object containing acquisition parameters,
             participant demographics, experiment details, and documentation.
             Returns None if no metadata is registered for this dataset.
@@ -630,15 +759,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     def _create_process_pipeline(self):
         return FixedPipeline(
-            [
-                (
-                    StepType.RAW,
-                    SetRawAnnotations(
-                        self.event_id,
-                        interval=self.interval,
-                    ),
-                ),
-            ]
+            [(StepType.RAW, SetRawAnnotations(self.event_id, interval=self.interval))]
         )
 
     def _block_rep(self, block, repetition):
@@ -649,9 +770,9 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         subject -> session -> run -> block -> repetition
 
-        See also
+        See Also
         --------
-        BaseDataset.get_data
+        get_data
 
         Parameters
         ----------
@@ -685,22 +806,13 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         return X_select, labels_select, meta_select
 
-    def get_data(
-        self,
-        subjects=None,
-        cache_config=None,
-        process_pipeline=None,
-    ):
+    def get_data(self, subjects=None, cache_config=None, process_pipeline=None, n_jobs=1):
         """
         Return the data corresponding to a list of subjects.
 
         The returned data is a dictionary with the following structure::
 
-            data = {'subject_id' :
-                        {'session_id':
-                            {'run_id': run}
-                        }
-                    }
+            data = {"subject_id": {"session_id": {"run_id": run}}}
 
         subjects are on top, then we have sessions, then runs.
         A sessions is a recording done in a single day, without removing the
@@ -719,19 +831,27 @@ class BaseDataset(metaclass=MetaclassDataset):
         ----------
         subjects: List of int
             List of subject number
-        cache_config: dict | CacheConfig
-            Configuration for caching of datasets. See ``CacheConfig``
-            for details.
-        process_pipeline: Pipeline | None
+        cache_config: dict | :class:`~moabb.datasets.base.CacheConfig`
+            Configuration for caching of datasets. See
+            :class:`~moabb.datasets.base.CacheConfig` for details.
+        process_pipeline: :class:`sklearn.pipeline.Pipeline` | None
             Optional processing pipeline to apply to the data.
             To generate an adequate pipeline, we recommend using
-            :func:`moabb.utils.make_process_pipelines`.
+            :func:`moabb.make_process_pipelines`.
             This pipeline will receive :class:`mne.io.BaseRaw` objects.
-            The steps names of this pipeline should be elements of :class:`StepType`.
+            The steps names of this pipeline should be elements of
+            ``StepType``.
             According to their name, the steps should either return a
-            :class:`mne.io.BaseRaw`, a :class:`mne.Epochs`, or a :func:`numpy.ndarray`.
+            :class:`mne.io.BaseRaw`, a :class:`mne.Epochs`, or a
+            :class:`numpy.ndarray`.
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
+        n_jobs: int
+            Number of jobs to run in parallel over subjects (passed to
+            :class:`joblib.Parallel`). Default ``1`` (sequential). Per-subject
+            processing (reading, filtering, resampling, epoching) is
+            independent, so this gives a near-linear speedup for datasets with
+            many subjects.
 
         Returns
         -------
@@ -744,24 +864,54 @@ class BaseDataset(metaclass=MetaclassDataset):
         if not isinstance(subjects, list):
             raise ValueError("subjects must be a list")
 
+        effective_sessions = self._selected_sessions
+
         cache_config = CacheConfig.make(cache_config)
 
         if process_pipeline is None:
             process_pipeline = self._create_process_pipeline()
 
-        data = dict()
+        if effective_sessions is not None:
+            str_sessions = {str(s) for s in effective_sessions}
+            pat = session_run_pattern()
+        else:
+            str_sessions = pat = None
+
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
-            data[subject] = self._get_single_subject_data_using_cache(
-                subject,
-                cache_config,
-                process_pipeline,
+
+        results = Parallel(n_jobs=n_jobs)(
+            delayed(self._get_selected_subject_data)(
+                subject, cache_config, process_pipeline, str_sessions, pat
             )
+            for subject in subjects
+        )
+        data = dict(zip(subjects, results))
         check_subject_names(data)
         check_session_names(data)
         check_run_names(data)
         return data
+
+    def _get_selected_subject_data(
+        self, subject, cache_config, process_pipeline, str_sessions, pat
+    ):
+        """Load one subject and keep only the selected sessions.
+
+        Split out of :meth:`get_data` so it can be dispatched to
+        :class:`joblib.Parallel` workers.
+        """
+        subject_data = self._get_single_subject_data_using_cache(
+            subject, cache_config, process_pipeline
+        )
+        if str_sessions is not None:
+            subject_data = {
+                k: v
+                for k, v in subject_data.items()
+                if k in str_sessions
+                or ((m := re.fullmatch(pat, k)) and m.group(1) in str_sessions)
+            }
+        return subject_data
 
     def download(
         self,
@@ -803,6 +953,24 @@ class BaseDataset(metaclass=MetaclassDataset):
         if subject_list is None:
             subject_list = self.subject_list
         for subject in subject_list:
+            if self.nemar_id is not None:
+                try:
+                    self._download_nemar(
+                        subject=subject,
+                        path=path,
+                        force_update=force_update,
+                        update_path=update_path,
+                        verbose=verbose,
+                    )
+                    continue
+                except NemarDownloadError as exc:
+                    warnings.warn(
+                        f"Could not download {self.code} from NEMAR ({self.nemar_id}); "
+                        "falling back to the dataset data_path downloader. "
+                        f"Original error: {exc}",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
             # check if accept is needed
             sig = signature(self.data_path)
             if "accept" in [str(p) for p in sig.parameters]:
@@ -823,6 +991,244 @@ class BaseDataset(metaclass=MetaclassDataset):
                     update_path=update_path,
                     verbose=verbose,
                 )
+
+    def _nemar_subject(self, subject):
+        """Format a MOABB subject identifier for NEMAR downloads.
+
+        Parameters
+        ----------
+        subject : int | str
+            MOABB subject identifier.
+
+        Returns
+        -------
+        str | None
+            Formatted NEMAR subject label, or None when subject filtering is
+            disabled.
+
+        Raises
+        ------
+        RuntimeError
+            If ``nemar_subject_template`` cannot format the subject value.
+        """
+        if self.nemar_subject_template is None:
+            return None
+        try:
+            return self.nemar_subject_template.format(subject=subject)
+        except (IndexError, KeyError, ValueError) as exc:
+            raise RuntimeError(
+                f"Could not format NEMAR subject {subject!r} for {self.code} "
+                f"with template {self.nemar_subject_template!r}: {exc}"
+            ) from exc
+
+    def _download_nemar(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        """Download one subject from NEMAR through :func:`moabb.datasets.download.nemar_dl`.
+
+        Parameters mirror :meth:`data_path` for compatibility with
+        :meth:`download`. ``update_path`` is accepted for API compatibility but
+        is not used by NEMAR.
+
+        Returns
+        -------
+        str
+            Local BIDS root returned by ``nemar_dl``.
+
+        Raises
+        ------
+        moabb.datasets.download.NemarDownloadError
+            If nemar-py is unavailable or the NEMAR download fails.
+        """
+        return nemar_dl(
+            self.nemar_id,
+            self.code,
+            path=path,
+            force_update=force_update,
+            subject=self._nemar_subject(subject),
+            verbose=verbose,
+            **(self.nemar_bids_filters or {}),
+        )
+
+    def _get_single_subject_data_from_nemar(self, subject, path=None):
+        """Download and load one subject from the NEMAR BIDS dataset."""
+        try:
+            root = self._download_nemar(subject=subject, path=path)
+            search_params = {
+                "root": root,
+                "subjects": self._nemar_subject(subject),
+                "datatypes": "eeg",
+                "extensions": _RAW_EXTENSIONS,
+            }
+            plural_filters = {
+                "acquisition": "acquisitions",
+                "run": "runs",
+                "session": "sessions",
+                "suffix": "suffixes",
+                "task": "tasks",
+            }
+            for key, value in (self.nemar_bids_filters or {}).items():
+                if key in plural_filters:
+                    search_params[plural_filters[key]] = value
+            bids_paths = mne_bids.find_matching_paths(**search_params)
+            if not bids_paths:
+                raise NemarDownloadError(
+                    f"NEMAR dataset {self.nemar_id} contains no EEG files for "
+                    f"subject {self._nemar_subject(subject)}."
+                )
+
+            session_labels = sorted({path.session for path in bids_paths}, key=str)
+            session_indexes = {label: index for index, label in enumerate(session_labels)}
+            data = {}
+            for bids_path in bids_paths:
+                raw = mne_bids.read_raw_bids(bids_path, verbose=False)
+                raw.load_data()
+                session_index = session_indexes[bids_path.session]
+                session = bids_path.session or str(session_index)
+                if not re.fullmatch(session_run_pattern(), session):
+                    session_label = re.sub(r"[^a-zA-Z0-9]", "", session)
+                    session = f"{session_index}{session_label}"
+                run_index = len(data.setdefault(session, {}))
+                run = bids_path.run or str(run_index)
+                if not re.fullmatch(session_run_pattern(), run) or run in data[session]:
+                    run_label = re.sub(
+                        r"[^a-zA-Z0-9]",
+                        "",
+                        "".join(
+                            value or ""
+                            for value in (
+                                bids_path.task,
+                                bids_path.acquisition,
+                                bids_path.run,
+                            )
+                        ),
+                    )
+                    run = f"{run_index}{run_label}"
+                data[session][run] = raw
+            return data
+        except NemarDownloadError:
+            raise
+        except (KeyError, OSError, RuntimeError, TypeError, ValueError) as exc:
+            raise NemarDownloadError(
+                f"Could not load {self.code} from NEMAR dataset {self.nemar_id}."
+            ) from exc
+
+    def convert_to_bids(
+        self,
+        path=None,
+        subjects=None,
+        overwrite=False,
+        format="EDF",
+        verbose=None,
+        generate_figures=False,
+    ):
+        """Convert the dataset to BIDS format.
+
+        Saves the raw EEG data in a BIDS-compliant directory structure.
+        Unlike the caching mechanism (see :class:`~moabb.datasets.base.CacheConfig`), the files
+        produced here do **not** contain a processing-pipeline hash
+        (``desc-<hash>``) in their names, making the output a clean,
+        shareable BIDS dataset.
+
+        Parameters
+        ----------
+        path : str | :class:`~pathlib.Path` | None
+            Directory under which the BIDS dataset will be written.
+            If ``None`` the default MNE data directory is used (same default
+            as the rest of MOABB).
+        subjects : list of int | None
+            Subject numbers to convert.  If ``None``, all subjects in
+            ``subject_list`` are converted.
+        overwrite : bool
+            If ``True``, existing BIDS files for a subject are removed before
+            saving.  Default is ``False``.
+        format : str
+            The file format for the raw EEG data.  Supported values are
+            ``"EDF"`` (default), ``"BrainVision"``, and ``"EEGLAB"``.
+        verbose : str | None
+            Verbosity level forwarded to MNE/MNE-BIDS.
+        generate_figures : bool
+            If ``True``, generate interactive neural signature HTML figures
+            in ``{bids_root}/derivatives/neural_signatures/``.  Requires
+            ``plotly`` (``pip install moabb[interactive]``).  Default is
+            ``False``.
+
+        Returns
+        -------
+        bids_root : pathlib.Path
+            Path to the root of the written BIDS dataset.
+
+        Examples
+        --------
+        >>> from moabb.datasets import AlexMI
+        >>> dataset = AlexMI()
+        >>> bids_root = dataset.convert_to_bids(path="/tmp/bids", subjects=[1])
+
+        Notes
+        -----
+        Use :class:`~moabb.datasets.base.CacheConfig` to configure caching
+        for :meth:`get_data`. Use
+        ``moabb.datasets.bids_interface.get_bids_root`` to get the BIDS root
+        path.
+
+        .. versionadded:: 1.5
+        """
+        if format not in _FORMAT_EXTENSION_MAP:
+            raise ValueError(
+                f"Unsupported format {format!r}. "
+                f"Allowed formats are {tuple(_FORMAT_EXTENSION_MAP)}"
+            )
+        if subjects is None:
+            subjects = self.subject_list
+
+        invalid = [s for s in subjects if s not in self.subject_list]
+        if invalid:
+            raise ValueError(
+                f"Invalid subject(s) {invalid}. Valid subjects are {self.subject_list}"
+            )
+
+        ext = _FORMAT_EXTENSION_MAP[format]
+
+        for subject in subjects:
+            interface = _BIDSInterfaceRawEDFNoDesc(
+                dataset=self,
+                subject=subject,
+                path=path,
+                process_pipeline=None,
+                verbose=verbose,
+                _format=format,
+            )
+            if overwrite:
+                interface.erase()
+            else:
+                subject_dir = interface.root / f"sub-{subject}"
+                if any(subject_dir.rglob(f"*{ext}")):
+                    log.info(
+                        "BIDS data already exists for %s, skipping "
+                        "(use overwrite=True to overwrite).",
+                        repr(interface),
+                    )
+                    continue
+            sessions_data = self.get_data(subjects=[subject])
+            interface.save(sessions_data[subject])
+
+        bids_root = get_bids_root(self.code, path)
+
+        if generate_figures:
+            try:
+                from moabb.analysis.neural_signatures import generate_neural_signature
+
+                fig_dir = bids_root / "derivatives" / "neural_signatures"
+                generate_neural_signature(self, subjects=subjects, output_dir=fig_dir)
+            except ImportError:
+                log.warning(
+                    "plotly not installed, skipping figure generation. "
+                    "Install with: pip install moabb[interactive]"
+                )
+            except (RuntimeError, ValueError, OSError) as e:
+                log.warning("Neural signature generation failed: %s", e)
+
+        return bids_root
 
     def _get_single_subject_data_using_cache(
         self, subject, cache_config, process_pipeline
@@ -850,6 +1256,12 @@ class BaseDataset(metaclass=MetaclassDataset):
             if len(cached_steps) == 0:  # last option: we don't use cache
                 sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
+                # Enrich raw.info from METADATA (sex, hand, age, line_freq)
+                metadata = getattr(self, "METADATA", None)
+                if metadata is not None:
+                    for runs in sessions_data.values():
+                        for raw in runs.values():
+                            _enrich_raw_info_from_metadata(raw, metadata, subject)
             else:
                 cache_type = cached_steps[-1][0]
                 interface = _interface_map[cache_type](
@@ -979,9 +1391,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         """  # noqa: E501
         pass
 
-    def get_additional_metadata(
-        self, subject: str, session: str, run: str
-    ) -> None | pd.DataFrame:
+    def get_additional_metadata(self, subject: str, session: str, run: str):
         """
         Load additional metadata for a specific subject, session, and run.
 
@@ -1000,7 +1410,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         Returns
         -------
-        None | pd.DataFrame
+        None | :class:`pandas.DataFrame`
             A DataFrame containing the additional metadata if available,
             otherwise None.
         """
@@ -1024,7 +1434,7 @@ class BaseBIDSDataset(BaseDataset):
     """
 
     def _get_path_search_params(self, subject: int | None) -> dict[str, Any]:
-        """Return the kwargs for the :func:`mne_bids.find_matching_paths` function."""
+        """Return the kwargs for the ``mne_bids.find_matching_paths`` function."""
         out = {"extensions": _RAW_EXTENSIONS}
         if subject is not None:
             out["subjects"] = str(subject)
@@ -1034,7 +1444,7 @@ class BaseBIDSDataset(BaseDataset):
         self,
         subject: int,  # pylint: disable=unused-argument
     ) -> dict[str, Any] | None:
-        """Return the ``extra_params`` argument for the :func:`mne_bids.read_raw_bids` function."""
+        """Return the ``extra_params`` argument for the ``mne_bids.read_raw_bids`` function."""
         return None
 
     @staticmethod
@@ -1097,9 +1507,7 @@ class BaseBIDSDataset(BaseDataset):
             data.setdefault(session, {})[run] = raw
         return data
 
-    def get_additional_metadata(
-        self, subject: str, session: str, run: str
-    ) -> None | pd.DataFrame:
+    def get_additional_metadata(self, subject: str, session: str, run: str):
         """
         Load additional metadata for a specific subject, session, and run.
 
@@ -1114,7 +1522,7 @@ class BaseBIDSDataset(BaseDataset):
 
         Returns
         -------
-        None | pd.DataFrame
+        None | :class:`pandas.DataFrame`
             A DataFrame containing the additional metadata if available,
             otherwise None.
         """
@@ -1173,12 +1581,12 @@ class LocalBIDSDataset(BaseBIDSDataset):
 
     Parameters
     ----------
-    bids_root : str | Path
+    bids_root : str | pathlib.Path
         Local path to the root of the BIDS dataset.
     path_search_params : dict[str, Any] | None
-        Additional kwargs for the :func:`mne_bids.find_matching_paths` function.
+        Additional kwargs for the ``mne_bids.find_matching_paths`` function.
     read_extra_params : dict[str, Any] | None
-        Additional kwargs for the :func:`mne_bids.read_raw_bids` function.
+        Additional kwargs for the ``mne_bids.read_raw_bids`` function.
     subjects : list[int] | None
         Optional list of subjects. If None, the subjects are inferred from the dataset.
     sessions_per_subject : int | None
@@ -1195,7 +1603,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
         Unique identifier for the dataset. for compatibility reasons,
         it should start with ``"LocalBIDSDataset"``
     unit_factor : float
-        Factor to convert units to microvolts (default: 1e6).
+        Factor to convert units to microvolts. Defaults to ``1e6``.
     """
 
     def __init__(
@@ -1212,6 +1620,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        return_all_modalities=False,
     ):
         self.bids_root = bids_root
         self.path_search_params = path_search_params
@@ -1223,16 +1632,16 @@ class LocalBIDSDataset(BaseBIDSDataset):
             raise ValueError(f"No BIDS dataset found in {bids_root}")
         if subjects is None or sessions_per_subject is None:
             if subjects is None:
-                subjects = sorted(set(path.subject for path in bids_paths))
+                subjects = sorted({path.subject for path in bids_paths})
                 log.warning(f"Found subjects: {subjects}")
             if sessions_per_subject is None:
                 sessions_per_subject = min(
                     len(
-                        set(
+                        {
                             bids_path.session
                             for bids_path in bids_paths
                             if bids_path.subject == subject
-                        )
+                        }
                     )
                     for subject in subjects
                 )
@@ -1247,6 +1656,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
             paradigm,
             doi,
             unit_factor,
+            return_all_modalities=return_all_modalities,
         )
 
     def _download_subject(self, subject, path, force_update, update_path, verbose):

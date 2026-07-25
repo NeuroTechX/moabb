@@ -5,26 +5,23 @@ https://doi.org/10.1371/journal.pone.0114853
 
 import json
 import logging
+import shutil
 from pathlib import Path
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
 
 import requests
 from mne.utils import _open_lock
 
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
-    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
-    FilterDetails,
-    FrequencyBands,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
-    PerformanceMetadata,
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
@@ -71,20 +68,22 @@ class Zhou2016(BaseBIDSDataset):
            https://doi.org/10.1371/journal.pone.0162657
     """
 
+    nemar_id = "nm000115"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=9,
-            channel_types={"eeg": 9},
-            montage="10-20",
-            hardware="BCI2000",
-            reference="Car",
-            ground="mastoid",
-            software="BCI2000",
-            filters="50 Hz notch",
+            n_channels=14,
+            channel_types={"eeg": 14},
+            montage="standard_1020",
+            sensor_type="EEG",
+            hardware=None,
+            reference="left mastoid",
+            ground="right mastoid",
+            software=None,
+            filters="0.1-100 Hz bandpass, 50 Hz notch",
             sensors=[
-                "FP1",
-                "FP2",
+                "Fp1",
+                "Fp2",
                 "FC3",
                 "FCz",
                 "FC4",
@@ -99,102 +98,147 @@ class Zhou2016(BaseBIDSDataset):
                 "O2",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_type=["horizontal"],
-                has_emg=True,
-                other_physiological=["ecg", "gsr"],
-            ),
+            auxiliary_channels=None,
         ),
         participants=ParticipantMetadata(
             n_subjects=4,
             health_status="healthy",
             gender={"male": 1, "female": 3},
-            bci_experience="prior experience in the experimental paradigm",
+            age_min=22,
+            age_max=28,
+            bci_experience="experienced",
         ),
         experiment=ExperimentMetadata(
+            events={"left_hand": 1, "right_hand": 2, "feet": 3},
             paradigm="imagery",
             n_classes=3,
             class_labels=["right_hand", "left_hand", "feet"],
-            trial_duration=9.0,
+            trial_duration=10.0,
             study_design="Three-class motor imagery (left hand, right hand, foot movement imagination) according to cue direction",
-            feedback_type="visual cue (red arrow)",
-            stimulus_type="avatar",
-            stimulus_modalities=["visual"],
+            feedback_type="none",
+            stimulus_type="visual arrow and beep",
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
-            mode="online",
+            mode="offline",
+            instructions="Subject sat in comfortable armchair facing computer screen. Trial started with short beep (1s preparation), followed by red arrow pointing randomly to three directions (left, right, or bottom) lasting 5s, then black screen for 4s. Subject instructed to immediately perform imagination tasks of left hand, right hand or foot movement according to cue direction, and relax during black screen.",
+            hed_tags={
+                "left_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Leftward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Left, Hand)))"
+                ),
+                "right_hand": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Rightward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, (Right, Hand)))"
+                ),
+                "feet": (
+                    "(Sensory-event, Experimental-stimulus, Visual-presentation, "
+                    "(Downward, Arrow)), "
+                    "(Agent-action, (Imagine, Move, Foot))"
+                ),
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0162657",
+            investigators=[
+                "Bangyan Zhou",
+                "Xiaopei Wu",
+                "Zhao Lv",
+                "Lei Zhang",
+                "Xiaojin Guo",
+            ],
+            institution="Anhui University",
+            institution_department="School of Computer Science and Technology",
+            country="CN",
+            institution_address="Hefei, China",
+            data_url="https://doi.org/10.6084/m9.figshare.2061654",
+            publication_year=2016,
+            senior_author="Xiaopei Wu",
+            contact_info=["wxp2001@ahu.edu.cn"],
+            funding=[
+                "National Natural Science Foundation of China (61271352; 61401002)",
+                "Anhui Province Natural Science Foundation (1408085QF125)",
+                "Anhui University Center of Information Support & Assurance Technology Open Foundation (ADXXBZ2014-3)",
+            ],
+            ethics_approval=["Institutional Review Board at Anhui University"],
+            keywords=[
+                "motor imagery",
+                "brain-computer interface",
+                "independent component analysis",
+                "trial selection",
+                "artifact rejection",
+                "ICA optimization",
+            ],
+            license="CC-BY-4.0",
+            repository="Zenodo",
         ),
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor"],
-        ),
+        sessions_per_subject=3,
+        runs_per_session=2,
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw EEG available",
-            preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering"],
-            filter_details=FilterDetails(
-                highpass_hz=8,
-                lowpass_hz=30,
-                bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 100.0},
-                notch_hz=[50],
-                filter_type="zero-phase",
-            ),
-            artifact_methods=["trial rejection", "ICA"],
-            re_reference="car",
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA"],
-            feature_extraction=[
-                "CSP",
-                "Bandpower",
-                "ERD",
-                "ERS",
-                "Covariance/Riemannian",
-                "Time-Frequency",
-                "ICA",
-            ],
-            frequency_bands=FrequencyBands(
-                analyzed_range=[8.0, 30.0],
-            ),
+            classifiers=["zero-training classifier"],
+            feature_extraction=["CSP", "ICA"],
+            frequency_bands={
+                "mu_beta": [8.0, 30.0],
+                "active_S1_S2_S4": [10.0, 14.0],
+                "active_S3": [12.0, 16.0],
+            },
+            spatial_filters=["ICA", "CSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["cross_session"],
+            evaluation_type=["cross_session", "within_session", "cross_run"]
         ),
-        performance=PerformanceMetadata(
-            accuracy_percent=80.6,
-        ),
+        performance={
+            "accuracy_percent": 80.6,
+            "ICA-T_self_test_mean": 80.6,
+            "ICA-T_session_transfer_success_rate": 67.0,
+        },
         bci_application=BCIApplicationMetadata(
-            applications=["vr_ar", "communication"],
-            environment="outdoor",
+            applications=["motor_control"], environment="laboratory"
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
+            imagery_tasks=["right_hand", "left_hand", "feet"],
+            cue_duration_s=5.0,
+            imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=25,
-            trials_context="per_class",
+            n_trials=75,
+            trials_context="per_run",
+            n_trials_per_class={"right_hand": 25, "left_hand": 25, "feet": 25},
         ),
-        data_processed=True,
+        data_processed=False,
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         """Initialize the BIDS dataset."""
         super().__init__(
             subjects=list(range(1, 5)),
             sessions_per_subject=3,
-            events=dict(left_hand=1, right_hand=2, feet=3),
+            events={"left_hand": 1, "right_hand": 2, "feet": 3},
             code="Zhou2016",
             # MI 1-6s, prepare 0-1, break 6-10
             # boundary effects
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1371/journal.pone.0162657",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
         self.zenodo_record_id = ZENODO_RECORD_ID
+
+    @staticmethod
+    def _subject_has_downloaded_data(folder_path: Path) -> bool:
+        """Check whether a subject directory contains minimally valid EEG BIDS data."""
+        if not folder_path.exists() or not folder_path.is_dir():
+            return False
+        has_eeg = any(folder_path.rglob("*_eeg.edf"))
+        has_events = any(folder_path.rglob("*_events.tsv"))
+        return has_eeg and has_events
 
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject data."""
@@ -219,21 +263,54 @@ class Zhou2016(BaseBIDSDataset):
                 # Check if the file corresponds to the current subject
                 if file_name == f"sub-{subject}.zip":
                     folder_path = file_path.with_suffix("")
+                    lock_path = dataset_path / f"sub-{subject}.download.lock"
+                    with _open_lock(lock_path, "w"):
+                        if force_update:
+                            if folder_path.exists():
+                                shutil.rmtree(folder_path)
+                            if file_path.exists():
+                                file_path.unlink()
+                        elif folder_path.exists() and (
+                            not self._subject_has_downloaded_data(folder_path)
+                        ):
+                            log.warning(
+                                "Found incomplete Zhou2016 data at %s; repairing subject %s",
+                                folder_path,
+                                subject,
+                            )
+                            shutil.rmtree(folder_path)
 
-                    if not folder_path.exists():
-                        log.info(
-                            f"Downloading {file_name} for subject {subject} to {file_path}"
-                        )
-                        download_if_missing(
-                            file_path=file_path,
-                            url=file_url,
-                            warn_missing=False,
-                            verbose=verbose,
-                        )
+                        if not self._subject_has_downloaded_data(folder_path):
+                            log.info(
+                                f"Downloading {file_name} for subject {subject} to {file_path}"
+                            )
+                            download_if_missing(
+                                file_path=file_path,
+                                url=file_url,
+                                warn_missing=False,
+                                verbose=verbose,
+                            )
 
-                        log.info(f"Extracting {file_name} to {folder_path}")
-                        with ZipFile(str(file_path), "r") as zip_ref:
-                            zip_ref.extractall(folder_path.parent)
+                            log.info(f"Extracting {file_name} to {folder_path}")
+                            try:
+                                with ZipFile(str(file_path), "r") as zip_ref:
+                                    zip_ref.extractall(folder_path.parent)
+                            except BadZipFile:
+                                log.warning(
+                                    "Corrupted archive at %s; redownloading %s",
+                                    file_path,
+                                    file_name,
+                                )
+                                if file_path.exists():
+                                    file_path.unlink()
+                                download_if_missing(
+                                    file_path=file_path,
+                                    url=file_url,
+                                    warn_missing=False,
+                                    verbose=verbose,
+                                )
+                                with ZipFile(str(file_path), "r") as zip_ref:
+                                    zip_ref.extractall(folder_path.parent)
 
             else:
                 download_if_missing(

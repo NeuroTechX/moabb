@@ -1,6 +1,6 @@
 import numpy as np
+from pyriemann.geometry.mean import mean_covariance
 from pyriemann.spatialfilters import CSP
-from pyriemann.utils.mean import mean_covariance
 from scipy import linalg
 
 
@@ -32,7 +32,8 @@ class TRCSP(CSP):
 
         Nt, Ne, Ns = X.shape
         classes = np.unique(y)
-        assert len(classes) == 2, "Can only do 2-class TRCSP"
+        if len(classes) != 2:  # was assert, now raises properly
+            raise ValueError(f"TRCSP only supports 2 classes, got {len(classes)}")
         # estimate class means
         C = []
         for c in classes:

@@ -17,30 +17,58 @@ maintainers = [
     { name = "Sylvain Chevallier", email = "sylvain.chevallier@universite-paris-saclay.fr" },
 ]
 license = { text = "BSD-3-Clause" }
-keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
+keywords = [
+    "eeg",
+    "datasets",
+    "reproducibility",
+    "bci",
+    "benchmark",
+    "brain-computer interface",
+    "motor imagery",
+    "p300",
+    "ssvep",
+    "neuroscience",
+    "mne-python",
+    "open science",
+    "electroencephalography",
+    "signal processing",
+    "machine learning",
+    "scikit-learn",
+    "neural engineering",
+    "cvep",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "numpy>=2.0",
     "scipy>=1.9.3",
     "mne>=1.10.0",
     "pandas>=1.5.2",
     "h5py>=3.10.0",
+    "pymatreader>=1.2.2",
     "matplotlib>=3.6.2",
     "seaborn>=0.12.1",
-    "pyriemann>=0.9",
+    "pyriemann>=0.12",
     "PyYAML>=6.0",
+    "nemar-py>=0.2.1",
     "pooch>=1.6.0",
     "requests>=2.28.1",
     "urllib3>=1.26.15",
@@ -50,24 +78,31 @@ dependencies = [
     "edflib-python>=1.0.6",
     "edfio>=0.4.2",
     "filelock>=3.18.0",
-    "pytest>=8.3.5",
-    "mne-bids>=0.17",
+    "mne-bids>=0.19",
     "scikit-learn>=1.6",
+    "pybv>=0.7.3",
     "pycountry>=24.6.1",
     "docstring-inheritance>=2.0.0",
 ]
 
 [project.urls]
-homepage = "https://moabb.neurotechx.com/docs/index.html"
-repository = "https://github.com/NeuroTechX/moabb"
-documentation = "https://moabb.neurotechx.com/docs/index.html"
+Homepage = "https://moabb.neurotechx.com/docs/"
+Documentation = "https://moabb.neurotechx.com/docs/"
+Repository = "https://github.com/NeuroTechX/moabb"
+"Bug Tracker" = "https://github.com/NeuroTechX/moabb/issues"
+Changelog = "https://moabb.neurotechx.com/docs/whats_new.html"
+"Dataset Catalog" = "https://moabb.neurotechx.com/docs/dataset_summary.html"
+"Benchmark Results" = "https://moabb.neurotechx.com/docs/paper_results.html"
+"Cite MOABB" = "https://moabb.neurotechx.com/docs/cite.html"
 
 [project.optional-dependencies]
 carbonemission = ["codecarbon>=2.1.4"]
 deeplearning = ["braindecode>=0.8.1"]
 optuna = ["optuna>=3.6.1", "optuna-integration>=3.6.0"]
+xdf = ["pyxdf>=1.16.4"]
+interactive = ["plotly>=5.18.0"]
 tests = [
-    "pytest>=8.3.5",
+    "pytest>=8.3.5,<9.1",  # pytest 9.1.0 changed IdMaker's signature, which breaks pytest_cases 3.10.1 (crash at collection time). Remove the cap once pytest_cases supports pytest >=9.1.
     "pytest-cov>=5.0.0",
     "codecov>=2.1.0",
     "pytest_cases>=3.0.0",
@@ -89,11 +124,14 @@ docs = [
     "mne-features>=0.3",
     "snowballstemmer>=3.0.1",
     "sphinx-sitemap",
+    "sphinxext-opengraph>=0.9.0",
 ]
 all = [
     "moabb[carbonemission]",
     "moabb[deeplearning]",
     "moabb[optuna]",
+    "moabb[xdf]",
+    "moabb[interactive]",
     "moabb[tests]",
     "moabb[docs]",
 ]
@@ -108,22 +146,47 @@ include = ["moabb*"]
 exclude = []
 namespaces = false
 
-[tool.black]
+[tool.ruff]
 line-length = 90
-target-version = ["py311"]
+target-version = "py311"
+extend-exclude = ["docs/", "setup.py"]
 
-[tool.isort]
-src_paths = ["moabb"]
-profile = "black"
-line_length = 90
-lines_after_imports = 2
+[tool.ruff.lint]
+# pycodestyle/pyflakes (E/F/W), bugbear (B), comprehensions (C4), isort (I).
+# mccabe (C90) is intentionally omitted — the old flake8 config declared
+# max-complexity=12 but wasn't actually enforced, and retrofitting it would
+# require refactoring ~47 functions.
+select = ["E", "F", "W", "B", "C4", "I"]
+# Matches the old setup.cfg ignore list. W503 and B950 are flake8-only
+# concepts with no ruff equivalent and are intentionally omitted.
+ignore = ["E203", "E501", "B905"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["moabb"]
+lines-after-imports = 2
+# Paired with format.skip-magic-trailing-comma=true below so import sorting
+# and formatting agree on line wrapping.
+split-on-trailing-comma = false
+
+[tool.ruff.format]
+docstring-code-format = true
+# Collapse multi-line constructs that would fit on a single line, matching
+# the old isort `profile = "black"` behavior (which predates black's
+# magic-trailing-comma feature).
+skip-magic-trailing-comma = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q"
+testpaths = ["moabb/tests"]
+# which files count as test modules
 python_files = [
     "test_*.py",
 ]
+# which functions inside them count as tests
+python_functions = ["test_*"]
 markers = [
     "network: tests that require network access (CrossRef/DataCite APIs)",
+    "download: tests that require downloading dataset files",
+    "slow: tests that use real datasets and take a long time to run",
 ]

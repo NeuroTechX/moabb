@@ -20,7 +20,7 @@ def test_default_config():
     emissions = Emissions()
 
     # Check default configuration is set
-    assert emissions.codecarbon_config == dict(save_to_file=False, log_level="error")
+    assert emissions.codecarbon_config == {"save_to_file": False, "log_level": "error"}
     # Check codecarbon_offline is set to False for default config
     assert emissions.codecarbon_offline is False
 

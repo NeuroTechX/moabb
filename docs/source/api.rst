@@ -1,17 +1,38 @@
+.. meta::
+   :description: MOABB API reference - Datasets, Paradigms, Evaluations, Pipelines, and analysis tools for EEG-based BCI benchmarking in Python.
+   :keywords: MOABB API, BCI Python API, EEG analysis, motor imagery paradigm, P300 paradigm, cross-session evaluation
+
 =====================
 API and Main Concepts
 =====================
 
-.. figure:: images/architecture.png
-   :alt: architecture
+.. raw:: html
 
+   <div class="api-hero">
 
-There are 4 main concepts in the MOABB: **the datasets**, **the paradigm**, **the
-evaluation**, and **the pipelines**. In addition, we offer **statistical**,
-**visualization**, **utilities** to simplify the workflow.
+.. figure:: images/architecture.svg
+   :alt: Concept flow in MOABB
+   :class: api-architecture-diagram
 
-And if you want to just run the benchmark, you can use our **benchmark** module that wraps
-all the steps in a single function.
+   Datasets and Paradigms define the problem; Evaluations and Pipelines
+   define the measurement.
+
+.. raw:: html
+
+   <p class="api-intro">
+   There are 4 main concepts in the MOABB:
+   <strong class="concept-dataset">the datasets</strong>,
+   <strong class="concept-paradigm">the paradigms</strong>,
+   <strong class="concept-evaluation">the evaluations</strong>, and
+   <strong class="concept-pipeline">the pipelines</strong>.
+   In addition, we offer <strong>statistical</strong>,
+   <strong>visualization</strong>, <strong>utilities</strong> to simplify the workflow.
+   </p>
+   <p class="api-intro">
+   And if you want to just run the benchmark, you can use our
+   <strong>benchmark</strong> module that wraps all the steps in a single function.
+   </p>
+   </div>
 
 
 Datasets
@@ -63,6 +84,51 @@ Motor Imagery Datasets
     Liu2024
     Beetl2021_A
     Beetl2021_B
+    BCIComp2020UpperLimb
+    Brandl2020
+    Chang2025
+    Forenzo2023
+    Gao2026
+    GuttmannFlury2025_ME
+    GuttmannFlury2025_MI
+    HefmiIch2025
+    Jeong2020
+    Kaya2018
+    Kumar2024
+    Liu2025
+    Ma2020
+    Rozado2015
+    Tavakolan2017
+    TrianaGuzman2024
+    Wairagkar2018
+    Wu2020
+    Yang2025
+    Yi2025
+    Zhang2017
+    Zhou2020
+    Zuo2025
+
+------------------------
+Imagined Speech Datasets
+------------------------
+
+MOABB now welcomes **imagined speech** datasets — subjects silently imagine
+speaking words, phonemes, or phrases. They share the ``imagery`` paradigm
+tag with motor imagery and can be decoded with the existing
+:class:`~moabb.paradigms.MotorImagery` and
+:class:`~moabb.paradigms.FilterBankMotorImagery` classes.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    AguileraRodriguez2025
+    Nguyen2017_L
+    Nguyen2017_S
+    Nguyen2017_SL
+    Nguyen2017_V
+    Nieto2022
+    Pressel2016
 
 -----------------
 ERP/P300 Datasets
@@ -106,6 +172,40 @@ ERP/P300 Datasets
     RomaniBF2025ERP
     Kojima2024A
     Kojima2024B
+    Lee2021Mobile_ERP
+    Chailloux2020
+    GuttmannFlury2025_P300
+    Kaneshiro2015
+    Lee2024_AC
+    Lee2024_BS
+    Lee2024_DL
+    Lee2024_EL
+    Lee2024_TV
+    Mainsah2025_A
+    Mainsah2025_B
+    Mainsah2025_C
+    Mainsah2025_D
+    Mainsah2025_E
+    Mainsah2025_F
+    Mainsah2025_G
+    Mainsah2025_H
+    Mainsah2025_I
+    Mainsah2025_J
+    Mainsah2025_K
+    Mainsah2025_L
+    Mainsah2025_M
+    Mainsah2025_N
+    Mainsah2025_O
+    Mainsah2025_P
+    Mainsah2025_Q
+    Mainsah2025_R
+    Mainsah2025_S1
+    Mainsah2025_S2
+    Simoes2020
+    Speier2017
+    Zhang2025
+    Zheng2020
+    BCIComp2020WalkingERP
 
 --------------
 SSVEP Datasets
@@ -122,6 +222,17 @@ SSVEP Datasets
     MAMEM2
     MAMEM3
     Lee2019_SSVEP
+    Chen2017SingleFlicker
+    Dong2023
+    Han2024Fatigue
+    Kim2025BetaRange
+    Lee2021Mobile_SSVEP
+    Lenaig2026
+    Liu2020BETA
+    Liu2022EldBETA
+    Wang2021Combined
+    GuttmannFlury2025_SSVEP
+    Schrag2026Pediatric
 
 --------------
 c-VEP Datasets
@@ -168,9 +279,9 @@ Compound Datasets
     Cattan2019_VR_Il
     BI_Il
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 .. currentmodule:: moabb.datasets
 
 .. autosummary::
@@ -181,6 +292,20 @@ Base & Utils
     base.BaseBIDSDataset
     base.LocalBIDSDataset
     base.CacheConfig
+    bnci.base.MNEBNCI
+    bnci.base.BNCIBaseDataset
+    erpcore2021.ErpCore2021
+    mainsah2025.Mainsah2025
+    lee2024.Lee2024
+    Lee2019.Lee2019
+    castillos2023.BaseCastillos2023
+    ssvep_mamem.BaseMAMEM
+    lee2021_mobile.Lee2021Mobile
+    bbci_eeg_fnirs.BaseShin2017
+    dreyer2023._Dreyer2023Base
+    huebner_llp._BaseVisualMatrixSpellerDataset
+    compound_dataset.base.CompoundDataset
+    compound_dataset.bi_illiteracy._base_bi_il
     fake.FakeDataset
     fake.FakeVirtualRealityDataset
 
@@ -200,8 +325,23 @@ Base & Utils
     utils.plot_datasets_grid
     utils.plot_datasets_cluster
 
-Paradigm
---------
+-------------
+Preprocessing
+-------------
+.. currentmodule:: moabb.datasets
+
+Trial-level transformers applied to the epoched/array data, usable as
+pipeline steps (inductive in a cross-validation, transductive via
+``fit_transform`` on a single recording).
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    preprocessing.EuclideanAlignment
+
+Paradigms
+---------
 .. currentmodule:: moabb.paradigms
 
 A paradigm defines how the raw data will be converted to trials ready to
@@ -210,14 +350,22 @@ used, i.e. in motor imagery one can have two-class, multi-class, or
 continuous paradigms; similarly, different preprocessing is necessary
 for ERP vs ERD paradigms.
 
------------------------
-Motor Imagery Paradigms
------------------------
+-----------------
+Imagery Paradigms
+-----------------
+
+The ``imagery`` paradigm tag covers both motor imagery and imagined
+speech. :class:`Imagery` is a thin alias for :class:`MotorImagery` that
+makes the umbrella scope explicit; :class:`SpeechImagery` overrides the
+defaults with the broadband 1-100 Hz filter used in imagined-speech
+work (Aguilera-Rodriguez et al. 2025).
 
 .. autosummary::
     :toctree: generated/
     :template: class.rst
 
+    Imagery
+    SpeechImagery
     MotorImagery
     LeftRightImagery
 
@@ -257,7 +405,7 @@ c-VEP Paradigms
     FilterBankCVEP
 
 -----------------------
-Resting state Paradigms
+Resting State Paradigms
 -----------------------
 
 .. autosummary::
@@ -277,9 +425,9 @@ Fixed Interval Windows Processings
     FixedIntervalWindowsProcessing
     FilterBankFixedIntervalWindowsProcessing
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
@@ -318,9 +466,9 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     CrossSessionSplitter
     CrossSubjectSplitter
 
-------------
-Base & Utils
-------------
+---------
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
@@ -351,6 +499,11 @@ for more info.
     classification.SSVEP_CCA
     classification.SSVEP_TRCA
     classification.SSVEP_MsetCCA
+    classification.SSVEP_itCCA
+    classification.SSVEP_eCCA
+    classification.SSVEP_TRCA_R
+    classification.SSVEP_SSCOR
+    classification.SSVEP_TDCA
 
 Statistics, visualization and utilities
 ---------------------------------------
@@ -410,22 +563,24 @@ The benchmark module wraps all the steps in a single function. It
 downloads the data, runs the benchmark, and returns the results. It is
 the easiest way to run a benchmark.
 
-.. code:: python
+.. admonition:: Minimal benchmark example
 
-    from moabb import benchmark
+   .. code-block:: python
 
-    results = benchmark(
-        pipelines="./pipelines",
-        evaluations=["WithinSession"],
-        paradigms=["LeftRightImagery"],
-        include_datasets=[BNCI2014_001(), PhysionetMI()],
-        exclude_datasets=None,
-        results="./results/",
-        overwrite=True,
-        plot=True,
-        output="./benchmark/",
-        n_jobs=-1,
-    )
+      from moabb import benchmark
+
+      results = benchmark(
+          pipelines="./pipelines",
+          evaluations=["WithinSession"],
+          paradigms=["LeftRightImagery"],
+          include_datasets=[BNCI2014_001(), PhysionetMI()],
+          exclude_datasets=None,
+          results="./results/",
+          overwrite=True,
+          plot=True,
+          output="./benchmark/",
+          n_jobs=-1,
+      )
 
 .. autosummary::
     :toctree: generated/

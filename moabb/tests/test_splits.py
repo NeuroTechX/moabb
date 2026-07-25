@@ -7,6 +7,7 @@ from sklearn.model_selection import (
     LeaveOneOut,
     LeavePGroupsOut,
     LeavePOut,
+    PredefinedSplit,
     RepeatedKFold,
     RepeatedStratifiedKFold,
     ShuffleSplit,
@@ -19,6 +20,7 @@ from sklearn.utils import check_random_state
 
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.splitters import (
+    CrossDatasetSplitter,
     CrossSessionSplitter,
     CrossSubjectSplitter,
     LearningCurveSplitter,
@@ -40,15 +42,15 @@ def data():
 # Split done for the Within Session evaluation
 def eval_split_within_session(shuffle, random_state, data):
     _, y, metadata = data
-    rng = check_random_state(random_state) if shuffle else None
 
     all_index = metadata.index.values
     # Convert to numpy array to avoid ArrowStringArray shuffle warning
     subjects = np.array(metadata["subject"].unique())
     if shuffle:
-        rng.shuffle(subjects)
+        shuffle_rng = check_random_state(random_state)
+        shuffle_rng.shuffle(subjects)
 
-    for i, subject in enumerate(subjects):
+    for _i, subject in enumerate(subjects):
         subject_mask = metadata["subject"] == subject
 
         subject_indices = all_index[subject_mask]
@@ -58,7 +60,7 @@ def eval_split_within_session(shuffle, random_state, data):
         y_subject = y[subject_mask]
 
         if shuffle:
-            rng.shuffle(sessions)
+            shuffle_rng.shuffle(sessions)
 
         for session in sessions:
             session_mask = subject_metadata["session"] == session
@@ -66,7 +68,8 @@ def eval_split_within_session(shuffle, random_state, data):
             metadata_ = subject_metadata[session_mask]
             y_ = y_subject[session_mask]
 
-            cv = StratifiedKFold(n_splits=5, shuffle=shuffle, random_state=rng)
+            cv_rng = check_random_state(random_state) if shuffle else None
+            cv = StratifiedKFold(n_splits=5, shuffle=shuffle, random_state=cv_rng)
 
             for idx_train, idx_test in cv.split(metadata_, y_):
                 yield indices[idx_train], indices[idx_test]
@@ -109,6 +112,41 @@ def eval_split_cross_subject(shuffle, random_state, data):
     ):
         train_mask = metadata["subject"].isin(subjects[train_subj_idx])
         test_mask = metadata["subject"].isin(subjects[test_subj_idx])
+
+        yield metadata.index[train_mask].values, metadata.index[test_mask].values
+
+
+def _metadata_with_dataset_column(metadata, n_datasets=3):
+    """Attach a synthetic dataset-group column while preserving subjects."""
+    metadata = metadata.copy()
+    subjects = np.array(metadata["subject"].unique())
+    n_datasets = max(1, min(n_datasets, len(subjects)))
+    dataset_labels = np.array([f"ds_{i + 1}" for i in range(n_datasets)])
+    subject_to_dataset = {
+        subject: dataset_labels[i % len(dataset_labels)]
+        for i, subject in enumerate(subjects)
+    }
+    metadata["dataset"] = metadata["subject"].map(subject_to_dataset)
+    return metadata
+
+
+def eval_split_cross_dataset(shuffle, random_state, data):
+    rng = check_random_state(random_state) if shuffle else None
+
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    datasets = metadata["dataset"].unique()
+
+    if shuffle:
+        splitter = GroupShuffleSplit(random_state=rng)
+    else:
+        splitter = LeaveOneGroupOut()
+
+    for train_dataset_idx, test_dataset_idx in splitter.split(
+        X=np.zeros(len(datasets)), y=None, groups=datasets
+    ):
+        train_mask = metadata["dataset"].isin(datasets[train_dataset_idx])
+        test_mask = metadata["dataset"].isin(datasets[test_dataset_idx])
 
         yield metadata.index[train_mask].values, metadata.index[test_mask].values
 
@@ -187,13 +225,13 @@ def test_is_shuffling(data):
         WithinSubjectSplitter,
         CrossSessionSplitter,
         CrossSubjectSplitter,
+        CrossDatasetSplitter,
     ],
 )
-def test_custom_inner_cv(
-    splitter,
-    data,
-):
+def test_custom_inner_cv(splitter, data):
     X, y, metadata = data
+    if splitter == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
     # Use a custom inner cv
     split = splitter(cv_class=TimeSeriesSplit, max_train_size=2)
 
@@ -208,9 +246,7 @@ def test_custom_shuffle_group(data):
 
     n_splits = 5
     splitter = CrossSubjectSplitter(
-        random_state=42,
-        cv_class=GroupShuffleSplit,
-        n_splits=n_splits,
+        random_state=42, cv_class=GroupShuffleSplit, n_splits=n_splits
     )
 
     splits = list(splitter.split(y, metadata))
@@ -226,8 +262,7 @@ def test_custom_shuffle_group(data):
 
     # Check if shuffling produces different splits
     splitter_different_seed = CrossSubjectSplitter(
-        cv_class=GroupShuffleSplit,
-        n_splits=n_splits,
+        cv_class=GroupShuffleSplit, n_splits=n_splits
     )
     splits_different_seed = list(splitter_different_seed.split(y, metadata))
 
@@ -259,15 +294,20 @@ def test_cross_session(shuffle, random_state, data):
         )
 
 
-@pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
+@pytest.mark.parametrize(
+    "splitter", [CrossSessionSplitter, CrossSubjectSplitter, CrossDatasetSplitter]
+)
 @pytest.mark.parametrize("shuffle, random_state", [(False, None), (True, 0), (True, 42)])
 def test_cross_compatibility(splitter, shuffle, random_state, data):
     _, y, metadata = data
 
     if splitter == CrossSessionSplitter:
         function_split = eval_split_cross_session
-    else:
+    elif splitter == CrossSubjectSplitter:
         function_split = eval_split_cross_subject
+    else:
+        function_split = eval_split_cross_dataset
+        metadata = _metadata_with_dataset_column(metadata)
 
     params = {"random_state": random_state}
     if splitter == CrossSessionSplitter:
@@ -358,7 +398,7 @@ def test_cross_session_unique_subjects(data):
 
     # Check if session splits are different across subjects
     subject_session_patterns = {}
-    for i, (train_idx, test_idx) in enumerate(splits_shuffle):
+    for _i, (train_idx, test_idx) in enumerate(splits_shuffle):
         subject = metadata.iloc[train_idx]["subject"].iloc[
             0
         ]  # Get the subject for this fold
@@ -383,9 +423,9 @@ def test_cross_session_unique_subjects(data):
                 break
         pattern_differences.append(patterns_differ)
 
-    assert any(
-        pattern_differences
-    ), "Session splitting patterns are identical across all subjects"
+    assert any(pattern_differences), (
+        "Session splitting patterns are identical across all subjects"
+    )
 
 
 @pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
@@ -403,9 +443,9 @@ def test_cross_session_unique_sessions(shuffle, random_state, data):
     for i, (train, test) in enumerate(splits):
         train_sessions = metadata.iloc[train]["session"].unique()
         test_sessions = metadata.iloc[test]["session"].unique()
-        assert not np.intersect1d(
-            train_sessions, test_sessions
-        ).size, f"Fold {i} train and test sessions overlap"
+        assert not np.intersect1d(train_sessions, test_sessions).size, (
+            f"Fold {i} train and test sessions overlap"
+        )
 
 
 @pytest.mark.parametrize("shuffle", [True, False])
@@ -429,6 +469,16 @@ def test_cross_subject_get_n_splits(data):
     assert n_splits == 5  # 5 subjects
 
 
+def test_cross_dataset_get_n_splits(data):
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+
+    split = CrossDatasetSplitter()
+
+    n_splits = split.get_n_splits(metadata)
+    assert n_splits == metadata["dataset"].nunique()
+
+
 def test_within_subject_get_n_splits(data):
     _, y, metadata = data
 
@@ -438,9 +488,51 @@ def test_within_subject_get_n_splits(data):
     assert n_splits == 5 * 5  # 5 subjects, 5 folds each
 
 
-@pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
+@pytest.mark.parametrize("splitter", [WithinSessionSplitter, WithinSubjectSplitter])
+def test_cv_kwargs_n_splits_not_overwritten(data, splitter):
+    """Explicit n_splits in cv_kwargs must not be overwritten by n_folds."""
+    _, y, metadata = data
+
+    split = splitter(
+        cv_class=StratifiedShuffleSplit,
+        n_splits=1,
+        test_size=0.25,
+        shuffle=True,
+        random_state=42,
+    )
+
+    # The inner cv should keep the explicitly requested single split.
+    assert split._cv_kwargs["n_splits"] == 1
+
+    if splitter == WithinSessionSplitter:
+        num_groups = metadata.groupby(["subject", "session"]).ngroups
+    else:
+        num_groups = metadata["subject"].nunique()
+
+    splits = list(split.split(y, metadata))
+    assert len(splits) == num_groups  # one split per group, not n_folds per group
+
+
+@pytest.mark.parametrize("splitter", [WithinSessionSplitter, WithinSubjectSplitter])
+def test_within_split_is_reproducible(data, splitter):
+    """Repeated split() calls with a fixed seed must yield identical folds."""
+    _, y, metadata = data
+    split = splitter(shuffle=True, random_state=42)
+    first = list(split.split(y, metadata))
+    second = list(split.split(y, metadata))
+    assert len(first) == len(second)
+    for (train, test), (train_2, test_2) in zip(first, second):
+        assert np.array_equal(train, train_2)
+        assert np.array_equal(test, test_2)
+
+
+@pytest.mark.parametrize(
+    "splitter", [CrossSessionSplitter, CrossSubjectSplitter, CrossDatasetSplitter]
+)
 def test_if_split_is_not_random(data, splitter):
     _, y, metadata = data
+    if splitter == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
 
     if splitter == CrossSessionSplitter:
         split = splitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)
@@ -488,9 +580,7 @@ def test_raise_error_on_invalid_cv_class(cv_class):
         StratifiedShuffleSplit,
     ],
 )
-def test_cross_session_splitter_without_error(
-    cv_class,
-):
+def test_cross_session_splitter_without_error(cv_class):
     splitter = CrossSessionSplitter(shuffle=True, cv_class=cv_class)
     assert splitter is not None
     assert isinstance(splitter, CrossSessionSplitter)
@@ -520,11 +610,14 @@ def test_learning_curve_splitter_metadata():
         WithinSubjectSplitter,
         CrossSessionSplitter,
         CrossSubjectSplitter,
+        CrossDatasetSplitter,
     ],
 )
 def test_learning_curve_as_cv_class(splitter, data):
     """Test that LearningCurveSplitter can be used as cv_class for all splitters."""
     _, y, metadata = data
+    if splitter == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
 
     data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
     n_perms = np.array([2, 1])
@@ -566,6 +659,10 @@ def test_learning_curve_as_cv_class(splitter, data):
             train_subjects = set(metadata.loc[train]["subject"])
             test_subjects = set(metadata.loc[test]["subject"])
             assert train_subjects.isdisjoint(test_subjects)
+        elif splitter == CrossDatasetSplitter:
+            train_datasets = set(metadata.loc[train]["dataset"])
+            test_datasets = set(metadata.loc[test]["dataset"])
+            assert train_datasets.isdisjoint(test_datasets)
 
 
 @pytest.mark.parametrize(
@@ -575,11 +672,14 @@ def test_learning_curve_as_cv_class(splitter, data):
         WithinSubjectSplitter,
         CrossSessionSplitter,
         CrossSubjectSplitter,
+        CrossDatasetSplitter,
     ],
 )
-def test_current_splitter_is_set(splitter_cls, data):
-    """Test that _current_splitter is set after split() for all splitters."""
+def test_splitter_metadata_interface(splitter_cls, data):
+    """Test get_metadata() access for splitters using metadata-aware inner CV."""
     _, y, metadata = data
+    if splitter_cls == CrossDatasetSplitter:
+        metadata = _metadata_with_dataset_column(metadata)
 
     data_size = {"policy": "ratio", "value": np.array([0.5, 1.0])}
     n_perms = np.array([2, 1])
@@ -597,14 +697,161 @@ def test_current_splitter_is_set(splitter_cls, data):
         **extra_kwargs,
     )
 
-    splits = list(split.split(y, metadata))
-    assert len(splits) > 0
+    has_split = False
+    for _train, _test in split.split(y, metadata):
+        has_split = True
+        meta = split.get_metadata()
+        assert meta is not None
+        assert meta["data_size"] is not None
+        assert meta["permutation"] is not None
+    assert has_split
 
-    # Verify _current_splitter is set and accessible
-    assert hasattr(split, "_current_splitter")
-    assert split._current_splitter is not None
 
-    # Verify metadata is accessible through _current_splitter
-    meta = split._current_splitter.get_metadata()
-    assert meta["data_size"] is not None
-    assert meta["permutation"] is not None
+def test_cross_dataset_requires_group_column(data):
+    _, y, metadata = data
+    splitter = CrossDatasetSplitter(group_column="does_not_exist")
+    with pytest.raises(ValueError):
+        list(splitter.split(y, metadata))
+
+
+# ---------------------------------------------------------------------------
+# Metadata-driven ``groups`` and callable ``cv_kwargs`` across the splitters.
+# ---------------------------------------------------------------------------
+
+
+def test_cross_subject_groups_compound_key(data):
+    """groups=["subject", "session"] yields one fold per (subject, session)."""
+    _, y, metadata = data
+    split = CrossSubjectSplitter(cv_class=LeaveOneGroupOut, groups=["subject", "session"])
+    n_groups = metadata.groupby(["subject", "session"]).ngroups
+    folds = list(split.split(y, metadata))
+    assert len(folds) == n_groups
+    assert split.get_n_splits(metadata) == n_groups
+    for train, test in folds:
+        test_meta = metadata.loc[test]
+        assert test_meta.groupby(["subject", "session"]).ngroups == 1
+        train_keys = set(map(tuple, metadata.loc[train][["subject", "session"]].values))
+        test_keys = set(map(tuple, test_meta[["subject", "session"]].values))
+        assert train_keys.isdisjoint(test_keys)
+
+
+def test_cross_subject_predefined_split_single_fold(data):
+    """cv_class=PredefinedSplit with a callable test_fold targets one fold."""
+    _, y, metadata = data
+    split = CrossSubjectSplitter(
+        cv_class=PredefinedSplit,
+        test_fold=lambda md: np.where(
+            (md["subject"] == 1) & (md["session"] == "0"), 0, -1
+        ),
+    )
+    folds = list(split.split(y, metadata))
+    assert len(folds) == 1
+    assert split.get_n_splits(metadata) == 1
+    train, test = folds[0]
+    test_meta = metadata.loc[test]
+    assert set(test_meta["subject"]) == {1}
+    assert set(test_meta["session"]) == {"0"}
+    assert len(train) + len(test) == len(metadata)
+
+
+def test_cross_dataset_groups_callable_and_list(data):
+    """CrossDatasetSplitter accepts groups as a list of columns or a callable."""
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    n_datasets = metadata["dataset"].nunique()
+
+    split_list = CrossDatasetSplitter(groups=["dataset"])
+    folds_list = list(split_list.split(y, metadata))
+    assert len(folds_list) == n_datasets
+
+    split_call = CrossDatasetSplitter(groups=lambda md: md["dataset"].to_numpy())
+    folds_call = list(split_call.split(y, metadata))
+    assert len(folds_call) == n_datasets
+    for train, test in folds_call:
+        train_ds = set(metadata.loc[train, "dataset"])
+        test_ds = set(metadata.loc[test, "dataset"])
+        assert train_ds.isdisjoint(test_ds)
+
+
+def test_cross_dataset_group_column_backcompat(data):
+    """The deprecated group_column= keyword still drives the folds."""
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    with pytest.warns(DeprecationWarning):
+        split = CrossDatasetSplitter(group_column="dataset")
+    folds = list(split.split(y, metadata))
+    assert len(folds) == metadata["dataset"].nunique()
+    # Per-fold metadata is preserved.
+    meta = split.get_metadata()
+    assert "test_dataset" in meta
+    assert "train_datasets" in meta
+
+
+def test_cross_session_groups_default_and_callable(data):
+    """Default groups='session' is unchanged; a callable reproduces it."""
+    _, y, metadata = data
+    default_folds = list(CrossSessionSplitter().split(y, metadata))
+    call_split = CrossSessionSplitter(groups=lambda md: md["session"].to_numpy())
+    call_folds = list(call_split.split(y, metadata))
+    assert len(call_folds) == len(default_folds)
+    for (tr1, te1), (tr2, te2) in zip(default_folds, call_folds):
+        assert np.array_equal(tr1, tr2)
+        assert np.array_equal(te1, te2)
+
+
+@pytest.mark.parametrize("splitter_cls", [WithinSessionSplitter, WithinSubjectSplitter])
+def test_within_groups_none_is_unchanged(splitter_cls, data):
+    """groups=None reproduces the splits produced without the argument."""
+    _, y, metadata = data
+    base = list(splitter_cls(n_folds=5, shuffle=False).split(y, metadata))
+    with_none = list(
+        splitter_cls(n_folds=5, shuffle=False, groups=None).split(y, metadata)
+    )
+    assert len(base) == len(with_none)
+    for (tr1, te1), (tr2, te2) in zip(base, with_none):
+        assert np.array_equal(tr1, tr2)
+        assert np.array_equal(te1, te2)
+
+
+def test_within_session_groups_routes_through(data):
+    """A group-aware cv_class receives groups resolved per (subject, session)."""
+    _, y, metadata = data
+    split = WithinSessionSplitter(shuffle=False, cv_class=LeaveOneGroupOut, groups="run")
+    folds = list(split.split(y, metadata))
+    n_subjects = metadata["subject"].nunique()
+    n_sessions = metadata["session"].nunique()
+    n_runs = metadata["run"].nunique()
+    assert len(folds) == n_subjects * n_sessions * n_runs
+    for train, test in folds:
+        test_meta = metadata.loc[test]
+        assert test_meta.groupby(["subject", "session"]).ngroups == 1
+        assert test_meta["run"].nunique() == 1
+        subj = test_meta["subject"].iloc[0]
+        sess = test_meta["session"].iloc[0]
+        held_out_run = test_meta["run"].iloc[0]
+        same_partition = metadata.loc[train]
+        same_partition = same_partition[
+            (same_partition["subject"] == subj) & (same_partition["session"] == sess)
+        ]
+        assert held_out_run not in set(same_partition["run"])
+
+
+def test_within_subject_groups_routes_through(data):
+    """A group-aware cv_class receives groups resolved per subject."""
+    _, y, metadata = data
+    split = WithinSubjectSplitter(
+        shuffle=False, cv_class=LeaveOneGroupOut, groups="session"
+    )
+    folds = list(split.split(y, metadata))
+    n_subjects = metadata["subject"].nunique()
+    n_sessions = metadata["session"].nunique()
+    assert len(folds) == n_subjects * n_sessions
+    for train, test in folds:
+        test_meta = metadata.loc[test]
+        assert test_meta["subject"].nunique() == 1
+        assert test_meta["session"].nunique() == 1
+        subj = test_meta["subject"].iloc[0]
+        held_out_session = test_meta["session"].iloc[0]
+        same_subject_train = metadata.loc[train]
+        same_subject_train = same_subject_train[same_subject_train["subject"] == subj]
+        assert held_out_session not in set(same_subject_train["session"])
