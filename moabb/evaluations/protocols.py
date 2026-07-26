@@ -1,113 +1,42 @@
-"""Cross-subject transfer protocol presets.
-
-This module defines named presets for cross-subject evaluation in which one
-subject is held out as the target subject and the remaining subjects are used
-as training/source subjects.
-
-The presets describe what information from the held-out target subject is
-allowed to be used by an estimator, and how the remaining target data are
-scored. They make the evaluation protocol explicit, so that different
-cross-subject and transfer-learning methods can be compared under controlled
-and reproducible conditions.
-
-These presets are designed specifically to be used in publications.
-
-A preset controls two related aspects of the evaluation:
-
-1. target calibration/adaptation access:
-   whether the estimator receives no target data, an unlabeled target slice, or
-   a labeled target slice during fitting;
-
-2. prediction access at scoring time:
-   whether the estimator receives the target test data as a full block or one
-   trial at a time.
-
-Blockwise prediction means that the estimator receives the whole target test
-block at scoring time, as in the standard MOABB CrossSubjectEvaluation path.
-
-Trialwise prediction means that the estimator is scored one target trial at a
-time. This prevents methods from using statistics of the full target test block
-during prediction.
-
-Alternatively, the protocol can be configured manually with
-``calibration_size`` and ``calibration_labeled``. For publications and
-benchmarks, however, a predefined ``CrossSubjectMode`` preset is strongly
-recommended.
-
-"""
+"""Named target-access protocols for cross-subject evaluation."""
 
 from enum import Enum
 
 
 class CrossSubjectMode(str, Enum):
-    """Named cross-subject transfer protocol.
+    """Target data made available in a cross-subject benchmark.
 
-    Each member fixes two things: how much of the held-out target subject the
-    estimator may see while fitting (``calibration_size``) and whether those
-    trials come with labels (``calibration_labeled``). ``TRAIN_TRIALWISE``
-    additionally scores one target trial at a time.
+    A mode fixes the target calibration fraction, whether calibration labels
+    are routed, and whether prediction is blockwise or trialwise.
 
-    ==================================== ================ ==================
-    Member                               calibration_size calibration_labeled
-    ==================================== ================ ==================
-    ``TRAIN``                            0.0              False
-    ``TRAIN_TRIALWISE``                  0.0              False
-    ``TRAIN_AND_TARGET_UNLABELED_20P``   0.2              False
-    ``TRAIN_AND_TARGET_UNLABELED_50P``   0.5              False
-    ``TRAIN_AND_TARGET_UNLABELED_FULL``  1.0              False
-    ``TRAIN_AND_TARGET_LABELED_20P``     0.2              True
-    ``TRAIN_AND_TARGET_LABELED_50P``     0.5              True
-    ==================================== ================ ==================
-
-    Pass a member as ``cs_mode`` to
+    Pass a member to the ``cs_mode`` parameter of
     :class:`moabb.evaluations.CrossSubjectEvaluation`.
     """
 
-    # Train only on training/source subjects; no target calibration data is used.
-    # The held-out target test data is predicted blockwise.
-    # This is the DEFAULT mode and it is not transfer learning aware.
-    TRAIN = "train"
+    def __new__(cls, value, calibration_size, calibration_labeled, trialwise=False):
+        member = str.__new__(cls, value)
+        member._value_ = value
+        member.calibration_size = calibration_size
+        member.calibration_labeled = calibration_labeled
+        member.trialwise = trialwise
+        return member
 
-    # Train only on training/source subjects; no target calibration data is used.
-    # The held-out target test data is predicted one trial at a time.
-    TRAIN_TRIALWISE = "train_trialwise"
+    # Train only on source subjects and predict the target block normally.
+    TRAIN = ("train", 0.0, False)
 
-    # Train on source subjects and use 20% of the held-out subject as
-    # unlabeled target calibration/adaptation data.
-    # Evaluate on the remaining target test data, predicted blockwise.
-    TRAIN_AND_TARGET_UNLABELED_20P = "train_and_target_unlabeled_20p"
+    # Train only on source subjects and predict one target trial at a time.
+    TRAIN_TRIALWISE = ("train_trialwise", 0.0, False, True)
 
-    # Train on source subjects and use 50% of the held-out subject as
-    # unlabeled target calibration/adaptation data.
-    # Evaluate on the remaining target test data, predicted blockwise.
-    TRAIN_AND_TARGET_UNLABELED_50P = "train_and_target_unlabeled_50p"
+    # Use an unlabeled target slice for adaptation.
+    TRAIN_AND_TARGET_UNLABELED_20P = ("train_and_target_unlabeled_20p", 0.2, False)
+    TRAIN_AND_TARGET_UNLABELED_50P = ("train_and_target_unlabeled_50p", 0.5, False)
 
-    # Train on source subjects and use all held-out target data as
-    # unlabeled target adaptation data.
-    # Evaluate transductively on the target test block, predicted blockwise.
-    TRAIN_AND_TARGET_UNLABELED_FULL = "train_and_target_unlabeled_full"
+    # Transductive: adapt on the same unlabeled target block that is scored.
+    TRAIN_AND_TARGET_UNLABELED_FULL = ("train_and_target_unlabeled_full", 1.0, False)
 
-    # Train on source subjects and use 20% of the held-out subject as
-    # labeled target calibration/adaptation data.
-    # Evaluate on the remaining target test data, predicted blockwise.
-    TRAIN_AND_TARGET_LABELED_20P = "train_and_target_labeled_20p"
-
-    # Train on source subjects and use 50% of the held-out subject as
-    # labeled target calibration/adaptation data.
-    # Evaluate on the remaining target test data, predicted blockwise.
-    TRAIN_AND_TARGET_LABELED_50P = "train_and_target_labeled_50p"
-
-
-# mode -> (calibration_size, calibration_labeled)
-_CROSS_SUBJECT_MODE_MAP = {
-    CrossSubjectMode.TRAIN: (0.0, False),
-    CrossSubjectMode.TRAIN_TRIALWISE: (0.0, False),
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P: (0.2, False),
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_50P: (0.5, False),
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_FULL: (1.0, False),
-    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_20P: (0.2, True),
-    CrossSubjectMode.TRAIN_AND_TARGET_LABELED_50P: (0.5, True),
-}
+    # Use a labeled target slice for calibration.
+    TRAIN_AND_TARGET_LABELED_20P = ("train_and_target_labeled_20p", 0.2, True)
+    TRAIN_AND_TARGET_LABELED_50P = ("train_and_target_labeled_50p", 0.5, True)
 
 
 def validate_transfer_protocol(calibration_size, calibration_labeled):
@@ -133,13 +62,3 @@ def validate_transfer_protocol(calibration_size, calibration_labeled):
         raise ValueError(
             "calibration_labeled=True is only allowed with calibration_size <= 0.5."
         )
-
-
-def resolve_cross_subject_mode(cross_subject_mode):
-    size, labeled = _CROSS_SUBJECT_MODE_MAP[CrossSubjectMode(cross_subject_mode)]
-    validate_transfer_protocol(size, labeled)
-    return {"calibration_size": size, "calibration_labeled": labeled}
-
-
-def is_trialwise_mode(cross_subject_mode):
-    return CrossSubjectMode(cross_subject_mode) == CrossSubjectMode.TRAIN_TRIALWISE

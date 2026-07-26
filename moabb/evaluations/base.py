@@ -14,7 +14,9 @@ import pandas as pd
 from joblib import Parallel, delayed
 from sklearn import config_context
 from sklearn.base import BaseEstimator, clone
-from sklearn.model_selection import StratifiedKFold
+from sklearn.frozen import FrozenEstimator
+from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.model_selection import LeaveOneOut, StratifiedKFold, cross_val_predict
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.metadata_routing import get_routing_for_object
 
@@ -47,125 +49,36 @@ search_methods, optuna_available = check_search_available()
 log = logging.getLogger(__name__)
 
 
-class _OneShotEstimator:
-    """Wrap a fitted estimator so predictions are made one trial at a time.
+def _score_trialwise(estimator, X, y, scoring):
+    """Score a fitted estimator from isolated, one-trial predictions.
 
-    This is what makes ``CrossSubjectMode.TRAIN_TRIALWISE`` meaningful: the
-    wrapped estimator never sees more than a single target trial at once, so it
-    cannot exploit statistics of the whole target test block.
-
-    ``predict_proba`` / ``decision_function`` / ``predict_log_proba`` are
-    proxied one trial at a time, but only when the wrapped estimator actually
-    has them -- a scorer such as ``roc_auc`` inspects which of them exist to
-    decide how to score, so they must not be advertised unconditionally.
+    ``FrozenEstimator`` prevents refitting on target data and ``LeaveOneOut``
+    makes every prediction fold contain exactly one target trial.
     """
-
-    # Methods proxied one trial at a time, with how to stack the results.
-    _PROXIED = {
-        "predict_proba": np.vstack,
-        "predict_log_proba": np.vstack,
-        "decision_function": lambda values: np.asarray([v[0] for v in values]),
-    }
-
-    def __init__(self, estimator):
-        self.estimator = estimator
-        if hasattr(estimator, "classes_"):
-            self.classes_ = estimator.classes_
-        elif hasattr(estimator, "steps") and hasattr(estimator.steps[-1][1], "classes_"):
-            self.classes_ = estimator.steps[-1][1].classes_
-
-    def predict(self, X):
-        return np.asarray(
-            [self.estimator.predict(X[i : i + 1])[0] for i in range(len(X))]
-        )
-
-    def score(self, X, y):
-        """Refuse to score, rather than silently scoring the whole block.
-
-        ``check_scoring(estimator, scoring=None)`` returns a passthrough scorer
-        that calls ``estimator.score(X, y)``. Delegating that to the wrapped
-        estimator would push the entire target test block through it in one
-        call and quietly void the trialwise guarantee, so it is an error
-        instead.
-        """
+    if scoring not in ("accuracy", "roc_auc"):
         raise TypeError(
-            "Trialwise scoring needs an explicit metric: the paradigm's "
-            "`scoring` is None, and an estimator's own `score` method would "
-            "see the whole target test block at once. Set `scoring` on the "
-            "paradigm (e.g. 'accuracy', 'roc_auc') or use a blockwise "
-            "CrossSubjectMode."
+            "Trialwise scoring supports the built-in 'accuracy' and 'roc_auc' "
+            "metrics. Set one of them on the paradigm or use a blockwise "
+            "CrossSubjectMode for a custom scorer."
         )
 
-    def __getattr__(self, name):
-        # ``__getattr__`` runs before ``__init__`` has set ``estimator`` during
-        # unpickling/copying, so look it up without recursing back in here.
-        estimator = self.__dict__.get("estimator")
-        if estimator is None:
-            raise AttributeError(name)
+    if scoring == "accuracy":
+        method = "predict"
+    elif hasattr(estimator, "decision_function"):
+        method = "decision_function"
+    else:
+        method = "predict_proba"
 
-        stack = self._PROXIED.get(name)
-        if stack is not None and hasattr(estimator, name):
-            method = getattr(estimator, name)
-
-            def one_shot(X):
-                return stack([method(X[i : i + 1]) for i in range(len(X))])
-
-            # sklearn's scorers dispatch on ``prediction_method.__name__``
-            # (sklearn.utils._response._get_response_values), so the proxy has
-            # to answer to the name it is standing in for.
-            one_shot.__name__ = name
-            one_shot.__qualname__ = f"{type(self).__name__}.{name}"
-            return one_shot
-
-        return getattr(estimator, name)
-
-
-def _one_shot_estimator(estimator):
-    """Wrap an estimator so predictions are made one sample at a time."""
-    return _OneShotEstimator(estimator)
-
-
-def _route_transfer_metadata(
-    estimator, subjects, X_calib=None, y_calib=None, split_metadata=None, cs_mode=None
-):
-    """Keep only protocol-allowed transfer metadata requested at ``fit``.
-
-    ``subjects`` is the per-trial source-subject array.
-
-    ``cs_mode`` is the selected cross-subject protocol preset.
-
-    ``X_calib`` / ``y_calib`` are the raw calibration trials of the held-out
-    target subject, or ``None`` when the protocol grants no target access.
-
-    Whether the calibration slice may carry labels is read off the splitter's
-    own ``split_metadata["calibration_labeled"]``, so the protocol decision
-    lives in exactly one place:
-
-    * ``False`` -> calibration is offered only as ``X_target_unlabeled``;
-    * ``True``  -> calibration is offered as ``X_target_labeled`` and
-      ``y_target_labeled``.
-
-    Steps opt in via ``set_fit_request(...)``. Plain pipelines request nothing,
-    so this returns ``{}`` and the fit is unchanged.
-    """
-    candidate = {"subjects": subjects}
-
-    if cs_mode is not None:
-        candidate["cs_mode"] = cs_mode
-
-    if X_calib is not None and len(X_calib):
-        if split_metadata is not None and split_metadata.get(
-            "calibration_labeled", False
-        ):
-            candidate["X_target_labeled"] = X_calib
-            candidate["y_target_labeled"] = y_calib
-        else:
-            candidate["X_target_unlabeled"] = X_calib
-
-    with config_context(enable_metadata_routing=True):
-        kept = get_routing_for_object(estimator).consumes("fit", set(candidate))
-
-    return {k: v for k, v in candidate.items() if k in kept}
+    response = cross_val_predict(
+        FrozenEstimator(estimator), X, y, cv=LeaveOneOut(), method=method
+    )
+    if scoring == "accuracy":
+        score = accuracy_score(y, response)
+    else:
+        if response.ndim == 2:
+            response = response[:, 1]
+        score = roc_auc_score(y, response)
+    return {"score": score}
 
 
 # Making the optuna soft dependency
@@ -265,17 +178,12 @@ def _evaluate_fold(
     score_per_session = config["score_per_session"]
     mne_labels = config["mne_labels"]
     codecarbon_config = config["codecarbon_config"]
-    one_shot_predict = config.get("one_shot_predict", False)
-    cs_mode = config.get("cs_mode", None)
+    trialwise = config.get("trialwise", False)
 
-    # Label encode per fold (matching old per-session/per-subject scoping)
+    # Fit the encoder on source labels only. Target labels never influence the
+    # training representation.
     if not mne_labels:
-        le = LabelEncoder()
-        if calib_idx is not None and len(calib_idx):
-            combined_y = np.concatenate([y[train_idx], y[test_idx], y[calib_idx]])
-        else:
-            combined_y = np.concatenate([y[train_idx], y[test_idx]])
-        le.fit(combined_y)
+        le = LabelEncoder().fit(y[train_idx])
         y_train = le.transform(y[train_idx])
         y_test = le.transform(y[test_idx])
     else:
@@ -309,16 +217,26 @@ def _evaluate_fold(
     X_calib = y_calib = None
     if calib_idx is not None and len(calib_idx):
         X_calib = X[calib_idx]
-        y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
+        calibration_labeled = split_metadata is not None and split_metadata.get(
+            "calibration_labeled", False
+        )
+        if calibration_labeled:
+            y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
 
-    fit_params = _route_transfer_metadata(
-        cvclf,
-        metadata["subject"].to_numpy()[train_idx],
-        X_calib=X_calib,
-        y_calib=y_calib,
-        split_metadata=split_metadata,
-        cs_mode=cs_mode,
-    )
+    fit_params = {}
+    if split_metadata is not None and "calibration_size" in split_metadata:
+        fit_params["subjects"] = metadata["subject"].to_numpy()[train_idx]
+        if X_calib is not None:
+            if y_calib is None:
+                fit_params["X_target_unlabeled"] = X_calib
+            else:
+                fit_params["X_target_labeled"] = X_calib
+                fit_params["y_target_labeled"] = y_calib
+        with config_context(enable_metadata_routing=True):
+            requested = get_routing_for_object(cvclf).consumes("fit", set(fit_params))
+        fit_params = {
+            name: value for name, value in fit_params.items() if name in requested
+        }
 
     # Fit model
     task_name = None
@@ -353,8 +271,7 @@ def _evaluate_fold(
         )
         _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
 
-    score_estimator = _one_shot_estimator(cvclf) if one_shot_predict else cvclf
-    scorer = _create_scorer(score_estimator, scoring)
+    scorer = None if trialwise else _create_scorer(cvclf, scoring)
 
     # Build score groups: per-session or full test set
     if score_per_session:
@@ -370,7 +287,10 @@ def _evaluate_fold(
     for group_idx, group_y, group_session in score_groups:
         is_error = False
         try:
-            score = scorer(score_estimator, X[group_idx], group_y)
+            if trialwise:
+                score = _score_trialwise(cvclf, X[group_idx], group_y, scoring)
+            else:
+                score = scorer(cvclf, X[group_idx], group_y)
         except ValueError as err:
             if error_score == "raise":
                 raise err
@@ -620,20 +540,13 @@ class BaseEvaluation(ABC):
         )
 
     def _resolve_cv(self, default_class, default_kwargs=None):
-        """Resolve the cross-validation class and kwargs for a splitter.
-
-        ``self.cv_kwargs`` is always honored, whether or not a custom
-        ``cv_class`` is set -- so splitter options (e.g. ``calibration_size``)
-        passed via ``cv_kwargs`` also reach the default ``cv_class``.
-
-        ``default_kwargs`` belongs to ``default_class`` only. A user-supplied
-        ``cv_class`` does not get it: e.g. ``n_splits`` is meaningless for
-        ``LeaveOneGroupOut``, which takes no arguments at all.
-        """
-        cv_class = default_class if self.cv_class is None else self.cv_class
-        cv_kwargs = dict(self.cv_kwargs)
-        if self.cv_class is None and default_kwargs:
-            cv_kwargs = {**default_kwargs, **cv_kwargs}
+        """Resolve the cross-validation class and kwargs for a splitter."""
+        if self.cv_class is None:
+            cv_class = default_class
+            cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
+        else:
+            cv_class = self.cv_class
+            cv_kwargs = dict(self.cv_kwargs)
         return cv_class, cv_kwargs
 
     def _load_data(
@@ -729,7 +642,7 @@ class BaseEvaluation(ABC):
             res["score"] = self.error_score
             return res
 
-    def _fit_cv(self, model, X_train, y_train, tracker=None, fit_params=None):
+    def _fit_cv(self, model, X_train, y_train, tracker=None):
         """Fit a model for a CV fold with optional CodeCarbon tracking."""
         task_name = None
         emissions = math.nan
@@ -737,8 +650,7 @@ class BaseEvaluation(ABC):
             task_name = str(uuid4())
             tracker.start_task(task_name)
         t_start = perf_counter()
-        with config_context(enable_metadata_routing=True):
-            model.fit(X_train, y_train, **(fit_params or {}))
+        model.fit(X_train, y_train)
         duration = perf_counter() - t_start
         if tracker is not None:
             emissions_data = tracker.stop_task()
@@ -832,8 +744,7 @@ class BaseEvaluation(ABC):
                 self.emissions.codecarbon_config if _carbonfootprint else None
             ),
             "score_per_session": self._score_per_session,
-            "one_shot_predict": getattr(self, "one_shot_predict", False),
-            "cs_mode": getattr(self, "cs_mode", None),
+            "trialwise": getattr(self, "trialwise", False),
             "param_grid": None,  # overridden per-task below if needed
         }
 

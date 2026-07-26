@@ -7,17 +7,8 @@ from sklearn.model_selection import GroupKFold, LeaveOneGroupOut, StratifiedKFol
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
-from moabb.evaluations.base import (
-    BaseEvaluation,
-    _one_shot_estimator,
-    _route_transfer_metadata,
-)
-from moabb.evaluations.protocols import (
-    CrossSubjectMode,
-    is_trialwise_mode,
-    resolve_cross_subject_mode,
-    validate_transfer_protocol,
-)
+from moabb.evaluations.base import BaseEvaluation
+from moabb.evaluations.protocols import CrossSubjectMode, validate_transfer_protocol
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
@@ -476,8 +467,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
     cv_kwargs : dict
         Keyword arguments for ``cv_class``. ``calibration_size`` (float in
         ``[0, 1]``, default ``0.0``) enables transfer learning: when ``> 0`` each
-        fold becomes ``(train, calibration, test)`` and the held-out calibration
-        slice is routed (raw) to the pipeline steps that request it via
+        fold becomes ``(train, calibration, test)``. The fraction is taken
+        within every held-out subject/session pair so each remains scorable,
+        and the calibration slice is routed (raw) to pipeline steps via
         ``set_fit_request``. With ``calibration_labeled=False``, only
         ``X_target_unlabeled`` may be routed. With ``calibration_labeled=True``,
         ``X_target_labeled`` and ``y_target_labeled`` may be routed.
@@ -486,7 +478,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
         Named cross-subject protocol preset. By default, this is the standard
         train-only cross-subject evaluation with no target calibration. The
         ``TRAIN_TRIALWISE`` mode additionally enforces one-trial-at-a-time
-        prediction during scoring. Cannot be combined with manual
+        prediction during scoring and supports the built-in ``"accuracy"`` and
+        ``"roc_auc"`` metrics. Cannot be combined with manual
         ``calibration_size`` or ``calibration_labeled`` in ``cv_kwargs``, except
         for the default ``TRAIN`` mode.
 
@@ -502,7 +495,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
         cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
-        self.one_shot_predict = False
 
         if cs_mode is None:
             cs_mode = CrossSubjectMode.TRAIN
@@ -522,11 +514,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
             )
 
         if not has_manual_calibration:
-            params = resolve_cross_subject_mode(cs_mode)
-            cv_kwargs["calibration_size"] = params["calibration_size"]
-            cv_kwargs["calibration_labeled"] = params["calibration_labeled"]
+            cv_kwargs["calibration_size"] = cs_mode.calibration_size
+            cv_kwargs["calibration_labeled"] = cs_mode.calibration_labeled
 
-        self.one_shot_predict = is_trialwise_mode(cs_mode)
+        self.trialwise = cs_mode.trialwise
 
         validate_transfer_protocol(
             cv_kwargs.get("calibration_size", 0.0),
@@ -551,6 +542,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             default_class = GroupKFold
             default_kwargs = {"n_splits": self.n_splits}
 
+        default_kwargs.update(self.cv_kwargs)
         cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
         if self.groups is not None:
             cv_kwargs = {**cv_kwargs, "groups": self.groups}
@@ -558,7 +550,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
 
-    # flake8: noqa: C901
     def evaluate(
         self,
         dataset: "BaseDataset",
@@ -573,118 +564,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 f"Dataset '{dataset.code}' is not appropriate for "
                 f"{self.__class__.__name__}: {reason}"
             )
-
-        run_pipes = {}
-        for subject in dataset.subject_list:
-            run_pipes.update(
-                self.results.not_yet_computed(
-                    pipelines, dataset, subject, process_pipeline
-                )
-            )
-
-        if len(run_pipes) == 0:
-            return
-
-        X, y, metadata = self._load_data(
-            dataset, run_pipes, process_pipeline, postprocess_pipeline
+        yield from self._evaluate_parallel_dataset(
+            dataset=dataset,
+            pipelines=pipelines,
+            param_grid=param_grid,
+            process_pipeline=process_pipeline,
+            postprocess_pipeline=postprocess_pipeline,
         )
-
-        le = LabelEncoder()
-        y = y if self.mne_labels else le.fit_transform(y)
-
-        groups = metadata.subject.values
-        sessions = metadata.session.values
-        n_subjects = len(dataset.subject_list)
-        nchan = self._get_nchan(X)
-
-        self.cv = self._create_splitter()
-
-        if self.n_splits is not None and self.cv_class is None:
-            n_subjects = self.n_splits
-
-        inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
-
-        if _carbonfootprint:
-            tracker = self.emissions.create_tracker()
-            tracker.start()
-
-        for cv_ind, (train, *cal, test) in enumerate(
-            tqdm(
-                self.cv.split(y, metadata),
-                total=n_subjects,
-                desc=f"{dataset.code}-CrossSubject",
-            )
-        ):
-            calib = cal[0] if cal else train[:0]
-            subject = groups[test[0]]
-
-            split_metadata = None
-            if hasattr(self.cv, "get_metadata"):
-                split_metadata = self.cv.get_metadata()
-                if split_metadata is not None:
-                    split_metadata = dict(split_metadata)
-
-            run_pipes = self.results.not_yet_computed(
-                pipelines, dataset, subject, process_pipeline
-            )
-
-            for name, clf in run_pipes.items():
-                clf = self._grid_search(
-                    param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
-                )
-                cvclf = clone(clf)
-
-                fit_params = _route_transfer_metadata(
-                    cvclf,
-                    groups[train],
-                    X_calib=X[calib] if len(calib) else None,
-                    y_calib=y[calib] if len(calib) else None,
-                    split_metadata=split_metadata,
-                    cs_mode=self.cs_mode,
-                )
-
-                duration, emissions, task_name = self._fit_cv(
-                    cvclf,
-                    X[train],
-                    y[train],
-                    tracker if _carbonfootprint else None,
-                    fit_params=fit_params,
-                )
-
-                self._maybe_save_model_cv(
-                    cvclf, dataset, subject, "", name, cv_ind, eval_type="CrossSubject"
-                )
-
-                score_estimator = (
-                    _one_shot_estimator(cvclf) if self.one_shot_predict else cvclf
-                )
-                scorer = _create_scorer(score_estimator, self.paradigm.scoring)
-
-                for session in np.unique(sessions[test]):
-                    ix = sessions[test] == session
-
-                    res = self._build_scored_result(
-                        dataset,
-                        subject,
-                        session,
-                        name,
-                        len(train),
-                        nchan,
-                        duration,
-                        scorer,
-                        score_estimator,
-                        X[test[ix]],
-                        y[test[ix]],
-                        split_metadata=split_metadata,
-                    )
-
-                    if _carbonfootprint:
-                        self._attach_emissions(res, emissions, task_name)
-
-                    yield res
-
-        if _carbonfootprint:
-            tracker.stop()
 
     def is_valid(self, dataset: "BaseDataset") -> bool:
         return len(dataset.subject_list) > 1

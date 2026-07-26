@@ -1218,55 +1218,49 @@ class _PredictSpy(sklearn.base.ClassifierMixin, sklearn.base.BaseEstimator):
         return 1.0
 
 
-def test_one_shot_estimator_scores_one_trial_at_a_time():
-    """The trialwise wrapper never hands the estimator more than one trial."""
-    from moabb.evaluations.base import _create_scorer, _one_shot_estimator
+def test_trialwise_score_predicts_one_trial_at_a_time():
+    """FrozenEstimator + LeaveOneOut isolates every target prediction."""
+    from moabb.evaluations.base import _score_trialwise
 
     X = np.random.RandomState(0).randn(8, 3)
     y = np.array([0, 1] * 4)
 
     spy = _PredictSpy().fit(X, y)
-    wrapped = _one_shot_estimator(spy)
-    _create_scorer(wrapped, "accuracy")(wrapped, X, y)
-    assert spy.calls, "the wrapped estimator was never called"
+    score = _score_trialwise(spy, X, y, "accuracy")
+
+    assert score == {"score": 0.5}
+    assert spy.calls, "the frozen estimator was never called"
     assert {n for _, n in spy.calls} == {1}
 
 
-def test_one_shot_estimator_refuses_passthrough_scoring():
-    """scoring=None must not silently fall back to whole-block scoring.
+def test_trialwise_score_refuses_passthrough_scoring():
+    """scoring=None must not silently call the estimator on the whole block.
 
     ``check_scoring(estimator, scoring=None)`` returns a passthrough scorer that
-    calls ``estimator.score(X, y)``. If that is delegated to the wrapped
+    calls ``estimator.score(X, y)``. If that is delegated to the frozen
     estimator, the whole target test block goes through in one call and the
     trialwise guarantee is void.
     """
-    from moabb.evaluations.base import _create_scorer, _one_shot_estimator
+    from moabb.evaluations.base import _score_trialwise
 
     X = np.random.RandomState(0).randn(8, 3)
     y = np.array([0, 1] * 4)
 
     spy = _PredictSpy().fit(X, y)
-    wrapped = _one_shot_estimator(spy)
-    with pytest.raises(TypeError, match="Trialwise scoring needs an explicit metric"):
-        _create_scorer(wrapped, None)(wrapped, X, y)
+    with pytest.raises(TypeError, match="Trialwise scoring supports"):
+        _score_trialwise(spy, X, y, None)
     assert spy.calls == []
 
 
-def test_one_shot_estimator_proxies_only_available_methods():
-    """A probability scorer still works, and absent methods stay absent."""
-    from moabb.evaluations.base import _create_scorer, _one_shot_estimator
+def test_trialwise_score_supports_probability_scorers():
+    """The official CV recipe also supports metrics such as ROC AUC."""
+    from moabb.evaluations.base import _score_trialwise
 
     X = np.random.RandomState(0).randn(8, 3)
     y = np.array([0, 1] * 4)
 
-    wrapped = _one_shot_estimator(LDA().fit(X, y))
-    # sklearn dispatches on the proxy's __name__, so it must keep the real name.
-    assert wrapped.predict_proba.__name__ == "predict_proba"
-    assert wrapped.predict_proba(X).shape == (8, 2)
-    assert _create_scorer(wrapped, "roc_auc")(wrapped, X, y)["score"] > 0
-
-    # _PredictSpy has no predict_proba; the wrapper must not invent one.
-    assert not hasattr(_one_shot_estimator(_PredictSpy().fit(X, y)), "predict_proba")
+    score = _score_trialwise(LDA().fit(X, y), X, y, "roc_auc")
+    assert 0.0 <= score["score"] <= 1.0
 
 
 @pytest.mark.parametrize(
@@ -1297,7 +1291,7 @@ def test_cs_mode_resolves_to_splitter_kwargs(
         splitter = evaluation._create_splitter()
         assert splitter.calibration_size == calibration_size
         assert splitter.calibration_labeled is calibration_labeled
-        assert evaluation.one_shot_predict is trialwise
+        assert evaluation.trialwise is trialwise
         # A plain string is accepted and normalised to the enum member.
         by_value = ev.CrossSubjectEvaluation(
             paradigm=FakeImageryParadigm(),
@@ -1337,7 +1331,7 @@ def test_cs_mode_rejects_labeled_calibration_above_half():
 
 
 def test_cs_mode_trialwise_runs_end_to_end():
-    """TRAIN_TRIALWISE scores through the one-shot wrapper and still reports
+    """TRAIN_TRIALWISE uses frozen leave-one-out predictions and still reports
     per-session rows, matching the blockwise TRAIN baseline."""
     from moabb.evaluations import CrossSubjectMode
 

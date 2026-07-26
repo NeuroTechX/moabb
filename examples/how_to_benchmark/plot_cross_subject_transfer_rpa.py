@@ -1,33 +1,24 @@
 """
-==========================================================
-Cross-subject transfer with RPA-style covariance alignment
-==========================================================
+=================================================
+Cross-subject transfer with Riemannian alignment
+=================================================
 
-Target-aware transfer methods such as Riemannian alignment need information
-that an ordinary source-only evaluation deliberately hides. This tutorial shows
-how :class:`~moabb.evaluations.CrossSubjectEvaluation` can grant that
-information under an explicit, reproducible protocol.
+A cross-subject benchmark asks whether a model trained on several people can
+generalize to a person it has never seen. This is harder than a random
+train/test split because EEG covariance matrices vary substantially between
+people, even when they perform the same task.
 
-By the end of the tutorial, you will know how to:
+This tutorial introduces a target-aware alternative inspired by Riemannian
+Procrustes Analysis (RPA) [1]_. We will:
 
-1. choose a named :class:`~moabb.evaluations.protocols.CrossSubjectMode`;
-2. route source-subject identifiers and permitted target data to one pipeline
-   step;
-3. use scikit-learn's ``transform_input`` so source and target data reach that
-   step in the same representation;
-4. make an estimator reject protocols that violate its assumptions; and
-5. report the access protocol together with the benchmark score.
+1. separate source, target-calibration, and target-test trials;
+2. recenter each subject's covariance matrices on the SPD manifold;
+3. route an unlabeled target slice through a scikit-learn pipeline; and
+4. compare the aligned pipeline with a source-only baseline.
 
-The worked method is a compact, pedagogical alignment stage inspired by
-Riemannian Procrustes Analysis (RPA). It whitens covariance matrices around
-source- and target-domain Riemannian means. It is intended to demonstrate the
-MOABB interface, not to reproduce every step or variant of a published RPA
-algorithm.
-
-We compare the standard source-only ``TRAIN`` baseline with three protocols
-that allow unlabeled target adaptation. A final, intentionally incompatible run
-demonstrates the failure mode.
-
+The example focuses on the *recentering* step of RPA. Full RPA also includes
+scaling and rotation. Keeping one operation here makes both the geometry and
+MOABB's transfer-learning interface visible.
 """
 
 # Authors: Anton Andonov <toncho11@gmail.com>
@@ -38,9 +29,9 @@ demonstrates the failure mode.
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.patches import Rectangle
 from pyriemann.estimation import Covariances
-from pyriemann.geometry.base import invsqrtm
-from pyriemann.geometry.mean import mean_riemann
+from pyriemann.preprocessing import Whitening
 from pyriemann.tangentspace import TangentSpace
 from sklearn import config_context
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -54,447 +45,282 @@ from moabb.paradigms import LeftRightImagery
 
 
 ###############################################################################
-# Define an alignment transformer
-# -------------------------------
+# The cross-subject transfer protocol
+# -----------------------------------
 #
-# pyriemann's ``Covariances`` is stateless and does not mark itself fitted,
-# which ``Pipeline(transform_input=...)`` requires. It calls ``transform`` on
-# the sub-pipeline, which runs ``check_is_fitted``.
+# Leave-one-subject-out evaluation repeats the following experiment: choose one
+# person as the target and train on all remaining source subjects. A standard
+# ``TRAIN`` fold exposes no target trial during fitting.
 #
-# This small wrapper should no longer be needed with pyRiemann version > 0.11.
+# A target-aware mode divides the held-out subject into two parts. For
+# ``TRAIN_AND_TARGET_UNLABELED_20P``, the first 20% of every target session may
+# be used without labels to estimate an alignment reference. The remaining 80%
+# are untouched until scoring. Thus the calibration trials are neither source
+# training samples nor test samples.
 
+fig, ax = plt.subplots(figsize=(10, 3.4))
+colors = {"source": "#4C78A8", "calibration": "#F2CF5B", "test": "#E45756"}
 
-class Covariances_(Covariances):
-    def __sklearn_is_fitted__(self):
-        return True
+for row, subject in enumerate(["Source 1", "Source 2", "Source 3", "Target"]):
+    if subject == "Target":
+        pieces = [
+            (0.0, 0.2, "calibration\nX only", "calibration"),
+            (0.2, 0.8, "scored target trials", "test"),
+        ]
+    else:
+        pieces = [(0.0, 1.0, "source training trials", "source")]
 
+    for left, width, label, role in pieces:
+        ax.add_patch(
+            Rectangle(
+                (left, row - 0.32), width, 0.64, facecolor=colors[role], edgecolor="white"
+            )
+        )
+        ax.text(left + width / 2, row, label, ha="center", va="center", fontsize=9)
 
-RPA_COMPATIBLE_MODES = {
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P,
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_50P,
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_FULL,
-}
+ax.set(
+    xlim=(0, 1),
+    ylim=(-0.7, 3.7),
+    yticks=range(4),
+    yticklabels=["Source 1", "Source 2", "Source 3", "Target"],
+    xlabel="Fraction of each subject's trials",
+    title="One TRAIN_AND_TARGET_UNLABELED_20P fold",
+)
+ax.invert_yaxis()
+for spine in ("top", "right", "left"):
+    ax.spines[spine].set_visible(False)
+ax.tick_params(axis="y", length=0)
+fig.tight_layout()
+plt.show()
 
 
 ###############################################################################
-# Compute domain-specific references
-# -----------------------------------
+# Why align covariance matrices?
+# ------------------------------
 #
-# EEG covariance matrices are symmetric positive definite (SPD), so their
-# geometry is not Euclidean. For each source subject :math:`s`, the transformer
-# estimates the affine-invariant Riemannian mean :math:`G_s` and applies
+# A trial with :math:`p` EEG channels is summarized by a
+# :math:`p \\times p` symmetric positive-definite (SPD) covariance matrix
+# :math:`C`. SPD matrices do not form a flat Euclidean space, so their average
+# is represented by a Riemannian mean.
+#
+# For a domain :math:`d` (one source subject or the target subject), let
+# :math:`G_d` be its Riemannian mean. Recentering applies
 #
 # .. math::
 #
-#    C_i^\prime = G_s^{-1/2} C_i G_s^{-1/2}.
+#    C' = G_d^{-1/2} C G_d^{-1/2}.
 #
-# It estimates a separate target reference :math:`G_t` from only the unlabeled
-# target trials permitted by the protocol, and uses the analogous mapping for
-# target trials. Centering every domain around the identity reduces
-# subject-specific covariance shifts while never using target labels.
+# The Riemannian mean of the transformed domain is the identity matrix. Each
+# subject therefore keeps its trial-to-trial structure while a large part of
+# its subject-specific covariance offset is removed.
 #
-# The fit method consumes three routed fields:
-#
-# * ``subjects`` identifies the source domain of every training trial;
-# * ``X_target_unlabeled`` contains the permitted target calibration slice;
-# * ``cs_mode`` states the benchmark contract explicitly.
-#
-# Requesting ``cs_mode`` is useful defensive design: the transformer can reject
-# source-only or labeled protocols rather than silently running a different
-# algorithm.
-#
-# Notice the separate ``fit_transform`` and ``transform`` implementations.
-# During pipeline fitting, ``fit_transform`` aligns source trials with their
-# own subject references. Later, ``transform`` is reserved for held-out target
-# trials and uses the target reference. This explicit lifecycle is safer than
-# guessing the domain from the number or shape of incoming trials.
+# At training time, every source trial must use the reference of its own
+# subject. At prediction time, every held-out trial must use the target
+# reference estimated from the permitted *unlabeled* calibration slice. These
+# two paths explain why the transformer defines both ``fit_transform`` and
+# ``transform``.
 
 
 class RiemannianAlignment(TransformerMixin, BaseEstimator):
-    def fit(self, X, y=None, subjects=None, X_target_unlabeled=None, cs_mode=None):
-        if cs_mode is None:
-            raise ValueError(
-                "RiemannianAlignment requires `cs_mode` fit metadata. "
-                "Use set_fit_request(cs_mode=True)."
-            )
+    """Recenter source and target covariance matrices by domain."""
 
-        cs_mode = CrossSubjectMode(cs_mode)
-        self.cs_mode_ = cs_mode
-
-        if cs_mode not in RPA_COMPATIBLE_MODES:
-            allowed = ", ".join(
-                mode.value for mode in sorted(RPA_COMPATIBLE_MODES, key=lambda m: m.value)
-            )
+    def fit(self, X, y=None, *, subjects=None, X_target_unlabeled=None):
+        if subjects is None or X_target_unlabeled is None:
             raise ValueError(
-                "RiemannianAlignment / RPA supports only the currently implemented "
-                "unlabeled target-adaptation modes in this example. "
-                f"Got {cs_mode.value!r}. "
-                "Modes combining unlabeled target calibration with trialwise scoring "
-                "could be meaningful, but are not currently represented by the "
-                "available CrossSubjectMode presets. "
-                f"Allowed modes are: {allowed}."
-            )
-
-        if subjects is None:
-            raise ValueError(
-                "RiemannianAlignment requires source-subject metadata. "
-                "Use set_fit_request(subjects=True)."
-            )
-
-        if X_target_unlabeled is None or len(X_target_unlabeled) == 0:
-            raise ValueError(
-                "RiemannianAlignment requires unlabeled target calibration data. "
-                "Use CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P, "
-                "TRAIN_AND_TARGET_UNLABELED_50P, or "
-                "TRAIN_AND_TARGET_UNLABELED_FULL."
+                "RiemannianAlignment needs `subjects` and `X_target_unlabeled` metadata."
             )
 
         X = np.asarray(X)
-        self.fit_subjects_ = np.asarray(subjects)
-
-        # One whitening reference per source subject.
-        self.source_refs_ = {
-            subject: invsqrtm(mean_riemann(X[self.fit_subjects_ == subject]))
-            for subject in np.unique(self.fit_subjects_)
+        subjects = np.asarray(subjects)
+        self.source_whiteners_ = {
+            subject: Whitening(metric="riemann").fit(X[subjects == subject])
+            for subject in np.unique(subjects)
         }
-
-        # ``X_target_unlabeled`` arrives as covariances thanks to transform_input.
-        self.target_ref_ = invsqrtm(mean_riemann(np.asarray(X_target_unlabeled)))
-
+        self.target_whitener_ = Whitening(metric="riemann").fit(
+            np.asarray(X_target_unlabeled)
+        )
         return self
 
-    def fit_transform(
-        self,
-        X,
-        y=None,
-        subjects=None,
-        X_target_unlabeled=None,
-        cs_mode=None,
-        **fit_params,
-    ):
-        """Fit the references and align the source trials used for training."""
-        if fit_params:
-            names = ", ".join(sorted(fit_params))
-            raise TypeError(f"Unexpected fit metadata: {names}.")
-        self.fit(
-            X,
-            y,
-            subjects=subjects,
-            X_target_unlabeled=X_target_unlabeled,
-            cs_mode=cs_mode,
-        )
-        X = np.asarray(X)
-        out = np.empty_like(X)
-        for subject, ref in self.source_refs_.items():
-            mask = self.fit_subjects_ == subject
-            out[mask] = ref @ X[mask] @ ref
-        return out
+    def fit_transform(self, X, y=None, *, subjects=None, X_target_unlabeled=None):
+        """Fit domain references and align the source training trials."""
+        self.fit(X, y, subjects=subjects, X_target_unlabeled=X_target_unlabeled)
+        subjects = np.asarray(subjects)
+        X_aligned = np.empty_like(X)
+        for subject, whitener in self.source_whiteners_.items():
+            mask = subjects == subject
+            X_aligned[mask] = whitener.transform(X[mask])
+        return X_aligned
 
     def transform(self, X):
-        """Align held-out target trials with the target reference."""
-        X = np.asarray(X)
-        return self.target_ref_ @ X @ self.target_ref_
-
-
-def run_mode(dataset, paradigm, mode, pipeline_name, pipeline):
-    print("\n" + "=" * 78)
-    print(f"Running mode: {mode.value}")
-    print(f"Pipeline    : {pipeline_name}")
-    print("=" * 78)
-
-    evaluation = CrossSubjectEvaluation(
-        paradigm=paradigm,
-        datasets=[dataset],
-        cs_mode=mode,
-        overwrite=True,
-        suffix=f"rpa_example_{mode.value}_{pipeline_name}",
-    )
-
-    results = evaluation.process({pipeline_name: pipeline}).assign(mode=mode.value)
-    view = results[["subject", "session", "pipeline", "score"]]
-    print(view.to_string(index=False))
-    return results
+        """Align unseen trials with the target reference."""
+        return self.target_whitener_.transform(X)
 
 
 ###############################################################################
-# Follow the metadata through the pipeline
-# ----------------------------------------
+# Route the target slice through the pipeline
+# -------------------------------------------
 #
-# ``X_target_unlabeled`` starts as raw epochs because the evaluation owns the
-# split. The alignment step, however, receives source *covariances* as its main
-# ``X``. Passing raw target epochs directly would therefore be a representation
-# error.
+# MOABB initially owns raw EEG epochs for both source and target trials. The
+# alignment step, however, sits after ``Covariances`` and therefore expects SPD
+# matrices. Scikit-learn's metadata routing handles this representation change:
 #
-# Scikit-learn's ``Pipeline(transform_input=["X_target_unlabeled"])`` solves
-# this: the routed target data traverses the same fitted pipeline prefix as the
-# source data before it reaches the consuming step. In this example both
-# branches pass through ``Covariances_``. Learned prefixes such as PCA or
-# feature selection would likewise use the clone fitted inside the current
-# cross-validation fold, preventing leakage.
+# * ``set_fit_request`` declares the two fields consumed by the alignment step;
+# * ``transform_input=["X_target_unlabeled"]`` sends the target slice through
+#   the already-fitted pipeline prefix before delivering it to that step.
+#
+# Consequently, ``RiemannianAlignment.fit`` receives source covariances as
+# ``X`` and target covariances as ``X_target_unlabeled``. No MOABB-specific
+# pipeline class is needed. pyRiemann 0.12 marks the stateless
+# ``Covariances`` transformer as fitted, so it works directly with
+# ``transform_input``.
 
-fig, ax = plt.subplots(figsize=(12, 4))
-ax.set(xlim=(0, 1), ylim=(0, 1))
+with config_context(enable_metadata_routing=True):
+    alignment = RiemannianAlignment().set_fit_request(
+        subjects=True, X_target_unlabeled=True
+    )
+
+aligned_pipeline = make_pipeline(
+    Covariances("oas"),
+    alignment,
+    TangentSpace(metric="riemann"),
+    LogisticRegression(max_iter=500),
+    transform_input=["X_target_unlabeled"],
+)
+
+source_only_pipeline = make_pipeline(
+    Covariances("oas"), TangentSpace(metric="riemann"), LogisticRegression(max_iter=500)
+)
+
+###############################################################################
+# The resulting data flow is compact: metadata is transformed only until the
+# step that requests it, while the ordinary source ``X`` continues through the
+# complete pipeline.
+
+fig, ax = plt.subplots(figsize=(10, 3.2))
 ax.axis("off")
-
-workflow_nodes = {
-    "source": (0.03, 0.68, "Source epochs\n+ subject IDs", "#d8ecff"),
-    "target": (0.03, 0.18, "Permitted unlabeled\ntarget epochs", "#fff0cc"),
-    "source_cov": (0.29, 0.68, "Covariances_\n(source X)", "#d8ecff"),
-    "target_cov": (0.29, 0.18, "Same pipeline prefix\n(target metadata)", "#fff0cc"),
-    "alignment": (
-        0.58,
-        0.43,
-        "RiemannianAlignment\nsource + target references",
-        "#e7ddff",
-    ),
-    "classifier": (0.84, 0.43, "Tangent space\n+ classifier", "#dff4df"),
-}
-for x, y, label, color in workflow_nodes.values():
+nodes = [
+    (0.03, 0.68, "Source epochs\n+ subject IDs", "#D8ECFF"),
+    (0.03, 0.20, "Unlabeled target\nepochs", "#FFF0CC"),
+    (0.35, 0.44, "Covariances", "#E8E8E8"),
+    (0.58, 0.44, "Riemannian\nalignment", "#E7DDFF"),
+    (0.82, 0.44, "Tangent space\n+ classifier", "#DFF4DF"),
+]
+for x, y, label, color in nodes:
     ax.text(
         x,
         y,
         label,
         ha="left",
         va="center",
-        fontsize=10,
         bbox={"boxstyle": "round,pad=0.5", "facecolor": color, "edgecolor": "0.35"},
     )
-
-workflow_arrows = [
-    ((0.20, 0.68), (0.285, 0.68)),
-    ((0.20, 0.18), (0.285, 0.18)),
-    ((0.46, 0.68), (0.575, 0.53)),
-    ((0.46, 0.18), (0.575, 0.43)),
-    ((0.78, 0.48), (0.835, 0.48)),
-]
-for start, end in workflow_arrows:
-    ax.annotate(
-        "",
-        xy=end,
-        xytext=start,
-        arrowprops={
-            "arrowstyle": "->",
-            "color": "0.3",
-            "lw": 1.8,
-            "shrinkA": 0,
-            "shrinkB": 0,
-        },
-        zorder=5,
-    )
-
-ax.text(
-    0.30,
-    0.04,
-    'transform_input=["X_target_unlabeled"] keeps both representations aligned',
-    fontsize=10,
-    color="0.25",
-)
-ax.set_title("Fit-time data and metadata flow", pad=12)
+for start, end in [
+    ((0.23, 0.68), (0.34, 0.52)),
+    ((0.23, 0.20), (0.34, 0.38)),
+    ((0.49, 0.44), (0.57, 0.44)),
+    ((0.73, 0.44), (0.81, 0.44)),
+]:
+    ax.annotate("", xy=end, xytext=start, arrowprops={"arrowstyle": "->", "lw": 1.8})
+ax.set_title("Source data and routed target metadata share the fitted prefix")
 fig.tight_layout()
 plt.show()
 
-###############################################################################
-# Compare the protocol contracts
-# ------------------------------
-#
-# The mode controls the estimator's access, not merely the split size.
-#
-# .. list-table::
-#    :header-rows: 1
-#
-#    * - Mode
-#      - Target data visible at fit
-#      - Scored target data
-#    * - ``TRAIN``
-#      - none
-#      - full target block, blockwise
-#    * - ``...UNLABELED_20P``
-#      - first 20%, labels withheld
-#      - remaining 80%, blockwise
-#    * - ``...UNLABELED_50P``
-#      - first 50%, labels withheld
-#      - remaining 50%, blockwise
-#    * - ``...UNLABELED_FULL``
-#      - full target block, labels withheld
-#      - same full block, transductively
-#
-# The ``FULL`` mode is transductive: all target samples may inform an unlabeled
-# target reference before that same block is scored. Its score answers a
-# different scientific question from an inductive source-only score. Always
-# report the mode name with the number.
-
 
 ###############################################################################
-# Configure a small benchmark
-# ---------------------------
+# Run the two benchmark contracts
+# --------------------------------
 #
-# A deterministic fake dataset keeps this tutorial fast and download-free. Its
-# scores are illustrative; the purpose is to show the transfer-learning API.
+# A deterministic :class:`~moabb.datasets.fake.FakeDataset` keeps the tutorial
+# fast and download-free. Its scores have no scientific meaning; it is used to
+# expose the complete evaluation path.
+#
+# The baseline uses ``TRAIN`` and therefore sees no target data during fitting.
+# The aligned pipeline uses ``TRAIN_AND_TARGET_UNLABELED_20P``. Recording the
+# mode next to every result is essential because the two scores answer different
+# questions and use different numbers of scored target trials.
 
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42)
 paradigm = LeftRightImagery()
-all_results = []
 
-###############################################################################
-# Run the source-only baseline
-# ----------------------------
-#
-# ``TRAIN`` is the ordinary cross-subject protocol: train on source subjects,
-# test on the held-out subject, and expose no target calibration data.
-
-baseline_results = run_mode(
-    dataset=dataset,
+baseline = CrossSubjectEvaluation(
     paradigm=paradigm,
-    mode=CrossSubjectMode.TRAIN,
-    pipeline_name="SourceOnly+TS+LR",
-    pipeline=make_pipeline(
-        Covariances_("oas"), TangentSpace("riemann"), LogisticRegression(max_iter=500)
-    ),
+    datasets=[dataset],
+    cs_mode=CrossSubjectMode.TRAIN,
+    overwrite=True,
+    suffix="rpa_source_only",
+).process({"Source only": source_only_pipeline})
+baseline["protocol"] = "Source only"
+
+aligned = CrossSubjectEvaluation(
+    paradigm=paradigm,
+    datasets=[dataset],
+    cs_mode=CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P,
+    overwrite=True,
+    suffix="rpa_unlabeled_20p",
+).process({"Riemannian alignment": aligned_pipeline})
+aligned["protocol"] = "20% unlabeled target"
+
+results = pd.concat([baseline, aligned], ignore_index=True)
+print(
+    results.groupby(["protocol", "pipeline"])["score"]
+    .agg(["mean", "std", "count"])
+    .round(3)
 )
-all_results.append(baseline_results)
+
 
 ###############################################################################
-# Run target-aware RPA
-# --------------------
+# Inspect paired target results
+# -----------------------------
 #
-# The three compatible modes differ only in how much unlabeled data from the
-# held-out target is available for estimating the target reference. Scikit-learn
-# routes both that data and the source-subject identifiers to the alignment step.
-
-for mode in sorted(RPA_COMPATIBLE_MODES, key=lambda m: m.value):
-    with config_context(enable_metadata_routing=True):
-        align = RiemannianAlignment().set_fit_request(
-            subjects=True, X_target_unlabeled=True, cs_mode=True
-        )
-
-    results = run_mode(
-        dataset=dataset,
-        paradigm=paradigm,
-        mode=mode,
-        pipeline_name="RPA+TS+LR",
-        pipeline=make_pipeline(
-            Covariances_("oas"),
-            align,
-            TangentSpace("riemann"),
-            LogisticRegression(max_iter=500),
-            transform_input=["X_target_unlabeled"],
-        ),
-    )
-    all_results.append(results)
-
-###############################################################################
-# Reject an incompatible protocol
-# -------------------------------
+# Each thin line below connects the same held-out subject and session. The
+# diamonds show pipeline means. With a real dataset, this pairing is useful
+# because subject difficulty often dominates the score variation.
 #
-# RPA uses unlabeled target data. A labeled-calibration preset therefore fails
-# with an explicit protocol error instead of silently changing the method.
+# Do not interpret the random ranking produced by ``FakeDataset``. A proper
+# study would repeat the benchmark over real datasets and compare methods under
+# the same target-access protocol. In particular, a source-only score and a
+# 20%-calibration score should never be presented as if they had identical
+# information budgets.
 
-try:
-    with config_context(enable_metadata_routing=True):
-        align = RiemannianAlignment().set_fit_request(
-            subjects=True, X_target_unlabeled=True, cs_mode=True
-        )
+paired = results.pivot(index=["subject", "session"], columns="protocol", values="score")
+order = ["Source only", "20% unlabeled target"]
+colors = ["#4C78A8", "#E45756"]
 
-    run_mode(
-        dataset=dataset,
-        paradigm=paradigm,
-        mode=CrossSubjectMode.TRAIN_AND_TARGET_LABELED_20P,
-        pipeline_name="RPA+TS+LR",
-        pipeline=make_pipeline(
-            Covariances_("oas"),
-            align,
-            TangentSpace("riemann"),
-            LogisticRegression(max_iter=500),
-            transform_input=["X_target_unlabeled"],
-        ),
-    )
-except ValueError as err:
-    print("\nExpected error for incompatible mode:")
-    print(err)
+fig, ax = plt.subplots(figsize=(7.5, 5))
+for row in paired[order].dropna().to_numpy():
+    ax.plot([0, 1], row, color="0.75", linewidth=1, zorder=1)
 
-###############################################################################
-# Compare the successful protocols
-# --------------------------------
-#
-# Each point below is one reported cross-subject/session result. The diamond is
-# the mean. The second panel shows how many target trials remain per held-out
-# subject after calibration. This matters: changing the access budget can also
-# change the evaluation set, so a score without its protocol is ambiguous.
-#
-# Because ``FakeDataset`` contains no simulated transfer effect, tiny ranking
-# differences are noise and should not be interpreted as evidence that one mode
-# is better. On real data, repeat the comparison across datasets and perform the
-# usual MOABB statistical analysis.
-
-summary = pd.concat(all_results, ignore_index=True)
-protocol_summary = (
-    summary.groupby(["mode", "pipeline"], as_index=False)
-    .agg(
-        mean_score=("score", "mean"),
-        score_std=("score", "std"),
-        n_results=("score", "size"),
-        scored_trials=("samples_test", "sum"),
-    )
-    .fillna({"score_std": 0.0})
-)
-protocol_summary["scored_trials_per_target"] = protocol_summary["scored_trials"] / len(
-    dataset.subject_list
-)
-print(protocol_summary.to_string(index=False))
-
-mode_order = [
-    CrossSubjectMode.TRAIN.value,
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P.value,
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_50P.value,
-    CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_FULL.value,
-]
-mode_labels = ["Source only", "20% unlabeled", "50% unlabeled", "Full transductive"]
-colors = ["#4c78a8", "#f58518", "#e45756", "#72b7b2"]
-
-fig, (ax_score, ax_trials) = plt.subplots(
-    1, 2, figsize=(13, 5), gridspec_kw={"width_ratios": [1.7, 1]}
-)
-for position, (mode, label, color) in enumerate(
-    zip(mode_order, mode_labels, colors, strict=True)
-):
-    values = summary.loc[summary["mode"] == mode, "score"].to_numpy()
-    offsets = np.linspace(-0.12, 0.12, len(values))
-    ax_score.scatter(
-        position + offsets, values, color=color, alpha=0.65, s=35, label=f"{label} folds"
-    )
-    ax_score.scatter(
+for position, (protocol, color) in enumerate(zip(order, colors, strict=True)):
+    values = paired[protocol].dropna().to_numpy()
+    offsets = np.linspace(-0.06, 0.06, len(values))
+    ax.scatter(position + offsets, values, color=color, alpha=0.7, zorder=2)
+    ax.scatter(
         position,
         values.mean(),
         marker="D",
+        s=95,
         color=color,
         edgecolor="black",
-        s=90,
         zorder=3,
     )
 
-ordered_summary = protocol_summary.set_index("mode").loc[mode_order]
-ax_score.axhline(0.5, color="black", linestyle="--", linewidth=1)
-ax_score.set(
-    xticks=range(len(mode_labels)),
-    xticklabels=mode_labels,
+ax.axhline(0.5, color="black", linestyle="--", linewidth=1, label="Chance")
+ax.set(
+    xticks=[0, 1],
+    xticklabels=order,
     ylabel="ROC AUC",
-    ylim=(0.4, 0.6),
-    title="Fold-level scores and means",
+    title="Cross-subject scores under two target-access contracts",
 )
-ax_score.tick_params(axis="x", rotation=20)
-ax_score.grid(axis="y", alpha=0.25)
-
-ax_trials.bar(
-    mode_labels,
-    ordered_summary["scored_trials_per_target"],
-    color=colors,
-    edgecolor="black",
-)
-ax_trials.set(
-    ylabel="Target trials scored per held-out subject", title="Evaluation-set size"
-)
-ax_trials.tick_params(axis="x", rotation=20)
-ax_trials.grid(axis="y", alpha=0.25)
-
+ax.grid(axis="y", alpha=0.25)
+ax.legend()
 fig.tight_layout()
 plt.show()
+
+
+###############################################################################
+# References
+# ----------
+# .. [1] Rodrigues, P. L. C., Jutten, C., & Congedo, M. (2019).
+#        Riemannian Procrustes Analysis: Transfer Learning for Brain-Computer
+#        Interfaces. *IEEE Transactions on Biomedical Engineering*, 66(8),
+#        2390-2401. https://doi.org/10.1109/TBME.2018.2889705

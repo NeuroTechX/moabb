@@ -864,8 +864,7 @@ def test_within_subject_groups_routes_through(data):
 
 @pytest.mark.parametrize("calibration_size", [0.0, 0.3, 1.0])
 def test_cross_subject_calibration(calibration_size, data):
-    """CrossSubjectSplitter carves a calibration slice off the held-out subject,
-    consumed uniformly with ``train, *cal, test``."""
+    """Calibration folds are consumed uniformly with ``train, *cal, test``."""
     _, y, metadata = data
     base = CrossSubjectSplitter()
     cal_split = CrossSubjectSplitter(calibration_size=calibration_size)
@@ -889,7 +888,7 @@ def test_cross_subject_calibration(calibration_size, data):
             assert np.array_equal(test, b_test)
         else:
             assert calib.size >= 1 and test.size >= 1
-            assert np.array_equal(np.concatenate([calib, test]), b_test)
+            assert np.array_equal(np.union1d(calib, test), b_test)
 
 
 def test_cross_subject_calibration_invalid_size():
@@ -932,23 +931,25 @@ def test_cross_subject_calibration_leakage_boundary(calibration_labeled, data):
         assert np.array_equal(np.union1d(calib_idx, test_idx), target_idx)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="_split_target_fraction slices the first N trials of the target "
-    "subject in index order, with no per-session and no class-stratified "
-    "draw, so whole sessions of the target subject are swallowed by the "
-    "calibration slice. CrossSubjectEvaluation scores per session, so the "
-    "affected sessions silently disappear from the results and the remaining "
-    "per-session scores are not comparable to the calibration_size=0 "
-    "baseline.",
-)
-def test_cross_subject_calibration_keeps_every_target_session_scorable(data):
-    """Every session of the target subject should still be scored."""
+def test_cross_subject_calibration_keeps_every_target_session(data):
+    """Calibration must not consume an entire target session."""
     _, y, metadata = data
-    baseline = list(CrossSubjectSplitter().split(y, metadata))
-    calibrated = list(CrossSubjectSplitter(calibration_size=0.2).split(y, metadata))
+    cv_kwargs = {
+        "cv_class": GroupShuffleSplit,
+        "n_splits": 2,
+        "test_size": 2,
+        "random_state": 0,
+    }
+    baseline = list(CrossSubjectSplitter(**cv_kwargs).split(y, metadata))
+    calibrated = list(
+        CrossSubjectSplitter(calibration_size=0.5, **cv_kwargs).split(y, metadata)
+    )
 
     for (_, base_test), (_, _calib, test) in zip(baseline, calibrated):
-        assert set(metadata.loc[test, "session"]) == set(
-            metadata.loc[base_test, "session"]
+        assert set(
+            metadata.loc[test, ["subject", "session"]].itertuples(index=False, name=None)
+        ) == set(
+            metadata.loc[base_test, ["subject", "session"]].itertuples(
+                index=False, name=None
+            )
         )

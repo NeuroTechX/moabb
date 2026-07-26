@@ -594,24 +594,24 @@ class CrossSessionSplitter(BaseCrossValidator):
 
 
 class CrossSubjectSplitter(BaseCrossValidator):
-    """Data splitter for cross-subject evaluation.
+    """Data splitter for cross subject evaluation.
 
-    This splitter enables cross-subject evaluation by splitting data according
-    to subject identity. It assumes that the entire metainformation across all
-    subjects is already loaded.
+    This splitter enables cross-subject evaluation by performing a Leave-One-Session-Out (LOSO)
+    cross-validation on the dataset.
 
-    Unlike the `CrossSubjectEvaluation` class from `moabb.evaluation`, which
-    manages the complete evaluation process end-to-end, this splitter is solely
-    responsible for dividing the data into training, optional calibration, and
-    testing sets based on subjects.
+    It assumes that the entire metainformation across all subjects is already loaded.
+
+    Unlike the `CrossSubjectEvaluation` class from `moabb.evaluation`, which manages
+    the complete evaluation process end-to-end, this splitter is solely responsible
+    for dividing the data into training and testing sets based on subjects.
 
     .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/crosssubj.png
-       :alt: The schematic diagram of the CrossSubject split
-       :align: center
+        :alt: The schematic diagram of the CrossSubject split
+        :align: center
 
     The splitting strategy for the subjects can be changed by passing the
-    `cv_class` and `cv_kwargs` arguments. By default, it uses
-    LeaveOneGroupOut, which performs leave-one-subject-out cross-validation.
+    `cv_class` and `cv_kwargs` arguments. By default, it uses LeaveOneGroupOut,
+    which performs Leave-One-Subject-Out cross-validation.
 
     Parameters
     ----------
@@ -625,30 +625,18 @@ class CrossSubjectSplitter(BaseCrossValidator):
         or a callable ``metadata -> array``. Passed straight to the stock
         scikit-learn ``cv_class``. Defaults to ``"subject"``.
     random_state : int or None
-        Controls the randomness of the cross-validation. Pass an int for
-        reproducible output across multiple calls. Defaults to ``None``.
+        Controls the randomness of the cross-validation.
+        Pass an int for reproducible output across multiple calls.
+        Defaults to ``None``.
     calibration_size : float, default=0.0
-        Transfer-learning calibration fraction, in ``[0, 1]``.
-
-        ``0.0`` is the ordinary cross-subject split and yields
-        ``(train, test)``.
-
-        When ``> 0``, the first ``calibration_size`` fraction of each held-out
-        fold's trials is set aside for adaptation/calibration and the splitter
-        yields ``(train, calibration, test)``.
-
-        ``1.0`` is transductive for unlabeled calibration: calibration and test
-        are the same target trials.
+        Fraction of each held-out subject/session pair reserved for
+        calibration. Values in ``(0, 1)`` yield
+        ``(train, calibration, test)``; ``0`` keeps the ordinary
+        ``(train, test)`` split, and ``1`` uses the full target block both for
+        unlabeled adaptation and scoring.
     calibration_labeled : bool, default=False
-        Whether the calibration slice may be treated as labeled target
-        calibration data.
-
-        If ``False``, the calibration slice may only be used as unlabeled
-        target data.
-
-        If ``True``, labels may be routed together with the calibration slice,
-        but ``calibration_size`` must be at most ``0.5``. This prevents labeled
-        calibration from using most or all of the held-out target subject.
+        If True, route labels with the calibration slice. Labeled calibration
+        is limited to at most half of the target trials.
     cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
         A callable value is resolved against the metadata at ``split`` time
@@ -660,8 +648,8 @@ class CrossSubjectSplitter(BaseCrossValidator):
         The training set indices for that split.
 
     calibration : ndarray
-        The held-out calibration indices. Only yielded when
-        ``calibration_size > 0``.
+        The held-out calibration indices, yielded only when
+        ``calibration_size`` is greater than zero.
 
     test : ndarray
         The testing set indices for that split.
@@ -690,39 +678,44 @@ class CrossSubjectSplitter(BaseCrossValidator):
         self._cv_kwargs = dict(**cv_kwargs)
 
         params = inspect.signature(self.cv_class).parameters
-
         if "random_state" in params:
             self._cv_kwargs["random_state"] = random_state
 
-        # Detect whether the cv_class uses the groups parameter.
+        # Detect whether the cv_class uses the groups parameter
         self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
-
         self._last_split_metadata = None
 
     def get_n_splits(self, metadata):
         """
         Return the number of splits for the cross-validation.
 
+        The number of splits is the number of subjects times the number of splits
+        of the inner cross-validation strategy.
+
+        We try to keep the same behaviour as the sklearn cross-validation classes.
+
         Parameters
         ----------
-        metadata : pandas.DataFrame
-            Metadata containing subject and session information.
+        metadata: :class:`pandas.DataFrame`
+            The metadata containing the subject and session information.
 
         Returns
         -------
-        n_splits : int
-            Number of splits.
+        n_splits: int
+            The number of splits for the cross-validation
         """
+
         splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
         get_n_splits_kwargs = {"X": metadata.index}
-
         if self._cv_uses_groups:
             get_n_splits_kwargs["groups"] = _resolve_groups(self.groups, metadata)
-
-        return splitter.get_n_splits(**get_n_splits_kwargs)
+        n_splits = splitter.get_n_splits(**get_n_splits_kwargs)
+        return n_splits
 
     def split(self, y, metadata):
+        # here, I am getting the index across all the subject
         all_index = metadata.index.values
+
         splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
         self._last_split_metadata = None
 
@@ -730,77 +723,50 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # (detected via GroupsConsumerMixin). This avoids the
         # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
         split_kwargs = {"X": all_index, "y": y}
-
         if self._cv_uses_groups:
             split_kwargs["groups"] = _resolve_groups(self.groups, metadata)
 
-        for train_subject_idx, test_subject_idx in splitter.split(**split_kwargs):
-            inner_metadata = _splitter_metadata(splitter)
-
-            split_metadata = {
-                "calibration_size": self.calibration_size,
-                "calibration_labeled": self.calibration_labeled,
-            }
-
-            if inner_metadata is not None:
-                split_metadata.update(inner_metadata)
-
-            self._last_split_metadata = split_metadata
-
-            train_idx = all_index[train_subject_idx]
-            target_idx = all_index[test_subject_idx]
+        for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
+            self._last_split_metadata = _splitter_metadata(splitter) or {}
+            self._last_split_metadata.update(
+                {
+                    "calibration_size": self.calibration_size,
+                    "calibration_labeled": self.calibration_labeled,
+                }
+            )
+            train_idx = all_index[train_session_idx]
+            target_idx = all_index[test_session_idx]
 
             if self.calibration_size > 0:
-                # Transfer learning: carve a calibration slice off the
-                # held-out target subject -> (train, calibration, test).
-                calib_idx, test_idx = _split_target_fraction(
-                    target_idx, self.calibration_size
-                )
-
+                if self.calibration_size == 1:
+                    calib_idx = test_idx = target_idx
+                else:
+                    target_metadata = metadata.loc[target_idx, ["subject", "session"]]
+                    target_subjects = target_metadata["subject"].to_numpy()
+                    target_sessions = target_metadata["session"].to_numpy()
+                    calibration_mask = np.zeros(len(target_idx), dtype=bool)
+                    for subject in np.unique(target_subjects):
+                        for session in np.unique(
+                            target_sessions[target_subjects == subject]
+                        ):
+                            positions = np.flatnonzero(
+                                (target_subjects == subject)
+                                & (target_sessions == session)
+                            )
+                            n_calib = int(
+                                np.floor(self.calibration_size * len(positions))
+                            )
+                            n_calib = min(max(n_calib, 1), len(positions) - 1)
+                            calibration_mask[positions[:n_calib]] = True
+                    calib_idx = target_idx[calibration_mask]
+                    test_idx = target_idx[~calibration_mask]
                 yield train_idx, calib_idx, test_idx
-
             else:
                 yield train_idx, target_idx
 
     def get_metadata(self):
         """Return metadata for the most recent split."""
         return self._last_split_metadata
-
-
-def _split_target_fraction(
-    target_idx: np.ndarray, calibration_size: float
-) -> tuple[np.ndarray, np.ndarray]:
-    """Slice a held-out target subject's trials into calibration and test.
-
-    The first ``calibration_size`` fraction of ``target_idx`` in trial order is
-    the calibration/adaptation slice; the rest is evaluated.
-
-    ``0.0`` yields no calibration.
-
-    ``1.0`` is transductive: calibration and test are identical. This is valid
-    only for unlabeled target adaptation at the evaluation level.
-
-    For any fraction strictly between 0 and 1, at least one trial is kept on
-    each side.
-    """
-    target_idx = np.asarray(target_idx, dtype=int)
-
-    if len(target_idx) == 0:
-        raise ValueError("Empty held-out target index.")
-
-    if not 0.0 <= calibration_size <= 1.0:
-        raise ValueError(f"calibration_size must be in [0, 1]. Got {calibration_size!r}.")
-
-    if calibration_size == 0.0:
-        return np.array([], dtype=int), target_idx
-
-    if calibration_size == 1.0:
-        return target_idx, target_idx
-
-    n_calib = int(np.floor(calibration_size * len(target_idx)))
-    n_calib = min(max(n_calib, 1), len(target_idx) - 1)
-
-    return target_idx[:n_calib], target_idx[n_calib:]
 
 
 class CrossDatasetSplitter(BaseCrossValidator):
