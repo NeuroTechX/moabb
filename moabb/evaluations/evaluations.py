@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
+from moabb.evaluations.protocols import CrossSubjectMode, validate_transfer_protocol
 from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
@@ -459,6 +460,28 @@ class CrossSubjectEvaluation(BaseEvaluation):
     n_splits : int or None
         Number of splits for cross-validation. If None, the number of splits
         is equal to the number of subjects. Defaults to ``None``.
+    cv_class : type or None
+        Cross-validation strategy used to hold out subjects (e.g.
+        ``LeaveOneGroupOut``, ``GroupShuffleSplit``, ``GroupKFold``). Defaults to
+        ``None`` (``LeaveOneGroupOut``, or ``GroupKFold`` when ``n_splits`` is set).
+    cv_kwargs : dict
+        Keyword arguments for ``cv_class``. ``calibration_size`` (float in
+        ``[0, 1]``, default ``0.0``) enables transfer learning: when ``> 0`` each
+        fold becomes ``(train, calibration, test)``. The fraction is taken
+        within every held-out subject/session pair so each remains scorable,
+        and the calibration slice is routed (raw) to pipeline steps via
+        ``set_fit_request``. With ``calibration_labeled=False``, only
+        ``X_target_unlabeled`` may be routed. With ``calibration_labeled=True``,
+        ``X_target_labeled`` and ``y_target_labeled`` may be routed.
+        Labeled calibration is only allowed with ``calibration_size <= 0.5``.
+    cs_mode : CrossSubjectMode or str, default=CrossSubjectMode.TRAIN
+        Named cross-subject protocol preset. By default, this is the standard
+        train-only cross-subject evaluation with no target calibration. The
+        ``TRAIN_TRIALWISE`` mode additionally enforces one-trial-at-a-time
+        prediction during scoring and supports the built-in ``"accuracy"`` and
+        ``"roc_auc"`` metrics. Cannot be combined with manual
+        ``calibration_size`` or ``calibration_labeled`` in ``cv_kwargs``, except
+        for the default ``TRAIN`` mode.
 
     Notes
     -----
@@ -470,8 +493,48 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _score_per_session = True
     _needs_all_subjects = True
 
+    def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
+        cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
+
+        if cs_mode is None:
+            cs_mode = CrossSubjectMode.TRAIN
+
+        cs_mode = CrossSubjectMode(cs_mode)
+        self.cs_mode = cs_mode
+
+        # Manual cv_kwargs still work when the default train-only blockwise
+        # mode is used.
+        has_manual_calibration = (
+            "calibration_size" in cv_kwargs or "calibration_labeled" in cv_kwargs
+        )
+
+        if has_manual_calibration and cs_mode != CrossSubjectMode.TRAIN:
+            raise ValueError(
+                "Pass either cs_mode or calibration_size/calibration_labeled, not both."
+            )
+
+        if not has_manual_calibration:
+            cv_kwargs["calibration_size"] = cs_mode.calibration_size
+            cv_kwargs["calibration_labeled"] = cs_mode.calibration_labeled
+
+        self.trialwise = cs_mode.trialwise
+
+        validate_transfer_protocol(
+            cv_kwargs.get("calibration_size", 0.0),
+            cv_kwargs.get("calibration_labeled", False),
+        )
+
+        kwargs["cv_kwargs"] = cv_kwargs
+        super().__init__(*args, **kwargs)
+
     def _create_splitter(self):
-        """Create the CrossSubjectSplitter for parallel evaluation."""
+        """Create the CrossSubjectSplitter for parallel evaluation.
+
+        ``calibration_size`` and ``calibration_labeled`` passed via
+        ``cv_kwargs`` turn each fold into a transfer split:
+
+        ``(train, calibration, test)``.
+        """
         if self.n_splits is None:
             default_class = LeaveOneGroupOut
             default_kwargs = {}
@@ -479,6 +542,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             default_class = GroupKFold
             default_kwargs = {"n_splits": self.n_splits}
 
+        default_kwargs.update(self.cv_kwargs)
         cv_class, cv_kwargs = self._resolve_cv(default_class, default_kwargs)
         if self.groups is not None:
             cv_kwargs = {**cv_kwargs, "groups": self.groups}
@@ -486,7 +550,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
             cv_class=cv_class, random_state=self.random_state, **cv_kwargs
         )
 
-    # flake8: noqa: C901
     def evaluate(
         self,
         dataset: "BaseDataset",
@@ -498,101 +561,16 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if not self.is_valid(dataset):
             reason = self._get_incompatibility_reason(dataset)
             raise AssertionError(
-                f"Dataset '{dataset.code}' is not appropriate for {self.__class__.__name__}: {reason}"
+                f"Dataset '{dataset.code}' is not appropriate for "
+                f"{self.__class__.__name__}: {reason}"
             )
-        # this is a bit awkward, but we need to check if at least one pipe
-        # have to be run before loading the data. If at least one pipeline
-        # need to be run, we have to load all the data.
-        # we might need a better granularity, if we query the DB
-        run_pipes = {}
-        for subject in dataset.subject_list:
-            run_pipes.update(
-                self.results.not_yet_computed(
-                    pipelines, dataset, subject, process_pipeline
-                )
-            )
-        if len(run_pipes) == 0:
-            return
-
-        X, y, metadata = self._load_data(
-            dataset, run_pipes, process_pipeline, postprocess_pipeline
+        yield from self._evaluate_parallel_dataset(
+            dataset=dataset,
+            pipelines=pipelines,
+            param_grid=param_grid,
+            process_pipeline=process_pipeline,
+            postprocess_pipeline=postprocess_pipeline,
         )
-        le = LabelEncoder()
-        y = y if self.mne_labels else le.fit_transform(y)
-
-        # extract metadata
-        groups = metadata.subject.values
-        sessions = metadata.session.values
-        n_subjects = len(dataset.subject_list)
-        nchan = self._get_nchan(X)
-
-        # perform leave one subject out CV
-        self.cv = self._create_splitter()
-        if self.n_splits is not None and self.cv_class is None:
-            n_subjects = self.n_splits
-
-        inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
-
-        if _carbonfootprint:
-            # Initialise CodeCarbon per cross-validation
-            tracker = self.emissions.create_tracker()
-            tracker.start()
-
-        # Progressbar at subject level
-        for cv_ind, (train, test) in enumerate(
-            tqdm(
-                self.cv.split(y, metadata),
-                total=n_subjects,
-                desc=f"{dataset.code}-CrossSubject",
-            )
-        ):
-            subject = groups[test[0]]
-            # now we can check if this subject has results
-            run_pipes = self.results.not_yet_computed(
-                pipelines, dataset, subject, process_pipeline
-            )
-            # iterate over pipelines
-            for name, clf in run_pipes.items():
-                clf = self._grid_search(
-                    param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
-                )
-                cvclf = clone(clf)
-
-                duration, emissions, task_name = self._fit_cv(
-                    cvclf, X[train], y[train], tracker if _carbonfootprint else None
-                )
-                self._maybe_save_model_cv(
-                    cvclf, dataset, subject, "", name, cv_ind, eval_type="CrossSubject"
-                )
-
-                # Create scorer once per pipeline
-                scorer = _create_scorer(cvclf, self.paradigm.scoring)
-
-                # Evaluate on each session
-                for session in np.unique(sessions[test]):
-                    ix = sessions[test] == session
-
-                    res = self._build_scored_result(
-                        dataset,
-                        subject,
-                        session,
-                        name,
-                        len(train),
-                        nchan,
-                        duration,
-                        scorer,
-                        cvclf,
-                        X[test[ix]],
-                        y[test[ix]],
-                    )
-
-                    if _carbonfootprint:
-                        self._attach_emissions(res, emissions, task_name)
-
-                    yield res
-
-        if _carbonfootprint:
-            tracker.stop()
 
     def is_valid(self, dataset: "BaseDataset") -> bool:
         return len(dataset.subject_list) > 1
@@ -600,11 +578,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
     def _get_incompatibility_reason(self, dataset):
         """Get specific reason for dataset incompatibility."""
         n_subjects = len(dataset.subject_list)
+
         if n_subjects <= 1:
             return (
                 f"dataset has only {n_subjects} subject(s), "
                 f"but {self.__class__.__name__} requires at least 2 subjects"
             )
+
         return "requirements not met"
 
 
