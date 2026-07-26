@@ -546,6 +546,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -727,11 +729,11 @@ be overwritten if necessary.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
-0  0.842857  0.018033  ...   CSP+LDA  48a20739-75d0-44aa-a133-2fded2fea635
-1  0.880952  0.026515  ...   CSP+LDA  cb822d79-4884-4c95-b4c8-cee099336cfb
-2  0.919048  0.075024  ...   CSP+LDA  c7ea8bb1-6b93-4dd8-833a-0ed3bf4a0d96
-3  0.942857  0.112746  ...   CSP+LDA  68c3a95c-cf67-43b9-b296-334220d0d02e
-4  0.900000  0.019665  ...   CSP+LDA  0ccb497a-257b-438b-b07c-1c297aaabfbb
+0  0.823810  0.146942  ...   CSP+LDA  908d9066-109f-4f75-b487-9af3801068a1
+1  0.785714  0.040136  ...   CSP+LDA  7be79f09-0308-40e2-852c-45621f027844
+2  0.823810  0.182191  ...   CSP+LDA  4feba2df-b72e-4593-99d4-18238b9da641
+3  0.871429  0.149682  ...   CSP+LDA  48735103-386b-4df4-b31e-346c013b41eb
+4  0.876190  0.024496  ...   CSP+LDA  62b22d1f-113c-495b-9644-b0bfbcd752cb
 
 [5 rows x 15 columns]
 </pre></div>
@@ -761,7 +763,8 @@ each pipeline</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.739 seconds)</p>
+<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.874 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  812 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5b1f506cd53838de0dd70e569a36f198/plot_learning_curve_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_learning_curve_motor_imagery.ipynb</span></code></a></p>

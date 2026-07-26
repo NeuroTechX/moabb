@@ -546,6 +546,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -769,20 +771,20 @@ Data will be selected thanks to the <cite>get_block_repetition</cite> method.</p
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 0.2
 subject 1, PC, tmax 0.2
 
- 50%|█████     | 1/2 [00:28&lt;00:28, 28.23s/it]subject 2, VR, tmax 0.2
+ 50%|█████     | 1/2 [00:20&lt;00:20, 20.35s/it]subject 2, VR, tmax 0.2
 subject 2, PC, tmax 0.2
 
-100%|██████████| 2/2 [00:49&lt;00:00, 24.17s/it]
-100%|██████████| 2/2 [00:49&lt;00:00, 24.78s/it]
+100%|██████████| 2/2 [00:41&lt;00:00, 20.92s/it]
+100%|██████████| 2/2 [00:41&lt;00:00, 20.83s/it]
 
   0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 1.0
 subject 1, PC, tmax 1.0
 
- 50%|█████     | 1/2 [00:19&lt;00:19, 19.28s/it]subject 2, VR, tmax 1.0
+ 50%|█████     | 1/2 [00:20&lt;00:20, 20.30s/it]subject 2, VR, tmax 1.0
 subject 2, PC, tmax 1.0
 
-100%|██████████| 2/2 [00:38&lt;00:00, 19.32s/it]
-100%|██████████| 2/2 [00:38&lt;00:00, 19.32s/it]
+100%|██████████| 2/2 [00:41&lt;00:00, 20.68s/it]
+100%|██████████| 2/2 [00:41&lt;00:00, 20.62s/it]
 </pre></div>
 </div>
 </section>
@@ -809,7 +811,8 @@ plot the mean AUC as a function of the epoch length.</p>
 &lt;Axes: title={&#39;center&#39;: &#39;Mean AUC as a function of the epoch length&#39;}, xlabel=&#39;tmax&#39;&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 28.292 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 24.059 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  629 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-vr-pc-p300-different-epoch-size-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/49d583283b8c86024dcc6b37dbba422f/plot_vr_pc_p300_different_epoch_size.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_vr_pc_p300_different_epoch_size.ipynb</span></code></a></p>

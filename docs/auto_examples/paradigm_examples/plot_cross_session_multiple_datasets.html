@@ -546,6 +546,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -735,11 +737,11 @@ each subject / session of the dataset, and for each pipeline.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>     score      time  ...  pipeline                  codecarbon_task_name
-0  0.85113  0.227496  ...   CSP+LDA  923ca05c-c909-439f-99a2-08887ff6ed7d
-1  0.93640  0.272526  ...   CSP+LDA  a01747c6-4d45-4bb6-8c7e-d5d45de923eb
-2  0.93960  0.241879  ...   CSP+LDA  3331fc1c-d5d6-4b18-ab9d-4d79d559819d
-3  0.90800  0.198803  ...   CSP+LDA  48aa99c9-36a0-47c1-b0aa-7a183b19f85b
-4  0.77037  0.237482  ...   CSP+LDA  fb707c9e-a734-46f5-8e7d-69ee721a2d16
+0  0.85113  0.253511  ...   CSP+LDA  26988992-1cc3-480b-bc8a-c4af47084794
+1  0.93640  0.233395  ...   CSP+LDA  0c18b82a-8f2b-498b-915a-f21ca72d3b06
+2  0.93960  0.204120  ...   CSP+LDA  16988564-c2f7-43c1-83e1-0eaaded7c955
+3  0.90800  0.198629  ...   CSP+LDA  6d3ecbf0-00c2-4fb4-a665-95c32e7bdb65
+4  0.77037  0.244090  ...   CSP+LDA  89f20600-fcbf-4d6b-a978-aac99b2777a7
 
 [5 rows x 13 columns]
 </pre></div>
@@ -760,7 +762,8 @@ each subject / session of the dataset, and for each pipeline.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.430 seconds)</p>
+<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.834 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  855 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a236a554370961344b575283a1efbb02/plot_cross_session_multiple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_multiple_datasets.ipynb</span></code></a></p>

@@ -546,6 +546,8 @@
 <li class="toctree-l2"><a class="reference internal" href="noplot_example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -746,6 +748,7 @@ Schirrmeister2017
 Shin2017A
 Stieger2021
 Wairagkar2018
+Wang2026
 Weibo2014
 Wu2020
 Yang2025
@@ -799,8 +802,8 @@ error-level logging to minimize overhead.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>The paradigms being run are dict_keys([&#39;LeftRightImagery&#39;])
 Datasets considered for LeftRightImagery paradigm [&#39;Zhou2016&#39;]
     dataset     evaluation          pipeline  avg score  carbon emission
-0  Zhou2016  WithinSession  Tangent Space LR   0.941601         0.051275
-1  Zhou2016  WithinSession         CSP + SVM   0.932315         0.041358
+0  Zhou2016  WithinSession  Tangent Space LR   0.941601         0.019752
+1  Zhou2016  WithinSession         CSP + SVM   0.932315         0.015847
 </pre></div>
 </div>
 <p>Benchmark prints a summary of the results. Detailed results are saved in a
@@ -813,7 +816,8 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_benchmark_001.png" srcset="../../_images/sphx_glr_plot_benchmark_001.png" alt="plot benchmark" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.944 seconds)</p>
+<img src="../../_images/sphx_glr_plot_benchmark_001.png" srcset="../../_images/sphx_glr_plot_benchmark_001.png" alt="plot benchmark" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 49.710 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  732 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-plot-benchmark-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/dd1d96e7a121ed07731e7e4772c2d143/plot_benchmark.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark.ipynb</span></code></a></p>

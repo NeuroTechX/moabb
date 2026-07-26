@@ -546,6 +546,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -754,6 +756,33 @@ ROC-AUC metric.</p>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_res</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">mne_eval</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_ppl</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
+  0%|                                     | 8.19k/18.5M [00:00&lt;04:36, 67.0kB/s]
+  0%|                                      | 56.3k/18.5M [00:00&lt;01:12, 256kB/s]
+  1%|▏                                      | 113k/18.5M [00:00&lt;00:53, 346kB/s]
+  1%|▎                                      | 176k/18.5M [00:00&lt;00:44, 411kB/s]
+  1%|▌                                      | 241k/18.5M [00:00&lt;00:40, 450kB/s]
+  2%|▋                                      | 321k/18.5M [00:00&lt;00:35, 515kB/s]
+  2%|▉                                      | 417k/18.5M [00:00&lt;00:30, 600kB/s]
+  3%|█                                      | 520k/18.5M [00:00&lt;00:26, 673kB/s]
+  4%|█▍                                     | 656k/18.5M [00:01&lt;00:22, 805kB/s]
+  4%|█▋                                     | 808k/18.5M [00:01&lt;00:19, 932kB/s]
+  5%|█▉                                    | 969k/18.5M [00:01&lt;00:16, 1.04MB/s]
+  7%|██▍                                  | 1.23M/18.5M [00:01&lt;00:12, 1.37MB/s]
+  8%|██▉                                  | 1.49M/18.5M [00:01&lt;00:10, 1.58MB/s]
+ 11%|███▉                                 | 1.95M/18.5M [00:01&lt;00:07, 2.23MB/s]
+ 13%|████▊                                | 2.40M/18.5M [00:01&lt;00:06, 2.64MB/s]
+ 17%|██████▍                              | 3.22M/18.5M [00:01&lt;00:03, 3.84MB/s]
+ 22%|████████                             | 4.02M/18.5M [00:02&lt;00:03, 4.60MB/s]
+ 30%|███████████                          | 5.51M/18.5M [00:02&lt;00:01, 6.83MB/s]
+ 37%|█████████████▊                       | 6.92M/18.5M [00:02&lt;00:01, 8.18MB/s]
+ 52%|███████████████████▎                 | 9.67M/18.5M [00:02&lt;00:00, 12.4MB/s]
+ 66%|████████████████████████▍            | 12.3M/18.5M [00:02&lt;00:00, 14.9MB/s]
+ 93%|██████████████████████████████████▌  | 17.3M/18.5M [00:02&lt;00:00, 22.6MB/s]
+  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 109GB/s]
+</pre></div>
+</div>
 </section>
 <section id="advanced-mne-pipeline">
 <h2>Advanced MNE Pipeline<a class="headerlink" href="#advanced-mne-pipeline" title="Link to this heading">#</a></h2>
@@ -824,7 +853,8 @@ differences between pipelines.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="plot mne and scikit estimators" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 56.192 seconds)</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="plot mne and scikit estimators" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 23.904 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  893 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b9f56e19f2500dad10214cc29a2a24e4/plot_mne_and_scikit_estimators.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_mne_and_scikit_estimators.ipynb</span></code></a></p>

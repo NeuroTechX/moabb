@@ -546,6 +546,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -698,11 +700,11 @@ a sampling rate of 200 Hz.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.918000  0.064141    100.0  ...  Zhou2016     ts+lr
-1  0.952000  0.069250    100.0  ...  Zhou2016     ts+lr
-2  0.870328  0.064309    119.0  ...  Zhou2016     ts+lr
-3  0.824691  0.054097     90.0  ...  Zhou2016     ts+lr
-4  0.926000  0.061218    100.0  ...  Zhou2016     ts+lr
+0  0.831944  0.042783    119.0  ...  Zhou2016     ts+lr
+1  0.926000  0.038387    100.0  ...  Zhou2016     ts+lr
+2  0.946000  0.036333    100.0  ...  Zhou2016     ts+lr
+3  0.827160  0.033174     90.0  ...  Zhou2016     ts+lr
+4  0.924000  0.037092    100.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -722,12 +724,12 @@ as well as the list of datasets with valid channels.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>     score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.94000  0.050670    100.0  ...  Zhou2016     ts+lr
-1  0.91000  0.049119    100.0  ...  Zhou2016     ts+lr
-2  0.85846  0.076899    119.0  ...  Zhou2016     ts+lr
-3  0.90200  0.048547    100.0  ...  Zhou2016     ts+lr
-4  0.91400  0.052775    100.0  ...  Zhou2016     ts+lr
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...   dataset  pipeline  codecarbon_task_name
+0  0.946000  0.037490    100.0  ...  Zhou2016     ts+lr
+1  0.934000  0.036408    100.0  ...  Zhou2016     ts+lr
+2  0.850631  0.042106    119.0  ...  Zhou2016     ts+lr
+3  0.934000  0.036548    100.0  ...  Zhou2016     ts+lr
+4  0.837037  0.033954     90.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -743,7 +745,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 44.817 seconds)</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 42.829 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  952 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>
