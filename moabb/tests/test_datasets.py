@@ -58,6 +58,7 @@ NEMAR_ID_EXEMPT = {
     "FakeVirtualRealityDataset",
     "Schrag2026Pediatric",
     "Lenaig2026",
+    "Wang2026",
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
