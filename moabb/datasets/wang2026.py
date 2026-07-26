@@ -346,68 +346,56 @@ class Wang2026(BaseDataset):
         archive, source_subject = _SUBJECT_MAPPING[subject]
 
         for path in map(Path, self.data_path(subject)):
-            run_data = read_mat(str(path))["runData"]
+            run_data = read_mat(
+                path,
+                ignore_fields=(
+                    "meta",
+                    "trialInfo",
+                    "trialCursorPosX",
+                    "trialCursorPosY",
+                    "trialFeedbackLabel",
+                    "trialMoveRight",
+                ),
+            )["runData"]
             signal = run_data["trialSignal"]
 
-            if "trialTargetCode" in run_data:
+            if isinstance(signal, list):
                 targets = run_data["trialTargetCode"]
                 mapping = (
                     _BCI2000_UD_EVENT_MAP
                     if path.stem.endswith("UD")
                     else _BCI2000_EVENT_MAP
                 )
+                keep = [
+                    index
+                    for index, trial in enumerate(signal)
+                    if np.asarray(trial).shape[0] >= _NOMINAL_TRIAL_SAMPLES
+                ]
+                epochs = [
+                    np.asarray(signal[index])[:_NOMINAL_TRIAL_SAMPLES].T for index in keep
+                ]
+                events = [
+                    mapping[int(np.asarray(targets[index]).flat[0])] for index in keep
+                ]
             else:
                 targets = run_data["trialTargetClass"]
-                mapping = _EEGNET_EVENT_MAP
-
-            if isinstance(signal, list):
-                trials = [np.asarray(trial) for trial in signal]
-                trials = [
-                    trial.T if trial.shape[0] != len(_CHANNELS) else trial
-                    for trial in trials
+                epochs = np.asarray(signal)[:_NOMINAL_TRIAL_SAMPLES].transpose(2, 1, 0)
+                events = [
+                    _EEGNET_EVENT_MAP[int(target)] for target in np.asarray(targets)[0]
                 ]
-                target_tracks = list(targets)
-            else:
-                signal = np.asarray(signal)
-                trials = [signal[..., trial].T for trial in range(signal.shape[-1])]
-                targets = np.asarray(targets)
-                target_tracks = [targets[:, trial] for trial in range(targets.shape[-1])]
 
-            epochs = []
-            events = []
-            for trial, target in zip(trials, target_tracks):
-                labels = np.asarray(target).ravel()
-                labels = labels[np.isin(labels, list(mapping))]
-                if not labels.size or trial.ndim != 2 or trial.shape[0] != len(_CHANNELS):
-                    continue
-                values, counts = np.unique(labels.astype(int), return_counts=True)
-                if trial.shape[1] >= _NOMINAL_TRIAL_SAMPLES:
-                    epochs.append(trial[:, :_NOMINAL_TRIAL_SAMPLES])
-                    events.append(mapping[int(values[counts.argmax()])])
-
-            if not epochs:
+            if len(epochs) == 0:
                 continue
 
             raw = build_raw_from_epochs(
-                np.nan_to_num(np.stack(epochs), nan=0.0, posinf=0.0, neginf=0.0),
-                _CHANNELS,
-                _SFREQ,
-                events,
-                "standard_1005",
-                scale=_EEG_SCALE,
+                epochs, _CHANNELS, _SFREQ, events, "standard_1005", scale=_EEG_SCALE
             )
             raw.info["line_freq"] = 60.0
             raw.info["subject_info"] = {"his_id": f"{archive}/{source_subject}"}
 
-            parts = path.stem.split("_")
-            session = next(
-                (
-                    str(int(part.removeprefix("sess")))
-                    for part in parts
-                    if part.startswith("sess")
-                ),
-                "0baseline",
-            )
+            session = "0baseline"
+            if "_sess" in path.stem:
+                session = str(int(path.stem.split("_sess", 1)[1].split("_", 1)[0]))
             sessions[session][str(len(sessions[session]))] = raw
 
         if not sessions:
