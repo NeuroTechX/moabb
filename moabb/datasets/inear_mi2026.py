@@ -275,11 +275,18 @@ class InEarMI2026(BaseDataset):
 
     @staticmethod
     def _select_common_in_ear_eeg(raw, subject):
-        """Keep the two real in-ear EEG channels shared by all subjects."""
+        """Keep shared in-ear EEG and any generated stimulus channel."""
         missing = [name for name in _COMMON_EEG_CHANNELS if name not in raw.ch_names]
         if missing:
             raise ValueError(
                 f"InEarMI2026 subject {subject} is missing required in-ear "
                 f"channel(s) {missing}; observed {raw.ch_names}."
             )
-        return raw.pick(_COMMON_EEG_CHANNELS)
+        # build_raw_from_epochs adds the event-carrying ``STI`` channel.  Keep
+        # all real stim channels while excluding optional scalp EEG and EMG.
+        stim_channels = [
+            name
+            for name, ch_type in zip(raw.ch_names, raw.get_channel_types())
+            if ch_type == "stim"
+        ]
+        return raw.pick(_COMMON_EEG_CHANNELS + stim_channels)
