@@ -43,12 +43,12 @@ SFREQ = 250.0
 # the two earlobe/mastoid channels A1 and A2 among the 32 recorded channels.
 # fmt: off
 MA2022_CH_NAMES = [
-    "FP1", "FP2", "FZ", "F3", "F4", "F7", "F8",
+    "Fp1", "Fp2", "Fz", "F3", "F4", "F7", "F8",
     "FC1", "FC2", "FC5", "FC6",
-    "CZ", "C3", "C4", "T3", "T4", "A1", "A2",
+    "Cz", "C3", "C4", "T3", "T4", "A1", "A2",
     "CP1", "CP2", "CP5", "CP6",
-    "PZ", "P3", "P4", "T5", "T6",
-    "PO3", "PO4", "OZ", "O1", "O2",
+    "Pz", "P3", "P4", "T5", "T6",
+    "PO3", "PO4", "Oz", "O1", "O2",
 ]
 # fmt: on
 
@@ -326,6 +326,19 @@ class Ma2022(BaseDataset):
                 f"Expected {len(MA2022_CH_NAMES)} channels, got "
                 f"{len(raw.ch_names)} in {edf_path}"
             )
+        if [name.upper() for name in raw.ch_names] != [
+            name.upper() for name in MA2022_CH_NAMES
+        ]:
+            raise ValueError(
+                f"Unexpected channel order in {edf_path}: {raw.ch_names}"
+            )
+        raw.rename_channels(
+            {
+                observed: expected
+                for observed, expected in zip(raw.ch_names, MA2022_CH_NAMES)
+                if observed != expected
+            }
+        )
 
         n_samples = int(round(4.0 * SFREQ))
         expected_samples = len(labels) * n_samples

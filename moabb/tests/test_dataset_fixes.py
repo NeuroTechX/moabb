@@ -184,7 +184,8 @@ def test_ding2025_session_and_run_names_follow_moabb_contract(tmp_path: Path):
 
 def test_ma2022_edf_reader_attaches_open_v1_labels():
     ds = Ma2022()
-    info = mne.create_info(MA2022_CH_NAMES, SFREQ, ch_types="eeg")
+    edf_names = [name.upper() for name in MA2022_CH_NAMES]
+    info = mne.create_info(edf_names, SFREQ, ch_types="eeg")
     raw = mne.io.RawArray(
         np.zeros((len(MA2022_CH_NAMES), int(8 * SFREQ))), info, verbose=False
     )
@@ -201,6 +202,7 @@ def test_ma2022_edf_reader_attaches_open_v1_labels():
     reader.assert_called_once_with("session.edf", preload=True, verbose=False)
     loadmat.assert_called_once_with("session.mat", variable_names=["labels"])
     assert loaded is raw
+    assert loaded.ch_names == MA2022_CH_NAMES
     assert list(loaded.annotations.description) == ["left_hand", "right_hand"]
     np.testing.assert_allclose(loaded.annotations.onset, [0.0, 4.0])
 
