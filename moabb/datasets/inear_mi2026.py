@@ -8,7 +8,6 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
-    AuxiliaryChannelsMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
@@ -42,6 +41,11 @@ _CHANNELS_BY_COUNT = {
 
 # Wrist EMG channels, typed ``emg`` so EEG paradigms exclude them by default.
 _EMG_CHANNELS = {"HANDR", "HANDL"}
+
+# The in-ear pair is the only EEG montage common to every participant.  The
+# optional C3/C4/CZ scalp channels cannot be included in a cross-subject cache
+# without padding or fabricating measurements for the 10 two-channel subjects.
+_COMMON_EEG_CHANNELS = ["EARR", "EARL"]
 
 # Stable OSF file GUIDs for each subject's sub_NN.mat (node tq4u8, osfstorage).
 # Download URL is ``https://osf.io/download/<guid>/``.
@@ -87,7 +91,7 @@ class InEarMI2026(BaseDataset):
         ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name            #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
         ============  =======  =======  ==========  =================  ============  ===============  ===========
-        InEarMI2026        26      2-7           2              ~150            5s           500 Hz            1
+        InEarMI2026        26        2           2              ~150            5s           500 Hz            1
         ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     **Dataset description**
@@ -118,10 +122,10 @@ class InEarMI2026(BaseDataset):
     channels are given by ``data_info.channel_names`` and are recovered here from
     the channel-count of the array (see module notes).
 
-    Because the number of EEG channels differs across subjects (only the two
-    in-ear channels are common to all), cross-subject analyses restricted to the
-    intersection of channels will use the ``EARR`` and ``EARL`` pair. Wrist EMG
-    channels are typed ``emg`` so that EEG paradigms exclude them by default.
+    Because the number of source EEG channels differs across subjects, the loader
+    returns the two in-ear channels common to every subject (``EARR``, ``EARL``).
+    This keeps one real, consistent EEG feature space for cross-subject analyses;
+    optional scalp EEG and wrist EMG channels are not returned.
 
     References
     ----------
@@ -140,14 +144,13 @@ class InEarMI2026(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
-            n_channels=7,
-            channel_types={"eeg": 5, "emg": 2},
-            sensors=["EARR", "EARL", "C4", "C3", "CZ", "HANDR", "HANDL"],
+            n_channels=2,
+            channel_types={"eeg": 2},
+            sensors=list(_COMMON_EEG_CHANNELS),
             sensor_type="dry",
             montage="standard_1005",
             line_freq=50.0,
             filters="4-45 Hz band-pass (4th-order Butterworth); 50/100 Hz notch",
-            auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=2),
         ),
         participants=ParticipantMetadata(
             n_subjects=26,
@@ -267,4 +270,16 @@ class InEarMI2026(BaseDataset):
             scale=1e-6,
             onset_sample=0,
         )
+        raw = self._select_common_in_ear_eeg(raw, subject)
         return {"0": {"0": raw}}
+
+    @staticmethod
+    def _select_common_in_ear_eeg(raw, subject):
+        """Keep the two real in-ear EEG channels shared by all subjects."""
+        missing = [name for name in _COMMON_EEG_CHANNELS if name not in raw.ch_names]
+        if missing:
+            raise ValueError(
+                f"InEarMI2026 subject {subject} is missing required in-ear "
+                f"channel(s) {missing}; observed {raw.ch_names}."
+            )
+        return raw.pick(_COMMON_EEG_CHANNELS)
