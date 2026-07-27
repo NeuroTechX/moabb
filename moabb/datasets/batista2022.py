@@ -9,6 +9,7 @@ Concept DOI: 10.5281/zenodo.7664068 (this loader downloads version record
 
 import logging
 import re
+import tempfile
 import warnings
 import zipfile
 from pathlib import Path
@@ -412,7 +413,7 @@ class Batista2022(BaseDataset):
         """Read one BrainVision run and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = mne.io.read_raw_brainvision(str(vhdr), preload=True, verbose=False)
+            raw = self._read_brainvision(vhdr)
 
         rename = {k: v for k, v in _AUX_RENAME.items() if k in raw.ch_names}
         if rename:
@@ -438,3 +439,48 @@ class Batista2022(BaseDataset):
             raw.annotations.rename(rename_ann)
 
         return raw
+
+    @staticmethod
+    def _read_brainvision(vhdr):
+        """Read a BrainVision header, repairing a bad marker reference in-memory.
+
+        Two pilot recordings on the Zenodo record name the data and marker
+        files from a different session.  The corresponding ``.eeg`` and
+        ``.vmrk`` files are present beside the header with the same stem, so
+        use a short-lived corrected header rather than changing downloaded
+        source files.
+        """
+        vhdr = Path(vhdr)
+        header = vhdr.read_text(encoding="utf-8")
+        repaired_any = False
+
+        def repair_reference(match):
+            nonlocal repaired_any
+            key, filename = match.groups()
+            expected = vhdr.with_suffix({"DataFile": ".eeg", "MarkerFile": ".vmrk"}[key])
+            if (vhdr.parent / filename).is_file() or not expected.is_file():
+                return match.group(0)
+            repaired_any = True
+            return f"{key}={expected.name}"
+
+        repaired = re.sub(
+            r"(?m)^(DataFile|MarkerFile)=([^\r\n]+)", repair_reference, header
+        )
+        if not repaired_any:
+            return mne.io.read_raw_brainvision(str(vhdr), preload=True, verbose=False)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            suffix=".vhdr",
+            prefix=f".{vhdr.stem}-",
+            dir=vhdr.parent,
+            delete=False,
+        ) as tmp:
+            tmp.write(repaired)
+            repaired_vhdr = Path(tmp.name)
+        try:
+            return mne.io.read_raw_brainvision(
+                str(repaired_vhdr), preload=True, verbose=False
+            )
+        finally:
+            repaired_vhdr.unlink(missing_ok=True)
