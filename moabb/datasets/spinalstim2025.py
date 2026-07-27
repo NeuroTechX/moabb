@@ -295,6 +295,17 @@ class SpinalStim2025(BaseDataset):
         if aux_present:
             raw.set_channel_types(dict.fromkeys(aux_present, "eog"))
 
+        missing_eeg = [channel for channel in _EEG_CHANNELS if channel not in raw.ch_names]
+        if missing_eeg:
+            raise ValueError(
+                "SpinalStim2025 recording is missing required EEG channels: "
+                f"{missing_eeg}; available channels: {raw.ch_names}"
+            )
+        # d3/d4 archive recordings swap O2 and OZ in their GDF channel order.
+        # The channel set is unchanged, so restore the documented acquisition
+        # order before Braindecode caches are combined across cohorts.
+        raw.reorder_channels([*_EEG_CHANNELS, *aux_present])
+
         # Keep only the two motor-imagery class cues and label them by class.
         onset, duration, desc = [], [], []
         for ann in raw.annotations:
