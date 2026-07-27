@@ -63,9 +63,12 @@ EEG_CHANNELS = [
 EOG_CHANNELS = ["VU", "VD", "HR", "HL"]
 INERTIAL_CHANNELS = ["AX", "AY", "AZ"]
 
-# Sample-wise task codes stored in ``task_EEG``.
-REST_CODE = 211  # relaxation task
-MI_CODE = 311  # motor imagery of ankle dorsiflexion/plantarflexion
+# Sample-wise task codes stored in ``task_EEG``.  The condition is encoded in
+# the tens digit: STATIC uses 211/311, while MOTION uses 221/321.  In both
+# cases the 30-second relaxation phase is the ``21`` code and the 28-second
+# motor-imagery phase is the ``31`` code.
+REST_CODES = (211, 221)
+MI_CODES = (311, 321)
 
 SFREQ = 250.0
 
@@ -260,8 +263,11 @@ class PoloHortiguela2025(BaseDataset):
         # Build annotations from the sample-wise task code channel.
         task = np.asarray(mat.task_EEG).ravel()
         onsets, durations, descriptions = [], [], []
-        for code, label in ((REST_CODE, "rest"), (MI_CODE, "motor_imagery")):
-            mask = task == code
+        for codes, label in ((REST_CODES, "rest"), (MI_CODES, "motor_imagery")):
+            # The archive uses a condition-specific code (STATIC/MOTION) for
+            # the same protocol phase.  Match both variants rather than
+            # silently emitting targetless MOTION raws.
+            mask = np.isin(task, codes)
             if not mask.any():
                 continue
             # Segment starts: where the mask turns on.
