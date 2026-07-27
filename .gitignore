@@ -150,3 +150,6 @@ results/results*
 docs/source/_static/timelines/
 docs/source/_static/viz/
 .env
+
+# local API keys (never commit)
+.dataset_keys.env

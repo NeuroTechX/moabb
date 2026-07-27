@@ -107,6 +107,65 @@ Motor Imagery Datasets
     Zhang2017
     Zhou2020
     Zuo2025
+    Garro2025
+    PerezBlanco2026
+    Iwama2023
+    KMIHandGrip2025
+    MILimbEEG
+    MIND2026
+    Song2026
+    Daly2020
+    Damm2026
+    Thapa2025
+    Cai2026
+    Peterson2022
+    Lee2022
+    LioiXP1
+    Lioi2020
+    MOVING2024
+    DFKI2023
+    Lu2026
+    Lomele2026
+    OpenViBE
+    HYGRIP2020
+    Pan2025
+    Rehab2025OpenBCI
+    PoloHortiguela2025
+    neuroTUMBCI
+    Farabbi2020
+    Medvedeva2026
+    SitStand2026
+    SpinalStim2025
+    Wirawan2024
+    Han2026
+    Batista2022
+    Zhao2026
+    InEarMI2026
+    Pan2023
+    PardoGarcia2026
+    Kodera2023
+    Sun2026
+    MartinezPeon2024
+    Russo2024
+    Wang2026
+    InMID2024
+    Patel2025
+    Vagaja2023
+    Ding2025
+    Jia2019
+    Vasilyev2021
+    Li2026
+    Perdikis2018
+    Ma2022
+    Ortiz2023
+    Yilmaz2024
+    Leeuwis2021
+    Shin2022
+    WRCC2023_MI_A
+    WRCC2023_MI_B
+    WRCC2023_MI_C
+    ZjuMI2025
+    SensoryGuidedMI2026
 
 ------------------------
 Imagined Speech Datasets

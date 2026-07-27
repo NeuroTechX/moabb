@@ -2,15 +2,29 @@
 
 import hashlib
 import json
+import zipfile
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import mne
 import numpy as np
+import requests
 
 from moabb.datasets import download as _dl
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
+from moabb.datasets.ding2025 import Ding2025
+from moabb.datasets.garro2025 import _ROOT_FILE_IDS as GARRO_ROOT_FILE_IDS
+from moabb.datasets.garro2025 import _SUBJECT_FILE_IDS as GARRO_SUBJECT_FILE_IDS
+from moabb.datasets.garro2025 import Garro2025
+from moabb.datasets.jia2019 import _FILE_IDS as JIA2019_FILE_IDS
+from moabb.datasets.jia2019 import Jia2019
+from moabb.datasets.ma2022 import MA2022_CH_NAMES, SFREQ, Ma2022
+from moabb.datasets.perezblanco2026 import PerezBlanco2026
+from moabb.datasets.sensoryguidedmi2026 import SUBJECT_MAP, SensoryGuidedMI2026
+from moabb.datasets.shin2022 import Shin2022
 from moabb.datasets.ssvep_mamem import MAMEM1
+from moabb.datasets.sun2026 import Sun2026
 
 
 def _fake_bciexp(n_channels=3, n_samples=4, n_trials=5):
@@ -91,6 +105,7 @@ def test_mamem_filelist_disk_cache(tmp_path: Path):
 
 def test_mamem_already_downloaded_does_not_ping_figshare(tmp_path: Path):
     _dl.fs_get_file_list.cache_clear()
+
     ds = MAMEM1()
 
     filelist = []
@@ -121,3 +136,260 @@ def test_mamem_already_downloaded_does_not_ping_figshare(tmp_path: Path):
             assert paths
             assert all(Path(p).exists() for p in paths)
     _dl.fs_get_file_list.cache_clear()
+
+
+def test_ma2022_prefers_complete_local_edf_set(tmp_path: Path):
+    ds = Ma2022()
+    edf_dir = tmp_path / "SHU_edf" / "edf"
+    edf_dir.mkdir(parents=True)
+    expected = []
+    for filename in ds._session_filenames(1, "edf"):
+        path = edf_dir / filename
+        path.touch()
+        expected.append(str(path))
+
+    with (
+        patch("moabb.datasets.ma2022.dl.get_dataset_path", return_value=str(tmp_path)),
+        patch.object(
+            ds,
+            "_mat_session_files",
+            side_effect=AssertionError("MAT fallback used despite complete EDF set"),
+        ),
+    ):
+        assert ds.data_path(1) == expected
+
+
+def test_ding2025_session_and_run_names_follow_moabb_contract(tmp_path: Path):
+    ds = Ding2025()
+    offline = tmp_path / "OfflineImagery" / "S01_OfflineImagery_R01.mat"
+    online = (
+        tmp_path
+        / "OnlineImagery_Sess01_2class_Base"
+        / "S01_OnlineImagery_Sess01_2class_Base_R01.mat"
+    )
+    for path in (offline, online):
+        path.parent.mkdir(parents=True)
+        path.touch()
+
+    with (
+        patch.object(ds, "data_path", return_value=[str(tmp_path)]),
+        patch.object(ds, "_load_run", return_value=object()),
+    ):
+        sessions = ds._get_single_subject_data(1)
+
+    assert list(sessions) == ["0SessionOfflineImagery", "1SessionOnlineImagerySess01"]
+    assert list(sessions["0SessionOfflineImagery"]) == ["0RunR01"]
+    assert list(sessions["1SessionOnlineImagerySess01"]) == ["0Run2classBaseR01"]
+
+
+def test_ma2022_edf_reader_attaches_open_v1_labels():
+    ds = Ma2022()
+    info = mne.create_info(MA2022_CH_NAMES, SFREQ, ch_types="eeg")
+    raw = mne.io.RawArray(
+        np.zeros((len(MA2022_CH_NAMES), int(8 * SFREQ))), info, verbose=False
+    )
+
+    with (
+        patch("moabb.datasets.ma2022.read_raw_edf", return_value=raw) as reader,
+        patch(
+            "moabb.datasets.ma2022.sio.loadmat",
+            return_value={"labels": np.array([[1, 2]])},
+        ) as loadmat,
+    ):
+        loaded = ds._edf_to_raw("session.edf", "session.mat")
+
+    reader.assert_called_once_with("session.edf", preload=True, verbose=False)
+    loadmat.assert_called_once_with("session.mat", variable_names=["labels"])
+    assert loaded is raw
+    assert list(loaded.annotations.description) == ["left_hand", "right_hand"]
+    np.testing.assert_allclose(loaded.annotations.onset, [0.0, 4.0])
+
+
+def test_jia2019_local_files_skip_figshare_api(tmp_path: Path):
+    ds = Jia2019()
+    files_dir = tmp_path / "MNE-jia2019-data" / "files"
+    files_dir.mkdir(parents=True)
+    expected = []
+    for side in ("left", "right"):
+        path = files_dir / JIA2019_FILE_IDS[1][side]
+        path.touch()
+        expected.append(str(path))
+
+    with (
+        patch("moabb.datasets.jia2019.dl.get_dataset_path", return_value=str(tmp_path)),
+        patch(
+            "moabb.datasets.jia2019.dl.fs_get_file_list",
+            side_effect=AssertionError("Figshare API called for local files"),
+        ),
+    ):
+        assert ds.data_path(1) == expected
+
+
+def test_garro2025_cached_archives_skip_figshare_api(tmp_path: Path):
+    ds = Garro2025()
+    root = tmp_path / "MNE-garro2025-data"
+    files_dir = root / "files"
+    files_dir.mkdir(parents=True)
+
+    for filename, file_id in GARRO_ROOT_FILE_IDS.items():
+        (files_dir / str(file_id)).write_text(filename)
+
+    archive = files_dir / str(GARRO_SUBJECT_FILE_IDS[1])
+    with zipfile.ZipFile(archive, "w") as zip_file:
+        zip_file.writestr(
+            "sub-01/eeg/sub-01_task-free_eeg.vhdr",
+            "Brain Vision Data Exchange Header File Version 1.0",
+        )
+
+    with (
+        patch("moabb.datasets.garro2025.dl.get_dataset_path", return_value=str(tmp_path)),
+        patch(
+            "moabb.datasets.garro2025.dl.fs_get_file_list",
+            side_effect=AssertionError("Figshare API called for cached archives"),
+        ),
+        patch(
+            "moabb.datasets.garro2025.dl.data_dl",
+            side_effect=AssertionError("Network download attempted for cached archives"),
+        ),
+    ):
+        downloaded_root = ds._download_root(1)
+
+    assert downloaded_root == root
+    assert (root / "dataset_description.json").exists()
+    assert (root / "participants.tsv").exists()
+    assert (root / "README.txt").exists()
+    assert (root / "sub-01/eeg/sub-01_task-free_eeg.vhdr").exists()
+
+
+def test_perezblanco2026_extracted_subject_skips_figshare_api(tmp_path: Path):
+    ds = PerezBlanco2026()
+    eeg_dir = tmp_path / "MNE-perezblanco2026-data" / "files" / "sub-01" / "eeg"
+    eeg_dir.mkdir(parents=True)
+    edf = eeg_dir / "sub-01_task-WristPointingTask_run-01_eeg.edf"
+    edf.touch()
+
+    with (
+        patch(
+            "moabb.datasets.perezblanco2026.dl.get_dataset_path",
+            return_value=str(tmp_path),
+        ),
+        patch(
+            "moabb.datasets.perezblanco2026.dl.fs_get_file_list",
+            side_effect=AssertionError("Figshare API called for extracted subject"),
+        ),
+    ):
+        assert ds.data_path(1) == [str(edf)]
+
+
+def test_sun2026_offline_probe_stops_after_local_run(tmp_path: Path):
+    ds = Sun2026()
+
+    def fake_download(_root, rel_path, _force_update):
+        if "_run-02_eeg.vhdr" in rel_path:
+            raise requests.RequestException("offline")
+        return True
+
+    with (
+        patch("moabb.datasets.sun2026.get_dataset_path", return_value=str(tmp_path)),
+        patch.object(ds, "_download_file", side_effect=fake_download),
+    ):
+        paths = ds.data_path(1)
+
+    assert [(path.session, path.run) for path in paths] == [("01", "01"), ("02", "01")]
+
+
+def test_sun2026_complete_local_runs_do_not_probe_openneuro(tmp_path: Path):
+    ds = Sun2026()
+    bids_root = tmp_path / "MNE-sun2026-data"
+    for filename in ("dataset_description.json", "participants.tsv", "participants.json"):
+        (bids_root / filename).parent.mkdir(parents=True, exist_ok=True)
+        (bids_root / filename).touch()
+
+    for session in ("01", "02"):
+        eeg_dir = bids_root / "sub-01" / f"ses-{session}" / "eeg"
+        eeg_dir.mkdir(parents=True)
+        for suffix in ("electrodes.tsv", "coordsystem.json"):
+            (eeg_dir / f"sub-01_ses-{session}_space-CapTrak_{suffix}").touch()
+        stem = f"sub-01_ses-{session}_task-graz_run-01"
+        for suffix in (
+            "eeg.vhdr",
+            "eeg.vmrk",
+            "eeg.json",
+            "channels.tsv",
+            "events.tsv",
+            "events.json",
+        ):
+            (eeg_dir / f"{stem}_{suffix}").touch()
+        (eeg_dir / f"{stem}_eeg.eeg").touch()
+
+    with (
+        patch("moabb.datasets.sun2026.get_dataset_path", return_value=str(tmp_path)),
+        patch(
+            "moabb.datasets.sun2026.requests.get",
+            side_effect=AssertionError("OpenNeuro probed for complete local runs"),
+        ),
+    ):
+        paths = ds.data_path(1)
+
+    assert [(path.session, path.run) for path in paths] == [("01", "01"), ("02", "01")]
+
+
+def test_shin2022_run_names_start_with_integer(tmp_path: Path):
+    ds = Shin2022()
+    run_dir = tmp_path / "BW"
+    run_dir.mkdir()
+    (run_dir / "BW120.dat").touch()
+
+    with (
+        patch.object(ds, "data_path", return_value=str(tmp_path)),
+        patch.object(ds, "_read_bci2000_dat", return_value=object()),
+    ):
+        runs = ds._get_single_subject_data(1)["0"]
+
+    assert list(runs) == ["0BW120"]
+
+
+def test_sensoryguided_subject_ids_are_group_scoped():
+    assert len(SUBJECT_MAP) == 39
+    assert SUBJECT_MAP[1] == ("JointLearning", 1)
+    assert SUBJECT_MAP[16] == ("BCI2000Control", 1)
+    assert SUBJECT_MAP[24] == ("TactileControl", 1)
+    assert SUBJECT_MAP[32] == ("EEGNetControl", 1)
+
+
+def test_sensoryguided_bci2000_codebook():
+    ds = SensoryGuidedMI2026()
+    two_dimensional = {
+        "trialTargetCode": [
+            np.array([1, 1]),
+            np.array([2, 2]),
+            np.array([3, 3]),
+            np.array([4, 4]),
+        ]
+    }
+    up_down = {"trialTargetCode": [np.array([1, 1]), np.array([2, 2])]}
+
+    np.testing.assert_array_equal(
+        ds._trial_label_events(two_dimensional, 4, "S001_sess04_run01.mat"), [2, 1, 3, 4]
+    )
+    np.testing.assert_array_equal(
+        ds._trial_label_events(up_down, 2, "S001_sess03_run01UD.mat"), [3, 4]
+    )
+
+
+def test_sensoryguided_read_run_keeps_first_trial_event():
+    ds = SensoryGuidedMI2026()
+    run_data = {
+        "meta": {"sampling_rate_hz": 1000.0},
+        "trialSignal": np.zeros((5000, 2, 2)),
+        "trialTargetClass": np.column_stack(
+            [np.zeros(5000, dtype=int), np.ones(5000, dtype=int)]
+        ),
+    }
+
+    with patch.object(ds, "_read_mat", return_value=run_data):
+        raw = ds._read_run("S001_sess01_run01.mat")
+
+    assert raw.get_channel_types() == ["eeg", "eeg"]
+    assert list(raw.annotations.description) == ["left_hand", "right_hand"]
+    np.testing.assert_allclose(raw.annotations.onset, [0.0, 5.0])

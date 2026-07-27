@@ -58,6 +58,68 @@ NEMAR_ID_EXEMPT = {
     "FakeVirtualRealityDataset",
     "Schrag2026Pediatric",
     "Lenaig2026",
+    "Garro2025",
+    "KMIHandGrip2025",
+    "MILimbEEG",
+    "MIND2026",
+    "PerezBlanco2026",
+    "Song2026",
+    "Thapa2025",
+    # Cai2026 is hosted on OpenNeuro (ds006840) but its loader keeps nemar_id
+    # commented out (NEMAR mirror unconfirmed); exempt until the mirror id lands.
+    "Cai2026",
+    "DFKI2023",
+    "Farabbi2020",
+    "HYGRIP2020",
+    "Lomele2026",
+    "Lu2026",
+    "MOVING2024",
+    "Medvedeva2026",
+    "OpenViBE",
+    "Pan2025",
+    "PoloHortiguela2025",
+    "Rehab2025OpenBCI",
+    "SitStand2026",
+    "SpinalStim2025",
+    "Wirawan2024",
+    "neuroTUMBCI",
+    # Round-2 batch: none of these loaders set a live nemar_id. Han2026
+    # (OpenNeuro ds007327) and Sun2026 (OpenNeuro ds007221, commented out like
+    # Cai2026) are on OpenNeuro but leave nemar_id unset, so they are exempt too.
+    "Han2026",
+    "Batista2022",
+    "Zhao2026",
+    "InEarMI2026",
+    "Pan2023",
+    "PardoGarcia2026",
+    "Kodera2023",
+    "Sun2026",
+    # Round-4 batch: Zenodo/figshare/Mendeley/Dataverse/UCL/OSF sources, none
+    # sets a valid OpenNeuro/NEMAR id, so all are exempt.
+    "MartinezPeon2024",
+    "Russo2024",
+    "Wang2026",
+    "InMID2024",
+    "Patel2025",
+    "Vagaja2023",
+    "Ding2025",
+    "Jia2019",
+    "Vasilyev2021",
+    "Li2026",
+    "Perdikis2018",
+    # Round-5 batch: figshare/Zenodo/DataverseNL/Harvard-Dataverse/Hugging-Face
+    # sources, none sets a valid OpenNeuro/NEMAR id, so all are exempt.
+    "Ma2022",
+    "Ortiz2023",
+    "Yilmaz2024",
+    "Leeuwis2021",
+    "Shin2022",
+    "WRCC2023_MI_A",
+    "WRCC2023_MI_B",
+    "WRCC2023_MI_C",
+    "ZjuMI2025",
+    # KiltHub/Figshare release; no OpenNeuro/NEMAR mirror.
+    "SensoryGuidedMI2026",
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here

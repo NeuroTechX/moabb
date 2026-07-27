@@ -637,8 +637,33 @@ def download_and_extract_subject_zip(
 
     extract_dir = Path(extract_dir)
     extract_dir.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zip_path) as zf:
-        safe_extract_zip(zf, extract_dir)
+    try:
+        with zipfile.ZipFile(zip_path) as zf:
+            safe_extract_zip(zf, extract_dir)
+    except NotImplementedError:
+        # Python's zipfile cannot decompress some methods (notably deflate64,
+        # used by large figshare archives such as Ding2025). Fall back to a
+        # system 7z, which handles them.
+        _extract_zip_with_7z(zip_path, extract_dir)
+
+
+def _extract_zip_with_7z(zip_path, dest_dir):
+    """Extract a ZIP that Python's :mod:`zipfile` cannot (e.g. deflate64) using 7z."""
+    if shutil.which("7z") is None:
+        raise RuntimeError(
+            "ZIP uses a compression method unsupported by Python's zipfile "
+            "(e.g. deflate64) and no '7z' command is available to fall back to. "
+            "Install 7-Zip (provides the '7z' command)."
+        )
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        ["7z", "x", "-y", f"-o{dest_dir}", str(zip_path)], capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"7z ZIP extraction failed (exit {result.returncode}):\n{result.stderr}"
+        )
 
 
 def extract_rar(rar_path, dest_dir):
