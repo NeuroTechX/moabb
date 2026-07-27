@@ -200,6 +200,12 @@ class OpenViBE(BaseDataset):
         with bz2.open(file_path, "rt") as fobj:
             df = pd.read_csv(fobj, low_memory=False)
 
+        # Records 01--04 name the nasion reference ``Ref_Nose``, while
+        # records 05--14 use its standard 10-10 name ``Nz``.  Normalize this
+        # one source-header alias before selecting the fixed channel order.
+        if "Ref_Nose" not in df.columns and "Nz" in df.columns:
+            df = df.rename(columns={"Nz": "Ref_Nose"})
+
         # Signal channels (11), converted from microvolts to volts.
         signal = df[_CSV_CHANNELS].to_numpy(dtype=np.float64).T * 1e-6
 
