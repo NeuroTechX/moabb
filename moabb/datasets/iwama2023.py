@@ -8,6 +8,7 @@ Data DOI: 10.18112/openneuro.ds004444.v1.0.1
 """
 
 import logging
+import tempfile
 from pathlib import Path
 
 import mne
@@ -67,6 +68,8 @@ _ROOT_FILES = [
     "task-smrbmi_eeg.json",
     "task-smrbmi_events.json",
 ]
+
+_DOWNLOAD_ATTEMPTS = 3
 
 
 class Iwama2023(BaseBIDSDataset):
@@ -298,13 +301,44 @@ class Iwama2023(BaseBIDSDataset):
             return True
         local_path.parent.mkdir(parents=True, exist_ok=True)
         url = f"{_S3_BASE}/{rel_path}"
-        log.info("Downloading %s ...", rel_path)
-        resp = requests.get(url, stream=True, timeout=300)
-        if resp.status_code == 404:
-            log.debug("Not found: %s (skipping)", url)
-            return False
-        resp.raise_for_status()
-        with open(local_path, "wb") as fout:
-            for chunk in resp.iter_content(chunk_size=8192):
-                fout.write(chunk)
-        return True
+        for attempt in range(1, _DOWNLOAD_ATTEMPTS + 1):
+            temp_path = None
+            response = None
+            try:
+                log.info(
+                    "Downloading %s (attempt %d/%d) ...",
+                    rel_path,
+                    attempt,
+                    _DOWNLOAD_ATTEMPTS,
+                )
+                response = requests.get(url, stream=True, timeout=300)
+                if response.status_code == 404:
+                    log.debug("Not found: %s (skipping)", url)
+                    return False
+                response.raise_for_status()
+                with tempfile.NamedTemporaryFile(
+                    mode="wb", dir=local_path.parent, delete=False
+                ) as fout:
+                    temp_path = Path(fout.name)
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            fout.write(chunk)
+                temp_path.replace(local_path)
+                return True
+            except requests.RequestException as exc:
+                if attempt == _DOWNLOAD_ATTEMPTS:
+                    raise
+                log.warning(
+                    "Download of %s failed (%s); retrying (%d/%d)",
+                    rel_path,
+                    exc,
+                    attempt,
+                    _DOWNLOAD_ATTEMPTS,
+                )
+            finally:
+                if response is not None:
+                    response.close()
+                if temp_path is not None:
+                    temp_path.unlink(missing_ok=True)
+
+        raise RuntimeError(f"Unreachable download retry state for {url}")
