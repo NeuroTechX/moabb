@@ -208,6 +208,44 @@ class Cai2026(BaseDataset):
             return f"{row['congruency']}_{row['direction']}"
         return f"{row['hand']}_hand"
 
+    @staticmethod
+    def _normalize_scalp_channels(raw):
+        """Keep the canonical scalp montage and put it in a stable order.
+
+        A subset of the BIDS recordings labels the two mastoids (``M1`` and
+        ``M2``) as EEG.  They are not part of the advertised 26-channel
+        montage, so keeping them makes cross-subject concatenation depend on
+        the subject.  Preserve the documented auxiliary channels and any
+        non-EEG/non-misc channel, but discard surplus EEG or misc channels.
+        """
+        missing = [name for name in _EEG_CH_NAMES if name not in raw.ch_names]
+        if missing:
+            raise ValueError(
+                "Cai2026 recording cannot be normalized to the canonical "
+                f"26-channel scalp montage; missing required channels: {missing}. "
+                f"Available channels: {raw.ch_names}"
+            )
+
+        channel_types = dict(zip(raw.ch_names, raw.get_channel_types()))
+        extras = [
+            name
+            for name, channel_type in channel_types.items()
+            if channel_type in ("eeg", "misc")
+            and name not in _EEG_CH_NAMES
+            and name not in _MISC_CH_NAMES
+        ]
+        if extras:
+            raw.drop_channels(extras)
+
+        # ``reorder_channels`` expects every retained channel.  The canonical
+        # scalp channels always lead, followed by any documented auxiliaries;
+        # other non-EEG/non-misc channel types retain their original order.
+        ordered = list(_EEG_CH_NAMES)
+        ordered.extend(name for name in _MISC_CH_NAMES if name in raw.ch_names)
+        ordered.extend(name for name in raw.ch_names if name not in ordered)
+        raw.reorder_channels(ordered)
+        return raw
+
     def _get_single_subject_data(self, subject):
         """Return {session: {run: Raw}} for one subject."""
         bids_paths = self.data_path(subject)
@@ -241,6 +279,7 @@ class Cai2026(BaseDataset):
                     onset=onset, duration=np.zeros(len(onset)), description=descriptions
                 )
             )
+            self._normalize_scalp_channels(raw)
 
             acq = bids_path.acquisition
             run = bids_path.run
