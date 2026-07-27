@@ -8,6 +8,7 @@ Concept DOI: 10.5281/zenodo.8086085 (this loader downloads version record
 
 import logging
 import re
+import tempfile
 import warnings
 import zipfile
 from pathlib import Path
@@ -372,11 +373,60 @@ class Vagaja2023(BaseDataset):
         montage = make_standard_montage("standard_1020")
         return {"0": {"0": self._load_run(vhdr, montage)}}
 
+    @staticmethod
+    def _read_brainvision(vhdr):
+        """Read BrainVision data, repairing a stale same-stem BIDS header.
+
+        The published subject-31 MI header retains lower-case acquisition
+        names with an extra underscore, while the archive contains the
+        adjacent `SUB31_MI.eeg` and `SUB31_MI.vmrk` files.  Only a missing
+        reference with an existing same-stem sibling is repaired, in a
+        temporary header, leaving the downloaded archive untouched.
+        """
+        vhdr = Path(vhdr)
+        header = vhdr.read_text(encoding="utf-8")
+        repaired = header
+        for field, suffix in (("DataFile", ".eeg"), ("MarkerFile", ".vmrk")):
+            match = re.search(rf"(?m)^{field}=(.+)$", repaired)
+            if match is None:
+                raise ValueError(f"Missing {field} entry in BrainVision header {vhdr}")
+            referenced = vhdr.parent / match.group(1).strip()
+            if referenced.exists():
+                continue
+            sibling = vhdr.with_suffix(suffix)
+            if not sibling.exists():
+                raise FileNotFoundError(
+                    f"{vhdr} references missing {referenced.name}; expected BIDS "
+                    f"sibling {sibling.name} is also absent."
+                )
+            repaired = re.sub(
+                rf"(?m)^{field}=.+$", f"{field}={sibling.name}", repaired
+            )
+
+        temporary = None
+        try:
+            path = vhdr
+            if repaired != header:
+                with tempfile.NamedTemporaryFile(
+                    "w",
+                    suffix=".vhdr",
+                    dir=vhdr.parent,
+                    encoding="utf-8",
+                    delete=False,
+                ) as fout:
+                    fout.write(repaired)
+                    temporary = Path(fout.name)
+                path = temporary
+            return mne.io.read_raw_brainvision(path, preload=True, verbose=False)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
     def _load_run(self, vhdr, montage):
         """Read one BrainVision run and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = mne.io.read_raw_brainvision(str(vhdr), preload=True, verbose=False)
+            raw = self._read_brainvision(vhdr)
 
         rename = {k: v for k, v in _AUX_RENAME.items() if k in raw.ch_names}
         if rename:
