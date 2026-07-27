@@ -34,13 +34,21 @@ EVENTS = {"left_hand": 1, "right_hand": 2}
 # scalp EEG and are marked as misc.
 _AUX_CHANNELS = {"17", "18"}
 
+# Every source recording contains these nine scalp electrodes.  The 500 Hz
+# layout has seven additional scalp electrodes, whereas the 1000 Hz layout
+# contains only this set.  Keep the ordered intersection for a genuine
+# cross-subject channel space; do not pad the 9-channel recordings or invent
+# signals for the absent optional electrodes.
+_COMMON_EEG_CHANNELS = ("Fz", "Cz", "Pz", "F3", "F4", "P3", "P4", "C3", "C4")
+
 # Deterministic subject map: one subject == one (recording-date, person-token)
 # group of BrainVision recordings that contains both left- and right-hand runs.
-# Person tokens beginning with a digit belong to the 16-channel / 500 Hz cohort
-# (short file names ``<idx><initial><ddmmyyyy><lh|rh><run>``); tokens beginning
-# with ``S`` belong to the 9-channel / 1000 Hz cohort (``HR_<ddmmyyyy>_<NN>_...``
-# with Czech ``leva``/``prava`` = left/right suffixes). The single unlabelled
-# recording (``HR_02092021_02_...``, no side suffix) is excluded.
+# Short names follow ``<idx><initial><ddmmyyyy><lh|rh><run>``; ``HR_*`` names
+# carry Czech ``leva``/``prava`` = left/right suffixes. The source layouts vary
+# by recording date as well as file-name family, so channel normalization is
+# derived from the actual header rather than inferred from this token. The
+# single unlabelled recording (``HR_02092021_02_...``, no side suffix) is
+# excluded.
 SUBJECTS = [
     ("01_12_2020", "1z"),
     ("01_12_2020", "2z"),
@@ -120,7 +128,7 @@ class Kodera2023(BaseDataset):
         =========  =======  =======  ==========  =================  ============  ===============  ===========
         Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
         =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Kodera2023      29     9-16           2              ~20-30            4s        500/1000 Hz            1
+        Kodera2023      29       9           2              ~20-30            4s        500/1000 Hz            1
         =========  =======  =======  ==========  =================  ============  ===============  ===========
 
     **Dataset description**
@@ -135,8 +143,8 @@ class Kodera2023(BaseDataset):
     The archive mixes two acquisition cohorts recorded on eleven dates:
 
     * a 16-channel cohort sampled at 500 Hz (Fp1, F3, F4, C3, C4, P3, P4, F7,
-      F8, T3, T4, T5, T6, Cz, Fz, Pz, plus two unnamed auxiliary channels kept
-      as misc), with short file names such as ``1z01122020lh1``;
+      F8, T3, T4, T5, T6, Cz, Fz, Pz, plus two unnamed auxiliary channels),
+      with short file names such as ``1z01122020lh1``;
     * a 9-channel cohort sampled at 1000 Hz (Fz, Cz, Pz, F3, F4, P3, P4, C3, C4;
       a subset of the 16-channel montage), with file names such as
       ``HR_07102021_09_s_vibratory_s_haptikou_leva``.
@@ -145,7 +153,11 @@ class Kodera2023(BaseDataset):
     both left- and right-hand runs; 29 such subjects are exposed, each as a
     single session with two to four runs. Each run is annotated at its ``S 1``
     imagery cue onsets with the run's class label, so the ``LeftRightImagery``
-    paradigm epochs both classes across a subject's runs.
+    paradigm epochs both classes across a subject's runs. To make subjects from
+    the two acquisition layouts comparable, the loader exposes their ordered
+    nine-channel scalp intersection (Fz, Cz, Pz, F3, F4, P3, P4, C3, C4).
+    The seven 500 Hz-only scalp channels and the two unnamed auxiliary channels
+    are deliberately omitted rather than padded or fabricated.
 
     Notes
     -----
@@ -172,29 +184,22 @@ class Kodera2023(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=16,
-            channel_types={"eeg": 16, "misc": 2},
+            n_channels=9,
+            channel_types={"eeg": 9},
             montage="standard_1020",
             hardware="BrainVision Recorder (BrainProducts)",
             reference=None,
             ground=None,
             sensors=[
-                "Fp1",
+                "Fz",
+                "Cz",
+                "Pz",
                 "F3",
                 "F4",
-                "C3",
-                "C4",
                 "P3",
                 "P4",
-                "F7",
-                "F8",
-                "T3",
-                "T4",
-                "T5",
-                "T6",
-                "Cz",
-                "Fz",
-                "Pz",
+                "C3",
+                "C4",
             ],
             line_freq=50.0,
         ),
@@ -330,6 +335,17 @@ class Kodera2023(BaseDataset):
         aux = {ch: "misc" for ch in raw.ch_names if ch in _AUX_CHANNELS}
         if aux:
             raw.set_channel_types(aux)
+
+        missing = [ch for ch in _COMMON_EEG_CHANNELS if ch not in raw.ch_names]
+        if missing:
+            raise ValueError(
+                "Kodera2023 recording is missing required shared EEG channels "
+                f"{missing}: {vhdr_path}"
+            )
+        # The 16-channel recordings contain seven optional scalp electrodes;
+        # keeping their exact ordered intersection with the 9-channel cohort
+        # is the only lossless cross-subject normalization available here.
+        raw.pick(list(_COMMON_EEG_CHANNELS))
         raw.set_montage(
             make_standard_montage("standard_1020"), on_missing="ignore", match_case=False
         )
