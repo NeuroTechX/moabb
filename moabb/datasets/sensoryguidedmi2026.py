@@ -502,15 +502,30 @@ class SensoryGuidedMI2026(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return ``{session: {run: raw}}`` for one subject."""
         sessions = {}
+        # The BCI2000 subjects have paired filenames such as ``run01`` and
+        # ``run01UD`` in one session.  Their source run number is meaningful
+        # metadata but not a unique MOABB ordering key: ``"1"`` and ``"1UD"``
+        # both have leading index 1 and fail ``check_run_names``.  Group first,
+        # then use a deterministic ordinal as the MOABB run index while keeping
+        # the original token as a human-readable suffix.
+        files_by_session = {}
         for fname in self.data_path(subject):
-            raw = self._read_run(fname)
-            if raw is None:
-                continue
             sess_key, run_key = self._run_keys(fname)
-            runs = sessions.setdefault(sess_key, {})
-            if run_key in runs:
-                raise ValueError(
-                    f"Duplicate session/run key ({sess_key}, {run_key}) for {fname}"
+            files_by_session.setdefault(sess_key, []).append((fname, run_key))
+
+        for sess_key in sorted(files_by_session, key=lambda value: int(value)):
+            runs = {}
+            for run_index, (fname, source_run_key) in enumerate(
+                sorted(files_by_session[sess_key])
+            ):
+                raw = self._read_run(fname)
+                if raw is None:
+                    continue
+                description = "".join(
+                    char for char in source_run_key if char.isalnum()
                 )
-            runs[run_key] = raw
+                run_key = f"{run_index}Run{description}"
+                runs[run_key] = raw
+            if runs:
+                sessions[sess_key] = runs
         return sessions
