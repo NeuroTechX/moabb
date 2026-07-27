@@ -30,6 +30,9 @@ _FNAME_RE = re.compile(
     r"^([RL])_(\d+)_session(\d+)_(left|right)(\d+)\.fif$", re.IGNORECASE
 )
 
+# The published rehabilitation recordings use this eight-electrode montage.
+_EEG_CHANNELS = ("FCC3", "FCC4", "CCP3", "CCP4", "FCC5", "A1", "FCC6", "A2")
+
 
 class Medvedeva2026(BaseDataset):
     """Post-stroke motor-recovery dataset [1]_ (EEG modality).
@@ -214,6 +217,18 @@ class Medvedeva2026(BaseDataset):
 
             if not self.return_all_modalities:
                 raw = raw.pick("eeg")
+                # Subjects 1--3 additionally contain a small set of legacy
+                # session-2 recordings with an incompatible F7/F3/F4/F8/C3/C4
+                # montage. They cannot be concatenated with the published
+                # FCC/CCP montage used by every other run and subject. Keep
+                # the coherent eight-channel acquisition only.
+                if tuple(raw.ch_names) != _EEG_CHANNELS:
+                    warnings.warn(
+                        "Skipping Medvedeva2026 run with incompatible EEG "
+                        f"montage {raw.ch_names!r}: expected {_EEG_CHANNELS!r}.",
+                        stacklevel=2,
+                    )
+                    continue
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     montage = mne.channels.make_standard_montage("standard_1005")
@@ -229,5 +244,11 @@ class Medvedeva2026(BaseDataset):
             # by a letters+digits description only (no separators like "_").
             run_str = f"{len(session)}{limb}{hand}{run_idx}"
             session[run_str] = raw
+
+        if not sessions:
+            raise ValueError(
+                f"Medvedeva2026 subject {subject} has no runs with the "
+                "published eight-channel EEG montage."
+            )
 
         return sessions
