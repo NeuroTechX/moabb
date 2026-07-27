@@ -17,7 +17,15 @@ class LogVariance(BaseEstimator, TransformerMixin):
         """transform."""
         if X.ndim != 3:  # was assert, now raises properly
             raise ValueError(f"X must be 3-dimensional, got {X.ndim}")
-        return np.log(np.var(X, -1))
+        variances = np.var(X, axis=-1)
+        # A constant recorded channel has a mathematically valid variance of
+        # zero, but its logarithm is undefined. Replace only exact zeros with
+        # the smallest normal value for the variance dtype: positive variances
+        # (including subnormals) remain exactly unchanged.
+        safe_variances = np.where(
+            variances == 0, np.finfo(variances.dtype).tiny, variances
+        )
+        return np.log(safe_variances)
 
 
 class FM(BaseEstimator, TransformerMixin):
