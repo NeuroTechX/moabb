@@ -88,7 +88,6 @@ NEMAR_ID_EXEMPT = {
     # Cai2026) are on OpenNeuro but leave nemar_id unset, so they are exempt too.
     "Han2026",
     "Batista2022",
-    "Zhao2026",
     "InEarMI2026",
     "Pan2023",
     "PardoGarcia2026",

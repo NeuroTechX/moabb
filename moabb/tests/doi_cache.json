@@ -2465,22 +2465,6 @@
         "year": 2022,
         "doi": "10.5281/zenodo.7664068"
     },
-    "10.5281/zenodo.21470456": {
-        "title": "EEG Dataset for Grip-Force-Level Motor Imagery",
-        "authors": [
-            "Jialing Zhao"
-        ],
-        "year": 2026,
-        "doi": "10.5281/zenodo.21470456"
-    },
-    "10.5281/zenodo.21470455": {
-        "title": "EEG Dataset for Grip-Force-Level Motor Imagery (data)",
-        "authors": [
-            "Jialing Zhao"
-        ],
-        "year": 2026,
-        "doi": "10.5281/zenodo.21470455"
-    },
     "10.17605/OSF.IO/TQ4U8": {
         "title": "Introducing an In-Ear EEG Dataset for Binary Motor Imagery Classification",
         "authors": [],

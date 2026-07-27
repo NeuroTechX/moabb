@@ -139,7 +139,6 @@ Motor Imagery Datasets
     Wirawan2024
     Han2026
     Batista2022
-    Zhao2026
     InEarMI2026
     Pan2023
     PardoGarcia2026
