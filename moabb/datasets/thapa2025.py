@@ -5,13 +5,15 @@ Article DOI: 10.1038/s41597-025-06039-9
 Data: Figshare article 28632599 (single BIDS archive, CC BY 4.0).
 """
 
+import csv
 import re
+import tempfile
 import warnings
 import zipfile
 from pathlib import Path
 
 import mne
-from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
+from mne_bids import BIDSPath, get_entity_vals
 
 from moabb.datasets import download as dl
 from moabb.datasets.metadata.schema import (
@@ -52,7 +54,18 @@ _EEG_CHANNELS = [
 # Non-EEG auxiliary channels to drop when building the EEG view:
 # 4 EOG, 1 audio-cue trigger, 3-axis accelerometer.
 _EOG_CHANNELS = ["EOGL", "EOGR", "EOGU", "EOGD"]
-_AUX_DROP = ["TRIG", "ACCX", "ACCY", "ACCZ", "ACC_X", "ACC_Y", "ACC_Z"]
+_AUX_DROP = [
+    "TRIG",
+    "ACCX",
+    "ACCY",
+    "ACCZ",
+    "ACC_X",
+    "ACC_Y",
+    "ACC_Z",
+    "X",
+    "Y",
+    "Z",
+]
 
 
 def _target_from_description(desc):
@@ -298,6 +311,105 @@ class Thapa2025(BaseDataset):
                     bids_paths.append(bids_path)
         return bids_paths
 
+    @staticmethod
+    def _read_brainvision(vhdr_path):
+        """Read a BIDS BrainVision run, repairing stale sibling references.
+
+        Three files in the published archive retain an acquisition-time
+        ``DataFile`` or ``MarkerFile`` name although the BIDS conversion
+        renamed the adjacent ``.eeg``/``.vmrk`` file.  Repair only a missing
+        reference for which the same-stem BIDS sibling exists, in a temporary
+        header, leaving the downloaded archive unchanged.
+        """
+        vhdr_path = Path(vhdr_path)
+        header = vhdr_path.read_text(encoding="utf-8")
+        repaired = header
+        for field, suffix in (("DataFile", ".eeg"), ("MarkerFile", ".vmrk")):
+            match = re.search(rf"(?m)^{field}=(.+)$", repaired)
+            if match is None:
+                raise ValueError(f"Missing {field} entry in BrainVision header {vhdr_path}")
+            referenced = vhdr_path.parent / match.group(1).strip()
+            if referenced.exists():
+                continue
+            sibling = vhdr_path.with_suffix(suffix)
+            if not sibling.exists():
+                raise FileNotFoundError(
+                    f"{vhdr_path} references missing {referenced.name}; expected BIDS "
+                    f"sibling {sibling.name} is also absent."
+                )
+            repaired = re.sub(
+                rf"(?m)^{field}=.+$", f"{field}={sibling.name}", repaired
+            )
+
+        temporary = None
+        try:
+            path = vhdr_path
+            if repaired != header:
+                with tempfile.NamedTemporaryFile(
+                    "w",
+                    suffix=".vhdr",
+                    dir=vhdr_path.parent,
+                    encoding="utf-8",
+                    delete=False,
+                ) as fout:
+                    fout.write(repaired)
+                    temporary = Path(fout.name)
+                path = temporary
+            return mne.io.read_raw_brainvision(path, preload=True, verbose=False)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
+    @staticmethod
+    def _annotations_from_events(events_path):
+        """Read BIDS events without assuming rectangular optional columns.
+
+        The source's sub-13/run-0001 events.tsv has one target row without an
+        empty ``stim_file`` field and the following row has an extra trailing
+        tab. ``mne_bids`` delegates this to ``numpy.loadtxt`` and rejects the
+        whole run. ``csv.DictReader`` preserves the required onset and target
+        fields in both rows, so no protocol event needs to be discarded.
+        """
+        events_path = Path(events_path)
+        onsets, durations, descriptions = [], [], []
+        with events_path.open(encoding="utf-8", newline="") as fin:
+            reader = csv.DictReader(fin, delimiter="\t")
+            required = {"onset", "duration", "trial_type"}
+            if reader.fieldnames is None or not required.issubset(reader.fieldnames):
+                raise ValueError(
+                    f"Thapa2025 events file {events_path} lacks required columns "
+                    f"{sorted(required)}; found {reader.fieldnames}."
+                )
+            for line_number, row in enumerate(reader, start=2):
+                onset = (row.get("onset") or "").strip()
+                trial_type = (row.get("trial_type") or "").strip()
+                if not onset or not trial_type:
+                    raise ValueError(
+                        f"Thapa2025 events file {events_path} has no onset or "
+                        f"trial_type at line {line_number}."
+                    )
+                try:
+                    onset_value = float(onset)
+                except ValueError as exc:
+                    raise ValueError(
+                        f"Invalid onset {onset!r} in {events_path} line {line_number}."
+                    ) from exc
+                duration = (row.get("duration") or "").strip()
+                if duration.lower() in {"", "n/a", "na"}:
+                    duration_value = 0.0
+                else:
+                    try:
+                        duration_value = float(duration)
+                    except ValueError as exc:
+                        raise ValueError(
+                            f"Invalid duration {duration!r} in {events_path} "
+                            f"line {line_number}."
+                        ) from exc
+                onsets.append(onset_value)
+                durations.append(duration_value)
+                descriptions.append(_target_from_description(trial_type) or trial_type)
+        return mne.Annotations(onsets, durations, descriptions)
+
     def _get_single_subject_data(self, subject):
         """Return {session: {run: Raw}} for one subject."""
         bids_paths = self.data_path(subject)
@@ -311,8 +423,7 @@ class Thapa2025(BaseDataset):
         for bids_path in bids_paths:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                raw = read_raw_bids(bids_path=bids_path, verbose=False)
-                raw.load_data(verbose=False)
+                raw = self._read_brainvision(bids_path.fpath)
 
             # Type the auxiliary channels and (by default) keep EEG only.
             type_map = {ch: "eog" for ch in _EOG_CHANNELS if ch in raw.ch_names}
@@ -322,23 +433,8 @@ class Thapa2025(BaseDataset):
             if type_map:
                 raw.set_channel_types(type_map)
 
-            # Normalise trial-target annotations to Tgt1..Tgt4. Rebuild via
-            # set_annotations rather than assigning a plain list to
-            # ``.description``: a list breaks the boolean-array indexing in
-            # mne.events_from_annotations downstream (TypeError), whereas
-            # mne.Annotations keeps ``.description`` an ndarray.
-            if len(raw.annotations):
-                new_desc = [
-                    _target_from_description(d) or d for d in raw.annotations.description
-                ]
-                raw.set_annotations(
-                    mne.Annotations(
-                        onset=raw.annotations.onset,
-                        duration=raw.annotations.duration,
-                        description=new_desc,
-                        orig_time=raw.annotations.orig_time,
-                    )
-                )
+            events_path = bids_path.copy().update(suffix="events", extension=".tsv")
+            raw.set_annotations(self._annotations_from_events(events_path.fpath))
 
             if not self.return_all_modalities:
                 raw.pick("eeg")
