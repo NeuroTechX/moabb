@@ -205,6 +205,36 @@ def test_ma2022_edf_reader_attaches_open_v1_labels():
     np.testing.assert_allclose(loaded.annotations.onset, [0.0, 4.0])
 
 
+def test_ma2022_bad_edf_numeric_header_uses_mat_session_fallback():
+    ds = Ma2022()
+    good_raw = object()
+    fallback_raw = object()
+    unreadable_header = ValueError("could not convert string to float: '        '")
+
+    with (
+        patch.object(ds, "data_path", return_value=["good.edf", "bad.edf"]),
+        patch.object(
+            ds,
+            "_mat_session_files",
+            return_value=["good.mat", "bad.mat"],
+        ),
+        patch.object(
+            ds,
+            "_edf_to_raw",
+            side_effect=[good_raw, unreadable_header],
+        ) as read_edf,
+        patch.object(ds, "_mat_to_raw", return_value=fallback_raw) as read_mat,
+    ):
+        sessions = ds._get_single_subject_data(1)
+
+    assert sessions == {
+        "0": {"0": good_raw},
+        "1": {"0": fallback_raw},
+    }
+    assert read_edf.call_count == 2
+    read_mat.assert_called_once_with("bad.mat")
+
+
 def test_jia2019_local_files_skip_figshare_api(tmp_path: Path):
     ds = Jia2019()
     files_dir = tmp_path / "MNE-jia2019-data" / "files"

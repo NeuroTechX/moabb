@@ -282,7 +282,22 @@ class Ma2022(BaseDataset):
             for session_idx, (edf_path, label_path) in enumerate(
                 zip(file_paths, label_paths)
             ):
-                sessions[str(session_idx)] = {"0": self._edf_to_raw(edf_path, label_path)}
+                try:
+                    raw = self._edf_to_raw(edf_path, label_path)
+                except ValueError as error:
+                    # Nine files in the password-protected EDF release have
+                    # blank numeric physical-min header fields. Preserve the
+                    # complete five-session dataset by using the corresponding
+                    # open-v1 MAT recording only for those malformed sessions.
+                    if "could not convert string to float" not in str(error):
+                        raise
+                    log.warning(
+                        "Unreadable EDF numeric header in %s; using %s",
+                        edf_path,
+                        label_path,
+                    )
+                    raw = self._mat_to_raw(label_path)
+                sessions[str(session_idx)] = {"0": raw}
         else:
             for session_idx, file_path in enumerate(file_paths):
                 sessions[str(session_idx)] = {"0": self._mat_to_raw(file_path)}
