@@ -1,10 +1,12 @@
 """Li2026 multi-paradigm motor-imagery EEG dataset (IMU-MI_A)."""
 
 import logging
+import re
 import zipfile
 from pathlib import Path
 
 import mne
+import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -375,7 +377,13 @@ class Li2026(BaseDataset):
     @staticmethod
     def _load_curry(cdt_path, task):
         """Read one Curry recording and label its Classic Arrow cues."""
-        raw = mne.io.read_raw_curry(cdt_path, preload=True, verbose="ERROR")
+        try:
+            raw = mne.io.read_raw_curry(cdt_path, preload=True, verbose="ERROR")
+        except RuntimeError as exc:
+            if "curryreader" not in str(exc):
+                raise
+            log.info("curryreader unavailable; using the Curry sidecar fallback")
+            raw = Li2026._read_legacy_curry(cdt_path)
 
         # Mark the trailing non-EEG channels (EOG/ECG/EMG/Trigger) by type.
         present = {ch: t for ch, t in _MISC_TYPES.items() if ch in raw.ch_names}
@@ -395,4 +403,67 @@ class Li2026(BaseDataset):
         if rename:
             raw.annotations.rename(rename)
 
+        return raw
+
+    @staticmethod
+    def _read_legacy_curry(cdt_path):
+        """Read this release's float32 Curry recording without curryreader.
+
+        MNE 1.11 delegates Curry files to an optional dependency.  The Li2026
+        release instead has a simple sample-major float32 ``.cdt`` payload and
+        text ``.dpa``/``.ceo`` sidecars, which can be read losslessly here.
+        """
+        cdt_path = Path(cdt_path)
+        dpa = cdt_path.with_suffix(cdt_path.suffix + ".dpa").read_text(
+            encoding="utf-8-sig"
+        )
+        ceo_path = cdt_path.with_suffix(cdt_path.suffix + ".ceo")
+
+        def parameter(name):
+            match = re.search(rf"(?m)^\s*{name}\s*=\s*(\S+)", dpa)
+            if match is None:
+                raise ValueError(f"Missing {name} in Curry sidecar {cdt_path}.dpa")
+            return match.group(1)
+
+        n_samples = int(parameter("NumSamples"))
+        n_channels = int(parameter("NumChannels"))
+        sfreq = float(parameter("SampleFreqHz"))
+
+        def labels(section):
+            match = re.search(
+                rf"{section} START_LIST.*?\n(.*?){section} END_LIST", dpa, re.S
+            )
+            if match is None:
+                return []
+            return [line.strip() for line in match.group(1).splitlines() if line.strip()]
+
+        ch_names = labels("LABELS") + labels("LABELS_OTHERS")
+        if len(ch_names) != n_channels:
+            raise ValueError(
+                f"Curry sidecar lists {len(ch_names)} channels, expected {n_channels}"
+            )
+        data = np.fromfile(cdt_path, dtype="<f4")
+        if data.size != n_samples * n_channels:
+            raise ValueError(
+                f"Curry data has {data.size} values, expected {n_samples * n_channels}"
+            )
+        info = mne.create_info(ch_names, sfreq, ch_types="eeg")
+        raw = mne.io.RawArray(
+            data.reshape(n_samples, n_channels).T * 1e-6, info, verbose="ERROR"
+        )
+
+        if ceo_path.is_file():
+            ceo = ceo_path.read_text(encoding="utf-8-sig")
+            match = re.search(
+                r"NUMBER_LIST START_LIST.*?\n(.*?)NUMBER_LIST END_LIST", ceo, re.S
+            )
+            if match is not None:
+                events = [
+                    line.split() for line in match.group(1).splitlines() if line.strip()
+                ]
+                onset = [int(event[0]) / sfreq for event in events]
+                description = [event[2] for event in events]
+                raw.set_annotations(
+                    mne.Annotations(onset, [0.0] * len(onset), description)
+                )
         return raw
