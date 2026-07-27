@@ -236,6 +236,21 @@ class InMID2024(BaseDataset):
         folder = f"{activity} {modality} Dataset"
         return root / INMID2024_ROOT / folder / f"{sub}.mat"
 
+    @staticmethod
+    def _trial_to_channels_by_samples(trial):
+        """Return a valid InMID trial in MNE's channel-by-sample layout.
+
+        InMID matrices are stored as ``(n_samples, 14)``.  The released
+        P05 standing/sitting movement file has one corrupt square segment
+        (13440 by 13440), which cannot represent the 14-channel recording.
+        Returning ``None`` lets the caller retain every valid segment while
+        excluding only an unusable one.
+        """
+        trial = np.asarray(trial)
+        if trial.ndim != 2 or trial.shape[1] != len(INMID2024_CHANNELS):
+            return None
+        return trial.astype(np.float64, copy=False).T
+
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -307,13 +322,33 @@ class InMID2024(BaseDataset):
                 n_trials = joined.shape[1]
 
                 for trial_idx in range(n_trials):
-                    trial = np.asarray(joined[0, trial_idx], dtype=np.float64)
-                    # trial is (n_samples, n_channels); one event per segment,
+                    trial = self._trial_to_channels_by_samples(joined[0, trial_idx])
+                    if trial is None:
+                        shape = np.asarray(joined[0, trial_idx]).shape
+                        warnings.warn(
+                            "Skipping malformed InMID2024 segment "
+                            f"(subject={subject}, modality={modality}, "
+                            f"activity={activity!r}, trial={trial_idx}, "
+                            f"shape={shape}); expected (n_samples, "
+                            f"{len(INMID2024_CHANNELS)}).",
+                            stacklevel=2,
+                        )
+                        continue
+                    # trial is (n_channels, n_samples); one event per segment,
                     # placed at the segment onset and sharing the folder class.
                     onset_samples.append(cursor)
                     onset_codes.append(self.event_id[label])
-                    segments.append(trial.T)
-                    cursor += trial.shape[0]
+                    segments.append(trial)
+                    cursor += trial.shape[1]
+
+            expected_codes = set(self.event_id.values())
+            observed_codes = set(onset_codes)
+            if observed_codes != expected_codes:
+                missing = sorted(expected_codes - observed_codes)
+                raise ValueError(
+                    f"InMID2024 subject {subject} {modality} has no usable "
+                    f"segments for event code(s) {missing}."
+                )
 
             # Concatenate all segments into one continuous recording (volts).
             data = np.concatenate(segments, axis=1) * 1e-6
