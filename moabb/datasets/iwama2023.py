@@ -274,6 +274,15 @@ class Iwama2023(BaseBIDSDataset):
         bids_root = Path(get_dataset_path("Iwama2023", path)) / "MNE-iwama2023-data"
         bids_root.mkdir(parents=True, exist_ok=True)
 
+        # A staged BIDS subject is complete enough to discover directly from
+        # its EDF files.  In particular, subjects can have non-consecutive
+        # session labels (sub-030 has ses-16 after ses-08), so probing S3 for
+        # the next numerical session both misses valid data and can block an
+        # otherwise offline load on a missing-object request.
+        if not force_update and self._staged_subject_is_complete(bids_root, subject):
+            log.info("Using locally staged Iwama2023 subject %03d", subject)
+            return str(bids_root)
+
         self._download_root_files(bids_root, force_update)
 
         subj_str = f"sub-{subject:03d}"
@@ -288,6 +297,27 @@ class Iwama2023(BaseBIDSDataset):
                 break
 
         return str(bids_root)
+
+    @staticmethod
+    def _staged_subject_edfs(bids_root, subject):
+        """Return locally staged EDFs for one subject, including sparse sessions."""
+        subject_dir = Path(bids_root) / f"sub-{subject:03d}"
+        return sorted(subject_dir.glob("ses-*/eeg/*_eeg.edf"))
+
+    @classmethod
+    def _staged_subject_is_complete(cls, bids_root, subject):
+        """Return whether every staged EDF has all required BIDS sidecars."""
+        edfs = cls._staged_subject_edfs(bids_root, subject)
+        if not edfs:
+            return False
+        for edf in edfs:
+            prefix = edf.name.removesuffix("eeg.edf")
+            if not all(
+                (edf.parent / f"{prefix}{suffix}").is_file()
+                for suffix in _SESSION_SUFFIXES
+            ):
+                return False
+        return True
 
     def _download_root_files(self, bids_root, force_update):
         for rel_path in _ROOT_FILES:
