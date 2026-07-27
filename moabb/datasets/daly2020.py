@@ -232,8 +232,25 @@ class Daly2020(BaseBIDSDataset):
                 desc[desc == code] = name
             raw.annotations.description = desc
 
+            # A few released non-calibration runs have an empty events file
+            # (sub-05/run2, sub-15/run3, and sub-17/runs2-3).  Do not let an
+            # empty target-event selection abort the entire subject; retain
+            # every run that contains at least one of the declared classes.
+            if not np.isin(desc, list(self.event_id)).any():
+                log.warning(
+                    "Skipping Daly2020 subject %02d %s: no motor-imagery events",
+                    subject,
+                    bids_path.task,
+                )
+                continue
+
             runs[str(run_idx)] = stim_channels_with_selected_ids(raw, self.event_id)
             run_idx += 1
+
+        if not runs:
+            raise ValueError(
+                f"Daly2020 subject {subject} has no usable motor-imagery runs."
+            )
 
         result["0"] = runs
         return result
