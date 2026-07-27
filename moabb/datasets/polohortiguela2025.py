@@ -200,30 +200,41 @@ class PoloHortiguela2025(BaseDataset):
             # e.g. "Bxx_S1_STATIC"), NOT from path_zip.stem (which is "content").
             extract_dir = path_zip.parent / Path(fname).stem  # .../Bxx_S1_STATIC
             if not extract_dir.is_dir():
+                archive_matches = False
                 try:
                     with z.ZipFile(path_zip, "r") as zip_ref:
                         # Only extract when the cached archive actually holds this
                         # condition's folder (the shared "content" name can leave
                         # a different condition's archive cached here).
-                        if any(
+                        archive_matches = any(
                             n.startswith(extract_dir.name + "/")
                             for n in zip_ref.namelist()
-                        ):
+                        )
+                        if archive_matches:
                             zip_ref.extractall(path_zip.parent)
                 except BadZipFile:
                     warnings.warn(
                         "Corrupted zip file detected, re-downloading...", stacklevel=2
                     )
                     path_zip.unlink(missing_ok=True)
+
+                # Every Zenodo URL ends in "/content", so data_dl can return a
+                # valid cached zip for another subject or condition. Refresh
+                # when the archive does not contain this expected top-level
+                # folder, rather than silently returning an empty session.
+                if not archive_matches:
                     path_zip = Path(
                         dl.data_dl(url, self.code, path=path, force_update=True)
                     )
                     with z.ZipFile(path_zip, "r") as zip_ref:
-                        if any(
+                        if not any(
                             n.startswith(extract_dir.name + "/")
                             for n in zip_ref.namelist()
                         ):
-                            zip_ref.extractall(path_zip.parent)
+                            raise FileNotFoundError(
+                                f"{path_zip} does not contain {extract_dir.name}"
+                            )
+                        zip_ref.extractall(path_zip.parent)
             paths.append(str(extract_dir))
         return paths
 
