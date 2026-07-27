@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import logging
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -180,6 +181,63 @@ def test_ding2025_session_and_run_names_follow_moabb_contract(tmp_path: Path):
     assert list(sessions) == ["0SessionOfflineImagery", "1SessionOnlineImagerySess01"]
     assert list(sessions["0SessionOfflineImagery"]) == ["0RunR01"]
     assert list(sessions["1SessionOnlineImagerySess01"]) == ["0Run2classBaseR01"]
+
+
+def test_ding2025_rejects_nonfinite_raw_data_before_scaling(tmp_path: Path):
+    """A corrupt MATLAB run must not enter MNE/preprocessing unchanged."""
+    ds = Ding2025()
+    mat_path = tmp_path / "S07_OnlineImagery_Sess05_3class_Base_R01.mat"
+    mat_path.touch()
+    data = np.ones((128, 16))
+    data[0, 0] = np.nan
+    data[1, 1] = np.inf
+    data[2, 2] = -np.inf
+
+    with patch(
+        "moabb.datasets.ding2025.read_mat",
+        return_value={"eeg": {"data": data, "fsample": 1024.0}},
+    ):
+        try:
+            ds._load_run(mat_path)
+        except ValueError as error:
+            message = str(error)
+        else:
+            raise AssertionError("Ding2025 accepted a raw run with non-finite EEG data")
+
+    assert "non-finite" in message
+    assert "nan=1" in message
+    assert "posinf=1" in message
+    assert "neginf=1" in message
+
+
+def test_ding2025_skips_only_nonfinite_runs_with_counts(tmp_path: Path, caplog):
+    ds = Ding2025()
+    run_dir = tmp_path / "OnlineImagery_Sess05_3class_Base"
+    bad_run = run_dir / "S07_OnlineImagery_Sess05_3class_Base_R01.mat"
+    good_run = run_dir / "S07_OnlineImagery_Sess05_3class_Base_R02.mat"
+    run_dir.mkdir()
+    bad_run.touch()
+    good_run.touch()
+
+    bad_data = np.ones((128, 16))
+    bad_data[0, 0] = np.nan
+    good_data = np.ones((128, 16))
+
+    def read_run(path):
+        data = bad_data if Path(path).name == bad_run.name else good_data
+        return {"eeg": {"data": data, "fsample": 1024.0}}
+
+    with (
+        patch.object(ds, "data_path", return_value=[str(tmp_path)]),
+        patch("moabb.datasets.ding2025.read_mat", side_effect=read_run),
+        caplog.at_level(logging.WARNING, logger="moabb.datasets.ding2025"),
+    ):
+        sessions = ds._get_single_subject_data(7)
+
+    runs = sessions["0SessionOnlineImagerySess05"]
+    assert list(runs) == ["1Run3classBaseR02"]
+    assert "Skipping S07_OnlineImagery_Sess05_3class_Base_R01.mat" in caplog.text
+    assert "non-finite eeg.data (nan=1, posinf=0, neginf=0)" in caplog.text
 
 
 def test_ma2022_edf_reader_attaches_open_v1_labels():

@@ -80,6 +80,10 @@ _TASK_TOKEN = {"imagery": "imagery", "movement": "movement"}
 _RUN_TOKENS = frozenset({"2class", "3class", "base", "finetune", "smooth"})
 
 
+class _NonFiniteEEGDataError(ValueError):
+    """A raw MATLAB run contains values that cannot be safely preprocessed."""
+
+
 def _session_key(folder_name):
     """Collapse a run-folder name to its acquisition-session key.
 
@@ -143,9 +147,10 @@ class Ding2025(BaseDataset):
     Middle-finger targets (code 3) appear only in the offline 4-class runs; the
     online runs contain 2 or 3 of the four classes. When pooled by the standard
     motor-imagery paradigm the class balance therefore varies across sessions.
-    Per the dataset README, the ``event`` struct for
-    ``S07/OnlineImagery_Sess05_3class_Base`` is missing; those runs yield no
-    trials and are skipped with a warning.
+    The eight runs in
+    ``S07/OnlineImagery_Sess05_3class_Base`` contain non-finite EEG samples.
+    Each affected raw run is skipped before scaling or later preprocessing, so
+    invalid values cannot contaminate other samples through filtering.
 
     References
     ----------
@@ -283,11 +288,14 @@ class Ding2025(BaseDataset):
                 try:
                     raw = self._load_run(mf)
                 except KeyError as e:
-                    # Expected only for runs missing an expected struct field
-                    # (e.g. the documented S07 OnlineImagery_Sess05_3class_Base
-                    # run whose 'event' struct is absent). Any other exception
-                    # type signals a genuine load failure and is re-raised.
+                    # A missing expected MATLAB field leaves no trustworthy run
+                    # to expose. Any other exception type is re-raised.
                     log.warning("Skipping %s: missing field %s", mf.name, e)
+                    continue
+                except _NonFiniteEEGDataError as e:
+                    # Do not impute raw corruption: filtering would spread it
+                    # across time and manufacture signal in subsequent windows.
+                    log.warning("Skipping %s: %s", mf.name, e)
                     continue
 
                 description = "".join(
@@ -325,6 +333,18 @@ class Ding2025(BaseDataset):
             data = data.reshape(1, -1)
         if data.shape[0] != _N_EEG and data.shape[1] == _N_EEG:
             data = data.T
+
+        # Reject corrupt source data before scaling or any later filtering and
+        # windowing. Replacing these values would fabricate EEG; moreover, a
+        # temporal filter would spread each invalid sample into neighbouring
+        # otherwise-valid data.
+        if not np.isfinite(data).all():
+            raise _NonFiniteEEGDataError(
+                "non-finite eeg.data "
+                f"(nan={np.isnan(data).sum()}, "
+                f"posinf={np.isposinf(data).sum()}, "
+                f"neginf={np.isneginf(data).sum()})"
+            )
 
         labels = eeg.get("label", None)
         if labels is not None:
