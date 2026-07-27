@@ -410,6 +410,15 @@ class Thapa2025(BaseDataset):
                 descriptions.append(_target_from_description(trial_type) or trial_type)
         return mne.Annotations(onsets, durations, descriptions)
 
+    @staticmethod
+    def _events_path_for_header(vhdr_path):
+        """Return the run-level events sidecar beside a BrainVision header."""
+        vhdr_path = Path(vhdr_path)
+        suffix = "_eeg.vhdr"
+        if not vhdr_path.name.endswith(suffix):
+            raise ValueError(f"Unexpected Thapa2025 BrainVision name: {vhdr_path}")
+        return vhdr_path.with_name(vhdr_path.name[: -len(suffix)] + "_events.tsv")
+
     def _get_single_subject_data(self, subject):
         """Return {session: {run: Raw}} for one subject."""
         bids_paths = self.data_path(subject)
@@ -433,8 +442,8 @@ class Thapa2025(BaseDataset):
             if type_map:
                 raw.set_channel_types(type_map)
 
-            events_path = bids_path.copy().update(suffix="events", extension=".tsv")
-            raw.set_annotations(self._annotations_from_events(events_path.fpath))
+            events_path = self._events_path_for_header(bids_path.fpath)
+            raw.set_annotations(self._annotations_from_events(events_path))
 
             if not self.return_all_modalities:
                 raw.pick("eeg")

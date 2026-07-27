@@ -51,3 +51,15 @@ def test_irregular_optional_events_column_preserves_all_protocol_events(tmp_path
     assert annotations.description.tolist() == ["trial_start", "Tgt4", "trial_end"]
     assert annotations.onset.tolist() == [1.0, 2.0, 3.0]
     assert annotations.duration.tolist() == [0.0, 0.0, 0.0]
+
+
+def test_events_sidecar_stays_beside_brainvision_header(tmp_path):
+    eeg_dir = tmp_path / "sub-09" / "ses-01" / "eeg"
+    eeg_dir.mkdir(parents=True)
+    header = eeg_dir / "sub-09_ses-01_task-reachingandgrasping_run-0001_eeg.vhdr"
+
+    events = Thapa2025._events_path_for_header(header)
+
+    assert events == eeg_dir / (
+        "sub-09_ses-01_task-reachingandgrasping_run-0001_events.tsv"
+    )
