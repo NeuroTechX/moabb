@@ -293,6 +293,7 @@ class Han2026(BaseDataset):
         for marker, name in _MARKER_TO_CLASS.items():
             desc[desc == marker] = name
         raw.annotations.description = desc
+        self._drop_duplicate_trial_annotations(raw)
 
         # standard_1005 places 63/64 scalp channels; the duplicate "Oz_1"
         # export artifact has no standard position and is left unplaced.
@@ -301,3 +302,30 @@ class Han2026(BaseDataset):
         )
 
         return {"0": {"0": raw}}
+
+    @staticmethod
+    def _drop_duplicate_trial_annotations(raw):
+        """Remove exact duplicate pure-condition annotations.
+
+        Subjects 20, 25, and 27 each contain a duplicated ``A11`` EEGLAB
+        marker at one onset.  Retaining both produces duplicate windows in
+        downstream consumers.  Only same-onset, same-class duplicates are
+        removed; distinct labels at an onset remain visible as a data error.
+        """
+        class_names = set(_MARKER_TO_CLASS.values())
+        seen = set()
+        duplicates = []
+        for index, (onset, duration, description) in enumerate(
+            zip(
+                raw.annotations.onset,
+                raw.annotations.duration,
+                raw.annotations.description,
+            )
+        ):
+            key = (onset, duration, description)
+            if description in class_names and key in seen:
+                duplicates.append(index)
+            else:
+                seen.add(key)
+        if duplicates:
+            raw.annotations.delete(duplicates)
