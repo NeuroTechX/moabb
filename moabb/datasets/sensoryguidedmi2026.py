@@ -455,6 +455,21 @@ class SensoryGuidedMI2026(BaseDataset):
         if not trials:
             return None
 
+        nonfinite_by_trial = [
+            int((~np.isfinite(trial)).sum()) for trial in trials
+        ]
+        nonfinite_total = sum(nonfinite_by_trial)
+        if nonfinite_total:
+            corrupt_trials = sum(count > 0 for count in nonfinite_by_trial)
+            warnings.warn(
+                f"Skipping corrupt SensoryGuidedMI2026 run {fname}: "
+                f"trialSignal contains {nonfinite_total} non-finite EEG values "
+                f"across {corrupt_trials} of {len(trials)} trials.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return None
+
         n_channels = trials[0].shape[1]
         if not ch_names or len(ch_names) != n_channels:
             ch_names = [f"EEG{i + 1}" for i in range(n_channels)]
