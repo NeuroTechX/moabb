@@ -14,7 +14,7 @@ import requests
 
 from moabb.datasets import download as _dl
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
-from moabb.datasets.ding2025 import Ding2025
+from moabb.datasets.ding2025 import _KNOWN_NONFINITE_RUNS, Ding2025
 from moabb.datasets.garro2025 import _ROOT_FILE_IDS as GARRO_ROOT_FILE_IDS
 from moabb.datasets.garro2025 import _SUBJECT_FILE_IDS as GARRO_SUBJECT_FILE_IDS
 from moabb.datasets.garro2025 import Garro2025
@@ -214,7 +214,7 @@ def test_ding2025_skips_only_nonfinite_runs_with_counts(tmp_path: Path, caplog):
     ds = Ding2025()
     run_dir = tmp_path / "OnlineImagery_Sess05_3class_Base"
     bad_run = run_dir / "S07_OnlineImagery_Sess05_3class_Base_R01.mat"
-    good_run = run_dir / "S07_OnlineImagery_Sess05_3class_Base_R02.mat"
+    good_run = run_dir / "S07_OnlineImagery_Sess05_3class_Base_R09.mat"
     run_dir.mkdir()
     bad_run.touch()
     good_run.touch()
@@ -235,9 +235,48 @@ def test_ding2025_skips_only_nonfinite_runs_with_counts(tmp_path: Path, caplog):
         sessions = ds._get_single_subject_data(7)
 
     runs = sessions["0SessionOnlineImagerySess05"]
-    assert list(runs) == ["1Run3classBaseR02"]
-    assert "Skipping S07_OnlineImagery_Sess05_3class_Base_R01.mat" in caplog.text
+    assert list(runs) == ["1Run3classBaseR09"]
+    assert (
+        "Skipping known corrupt run "
+        "OnlineImagery_Sess05_3class_Base/"
+        "S07_OnlineImagery_Sess05_3class_Base_R01.mat"
+    ) in caplog.text
     assert "non-finite eeg.data (nan=1, posinf=0, neginf=0)" in caplog.text
+
+
+def test_ding2025_known_nonfinite_guard_is_exact_and_unexpected_corruption_raises(
+    tmp_path: Path,
+):
+    expected = {
+        "OnlineImagery_Sess05_3class_Base/"
+        f"S07_OnlineImagery_Sess05_3class_Base_R{run:02d}.mat"
+        for run in range(1, 9)
+    }
+    assert _KNOWN_NONFINITE_RUNS == expected
+
+    ds = Ding2025()
+    run_dir = tmp_path / "OnlineImagery_Sess05_3class_Base"
+    unexpected = run_dir / "S07_OnlineImagery_Sess05_3class_Base_R09.mat"
+    run_dir.mkdir()
+    unexpected.touch()
+    data = np.ones((128, 16))
+    data[0, 0] = np.nan
+
+    with (
+        patch.object(ds, "data_path", return_value=[str(tmp_path)]),
+        patch(
+            "moabb.datasets.ding2025.read_mat",
+            return_value={"eeg": {"data": data, "fsample": 1024.0}},
+        ),
+    ):
+        try:
+            ds._get_single_subject_data(7)
+        except ValueError as error:
+            message = str(error)
+        else:
+            raise AssertionError("Ding2025 silently skipped unexpected corruption")
+
+    assert "non-finite eeg.data (nan=1, posinf=0, neginf=0)" in message
 
 
 def test_ma2022_edf_reader_attaches_open_v1_labels():

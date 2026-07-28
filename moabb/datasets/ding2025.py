@@ -79,6 +79,14 @@ _TASK_TOKEN = {"imagery": "imagery", "movement": "movement"}
 # are therefore stripped when deriving the MOABB session key.
 _RUN_TOKENS = frozenset({"2class", "3class", "base", "finetune", "smooth"})
 
+# These eight source runs contain non-finite EEG samples in KiltHub article
+# 29104040 v2. Paths are relative to the extracted S07 subject directory.
+_KNOWN_NONFINITE_RUNS = frozenset(
+    "OnlineImagery_Sess05_3class_Base/"
+    f"S07_OnlineImagery_Sess05_3class_Base_R{run:02d}.mat"
+    for run in range(1, 9)
+)
+
 
 class _NonFiniteEEGDataError(ValueError):
     """A raw MATLAB run contains values that cannot be safely preprocessed."""
@@ -147,10 +155,11 @@ class Ding2025(BaseDataset):
     Middle-finger targets (code 3) appear only in the offline 4-class runs; the
     online runs contain 2 or 3 of the four classes. When pooled by the standard
     motor-imagery paradigm the class balance therefore varies across sessions.
-    The eight runs in
-    ``S07/OnlineImagery_Sess05_3class_Base`` contain non-finite EEG samples.
-    Each affected raw run is skipped before scaling or later preprocessing, so
-    invalid values cannot contaminate other samples through filtering.
+    The eight exact runs ``R01`` through ``R08`` in
+    ``S07/OnlineImagery_Sess05_3class_Base`` contain non-finite EEG samples and
+    are skipped before scaling or later preprocessing. A non-finite run outside
+    this documented set raises instead of being silently excluded, so newly
+    discovered corruption cannot change the exposed dataset unnoticed.
 
     References
     ----------
@@ -295,7 +304,12 @@ class Ding2025(BaseDataset):
                 except _NonFiniteEEGDataError as e:
                     # Do not impute raw corruption: filtering would spread it
                     # across time and manufacture signal in subsequent windows.
-                    log.warning("Skipping %s: %s", mf.name, e)
+                    # Only the eight source-provenance exceptions documented
+                    # above may reduce the exposed run set silently.
+                    relative_run = mf.relative_to(base).as_posix()
+                    if relative_run not in _KNOWN_NONFINITE_RUNS:
+                        raise
+                    log.warning("Skipping known corrupt run %s: %s", relative_run, e)
                     continue
 
                 description = "".join(
