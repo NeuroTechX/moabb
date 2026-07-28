@@ -48,6 +48,40 @@ _ARCHIVE_ROOT = "DATASET_1748801_26070"
 # orientation check for the EEG_data matrix in each .mat block.
 _N_CHANNELS = 24
 
+# The newer S7-S10/P2-P8 files store this anatomical order directly. The
+# legacy S1-S6/P1 files store ExG1-ExG24 in the corresponding array positions.
+# The positional legacy mapping is inferred from the shared published montage
+# and the newer cohort's stored order; the authors' exact wiring table is not
+# public. Keep this status explicit so downstream benchmarks can report it.
+_ANATOMICAL_CHANNELS = (
+    "F1",
+    "Fz",
+    "F2",
+    "FC3",
+    "FC1",
+    "FCz",
+    "FC2",
+    "FC4",
+    "C5",
+    "C3",
+    "C1",
+    "Cz",
+    "C2",
+    "C4",
+    "C6",
+    "CP3",
+    "CP1",
+    "CPz",
+    "CP2",
+    "CP4",
+    "P3",
+    "P1",
+    "Pz",
+    "P2",
+)
+_LEGACY_CHANNELS = tuple(f"ExG{index}" for index in range(1, _N_CHANNELS + 1))
+_CHANNEL_MAPPING_STATUS = "inferred_from_published_montage_and_new_cohort_order"
+
 # Published cohort (README + article overview): ten neurotypical controls
 # (S1-S10) and eight participants with multiple sclerosis (P1-P8) = 18
 # subjects, each with a single recording session. Integer subject ids map
@@ -114,11 +148,19 @@ class Russo2024(BaseDataset):
     referenced to AFz (50 Hz line frequency). Channel labels differ by
     collection cohort: legacy participants S1-S6 and P1 use generic
     ``ExG1``-``ExG24`` labels, while newer participants S7-S10 and P2-P8 use
-    anatomical labels. The archive does not document a mapping from the legacy
-    acquisition order to the newer anatomical order, so labels are preserved
-    as stored and no montage is applied.
+    anatomical labels. To align both cohorts, this loader maps the legacy
+    channel array positionally to the newer cohort's published order:
+    ``F1, Fz, F2, FC3, FC1, FCz, FC2, FC4, C5, C3, C1, Cz, C2, C4, C6,
+    CP3, CP1, CPz, CP2, CP4, P3, P1, Pz, P2``. It then applies MNE's
+    ``standard_1020`` montage.
 
     .. note::
+
+       The legacy mapping is inferred from the common montage in the papers and
+       the newer cohort's stored channel order. The released archive does not
+       include the authors' wiring table or EEGLAB ``chanlocs``. Consequently,
+       the mapping is suitable for this benchmark by explicit policy, but is
+       not independently author-confirmed.
 
        Only the imagined-movement blocks are loaded. Some participants also have
        motor-execution ("active") blocks in the archive; those use a different
@@ -151,10 +193,11 @@ class Russo2024(BaseDataset):
             sampling_rate=2048.0,
             n_channels=24,
             channel_types={"eeg": 24},
-            sensors=[],  # Cohort-specific labels have no documented common order.
+            sensors=list(_ANATOMICAL_CHANNELS),
             reference="AFz",
             hardware="TMSi Porti 7 32-channel biosignal amplifier",
             line_freq=50.0,
+            montage="standard_1020",
         ),
         participants=ParticipantMetadata(
             n_subjects=18,
@@ -187,7 +230,9 @@ class Russo2024(BaseDataset):
             description=(
                 "Imagined-movement EEG under a go/no-go protocol from eight "
                 "participants with multiple sclerosis and ten neurotypical "
-                "controls, recorded with a 24-channel amplifier at 2048 Hz."
+                "controls, recorded with a 24-channel amplifier at 2048 Hz. "
+                "Legacy ExG channels are positionally aligned to the anatomical "
+                "order shared by the published montage and newer recordings."
             ),
             investigators=[
                 "John Russo",
@@ -221,6 +266,12 @@ class Russo2024(BaseDataset):
             data_state="raw",
             preprocessing_applied=False,
             re_reference="AFz reference; common average of all 24 channels",
+            notes=(
+                "Legacy ExG1-ExG24 labels are mapped positionally to the newer "
+                "cohort's anatomical order. This mapping is inferred from the "
+                "published montage and newer file order, not an author-released "
+                "wiring table."
+            ),
         ),
         signal_processing=SignalProcessingMetadata(
             frequency_bands={"mu": [8.0, 12.0], "beta": [12.0, 30.0]}
@@ -252,6 +303,8 @@ class Russo2024(BaseDataset):
         file_format="MAT",
         data_processed=False,
     )
+
+    channel_mapping_status = _CHANNEL_MAPPING_STATUS
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -395,7 +448,7 @@ def _load_block(mat_path):
 
     sfreq = float(np.ravel(mat["Fs"])[0])
 
-    ch_names = _channel_names(mat, n_channels)
+    ch_names = _aligned_channel_names(_channel_names(mat, n_channels))
     ch_types = ["eeg"] * n_channels + ["stim"]
 
     # EEG assumed in microvolts -> volts for MNE; stim channel appended last.
@@ -419,13 +472,18 @@ def _load_block(mat_path):
         if 0 <= sample < n_samples:
             stim[sample] = code
 
-    info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
+    info = mne.create_info(
+        ch_names=ch_names + ["STI 014"], ch_types=ch_types, sfreq=sfreq
+    )
     raw = mne.io.RawArray(data, info, verbose=False)
+    # Fail loudly if the inferred/common schema ever stops resolving completely.
+    # A partial montage would make spatial cross-subject results misleading.
+    raw.set_montage("standard_1020", on_missing="raise", verbose=False)
     return raw
 
 
 def _channel_names(mat, n_channels):
-    """Read channel labels from the .mat, falling back to ExG names + stim."""
+    """Read the EEG labels from a source MAT block."""
     default = [f"ExG{i}" for i in range(1, n_channels + 1)]
     try:
         cells = np.ravel(mat["channel_names"])
@@ -434,4 +492,17 @@ def _channel_names(mat, n_channels):
             names = default
     except Exception:
         names = default
-    return names + ["STI 014"]
+    return names
+
+
+def _aligned_channel_names(stored_names):
+    """Return the common anatomical schema for either released cohort."""
+    stored_names = tuple(stored_names)
+    if stored_names == _LEGACY_CHANNELS:
+        return list(_ANATOMICAL_CHANNELS)
+    if stored_names == _ANATOMICAL_CHANNELS:
+        return list(_ANATOMICAL_CHANNELS)
+    raise ValueError(
+        "Russo2024 channel labels do not match either released 24-channel "
+        f"schema: {stored_names!r}"
+    )
