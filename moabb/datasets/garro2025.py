@@ -144,8 +144,10 @@ class Garro2025(BaseDataset):
     positions), which define the three decoding classes. The BrainVision markers
     encode a trial as ``StartTrial`` -> ``G n`` (go cue / target illumination)
     -> ``R n`` (target reached) -> ``EndTrial``, where ``n`` in {1, 2, 3} is the
-    movement type. As in the authors' technical-validation code, epochs span
-    -0.5 to 2 seconds relative to the Go cue ``G n``.
+    movement type. The authors' technical-validation code used -0.5 to 2
+    seconds relative to the Go cue ``G n``. This loader uses the complete
+    post-cue interval from 0 to 2 seconds, because some released recordings do
+    not contain the full pre-cue baseline before their first trial.
 
     EEG was acquired with a 128-channel Brain Products actiCHamp system at
     1000 Hz using FCz as the online reference (127 channels are stored). Surface
@@ -277,7 +279,7 @@ class Garro2025(BaseDataset):
             sessions_per_subject=1,
             events=dict(_EVENTS),
             code="Garro2025",
-            interval=[-0.5, 2],
+            interval=[0, 2],
             paradigm="imagery",
             doi="10.1038/s41597-025-05042-4",
             selected_subjects=subjects,

@@ -399,7 +399,7 @@ def test_garro2025_epochs_are_locked_to_go_cues():
         "Stimulus/G 2": "reach_2",
         "Stimulus/G 3": "reach_3",
     }
-    assert ds.interval == [-0.5, 2]
+    assert ds.interval == [0, 2]
 
 
 def test_perezblanco2026_extracted_subject_skips_figshare_api(tmp_path: Path):
