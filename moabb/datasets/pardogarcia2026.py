@@ -62,8 +62,9 @@ PARDOGARCIA2026_SUBJECTS = {
 # "pinza" (pinch) grip, 2 = a "puno cerrado" (closed fist). This code -> grip
 # mapping is documented in the record file "bdf_IMAGEN.txt" ("Imagen, aparece una
 # imagen de una pinza o un puno cerrado. {1; 2}"). Each trial also carries a
-# second marker (S 11 / S 22) at roughly 2 s that flags the motor-skill phase of
-# the same class; those are left unmapped so a single event is kept per trial.
+# second marker (S 11 / S 22) at roughly 2 s for the auditory go cue that starts
+# overt execution of the same class. Those markers are left unmapped so the
+# adapter exposes only one image-cue event per trial.
 PARDOGARCIA2026_EVENT_RENAME = {"Stimulus/S  1": "pinch", "Stimulus/S  2": "fist"}
 
 # Bipolar EOG channels present alongside the scalp EEG montage.
@@ -146,7 +147,7 @@ class PardoGarcia2026(BaseDataset):
         ==============  =======  =======  ==========  =====================  ============  ===============  ===========
         Name              #Subj    #Chan    #Classes    #Trials / class        Trials len    Sampling rate      #Sessions
         ==============  =======  =======  ==========  =====================  ============  ===============  ===========
-        PardoGarcia2026      18       63           2       50 (ctrl) / 70 (pat)           7s          1000 Hz          1-2
+        PardoGarcia2026      18       63           2       50 (ctrl) / 70 (pat)         1.5s          1000 Hz          1-2
         ==============  =======  =======  ==========  =====================  ============  ===============  ===========
 
     **Dataset description**
@@ -155,9 +156,9 @@ class PardoGarcia2026(BaseDataset):
     (8-12 Hz) and beta (12-30 Hz) oscillatory changes in chronic middle cerebral
     artery (MCA) stroke patients and healthy controls. On each trial an image of
     the grip to imagine is shown: a precision pinch (``pinch``, stimulus code 1)
-    or a closed fist (``fist``, stimulus code 2); the participant then performs
-    kinaesthetic motor imagery of that grip. The grip-to-code mapping is documented
-    in the record file ``bdf_IMAGEN.txt``.
+    or a closed fist (``fist``, stimulus code 2). The image starts a motor-imagery
+    and preparation phase; a later auditory go cue instructs overt execution. The
+    grip-to-code mapping is documented in the record file ``bdf_IMAGEN.txt``.
 
     The cohort comprises 10 chronic MCA stroke patients (stems ``PAC01``-``PAC10``)
     and 8 healthy controls (stems ``C01``, ``02``, ``C03`` and
@@ -175,12 +176,14 @@ class PardoGarcia2026(BaseDataset):
     standard 10-05 template positions are attached at load time.
 
     Each trial carries two markers of the same class: an image-onset cue
-    (``S 1``/``S 2``, taken as t = 0) and a motor-skill marker (``S 11``/``S 22``)
-    at roughly 2 s. This loader keeps one event per trial by mapping only the
-    image-onset cues; the exposed interval spans 0-7 s after the cue, matching the
-    epoching window described in the dataset analysis manual (baseline [-1, 0] s,
-    analysis up to 7 s, with the imagery/ERD phase from about 2 s). Control
-    recordings contain 50 trials per class and patient recordings about 70.
+    (``S 1``/``S 2``, taken as t = 0) and an auditory go-cue marker
+    (``S 11``/``S 22``) at roughly 2 s, after which the participant executes the
+    movement. The creator analysis manual's full 0-7 s image-locked epoch therefore
+    mixes imagery/preparation and overt execution. This adapter maps only the image
+    cues and exposes 0-1.5 s, ending just before the earliest observed go cue at
+    1.510 s. The conservative window keeps one event per trial and excludes overt
+    movement. Control recordings contain 50 trials per class and patient
+    recordings about 70.
 
     References
     ----------
@@ -220,11 +223,11 @@ class PardoGarcia2026(BaseDataset):
             paradigm="imagery",
             n_classes=2,
             class_labels=["pinch", "fist"],
-            trial_duration=7.0,
+            trial_duration=1.5,
             study_design=(
-                "Cued two-class hand motor imagery (precision pinch vs closed fist) "
-                "used to study mu/beta oscillatory changes in chronic MCA stroke "
-                "patients (baseline and post-rehabilitation) and healthy controls."
+                "Image-cued two-class hand motor imagery and preparation (precision "
+                "pinch vs closed fist) before a later auditory go cue and overt "
+                "execution. The adapter exposes only the pre-execution phase."
             ),
             feedback_type="none",
             stimulus_type="visual",
@@ -233,17 +236,18 @@ class PardoGarcia2026(BaseDataset):
             mode="offline",
             events={"pinch": 1, "fist": 2},
             instructions=(
-                "Perform kinaesthetic motor imagery of the hand grip shown in the "
-                "cue image (a precision pinch or a closed fist)."
+                "Imagine and prepare the hand grip shown in the cue image (a "
+                "precision pinch or a closed fist); overt execution begins only "
+                "after the later auditory go cue, outside the exposed interval."
             ),
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.19599465",
             description=(
-                "Two-class hand motor-imagery EEG (pinch vs fist) from 10 chronic "
-                "MCA stroke patients (baseline and post-rehabilitation) and 8 "
-                "healthy controls, 63 BrainVision channels at 1000 Hz, used to "
-                "study mu and beta oscillatory changes."
+                "Pre-execution, two-class hand motor-imagery EEG (pinch vs fist) "
+                "from recordings that continue into cued overt execution: 10 "
+                "chronic MCA stroke patients (baseline and post-rehabilitation) "
+                "and 8 healthy controls, 63 BrainVision channels at 1000 Hz."
             ),
             investigators=[
                 "Rebeca Pardo-Garcia",
@@ -266,6 +270,8 @@ class PardoGarcia2026(BaseDataset):
             keywords=[
                 "EEG",
                 "motor imagery",
+                "motor preparation",
+                "motor execution",
                 "chronic stroke",
                 "MCA stroke",
                 "rehabilitation",
@@ -291,7 +297,7 @@ class PardoGarcia2026(BaseDataset):
             sessions_per_subject=1,
             events={"pinch": 1, "fist": 2},
             code="PardoGarcia2026",
-            interval=[0, 7],
+            interval=[0, 1.5],
             paradigm="imagery",
             doi="10.5281/zenodo.19599465",
         )

@@ -1,8 +1,26 @@
-"""Regression tests for PardoGarcia2026 BrainVision references."""
+"""Semantic and BrainVision regression tests for PardoGarcia2026."""
 
 from pathlib import Path
 
-from moabb.datasets.pardogarcia2026 import PardoGarcia2026
+from moabb.datasets.pardogarcia2026 import PARDOGARCIA2026_EVENT_RENAME, PardoGarcia2026
+
+
+def test_pure_imagery_window_precedes_overt_execution():
+    dataset = PardoGarcia2026()
+    experiment = dataset.METADATA.experiment
+    documentation = " ".join(PardoGarcia2026.__doc__.split())
+
+    assert dataset.interval == [0, 1.5]
+    assert dataset.event_id == {"pinch": 1, "fist": 2}
+    assert PARDOGARCIA2026_EVENT_RENAME == {
+        "Stimulus/S  1": "pinch",
+        "Stimulus/S  2": "fist",
+    }
+    assert experiment.trial_duration == 1.5
+    assert "auditory go cue and overt execution" in experiment.study_design
+    assert "outside the exposed interval" in experiment.instructions
+    assert "0-1.5 s" in documentation
+    assert "excludes overt movement" in documentation
 
 
 def test_stale_marker_reference_uses_unambiguous_sibling(tmp_path, monkeypatch):
