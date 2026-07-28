@@ -216,7 +216,7 @@ class Ding2025(BaseDataset):
             country="US",
             data_url="https://kilthub.cmu.edu/articles/dataset/29104040",
             publication_year=2025,
-            license="CC-BY-4.0",
+            license="CC-BY-NC-4.0",
             funding=["NIH NS124564", "NIH NS131069", "NIH NS127849", "NIH NS096761"],
         ),
         sessions_per_subject=7,
