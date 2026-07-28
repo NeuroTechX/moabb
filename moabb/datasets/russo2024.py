@@ -109,10 +109,14 @@ class Russo2024(BaseDataset):
     (``prompt_times`` column 3) and exposes an interval covering the roughly
     three-second imagery window.
 
-    EEG was recorded with a 24-channel BioSemi-style amplifier at 2048 Hz,
-    referenced to AFz (50 Hz line frequency). The shared ``.mat`` files carry
-    generic amplifier channel labels (``ExG1``-``ExG24``); the physical 10-20
-    positions are not documented in the archive, so no montage is applied.
+    EEG was recorded with a TMSi Porti 7 32-channel biosignal amplifier using
+    24 EEG electrodes at 2048 Hz,
+    referenced to AFz (50 Hz line frequency). Channel labels differ by
+    collection cohort: legacy participants S1-S6 and P1 use generic
+    ``ExG1``-``ExG24`` labels, while newer participants S7-S10 and P2-P8 use
+    anatomical labels. The archive does not document a mapping from the legacy
+    acquisition order to the newer anatomical order, so labels are preserved
+    as stored and no montage is applied.
 
     .. note::
 
@@ -147,9 +151,9 @@ class Russo2024(BaseDataset):
             sampling_rate=2048.0,
             n_channels=24,
             channel_types={"eeg": 24},
-            sensors=[f"ExG{i}" for i in range(1, 25)],
+            sensors=[],  # Cohort-specific labels have no documented common order.
             reference="AFz",
-            hardware="24-channel BioSemi-style active-electrode amplifier",
+            hardware="TMSi Porti 7 32-channel biosignal amplifier",
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
