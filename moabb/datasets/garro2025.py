@@ -101,13 +101,14 @@ _CH_NAMES = [
 # The 3 reaching movement types (targets) are the decoding classes. The
 # eeg/ folder ships no events.tsv (only sub-01/emg/ has one), so
 # read_raw_bids does not rebuild annotations from events.tsv -- it keeps the
-# BrainVision .vmrk marker descriptions as-is: "Stimulus/R 1" / "Stimulus/R 2"
-# / "Stimulus/R 3" (with the "Stimulus/" prefix and an internal space).
+# BrainVision .vmrk marker descriptions as-is. The authors' technical
+# validation epochs are locked to the Go cues ("Stimulus/G 1" / "Stimulus/G 2"
+# / "Stimulus/G 3"), not the later target-reached markers ("Stimulus/R n").
 _EVENTS = {"reach_1": 1, "reach_2": 2, "reach_3": 3}
 _ANNOT_RENAME = {
-    "Stimulus/R 1": "reach_1",
-    "Stimulus/R 2": "reach_2",
-    "Stimulus/R 3": "reach_3",
+    "Stimulus/G 1": "reach_1",
+    "Stimulus/G 2": "reach_2",
+    "Stimulus/G 3": "reach_3",
 }
 
 # The three assistance-level recordings become runs (in acquisition order).
@@ -142,8 +143,9 @@ class Garro2025(BaseDataset):
     Within every run, trials cover three reaching movement types (three target
     positions), which define the three decoding classes. The BrainVision markers
     encode a trial as ``StartTrial`` -> ``G n`` (go cue / target illumination)
-    -> ``R n`` (reach onset) -> ``EndTrial``, where ``n`` in {1, 2, 3} is the
-    movement type. Epoching is locked to the reach onset ``R n``.
+    -> ``R n`` (target reached) -> ``EndTrial``, where ``n`` in {1, 2, 3} is the
+    movement type. As in the authors' technical-validation code, epochs span
+    -0.5 to 2 seconds relative to the Go cue ``G n``.
 
     EEG was acquired with a 128-channel Brain Products actiCHamp system at
     1000 Hz using FCz as the online reference (127 channels are stored). Surface
@@ -193,6 +195,7 @@ class Garro2025(BaseDataset):
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
             paradigm="imagery",
+            task_type="motor execution",
             n_classes=3,
             class_labels=list(_EVENTS.keys()),
             study_design=(
@@ -249,9 +252,12 @@ class Garro2025(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=3,
-        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        tags=Tags(
+            pathology=["Healthy"], modality=["Motor"], type=["motor_execution"]
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery", imagery_tasks=list(_EVENTS.keys())
+            detected_paradigm="motor_execution",
+            imagery_tasks=list(_EVENTS.keys()),
         ),
         data_structure=DataStructureMetadata(
             n_trials=30,
@@ -271,7 +277,7 @@ class Garro2025(BaseDataset):
             sessions_per_subject=1,
             events=dict(_EVENTS),
             code="Garro2025",
-            interval=[0, 2],
+            interval=[-0.5, 2],
             paradigm="imagery",
             doi="10.1038/s41597-025-05042-4",
             selected_subjects=subjects,
@@ -376,7 +382,8 @@ class Garro2025(BaseDataset):
                 raw = read_raw_bids(bids_path=bids_path, verbose=False)
                 raw.load_data(verbose=False)
 
-                # Reach markers carry the class label; keep only the ones present.
+                # Go cues carry the target class used for epoching; keep only
+                # those present in each recording.
                 present = set(raw.annotations.description)
                 rename = {k: v for k, v in _ANNOT_RENAME.items() if k in present}
                 if rename:

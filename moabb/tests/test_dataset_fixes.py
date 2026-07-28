@@ -15,6 +15,7 @@ import requests
 from moabb.datasets import download as _dl
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.ding2025 import _KNOWN_NONFINITE_RUNS, Ding2025
+from moabb.datasets.garro2025 import _ANNOT_RENAME as GARRO_ANNOT_RENAME
 from moabb.datasets.garro2025 import _ROOT_FILE_IDS as GARRO_ROOT_FILE_IDS
 from moabb.datasets.garro2025 import _SUBJECT_FILE_IDS as GARRO_SUBJECT_FILE_IDS
 from moabb.datasets.garro2025 import Garro2025
@@ -388,6 +389,17 @@ def test_garro2025_cached_archives_skip_figshare_api(tmp_path: Path):
     assert (root / "participants.tsv").exists()
     assert (root / "README.txt").exists()
     assert (root / "sub-01/eeg/sub-01_task-free_eeg.vhdr").exists()
+
+
+def test_garro2025_epochs_are_locked_to_go_cues():
+    ds = Garro2025()
+
+    assert GARRO_ANNOT_RENAME == {
+        "Stimulus/G 1": "reach_1",
+        "Stimulus/G 2": "reach_2",
+        "Stimulus/G 3": "reach_3",
+    }
+    assert ds.interval == [-0.5, 2]
 
 
 def test_perezblanco2026_extracted_subject_skips_figshare_api(tmp_path: Path):
