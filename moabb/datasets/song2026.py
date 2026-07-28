@@ -1,11 +1,14 @@
-"""Song2026 multi-class motor-attempt dataset (chronic stroke)."""
+"""Song2026 multi-class motor-attempt dataset (chronic stroke, raw Neuracle NDF)."""
 
+import re
+import struct
 import warnings
+from collections import Counter
 from pathlib import Path
 
 import mne
-import numpy as np
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -17,74 +20,111 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
+from ._neuracle_ndf.NDFSysMNE import mneNDF
 
-# The dataset is distributed only through Baidu Netdisk (no direct HTTP mirror).
-# The repository https://github.com/sjx66606/MVCMGNet holds the analysis code and
-# points to the data at:
-#   https://pan.baidu.com/s/1ZNHmlcpRD9yDFok6NOv1mg   (extraction code: ma93)
+
+# The dataset is distributed only through Baidu Netdisk (no direct HTTP mirror);
+# the analysis code and a data pointer live at https://github.com/sjx66606/MVCMGNet.
 SONG2026_BAIDU_URL = "https://pan.baidu.com/s/1ZNHmlcpRD9yDFok6NOv1mg"
 SONG2026_BAIDU_CODE = "ma93"
 
-# 32-channel Neuracle cap in 10-10 layout. The exact per-channel order distributed
-# on Baidu Netdisk could not be verified (access-gated); this default mirrors the
-# common Neuracle 32 montage, where the two mastoids used as the reference
-# (EEGLAB channels 17 and 18 in the study's pop_reref) fall at positions 17-18.
-# Real channel names are read from the EEGLAB struct when present and only fall
-# back to this list otherwise.
+# The 32 scalp-EEG channels in the Neuracle recording order (verified against the
+# raw .nsf/.ndf headers). A1/A2 are the mastoids used as the reference in the
+# authors' pop_reref (channels 17-18). The recording also carries 40 auxiliary
+# channels (per-limb EMG + gyro/accel/magneto), which this loader drops.
 SONG2026_CHANNELS = [
     "Fp1",
     "Fp2",
+    "Fz",
     "F3",
     "F4",
-    "C3",
-    "C4",
-    "P3",
-    "P4",
-    "O1",
-    "O2",
     "F7",
     "F8",
-    "T7",
-    "T8",
-    "P7",
-    "P8",
-    "M1",
-    "M2",
-    "Fz",
-    "Cz",
-    "Pz",
     "FC1",
     "FC2",
-    "CP1",
-    "CP2",
     "FC5",
     "FC6",
+    "Cz",
+    "C3",
+    "C4",
+    "T7",
+    "T8",
+    "A1",
+    "A2",
+    "CP1",
+    "CP2",
     "CP5",
     "CP6",
-    "TP9",
-    "TP10",
+    "Pz",
+    "P3",
+    "P4",
+    "P7",
+    "P8",
+    "PO3",
+    "PO4",
     "Oz",
+    "O1",
+    "O2",
 ]
 
-# The tens digit of each EEGLAB marker ("21"/"23", "31"/"33", ...) identifies the
-# motor-attempt task; the two units digits (1 and 3) are the two cue markers of the
-# same task and collapse to one class. The numeric-to-task assignment below is the
-# best inference from the paper text and could not be verified against the raw data.
+# The tens digit of each Neuracle marker identifies the motor-attempt task.
 SONG2026_EVENTS = {"fist_clench": 2, "pinch_grip": 3, "wrist_lift": 4, "elbow_flexion": 5}
 _TENS_TO_LABEL = {v: k for k, v in SONG2026_EVENTS.items()}
 
+# Every raw recording contains three consecutive 40-trial blocks. The public
+# preprocessing script relabels the middle block from *1 to *2 when it is
+# followed by fixed-rate ``20`` flicker markers. The final *3 block is the one
+# matching the paper's published 40-trial motor-attempt protocol: its ``20``
+# markers follow the movement-specific looping image sequences. Loading all
+# eight markers from the preprocessing script would silently mix the three
+# experimental conditions and create 120 trials rather than the reported 40.
+_CLASS_MARKERS = {"23", "33", "43", "53"}
+_EXPECTED_TRIALS_PER_CLASS = 10
+
 
 def _label_from_marker(marker):
-    """Map an EEGLAB marker string ("21"/"23", "31"/"33", ...) to a class label.
-
-    The tens digit selects the task via ``_TENS_TO_LABEL``; the units digit (1
-    or 3) marks one of two cue repetitions of the same task and is ignored.
-    Returns ``None`` if ``marker`` does not parse as a 2+ digit code.
-    """
-    digits = "".join(ch for ch in str(marker) if ch.isdigit())
-    if len(digits) < 2:
+    """Return the motor-attempt class for a published-protocol marker."""
+    if marker not in _CLASS_MARKERS:
         return None
-    return _TENS_TO_LABEL.get(int(digits[0]))
+    return _TENS_TO_LABEL[int(marker[0])]
+
+
+def _parse_nef(nef_path):
+    """Parse a Neuracle ``.nef`` event file into ``[(onset_sample, marker), ...]``.
+
+    The vendored reader's ``FileNEF`` miscomputes the frame stride (it reads
+    ``event-count * 1004`` bytes where the on-disk stride is 1005) and silently
+    fails on real event files, so parse it directly. Layout: a 64-byte header
+    (0xFEFF BOM, record date/time, ``uint32`` event count at byte 29), then
+    ``event-count`` frames of 1005 bytes: a 1-byte valid flag, ``uint32`` id /
+    onset-sample / duration / colour (each padded to 6 bytes) and a
+    null-delimited annotation string (the marker, e.g. ``"21"``).
+    """
+    raw = Path(nef_path).read_bytes()
+    if len(raw) < 64:
+        raise ValueError(f"Truncated Neuracle event header in {nef_path}")
+    is_le = len(raw) > 1 and raw[0] == 0xFE and raw[1] == 0xFF
+    u = "<I" if is_le else ">I"
+    n_events = struct.unpack(u, raw[29:33])[0]
+    expected_size = 64 + n_events * 1005
+    if len(raw) < expected_size:
+        raise ValueError(
+            f"Truncated Neuracle event data in {nef_path}: expected at least "
+            f"{expected_size} bytes, found {len(raw)}"
+        )
+    body, stride, out = raw[64:], 1005, []
+    for i in range(n_events):
+        p = i * stride
+        if p + 23 > len(body) or not body[p]:
+            continue
+        onset = struct.unpack(u, body[p + 5 : p + 9])[0]
+        ann = body[p + 23 : p + 23 + 982]
+        if b"\x16" in ann:
+            ann = ann[: ann.index(b"\x16")]
+        parts = [x for x in ann.split(b"\x00") if x]
+        if parts:
+            out.append((onset, parts[0].decode("latin1", "ignore")))
+    return out
 
 
 class Song2026(BaseDataset):
@@ -92,33 +132,34 @@ class Song2026(BaseDataset):
 
     **Dataset description**
 
-    EEG (and synchronous 4-channel surface EMG) recorded from 45 chronic stroke
-    patients while they attempted four unilateral upper-limb movements of the
-    affected side: fist clenching (Fc), pinch grip (Pg), wrist lift up (Wlu) and
-    elbow flexion (Ef). The task is framed both as a quad-task (4-class) problem
-    and, pairwise, as a set of dual-task (2-class) problems. Signals were acquired
-    with a 32-channel Neuracle system referenced to the bilateral mastoids at
-    1000 Hz. Each paradigm consists of 10 trials of 10 s (5 s motor attempt
-    followed by 5 s rest), preceded by a 3-min baseline.
+    EEG (and synchronous 4-channel surface EMG) was recorded from 50 chronic
+    stroke patients while they attempted four unilateral upper-limb movements
+    of the affected side: fist clenching (Fc), pinch grip (Pg), wrist lift up
+    (Wlu), and elbow flexion (Ef). The paper retained 45 participants after
+    quality control but does not identify the five exclusions; this raw-data
+    loader therefore exposes all 50 released participants. The task is framed
+    both as a quad-task (4-class) problem and, pairwise, as a set of dual-task
+    (2-class) problems. Signals were acquired with a 32-channel Neuracle system
+    referenced to the bilateral mastoids at 1000 Hz. Each paradigm consists of
+    10 trials of 10 s (5 s motor attempt followed by 5 s rest), preceded by a
+    3-min baseline.
 
-    .. warning::
-
-        **status = needs-data.** The recordings are only distributed through Baidu
-        Netdisk (``pan.baidu.com/s/1ZNHmlcpRD9yDFok6NOv1mg``, code ``ma93``), which
-        cannot be fetched programmatically, so the
-        exact on-disk file naming, per-channel order and the numeric-to-task marker
-        mapping could not be verified against the raw files. The ``.mat`` path
-        decodes class labels from ``EEG.event.type`` using the tens-digit
-        convention below (falling back to ``unknown``, with a warning, if that
-        struct is absent or does not have one marker per epoch); this mapping
-        itself is unverified. This loader implements the layout documented by
-        the authors' processing script
-        (``DataProcess/ProdData_EEG.m`` in https://github.com/sjx66606/MVCMGNet):
-        one EEGLAB ``EEG`` struct per subject saved as a v7.3 ``.mat`` file with the
-        continuous/epoched data, ``EEG.srate == 1000`` and the string markers
-        ``21/31/41/51`` and ``23/33/43/53``. Download the archive manually and place
-        one ``sub-XX.mat`` (or ``.set``) file per subject under the dataset folder;
-        :meth:`data_path` explains where.
+    Notes
+    -----
+    The data are distributed only through Baidu Netdisk
+    (``pan.baidu.com/s/1ZNHmlcpRD9yDFok6NOv1mg``, code ``ma93``), which cannot be
+    fetched programmatically. Download and extract the archive once under the
+    dataset folder; see :meth:`data_path`. The raw recordings are in Neuracle
+    NDF format (per-subject ``data/<session>/<condition>/`` folders holding an
+    ``M_*`` EEG block plus per-limb EMG/IMU folders, with events in a
+    session-level ``neuracle.nef``). They are read here via the vendored official
+    Neuracle reader
+    (``moabb/datasets/_neuracle_ndf``, from
+    https://github.com/neuracle/neuracle-ndffile-reader): the 32 scalp-EEG
+    channels are kept and scaled to volts. Only the final ``23/33/43/53`` block
+    is exposed because it matches the paper's 40-trial motor-attempt protocol;
+    the two auxiliary 40-trial blocks in the raw recording are intentionally
+    excluded.
 
     References
     ----------
@@ -128,9 +169,6 @@ class Song2026(BaseDataset):
        affected unilateral limbs in chronic stroke patients. Journal of
        NeuroEngineering and Rehabilitation, 23(1), 109.
        DOI: https://doi.org/10.1186/s12984-026-01920-z
-
-    Notes
-    -----
 
     .. versionadded:: 1.1.1
 
@@ -144,7 +182,7 @@ class Song2026(BaseDataset):
             montage="10-10",
             hardware="Neuracle 32-channel EEG amplifier (with synchronous 4-channel EMG)",
             cap_manufacturer="Neuracle",
-            reference="bilateral mastoids (M1, M2)",
+            reference="bilateral mastoids (A1, A2)",
             ground=None,
             sensors=SONG2026_CHANNELS,
             line_freq=50.0,
@@ -160,7 +198,7 @@ class Song2026(BaseDataset):
             ),
         ),
         participants=ParticipantMetadata(
-            n_subjects=45,
+            n_subjects=50,
             health_status="chronic stroke patients",
             clinical_population="chronic stroke patients with affected unilateral upper limb",
             species="homo sapiens",
@@ -185,7 +223,11 @@ class Song2026(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1186/s12984-026-01920-z",
-            description="EEG + EMG motor-attempt dataset from 45 chronic stroke patients performing four cued unilateral upper-limb tasks with the affected side.",
+            description=(
+                "EEG + EMG motor-attempt recordings from 50 chronic stroke "
+                "patients performing four cued unilateral upper-limb tasks with "
+                "the affected side; the paper retained 45 after quality control."
+            ),
             investigators=[
                 "Jiuxiang Song",
                 "Nan Wang",
@@ -218,14 +260,20 @@ class Song2026(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        file_format="MAT (EEGLAB struct)",
+        file_format="NDF (Neuracle raw)",
         tags=Tags(pathology=["Stroke"], modality=["Motor"], type=["Motor Attempt"]),
-        abstract="Multi-class motor-attempt decoding from the affected unilateral limbs of 45 chronic stroke patients, using synchronous EEG and EMG. The authors report 78.52% accuracy for dual-task (2-class) and 52.79% for quad-task (4-class) scenarios with the proposed MVCMGNet.",
+        abstract=(
+            "Multi-class motor-attempt decoding from the affected unilateral "
+            "limbs of chronic stroke patients, using synchronous EEG and EMG. "
+            "The release contains 50 participants; the paper analyzed 45 after "
+            "quality control and reports 78.52% accuracy for dual-task (2-class) "
+            "and 52.79% for quad-task (4-class) scenarios with MVCMGNet."
+        ),
     )
 
     def __init__(self, subjects=None, sessions=None, **kwargs):
         super().__init__(
-            subjects=list(range(1, 45 + 1)),
+            subjects=list(range(1, 50 + 1)),
             sessions_per_subject=1,
             events=SONG2026_EVENTS,
             code="Song2026",
@@ -239,193 +287,104 @@ class Song2026(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the local path to a single subject's data file.
+        """Return the local path to the extracted ``data/`` tree.
 
         The recordings are distributed only through Baidu Netdisk
-        (``pan.baidu.com/s/1ZNHmlcpRD9yDFok6NOv1mg``, extraction code ``ma93``),
-        which cannot be downloaded automatically.
-        Download the archive manually and place one file per subject named
-        ``sub-XX.mat`` (EEGLAB ``EEG`` struct, ``-v7.3``) or ``sub-XX.set`` under::
+        (``pan.baidu.com/s/1ZNHmlcpRD9yDFok6NOv1mg``, code ``ma93``), which cannot
+        be downloaded automatically. Download the archive manually and place it as
+        ``data.zip`` under the following directory and extract it there exactly
+        once::
 
             <mne_data>/MNE-song2026-data/
 
-        where ``<mne_data>`` is the MOABB/MNE data directory (``path`` argument,
-        or the ``MNE_DATA`` config, defaulting to ``~/mne_data``).
+        The result must be ``<mne_data>/MNE-song2026-data/data/``. Extraction is
+        deliberately not performed inside this subject-level method because
+        parallel data loading could otherwise race and unpack the 4.6 GB archive
+        more than once.
 
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-        path : None | str
-            Location of the dataset. If None, the MNE_DATA config (or
-            ``~/mne_data``) is used.
-        force_update : bool
-            Unused; kept for API compatibility (no remote copy to refresh).
-        update_path : bool | None
-            Unused; kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level.
-
-        Returns
-        -------
-        list
-            A one-element list with the path to the subject's data file.
+        Returns a one-element list with the path to the extracted ``data/``
+        directory.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-
-        if path is None:
-            path = mne.get_config("MNE_DATA", str(Path.home() / "mne_data"))
-        base = Path(path) / "MNE-song2026-data"
-
-        sub = f"sub-{subject:02d}"
-        for ext in (".mat", ".set"):
-            candidate = base / f"{sub}{ext}"
-            if candidate.exists():
-                return [str(candidate)]
-
-        raise RuntimeError(
-            f"Song2026 data for {sub} not found under {base}. The dataset is only "
-            f"available on Baidu Netdisk ({SONG2026_BAIDU_URL}, code "
-            f"{SONG2026_BAIDU_CODE}); download it manually and place one file per "
-            f"subject as {sub}.mat or {sub}.set there. See data_path docstring."
-        )
+        root = Path(dl.get_dataset_path("Song2026", path)) / "MNE-song2026-data"
+        data_dir = root / "data"
+        if not data_dir.is_dir():
+            archive = root / "data.zip"
+            archive_note = (
+                f" Archive {archive} exists but must be extracted once before loading."
+                if archive.is_file()
+                else ""
+            )
+            raise RuntimeError(
+                f"Song2026 raw Neuracle data not found under {data_dir}. The dataset "
+                f"is distributed only on Baidu Netdisk ({SONG2026_BAIDU_URL}, code "
+                f"{SONG2026_BAIDU_CODE}); download it and place the archive as "
+                f"{archive}, then extract it once in {root}.{archive_note}"
+            )
+        return [str(data_dir)]
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
+        """Return ``{session: {run: mne.io.Raw}}`` for a single subject.
 
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-
-        Returns
-        -------
-        dict
-            ``{session: {run: mne.io.Raw}}`` with a single session/run.
+        Subjects map to the sorted per-session folders (``<14-digit>_<n>``). The
+        primary condition folder (the one holding the ``M_*`` EEG block) is read
+        via the official Neuracle reader, the 32 scalp channels are kept and
+        scaled to volts, and the task cues from the session ``neuracle.nef`` are
+        annotated with their class label.
         """
-        file_path = self.data_path(subject)[0]
-
-        if file_path.endswith(".set"):
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                raw = mne.io.read_raw_eeglab(file_path, preload=True, verbose=False)
-        else:
-            raw = self._read_eeglab_mat(file_path)
-
-        return {"0": {"0": raw}}
-
-    def _read_eeglab_mat(self, file_path):
-        """Read an EEGLAB ``EEG`` struct saved as a v7.3 (HDF5) ``.mat`` file.
-
-        The study's ``ProdData_EEG.m`` saves each subject as ``save(..., 'EEG',
-        '-v7.3')`` after 1-40 Hz filtering, 48-52 Hz notch and bilateral-mastoid
-        re-referencing, epoched from -2 to 5 s around the task markers. This reader
-        reconstructs a continuous :class:`mne.io.RawArray` by concatenating the
-        epochs and annotating each epoch onset (at the marker, 2 s into the
-        block) with the class label decoded from ``EEG.event.type``.
-        """
-        try:
-            import h5py
-        except ImportError as exc:  # pragma: no cover - optional dependency
-            raise ImportError(
-                "Reading the Song2026 v7.3 .mat files requires h5py (`pip install h5py`)."
-            ) from exc
-
-        with h5py.File(file_path, "r") as f:
-            eeg = f["EEG"]
-            sfreq = float(np.array(eeg["srate"]).ravel()[0])
-            data = np.array(eeg["data"])  # HDF5 stores as (epochs, times, channels)
-
-            # h5py returns the MATLAB array transposed; normalise to
-            # (n_channels, n_times, n_epochs).
-            if data.ndim == 3:
-                data = np.transpose(data, (2, 1, 0))
-            elif data.ndim == 2:
-                data = data.T[:, :, np.newaxis]
-
-            n_channels = data.shape[0]
-            ch_names = self._resolve_channel_names(f, eeg, n_channels)
-            event_markers = self._resolve_event_markers(f, eeg)
-
-        # EEGLAB data are in microvolts; MNE expects volts.
-        data = data * 1e-6
-        n_channels, n_times, n_epochs = data.shape
-        continuous = data.transpose(0, 2, 1).reshape(n_channels, n_epochs * n_times)
-
-        info = mne.create_info(ch_names, sfreq=sfreq, ch_types="eeg")
-        raw = mne.io.RawArray(continuous, info, verbose=False)
-
-        # Each epoch spans -2..+5 s around its task marker (2 s pre-marker
-        # baseline), so the block start (previously used directly as the
-        # onset) is 2 s *before* the marker. Offset every onset by the
-        # baseline so it lands on the marker, matching interval=(0, 5) in
-        # __init__ (instead of windowing -2..+3 s relative to the marker).
-        baseline_s = 2.0
-        onsets = np.arange(n_epochs) * (n_times / sfreq) + baseline_s
-        durations = np.full(n_epochs, n_times / sfreq - baseline_s)
-
-        if event_markers is not None and len(event_markers) == n_epochs:
-            descriptions = [_label_from_marker(m) for m in event_markers]
-            n_unresolved = sum(d is None for d in descriptions)
-            descriptions = [d or "unknown" for d in descriptions]
-            if n_unresolved:
-                warnings.warn(
-                    f"Song2026: could not map {n_unresolved}/{n_epochs} "
-                    f"EEG.event.type markers in {Path(file_path).name} to a "
-                    "class label; those epochs are annotated 'unknown' and "
-                    "will be dropped by the imagery paradigm.",
-                    stacklevel=2,
-                )
-        else:
-            warnings.warn(
-                f"Song2026: EEG.event.type markers were not found or do not "
-                f"match the {n_epochs} epochs in {Path(file_path).name}; all "
-                "epochs annotated 'unknown' (needs-data).",
-                stacklevel=2,
+        data_dir = Path(self.data_path(subject)[0])
+        sessions = {}
+        for candidate in data_dir.iterdir():
+            match = re.fullmatch(r"\d{14}_(\d+)", candidate.name)
+            if candidate.is_dir() and match:
+                sessions[int(match.group(1))] = candidate
+        if subject not in sessions:
+            raise FileNotFoundError(
+                f"Song2026: no session folder for subject {subject} under {data_dir}"
             )
-            descriptions = ["unknown"] * n_epochs
+        sdir = sessions[subject]
+        nef = sdir / "neuracle.nef"
+        if not nef.is_file():
+            raise FileNotFoundError(f"Song2026: missing event file {nef}")
+        events = _parse_nef(nef)
 
-        raw.set_annotations(
-            mne.Annotations(onset=onsets, duration=durations, description=descriptions)
+        conds = sorted(
+            c
+            for c in sdir.iterdir()
+            if c.is_dir() and any(m.name.startswith("M_") for m in c.iterdir())
         )
-        return raw
+        if not conds:
+            raise FileNotFoundError(f"Song2026: no EEG (M_*) block under {sdir}")
 
-    @staticmethod
-    def _resolve_channel_names(f, eeg, n_channels):
-        """Read channel labels from ``EEG.chanlocs.labels`` if available."""
-        try:
-            labels_ref = eeg["chanlocs"]["labels"]
-            names = []
-            for ref in np.array(labels_ref).ravel():
-                chars = np.array(f[ref]).ravel()
-                names.append("".join(chr(int(c)) for c in chars))
-            if len(names) == n_channels:
-                return names
-        except Exception:
-            pass
-        if n_channels == len(SONG2026_CHANNELS):
-            return list(SONG2026_CHANNELS)
-        return [f"EEG{i + 1:03d}" for i in range(n_channels)]
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            raw = mneNDF(str(conds[0]) + "/").read2MneRaw()
+            missing = sorted(set(SONG2026_CHANNELS).difference(raw.ch_names))
+            if missing:
+                raise RuntimeError(
+                    f"Song2026 subject {subject}: missing EEG channels {missing}"
+                )
+            raw.pick(SONG2026_CHANNELS)
+            # The Neuracle reader returns physical values in microvolts; MNE uses
+            # volts. Scale the full EEG matrix in one vectorized operation.
+            raw.apply_function(lambda data: data * 1e-6, picks="eeg", channel_wise=False)
+            raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
 
-    @staticmethod
-    def _resolve_event_markers(f, eeg):
-        """Read the ``EEG.event.type`` marker strings, in event order.
+        sfreq = raw.info["sfreq"]
+        onsets, descriptions = [], []
+        for onset, marker in events:
+            label = _label_from_marker(marker)
+            if label is not None and onset + 5 * sfreq <= raw.n_times:
+                onsets.append(onset / sfreq)
+                descriptions.append(label)
 
-        Mirrors :meth:`_resolve_channel_names`: each ``event.type`` entry is an
-        HDF5 reference to a char-code array (``ProdData_EEG.m`` stores the
-        markers "21"/"23"/"31"/... as strings). Returns ``None`` if the
-        ``event`` struct is absent or not in the expected layout.
-        """
-        try:
-            type_ref = eeg["event"]["type"]
-            markers = []
-            for ref in np.array(type_ref).ravel():
-                chars = np.array(f[ref]).ravel()
-                if chars.size and np.issubdtype(chars.dtype, np.number):
-                    markers.append("".join(chr(int(c)) for c in chars))
-                else:
-                    markers.append("".join(np.asarray(chars).astype(str)))
-            return markers
-        except Exception:
-            return None
+        counts = Counter(descriptions)
+        expected = dict.fromkeys(SONG2026_EVENTS, _EXPECTED_TRIALS_PER_CLASS)
+        if counts != expected:
+            raise RuntimeError(
+                f"Song2026 subject {subject}: expected published-protocol trial "
+                f"counts {expected}, found {dict(counts)}"
+            )
+        raw.set_annotations(mne.Annotations(onsets, [5.0] * len(onsets), descriptions))
+        return {"0": {"0": raw}}
