@@ -64,7 +64,7 @@ class Ma2022(BaseDataset):
         =========  =======  =======  ==========  =================  ============  ===============  ===========
         Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
         =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Ma2022          25       32           2                250            4s           250 Hz            5
+        Ma2022          25       32           2       up to 250            4s           250 Hz            5
         =========  =======  =======  ==========  =================  ============  ===============  ===========
 
     **Dataset description**
@@ -76,19 +76,22 @@ class Ma2022(BaseDataset):
     for studying cross-session variability in motor imagery brain-computer
     interfaces.
 
-    Each session provides 100 trials (50 left-hand, 50 right-hand). Signals
-    were recorded from 32 EEG channels (10-20 system, unipolar reference on M1,
-    ground on Afz) at a sampling rate of 250 Hz. Every trial lasts 8 s: a
-    0 to 2 s rest period, a 2 to 4 s visual cue, and a 4 to 8 s motor imagery
-    period. Only the 4 s motor imagery window is stored (1000 samples per
-    trial), so the analysis interval spans the full stored window (0 to
-    3.996 s, i.e. 4 s minus one sample, relative to imagery onset).
+    Each session was designed with 100 trials (50 left-hand, 50 right-hand).
+    The released files contain 74 to 100 retained trials per session after the
+    source-side bad-segment rejection described in the data paper, for 11,988
+    trials in total. Signals were recorded from 32 EEG channels (10-20 system,
+    unipolar reference on M1, ground on Afz) at a sampling rate of 250 Hz.
+    Every trial lasts 8 s: a 0 to 2 s rest period, a 2 to 4 s visual cue, and a
+    4 to 8 s motor imagery period. Only the 4 s motor imagery window is stored
+    (1000 samples per trial), so the analysis interval spans the full stored
+    window (0 to 3.996 s, i.e. 4 s minus one sample, relative to imagery
+    onset).
 
     The data are distributed as MATLAB ``.mat`` files (one per subject and
     session, named ``sub-XXX_ses-YY_task_motorimagery_eeg.mat``) bundled in a
-    single figshare archive. Each file contains a ``data`` array of shape
-    ``(n_trials, n_channels, n_samples)`` and an integer ``labels`` vector
-    (1 = left hand, 2 = right hand).
+    single figshare archive. Each file contains a variable-length ``data``
+    array of shape ``(n_trials, n_channels, n_samples)`` and an integer
+    ``labels`` vector (1 = left hand, 2 = right hand).
 
     .. note::
 
