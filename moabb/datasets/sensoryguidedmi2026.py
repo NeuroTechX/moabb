@@ -76,6 +76,76 @@ _BCI2000_CODE_TO_EVENT = {
     "2D": {1: 2, 2: 1, 3: 3, 4: 4},
 }
 
+# Exact released/model-input order documented by the authors in
+# onlineFeedback.py at commit 57710f76a5ddd6f9a3aad28566ca55776a424400.
+# The v7.3 ``meta.selected_channels`` field is a MATLAB string object that
+# pymatreader currently returns as ``None``, so this is also the authoritative
+# fallback for the 62-channel release.
+SENSORY_GUIDED_EEG_CHANNELS = (
+    "Fp1",
+    "Fpz",
+    "Fp2",
+    "Af3",
+    "Af4",
+    "F7",
+    "F5",
+    "F3",
+    "F1",
+    "Fz",
+    "F2",
+    "F4",
+    "F6",
+    "F8",
+    "Ft7",
+    "Fc5",
+    "Fc3",
+    "Fc1",
+    "Fcz",
+    "Fc2",
+    "Fc4",
+    "Fc6",
+    "Ft8",
+    "T7",
+    "C5",
+    "C3",
+    "C1",
+    "Cz",
+    "C2",
+    "C4",
+    "C6",
+    "T8",
+    "Tp7",
+    "Cp5",
+    "Cp3",
+    "Cp1",
+    "Cpz",
+    "Cp2",
+    "Cp4",
+    "Cp6",
+    "Tp8",
+    "P7",
+    "P5",
+    "P3",
+    "P1",
+    "Pz",
+    "P2",
+    "P4",
+    "P6",
+    "P8",
+    "Po7",
+    "Po5",
+    "Po3",
+    "Poz",
+    "Po4",
+    "Po6",
+    "Po8",
+    "Cb1",
+    "O1",
+    "Oz",
+    "O2",
+    "Cb2",
+)
+
 
 class SensoryGuidedMI2026(BaseDataset):
     """Motor imagery BCI dataset with sensory-guided joint learning [1]_.
@@ -471,7 +541,12 @@ class SensoryGuidedMI2026(BaseDataset):
             return None
 
         n_channels = trials[0].shape[1]
-        if not ch_names or len(ch_names) != n_channels:
+        if (
+            (not ch_names or len(ch_names) != n_channels)
+            and n_channels == len(SENSORY_GUIDED_EEG_CHANNELS)
+        ):
+            ch_names = list(SENSORY_GUIDED_EEG_CHANNELS)
+        elif not ch_names or len(ch_names) != n_channels:
             ch_names = [f"EEG{i + 1}" for i in range(n_channels)]
 
         codes = self._trial_label_events(rd, len(trials), fname)
@@ -509,7 +584,12 @@ class SensoryGuidedMI2026(BaseDataset):
         )
         try:
             montage = mne.channels.make_standard_montage("standard_1005")
-            raw.set_montage(montage, on_missing="ignore", verbose=False)
+            raw.set_montage(
+                montage,
+                match_case=False,
+                on_missing="ignore",
+                verbose=False,
+            )
         except Exception:  # pragma: no cover - montage is best-effort
             pass
         return raw

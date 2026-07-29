@@ -5,7 +5,10 @@ import numpy as np
 import pytest
 
 from moabb.datasets.base import check_run_names
-from moabb.datasets.sensoryguidedmi2026 import SensoryGuidedMI2026
+from moabb.datasets.sensoryguidedmi2026 import (
+    SENSORY_GUIDED_EEG_CHANNELS,
+    SensoryGuidedMI2026,
+)
 
 
 def test_bci2000_paired_lr_ud_runs_receive_unique_order_indices(tmp_path: Path):
@@ -61,3 +64,29 @@ def test_read_run_rejects_nonfinite_source_eeg_before_filtering():
         raw = ds._read_run("corrupt.mat")
 
     assert raw is None
+
+
+def test_read_run_restores_documented_62_channel_order_and_positions():
+    """Opaque MATLAB strings must not erase the authors' channel identity."""
+    ds = SensoryGuidedMI2026()
+    signal = np.zeros((5, 62, 2))
+    run_data = {
+        "meta": {
+            "sampling_rate_hz": 1000.0,
+            "selected_channels": None,
+        },
+        "trialSignal": signal,
+        "trialTargetClass": np.column_stack(
+            [np.zeros(5, dtype=int), np.ones(5, dtype=int)]
+        ),
+    }
+
+    with patch.object(ds, "_read_mat", return_value=run_data):
+        raw = ds._read_run("opaque_matlab_strings.mat")
+
+    assert raw.ch_names == list(SENSORY_GUIDED_EEG_CHANNELS)
+    positions = np.asarray([channel["loc"][:3] for channel in raw.info["chs"]])
+    positioned = np.isfinite(positions).all(axis=1) & np.any(positions, axis=1)
+    assert positioned.sum() == 60
+    assert positioned[raw.ch_names.index("C3")]
+    assert positioned[raw.ch_names.index("C4")]
