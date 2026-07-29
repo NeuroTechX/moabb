@@ -262,25 +262,35 @@ class SitStand2026(BaseDataset):
         path_zip = Path(dl.data_dl(url, self.code, path=path, force_update=force_update))
         extract_dir = path_zip.parent / f"S{subject:02d}"
 
-        mat_paths = [extract_dir / f"S{subject:02d}_S{sess}.mat" for sess in (1, 2)]
-        if not all(p.exists() for p in mat_paths):
+        def resolve_mat_paths():
+            resolved = []
+            for sess in (1, 2):
+                filename = f"S{subject:02d}_S{sess}.mat"
+                direct = extract_dir / filename
+                if direct.exists():
+                    resolved.append(direct)
+                    continue
+                found = sorted(extract_dir.rglob(filename))
+                if not found:
+                    return []
+                resolved.append(found[0])
+            return resolved
+
+        # Zenodo's archives contain an extra ``v1_raw_s<ID>`` directory. Check
+        # that nested layout before opening the archive: otherwise every
+        # subsequent ``get_data`` call needlessly extracts the same subject
+        # again, which also breaks read-only/offline compute jobs.
+        mat_paths = resolve_mat_paths()
+        if force_update or len(mat_paths) != 2:
             with z.ZipFile(path_zip, "r") as zip_ref:
                 zip_ref.extractall(extract_dir)
+            mat_paths = resolve_mat_paths()
 
-        # The archive layout may nest the .mat files; resolve them if needed.
-        resolved = []
-        for sess in (1, 2):
-            direct = extract_dir / f"S{subject:02d}_S{sess}.mat"
-            if direct.exists():
-                resolved.append(str(direct))
-            else:
-                found = list(extract_dir.rglob(f"S{subject:02d}_S{sess}.mat"))
-                if not found:
-                    raise FileNotFoundError(
-                        f"Could not find S{subject:02d}_S{sess}.mat under {extract_dir}"
-                    )
-                resolved.append(str(found[0]))
-        return resolved
+        if len(mat_paths) != 2:
+            raise FileNotFoundError(
+                f"Could not find both session .mat files under {extract_dir}"
+            )
+        return [str(mat_path) for mat_path in mat_paths]
 
     def _build_raw(self, mat_path):
         """Build an :class:`mne.io.RawArray` from one session ``.mat`` file."""
