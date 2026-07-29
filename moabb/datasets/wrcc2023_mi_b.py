@@ -3,6 +3,7 @@
 import numpy as np
 import scipy.io as sio
 from mne import create_info
+from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets import download as dl
@@ -15,6 +16,7 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+from moabb.datasets.wrcc2023_mi_a import WRCC2023_MI_A_CHANNELS
 
 
 # Harvard Dataverse "MI-B dataset of the BCI competition WRCC2023"
@@ -36,10 +38,10 @@ WRCC2023_MI_B_FILE_IDS = {
     9: 10358832,
 }
 
-# Sampling rate is not stored in the file. The World Robot Contest (WRCC) BCI
-# motor-imagery series records with a Neuracle 64-channel system, keeping 59 EEG
-# channels (10-20 layout) at 1000 Hz. The stored 4000-sample epochs are therefore
-# 4.0 s long, consistent with that setup.
+# Sampling rate and channel names are not stored in the file. The World Robot
+# Contest (WRCC) BCI motor-imagery series records with a Neuracle 64-channel
+# system, keeping the same 59 EEG channels used by the companion MI-A and MI-C
+# tracks at 1000 Hz. The stored 4000-sample epochs are therefore 4.0 s long.
 WRCC2023_MI_B_SFREQ = 1000.0
 
 # Class codes stored in the ``label`` variable. The dataset description lists the
@@ -90,9 +92,9 @@ class WRCC2023_MI_B(BaseDataset):
     -----
 
     The ``.mat`` files do not store channel names, channel positions or the
-    sampling rate. Channels are exposed with generic names (``EEG1`` .. ``EEG59``)
-    and no montage is set; the sampling rate is taken from the documented WRCC
-    motor-imagery Neuracle 59-channel / 1000 Hz recording configuration.
+    sampling rate. The loader applies the documented WRCC/Neuracle 59-channel
+    acquisition order shared by the companion MI-A and MI-C tracks, and takes
+    the sampling rate from the same 1000 Hz recording configuration.
 
     .. versionadded:: 1.2.1
 
@@ -103,10 +105,11 @@ class WRCC2023_MI_B(BaseDataset):
             sampling_rate=WRCC2023_MI_B_SFREQ,
             n_channels=59,
             channel_types={"eeg": 59},
-            montage=None,
+            montage="standard_1005",
             reference=None,
             ground=None,
             hardware="Neuracle 64-channel EEG (59 EEG channels retained)",
+            sensors=list(WRCC2023_MI_A_CHANNELS),
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -200,23 +203,40 @@ class WRCC2023_MI_B(BaseDataset):
         labels = np.atleast_1d(np.asarray(mat["label"]).ravel()).astype(int)
 
         n_trials, n_channels, n_samples = data.shape
+        if n_channels != len(WRCC2023_MI_A_CHANNELS):
+            raise ValueError(
+                f"WRCC2023_MI_B: expected {len(WRCC2023_MI_A_CHANNELS)} channels, "
+                f"got {n_channels} in {file_path}"
+            )
 
         # (n_trials, n_channels, n_samples) -> (n_channels, n_trials * n_samples).
         # The stored signals are already in volts (DC-coupled recording), so no
         # unit rescaling is applied.
         cont = np.transpose(data, (1, 0, 2)).reshape(n_channels, n_trials * n_samples)
+        # Keep the first event away from sample zero and give the inclusive end
+        # of the final 4 s epoch one real sample. Without these two pads MNE
+        # silently drops the first and last trials.
+        pad = 1
+        cont = np.concatenate(
+            [np.zeros((n_channels, pad)), cont, np.zeros((n_channels, pad))],
+            axis=1,
+        )
 
         # Mark each trial's cue onset (start of the stored epoch) with its label.
         stim = np.zeros((1, cont.shape[1]))
         for trial_idx, label in enumerate(labels[:n_trials]):
-            stim[0, trial_idx * n_samples] = label
+            stim[0, pad + trial_idx * n_samples] = label
 
-        ch_names = [f"EEG{i + 1}" for i in range(n_channels)]
         full = np.vstack([cont, stim])
         mne_info = create_info(
-            ch_names=ch_names + ["STI 014"],
+            ch_names=list(WRCC2023_MI_A_CHANNELS) + ["STI 014"],
             sfreq=WRCC2023_MI_B_SFREQ,
             ch_types=["eeg"] * n_channels + ["stim"],
         )
         raw = RawArray(data=full, info=mne_info, verbose=False)
+        raw.set_montage(
+            make_standard_montage("standard_1005"),
+            on_missing="ignore",
+            verbose=False,
+        )
         return raw

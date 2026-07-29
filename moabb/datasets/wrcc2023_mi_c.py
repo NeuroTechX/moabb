@@ -247,10 +247,14 @@ class WRCC2023_MI_C(BaseDataset):
         # Concatenate trials along time: (n_channels, n_trials * n_samples).
         # Values are already in volts (raw, DC-coupled), so no unit rescaling.
         cont = np.transpose(data, (1, 0, 2)).reshape(n_channels, n_trials * n_samples)
-        # Prepend one zero sample so the first trial's cue is not at sample 0,
-        # where mne.find_events cannot detect a rising edge (would drop trial 1).
+        # Keep the first cue away from sample zero and give the inclusive end of
+        # the final 4 s epoch one real sample. Without the trailing pad MNE
+        # silently drops the final trial.
         pad = 1
-        cont = np.concatenate([np.zeros((n_channels, pad)), cont], axis=1)
+        cont = np.concatenate(
+            [np.zeros((n_channels, pad)), cont, np.zeros((n_channels, pad))],
+            axis=1,
+        )
 
         stim = np.zeros((1, cont.shape[1]))
         for trial_idx, label in enumerate(labels[:n_trials]):
