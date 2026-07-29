@@ -86,8 +86,10 @@ class MIND2026(BaseDataset):
 
     Codes 1 (eyes-open rest) and 2 (eyes-closed rest) are ignored.
 
-    The imagery ``interval`` is set to ``[2, 12]`` s relative to cue onset,
-    covering the 10 s motor-imagery execution period that follows the 2 s cue.
+    In the BIDS events sidecar, code 3 marks the 2 s pre-imagery cue and codes
+    4-7 mark the subsequent motor-imagery execution onset. The imagery
+    ``interval`` is therefore ``[0, 10]`` s relative to the code 4-7 event,
+    covering exactly the 10 s execution period.
 
     .. note::
 
@@ -247,7 +249,7 @@ class MIND2026(BaseDataset):
             sessions_per_subject=1,
             events=dict(_EVENTS),
             code="MIND2026",
-            interval=[2, 12],
+            interval=[0, 10],
             paradigm="imagery",
             doi=MIND2026_DOI,
             selected_subjects=subjects,
@@ -279,12 +281,14 @@ class MIND2026(BaseDataset):
         """Directional-MI annotations for one run, from the events.tsv sidecar.
 
         The four MI conditions carry trigger ``value`` codes 4-7 in the BIDS
-        ``*_events.tsv``; the rest/cue codes (1, 2, 3) are dropped. Onsets are in
-        seconds from recording start, matching the BrainVision time axis. Falls
-        back to the ``read_raw_brainvision`` marker annotations if the sidecar is
-        missing, recovering the code from the marker description (e.g.
-        ``"Comment/4"``). Descriptions are the :data:`_EVENTS` class labels, so
-        the four directional codes map to the same classes the loader intends.
+        ``*_events.tsv``. These events already mark motor-imagery execution
+        onset, approximately 2 s after the separate pre-imagery cue (code 3);
+        the rest/cue codes (1, 2, 3) are dropped. Onsets are in seconds from
+        recording start, matching the BrainVision time axis. Falls back to the
+        ``read_raw_brainvision`` marker annotations if the sidecar is missing,
+        recovering the code from the marker description (e.g. ``"Comment/4"``).
+        Descriptions are the :data:`_EVENTS` class labels, so the four
+        directional codes map to the same classes the loader intends.
         """
         event_desc = {code: label for label, code in _EVENTS.items()}
         events_path = Path(str(vhdr).replace("_eeg.vhdr", "_events.tsv"))
