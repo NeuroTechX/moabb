@@ -9,6 +9,7 @@ Data DOI: 10.57760/sciencedb.34326 (ScienceDB).
 import csv
 import logging
 import re
+from collections import Counter
 from pathlib import Path
 
 import mne
@@ -55,6 +56,8 @@ _EVENTS = {
     "upperleft_to_lowerright": 6,
     "upperright_to_lowerleft": 7,
 }
+_N_MI_EVENTS_PER_RUN = 40
+_N_MI_EVENTS_PER_CLASS = 10
 
 
 class MIND2026(BaseDataset):
@@ -71,11 +74,12 @@ class MIND2026(BaseDataset):
 
     Each participant completed three consecutive blocks (treated here as three
     runs of a single session). Every block lasted ~11 min and contained a
-    60 s eyes-open rest, a 60 s eyes-closed rest, and 20 MI trials. Each MI
-    trial lasted 27 s: a 2 s synchronous visual+auditory cue at 0 s, a 10 s
-    motor-imagery execution period, and a 10 s post-imagery rest. Participants
-    performed 120 MI trials in total (30 per class), for 3,600 EEG/fNIRS trials
-    across the cohort.
+    60 s eyes-open rest, a 60 s eyes-closed rest, and 40 MI trials: 20 trials
+    using codes 4/5 followed by 20 trials using codes 6/7. Each MI trial lasted
+    27 s: a 2 s synchronous visual+auditory cue at 0 s, a 10 s motor-imagery
+    execution period, and a 10 s post-imagery rest. Participants performed 120
+    MI trials in total (30 per class), for 3,600 EEG/fNIRS trials across the
+    cohort.
 
     The four directional MI conditions (raw trigger codes) are:
 
@@ -143,7 +147,7 @@ class MIND2026(BaseDataset):
                 "Four-class directional motor imagery of the right upper limb "
                 "with simultaneous EEG and fNIRS recording. Three blocks per "
                 "subject; each block: 60 s eyes-open rest, 60 s eyes-closed "
-                "rest, 20 MI trials. Each 27 s trial: 2 s synchronous "
+                "rest, 40 MI trials. Each 27 s trial: 2 s synchronous "
                 "visual+auditory cue, 10 s MI execution, 10 s post-imagery rest."
             ),
             feedback_type="none",
@@ -226,7 +230,7 @@ class MIND2026(BaseDataset):
             n_trials_per_class=dict.fromkeys(_EVENTS, 30),
             trials_context=(
                 "120 MI trials per subject (30 per class) split over three "
-                "blocks/runs of 20 MI trials each; 3,600 trials across 30 "
+                "blocks/runs of 40 MI trials each; 3,600 trials across 30 "
                 "subjects."
             ),
         ),
@@ -289,11 +293,19 @@ class MIND2026(BaseDataset):
         recovering the code from the marker description (e.g. ``"Comment/4"``).
         Descriptions are the :data:`_EVENTS` class labels, so the four
         directional codes map to the same classes the loader intends.
+
+        A complete run has 40 MI events, 10 per class. Two released run-1
+        recordings contain aborted events followed by a code-1 acquisition
+        restart. For an overfull stream, only a complete, balanced suffix after
+        the final code 1 is accepted, and that suffix must preserve the
+        released task order: 20 code-4/5 events followed by 20 code-6/7 events.
+        All other incomplete or ambiguous event streams fail closed.
         """
         event_desc = {code: label for label, code in _EVENTS.items()}
         events_path = Path(str(vhdr).replace("_eeg.vhdr", "_events.tsv"))
 
-        onsets, descs = [], []
+        coded_events = []
+        source = None
         if events_path.exists():
             with open(events_path, newline="") as fh:
                 for row in csv.DictReader(fh, delimiter="\t"):
@@ -302,29 +314,101 @@ class MIND2026(BaseDataset):
                         onset = float(row["onset"])
                     except (KeyError, TypeError, ValueError):
                         continue
-                    if code in event_desc:
-                        onsets.append(onset)
-                        descs.append(event_desc[code])
+                    coded_events.append((onset, code))
+            if any(code in event_desc for _, code in coded_events):
+                source = f"events sidecar {events_path.name}"
 
-        if not onsets:
+        if source is None:
             # Recover the codes from the BrainVision marker annotations, whose
             # descriptions end in the numeric code (e.g. "Comment/4").
+            coded_events = []
             for onset, desc in zip(raw.annotations.onset, raw.annotations.description):
                 m = re.search(r"(\d+)\s*$", str(desc))
-                if m is not None and int(m.group(1)) in event_desc:
-                    onsets.append(float(onset))
-                    descs.append(event_desc[int(m.group(1))])
+                if m is not None:
+                    coded_events.append((float(onset), int(m.group(1))))
+            if any(code in event_desc for _, code in coded_events):
+                source = "BrainVision markers"
 
-        if not onsets:
+        if source is None:
             raise RuntimeError(
                 f"MIND2026: no MI trigger codes {sorted(_EVENTS.values())} found "
                 f"for {Path(vhdr).name}; checked the sidecar {events_path.name} and "
                 "the BrainVision markers."
             )
 
+        coded_events.sort(key=lambda event: event[0])
+        mi_events = MIND2026._validated_mi_events(
+            coded_events, source=source, recording=Path(vhdr).name
+        )
+        onsets = [onset for onset, _ in mi_events]
+        descs = [event_desc[code] for _, code in mi_events]
         return mne.Annotations(
             onset=onsets, duration=[0.0] * len(onsets), description=descs
         )
+
+    @staticmethod
+    def _validated_mi_events(coded_events, *, source, recording):
+        """Return one structurally complete MI run or raise on ambiguity."""
+        mi_codes = set(_EVENTS.values())
+        expected_counts = Counter(dict.fromkeys(mi_codes, _N_MI_EVENTS_PER_CLASS))
+        mi_events = [(onset, code) for onset, code in coded_events if code in mi_codes]
+        counts = Counter(code for _, code in mi_events)
+
+        if len(mi_events) == _N_MI_EVENTS_PER_RUN and counts == expected_counts:
+            return mi_events
+
+        counts_text = ", ".join(
+            f"{code}:{counts.get(code, 0)}" for code in sorted(mi_codes)
+        )
+        context = f"{recording} from {source}"
+        if len(mi_events) <= _N_MI_EVENTS_PER_RUN:
+            raise RuntimeError(
+                f"MIND2026: expected exactly {_N_MI_EVENTS_PER_RUN} MI events "
+                f"({_N_MI_EVENTS_PER_CLASS} per class) in {context}; found "
+                f"{len(mi_events)} ({counts_text})."
+            )
+
+        restart_indices = [
+            index for index, (_, code) in enumerate(coded_events) if code == 1
+        ]
+        if not restart_indices:
+            raise RuntimeError(
+                f"MIND2026: found {len(mi_events)} MI events ({counts_text}) in "
+                f"{context}, but an overfull run requires a final code 1 restart "
+                "marker; refusing to guess which events belong to the run."
+            )
+
+        suffix = [
+            (onset, code)
+            for onset, code in coded_events[restart_indices[-1] + 1 :]
+            if code in mi_codes
+        ]
+        suffix_counts = Counter(code for _, code in suffix)
+        suffix_counts_text = ", ".join(
+            f"{code}:{suffix_counts.get(code, 0)}" for code in sorted(mi_codes)
+        )
+        if len(suffix) != _N_MI_EVENTS_PER_RUN or suffix_counts != expected_counts:
+            raise RuntimeError(
+                f"MIND2026: the events after the final code 1 restart marker in "
+                f"{context} are not one complete run; expected "
+                f"{_N_MI_EVENTS_PER_RUN} MI events "
+                f"({_N_MI_EVENTS_PER_CLASS} per class), found {len(suffix)} "
+                f"({suffix_counts_text})."
+            )
+
+        first_half = [code for _, code in suffix[:20]]
+        second_half = [code for _, code in suffix[20:]]
+        if not all(code in {4, 5} for code in first_half):
+            raise RuntimeError(
+                f"MIND2026: the first 20 MI events after the final code 1 restart "
+                f"marker in {context} must use only codes 4/5."
+            )
+        if not all(code in {6, 7} for code in second_half):
+            raise RuntimeError(
+                f"MIND2026: the last 20 MI events after the final code 1 restart "
+                f"marker in {context} must use only codes 6/7."
+            )
+        return suffix
 
     def _subject_vhdrs(self, subject):
         """Sorted BrainVision ``.vhdr`` recordings for one subject (by run)."""
