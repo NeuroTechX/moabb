@@ -192,6 +192,7 @@ class SitStand2026(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.20348444",
+            data_url="https://zenodo.org/records/20348444",
             description=(
                 "First public EEG dataset explicitly targeting sit-to-stand and "
                 "stand-to-sit transitions during motor execution and motor imagery, "
