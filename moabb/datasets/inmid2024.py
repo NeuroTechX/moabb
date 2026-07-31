@@ -118,10 +118,16 @@ class InMID2024(BaseDataset):
     loader collapses each folder to one class; the folder membership is the
     data-borne label used here.
 
-    This is a distinct recording from the same authors' MIMED dataset
-    (:class:`moabb.datasets.Wirawan2024`, Mendeley 10.17632/zs25xxjkm9.3):
-    InMID has 23 participants from diverse Indonesian regions, whereas MIMED has
-    30 participants from the Bali region.
+    The imagery session is not an independent cohort from the same authors'
+    MIMED release (:class:`moabb.datasets.Wirawan2024`, Mendeley
+    10.17632/zs25xxjkm9.3). A waveform-level audit found that the InMID imagery
+    files reuse the MIMED P01-P23 recordings: 269 of 276 task/repetition
+    arrays equal the corresponding MIMED array after removing InMID's leading
+    sample, and three are identical without that adjustment. The four
+    InMID-right-P16 arrays are mislabeled copies of InMID-left-P15 rather than
+    independent right-P16 recordings. Do not include both adapters as
+    independent datasets in the same analysis. This finding does not establish
+    that the InMID motor-execution recordings are duplicated.
 
     References
     ----------

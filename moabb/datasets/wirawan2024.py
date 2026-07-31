@@ -64,17 +64,27 @@ WIRAWAN2024_SCENARIOS = {
 WIRAWAN2024_SFREQ = 128
 WIRAWAN2024_BASELINE_SAMPLES = 384
 
+# The release labels 30 participant files, but the imagery signals for P24-P30
+# are exact copies of P17-P23, respectively, across every scenario and
+# repetition. Expose only the 23 unique recordings so subject-wise validation
+# cannot place the same waveform in both train and test folds.
+WIRAWAN2024_UNIQUE_SUBJECTS = tuple(range(1, 24))
+WIRAWAN2024_DUPLICATE_SUBJECTS = {24: 17, 25: 18, 26: 19, 27: 20, 28: 21, 29: 22, 30: 23}
+
 
 class Wirawan2024(BaseDataset):
     """Motor Imagery MIMED dataset from Wirawan et al. 2024 [1]_.
 
     **Dataset description**
 
-    The MIMED (Motor Imagery and Motor Execution Dataset) was recorded from
-    30 healthy students from the Bali region of Indonesia using an Emotiv
-    EPOC X 14-channel wireless headset sampled at 128 Hz. The 14 electrodes
-    follow the international 10-20 system: AF3, F7, F3, FC5, T7, P7, O1, O2,
-    P8, T8, FC6, F4, F8, AF4.
+    The MIMED (Motor Imagery and Motor Execution Dataset) release contains 30
+    participant labels from students in the Bali region of Indonesia, recorded
+    using an Emotiv EPOC X 14-channel wireless headset sampled at 128 Hz. The
+    imagery signals distributed for P24 through P30 are exact copies of P17
+    through P23, respectively, across every scenario and repetition. This
+    loader therefore exposes the 23 unique imagery recordings (P01-P23). The
+    14 electrodes follow the international 10-20 system: AF3, F7, F3, FC5, T7,
+    P7, O1, O2, P8, T8, FC6, F4, F8, AF4.
 
     Participants performed six activities, both as motor execution and as
     motor imagery: raising the right hand, lowering the right hand, raising
@@ -107,6 +117,10 @@ class Wirawan2024(BaseDataset):
     not carried by the ``.mat`` files and was dropped; only the folder-level
     3-class labelling is data-borne.
 
+    The same imagery recordings for P01-P23 also occur in the InMID release
+    (:class:`moabb.datasets.InMID2024`). They must not be treated as an
+    independent cohort in a combined analysis.
+
     References
     ----------
 
@@ -132,7 +146,9 @@ class Wirawan2024(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=30, health_status="healthy", species="homo sapiens"
+            n_subjects=len(WIRAWAN2024_UNIQUE_SUBJECTS),
+            health_status="healthy",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -146,7 +162,8 @@ class Wirawan2024(BaseDataset):
             doi="10.1016/j.dib.2024.110833",
             description=(
                 "MIMED: motor imagery and motor execution EEG dataset of six "
-                "activities recorded from 30 subjects with an Emotiv EPOC X "
+                "activities released under 30 participant labels, with 23 "
+                "unique imagery recordings, acquired using an Emotiv EPOC X "
                 "14-channel headset at 128 Hz."
             ),
             investigators=["I Made Agus Wirawan"],
@@ -163,17 +180,19 @@ class Wirawan2024(BaseDataset):
         abstract=(
             "The MIMED dataset provides EEG recordings of motor imagery and "
             "motor execution for six activities (raising and lowering each "
-            "hand, standing and sitting) from 30 subjects, acquired with a "
-            "14-channel Emotiv EPOC X headset at 128 Hz. The distributed "
-            "imagery .mat files carry no per-repetition activity label, so the "
-            "loader exposes the reliable folder-level 3-class task "
-            "(left_hand / right_hand / trunk)."
+            "hand, standing and sitting), acquired with a 14-channel Emotiv "
+            "EPOC X headset at 128 Hz. The release labels 30 participants, but "
+            "P24-P30 repeat P17-P23 exactly; the loader exposes only the 23 "
+            "unique imagery recordings. The distributed imagery .mat files "
+            "carry no per-repetition activity label, so the loader exposes the "
+            "reliable folder-level 3-class task (left_hand / right_hand / "
+            "trunk)."
         ),
     )
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 30 + 1)),
+            subjects=list(WIRAWAN2024_UNIQUE_SUBJECTS),
             sessions_per_subject=1,
             events={"left_hand": 1, "right_hand": 2, "trunk": 3},
             code="Wirawan2024",
