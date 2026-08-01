@@ -12,6 +12,7 @@ from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
+from sklearn.model_selection import GroupShuffleSplit
 from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_digest, get_string_rep
@@ -485,6 +486,57 @@ def test_resolve_cv_honours_cv_kwargs_without_forcing_defaults():
         for e in evals:
             if os.path.isfile(e.results.filepath):
                 os.remove(e.results.filepath)
+
+
+def test_default_cv_kwargs_override_splitter_defaults(tmp_path):
+    evaluation = ev.WithinSessionEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        cv_kwargs={"n_splits": 3, "shuffle": False},
+    )
+    splitter = evaluation._create_splitter()
+    assert splitter._cv_kwargs["n_splits"] == 3
+    assert splitter.shuffle is False
+
+
+def test_custom_cv_kwargs_override_splitter_defaults(tmp_path):
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        n_splits=3,
+        cv_class=GroupShuffleSplit,
+        cv_kwargs={"random_state": 17},
+    )
+    splitter = evaluation._create_splitter()
+    assert splitter._cv_kwargs["n_splits"] == 3
+    assert splitter.random_state == 17
+
+
+@pytest.mark.parametrize(
+    "evaluation_class", [ev.WithinSessionEvaluation, ev.WithinSubjectEvaluation]
+)
+def test_inner_cv_random_state_survives_disabled_wrapper_shuffle(
+    tmp_path, evaluation_class
+):
+    evaluation = evaluation_class(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        cv_class=LearningCurveSplitter,
+        cv_kwargs={
+            "data_size": {"policy": "ratio", "value": [0.5]},
+            "n_perms": 1,
+            "shuffle": False,
+            "random_state": 17,
+        },
+    )
+    splitter = evaluation._create_splitter()
+    inner_splitter = splitter.cv_class(**splitter._cv_kwargs)
+    assert splitter.shuffle is False
+    assert splitter.random_state is None
+    assert inner_splitter.random_state == 17
 
 
 class Test_CrossSubj(TestWithinSess):

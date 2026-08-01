@@ -1,3 +1,4 @@
+import inspect
 import logging
 import math
 from abc import ABC, abstractmethod
@@ -541,12 +542,14 @@ class BaseEvaluation(ABC):
 
     def _resolve_cv(self, default_class, default_kwargs=None):
         """Resolve the cross-validation class and kwargs for a splitter."""
-        if self.cv_class is None:
-            cv_class = default_class
-            cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
-        else:
-            cv_class = self.cv_class
-            cv_kwargs = dict(self.cv_kwargs)
+        cv_class = default_class if self.cv_class is None else self.cv_class
+        cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
+        if self.cv_class is not None:
+            parameters = inspect.signature(cv_class).parameters
+            cv_kwargs = {
+                name: value for name, value in cv_kwargs.items() if name in parameters
+            }
+        cv_kwargs.update(self.cv_kwargs)
         return cv_class, cv_kwargs
 
     def _load_data(

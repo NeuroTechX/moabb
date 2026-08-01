@@ -110,6 +110,7 @@ class WithinSessionSplitter(BaseCrossValidator):
         random_state: int = None,
         cv_class: type[BaseCrossValidator] = StratifiedKFold,
         groups=None,
+        _inner_random_state=None,
         **cv_kwargs,
     ):
         self.cv_class = cv_class
@@ -142,6 +143,8 @@ class WithinSessionSplitter(BaseCrossValidator):
         ]:
             if p in params and p not in cv_kwargs:
                 self._cv_kwargs[p] = v
+        if _inner_random_state is not None:
+            self._cv_kwargs["random_state"] = _inner_random_state
         # Detect whether the cv_class consumes the groups parameter
         self._cv_uses_groups = issubclass(self.cv_class, GroupsConsumerMixin)
         self._last_split_metadata = None
@@ -278,6 +281,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
         random_state: int = None,
         cv_class: type[BaseCrossValidator] = StratifiedKFold,
         groups=None,
+        _inner_random_state=None,
         **cv_kwargs,
     ):
         self.cv_class = cv_class
@@ -310,6 +314,8 @@ class WithinSubjectSplitter(BaseCrossValidator):
         ]:
             if p in params and p not in cv_kwargs:
                 self._cv_kwargs[p] = v
+        if _inner_random_state is not None:
+            self._cv_kwargs["random_state"] = _inner_random_state
         # Detect whether the cv_class consumes the groups parameter
         self._cv_uses_groups = issubclass(self.cv_class, GroupsConsumerMixin)
         self._last_split_metadata = None
