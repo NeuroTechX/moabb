@@ -672,6 +672,10 @@ classify these signals.</p>
 <a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f&quot;{msg} Use `optuna_integration.sklearn` instead.&quot;, FutureWarning)
+</pre></div>
+</div>
 <section id="instantiating-dataset">
 <h2>Instantiating Dataset<a class="headerlink" href="#instantiating-dataset" title="Link to this heading">#</a></h2>
 <p>The first thing to do is to instantiate the dataset that we want to analyze.
@@ -774,65 +778,13 @@ partition and the remaining one as testing partition.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">({</span><span class="s2">&quot;csp+lda&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">})</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/44.1M [00:00&lt;11:09, 65.8kB/s]
-  0%|                                      | 48.1k/44.1M [00:00&lt;03:26, 213kB/s]
-  0%|                                       | 113k/44.1M [00:00&lt;02:06, 349kB/s]
-  0%|▏                                      | 184k/44.1M [00:00&lt;01:41, 434kB/s]
-  1%|▎                                      | 296k/44.1M [00:00&lt;01:13, 595kB/s]
-  1%|▍                                      | 432k/44.1M [00:00&lt;00:57, 758kB/s]
-  1%|▌                                     | 648k/44.1M [00:00&lt;00:40, 1.07MB/s]
-  2%|▊                                     | 904k/44.1M [00:01&lt;00:31, 1.37MB/s]
-  3%|█                                    | 1.30M/44.1M [00:01&lt;00:22, 1.91MB/s]
-  4%|█▍                                   | 1.72M/44.1M [00:01&lt;00:18, 2.35MB/s]
-  5%|█▉                                   | 2.35M/44.1M [00:01&lt;00:13, 3.16MB/s]
-  7%|██▌                                  | 3.06M/44.1M [00:01&lt;00:10, 3.88MB/s]
-  9%|███▎                                 | 4.01M/44.1M [00:01&lt;00:08, 4.98MB/s]
- 12%|████▎                                | 5.15M/44.1M [00:01&lt;00:06, 6.20MB/s]
- 15%|█████▌                               | 6.66M/44.1M [00:01&lt;00:04, 7.90MB/s]
- 19%|███████▏                             | 8.50M/44.1M [00:02&lt;00:03, 9.91MB/s]
- 25%|█████████▏                           | 11.0M/44.1M [00:02&lt;00:02, 12.7MB/s]
- 32%|███████████▊                         | 14.0M/44.1M [00:02&lt;00:01, 16.2MB/s]
- 41%|███████████████▏                     | 18.0M/44.1M [00:02&lt;00:01, 20.8MB/s]
- 52%|███████████████████▎                 | 23.0M/44.1M [00:02&lt;00:00, 26.2MB/s]
- 63%|███████████████████████▏             | 27.6M/44.1M [00:02&lt;00:00, 29.1MB/s]
- 77%|████████████████████████████▍        | 33.9M/44.1M [00:02&lt;00:00, 34.8MB/s]
- 91%|█████████████████████████████████▊   | 40.3M/44.1M [00:02&lt;00:00, 39.5MB/s]
-  0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.1M/44.1M [00:00&lt;00:00, 174GB/s]
-
-  0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/42.3M [00:00&lt;11:23, 61.9kB/s]
-  0%|                                      | 56.3k/42.3M [00:00&lt;02:57, 239kB/s]
-  0%|                                       | 121k/42.3M [00:00&lt;02:00, 351kB/s]
-  0%|▏                                      | 184k/42.3M [00:00&lt;01:45, 400kB/s]
-  1%|▏                                      | 264k/42.3M [00:00&lt;01:29, 472kB/s]
-  1%|▎                                      | 337k/42.3M [00:00&lt;01:24, 498kB/s]
-  1%|▍                                      | 432k/42.3M [00:00&lt;01:13, 569kB/s]
-  1%|▍                                      | 512k/42.3M [00:01&lt;01:12, 578kB/s]
-  2%|▌                                      | 656k/42.3M [00:01&lt;00:56, 737kB/s]
-  2%|▋                                      | 776k/42.3M [00:01&lt;00:52, 787kB/s]
-  2%|▉                                     | 984k/42.3M [00:01&lt;00:40, 1.02MB/s]
-  3%|█                                    | 1.18M/42.3M [00:01&lt;00:35, 1.17MB/s]
-  4%|█▎                                   | 1.53M/42.3M [00:01&lt;00:25, 1.59MB/s]
-  4%|█▌                                   | 1.78M/42.3M [00:01&lt;00:24, 1.67MB/s]
-  6%|██                                   | 2.33M/42.3M [00:01&lt;00:16, 2.42MB/s]
-  7%|██▍                                  | 2.83M/42.3M [00:02&lt;00:13, 2.83MB/s]
-  9%|███▏                                 | 3.60M/42.3M [00:02&lt;00:10, 3.71MB/s]
- 11%|███▉                                 | 4.45M/42.3M [00:02&lt;00:08, 4.50MB/s]
- 12%|████▌                                | 5.27M/42.3M [00:02&lt;00:07, 5.00MB/s]
- 16%|█████▉                               | 6.72M/42.3M [00:02&lt;00:05, 6.75MB/s]
- 18%|██████▋                              | 7.66M/42.3M [00:02&lt;00:05, 6.84MB/s]
- 24%|████████▊                            | 10.1M/42.3M [00:02&lt;00:03, 10.2MB/s]
- 30%|██████████▉                          | 12.6M/42.3M [00:03&lt;00:02, 12.7MB/s]
- 39%|██████████████▎                      | 16.4M/42.3M [00:03&lt;00:01, 17.6MB/s]
- 47%|█████████████████▍                   | 19.9M/42.3M [00:03&lt;00:01, 20.2MB/s]
- 59%|█████████████████████▊               | 24.9M/42.3M [00:03&lt;00:00, 25.3MB/s]
- 71%|██████████████████████████▏          | 29.9M/42.3M [00:03&lt;00:00, 29.0MB/s]
- 84%|███████████████████████████████▏     | 35.7M/42.3M [00:03&lt;00:00, 33.0MB/s]
-100%|████████████████████████████████████▉| 42.2M/42.3M [00:03&lt;00:00, 37.2MB/s]
-  0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.3M/42.3M [00:00&lt;00:00, 289GB/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 07:41:45] Multiple instances of codecarbon are allowed to run at the same time.
+2026-08-04 07:41:54,528 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 0train: Score 0.939
+2026-08-04 07:41:54,528 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 1test: Score 0.956
+2026-08-04 07:41:54,528 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 0train: Score 0.722
+2026-08-04 07:41:54,528 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 1test: Score 0.636
+2026-08-04 07:41:54,528 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 1test: Score 0.990
+2026-08-04 07:41:54,528 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 0train: Score 0.994
 </pre></div>
 </div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
@@ -860,8 +812,11 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 30.100 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1319 MB</p>
+<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-08-04 07:41:54,566 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-04 07:41:54,568 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 25.308 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b5e20655a202770c185990e75afbe3cd/tutorial_1_simple_example_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.ipynb</span></code></a></p>
