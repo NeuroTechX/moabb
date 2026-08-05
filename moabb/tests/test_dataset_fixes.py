@@ -10,11 +10,13 @@ import numpy as np
 import pytest
 
 from moabb.datasets import download as _dl
+from moabb.datasets import schirrmeister2017
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.braininvaders import BI2015b
 from moabb.datasets.hefmi_ich2025 import HefmiIch2025
 from moabb.datasets.kojima2024a import Kojima2024A
 from moabb.datasets.mainsah2025 import _parse_manifest
+from moabb.datasets.schirrmeister2017 import Schirrmeister2017
 from moabb.datasets.ssvep_chen2017 import Chen2017SingleFlicker
 from moabb.datasets.ssvep_mamem import MAMEM1
 from moabb.datasets.yang2025 import Yang2025
@@ -240,3 +242,62 @@ def test_kojima2024_removes_invalid_cached_manifest(tmp_path: Path, monkeypatch)
         dataset.download_by_subject(1, tmp_path)
 
     assert not manifest_path.exists()
+
+
+def _recording_data_dl(calls):
+    """Stand-in for ``data_dl`` that records every actual download.
+
+    It reproduces the caching contract of the real function: the file is
+    written to the location derived from the URL and reused on later calls.
+    """
+
+    def data_dl(url, sign, path=None, force_update=False, verbose=None):
+        root = Path(_dl.get_dataset_path(sign, path)) / f"MNE-{sign.lower()}-data"
+        destination = _dl._sanitize_path(_dl._normalize_destination(url, root))
+        if destination.is_file() and not force_update:
+            return str(destination)
+        calls.append(url)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(b"edf")
+        return str(destination)
+
+    return data_dl
+
+
+def test_schirrmeister2017_does_not_redownload(tmp_path: Path, monkeypatch):
+    """``data_path`` must fetch each recording only once (issue #851)."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    calls = []
+    monkeypatch.setattr(schirrmeister2017.dl, "data_dl", _recording_data_dl(calls))
+
+    dataset = Schirrmeister2017()
+    first = dataset.data_path(1, path=str(tmp_path))
+    assert len(calls) == 2
+
+    for _ in range(2):
+        assert dataset.data_path(1, path=str(tmp_path)) == first
+    assert len(calls) == 2, "the recordings were downloaded more than once"
+
+    # A single copy of each recording, not one per storage layout.
+    assert len(list(tmp_path.rglob("1.edf"))) == 2
+
+
+def test_schirrmeister2017_reuses_relocated_files(tmp_path: Path, monkeypatch):
+    """A copy left by the old layout is reused instead of downloaded again."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    dataset_folder = tmp_path / "MNE-schirrmeister2017-data"
+    relocated = []
+    for split in ("train", "test"):
+        path = dataset_folder / split / "1.edf"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"edf")
+        relocated.append(str(path))
+
+    monkeypatch.setattr(
+        schirrmeister2017.dl,
+        "data_dl",
+        lambda *args, **kwargs: pytest.fail("downloaded an already available file"),
+    )
+
+    dataset = Schirrmeister2017()
+    assert dataset.data_path(1, path=str(tmp_path)) == relocated
