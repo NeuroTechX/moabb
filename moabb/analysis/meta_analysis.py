@@ -11,6 +11,13 @@ from sklearn.utils import check_random_state
 
 log = logging.getLogger(__name__)
 
+# Stouffer's method, used by combine_pvalues, turns a p-value of exactly 0 or 1
+# into an infinite z-score. The permutation branch already keeps its p-values
+# strictly inside (0, 1); these are the tightest bounds that do the same for the
+# Wilcoxon branch without moving any p-value that is already valid.
+_P_FLOOR = np.nextafter(0.0, 1.0)
+_P_CEIL = np.nextafter(1.0, 0.0)
+
 
 def collapse_session_scores(df):
     """Prepare results dataframe for computing statistics.
@@ -64,13 +71,28 @@ def compute_pvals_wilcoxon(df, order=None):
             if i != j:
                 pipe1 = order[i]
                 pipe2 = order[j]
+                diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
+                if (diffs == 0).all():
+                    # Wilcoxon is undefined when every paired difference is
+                    # zero. Old SciPy raised ValueError here; current SciPy
+                    # returns 1.0 from its exact method but NaN from the normal
+                    # approximation it switches to on larger samples, so the
+                    # result silently depended on the number of subjects. The
+                    # two pipelines are indistinguishable, so the one-tailed
+                    # p-value is 0.5 in both directions, which is what the exact
+                    # method already yields.
+                    out[i, j] = 0.5
+                    continue
                 p = stats.wilcoxon(df.loc[:, pipe1], df.loc[:, pipe2])[1]
                 p /= 2
                 # we want the one-tailed p-value
-                diff = (df.loc[:, pipe1] - df.loc[:, pipe2]).mean()
-                if diff < 0:
+                if diffs.mean() < 0:
                     p = 1 - p  # was in the other side of the distribution
-                out[i, j] = p
+                # Keep p strictly inside (0, 1) so Stouffer's method stays
+                # finite, as the permutation branch already does. The normal
+                # approximation can underflow to an exact 0, which the one-tailed
+                # flip then turns into an exact 1.
+                out[i, j] = min(max(p, _P_FLOOR), _P_CEIL)
     return out
 
 
@@ -217,8 +239,18 @@ def compute_effect(df, order=None):
             if i != j:
                 # for now it's just the standardized difference
                 diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
-                diffs = diffs.mean() / diffs.std()
-                out[i, j] = diffs
+                mean, std = diffs.mean(), diffs.std()
+                if std == 0:
+                    # The paired differences have no spread, so the standardized
+                    # difference is 0/0 when the two pipelines score identically
+                    # and c/0 when they differ by a constant. Identical pipelines
+                    # have no effect, so report 0 rather than the NaN (plus
+                    # RuntimeWarning) that NumPy would produce. A constant offset
+                    # really is an unbounded effect, so keep the sign and make
+                    # the infinity deliberate rather than a division accident.
+                    out[i, j] = 0.0 if mean == 0 else np.sign(mean) * np.inf
+                else:
+                    out[i, j] = mean / std
     return out
 
 
@@ -345,9 +377,12 @@ def find_significant_differences(df, perm_cutoff=20):
                 t = T_full.loc[(slice(None), algs[i]), algs[j]]
                 P[i, j] = combine_pvalues(p, nsubs)
                 if np.isnan(P[i, j]):
+                    # A dataset can be missing this pipeline pair entirely, in
+                    # which case pivot_table leaves a NaN behind. Treat the
+                    # missing evidence as "no difference" instead of returning a
+                    # NaN that every downstream consumer has to special-case.
                     log.info("NaN p-value found, turned to 1")
-                    print("NaN")
-                    # P[i, j] = 1.0
+                    P[i, j] = 1.0
                 T[i, j] = combine_effects(t, nsubs)
     dfP = pd.DataFrame(index=algs, columns=algs, data=P)
     dfT = pd.DataFrame(index=algs, columns=algs, data=T)
