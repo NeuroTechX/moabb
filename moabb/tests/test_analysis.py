@@ -4,6 +4,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 from matplotlib.pyplot import Figure
 
 import moabb.analysis.meta_analysis as ma
@@ -165,6 +166,87 @@ class TestStats:
         pvals = ma.compute_pvals_perm(df, seed=rng)
         p1vsp2 = pvals[0, 1]
         assert p1vsp2 >= 1 / n_perms, f"P-values cannot be zero {pvals}"
+
+
+def _results_df(scores, dataset="d1", pipeline="p1", sessions=("0",)):
+    """Build an evaluation-like dataframe from per-subject scores."""
+    return pd.DataFrame(
+        [
+            {
+                "dataset": dataset,
+                "pipeline": pipeline,
+                "subject": subject,
+                "session": session,
+                "score": score,
+            }
+            for subject, score in enumerate(scores, start=1)
+            for session in sessions
+        ]
+    )
+
+
+class TestLowestSubjectScores:
+    def test_keeps_the_worst_subjects(self):
+        df = _results_df([0.9, 0.5, 1.0, 0.6, 0.95, 0.99, 0.98, 0.97, 0.96, 0.94])
+        out = ma.compute_lowest_subject_scores(df, percentile=20)
+        assert len(out) == 1
+        # 20% of 10 subjects, so the two worst: 0.5 and 0.6.
+        assert out.loc[0, "n_subjects"] == 2
+        assert out.loc[0, "score"] == pytest.approx(0.55)
+
+    def test_rounds_the_subject_count_up(self):
+        df = _results_df([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7])
+        out = ma.compute_lowest_subject_scores(df, percentile=20)
+        # 20% of 7 subjects is 1.4, rounded up to 2.
+        assert out.loc[0, "n_subjects"] == 2
+        assert out.loc[0, "score"] == pytest.approx(0.15)
+
+    def test_always_keeps_at_least_one_subject(self):
+        df = _results_df([0.3, 0.4, 0.5])
+        out = ma.compute_lowest_subject_scores(df, percentile=1)
+        assert out.loc[0, "n_subjects"] == 1
+        assert out.loc[0, "score"] == pytest.approx(0.3)
+
+    def test_full_percentile_matches_the_plain_mean(self):
+        scores = [0.4, 0.6, 0.8, 1.0]
+        out = ma.compute_lowest_subject_scores(_results_df(scores), percentile=100)
+        assert out.loc[0, "n_subjects"] == len(scores)
+        assert out.loc[0, "score"] == pytest.approx(np.mean(scores))
+
+    def test_sessions_are_averaged_before_ranking(self):
+        # Subject 1 holds the single worst session (0.1) but averages 0.5,
+        # above subject 2. Ranking the raw rows would pick subject 1.
+        df = pd.concat(
+            [
+                _results_df([0.1, 0.35], sessions=("0",)),
+                _results_df([0.9, 0.35], sessions=("1",)),
+            ],
+            ignore_index=True,
+        )
+        out = ma.compute_lowest_subject_scores(df, percentile=50)
+        assert out.loc[0, "n_subjects"] == 1
+        assert out.loc[0, "score"] == pytest.approx(0.35)
+
+    def test_one_row_per_dataset_and_pipeline(self):
+        df = pd.concat(
+            [
+                _results_df([0.2, 0.4], dataset="d1", pipeline="p1"),
+                _results_df([0.6, 0.8], dataset="d1", pipeline="p2"),
+                _results_df([0.1, 0.3], dataset="d2", pipeline="p1"),
+            ],
+            ignore_index=True,
+        )
+        out = ma.compute_lowest_subject_scores(df, percentile=50)
+        assert len(out) == 3
+        scores = out.set_index(["dataset", "pipeline"])["score"]
+        assert scores[("d1", "p1")] == pytest.approx(0.2)
+        assert scores[("d1", "p2")] == pytest.approx(0.6)
+        assert scores[("d2", "p1")] == pytest.approx(0.1)
+
+    @pytest.mark.parametrize("percentile", [0, -5, 101])
+    def test_rejects_an_invalid_percentile(self, percentile):
+        with pytest.raises(ValueError, match="percentile"):
+            ma.compute_lowest_subject_scores(_results_df([0.5]), percentile=percentile)
 
 
 class TestResults:

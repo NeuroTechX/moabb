@@ -33,6 +33,67 @@ def collapse_session_scores(df):
     )
 
 
+def compute_lowest_subject_scores(df, percentile=20):
+    """Score of a pipeline on its lowest performing subjects.
+
+    For every (dataset, pipeline) pair, rank the subjects by score and keep
+    only the ``percentile`` percent that score lowest, then average over them.
+
+    Paradigms such as ERP, SSVEP and c-VEP saturate near a perfect score on
+    most subjects, so a mean over the whole cohort is dominated by subjects
+    that no longer discriminate between pipelines. The subjects a pipeline
+    handles worst are where the remaining differences are, which is what the
+    F1@20% metric of [1]_ reports.
+
+    Scores are first averaged over the sessions of a subject, so every subject
+    weighs the same regardless of how many sessions it contributes.
+
+    Parameters
+    ----------
+    df: :class:`pandas.DataFrame`
+        results obtained by an evaluation, with at least the ``dataset``,
+        ``pipeline``, ``subject`` and ``score`` columns
+    percentile: float, default=20
+        percentage of subjects to keep, in ``(0, 100]``. The number of
+        retained subjects is rounded up, and is at least one, so a value
+        small enough always falls back to the single worst subject.
+
+    Returns
+    -------
+    scores: :class:`pandas.DataFrame`
+        One row per (dataset, pipeline) pair, with the mean ``score`` over
+        the retained subjects and the ``n_subjects`` that were retained.
+
+    References
+    ----------
+    .. [1] Gnassounou, T., Collas, A., Flamary, R., Gramfort, A., 2025.
+           Multi-Source and Test-Time Domain Adaptation on Multivariate
+           Signals using Spatio-Temporal Monge Alignment.
+           https://arxiv.org/abs/2503.04582
+    """
+    if not 0 < percentile <= 100:
+        raise ValueError(f"percentile must be in (0, 100], got {percentile}")
+
+    subject_scores = collapse_session_scores(df)
+    rows = []
+    for (dataset, pipeline), group in subject_scores.groupby(
+        ["dataset", "pipeline"], sort=False
+    ):
+        n_keep = max(1, int(np.ceil(len(group) * percentile / 100)))
+        # Sorting on the subject as well keeps the selection stable when
+        # several subjects share the score at the cut-off.
+        lowest = group.sort_values(["score", "subject"], kind="stable").head(n_keep)
+        rows.append(
+            {
+                "dataset": dataset,
+                "pipeline": pipeline,
+                "score": lowest["score"].mean(),
+                "n_subjects": n_keep,
+            }
+        )
+    return pd.DataFrame(rows, columns=["dataset", "pipeline", "score", "n_subjects"])
+
+
 def compute_pvals_wilcoxon(df, order=None):
     """Compute Wilcoxon rank-sum test on aggregated results.
 
