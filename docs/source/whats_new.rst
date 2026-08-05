@@ -57,6 +57,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :class:`moabb.datasets.Schirrmeister2017` re-downloading every recording. ``data_path`` moved each freshly fetched EDF out of the directory that :func:`moabb.datasets.download.data_dl` owns and into ``MNE-schirrmeister2017-data/<train|test>/``, so the next call found the download cache empty and fetched the whole file again. The refetched copy was then left behind because the destination already existed, leaving two copies of a multi-gigabyte recording on disk. ``data_path`` now returns the path :func:`~moabb.datasets.download.data_dl` reports and only reads from the old location when a file is already there, so an existing local copy is still reused and never re-downloaded (:gh:`851` by `Aditya Singh`_)
 - Fix how the benchmark results page (:doc:`paper_results`) describes what its tables report. It stated that results are "mean accuracy and standard deviation across all folds for all sessions and subjects", and both halves are inaccurate: :class:`moabb.paradigms.MotorImagery` selects the metric from the number of classes, so two-class scenarios are scored with ROC-AUC rather than accuracy, and :class:`moabb.evaluations.WithinSessionEvaluation` averages the cross-validation folds within each session before returning a score, so the reported standard deviation is across (subject, session) pairs and not across individual folds (:gh:`1128` by `Bhargav Kowshik`_)
 - Fix datasets ignoring a change of download directory: datasets now inherit ``MNE_DATA`` without persisting a redundant per-dataset mirror, and :func:`moabb.utils.set_download_dir` removes legacy ``MNE_DATASETS_<SIGN>_PATH`` entries that still mirror the previous shared location while preserving explicit overrides. :class:`moabb.datasets.RomaniBF2025ERP` now uses the same path mechanism and honours ``path`` and ``force_update``. Adds isolated regression coverage across every dataset (:gh:`1115` by `Bruno Aristimunha`_).
 - Add a ``__repr__`` to :class:`moabb.datasets.base.BaseDataset` so datasets display by their code (e.g. ``BNCI2014-001``) when printed, instead of the verbose default ``<...object at 0x...>``. This declutters the output of ``print(paradigm.datasets)`` in the tutorials and of the paradigm and evaluation compatibility warnings (by `Danae`_)
@@ -923,4 +924,5 @@ API changes
 .. _Danae: https://github.com/dnplchrn
 .. _Henrique Lefundes: https://github.com/HenriqueLefundes
 .. _Paul-Adrien Graignic: https://github.com/pagraignic-yneuro
+.. _Aditya Singh: https://github.com/adityasingh2400
 .. _pre-commit-ci: https://github.com/apps/pre-commit-ci
