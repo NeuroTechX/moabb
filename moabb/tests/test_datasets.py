@@ -69,7 +69,6 @@ NEMAR_ID_PENDING = {
     "BNCI2020_001": "nm000178",
     "Beetl2021_A": "nm000220",
     "Beetl2021_B": "nm000274",
-    "Chailloux2020": "nm000262",
     "Kaneshiro2015": "nm000263",
     "Kumar2024": "nm000177",
     "Lee2019_SSVEP": "nm000273",
@@ -79,7 +78,6 @@ NEMAR_ID_PENDING = {
     "Nguyen2017_SL": "nm000224",
     "Nguyen2017_V": "nm000261",
     "Pressel2016": "nm000258",
-    "TrianaGuzman2024": "nm000164",
 }
 
 
