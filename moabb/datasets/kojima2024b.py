@@ -587,8 +587,16 @@ class Kojima2024B(BaseDataset):
         # checking it there is manifest file in the dataset folder.
         dl.download_if_missing(path / "kojima2024_manifest.json", _manifest_link)
 
-        with open(path / "kojima2024_manifest.json", "r") as f:
-            manifest = json.load(f)
+        manifest_path = path / "kojima2024_manifest.json"
+        try:
+            with open(manifest_path, "r") as f:
+                manifest = json.load(f)
+        except json.JSONDecodeError as err:
+            manifest_path.unlink(missing_ok=True)
+            raise RuntimeError(
+                "Downloaded Kojima2024 manifest is invalid and has been removed; retry "
+                "once the upstream service is available."
+            ) from err
 
         files = self._get_files_list(subject, manifest)
 

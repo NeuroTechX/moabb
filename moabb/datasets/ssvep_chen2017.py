@@ -359,7 +359,7 @@ class Chen2017SingleFlicker(BaseDataset):
 
         # Check if already extracted
         mat_files = sorted(data_dir.rglob(f"{subject}_*.mat"))
-        xdf_files = sorted(data_dir.rglob(f"{subject}_*.xdf"))
+        xdf_files = sorted(data_dir.rglob(f"sub_{subject}_*.xdf"))
         if (mat_files or xdf_files) and not force_update:
             return {
                 "mat": [str(f) for f in mat_files],
@@ -380,5 +380,5 @@ class Chen2017SingleFlicker(BaseDataset):
             safe_extract_zip(zf, data_dir, members=selected)
 
         mat_files = sorted(data_dir.rglob(f"{subject}_*.mat"))
-        xdf_files = sorted(data_dir.rglob(f"{subject}_*.xdf"))
+        xdf_files = sorted(data_dir.rglob(f"sub_{subject}_*.xdf"))
         return {"mat": [str(f) for f in mat_files], "xdf": [str(f) for f in xdf_files]}
