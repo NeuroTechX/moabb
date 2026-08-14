@@ -10,6 +10,7 @@ from .evaluations import (
     WithinSessionEvaluation,
     WithinSubjectEvaluation,
 )
+from .protocols import CrossSubjectMode
 from .splitters import (
     CrossDatasetSplitter,
     CrossSessionSplitter,

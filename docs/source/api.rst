@@ -101,6 +101,7 @@ Motor Imagery Datasets
     Tavakolan2017
     TrianaGuzman2024
     Wairagkar2018
+    Wang2026
     Wu2020
     Yang2025
     Yi2025
@@ -465,6 +466,16 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     WithinSubjectSplitter
     CrossSessionSplitter
     CrossSubjectSplitter
+
+A cross-subject transfer protocol additionally states what the estimator is
+allowed to see of the held-out target subject, and how the rest of that
+subject is scored.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    CrossSubjectMode
 
 ---------
 Utilities

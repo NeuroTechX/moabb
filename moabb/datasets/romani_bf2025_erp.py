@@ -11,6 +11,7 @@ from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.download import get_dataset_path
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -39,7 +40,6 @@ BRAINFORM_dataset_params = {
     "archive_name": BF_archive_name,
     "folder_name": BF_folder_name,
     "hash": "a104ae6d7ea22f5a38a6f5548bee2de254e9b116713265465837395320d34536",  # sha256
-    "config_key": BF_dataset_name,
 }
 
 _EVENTS = {"Target": 1, "NonTarget": 2}
@@ -278,8 +278,9 @@ class RomaniBF2025ERP(BaseDataset):
         ----------
         data_folder : str, optional
             Path to the Brainform dataset folder. If None, will download
-            and extract the dataset to a temporary directory. You can provide the path to the original dataset
-            or to a new dataset collected with BrainForm and converted to BIDS format.
+            and extract the dataset under the shared MOABB/MNE download
+            directory. You can provide the path to the original dataset or to
+            a new dataset collected with BrainForm and converted to BIDS format.
         subjects : List[int], optional
             List of subject indices to include. If None, include all subjects.
         exclude_subjects : List[int], optional
@@ -312,8 +313,7 @@ class RomaniBF2025ERP(BaseDataset):
         if exclude_subjects is None:
             exclude_subjects = ["P15", "P18"]
         self.data_folder = data_folder
-        self._is_temp_dir = False
-        self._download_attempted = False
+        self._data_folder_explicit = data_folder is not None
 
         self.n_targets = n_targets  # Fixed for BrainForm dataset, 10 unique targets
         self.calibration_length = calibration_length
@@ -360,36 +360,40 @@ class RomaniBF2025ERP(BaseDataset):
             selected_sessions=sessions,
         )
 
-    def _ensure_data_downloaded(self) -> None:
+    def _ensure_data_downloaded(self, path=None, force_update=False) -> None:
         """
         Ensure the dataset is downloaded. This is called lazily when data is accessed.
         """
-        if self.data_folder is not None and os.path.exists(self.data_folder):
-            # Data folder already exists, no download needed
+        if self._data_folder_explicit:
             return
 
-        if self._download_attempted:
-            # Already tried to download, don't try again
-            return
+        self.data_folder = self._download_and_extract_dataset(
+            path=path, force_update=force_update
+        )
 
-        self._download_attempted = True
-        self.data_folder = self._download_and_extract_dataset()
-        self._is_temp_dir = True
-
-    def _download_and_extract_dataset(self) -> str:
+    def _download_and_extract_dataset(self, path=None, force_update=False) -> str:
         """
         Download and extract the Brainform dataset using MNE's fetch_dataset.
+
+        Parameters
+        ----------
+        path : None | str
+            Shared root directory in which to store the dataset.
+        force_update : bool
+            Whether to download and extract the archive again.
 
         Returns
         -------
         str
             Path to the extracted dataset folder
         """
+        path = get_dataset_path(BF_dataset_name, path)
         path_root = fetch_dataset(
             dataset_params=BRAINFORM_dataset_params,
-            path=None,  # Uses MNE's default data directory
+            path=path,
             processor="unzip",
-            force_update=False,
+            force_update=force_update,
+            update_path=False,
         )
 
         # Correct path if needed (in case the unzipped folder has a different structure)
@@ -463,9 +467,9 @@ class RomaniBF2025ERP(BaseDataset):
         subject : int
             Subject identifier
         path : str, optional
-            Not used for this dataset
+            Shared root directory in which to store the dataset.
         force_update : bool
-            Not used for this dataset
+            Whether to download and extract the archive again.
         update_path : bool
             Not used for this dataset
         verbose : bool
@@ -476,7 +480,7 @@ class RomaniBF2025ERP(BaseDataset):
         str
             Path to the dataset folder
         """
-        self._ensure_data_downloaded()
+        self._ensure_data_downloaded(path=path, force_update=force_update)
         if not os.path.exists(self.data_folder):
             raise FileNotFoundError(f"Dataset folder not found: {self.data_folder}")
         return self.data_folder

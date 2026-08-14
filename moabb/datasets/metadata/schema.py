@@ -762,7 +762,10 @@ def validate_metadata_against_dataset(dataset, metadata: DatasetMetadata) -> Lis
 
     # Validate n_subjects
     if hasattr(dataset, "subject_list"):
-        n_subjects = len(dataset.subject_list)
+        # Constructor filters are views over a release, not new dataset
+        # populations. Prefer the unfiltered IDs when a dataset exposes them.
+        subjects = getattr(dataset, "all_subjects", dataset.subject_list)
+        n_subjects = len(subjects)
         if metadata.participants.n_subjects != n_subjects:
             errors.append(
                 f"n_subjects mismatch: metadata={metadata.participants.n_subjects}, "

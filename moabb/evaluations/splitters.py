@@ -14,6 +14,8 @@ from sklearn.model_selection import (
 from sklearn.model_selection._split import GroupsConsumerMixin
 from sklearn.utils import check_random_state
 
+from moabb.evaluations.protocols import validate_transfer_protocol
+
 
 log = logging.getLogger(__name__)
 
@@ -626,6 +628,15 @@ class CrossSubjectSplitter(BaseCrossValidator):
         Controls the randomness of the cross-validation.
         Pass an int for reproducible output across multiple calls.
         Defaults to ``None``.
+    calibration_size : float, default=0.0
+        Fraction of each held-out subject/session pair reserved for
+        calibration. Values in ``(0, 1)`` yield
+        ``(train, calibration, test)``; ``0`` keeps the ordinary
+        ``(train, test)`` split, and ``1`` uses the full target block both for
+        unlabeled adaptation and scoring.
+    calibration_labeled : bool, default=False
+        If True, route labels with the calibration slice. Labeled calibration
+        is limited to at most half of the target trials.
     cv_kwargs : dict
         Additional arguments to pass to the inner cross-validation strategy.
         A callable value is resolved against the metadata at ``split`` time
@@ -636,6 +647,10 @@ class CrossSubjectSplitter(BaseCrossValidator):
     train : ndarray
         The training set indices for that split.
 
+    calibration : ndarray
+        The held-out calibration indices, yielded only when
+        ``calibration_size`` is greater than zero.
+
     test : ndarray
         The testing set indices for that split.
     """
@@ -645,13 +660,20 @@ class CrossSubjectSplitter(BaseCrossValidator):
         cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
         groups="subject",
         random_state: int = None,
+        calibration_size: float = 0.0,
+        calibration_labeled: bool = False,
         **cv_kwargs,
     ):
+        validate_transfer_protocol(calibration_size, calibration_labeled)
+
         self.cv_class = cv_class
         # ``groups`` selects what defines a fold: a metadata column ("subject"),
         # a list of columns (["subject", "session"]), or a callable
         # ``metadata -> array``. Fed straight to the stock sklearn cv_class.
         self.groups = groups
+        self.calibration_size = calibration_size
+        self.calibration_labeled = calibration_labeled
+        self.random_state = random_state
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
@@ -705,8 +727,42 @@ class CrossSubjectSplitter(BaseCrossValidator):
             split_kwargs["groups"] = _resolve_groups(self.groups, metadata)
 
         for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
-            self._last_split_metadata = _splitter_metadata(splitter)
-            yield all_index[train_session_idx], all_index[test_session_idx]
+            self._last_split_metadata = _splitter_metadata(splitter) or {}
+            self._last_split_metadata.update(
+                {
+                    "calibration_size": self.calibration_size,
+                    "calibration_labeled": self.calibration_labeled,
+                }
+            )
+            train_idx = all_index[train_session_idx]
+            target_idx = all_index[test_session_idx]
+
+            if self.calibration_size > 0:
+                if self.calibration_size == 1:
+                    calib_idx = test_idx = target_idx
+                else:
+                    target_metadata = metadata.loc[target_idx, ["subject", "session"]]
+                    target_subjects = target_metadata["subject"].to_numpy()
+                    target_sessions = target_metadata["session"].to_numpy()
+                    calibration_mask = np.zeros(len(target_idx), dtype=bool)
+                    for subject in np.unique(target_subjects):
+                        for session in np.unique(
+                            target_sessions[target_subjects == subject]
+                        ):
+                            positions = np.flatnonzero(
+                                (target_subjects == subject)
+                                & (target_sessions == session)
+                            )
+                            n_calib = int(
+                                np.floor(self.calibration_size * len(positions))
+                            )
+                            n_calib = min(max(n_calib, 1), len(positions) - 1)
+                            calibration_mask[positions[:n_calib]] = True
+                    calib_idx = target_idx[calibration_mask]
+                    test_idx = target_idx[~calibration_mask]
+                yield train_idx, calib_idx, test_idx
+            else:
+                yield train_idx, target_idx
 
     def get_metadata(self):
         """Return metadata for the most recent split."""

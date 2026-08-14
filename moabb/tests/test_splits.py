@@ -855,3 +855,101 @@ def test_within_subject_groups_routes_through(data):
         same_subject_train = metadata.loc[train]
         same_subject_train = same_subject_train[same_subject_train["subject"] == subj]
         assert held_out_session not in set(same_subject_train["session"])
+
+
+# ---------------------------------------------------------------------------
+# Cross-subject transfer learning: the target-calibration slice.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("calibration_size", [0.0, 0.3, 1.0])
+def test_cross_subject_calibration(calibration_size, data):
+    """Calibration folds are consumed uniformly with ``train, *cal, test``."""
+    _, y, metadata = data
+    base = CrossSubjectSplitter()
+    cal_split = CrossSubjectSplitter(calibration_size=calibration_size)
+
+    base_folds = list(base.split(y, metadata))
+    cal_folds = list(cal_split.split(y, metadata))
+    assert len(cal_folds) == len(base_folds) == cal_split.get_n_splits(metadata)
+
+    for (b_train, b_test), fold in zip(base_folds, cal_folds):
+        train, *cal, test = fold  # generic consumption: 2- or 3-tuple
+        calib = cal[0] if cal else test[:0]
+
+        assert np.array_equal(train, b_train)
+        assert np.intersect1d(train, b_test).size == 0
+
+        if calibration_size == 0.0:
+            assert calib.size == 0
+            assert np.array_equal(test, b_test)
+        elif calibration_size == 1.0:
+            assert np.array_equal(calib, b_test)
+            assert np.array_equal(test, b_test)
+        else:
+            assert calib.size >= 1 and test.size >= 1
+            assert np.array_equal(np.union1d(calib, test), b_test)
+
+
+def test_cross_subject_calibration_invalid_size():
+    with pytest.raises(ValueError):
+        CrossSubjectSplitter(calibration_size=1.5)
+
+
+@pytest.mark.parametrize("calibration_labeled", [False, True])
+def test_cross_subject_calibration_leakage_boundary(calibration_labeled, data):
+    """Pin the leakage contract of the transfer split.
+
+    The held-out fold is a single target subject. The calibration slice is
+    carved out of that target subject and reaches the estimator only through
+    ``fit`` metadata routing -- never through ``train_idx`` -- and it is
+    removed from the scored test set. Train, calibration and test are
+    pairwise trial-disjoint.
+    """
+    _, y, metadata = data
+    splitter = CrossSubjectSplitter(
+        calibration_size=0.2, calibration_labeled=calibration_labeled
+    )
+    folds = list(splitter.split(y, metadata))
+    assert len(folds) == metadata["subject"].nunique()
+
+    for train_idx, calib_idx, test_idx in folds:
+        target = set(metadata.loc[test_idx, "subject"])
+        # Exactly one held-out target subject per fold.
+        assert len(target) == 1
+        # The calibration slice belongs to that same target subject...
+        assert set(metadata.loc[calib_idx, "subject"]) == target
+        assert calib_idx.size > 0
+        # ...and no trial of the target subject is in the training fold.
+        assert target.isdisjoint(set(metadata.loc[train_idx, "subject"]))
+        # Pairwise trial-disjoint: nothing is scored that was also fitted.
+        assert np.intersect1d(train_idx, test_idx).size == 0
+        assert np.intersect1d(train_idx, calib_idx).size == 0
+        assert np.intersect1d(calib_idx, test_idx).size == 0
+        # Calibration + test partition the target subject exactly.
+        target_idx = metadata.index[metadata["subject"].isin(target)].to_numpy()
+        assert np.array_equal(np.union1d(calib_idx, test_idx), target_idx)
+
+
+def test_cross_subject_calibration_keeps_every_target_session(data):
+    """Calibration must not consume an entire target session."""
+    _, y, metadata = data
+    cv_kwargs = {
+        "cv_class": GroupShuffleSplit,
+        "n_splits": 2,
+        "test_size": 2,
+        "random_state": 0,
+    }
+    baseline = list(CrossSubjectSplitter(**cv_kwargs).split(y, metadata))
+    calibrated = list(
+        CrossSubjectSplitter(calibration_size=0.5, **cv_kwargs).split(y, metadata)
+    )
+
+    for (_, base_test), (_, _calib, test) in zip(baseline, calibrated):
+        assert set(
+            metadata.loc[test, ["subject", "session"]].itertuples(index=False, name=None)
+        ) == set(
+            metadata.loc[base_test, ["subject", "session"]].itertuples(
+                index=False, name=None
+            )
+        )

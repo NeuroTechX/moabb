@@ -515,7 +515,7 @@ class TestMetadataCatalog:
 
     def test_catalog_dataset_count(self):
         """Test that catalog contains expected number of datasets."""
-        assert len(DATASET_METADATA_CATALOG) == 159
+        assert len(DATASET_METADATA_CATALOG) == 160
 
     def test_bnci2015_006_metadata(self):
         """Test BNCI2015_006 music BCI metadata."""
@@ -990,6 +990,25 @@ def test_country_flag_handles_bad_input(value, expected, country_constants):
 
 # A missing value arrives from the DataFrame as NaN (a truthy float), which
 # slipped past ``if not url`` guards and crashed html.escape in the docs build.
-@pytest.mark.parametrize("fmt", ["data_url", "doi_link", "country", "str", "num"])
-def test_format_cell_handles_nan(fmt):
-    assert _format_cell(float("nan"), fmt) == ""
+# Covers every ``fmt`` in the _format_cell dispatch table, and both the raw NaN
+# and the None it is collapsed to -- "link"/"paradigm_tag" were the two branches
+# with no empty-value guard, so they raised AttributeError on html.escape(None).
+@pytest.mark.parametrize(
+    "fmt",
+    [
+        "link",
+        "paradigm_tag",
+        "health_tag",
+        "doi_link",
+        "data_url",
+        "country",
+        "year",
+        "int",
+        "num",
+        "bool",
+        "str",
+    ],
+)
+@pytest.mark.parametrize("missing", [float("nan"), None])
+def test_format_cell_handles_nan(fmt, missing):
+    assert _format_cell(missing, fmt) == ""
