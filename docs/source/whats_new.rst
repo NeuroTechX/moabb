@@ -57,6 +57,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix dataset download paths that silently omitted files, returned nonexistent paths, or repeatedly extracted archives (:gh:`1135`).
 - Use NEMAR's OpenNeuro rehosts for :class:`moabb.datasets.TrianaGuzman2024` and :class:`moabb.datasets.Chailloux2020` (:gh:`1136`).
 - Fix how the benchmark results page (:doc:`paper_results`) describes what its tables report. It stated that results are "mean accuracy and standard deviation across all folds for all sessions and subjects", and both halves are inaccurate: :class:`moabb.paradigms.MotorImagery` selects the metric from the number of classes, so two-class scenarios are scored with ROC-AUC rather than accuracy, and :class:`moabb.evaluations.WithinSessionEvaluation` averages the cross-validation folds within each session before returning a score, so the reported standard deviation is across (subject, session) pairs and not across individual folds (:gh:`1128` by `Bhargav Kowshik`_)
 - Fix datasets ignoring a change of download directory: datasets now inherit ``MNE_DATA`` without persisting a redundant per-dataset mirror, and :func:`moabb.utils.set_download_dir` removes legacy ``MNE_DATASETS_<SIGN>_PATH`` entries that still mirror the previous shared location while preserving explicit overrides. :class:`moabb.datasets.RomaniBF2025ERP` now uses the same path mechanism and honours ``path`` and ``force_update``. Adds isolated regression coverage across every dataset (:gh:`1115` by `Bruno Aristimunha`_).

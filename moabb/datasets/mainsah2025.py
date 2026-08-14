@@ -234,8 +234,8 @@ def _parse_manifest(manifest_path):
                 continue
             path = parts[1]
             m = re.match(
-                r"bigP3BCI-data/Study(\w+)/(\w+)/SE(\d+)/"
-                r"(Test|Train)/(\w+)/(.+\.edf)",
+                r"bigP3BCI-data/Study([\w-]+)/([\w-]+)/SE(\d+)/"
+                r"(Test|Train)/([\w-]+)/(.+\.edf)",
                 path,
             )
             if not m:
