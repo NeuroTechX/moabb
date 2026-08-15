@@ -11,10 +11,10 @@ import pytest
 from mne import get_config, set_config
 
 import moabb.datasets.download as dl
-from moabb.datasets import base as base_module
-from moabb.datasets.fake import FakeDataset
 import moabb.datasets.romani_bf2025_erp as romani
+from moabb.datasets import base as base_module
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
+from moabb.datasets.fake import FakeDataset
 from moabb.datasets.utils import dataset_list
 from moabb.utils import set_download_dir
 
@@ -418,9 +418,7 @@ def nemar_calls(monkeypatch, tmp_path):
         lambda *a, **k: calls.sourcedata.append(k) or str(tmp_path),
     )
     monkeypatch.setattr(
-        base_module,
-        "nemar_dl",
-        lambda *a, **k: calls.bids.append(k) or str(tmp_path),
+        base_module, "nemar_dl", lambda *a, **k: calls.bids.append(k) or str(tmp_path)
     )
     return calls
 
@@ -498,9 +496,7 @@ def test_nemar_sourcedata_dl_raises_when_nothing_was_fetched(
     fake_nemar(files)
 
     with pytest.raises(dl.NemarDownloadError, match=match):
-        dl.nemar_sourcedata_dl(
-            "nm000115", "Zhou2016", path=tmp_path, include=include
-        )
+        dl.nemar_sourcedata_dl("nm000115", "Zhou2016", path=tmp_path, include=include)
 
 
 @pytest.mark.parametrize(
@@ -516,9 +512,7 @@ def test_nemar_sourcedata_dl_raises_when_nothing_was_fetched(
         ),
     ],
 )
-def test_sourcedata_path_rejects_unusable_configuration(
-    nemar_id, include, kwargs, match
-):
+def test_sourcedata_path_rejects_unusable_configuration(nemar_id, include, kwargs, match):
     """Both refusals name the attribute the caller has to set."""
     dataset = FakeDataset()
     dataset.nemar_id = nemar_id
@@ -633,9 +627,7 @@ def test_download_provider_nemar_rejects_unmirrored_dataset(monkeypatch, tmp_pat
         dataset.download(path=tmp_path)
 
 
-def test_download_falls_back_to_upstream_when_sourcedata_missing(
-    monkeypatch, tmp_path
-):
+def test_download_falls_back_to_upstream_when_sourcedata_missing(monkeypatch, tmp_path):
     """A deposit without sourcedata/ must not block the download."""
     monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
 
