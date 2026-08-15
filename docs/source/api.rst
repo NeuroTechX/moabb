@@ -564,6 +564,8 @@ Utils
     set_log_level
     setup_seed
     set_download_dir
+    set_download_provider
+    get_download_provider
     make_process_pipelines
 
 Benchmark

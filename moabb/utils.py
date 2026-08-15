@@ -258,6 +258,92 @@ def set_download_dir(path):
         _clear_legacy_dataset_paths(old_path, path)
 
 
+#: Where MOABB may fetch dataset files from.
+#:
+#: ``"auto"``     try NEMAR first for datasets that declare a ``nemar_id``,
+#:                fall back to the dataset's own upstream downloader.
+#: ``"nemar"``    NEMAR only -- do not fall back to the upstream host.
+#: ``"upstream"`` never use NEMAR; always use the dataset's own downloader.
+DOWNLOAD_PROVIDERS = ("auto", "nemar", "upstream")
+
+
+def set_download_provider(provider):
+    """Choose where MOABB fetches dataset files from.
+
+    Many datasets are mirrored on NEMAR, which also republishes the original
+    pre-BIDS distribution under ``sourcedata/``. Pinning the provider to
+    ``"nemar"`` makes downloads reproducible and immune to upstream hosts that
+    are slow, rate-limited, behind a bot gate, or retired -- at the cost of
+    failing outright, rather than silently falling back, when NEMAR cannot
+    serve a dataset.
+
+    Parameters
+    ----------
+    provider : str | None
+        One of ``"auto"`` (default), ``"nemar"``, or ``"upstream"``. Passing
+        ``None`` restores the default.
+
+    Raises
+    ------
+    ValueError
+        If ``provider`` is not a recognised value.
+
+    Notes
+    -----
+    The choice is stored in the MNE config as ``MOABB_DOWNLOAD_PROVIDER`` and
+    can also be set for a single run via the environment variable of the same
+    name, which takes precedence.
+    """
+    if provider is not None:
+        normalized = str(provider).lower()
+        if normalized not in DOWNLOAD_PROVIDERS:
+            raise ValueError(
+                f"Unknown download provider {provider!r}; "
+                f"expected one of {', '.join(DOWNLOAD_PROVIDERS)}."
+            )
+    else:
+        normalized = None
+    # MNE warns on every write to a key it does not know about. The key is
+    # ours by design, so the warning is pure noise for the caller.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=r'Setting non-standard config type: "MOABB_DOWNLOAD_PROVIDER"',
+            category=RuntimeWarning,
+        )
+        set_config("MOABB_DOWNLOAD_PROVIDER", normalized)
+
+
+def get_download_provider():
+    """Return the active download provider.
+
+    The environment variable ``MOABB_DOWNLOAD_PROVIDER`` wins over the stored
+    MNE config value, so a single run can override a persisted preference.
+    An unrecognised value falls back to ``"auto"`` with a warning rather than
+    raising, so a stale config cannot break every download.
+
+    Returns
+    -------
+    str
+        One of :data:`DOWNLOAD_PROVIDERS`.
+    """
+    provider = os.environ.get("MOABB_DOWNLOAD_PROVIDER") or get_config(
+        "MOABB_DOWNLOAD_PROVIDER"
+    )
+    if not provider:
+        return "auto"
+    normalized = str(provider).lower()
+    if normalized not in DOWNLOAD_PROVIDERS:
+        log.warning(
+            "Ignoring unknown MOABB_DOWNLOAD_PROVIDER %r; using 'auto'. "
+            "Expected one of %s.",
+            provider,
+            ", ".join(DOWNLOAD_PROVIDERS),
+        )
+        return "auto"
+    return normalized
+
+
 def make_process_pipelines(
     processing: "BaseProcessing",
     dataset: "BaseDataset",

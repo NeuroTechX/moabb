@@ -53,7 +53,10 @@ def test_nemar_download_equivalence(dl_data, tmp_path, dataset_class):
         f"{dataset_class.__name__} has no NEMAR dataset ID"
     )
     subject = dataset.subject_list[0]
-    dataset.download(subject_list=[subject], path=tmp_path)
+    # `download()` now fetches NEMAR's `sourcedata/` (the original pre-BIDS
+    # distribution), so drive the BIDS copy explicitly to keep covering the
+    # BIDS loader below.
+    dataset._download_nemar(subject=subject, path=tmp_path)
 
     bids_root = tmp_path / f"MNE-{dataset.code.lower()}-data" / dataset.nemar_id
     description = bids_root / "dataset_description.json"
@@ -353,3 +356,274 @@ def test_romani_follows_download_dir_changes(tmp_path, monkeypatch, _isolated_mn
     assert [call["force_update"] for call in calls] == [False, True]
     assert all(call["update_path"] is False for call in calls)
     assert all("config_key" not in call["dataset_params"] for call in calls)
+
+
+# --------------------------------------------------------------------------
+# sourcedata/: NEMAR as a provider for the ORIGINAL, pre-BIDS distribution
+# --------------------------------------------------------------------------
+
+
+class _FakeNemar:
+    """Stand-in for the ``nemar`` module that records calls and writes files."""
+
+    def __init__(self, files=("sourcedata/subject_01.mat",)):
+        self.files = files
+        self.calls = []
+
+    def download(self, **kwargs):
+        self.calls.append(kwargs)
+        target = Path(kwargs["target_dir"])
+        for relative in self.files:
+            destination = target / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(b"x")
+
+
+def test_nemar_sourcedata_dl_requests_the_sourcedata_scope(tmp_path, monkeypatch):
+    """The scope must be ``sourcedata``; ``raw`` would fetch the BIDS copy."""
+    fake = _FakeNemar()
+    monkeypatch.setattr(dl, "nemar", fake)
+
+    root = dl.nemar_sourcedata_dl("nm000341", "Cattan2019-PHMD", path=tmp_path)
+
+    assert fake.calls[0]["scope"] == "sourcedata"
+    assert fake.calls[0]["dataset"] == "nm000341"
+    assert Path(root).name == "sourcedata"
+    assert Path(root).is_dir()
+
+
+def test_nemar_sourcedata_dl_forwards_include(tmp_path, monkeypatch):
+    """``include`` selects one subject inside the upstream layout."""
+    fake = _FakeNemar()
+    monkeypatch.setattr(dl, "nemar", fake)
+
+    dl.nemar_sourcedata_dl(
+        "nm000341",
+        "Cattan2019-PHMD",
+        path=tmp_path,
+        include="sourcedata/subject_01.*",
+    )
+
+    assert fake.calls[0]["include"] == "sourcedata/subject_01.*"
+
+
+def test_nemar_sourcedata_dl_omits_include_when_unset(tmp_path, monkeypatch):
+    """Passing ``include=None`` through would filter everything out."""
+    fake = _FakeNemar()
+    monkeypatch.setattr(dl, "nemar", fake)
+
+    dl.nemar_sourcedata_dl("nm000341", "Cattan2019-PHMD", path=tmp_path)
+
+    assert "include" not in fake.calls[0]
+
+
+def test_nemar_sourcedata_dl_raises_when_deposit_has_no_sourcedata(
+    tmp_path, monkeypatch
+):
+    """An empty result must fail here, not surface later as an empty cache."""
+    fake = _FakeNemar(files=())
+    monkeypatch.setattr(dl, "nemar", fake)
+
+    with pytest.raises(dl.NemarDownloadError, match="no sourcedata/"):
+        dl.nemar_sourcedata_dl("nm000115", "Zhou2016", path=tmp_path)
+
+
+def test_nemar_sourcedata_dl_honors_force_update(tmp_path, monkeypatch):
+    """``force_update`` maps to ``trust_existing=False``."""
+    fake = _FakeNemar()
+    monkeypatch.setattr(dl, "nemar", fake)
+
+    dl.nemar_sourcedata_dl(
+        "nm000341", "Cattan2019-PHMD", path=tmp_path, force_update=True
+    )
+
+    assert fake.calls[0]["trust_existing"] is False
+
+
+def test_sourcedata_path_requires_a_nemar_id(monkeypatch):
+    """A dataset NEMAR does not mirror cannot serve its original files."""
+    from moabb.datasets.fake import FakeDataset
+
+    dataset = FakeDataset()
+    dataset.nemar_id = None
+    with pytest.raises(ValueError, match="declares no nemar_id"):
+        dataset.sourcedata_path()
+
+
+def test_sourcedata_path_rejects_subject_without_include_template(monkeypatch):
+    """sourcedata/ keeps the upstream layout, so per-subject needs a template."""
+    from moabb.datasets.fake import FakeDataset
+
+    dataset = FakeDataset()
+    dataset.nemar_id = "nm000341"
+    dataset.nemar_sourcedata_include = None
+    with pytest.raises(ValueError, match="nemar_sourcedata_include"):
+        dataset.sourcedata_path(subject=1)
+
+
+def test_sourcedata_path_formats_the_include_template(monkeypatch):
+    """``{subject}`` is formatted with the raw MOABB subject id."""
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    seen = {}
+    monkeypatch.setattr(
+        base_module,
+        "nemar_sourcedata_dl",
+        lambda *args, **kwargs: seen.update(kwargs) or "/tmp/sourcedata",
+    )
+    dataset = FakeDataset()
+    dataset.nemar_id = "nm000341"
+    dataset.nemar_sourcedata_include = "sourcedata/subject_{subject:02d}.*"
+
+    dataset.sourcedata_path(subject=3)
+
+    assert seen["include"] == "sourcedata/subject_03.*"
+
+
+def test_download_provider_upstream_skips_nemar(monkeypatch, tmp_path):
+    """``upstream`` must not touch NEMAR even when a nemar_id exists."""
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "upstream")
+    called = []
+    for name in ("nemar_dl", "nemar_sourcedata_dl"):
+        monkeypatch.setattr(
+            base_module, name, lambda *a, **k: called.append(k) or str(tmp_path)
+        )
+    dataset = FakeDataset(n_subjects=1)
+    dataset.nemar_id = "nm000341"
+
+    dataset.download(path=tmp_path)
+
+    assert called == []
+
+
+def test_download_provider_nemar_does_not_fall_back(monkeypatch, tmp_path):
+    """Pinned to NEMAR, a failure surfaces instead of silently going upstream."""
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "nemar")
+
+    def _boom(*args, **kwargs):
+        raise dl.NemarDownloadError("nemar is down")
+
+    monkeypatch.setattr(base_module, "nemar_sourcedata_dl", _boom)
+    dataset = FakeDataset(n_subjects=1)
+    dataset.nemar_id = "nm000341"
+
+    with pytest.raises(dl.NemarDownloadError, match="nemar is down"):
+        dataset.download(path=tmp_path)
+
+
+def test_download_provider_nemar_rejects_unmirrored_dataset(monkeypatch, tmp_path):
+    """Pinning to NEMAR must explain why an unmirrored dataset cannot work."""
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "nemar")
+    dataset = FakeDataset(n_subjects=1)
+    dataset.nemar_id = None
+
+    with pytest.raises(dl.NemarDownloadError, match="pinned to 'nemar'"):
+        dataset.download(path=tmp_path)
+
+
+def test_download_fetches_sourcedata_not_the_bids_copy(monkeypatch, tmp_path):
+    """``download()`` must pull the ORIGINAL distribution, not the BIDS copy.
+
+    The BIDS copy is a re-encoding: its events and session/run labels differ
+    from what each dataset's own loader produces, so substituting it would
+    silently change results. ``sourcedata/`` is byte-identical to upstream.
+    """
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    calls = {"sourcedata": 0, "bids": 0}
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+    monkeypatch.setattr(
+        base_module,
+        "nemar_sourcedata_dl",
+        lambda *a, **k: calls.__setitem__("sourcedata", calls["sourcedata"] + 1)
+        or str(tmp_path),
+    )
+    monkeypatch.setattr(
+        base_module,
+        "nemar_dl",
+        lambda *a, **k: calls.__setitem__("bids", calls["bids"] + 1) or str(tmp_path),
+    )
+    dataset = FakeDataset(n_subjects=2)
+    dataset.nemar_id = "nm000341"
+
+    dataset.download(path=tmp_path)
+
+    assert calls["sourcedata"] == 1
+    assert calls["bids"] == 0
+
+
+def test_download_sourcedata_is_fetched_once_without_include_template(
+    monkeypatch, tmp_path
+):
+    """No per-subject template means one whole-tree fetch, not one per subject."""
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    seen = []
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+    monkeypatch.setattr(
+        base_module,
+        "nemar_sourcedata_dl",
+        lambda *a, **k: seen.append(k.get("include")) or str(tmp_path),
+    )
+    dataset = FakeDataset(n_subjects=5)
+    dataset.nemar_id = "nm000341"
+    dataset.nemar_sourcedata_include = None
+
+    dataset.download(path=tmp_path)
+
+    assert seen == [None]
+
+
+def test_download_sourcedata_is_per_subject_with_include_template(
+    monkeypatch, tmp_path
+):
+    """With a template each subject is addressed individually."""
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    seen = []
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+    monkeypatch.setattr(
+        base_module,
+        "nemar_sourcedata_dl",
+        lambda *a, **k: seen.append(k.get("include")) or str(tmp_path),
+    )
+    dataset = FakeDataset(n_subjects=3)
+    dataset.nemar_id = "nm000341"
+    dataset.nemar_sourcedata_include = "sourcedata/subject_{subject:02d}.*"
+
+    dataset.download(subject_list=[1, 2], path=tmp_path)
+
+    assert seen == ["sourcedata/subject_01.*", "sourcedata/subject_02.*"]
+
+
+def test_download_falls_back_to_upstream_when_sourcedata_missing(
+    monkeypatch, tmp_path
+):
+    """A deposit without sourcedata/ must not block the download."""
+    from moabb.datasets import base as base_module
+    from moabb.datasets.fake import FakeDataset
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+
+    def _no_sourcedata(*args, **kwargs):
+        raise dl.NemarDownloadError("published no sourcedata/")
+
+    monkeypatch.setattr(base_module, "nemar_sourcedata_dl", _no_sourcedata)
+    dataset = FakeDataset(n_subjects=1)
+    dataset.nemar_id = "nm000115"
+
+    with pytest.warns(RuntimeWarning, match="falling back"):
+        dataset.download(path=tmp_path)

@@ -281,6 +281,82 @@ def nemar_dl(
     return str(target_dir)
 
 
+def nemar_sourcedata_dl(
+    nemar_id,
+    dataset_code,
+    path=None,
+    force_update=False,
+    include=None,
+    verbose=None,
+):
+    """Download a NEMAR dataset's ``sourcedata/`` and return its local root.
+
+    ``sourcedata/`` holds the **original, pre-BIDS distribution** as published
+    by the dataset authors, stored under the upstream filenames. It is
+    therefore a drop-in mirror of whatever :meth:`BaseDataset.data_path` would
+    otherwise fetch from the upstream host — useful when that host is slow,
+    rate-limited, behind a bot gate, or gone.
+
+    Parameters
+    ----------
+    nemar_id : str
+        NEMAR dataset identifier.
+    dataset_code : str
+        MOABB dataset code used to choose the local dataset directory.
+    path : None | str
+        Base path where MOABB stores datasets.
+    force_update : bool
+        Re-fetch even when a local copy is already present.
+    include : str | list of str | None
+        Optional path glob(s), relative to the dataset root, restricting which
+        files are fetched (e.g. ``"sourcedata/subject_01.*"``). Without this
+        the whole ``sourcedata/`` tree is downloaded.
+    verbose : bool, str, int, or None
+        If not None, override default verbose level.
+
+    Returns
+    -------
+    str
+        Local path to the downloaded ``sourcedata`` directory.
+
+    Raises
+    ------
+    NemarDownloadError
+        If nemar-py is unavailable, the download fails, or the deposit
+        publishes no ``sourcedata/`` at all.
+    """
+    root = Path(get_dataset_path(dataset_code, path))
+    target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
+
+    kwargs = {}
+    if include is not None:
+        kwargs["include"] = include
+    try:
+        nemar.download(
+            dataset=nemar_id,
+            target_dir=target_dir,
+            scope="sourcedata",
+            trust_existing=not force_update,
+            **kwargs,
+        )
+    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        raise NemarDownloadError(
+            f"Could not download sourcedata/ for NEMAR dataset {nemar_id}."
+        ) from exc
+
+    sourcedata_dir = target_dir / "sourcedata"
+    # A deposit without sourcedata/ downloads "successfully" with zero matching
+    # files, which would otherwise surface much later as a confusing empty
+    # cache. Fail here instead, where the cause is still obvious.
+    if not sourcedata_dir.is_dir() or not any(sourcedata_dir.rglob("*")):
+        raise NemarDownloadError(
+            f"NEMAR dataset {nemar_id} published no sourcedata/ "
+            f"{'matching ' + repr(include) if include else ''}"
+            "-- the original distribution is not mirrored there."
+        )
+    return str(sourcedata_dir)
+
+
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)
 def fs_issue_request(method, url, headers, data=None, binary=False):
     """Wrapper for HTTP request.
