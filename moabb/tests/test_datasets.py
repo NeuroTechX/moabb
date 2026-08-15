@@ -317,7 +317,7 @@ class Test_Datasets:
                 {
                     "path": tmp_path,
                     "force_update": False,
-                    "include": None,
+                    "subject": 1,
                     "verbose": None,
                 },
             )

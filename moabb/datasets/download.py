@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import os.path as osp
+import warnings
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -406,11 +407,16 @@ def nemar_sourcedata_dl(
             target_dir, nemar_id, subject, force_update
         )
         if include is None:
-            warn(
+            # warnings.warn, not mne.utils.warn: the latter emits a given
+            # warning once per session, which makes it order-dependent for
+            # anything asserting on it -- and matches what base.py already does
+            # for the sibling upstream fallback.
+            warnings.warn(
                 f"NEMAR dataset {nemar_id} was enriched before its sourcedata "
                 "manifest recorded subjects, so one subject cannot be selected; "
                 "downloading the whole sourcedata/ tree instead.",
                 RuntimeWarning,
+                stacklevel=2,
             )
 
     kwargs = {"include": include} if include is not None else {}
