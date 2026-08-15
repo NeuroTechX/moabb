@@ -282,12 +282,7 @@ def nemar_dl(
 
 
 def nemar_sourcedata_dl(
-    nemar_id,
-    dataset_code,
-    path=None,
-    force_update=False,
-    include=None,
-    verbose=None,
+    nemar_id, dataset_code, path=None, force_update=False, include=None, verbose=None
 ):
     """Download a NEMAR dataset's ``sourcedata/`` and return its local root.
 

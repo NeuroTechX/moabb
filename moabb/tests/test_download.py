@@ -398,10 +398,7 @@ def test_nemar_sourcedata_dl_forwards_include(tmp_path, monkeypatch):
     monkeypatch.setattr(dl, "nemar", fake)
 
     dl.nemar_sourcedata_dl(
-        "nm000341",
-        "Cattan2019-PHMD",
-        path=tmp_path,
-        include="sourcedata/subject_01.*",
+        "nm000341", "Cattan2019-PHMD", path=tmp_path, include="sourcedata/subject_01.*"
     )
 
     assert fake.calls[0]["include"] == "sourcedata/subject_01.*"
@@ -417,9 +414,7 @@ def test_nemar_sourcedata_dl_omits_include_when_unset(tmp_path, monkeypatch):
     assert "include" not in fake.calls[0]
 
 
-def test_nemar_sourcedata_dl_raises_when_deposit_has_no_sourcedata(
-    tmp_path, monkeypatch
-):
+def test_nemar_sourcedata_dl_raises_when_deposit_has_no_sourcedata(tmp_path, monkeypatch):
     """An empty result must fail here, not surface later as an empty cache."""
     fake = _FakeNemar(files=())
     monkeypatch.setattr(dl, "nemar", fake)
@@ -546,8 +541,9 @@ def test_download_fetches_sourcedata_not_the_bids_copy(monkeypatch, tmp_path):
     monkeypatch.setattr(
         base_module,
         "nemar_sourcedata_dl",
-        lambda *a, **k: calls.__setitem__("sourcedata", calls["sourcedata"] + 1)
-        or str(tmp_path),
+        lambda *a, **k: (
+            calls.__setitem__("sourcedata", calls["sourcedata"] + 1) or str(tmp_path)
+        ),
     )
     monkeypatch.setattr(
         base_module,
@@ -586,9 +582,7 @@ def test_download_sourcedata_is_fetched_once_without_include_template(
     assert seen == [None]
 
 
-def test_download_sourcedata_is_per_subject_with_include_template(
-    monkeypatch, tmp_path
-):
+def test_download_sourcedata_is_per_subject_with_include_template(monkeypatch, tmp_path):
     """With a template each subject is addressed individually."""
     from moabb.datasets import base as base_module
     from moabb.datasets.fake import FakeDataset
@@ -609,9 +603,7 @@ def test_download_sourcedata_is_per_subject_with_include_template(
     assert seen == ["sourcedata/subject_01.*", "sourcedata/subject_02.*"]
 
 
-def test_download_falls_back_to_upstream_when_sourcedata_missing(
-    monkeypatch, tmp_path
-):
+def test_download_falls_back_to_upstream_when_sourcedata_missing(monkeypatch, tmp_path):
     """A deposit without sourcedata/ must not block the download."""
     from moabb.datasets import base as base_module
     from moabb.datasets.fake import FakeDataset

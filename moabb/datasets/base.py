@@ -29,11 +29,7 @@ from moabb.datasets.bids_interface import (
     _interface_map,
     get_bids_root,
 )
-from moabb.datasets.download import (
-    NemarDownloadError,
-    nemar_dl,
-    nemar_sourcedata_dl,
-)
+from moabb.datasets.download import NemarDownloadError, nemar_dl, nemar_sourcedata_dl
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 from moabb.utils import get_download_provider
 
@@ -1099,18 +1095,13 @@ class BaseDataset(metaclass=MetaclassDataset):
             publishes no ``sourcedata/``.
         """
         if self.nemar_sourcedata_include is None:
-            self.sourcedata_path(
-                path=path, force_update=force_update, verbose=verbose
-            )
+            self.sourcedata_path(path=path, force_update=force_update, verbose=verbose)
             return
         if subject_list is None:
             subject_list = self.subject_list
         for subject in subject_list:
             self.sourcedata_path(
-                subject=subject,
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
+                subject=subject, path=path, force_update=force_update, verbose=verbose
             )
 
     def sourcedata_path(self, subject=None, path=None, force_update=False, verbose=None):
