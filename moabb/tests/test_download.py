@@ -563,26 +563,20 @@ def test_sourcedata_selects_a_subject_from_the_provenance(
     }
     fake = fake_nemar(tuple(files), subjects=files)
 
-    dl.nemar_sourcedata_dl(
-        "nm000341", "Cattan2019-PHMD", path=tmp_path, subject=subject
-    )
+    dl.nemar_sourcedata_dl("nm000341", "Cattan2019-PHMD", path=tmp_path, subject=subject)
 
     # First call fetches the manifest, second fetches that subject's files.
     assert fake.calls[0]["include"] == dl.SOURCEDATA_PROVENANCE
     assert sorted(fake.calls[-1]["include"]) == sorted(expected)
 
 
-def test_sourcedata_reports_an_unknown_subject_with_the_known_ones(
-    tmp_path, fake_nemar
-):
+def test_sourcedata_reports_an_unknown_subject_with_the_known_ones(tmp_path, fake_nemar):
     """A subject the deposit does not carry must say so, and say what it has."""
     files = {"sourcedata/sub-A/eeg/a.eeg": "1"}
     fake_nemar(tuple(files), subjects=files)
 
     with pytest.raises(dl.NemarDownloadError, match="lists no sourcedata for subject"):
-        dl.nemar_sourcedata_dl(
-            "nm000341", "Cattan2019-PHMD", path=tmp_path, subject=99
-        )
+        dl.nemar_sourcedata_dl("nm000341", "Cattan2019-PHMD", path=tmp_path, subject=99)
 
 
 def test_sourcedata_falls_back_to_the_whole_tree_without_subject_records(
@@ -597,9 +591,7 @@ def test_sourcedata_falls_back_to_the_whole_tree_without_subject_records(
     fake = fake_nemar(("sourcedata/subject_01.mat",), subjects=None)
 
     with pytest.warns(RuntimeWarning, match="before its sourcedata manifest"):
-        dl.nemar_sourcedata_dl(
-            "nm000341", "Cattan2019-PHMD", path=tmp_path, subject=1
-        )
+        dl.nemar_sourcedata_dl("nm000341", "Cattan2019-PHMD", path=tmp_path, subject=1)
 
     assert "include" not in fake.calls[-1]
 

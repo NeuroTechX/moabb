@@ -333,9 +333,7 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     if not any("subject" in entry for entry in entries):
         return None
     wanted = str(subject)
-    files = [
-        entry["file"] for entry in entries if str(entry.get("subject")) == wanted
-    ]
+    files = [entry["file"] for entry in entries if str(entry.get("subject")) == wanted]
     if not files:
         raise NemarDownloadError(
             f"NEMAR dataset {nemar_id} lists no sourcedata for subject "
