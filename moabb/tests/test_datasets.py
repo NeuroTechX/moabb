@@ -314,12 +314,7 @@ class Test_Datasets:
         assert calls == [
             (
                 ("nm000001", dataset.code),
-                {
-                    "path": tmp_path,
-                    "force_update": False,
-                    "subject": 1,
-                    "verbose": None,
-                },
+                {"path": tmp_path, "force_update": False, "subject": 1, "verbose": None},
             )
         ]
 
