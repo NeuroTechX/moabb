@@ -598,14 +598,6 @@ class BaseDataset(metaclass=MetaclassDataset):
     nemar_subject_template : str | None
         Template for formatting subject IDs for NEMAR downloads. For example,
         ``"{subject:03d}"`` formats subject ``1`` as ``"001"``.
-    nemar_sourcedata_include : str | None
-        Optional glob template selecting one subject's files inside the
-        deposit's ``sourcedata/``, e.g.
-        ``"sourcedata/subject_{subject:02d}.*"``. ``{subject}`` is formatted
-        with the *raw* MOABB subject id. When ``None``,
-        :meth:`sourcedata_path` fetches the whole ``sourcedata/`` tree,
-        because ``sourcedata/`` keeps the upstream layout and only the
-        dataset itself knows how that layout maps to subjects.
 
     return_all_modalities : bool | dict, optional
         Controls which channel types are retained when data is picked:
@@ -621,7 +613,6 @@ class BaseDataset(metaclass=MetaclassDataset):
     nemar_id: str | None = None
     nemar_subject_template: str | None = "{subject}"
     nemar_bids_filters: dict[str, Any] | None = None
-    nemar_sourcedata_include: str | None = None
 
     def __init__(
         self,
@@ -948,10 +939,9 @@ class BaseDataset(metaclass=MetaclassDataset):
         ----------
         subject_list : list of int | None
             List of subjects id to download, if None all subjects
-            are downloaded. Ignored on the NEMAR path unless the dataset sets
-            :attr:`nemar_sourcedata_include`: ``sourcedata/`` keeps the
-            upstream layout, so without a template there is no general way to
-            address one subject and the whole tree is fetched.
+            are downloaded. On the NEMAR path each subject is resolved through
+            the deposit's ``sourcedata_provenance.json``; deposits enriched
+            before that manifest recorded subjects fetch the whole tree.
         path : None | str
             Location of where to look for the data storing location.
             If None, the environment variable or config parameter
@@ -1094,12 +1084,10 @@ class BaseDataset(metaclass=MetaclassDataset):
     ):
         """Fetch the original pre-BIDS distribution for a set of subjects.
 
-        Fetches per subject when :attr:`nemar_sourcedata_include` gives a way to
-        address one subject inside the upstream layout, and otherwise fetches
-        the tree once. It is deliberately not per-subject-by-default: with no
-        template there is no general rule mapping a subject to files in an
-        arbitrary upstream layout, and guessing one would quietly fetch the
-        wrong subset.
+        Each subject is resolved through the deposit's provenance manifest
+        rather than by pattern-matching the layout, which across the catalogue
+        is genuinely arbitrary -- subjects appear as letters, as ``sub1``, as
+        ``S10_Session_1``, split across two path components, or not at all.
 
         Raises
         ------
@@ -1107,11 +1095,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             If nemar-py is unavailable, a download fails, or the deposit
             publishes no ``sourcedata/``.
         """
-        # ``[None]`` is the whole-tree fetch. With no template there is no
-        # general rule mapping a subject onto files in an arbitrary upstream
-        # layout, and guessing one would quietly fetch the wrong subset.
-        subjects = subject_list if self.nemar_sourcedata_include else [None]
-        for subject in subjects:
+        for subject in subject_list:
             self.sourcedata_path(
                 subject=subject, path=path, force_update=force_update, verbose=verbose
             )
@@ -1128,10 +1112,10 @@ class BaseDataset(metaclass=MetaclassDataset):
         Parameters
         ----------
         subject : int | str | None
-            Restrict the download to one subject. Requires
-            :attr:`nemar_sourcedata_include` to be set on the dataset, since
-            ``sourcedata/`` keeps the upstream layout rather than a BIDS one.
-            When ``None`` the whole tree is fetched.
+            Restrict the download to one subject, resolved through the
+            deposit's ``sourcedata_provenance.json``. Deposits enriched before
+            that manifest recorded subjects fall back to the whole tree with a
+            warning. When ``None`` the whole tree is fetched.
         path : None | str
             Base path where MOABB stores datasets.
         force_update : bool
@@ -1147,8 +1131,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         Raises
         ------
         ValueError
-            If the dataset declares no ``nemar_id``, or a ``subject`` was
-            given without :attr:`nemar_sourcedata_include`.
+            If the dataset declares no ``nemar_id``.
         moabb.datasets.download.NemarDownloadError
             If nemar-py is unavailable, the download fails, or the deposit
             publishes no ``sourcedata/``.
@@ -1158,35 +1141,12 @@ class BaseDataset(metaclass=MetaclassDataset):
                 f"{self.code} declares no nemar_id, so its original distribution "
                 "cannot be fetched from NEMAR."
             )
-        include = None
-        if subject is not None:
-            if self.nemar_sourcedata_include is None:
-                raise ValueError(
-                    f"{self.code} does not define nemar_sourcedata_include, so a "
-                    "single subject cannot be selected inside sourcedata/ "
-                    "(it keeps the upstream layout, not a BIDS one). Call "
-                    "sourcedata_path() without `subject` to fetch the whole tree."
-                )
-            try:
-                include = self.nemar_sourcedata_include.format(subject=subject)
-            except (IndexError, KeyError, ValueError) as exc:
-                # A template is a glob, so braces are natural to reach for
-                # ("*.{mat,fdt}") and str.format reads them as fields. Raising
-                # NemarDownloadError keeps this inside what download() catches,
-                # so a bad template degrades to the upstream downloader instead
-                # of killing the call.
-                raise NemarDownloadError(
-                    f"Could not build a sourcedata filter for {self.code} "
-                    f"subject {subject!r} from template "
-                    f"{self.nemar_sourcedata_include!r}: {exc}. Escape literal "
-                    "braces as {{ }}."
-                ) from exc
         return nemar_sourcedata_dl(
             self.nemar_id,
             self.code,
             path=path,
             force_update=force_update,
-            include=include,
+            subject=subject,
             verbose=verbose,
         )
 

@@ -1,6 +1,7 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
 import inspect
+import json
 import os
 import sys
 from pathlib import Path, PurePath
@@ -375,28 +376,51 @@ class _FakeNemar:
     per-subject call that matches nothing behaves like the real client.
     """
 
-    def __init__(self, files=("sourcedata/subject_01.mat",)):
+    def __init__(self, files=("sourcedata/subject_01.mat",), subjects=None):
         self.files = files
+        # {relative path -> subject}; None means the deposit predates the
+        # subject field, which is the state every already-enriched deposit is
+        # in today.
+        self.subjects = subjects
         self.calls = []
 
     def download(self, **kwargs):
         self.calls.append(kwargs)
         target = Path(kwargs["target_dir"])
         include = kwargs.get("include")
-        for relative in self.files:
-            if include is not None and not PurePath(relative).match(include):
+        patterns = [include] if isinstance(include, str) else include
+        for relative in self._served():
+            if patterns is not None and not any(
+                PurePath(relative).match(p) for p in patterns
+            ):
                 continue
             destination = target / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(b"x")
+            if relative == dl.SOURCEDATA_PROVENANCE:
+                destination.write_text(json.dumps(self._provenance()))
+            else:
+                destination.write_bytes(b"x")
+
+    def _served(self):
+        return (dl.SOURCEDATA_PROVENANCE, *self.files)
+
+    def _provenance(self):
+        entries = []
+        for relative in self.files:
+            name = relative[len("sourcedata/") :]
+            entry = {"file": name, "bytes": 1, "sha256": "0" * 64}
+            if self.subjects is not None:
+                entry["subject"] = self.subjects[relative]
+            entries.append(entry)
+        return {"dataset": "nm000341", "files": entries}
 
 
 @pytest.fixture
 def fake_nemar(monkeypatch):
     """Install a :class:`_FakeNemar` in place of the real client."""
 
-    def _install(files=("sourcedata/subject_01.mat",)):
-        fake = _FakeNemar(files)
+    def _install(files=("sourcedata/subject_01.mat",), subjects=None):
+        fake = _FakeNemar(files, subjects)
         monkeypatch.setattr(dl, "nemar", fake)
         return fake
 
@@ -499,94 +523,109 @@ def test_nemar_sourcedata_dl_raises_when_nothing_was_fetched(
         dl.nemar_sourcedata_dl("nm000115", "Zhou2016", path=tmp_path, include=include)
 
 
+def test_sourcedata_path_requires_a_nemar_id():
+    """A dataset NEMAR does not mirror cannot serve its original files."""
+    dataset = FakeDataset()
+    dataset.nemar_id = None
+
+    with pytest.raises(ValueError, match="declares no nemar_id"):
+        dataset.sourcedata_path()
+
+
 @pytest.mark.parametrize(
-    ("nemar_id", "include", "kwargs", "match"),
+    ("subject", "expected"),
     [
-        pytest.param(None, None, {}, "declares no nemar_id", id="no-nemar-id"),
+        pytest.param(1, ["sourcedata/sub-A/eeg/a.eeg"], id="letters"),
+        pytest.param(2, ["sourcedata/session1/s2/x.mat"], id="nested-session-dir"),
         pytest.param(
-            "nm000341",
-            None,
-            {"subject": 1},
-            "nemar_sourcedata_include",
-            id="subject-without-template",
+            3,
+            ["sourcedata/S3_Session_1.mat", "sourcedata/S3_Session_2.mat"],
+            id="two-files-one-subject",
         ),
     ],
 )
-def test_sourcedata_path_rejects_unusable_configuration(nemar_id, include, kwargs, match):
-    """Both refusals name the attribute the caller has to set."""
-    dataset = FakeDataset()
-    dataset.nemar_id = nemar_id
-    dataset.nemar_sourcedata_include = include
+def test_sourcedata_selects_a_subject_from_the_provenance(
+    tmp_path, fake_nemar, subject, expected
+):
+    """Selection is data-driven, so any upstream layout works.
 
-    with pytest.raises(ValueError, match=match):
-        dataset.sourcedata_path(**kwargs)
-
-
-def test_sourcedata_path_formats_the_include_template(monkeypatch):
-    """``{subject}`` is formatted with the raw MOABB subject id."""
-    seen = {}
-    monkeypatch.setattr(
-        base_module,
-        "nemar_sourcedata_dl",
-        lambda *args, **kwargs: seen.update(kwargs) or "/tmp/sourcedata",
-    )
-    dataset = FakeDataset()
-    dataset.nemar_id = "nm000341"
-    dataset.nemar_sourcedata_include = "sourcedata/subject_{subject:02d}.*"
-
-    dataset.sourcedata_path(subject=3)
-
-    assert seen["include"] == "sourcedata/subject_03.*"
-
-
-def test_sourcedata_path_converts_a_bad_template_into_a_download_error(monkeypatch):
-    """A glob template is a natural place to write braces.
-
-    ``str.format`` reads ``{mat,fdt}`` as a field and raises KeyError, which
-    would escape ``download()``'s ``except NemarDownloadError`` and kill the
-    call instead of falling back to the upstream downloader.
+    These three shapes are all real: ``sub-A`` (nm000193 labels subjects with
+    letters), ``session1/s2/`` (nm000273 splits the subject across two path
+    components), and two files per subject (nm000339). No glob template spans
+    them, and at least one deposit encodes no subject in the path at all --
+    which is why the deposit is asked instead of guessed at.
     """
-    dataset = FakeDataset()
-    dataset.nemar_id = "nm000341"
-    dataset.nemar_sourcedata_include = "sourcedata/sub-{subject:02d}/*.{mat,fdt}"
+    files = {
+        "sourcedata/sub-A/eeg/a.eeg": "1",
+        "sourcedata/session1/s2/x.mat": "2",
+        "sourcedata/S3_Session_1.mat": "3",
+        "sourcedata/S3_Session_2.mat": "3",
+    }
+    fake = fake_nemar(tuple(files), subjects=files)
 
-    with pytest.raises(dl.NemarDownloadError, match="Escape literal braces"):
-        dataset.sourcedata_path(subject=1)
+    dl.nemar_sourcedata_dl(
+        "nm000341", "Cattan2019-PHMD", path=tmp_path, subject=subject
+    )
+
+    # First call fetches the manifest, second fetches that subject's files.
+    assert fake.calls[0]["include"] == dl.SOURCEDATA_PROVENANCE
+    assert sorted(fake.calls[-1]["include"]) == sorted(expected)
+
+
+def test_sourcedata_reports_an_unknown_subject_with_the_known_ones(
+    tmp_path, fake_nemar
+):
+    """A subject the deposit does not carry must say so, and say what it has."""
+    files = {"sourcedata/sub-A/eeg/a.eeg": "1"}
+    fake_nemar(tuple(files), subjects=files)
+
+    with pytest.raises(dl.NemarDownloadError, match="lists no sourcedata for subject"):
+        dl.nemar_sourcedata_dl(
+            "nm000341", "Cattan2019-PHMD", path=tmp_path, subject=99
+        )
+
+
+def test_sourcedata_falls_back_to_the_whole_tree_without_subject_records(
+    tmp_path, fake_nemar
+):
+    """Deposits enriched before the subject field still work, with a warning.
+
+    Every deposit is in this state today, so this is the live path until the
+    manifests are regenerated -- it must degrade to the whole tree rather than
+    fail or silently fetch nothing.
+    """
+    fake = fake_nemar(("sourcedata/subject_01.mat",), subjects=None)
+
+    with pytest.warns(RuntimeWarning, match="before its sourcedata manifest"):
+        dl.nemar_sourcedata_dl(
+            "nm000341", "Cattan2019-PHMD", path=tmp_path, subject=1
+        )
+
+    assert "include" not in fake.calls[-1]
 
 
 @pytest.mark.parametrize(
-    ("include_template", "n_subjects", "subject_list", "expected"),
+    ("n_subjects", "subject_list", "expected"),
     [
-        pytest.param(None, 2, None, [None], id="whole-tree-without-template"),
-        pytest.param(None, 5, None, [None], id="whole-tree-ignores-subject-count"),
-        pytest.param(
-            "sourcedata/subject_{subject:02d}.*",
-            3,
-            [1, 2],
-            ["sourcedata/subject_01.*", "sourcedata/subject_02.*"],
-            id="per-subject-with-template",
-        ),
+        pytest.param(2, None, [1, 2], id="all-subjects"),
+        pytest.param(3, [1, 2], [1, 2], id="explicit-subject-list"),
     ],
 )
 def test_download_selects_sourcedata_not_the_bids_copy(
-    nemar_calls, include_template, n_subjects, subject_list, expected
+    nemar_calls, n_subjects, subject_list, expected
 ):
     """``download()`` pulls the ORIGINAL distribution, never the BIDS copy.
 
     The BIDS copy is a re-encoding whose events and session/run labels differ
     from what each dataset's own loader produces, so substituting it would
     change results rather than only change where the bytes come from.
-
-    Without a template the tree is fetched once, not once per subject: there is
-    no general subject-to-file rule for an arbitrary upstream layout.
     """
     dataset = FakeDataset(n_subjects=n_subjects)
     dataset.nemar_id = "nm000341"
-    dataset.nemar_sourcedata_include = include_template
 
     dataset.download(subject_list=subject_list, path=nemar_calls.path)
 
-    assert [call.get("include") for call in nemar_calls.sourcedata] == expected
+    assert [call.get("subject") for call in nemar_calls.sourcedata] == expected
     assert nemar_calls.bids == []
 
 
