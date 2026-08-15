@@ -328,15 +328,13 @@ def nemar_sourcedata_dl(
     root = Path(get_dataset_path(dataset_code, path))
     target_dir = root / "NEMAR" / nemar_id
 
-    kwargs = {}
-    if include is not None:
-        kwargs["include"] = include
+    kwargs = {"include": include} if include is not None else {}
     sourcedata_dir = target_dir / "sourcedata"
-    # Compared against afterwards rather than testing the directory for
-    # emptiness: `download()` calls this once per subject into a shared tree, so
-    # "the directory has something in it" is true from the second subject on
-    # even when that subject's own fetch matched nothing.
-    before = set(sourcedata_dir.rglob("*")) if sourcedata_dir.is_dir() else set()
+    what = f"sourcedata/ matching {include!r}" if include else "sourcedata/"
+    missing = (
+        f"NEMAR dataset {nemar_id} published no {what} -- the original "
+        "distribution is not mirrored there."
+    )
     try:
         nemar.download(
             dataset=nemar_id,
@@ -349,21 +347,20 @@ def nemar_sourcedata_dl(
         # nemar-py raises SelectionError (a NemarError) when the scope or the
         # include glob matches nothing, so "this deposit has no sourcedata/" and
         # "this subject is not in it" both arrive here rather than as a
-        # successful empty download. Say which, because the remedies differ.
-        what = f"sourcedata/ matching {include!r}" if include else "sourcedata/"
-        raise NemarDownloadError(
-            f"NEMAR dataset {nemar_id} published no {what} -- the original "
-            "distribution is not mirrored there."
-        ) from exc
+        # successful empty download.
+        raise NemarDownloadError(missing) from exc
 
-    if not sourcedata_dir.is_dir() or set(sourcedata_dir.rglob("*")) == before:
-        raise NemarDownloadError(
-            f"NEMAR dataset {nemar_id} returned no new files for "
-            f"{include!r} -- the original distribution is not mirrored there."
-            if include
-            else f"NEMAR dataset {nemar_id} published no sourcedata/ -- the "
-            "original distribution is not mirrored there."
-        )
+    # Ask about the subset this call requested, not the whole tree. `download()`
+    # calls this once per subject into a shared directory, so "the directory has
+    # something in it" is true from the second subject on even when this
+    # subject's fetch matched nothing -- and a before/after diff of the tree
+    # would walk every file twice per subject to find that out.
+    if include is not None:
+        fetched = next(target_dir.glob(include), None) is not None
+    else:
+        fetched = sourcedata_dir.is_dir() and next(sourcedata_dir.iterdir(), None)
+    if not fetched:
+        raise NemarDownloadError(missing)
     return str(sourcedata_dir)
 
 

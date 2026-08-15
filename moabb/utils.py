@@ -258,6 +258,22 @@ def set_download_dir(path):
         _clear_legacy_dataset_paths(old_path, path)
 
 
+def _set_moabb_config(key, value, **kwargs):
+    """Write a MOABB-owned config key without MNE's unknown-key warning.
+
+    MNE warns on every write to a key outside its own vocabulary, and offers no
+    flag to suppress it, so the filter is the only lever. Written once here
+    rather than at each call site.
+    """
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=rf'Setting non-standard config type: "{re.escape(key)}"',
+            category=RuntimeWarning,
+        )
+        set_config(key, value, **kwargs)
+
+
 #: Where MOABB may fetch dataset files from.
 #:
 #: ``"auto"``     try NEMAR first for datasets that declare a ``nemar_id``,
@@ -303,15 +319,7 @@ def set_download_provider(provider):
             )
     else:
         normalized = None
-    # MNE warns on every write to a key it does not know about. The key is
-    # ours by design, so the warning is pure noise for the caller.
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore",
-            message=r'Setting non-standard config type: "MOABB_DOWNLOAD_PROVIDER"',
-            category=RuntimeWarning,
-        )
-        set_config("MOABB_DOWNLOAD_PROVIDER", normalized)
+    _set_moabb_config("MOABB_DOWNLOAD_PROVIDER", normalized)
 
 
 def get_download_provider():
@@ -327,9 +335,9 @@ def get_download_provider():
     str
         One of :data:`DOWNLOAD_PROVIDERS`.
     """
-    provider = os.environ.get("MOABB_DOWNLOAD_PROVIDER") or get_config(
-        "MOABB_DOWNLOAD_PROVIDER"
-    )
+    # get_config consults os.environ first, so an env var set for one run wins
+    # over the stored preference without a second lookup here.
+    provider = get_config("MOABB_DOWNLOAD_PROVIDER")
     if not provider:
         return "auto"
     normalized = str(provider).lower()

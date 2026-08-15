@@ -1107,12 +1107,11 @@ class BaseDataset(metaclass=MetaclassDataset):
             If nemar-py is unavailable, a download fails, or the deposit
             publishes no ``sourcedata/``.
         """
-        if self.nemar_sourcedata_include is None:
-            self.sourcedata_path(path=path, force_update=force_update, verbose=verbose)
-            return
-        if subject_list is None:
-            subject_list = self.subject_list
-        for subject in subject_list:
+        # ``[None]`` is the whole-tree fetch. With no template there is no
+        # general rule mapping a subject onto files in an arbitrary upstream
+        # layout, and guessing one would quietly fetch the wrong subset.
+        subjects = subject_list if self.nemar_sourcedata_include else [None]
+        for subject in subjects:
             self.sourcedata_path(
                 subject=subject, path=path, force_update=force_update, verbose=verbose
             )
