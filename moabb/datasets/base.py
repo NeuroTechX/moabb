@@ -936,12 +936,22 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         This function is only useful to download all the dataset at once.
 
+        When the dataset declares a :attr:`nemar_id` and the download provider
+        is not ``"upstream"``, the files come from NEMAR's ``sourcedata/`` --
+        the original pre-BIDS distribution, byte-identical to what the upstream
+        host serves. On any NEMAR failure this falls back to the dataset's own
+        downloader with a warning (unless the provider is pinned to
+        ``"nemar"``). See :meth:`sourcedata_path` and
+        :func:`moabb.set_download_provider`.
 
         Parameters
         ----------
         subject_list : list of int | None
             List of subjects id to download, if None all subjects
-            are downloaded.
+            are downloaded. Ignored on the NEMAR path unless the dataset sets
+            :attr:`nemar_sourcedata_include`: ``sourcedata/`` keeps the
+            upstream layout, so without a template there is no general way to
+            address one subject and the whole tree is fetched.
         path : None | str
             Location of where to look for the data storing location.
             If None, the environment variable or config parameter
@@ -954,8 +964,11 @@ class BaseDataset(metaclass=MetaclassDataset):
         update_path : bool | None
             If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
             config to the given path. If None, the user is prompted.
+            Not used on the NEMAR path.
         accept: bool
-            Accept licence term to download the data, if any. Default: False
+            Accept licence term to download the data, if any. Default: False.
+            Only relevant to the dataset's own downloader; NEMAR mirrors are
+            already public.
         verbose : bool, str, int, or None
             If not None, override default verbose level
             (see :func:`mne.verbose`).
@@ -1155,7 +1168,20 @@ class BaseDataset(metaclass=MetaclassDataset):
                     "(it keeps the upstream layout, not a BIDS one). Call "
                     "sourcedata_path() without `subject` to fetch the whole tree."
                 )
-            include = self.nemar_sourcedata_include.format(subject=subject)
+            try:
+                include = self.nemar_sourcedata_include.format(subject=subject)
+            except (IndexError, KeyError, ValueError) as exc:
+                # A template is a glob, so braces are natural to reach for
+                # ("*.{mat,fdt}") and str.format reads them as fields. Raising
+                # NemarDownloadError keeps this inside what download() catches,
+                # so a bad template degrades to the upstream downloader instead
+                # of killing the call.
+                raise NemarDownloadError(
+                    f"Could not build a sourcedata filter for {self.code} "
+                    f"subject {subject!r} from template "
+                    f"{self.nemar_sourcedata_include!r}: {exc}. Escape literal "
+                    "braces as {{ }}."
+                ) from exc
         return nemar_sourcedata_dl(
             self.nemar_id,
             self.code,

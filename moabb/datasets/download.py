@@ -281,6 +281,7 @@ def nemar_dl(
     return str(target_dir)
 
 
+@verbose
 def nemar_sourcedata_dl(
     nemar_id, dataset_code, path=None, force_update=False, include=None, verbose=None
 ):
@@ -320,12 +321,22 @@ def nemar_sourcedata_dl(
         If nemar-py is unavailable, the download fails, or the deposit
         publishes no ``sourcedata/`` at all.
     """
+    # Keyed on the NEMAR id, not the MOABB code: one deposit backs several
+    # classes (nm000132 is shared by all seven ErpCore2021 subclasses, nm000250
+    # by four Dreyer2023 ones), and a per-code path would download the same
+    # tree once per class.
     root = Path(get_dataset_path(dataset_code, path))
-    target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
+    target_dir = root / "NEMAR" / nemar_id
 
     kwargs = {}
     if include is not None:
         kwargs["include"] = include
+    sourcedata_dir = target_dir / "sourcedata"
+    # Compared against afterwards rather than testing the directory for
+    # emptiness: `download()` calls this once per subject into a shared tree, so
+    # "the directory has something in it" is true from the second subject on
+    # even when that subject's own fetch matched nothing.
+    before = set(sourcedata_dir.rglob("*")) if sourcedata_dir.is_dir() else set()
     try:
         nemar.download(
             dataset=nemar_id,
@@ -335,19 +346,23 @@ def nemar_sourcedata_dl(
             **kwargs,
         )
     except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        # nemar-py raises SelectionError (a NemarError) when the scope or the
+        # include glob matches nothing, so "this deposit has no sourcedata/" and
+        # "this subject is not in it" both arrive here rather than as a
+        # successful empty download. Say which, because the remedies differ.
+        what = f"sourcedata/ matching {include!r}" if include else "sourcedata/"
         raise NemarDownloadError(
-            f"Could not download sourcedata/ for NEMAR dataset {nemar_id}."
+            f"NEMAR dataset {nemar_id} published no {what} -- the original "
+            "distribution is not mirrored there."
         ) from exc
 
-    sourcedata_dir = target_dir / "sourcedata"
-    # A deposit without sourcedata/ downloads "successfully" with zero matching
-    # files, which would otherwise surface much later as a confusing empty
-    # cache. Fail here instead, where the cause is still obvious.
-    if not sourcedata_dir.is_dir() or not any(sourcedata_dir.rglob("*")):
+    if not sourcedata_dir.is_dir() or set(sourcedata_dir.rglob("*")) == before:
         raise NemarDownloadError(
-            f"NEMAR dataset {nemar_id} published no sourcedata/ "
-            f"{'matching ' + repr(include) if include else ''}"
-            "-- the original distribution is not mirrored there."
+            f"NEMAR dataset {nemar_id} returned no new files for "
+            f"{include!r} -- the original distribution is not mirrored there."
+            if include
+            else f"NEMAR dataset {nemar_id} published no sourcedata/ -- the "
+            "original distribution is not mirrored there."
         )
     return str(sourcedata_dir)
 
