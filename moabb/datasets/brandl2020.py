@@ -5,6 +5,7 @@ DOI: 10.3389/fnins.2020.566147
 """
 
 import logging
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -32,9 +33,17 @@ from .metadata.schema import (
 
 log = logging.getLogger(__name__)
 
-# DepositOnce TU Berlin bitstream base URL
+# DepositOnce bitstream endpoint.
+#
+# The REST API is on a different host from the web UI. depositonce.tu-berlin.de
+# is the Angular front end, and since the DSpace 7 migration it answers *every*
+# path -- including ones that used to be files -- with HTTP 200 and the 1306-byte
+# app shell rather than a 404. A downloader that only checks the status code
+# therefore stores that HTML under the requested .mat name and caches it as a
+# successful download. The API host is the one named in the front end's own
+# assets/config.json, and it serves the bytes (and honours Range requests).
 _BITSTREAM_URL = (
-    "https://depositonce.tu-berlin.de/bitstreams/handle/11303/10934.2/{filename}"
+    "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/{uuid}/content"
 )
 
 # Bitstream UUIDs for direct download (resolved from DepositOnce DSpace)
@@ -57,6 +66,48 @@ _BITSTREAM_UUIDS = {
     "pp16.mat": "358eef6d-bffe-4562-91fb-0173deafa0ed",
     "mnt.mat": "6bc4de0d-4c65-4bd8-96b2-1f921a800ace",
 }
+
+# Every .mat here is a MATLAB v5 or v7.3 file, and both start with the ASCII
+# banner "MATLAB". Checking it costs one short read and is what separates a real
+# download from an HTML error body saved under a .mat name -- the failure this
+# upstream produces silently, because it returns HTTP 200 for missing files.
+_MAT_MAGIC = b"MATLAB"
+
+
+def _download_bitstream(filename, path, force_update, verbose):
+    """Download one DepositOnce bitstream and confirm it is really a MAT file."""
+    try:
+        uuid = _BITSTREAM_UUIDS[filename]
+    except KeyError:
+        raise ValueError(
+            f"No DepositOnce bitstream UUID known for {filename!r}; "
+            f"known files: {sorted(_BITSTREAM_UUIDS)}"
+        ) from None
+
+    dest = dl.data_dl(
+        _BITSTREAM_URL.format(uuid=uuid),
+        "Brandl2020",
+        path,
+        force_update,
+        verbose,
+        fname=filename,
+    )
+
+    with open(dest, "rb") as fid:
+        head = fid.read(len(_MAT_MAGIC))
+    if head != _MAT_MAGIC:
+        # Remove it: a cached bad file is worse than a failed download, because
+        # every later call is served the same bytes without hitting the network.
+        Path(dest).unlink(missing_ok=True)
+        raise RuntimeError(
+            f"Downloaded {filename} from DepositOnce is not a MATLAB file "
+            f"(starts with {head!r}). The upstream repository returns HTTP 200 "
+            f"with an HTML page when a file cannot be served, so this usually "
+            f"means the bitstream is unavailable rather than that it is corrupt. "
+            f"The file has been removed; please retry later."
+        )
+    return dest
+
 
 # Distraction condition names (runs 2-7 map to conditions 1-6)
 _CONDITION_NAMES = {
@@ -349,18 +400,11 @@ class Brandl2020(BaseDataset):
                 f"Invalid subject number {subject}, must be in {self.subject_list}"
             )
 
-        paths = []
-
-        # Download subject data file
-        subj_fname = f"pp{subject}.mat"
-        url = _BITSTREAM_URL.format(filename=subj_fname)
-        paths.append(dl.data_dl(url, "Brandl2020", path, force_update, verbose))
-
-        # Download montage file (shared across subjects)
-        url_mnt = _BITSTREAM_URL.format(filename="mnt.mat")
-        paths.append(dl.data_dl(url_mnt, "Brandl2020", path, force_update, verbose))
-
-        return paths
+        return [
+            # Subject data, then the montage that is shared across subjects.
+            _download_bitstream(f"pp{subject}.mat", path, force_update, verbose),
+            _download_bitstream("mnt.mat", path, force_update, verbose),
+        ]
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject.
