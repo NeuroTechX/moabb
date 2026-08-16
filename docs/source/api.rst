@@ -550,6 +550,7 @@ Statistics
 
     meta_analysis.find_significant_differences
     meta_analysis.compute_dataset_statistics
+    meta_analysis.compute_pvals_corrected_ttest
     meta_analysis.combine_effects
     meta_analysis.combine_pvalues
     meta_analysis.collapse_session_scores
