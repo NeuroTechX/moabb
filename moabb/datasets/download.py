@@ -30,6 +30,18 @@ class NemarDownloadError(RuntimeError):
     """Raised when a NEMAR download cannot be completed."""
 
 
+class DatasetDownloadError(RuntimeError):
+    """Raised when a download completed but did not deliver the dataset's data.
+
+    Distinct from a transport error: the request succeeded. Repositories
+    increasingly answer a missing file with HTTP 200 and an HTML page, which a
+    status-code check accepts and caches under the requested name. Callers that
+    sweep many datasets need to tell "this upstream is unavailable, skip it"
+    apart from "moabb has a bug", and a bare RuntimeError is indistinguishable
+    from the ones raised for a missing unrar binary or an absent XDF stream.
+    """
+
+
 def get_user_agent():
     """Return a user agent string for outbound requests."""
     try:

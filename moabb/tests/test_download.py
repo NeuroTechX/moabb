@@ -8,6 +8,7 @@ from pathlib import Path
 import mne
 import pytest
 from mne import get_config, set_config
+from requests.exceptions import HTTPError
 
 import moabb.datasets.brandl2020 as brandl
 import moabb.datasets.download as dl
@@ -414,10 +415,36 @@ def test_brandl_rejects_and_removes_non_mat_download(body, reason, tmp_path, mon
 
     monkeypatch.setattr(brandl.dl, "data_dl", fake_data_dl)
 
-    with pytest.raises(RuntimeError, match="not a MATLAB file"):
+    # A dedicated type, so a benchmark sweeping datasets can tell "this upstream
+    # is unavailable, skip it" from "moabb has a bug" without string-matching.
+    with pytest.raises(dl.DatasetDownloadError, match="not a MATLAB file"):
         brandl._download_bitstream("pp1.mat", str(tmp_path), False, None)
     # A cached bad file would be served to every later call without a network hit.
     assert not dest.exists(), f"{reason} was left in the cache"
+
+
+def test_brandl_bitstream_table_is_complete_and_unique():
+    """The UUID table is hand-maintained; check its shape, not its formatting.
+
+    Asserting that the module formats its own constants into a URL cannot fail
+    for the reason the table exists to worry about. These two properties can.
+    """
+    table = brandl._BITSTREAM_UUIDS
+    assert set(table) == {f"pp{i}.mat" for i in range(1, 17)} | {"mnt.mat"}
+    # A copy-paste slip that repeats a UUID would silently download one
+    # subject's recording under another subject's name.
+    assert len(set(table.values())) == len(table), "duplicate bitstream UUID"
+
+
+def test_brandl_stale_uuid_reports_how_to_regenerate(tmp_path, monkeypatch):
+    """A re-ingest answers 404/JSON, which the MAT-magic check never sees."""
+
+    def fake_data_dl(*a, **kw):
+        raise HTTPError("404 Client Error: Not Found")
+
+    monkeypatch.setattr(brandl.dl, "data_dl", fake_data_dl)
+    with pytest.raises(dl.DatasetDownloadError, match=r"stale.*11303/10934\.2"):
+        brandl._download_bitstream("pp1.mat", str(tmp_path), False, None)
 
 
 def test_brandl_unknown_bitstream_name_is_rejected(tmp_path):

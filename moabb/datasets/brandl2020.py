@@ -12,9 +12,11 @@ import numpy as np
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 from pymatreader import read_mat
+from requests.exceptions import HTTPError
 
 from . import download as dl
 from .base import BaseDataset
+from .download import DatasetDownloadError
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -45,6 +47,14 @@ log = logging.getLogger(__name__)
 _BITSTREAM_URL = (
     "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/{uuid}/content"
 )
+
+# The item's stable identifier. The UUIDs below are not stable across a
+# re-ingest, so this is what regenerates them:
+#
+#   curl -sL "https://api-depositonce.tu-berlin.de/server/api/pid/find?id=hdl:11303/10934.2"
+#   # -> item uuid; then .../core/items/<uuid>/bundles -> ORIGINAL -> bitstreams
+#   #    each carries name, sizeBytes, checkSum and _links.content
+_HANDLE = "11303/10934.2"
 
 # Bitstream UUIDs for direct download (resolved from DepositOnce DSpace)
 _BITSTREAM_UUIDS = {
@@ -84,27 +94,41 @@ def _download_bitstream(filename, path, force_update, verbose):
             f"known files: {sorted(_BITSTREAM_UUIDS)}"
         ) from None
 
-    dest = dl.data_dl(
-        _BITSTREAM_URL.format(uuid=uuid),
-        "Brandl2020",
-        path,
-        force_update,
-        verbose,
-        fname=filename,
-    )
+    try:
+        dest = dl.data_dl(
+            _BITSTREAM_URL.format(uuid=uuid),
+            "Brandl2020",
+            path,
+            force_update,
+            verbose,
+            fname=filename,
+        )
+    except HTTPError as exc:
+        # A UUID that no longer resolves answers 404 with JSON, not 200 with
+        # HTML, so the payload check below never sees it. Say what actually has
+        # to happen -- the table above is regenerated from the stable handle --
+        # instead of surfacing a bare 404 naming an unsearchable UUID.
+        raise DatasetDownloadError(
+            f"DepositOnce returned {exc} for {filename}. The bitstream UUID "
+            f"table in this module may be stale; regenerate it from the stable "
+            f"handle {_HANDLE} (see the comment above _BITSTREAM_UUIDS)."
+        ) from exc
 
     with open(dest, "rb") as fid:
         head = fid.read(len(_MAT_MAGIC))
     if head != _MAT_MAGIC:
         # Remove it: a cached bad file is worse than a failed download, because
-        # every later call is served the same bytes without hitting the network.
+        # data_dl hashes an existing file against itself to build known_hash, so
+        # pooch would report a match and never re-fetch. Only force_update or a
+        # manual delete recovers, and nothing would tell the user which.
         Path(dest).unlink(missing_ok=True)
-        raise RuntimeError(
+        raise DatasetDownloadError(
             f"Downloaded {filename} from DepositOnce is not a MATLAB file "
-            f"(starts with {head!r}). The upstream repository returns HTTP 200 "
-            f"with an HTML page when a file cannot be served, so this usually "
-            f"means the bitstream is unavailable rather than that it is corrupt. "
-            f"The file has been removed; please retry later."
+            f"(starts with {head!r}). The repository answers HTTP 200 with an "
+            f"HTML page when it cannot serve a file, so the download looked "
+            f"successful. The bad file has been removed. If this persists it is "
+            f"not transient -- check whether the item at handle {_HANDLE} is "
+            f"still published."
         )
     return dest
 
