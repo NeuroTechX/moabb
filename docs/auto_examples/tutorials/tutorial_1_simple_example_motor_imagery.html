@@ -668,8 +668,12 @@ classify these signals.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a>
 
 
-<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">"info"</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span></a><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
 </pre></div>
 </div>
 <section id="instantiating-dataset">
@@ -701,8 +705,8 @@ for some users, since the pre-processing and epoching steps can be easily
 done via MNE. However, to conduct an assessment of several classifiers on
 multiple subjects, MOABB ends up being a more appropriate option.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="mi">1</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session_name</span></a> <span class="o">=</span> <span class="s2">&quot;0train&quot;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_name</span></a> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session_name</span></a> <span class="o">=</span> <span class="s2">"0train"</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_name</span></a> <span class="o">=</span> <span class="s2">"0"</span>
 <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray" title="mne.io.RawArray" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session_name</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_name</span></a><span class="p">]</span>
 </pre></div>
 </div>
@@ -771,75 +775,26 @@ partition and the remaining one as testing partition.</p>
 </pre></div>
 </div>
 <p>We obtain the results in the form of a pandas dataframe</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">({</span><span class="s2">&quot;csp+lda&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">})</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">({</span><span class="s2">"csp+lda"</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">})</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/44.1M [00:00&lt;12:44, 57.6kB/s]
-  0%|                                      | 39.9k/44.1M [00:00&lt;04:46, 154kB/s]
-  0%|                                       | 113k/44.1M [00:00&lt;02:20, 314kB/s]
-  0%|▏                                      | 193k/44.1M [00:00&lt;01:47, 409kB/s]
-  1%|▎                                      | 296k/44.1M [00:00&lt;01:24, 520kB/s]
-  1%|▍                                      | 424k/44.1M [00:00&lt;01:07, 645kB/s]
-  1%|▍                                      | 528k/44.1M [00:01&lt;01:04, 671kB/s]
-  2%|▌                                      | 696k/44.1M [00:01&lt;00:52, 828kB/s]
-  2%|▋                                      | 824k/44.1M [00:01&lt;00:51, 847kB/s]
-  2%|▉                                    | 1.10M/44.1M [00:01&lt;00:36, 1.17MB/s]
-  3%|█                                    | 1.26M/44.1M [00:01&lt;00:37, 1.15MB/s]
-  4%|█▍                                   | 1.64M/44.1M [00:01&lt;00:26, 1.61MB/s]
-  5%|█▊                                   | 2.10M/44.1M [00:01&lt;00:20, 2.10MB/s]
-  6%|██▏                                  | 2.59M/44.1M [00:02&lt;00:16, 2.49MB/s]
-  8%|██▊                                  | 3.41M/44.1M [00:02&lt;00:11, 3.44MB/s]
- 10%|███▌                                 | 4.30M/44.1M [00:02&lt;00:09, 4.28MB/s]
- 13%|████▋                                | 5.65M/44.1M [00:02&lt;00:06, 5.79MB/s]
- 17%|██████▏                              | 7.37M/44.1M [00:02&lt;00:04, 7.64MB/s]
- 23%|████████▍                            | 9.99M/44.1M [00:02&lt;00:03, 10.8MB/s]
- 29%|██████████▊                          | 12.9M/44.1M [00:02&lt;00:02, 13.7MB/s]
- 40%|██████████████▉                      | 17.8M/44.1M [00:03&lt;00:01, 19.8MB/s]
- 51%|██████████████████▊                  | 22.4M/44.1M [00:03&lt;00:00, 23.3MB/s]
- 65%|████████████████████████             | 28.6M/44.1M [00:03&lt;00:00, 28.9MB/s]
- 80%|█████████████████████████████▍       | 35.1M/44.1M [00:03&lt;00:00, 33.3MB/s]
- 94%|██████████████████████████████████▉  | 41.6M/44.1M [00:03&lt;00:00, 36.3MB/s]
-  0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.1M/44.1M [00:00&lt;00:00, 305GB/s]
-
-  0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/42.3M [00:00&lt;12:22, 57.0kB/s]
-  0%|                                      | 39.9k/42.3M [00:00&lt;04:36, 153kB/s]
-  0%|                                       | 104k/42.3M [00:00&lt;02:27, 286kB/s]
-  0%|▏                                      | 168k/42.3M [00:00&lt;02:01, 346kB/s]
-  1%|▎                                      | 281k/42.3M [00:00&lt;01:23, 502kB/s]
-  1%|▎                                      | 384k/42.3M [00:00&lt;01:13, 574kB/s]
-  1%|▌                                      | 545k/42.3M [00:01&lt;00:55, 749kB/s]
-  2%|▋                                      | 680k/42.3M [00:01&lt;00:51, 807kB/s]
-  2%|▊                                     | 921k/42.3M [00:01&lt;00:38, 1.07MB/s]
-  3%|█                                    | 1.20M/42.3M [00:01&lt;00:30, 1.34MB/s]
-  4%|█▎                                   | 1.54M/42.3M [00:01&lt;00:24, 1.64MB/s]
-  5%|█▊                                   | 2.01M/42.3M [00:01&lt;00:18, 2.13MB/s]
-  6%|██▏                                  | 2.46M/42.3M [00:01&lt;00:16, 2.44MB/s]
-  8%|██▉                                  | 3.31M/42.3M [00:02&lt;00:11, 3.47MB/s]
- 10%|███▌                                 | 4.14M/42.3M [00:02&lt;00:09, 4.15MB/s]
- 14%|█████                                | 5.75M/42.3M [00:02&lt;00:05, 6.25MB/s]
- 17%|██████▎                              | 7.24M/42.3M [00:02&lt;00:04, 7.46MB/s]
- 24%|████████▉                            | 10.2M/42.3M [00:02&lt;00:02, 11.4MB/s]
- 31%|███████████▍                         | 13.1M/42.3M [00:02&lt;00:02, 14.0MB/s]
- 42%|███████████████▍                     | 17.6M/42.3M [00:02&lt;00:01, 19.0MB/s]
- 53%|███████████████████▌                 | 22.4M/42.3M [00:03&lt;00:00, 23.3MB/s]
- 64%|███████████████████████▌             | 26.9M/42.3M [00:03&lt;00:00, 25.6MB/s]
- 79%|█████████████████████████████▏       | 33.4M/42.3M [00:03&lt;00:00, 30.9MB/s]
- 94%|██████████████████████████████████▉  | 39.9M/42.3M [00:03&lt;00:00, 34.7MB/s]
-  0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.3M/42.3M [00:00&lt;00:00, 323GB/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 14:19:22] Multiple instances of codecarbon are allowed to run at the same time.
+2026-08-18 14:19:30,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 0train: Score 0.913
+2026-08-18 14:19:30,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 1test: Score 0.953
+2026-08-18 14:19:30,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 1test: Score 0.668
+2026-08-18 14:19:30,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 0train: Score 0.591
+2026-08-18 14:19:30,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 1test: Score 0.986
+2026-08-18 14:19:30,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 0train: Score 0.994
 </pre></div>
 </div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
 It is saved in <cite>hdf5_path</cite> if defined or in ~/mne_data/results  otherwise.
 To export the results in CSV:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html#pandas.DataFrame.to_csv" title="pandas.DataFrame.to_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">to_csv</span></a><span class="p">(</span><span class="s2">&quot;./results_part2-1.csv&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html#pandas.DataFrame.to_csv" title="pandas.DataFrame.to_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">to_csv</span></a><span class="p">(</span><span class="s2">"./results_part2-1.csv"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To load previously obtained results saved in CSV</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span><span class="s2">&quot;./results_part2-1.csv&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span><span class="s2">"./results_part2-1.csv"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -850,15 +805,18 @@ score for each subject on each session. Note that the ‘subject’ field from
 the <cite>results</cite> is given in terms of integers, but seaborn accepts only
 strings for its labeling. This is why we create the field ‘subj’.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">[</span><span class="s2">&quot;subj&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">[</span><span class="s2">"subj"</span><span class="p">]</span> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">[</span><span class="s2">"subject"</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span>
-    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;subj&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a>
+    <span class="n">x</span><span class="o">=</span><span class="s2">"score"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"subj"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"session"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">"h"</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"viridis"</span><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a>
 <span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 27.730 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1320 MB</p>
+<img src="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-08-18 14:19:30,451 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-08-18 14:19:30,453 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.433 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b5e20655a202770c185990e75afbe3cd/tutorial_1_simple_example_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.ipynb</span></code></a></p>

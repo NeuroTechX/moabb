@@ -661,7 +661,7 @@ to easily scale to many datasets.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a>
 
 
-<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">"info"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In this example, we will use only the dataset ‘Zhou 2016’.</p>
@@ -692,34 +692,36 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 <span class="c1"># .. code-block:: python</span>
 <span class="c1">#</span>
 <span class="c1">#     codecarbon_config = {</span>
-<span class="c1">#         &#39;tracking_mode&#39;: &#39;machine&#39;,</span>
-<span class="c1">#         &#39;save_to_file&#39;: True,</span>
-<span class="c1">#         &#39;output_file&#39;: &#39;gridsearch_emissions.csv&#39;,</span>
-<span class="c1">#         &#39;log_level&#39;: &#39;info&#39;</span>
+<span class="c1">#         'tracking_mode': 'machine',</span>
+<span class="c1">#         'save_to_file': True,</span>
+<span class="c1">#         'output_file': 'gridsearch_emissions.csv',</span>
+<span class="c1">#         'log_level': 'info'</span>
 <span class="c1">#     }</span>
 <span class="c1">#</span>
-<span class="c1"># With ``tracking_mode=&#39;machine&#39;``, CodeCarbon will track the entire machine&#39;s</span>
+<span class="c1"># With ``tracking_mode='machine'``, CodeCarbon will track the entire machine's</span>
 <span class="c1"># power consumption, which is useful for benchmarking.</span>
 
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">(</span>
-    <span class="n">pipelines</span><span class="o">=</span><span class="s2">&quot;./pipelines_grid/&quot;</span><span class="p">,</span>
-    <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;WithinSession&quot;</span><span class="p">],</span>
-    <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;LeftRightImagery&quot;</span><span class="p">],</span>
-    <span class="n">include_datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Zhou2016&quot;</span><span class="p">],</span>
-    <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">=</span><span class="s2">&quot;./results/&quot;</span><span class="p">,</span>
+    <span class="n">pipelines</span><span class="o">=</span><span class="s2">"./pipelines_grid/"</span><span class="p">,</span>
+    <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">"WithinSession"</span><span class="p">],</span>
+    <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">"LeftRightImagery"</span><span class="p">],</span>
+    <span class="n">include_datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">"Zhou2016"</span><span class="p">],</span>
+    <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="o">=</span><span class="s2">"./results/"</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;./benchmark/&quot;</span><span class="p">,</span>
-    <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;benchmark_grid&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="o">=</span><span class="s2">"./benchmark/"</span><span class="p">,</span>
+    <span class="n">suffix</span><span class="o">=</span><span class="s2">"benchmark_grid"</span><span class="p">,</span>
     <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>The paradigms being run are dict_keys([&#39;LeftRightImagery&#39;])
-Datasets considered for LeftRightImagery paradigm [&#39;Zhou2016&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>The paradigms being run are dict_keys(['LeftRightImagery'])
+Datasets considered for LeftRightImagery paradigm ['Zhou2016']
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
     dataset     evaluation   pipeline  avg score  carbon emission
-0  Zhou2016  WithinSession    EN Grid   0.943416         0.617844
-1  Zhou2016  WithinSession  CSP + LDA   0.938120         0.318599
-2  Zhou2016  WithinSession         EN   0.943825         0.057771
+0  Zhou2016  WithinSession    EN Grid   0.943416         0.561004
+1  Zhou2016  WithinSession  CSP + LDA   0.938120         0.280517
+2  Zhou2016  WithinSession         EN   0.943619         0.036628
 </pre></div>
 </div>
 <p>Benchmark prints a summary of the results. Detailed results are saved in a
@@ -733,8 +735,11 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" srcset="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" alt="plot benchmark grid search" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 48.725 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  740 MB</p>
+<img src="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" srcset="../../_images/sphx_glr_plot_benchmark_grid_search_001.png" alt="plot benchmark grid search" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/plotting.py:434: UserWarning: The palette list has more values (6) than needed (3), which may not be intended.
+  sea.stripplot(
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 22.864 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-plot-benchmark-grid-search-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/d296b17ab4e4deaa68df6cc8f3f5c727/plot_benchmark_grid_search.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark_grid_search.ipynb</span></code></a></p>

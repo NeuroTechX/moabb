@@ -675,10 +675,14 @@ use the standard python logging commands through the top-level moabb module</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines.features</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
+</pre></div>
+</div>
 <p>In order to create pipelines within a script, you will likely need at least
 the make_pipeline function. They can also be specified via a .yml file. Here
 we will make a couple pipelines just for convenience</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">"info"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -690,12 +694,12 @@ cross-validation via scikit-learn cannot be described in a .yml file). For
 later in the process, the pipelines need to be in a dictionary where the key
 is the name of the pipeline and the value is the Pipeline object</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;AM+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parameters</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.logspace.html#numpy.logspace" title="numpy.logspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">)}</span>
-<a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">GridSearchCV</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="sklearn.svm.SVC" class="sphx-glr-backref-module-sklearn-svm sphx-glr-backref-type-py-class"><span class="n">SVC</span></a><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">),</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parameters</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">"AM+LDA"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parameters</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">"C"</span><span class="p">:</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.logspace.html#numpy.logspace" title="numpy.logspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">)}</span>
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">GridSearchCV</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC" title="sklearn.svm.SVC" class="sphx-glr-backref-module-sklearn-svm sphx-glr-backref-type-py-class"><span class="n">SVC</span></a><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">),</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">parameters</span></a><span class="p">)</span>
 <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipe</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a><span class="p">(),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">clf</span></a><span class="p">)</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;AM+SVM&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipe</span></a>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">"AM+SVM"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipe</span></a>
 </pre></div>
 </div>
 </section>
@@ -710,7 +714,7 @@ is the name of the pipeline and the value is the Pipeline object</p>
 </pre></div>
 </div>
 <p>Or you can run a search through the available datasets:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">utils</span><span class="o">.</span><span class="n">dataset_search</span></a><span class="p">(</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span> <span class="n">min_subjects</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">utils</span><span class="o">.</span><span class="n">dataset_search</span></a><span class="p">(</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">"imagery"</span><span class="p">,</span> <span class="n">min_subjects</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[AguileraRodriguez2025, AlexandreMotorImagery, BCIComp2020UpperLimb, BNCI2014-001, BNCI2014-002, BNCI2014-004, BNCI2015-001, BNCI2015-004, BNCI2019-001, BNCI2020-001, BNCI2022-001, BNCI2024-001, BNCI2025-001, BNCI2025-002, Brandl2020, Chang2025, Cho2017, Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C, FakeDataset-imagery-10-2--60-60--120-120--fake1-fake2-fake3--c3-cz-c4, Forenzo2023, Gao2026, GrosseWentrup2009, GuttmannFlury2025-ME, GuttmannFlury2025-MI, HefmiIch2025, Jeong2020, Kaya2018, Kumar2024, Lee2019-MI, Liu2024, Liu2025, Ma2020, Nguyen2017-L, Nguyen2017-S, Nguyen2017-SL, Nguyen2017-V, Nieto2022, Ofner2017, PhysionetMotorImagery, Pressel2016, Rozado2015, Schirrmeister2017, Shin2017A, Shin2017B, Stieger2021, Tavakolan2017, TrianaGuzman2024, Wairagkar2018, Wang2026, Weibo2014, Wu2020, Yang2025, Yi2025, Zhang2017, Zhou2020, Zuo2025]
@@ -734,7 +738,7 @@ at the tutorial Exploring Paradigms</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a> <span class="o">=</span> <span class="mi">8</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a> <span class="o">=</span> <span class="mi">35</span>
 <span class="c1"># You can inject custom scoring directly into the paradigm (single or multi-metric).</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">custom_scorer</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score" title="sklearn.metrics.accuracy_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">accuracy_score</span></a><span class="p">,</span> <span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score" title="sklearn.metrics.roc_auc_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">roc_auc_score</span></a><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;needs_threshold&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">custom_scorer</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score" title="sklearn.metrics.accuracy_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">accuracy_score</span></a><span class="p">,</span> <span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score" title="sklearn.metrics.roc_auc_score" class="sphx-glr-backref-module-sklearn-metrics sphx-glr-backref-type-py-function"><span class="n">roc_auc_score</span></a><span class="p">,</span> <span class="p">{</span><span class="s2">"needs_threshold"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})]</span>
 <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmin</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fmax</span></a><span class="p">,</span> <span class="n">scorer</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">custom_scorer</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -745,169 +749,21 @@ at the tutorial Exploring Paradigms</p>
 be cross-validated within a single recording, or across days, or sessions, or
 subjects. This also is the correct place to specify multiple threads.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a><span class="p">(</span>
-    <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;examples&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+    <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">"examples"</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/42.8M [00:00&lt;12:23, 57.5kB/s]
-  0%|                                      | 32.8k/42.8M [00:00&lt;05:42, 125kB/s]
-  0%|                                      | 88.1k/42.8M [00:00&lt;02:55, 244kB/s]
-  0%|▏                                      | 168k/42.8M [00:00&lt;01:56, 366kB/s]
-  1%|▎                                      | 281k/42.8M [00:00&lt;01:22, 516kB/s]
-  1%|▎                                      | 400k/42.8M [00:00&lt;01:08, 623kB/s]
-  1%|▍                                      | 528k/42.8M [00:01&lt;00:59, 710kB/s]
-  2%|▌                                      | 665k/42.8M [00:01&lt;00:53, 785kB/s]
-  2%|▋                                      | 776k/42.8M [00:01&lt;00:53, 782kB/s]
-  2%|▊                                      | 904k/42.8M [00:01&lt;00:51, 814kB/s]
-  2%|▉                                     | 1.03M/42.8M [00:01&lt;00:49, 837kB/s]
-  3%|█                                     | 1.14M/42.8M [00:01&lt;00:50, 820kB/s]
-  3%|█▏                                    | 1.27M/42.8M [00:01&lt;00:49, 840kB/s]
-  3%|█▎                                    | 1.45M/42.8M [00:02&lt;00:43, 953kB/s]
-  4%|█▍                                    | 1.58M/42.8M [00:02&lt;00:43, 951kB/s]
-  4%|█▌                                   | 1.87M/42.8M [00:02&lt;00:32, 1.27MB/s]
-  5%|█▊                                   | 2.16M/42.8M [00:02&lt;00:27, 1.49MB/s]
-  6%|██▏                                  | 2.51M/42.8M [00:02&lt;00:22, 1.77MB/s]
-  7%|██▌                                  | 2.91M/42.8M [00:02&lt;00:19, 2.07MB/s]
-  8%|██▊                                  | 3.31M/42.8M [00:02&lt;00:17, 2.28MB/s]
-  9%|███▎                                 | 3.87M/42.8M [00:03&lt;00:14, 2.77MB/s]
- 10%|███▊                                 | 4.45M/42.8M [00:03&lt;00:12, 3.13MB/s]
- 12%|████▌                                | 5.21M/42.8M [00:03&lt;00:09, 3.78MB/s]
- 14%|█████▎                               | 6.15M/42.8M [00:03&lt;00:07, 4.61MB/s]
- 17%|██████▎                              | 7.29M/42.8M [00:03&lt;00:06, 5.59MB/s]
- 21%|███████▊                             | 9.02M/42.8M [00:03&lt;00:04, 7.51MB/s]
- 25%|█████████▍                           | 10.9M/42.8M [00:03&lt;00:03, 9.12MB/s]
- 33%|████████████                         | 13.9M/42.8M [00:04&lt;00:02, 12.7MB/s]
- 40%|██████████████▋                      | 16.9M/42.8M [00:04&lt;00:01, 15.2MB/s]
- 50%|██████████████████▍                  | 21.3M/42.8M [00:04&lt;00:01, 19.8MB/s]
- 61%|██████████████████████▋              | 26.2M/42.8M [00:04&lt;00:00, 23.8MB/s]
- 75%|███████████████████████████▉         | 32.3M/42.8M [00:04&lt;00:00, 29.0MB/s]
- 91%|█████████████████████████████████▌   | 38.8M/42.8M [00:04&lt;00:00, 33.4MB/s]
-  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 234GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/43.8M [00:00&lt;12:50, 56.8kB/s]
-  0%|                                      | 39.9k/43.8M [00:00&lt;04:46, 153kB/s]
-  0%|                                      | 88.1k/43.8M [00:00&lt;03:06, 235kB/s]
-  0%|▏                                      | 144k/43.8M [00:00&lt;02:27, 296kB/s]
-  0%|▏                                      | 201k/43.8M [00:00&lt;02:12, 329kB/s]
-  1%|▏                                      | 281k/43.8M [00:00&lt;01:47, 405kB/s]
-  1%|▎                                      | 352k/43.8M [00:01&lt;01:40, 434kB/s]
-  1%|▍                                      | 432k/43.8M [00:01&lt;01:31, 471kB/s]
-  1%|▍                                      | 528k/43.8M [00:01&lt;01:21, 532kB/s]
-  1%|▌                                      | 608k/43.8M [00:01&lt;01:20, 538kB/s]
-  2%|▋                                      | 705k/43.8M [00:01&lt;01:14, 576kB/s]
-  2%|▋                                      | 784k/43.8M [00:01&lt;01:15, 569kB/s]
-  2%|▊                                      | 889k/43.8M [00:01&lt;01:09, 615kB/s]
-  2%|▉                                      | 984k/43.8M [00:02&lt;01:08, 628kB/s]
-  3%|▉                                     | 1.11M/43.8M [00:02&lt;01:00, 705kB/s]
-  3%|█                                     | 1.22M/43.8M [00:02&lt;00:59, 710kB/s]
-  3%|█▏                                    | 1.39M/43.8M [00:02&lt;00:49, 862kB/s]
-  3%|█▎                                    | 1.51M/43.8M [00:02&lt;00:49, 851kB/s]
-  4%|█▌                                   | 1.79M/43.8M [00:02&lt;00:35, 1.17MB/s]
-  5%|█▋                                   | 1.98M/43.8M [00:02&lt;00:34, 1.20MB/s]
-  5%|██                                   | 2.39M/43.8M [00:03&lt;00:24, 1.70MB/s]
-  7%|██▍                                  | 2.86M/43.8M [00:03&lt;00:18, 2.17MB/s]
-  8%|██▉                                  | 3.47M/43.8M [00:03&lt;00:14, 2.78MB/s]
- 10%|███▌                                 | 4.23M/43.8M [00:03&lt;00:11, 3.52MB/s]
- 11%|████▎                                | 5.03M/43.8M [00:03&lt;00:09, 4.12MB/s]
- 14%|█████▏                               | 6.21M/43.8M [00:03&lt;00:07, 5.32MB/s]
- 17%|██████▏                              | 7.25M/43.8M [00:03&lt;00:06, 5.88MB/s]
- 21%|███████▋                             | 9.09M/43.8M [00:04&lt;00:04, 7.92MB/s]
- 24%|████████▊                            | 10.4M/43.8M [00:04&lt;00:04, 8.16MB/s]
- 31%|███████████▍                         | 13.5M/43.8M [00:04&lt;00:02, 12.2MB/s]
- 35%|████████████▉                        | 15.2M/43.8M [00:04&lt;00:02, 12.2MB/s]
- 46%|████████████████▉                    | 20.0M/43.8M [00:04&lt;00:01, 18.3MB/s]
- 53%|███████████████████▊                 | 23.4M/43.8M [00:04&lt;00:01, 19.8MB/s]
- 68%|█████████████████████████▎           | 29.9M/43.8M [00:04&lt;00:00, 27.1MB/s]
- 82%|██████████████████████████████▎      | 35.9M/43.8M [00:05&lt;00:00, 31.3MB/s]
- 97%|███████████████████████████████████▊ | 42.4M/43.8M [00:05&lt;00:00, 34.7MB/s]
-  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 315GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/43.1M [00:00&lt;12:34, 57.1kB/s]
-  0%|                                      | 39.9k/43.1M [00:00&lt;04:39, 154kB/s]
-  0%|                                       | 104k/43.1M [00:00&lt;02:28, 288kB/s]
-  0%|▏                                      | 168k/43.1M [00:00&lt;02:03, 348kB/s]
-  1%|▏                                      | 264k/43.1M [00:00&lt;01:32, 464kB/s]
-  1%|▎                                      | 369k/43.1M [00:00&lt;01:17, 553kB/s]
-  1%|▍                                      | 497k/43.1M [00:01&lt;01:04, 662kB/s]
-  2%|▌                                      | 656k/43.1M [00:01&lt;00:52, 804kB/s]
-  2%|▊                                      | 833k/43.1M [00:01&lt;00:45, 935kB/s]
-  3%|▉                                    | 1.10M/43.1M [00:01&lt;00:34, 1.21MB/s]
-  3%|█▏                                   | 1.35M/43.1M [00:01&lt;00:30, 1.38MB/s]
-  4%|█▍                                   | 1.70M/43.1M [00:01&lt;00:24, 1.69MB/s]
-  5%|█▊                                   | 2.12M/43.1M [00:01&lt;00:19, 2.07MB/s]
-  6%|██▎                                  | 2.67M/43.1M [00:02&lt;00:15, 2.60MB/s]
-  8%|██▉                                  | 3.41M/43.1M [00:02&lt;00:11, 3.35MB/s]
- 10%|███▊                                 | 4.39M/43.1M [00:02&lt;00:08, 4.40MB/s]
- 13%|████▊                                | 5.61M/43.1M [00:02&lt;00:06, 5.61MB/s]
- 17%|██████▏                              | 7.24M/43.1M [00:02&lt;00:04, 7.33MB/s]
- 21%|███████▊                             | 9.05M/43.1M [00:02&lt;00:03, 8.89MB/s]
- 26%|█████████▊                           | 11.4M/43.1M [00:02&lt;00:02, 11.1MB/s]
- 33%|████████████▏                        | 14.2M/43.1M [00:03&lt;00:02, 13.7MB/s]
- 42%|███████████████▍                     | 17.9M/43.1M [00:03&lt;00:01, 17.3MB/s]
- 53%|███████████████████▍                 | 22.7M/43.1M [00:03&lt;00:00, 22.0MB/s]
- 64%|███████████████████████▌             | 27.5M/43.1M [00:03&lt;00:00, 25.2MB/s]
- 77%|████████████████████████████▍        | 33.0M/43.1M [00:03&lt;00:00, 29.0MB/s]
- 92%|█████████████████████████████████▉   | 39.5M/43.1M [00:03&lt;00:00, 33.4MB/s]
-  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 289GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/44.2M [00:00&lt;12:54, 57.1kB/s]
-  0%|                                      | 39.9k/44.2M [00:00&lt;04:49, 153kB/s]
-  0%|                                      | 96.3k/44.2M [00:00&lt;02:49, 261kB/s]
-  0%|                                       | 128k/44.2M [00:00&lt;03:00, 244kB/s]
-  0%|▏                                      | 216k/44.2M [00:00&lt;01:57, 375kB/s]
-  1%|▎                                      | 304k/44.2M [00:00&lt;01:36, 454kB/s]
-  1%|▎                                      | 417k/44.2M [00:01&lt;01:18, 560kB/s]
-  1%|▍                                      | 520k/44.2M [00:01&lt;01:11, 609kB/s]
-  1%|▌                                      | 616k/44.2M [00:01&lt;01:09, 626kB/s]
-  2%|▋                                      | 744k/44.2M [00:01&lt;01:01, 705kB/s]
-  2%|▋                                      | 833k/44.2M [00:01&lt;01:04, 676kB/s]
-  2%|▊                                     | 1.00M/44.2M [00:01&lt;00:52, 822kB/s]
-  3%|▉                                     | 1.11M/44.2M [00:01&lt;00:53, 807kB/s]
-  3%|█▏                                   | 1.36M/44.2M [00:02&lt;00:39, 1.08MB/s]
-  3%|█▎                                   | 1.52M/44.2M [00:02&lt;00:39, 1.09MB/s]
-  4%|█▌                                   | 1.89M/44.2M [00:02&lt;00:27, 1.52MB/s]
-  5%|█▊                                   | 2.10M/44.2M [00:02&lt;00:28, 1.50MB/s]
-  6%|██▎                                  | 2.73M/44.2M [00:02&lt;00:17, 2.36MB/s]
-  8%|██▊                                  | 3.34M/44.2M [00:02&lt;00:13, 2.93MB/s]
- 10%|███▌                                 | 4.33M/44.2M [00:02&lt;00:09, 4.09MB/s]
- 12%|████▍                                | 5.23M/44.2M [00:03&lt;00:08, 4.73MB/s]
- 16%|█████▊                               | 6.89M/44.2M [00:03&lt;00:05, 6.74MB/s]
- 18%|██████▋                              | 8.02M/44.2M [00:03&lt;00:05, 7.06MB/s]
- 25%|█████████▎                           | 11.1M/44.2M [00:03&lt;00:02, 11.3MB/s]
- 32%|███████████▉                         | 14.2M/44.2M [00:03&lt;00:02, 14.4MB/s]
- 46%|████████████████▊                    | 20.2M/44.2M [00:03&lt;00:01, 22.4MB/s]
- 58%|█████████████████████▌               | 25.8M/44.2M [00:03&lt;00:00, 27.4MB/s]
- 69%|█████████████████████████▍           | 30.4M/44.2M [00:04&lt;00:00, 28.7MB/s]
- 84%|██████████████████████████████▉      | 36.9M/44.2M [00:04&lt;00:00, 33.1MB/s]
- 98%|████████████████████████████████████▎| 43.4M/44.2M [00:04&lt;00:00, 36.2MB/s]
-  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 335GB/s]
-2026-08-14 12:13:23,175 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
-2026-08-14 12:13:23,175 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
-2026-08-14 12:13:23,175 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-08-14 12:13:23,175 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-08-14 12:13:23,175 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
-2026-08-14 12:13:23,176 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
-2026-08-14 12:13:23,176 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
-2026-08-14 12:13:23,176 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype=&#39;f4&#39; will keep the current default behaviour.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 14:19:18] Multiple instances of codecarbon are allowed to run at the same time.
+2026-08-18 14:19:21,525 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
+2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
+2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
+2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
+2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
+2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
   dset.create_dataset(
 </pre></div>
 </div>
@@ -918,17 +774,16 @@ provided, MOABB adds a primary <cite>score</cite> plus one column per metric
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
-0  0.729167  0.011780  ...    AM+LDA  4252b333-02dc-4567-8e2a-f9d747fa4b2c
-1  0.715278  0.011085  ...    AM+LDA  1eaef25a-0399-48a2-8a40-797f067c19f6
-2  0.597222  0.010831  ...    AM+LDA  b72995be-33b9-4d29-95ca-ee957ce246f1
-3  0.520833  0.010657  ...    AM+LDA  2ddc4020-ca53-4578-81ad-a878a1bd7ce4
-4  0.743056  0.118244  ...    AM+SVM  59a3fd9f-c57a-4498-ae37-2015168fbaf8
+0  0.729167  0.019233  ...    AM+LDA  9cbb9516-cbd3-4e15-8742-e9acab9e65bb
+1  0.715278  0.018593  ...    AM+LDA  983697d8-8904-4b46-b355-eca8d61a3c12
+2  0.597222  0.017463  ...    AM+LDA  54dc6745-764a-410e-b185-12614fb16199
+3  0.520833  0.018966  ...    AM+LDA  35baf775-b86e-4023-9eaa-07494c1a6a68
+4  0.743056  0.121790  ...    AM+SVM  d7a24224-d078-48be-9a6c-0cb60b7fdede
 
 [5 rows x 15 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.328 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1053 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.511 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-0-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc78b19f551dfa48627d09f644ea18ad/tutorial_0_plot_getting_started.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_0_plot_getting_started.ipynb</span></code></a></p>

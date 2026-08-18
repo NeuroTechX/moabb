@@ -712,7 +712,7 @@ paradigm except that it will save un-processed raw recordings.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a>
 
 
-<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">"info"</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="basic-usage">
@@ -720,14 +720,14 @@ paradigm except that it will save un-processed raw recordings.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">cache_config</span></code> parameter is a dictionary that has the
 following default values:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">default_cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;save_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s2">"save_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"use"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"path"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -753,11 +753,11 @@ example, but this works for any dataset and paradigm pair.:</p>
 <p>Then, saving a cache can simply be done by setting the desired parameters
 in the <code class="docutils literal notranslate"><span class="pre">cache_config</span></code> dictionary:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;save_raw&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;save_epochs&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;save_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
+    <span class="s2">"use"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"save_raw"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"save_epochs"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"save_array"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"path"</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
 <span class="p">}</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="p">)</span>
 </pre></div>
@@ -772,14 +772,14 @@ takes to load the data and compute the missing steps with an increasing
 number of missing steps.</p>
 <p>Using array cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
-    <span class="s2">&quot;save_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"use"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"path"</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
+    <span class="s2">"save_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">}</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="p">)</span>
@@ -788,14 +788,14 @@ number of missing steps.</p>
 </div>
 <p>Using epochs cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
-    <span class="s2">&quot;save_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"use"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"path"</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
+    <span class="s2">"save_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_array"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">}</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="p">)</span>
@@ -804,14 +804,14 @@ number of missing steps.</p>
 </div>
 <p>Using raw cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
-    <span class="s2">&quot;save_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_epochs&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_array&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"use"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"path"</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
+    <span class="s2">"save_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_epochs"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"overwrite_array"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">}</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="p">)</span>
@@ -820,14 +820,14 @@ number of missing steps.</p>
 </div>
 <p>Using no cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
-    <span class="s2">&quot;save_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;save_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_epochs&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;overwrite_array&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"use"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"path"</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span>
+    <span class="s2">"save_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"save_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_raw"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_epochs"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"overwrite_array"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">}</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t0</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cache_config</span></a><span class="p">)</span>
@@ -835,16 +835,16 @@ number of missing steps.</p>
 </pre></div>
 </div>
 <p>Time needed to load the data with different levels of cache:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using array cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_array</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using epochs cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_epochs</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using raw cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_raw</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Without cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_nocache</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Using array cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_array</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Using epochs cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_epochs</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Using raw cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_raw</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Without cache: </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t_nocache</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using array cache: 0.06 seconds
-Using epochs cache: 0.17 seconds
-Using raw cache: 0.36 seconds
-Without cache: 0.80 seconds
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using array cache: 0.03 seconds
+Using epochs cache: 0.08 seconds
+Using raw cache: 0.27 seconds
+Without cache: 0.76 seconds
 </pre></div>
 </div>
 <p>As you can see, using a raw cache is more than 5 times faster than
@@ -898,8 +898,7 @@ to decode the description key.</p></li>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.535 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  765 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.549 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-plot-disk-cache-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b843884d191ec86afaa081573b87c5dc/plot_disk_cache.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_disk_cache.ipynb</span></code></a></p>

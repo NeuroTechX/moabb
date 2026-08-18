@@ -659,7 +659,7 @@ Start classification ...
 
 Results:
     score      time  samples                dataset  pipeline
-0   0.58  0.046921    100.0  DummyRawEpochsDataset  XD+TS+LR
+0   0.56  0.064461    100.0  DummyRawEpochsDataset  XD+TS+LR
 </pre></div>
 </div>
 <div class="line-block">
@@ -681,12 +681,12 @@ Results:
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">RawEpochParadigm</span><span class="p">(</span><a href="../../generated/moabb.paradigms.base.BaseParadigm.html#moabb.paradigms.base.BaseParadigm" title="moabb.paradigms.base.BaseParadigm" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-class"><span class="n">BaseParadigm</span></a><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A minimal paradigm that directly uses dataset.get_epoch_data()</span>
 <span class="sd">    with no filtering, epoching, or signal processing.</span>
 
 <span class="sd">    Useful when your data is in the format X, y.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># filters=None indicates no filtering is done</span>
@@ -711,11 +711,11 @@ Results:
             <span class="c1"># Build metadata for each trial, filling defaults for session and run</span>
             <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">meta</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">,</span>
-                    <span class="s2">&quot;session&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">,</span>  <span class="c1"># Default to 1 if sessions unknown</span>
-                    <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">,</span>  <span class="c1"># Default to 1 if runs unknown</span>
-                    <span class="s2">&quot;trial&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">)),</span>
-                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+                    <span class="s2">"subject"</span><span class="p">:</span> <span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">,</span>
+                    <span class="s2">"session"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">,</span>  <span class="c1"># Default to 1 if sessions unknown</span>
+                    <span class="s2">"run"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">,</span>  <span class="c1"># Default to 1 if runs unknown</span>
+                    <span class="s2">"trial"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">)),</span>
+                    <span class="s2">"label"</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
 
@@ -728,7 +728,7 @@ Results:
         <span class="k">return</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">meta</span></a>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;get_epoch_data&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">"get_epoch_data"</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">scoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -748,9 +748,9 @@ Results:
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DummyRawEpochsDataset</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">BaseDataset</span></a><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Minimal custom dataset compatible with RawEpochParadigm.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">subjects</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -758,10 +758,10 @@ Results:
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">subjects</span><span class="o">=</span><span class="n">subjects</span><span class="p">,</span>
             <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>  <span class="c1"># required dummy event map</span>
-            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;DummyRawEpochsDataset&quot;</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">"left"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>  <span class="c1"># required dummy event map</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">"DummyRawEpochsDataset"</span><span class="p">,</span>
             <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;RawEpochParadigm&quot;</span><span class="p">,</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="s2">"RawEpochParadigm"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">=</span> <span class="mi">8</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_times</span> <span class="o">=</span> <span class="mi">128</span>
@@ -774,13 +774,13 @@ Results:
         <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Not needed since we generate synthetic data</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not used with RawEpochParadigm&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Not used with RawEpochParadigm"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_epoch_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Simulates epochs: shape (trials, channels, time), and labels</span>
 <span class="sd">        Trials is the number of epochs to generate.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">rng</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">subject</span><span class="p">)</span>
         <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_times</span><span class="p">))</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span><span class="p">)</span>
@@ -793,28 +793,27 @@ Results:
 
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">meta</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Epochs count before classification&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Epochs count before classification"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">))</span>
 
 <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span>
-    <span class="n">paradigm</span><span class="o">=</span><span class="n">paradigm</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;motan&quot;</span>
+    <span class="n">paradigm</span><span class="o">=</span><span class="n">paradigm</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">"motan"</span>
 <span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;XD+TS+LR&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
-    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;oas&quot;</span><span class="p">,</span> <span class="n">xdawn_estimator</span><span class="o">=</span><span class="s2">&quot;scm&quot;</span><span class="p">),</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">"XD+TS+LR"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
+    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a><span class="p">(</span><span class="n">nfilter</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="s2">"oas"</span><span class="p">,</span> <span class="n">xdawn_estimator</span><span class="o">=</span><span class="s2">"scm"</span><span class="p">),</span>
     <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a><span class="p">(),</span>
     <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a><span class="p">(),</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start classification ...&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Start classification ..."</span><span class="p">)</span>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Results:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">[[</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;pipeline&quot;</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Results:</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">[[</span><span class="s2">"score"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">,</span> <span class="s2">"samples"</span><span class="p">,</span> <span class="s2">"dataset"</span><span class="p">,</span> <span class="s2">"pipeline"</span><span class="p">]])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.059 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  552 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.949 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-use-an-x-y-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e5de6f35345558b773e3c906606d7bc4/plot_use_an_X_y_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_use_an_X_y_dataset.ipynb</span></code></a></p>

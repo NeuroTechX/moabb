@@ -686,7 +686,7 @@ included the script that creates this dataset and have uploaded it online.
 The fake dataset is available on the
 <a class="reference external" href="https://zenodo.org/records/14973598">Zenodo website</a></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_example_dataset</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a fake example for a dataset.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create a fake example for a dataset."""</span>
     <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">256</span>
     <span class="n">t_recording</span> <span class="o">=</span> <span class="mi">150</span>
     <span class="n">t_trial</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># duration of a trial</span>
@@ -713,10 +713,10 @@ The fake dataset is available on the
 <span class="c1"># Create the fake data</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
     <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs</span></a> <span class="o">=</span> <span class="n">create_example_dataset</span><span class="p">()</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">filename</span></a> <span class="o">=</span> <span class="s2">&quot;subject_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.mat&quot;</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">filename</span></a> <span class="o">=</span> <span class="s2">"subject_"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".mat"</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mdict</span></a> <span class="o">=</span> <span class="p">{}</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mdict</span></a><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a>
-    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mdict</span></a><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs</span></a>
+    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mdict</span></a><span class="p">[</span><span class="s2">"x"</span><span class="p">]</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a>
+    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mdict</span></a><span class="p">[</span><span class="s2">"fs"</span><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs</span></a>
     <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.savemat.html#scipy.io.savemat" title="scipy.io.savemat" class="sphx-glr-backref-module-scipy-io sphx-glr-backref-type-py-function"><span class="n">savemat</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">filename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mdict</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -735,7 +735,7 @@ where to fetch the data.</p></li>
 </ul>
 <p>The global variable with the dataset’s URL should specify an online
 repository where all the files are stored.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ExampleDataset_URL</span></a> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/records/14973598&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ExampleDataset_URL</span></a> <span class="o">=</span> <span class="s2">"https://zenodo.org/records/14973598"</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">ExampleDataset</span></code> needs to implement only 3 functions:</p>
@@ -746,49 +746,49 @@ have been downloaded</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">data_path</span></code> to define how the data are downloaded.</p></li>
 </ul>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ExampleDataset</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">BaseDataset</span></a><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataset used to exemplify the creation of a dataset class in MOABB.</span>
+<span class="w">    </span><span class="sd">"""Dataset used to exemplify the creation of a dataset class in MOABB.</span>
 
 <span class="sd">    The data samples have been simulated and has no physiological</span>
 <span class="sd">    meaning whatsoever.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
             <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left_hand&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right_hand&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
-            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;ExampleDataset&quot;</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">"left_hand"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"right_hand"</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">"ExampleDataset"</span><span class="p">,</span>
             <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
-            <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
-            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">"imagery"</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return data for a single subject.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return data for a single subject."""</span>
         <span class="n">file_path_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span>
 
         <span class="n">data</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.loadmat.html#scipy.io.loadmat" title="scipy.io.loadmat" class="sphx-glr-backref-module-scipy-io sphx-glr-backref-type-py-function"><span class="n">loadmat</span></a><span class="p">(</span><span class="n">file_path_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
-        <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs</span></a> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span>
-        <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ch&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
-        <span class="n">ch_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+        <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"x"</span><span class="p">]</span>
+        <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs</span></a> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"fs"</span><span class="p">]</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ch"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"stim"</span><span class="p">]</span>
+        <span class="n">ch_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"eeg"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"stim"</span><span class="p">]</span>
         <span class="n">info</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.create_info.html#mne.create_info" title="mne.create_info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">create_info</span></a><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.squeeze.html#numpy.squeeze" title="numpy.squeeze" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs</span></a><span class="p">)),</span> <span class="n">ch_types</span><span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray" title="mne.io.RawArray" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
 
         <span class="n">sessions</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">sessions</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">sessions</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">][</span><span class="s2">&quot;0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+        <span class="n">sessions</span><span class="p">[</span><span class="s2">"0"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">sessions</span><span class="p">[</span><span class="s2">"0"</span><span class="p">][</span><span class="s2">"0"</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
         <span class="k">return</span> <span class="n">sessions</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">data_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the data from one subject.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Download the data from one subject."""</span>
         <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid subject number"</span><span class="p">))</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:s}</span><span class="s2">/files/subject_0</span><span class="si">{:d}</span><span class="s2">.mat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ExampleDataset_URL</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span>
-        <span class="n">path</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.download.data_dl.html#moabb.datasets.download.data_dl" title="moabb.datasets.download.data_dl" class="sphx-glr-backref-module-moabb-datasets-download sphx-glr-backref-type-py-function"><span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span></a><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;ExampleDataset&quot;</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{:s}</span><span class="s2">/files/subject_0</span><span class="si">{:d}</span><span class="s2">.mat"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ExampleDataset_URL</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.download.data_dl.html#moabb.datasets.download.data_dl" title="moabb.datasets.download.data_dl" class="sphx-glr-backref-module-moabb-datasets-download sphx-glr-backref-type-py-function"><span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span></a><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">"ExampleDataset"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>  <span class="c1"># it has to return a list</span>
 </pre></div>
 </div>
@@ -803,109 +803,16 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">meta</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
 <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span>
-    <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;newdataset&quot;</span>
+    <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">"newdataset"</span>
 <span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;MDM&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="s2">&quot;oas&quot;</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;riemann&quot;</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">"MDM"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a><span class="p">(</span><span class="s2">"oas"</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"riemann"</span><span class="p">))</span>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  0%|▏                                    | 11.3k/2.77M [00:00&lt;00:29, 92.9kB/s]
-  1%|▌                                     | 39.9k/2.77M [00:00&lt;00:18, 145kB/s]
-  4%|█▎                                    | 98.3k/2.77M [00:00&lt;00:09, 294kB/s]
-  5%|█▊                                     | 131k/2.77M [00:00&lt;00:09, 283kB/s]
-  7%|██▊                                    | 203k/2.77M [00:00&lt;00:06, 377kB/s]
- 10%|████                                   | 285k/2.77M [00:00&lt;00:05, 459kB/s]
- 13%|█████                                  | 360k/2.77M [00:00&lt;00:04, 494kB/s]
- 17%|██████▍                                | 459k/2.77M [00:01&lt;00:04, 572kB/s]
- 20%|███████▌                               | 540k/2.77M [00:01&lt;00:03, 582kB/s]
- 22%|████████▊                              | 622k/2.77M [00:01&lt;00:03, 591kB/s]
- 26%|██████████▏                            | 720k/2.77M [00:01&lt;00:03, 631kB/s]
- 30%|███████████▊                           | 835k/2.77M [00:01&lt;00:02, 697kB/s]
- 34%|█████████████▍                         | 949k/2.77M [00:01&lt;00:02, 741kB/s]
- 37%|██████████████▏                       | 1.03M/2.77M [00:01&lt;00:02, 696kB/s]
- 40%|███████████████▎                      | 1.11M/2.77M [00:02&lt;00:02, 667kB/s]
- 45%|█████████████████                     | 1.24M/2.77M [00:02&lt;00:02, 756kB/s]
- 49%|██████████████████▋                   | 1.36M/2.77M [00:02&lt;00:01, 782kB/s]
- 53%|████████████████████▏                 | 1.47M/2.77M [00:02&lt;00:01, 801kB/s]
- 57%|█████████████████████▌                | 1.57M/2.77M [00:02&lt;00:01, 771kB/s]
- 60%|██████████████████████▋               | 1.65M/2.77M [00:02&lt;00:01, 720kB/s]
- 63%|███████████████████████▊              | 1.73M/2.77M [00:02&lt;00:01, 685kB/s]
- 68%|█████████████████████████▊            | 1.88M/2.77M [00:02&lt;00:01, 804kB/s]
- 73%|███████████████████████████▋          | 2.01M/2.77M [00:03&lt;00:00, 850kB/s]
- 76%|████████████████████████████▊         | 2.10M/2.77M [00:03&lt;00:00, 784kB/s]
- 79%|██████████████████████████████        | 2.19M/2.77M [00:03&lt;00:00, 754kB/s]
- 84%|███████████████████████████████▉      | 2.32M/2.77M [00:03&lt;00:00, 816kB/s]
- 88%|█████████████████████████████████▎    | 2.42M/2.77M [00:03&lt;00:00, 788kB/s]
- 93%|███████████████████████████████████▎  | 2.57M/2.77M [00:03&lt;00:00, 875kB/s]
- 97%|████████████████████████████████████▊ | 2.68M/2.77M [00:03&lt;00:00, 863kB/s]
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 21.8GB/s]
-
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  0%|▏                                    | 12.3k/2.77M [00:00&lt;00:30, 90.2kB/s]
-  1%|▌                                     | 36.9k/2.77M [00:00&lt;00:19, 143kB/s]
-  4%|█▋                                     | 117k/2.77M [00:00&lt;00:07, 346kB/s]
-  7%|██▊                                    | 198k/2.77M [00:00&lt;00:07, 349kB/s]
- 10%|████                                   | 284k/2.77M [00:00&lt;00:05, 435kB/s]
- 13%|█████▏                                 | 371k/2.77M [00:00&lt;00:04, 498kB/s]
- 16%|██████                                 | 432k/2.77M [00:01&lt;00:04, 484kB/s]
- 18%|███████                                | 498k/2.77M [00:01&lt;00:04, 483kB/s]
- 25%|█████████▊                             | 693k/2.77M [00:01&lt;00:02, 769kB/s]
- 29%|███████████▏                           | 792k/2.77M [00:01&lt;00:02, 755kB/s]
- 32%|████████████▌                          | 890k/2.77M [00:01&lt;00:02, 743kB/s]
- 42%|███████████████▌                     | 1.17M/2.77M [00:01&lt;00:01, 1.13MB/s]
- 46%|█████████████████▏                   | 1.28M/2.77M [00:01&lt;00:01, 1.04MB/s]
- 51%|███████████████████▏                  | 1.40M/2.77M [00:02&lt;00:01, 983kB/s]
- 56%|████████████████████▉                | 1.56M/2.77M [00:02&lt;00:01, 1.05MB/s]
- 60%|██████████████████████▉               | 1.67M/2.77M [00:02&lt;00:01, 965kB/s]
- 65%|████████████████████████▌             | 1.79M/2.77M [00:02&lt;00:01, 946kB/s]
- 69%|██████████████████████████▍           | 1.92M/2.77M [00:02&lt;00:00, 951kB/s]
- 75%|███████████████████████████▉         | 2.08M/2.77M [00:02&lt;00:00, 1.03MB/s]
- 81%|██████████████████████████████       | 2.25M/2.77M [00:02&lt;00:00, 1.08MB/s]
- 85%|███████████████████████████████▌     | 2.36M/2.77M [00:02&lt;00:00, 1.01MB/s]
- 97%|███████████████████████████████████▊ | 2.67M/2.77M [00:03&lt;00:00, 1.39MB/s]
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 21.8GB/s]
-
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/2.77M [00:00&lt;00:38, 71.0kB/s]
-  1%|▌                                     | 39.9k/2.77M [00:00&lt;00:15, 173kB/s]
-  3%|█▎                                    | 94.2k/2.77M [00:00&lt;00:09, 280kB/s]
-  5%|█▉                                     | 137k/2.77M [00:00&lt;00:08, 295kB/s]
-  7%|██▉                                    | 205k/2.77M [00:00&lt;00:06, 369kB/s]
- 10%|████                                   | 289k/2.77M [00:00&lt;00:05, 433kB/s]
- 13%|█████▏                                 | 371k/2.77M [00:00&lt;00:04, 487kB/s]
- 16%|██████▍                                | 453k/2.77M [00:01&lt;00:04, 523kB/s]
- 19%|███████▌                               | 535k/2.77M [00:01&lt;00:04, 547kB/s]
- 23%|█████████▏                             | 649k/2.77M [00:01&lt;00:03, 638kB/s]
- 27%|██████████▌                            | 748k/2.77M [00:01&lt;00:03, 662kB/s]
- 30%|███████████▋                           | 829k/2.77M [00:01&lt;00:03, 644kB/s]
- 35%|█████████████▌                         | 959k/2.77M [00:01&lt;00:02, 737kB/s]
- 38%|██████████████▌                       | 1.06M/2.77M [00:01&lt;00:02, 730kB/s]
- 41%|███████████████▋                      | 1.14M/2.77M [00:02&lt;00:02, 689kB/s]
- 45%|████████████████▉                     | 1.24M/2.77M [00:02&lt;00:02, 699kB/s]
- 48%|██████████████████                    | 1.32M/2.77M [00:02&lt;00:02, 670kB/s]
- 52%|███████████████████▋                  | 1.43M/2.77M [00:02&lt;00:01, 718kB/s]
- 55%|████████████████████▊                 | 1.51M/2.77M [00:02&lt;00:01, 683kB/s]
- 58%|██████████████████████▏               | 1.61M/2.77M [00:02&lt;00:01, 694kB/s]
- 61%|███████████████████████▎              | 1.69M/2.77M [00:02&lt;00:01, 665kB/s]
- 65%|████████████████████████▋             | 1.79M/2.77M [00:02&lt;00:01, 682kB/s]
- 68%|█████████████████████████▊            | 1.87M/2.77M [00:03&lt;00:01, 657kB/s]
- 73%|███████████████████████████▊          | 2.02M/2.77M [00:03&lt;00:00, 782kB/s]
- 77%|█████████████████████████████         | 2.12M/2.77M [00:03&lt;00:00, 764kB/s]
- 81%|██████████████████████████████▉       | 2.25M/2.77M [00:03&lt;00:00, 823kB/s]
- 84%|████████████████████████████████      | 2.33M/2.77M [00:03&lt;00:00, 759kB/s]
- 90%|██████████████████████████████████    | 2.48M/2.77M [00:03&lt;00:00, 851kB/s]
- 93%|███████████████████████████████████▏  | 2.56M/2.77M [00:03&lt;00:00, 785kB/s]
- 96%|████████████████████████████████████▌ | 2.66M/2.77M [00:04&lt;00:00, 757kB/s]
- 99%|█████████████████████████████████████▋| 2.74M/2.77M [00:04&lt;00:00, 710kB/s]
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 26.1GB/s]
-   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
 0    1.0  0.014115     40.0  ...  ExampleDataset       MDM
 1    1.0  0.013855     40.0  ...  ExampleDataset       MDM
 2    1.0  0.013700     40.0  ...  ExampleDataset       MDM
@@ -942,31 +849,31 @@ and returns the local path to the <strong>root</strong> of the BIDS dataset.</p>
 <code class="docutils literal notranslate"><span class="pre">_download_subject</span></code> raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>. Replace it with your
 own download logic before instantiating the class.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ExampleBIDSDataset</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">BaseBIDSDataset</span></a><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Skeleton showing how to wrap an online BIDS dataset.</span>
+<span class="w">    </span><span class="sd">"""Skeleton showing how to wrap an online BIDS dataset.</span>
 
 <span class="sd">    Replace ``_download_subject`` with the actual download logic for your</span>
 <span class="sd">    dataset (e.g. fetching a zip archive from Zenodo and extracting it).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
             <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left_hand&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right_hand&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
-            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;ExampleBIDSDataset&quot;</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">"left_hand"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"right_hand"</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">"ExampleBIDSDataset"</span><span class="p">,</span>
             <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
-            <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
-            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">"imagery"</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_download_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the BIDS dataset for *subject* and return the BIDS root.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Download the BIDS dataset for *subject* and return the BIDS root."""</span>
         <span class="c1"># Example (not executed here — replace with your actual download URL):</span>
         <span class="c1">#</span>
-        <span class="c1">#   url = f&quot;https://zenodo.org/records/XXXXX/files/bids_dataset.zip&quot;</span>
-        <span class="c1">#   bids_root = dl.data_dl(url, &quot;ExampleBIDSDataset&quot;)</span>
+        <span class="c1">#   url = f"https://zenodo.org/records/XXXXX/files/bids_dataset.zip"</span>
+        <span class="c1">#   bids_root = dl.data_dl(url, "ExampleBIDSDataset")</span>
         <span class="c1">#   return bids_root</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Replace this with your actual download logic.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Replace this with your actual download logic."</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="using-localbidsdataset-for-local-private-bids-datasets">
@@ -978,10 +885,10 @@ It auto-discovers subjects and sessions from the BIDS directory structure:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalBIDSDataset</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">LocalBIDSDataset</span><span class="p">(</span>
-    <span class="n">bids_root</span><span class="o">=</span><span class="s2">&quot;/path/to/bids/dataset&quot;</span><span class="p">,</span>
-    <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left_hand&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right_hand&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">bids_root</span><span class="o">=</span><span class="s2">"/path/to/bids/dataset"</span><span class="p">,</span>
+    <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">"left_hand"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"right_hand"</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
     <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
-    <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
+    <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">"imagery"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a><span class="p">()</span>
@@ -1018,9 +925,9 @@ nemar<span class="w"> </span>dataset<span class="w"> </span>publish<span class="
 <p>Once the deposit is public, NEMAR assigns it an id (e.g. <code class="docutils literal notranslate"><span class="pre">nm000123</span></code>). Add it to your
 dataset class so MOABB downloads from NEMAR by default:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyDataset</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">BaseBIDSDataset</span></a><span class="p">):</span>
-    <span class="n">nemar_id</span> <span class="o">=</span> <span class="s2">&quot;nm000123&quot;</span>
+    <span class="n">nemar_id</span> <span class="o">=</span> <span class="s2">"nm000123"</span>
     <span class="c1"># Only if NEMAR subject labels are zero-padded (sub-001, sub-002, ...)</span>
-    <span class="n">nemar_subject_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{subject:03d}</span><span class="s2">&quot;</span>
+    <span class="n">nemar_subject_template</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{subject:03d}</span><span class="s2">"</span>
     <span class="o">...</span>
 </pre></div>
 </div>
@@ -1032,8 +939,7 @@ dataset’s own <code class="docutils literal notranslate"><span class="pre">dat
 <li><p>If a NEMAR download fails at runtime, MOABB emits a warning and
 automatically falls back to <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.550 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  552 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.781 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>

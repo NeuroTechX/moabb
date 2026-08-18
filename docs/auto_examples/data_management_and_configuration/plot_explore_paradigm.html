@@ -684,7 +684,7 @@ coefficients for continuous paradigms.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>N-class motor imagery.
 
-    By default, metric is &#39;roc-auc&#39; if 2 classes and &#39;accuracy&#39; if more
+    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
     ----------
@@ -739,7 +739,7 @@ postprocess_pipeline: :class:`sklearn.pipeline.Pipeline` | None
     or :class:`numpy.ndarray` as input, depending on the values of ``return_epochs``
     and ``return_raws``.
     This pipeline must return a :class:`numpy.ndarray`.
-    This pipeline must be &quot;fixed&quot; because it will not be trained,
+    This pipeline must be "fixed" because it will not be trained,
     i.e. no call to ``fit`` will be made.
 process_pipelines: :class:`sklearn.pipeline.Pipeline` | None
     Optional pipeline to apply to the data after the preprocessing.
@@ -747,10 +747,10 @@ process_pipelines: :class:`sklearn.pipeline.Pipeline` | None
     accordingly, i.e., if your custom pipeline returns raw objects,
     you must also set ``return_raws=True``, otherwise you will get unexpected results.
     Only use it if you know what you are doing.
-additional_metadata: Literal[&quot;all&quot;] | list[str] | None
+additional_metadata: Literal["all"] | list[str] | None
     Additional metadata to be loaded from the dataset.
     If None, the default metadata will be loaded containing
-    `subject`, `session` and `run`. If &quot;all&quot;, all columns of the `events.tsv`
+    `subject`, `session` and `run`. If "all", all columns of the `events.tsv`
     file will be loaded. A list of column names can be passed to just
     select these columns in addition to the three default values mentioned
     before. This parameter works regardless of the return type
@@ -799,7 +799,7 @@ dataset, we have the 4 types of motor imagery that was performed.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.unique.html#numpy.unique" title="numpy.unique" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">unique</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;feet&#39; &#39;left_hand&#39; &#39;right_hand&#39; &#39;tongue&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>['feet' 'left_hand' 'right_hand' 'tongue']
 </pre></div>
 </div>
 <p>Metadata have at least 3 columns: subject, session and run.</p>
@@ -823,7 +823,7 @@ may or may not contain multiple runs.</p></li>
 </div>
 <p>For this data, we have one subject, 2 sessions (2 different recording days)
 and 6 runs per session.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.describe.html#pandas.DataFrame.describe" title="pandas.DataFrame.describe" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">metadata</span><span class="o">.</span><span class="n">describe</span></a><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">))</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.describe.html#pandas.DataFrame.describe" title="pandas.DataFrame.describe" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">metadata</span><span class="o">.</span><span class="n">describe</span></a><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">"all"</span><span class="p">))</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>        subject session  run
@@ -846,7 +846,7 @@ it will return the list all the imagery datasets from the MOABB.</p>
 <span class="nb">print</span><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">code</span></a> <span class="k">for</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">compatible_datasets</span></a><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;AguileraRodriguez2025&#39;, &#39;AlexandreMotorImagery&#39;, &#39;BCIComp2020UpperLimb&#39;, &#39;BNCI2003-004&#39;, &#39;BNCI2014-001&#39;, &#39;BNCI2014-002&#39;, &#39;BNCI2014-004&#39;, &#39;BNCI2015-001&#39;, &#39;BNCI2015-004&#39;, &#39;BNCI2019-001&#39;, &#39;BNCI2020-001&#39;, &#39;BNCI2022-001&#39;, &#39;BNCI2024-001&#39;, &#39;BNCI2025-001&#39;, &#39;BNCI2025-002&#39;, &#39;Beetl2021-A&#39;, &#39;Beetl2021-B&#39;, &#39;Brandl2020&#39;, &#39;Chang2025&#39;, &#39;Cho2017&#39;, &#39;Dreyer2023&#39;, &#39;Dreyer2023A&#39;, &#39;Dreyer2023B&#39;, &#39;Dreyer2023C&#39;, &#39;FakeDataset-imagery-10-2--60-60--120-120--fake1-fake2-fake3--c3-cz-c4&#39;, &#39;Forenzo2023&#39;, &#39;Gao2026&#39;, &#39;GrosseWentrup2009&#39;, &#39;GuttmannFlury2025-ME&#39;, &#39;GuttmannFlury2025-MI&#39;, &#39;HefmiIch2025&#39;, &#39;Jeong2020&#39;, &#39;Kaya2018&#39;, &#39;Kumar2024&#39;, &#39;Lee2019-MI&#39;, &#39;Liu2024&#39;, &#39;Liu2025&#39;, &#39;Ma2020&#39;, &#39;Nguyen2017-L&#39;, &#39;Nguyen2017-S&#39;, &#39;Nguyen2017-SL&#39;, &#39;Nguyen2017-V&#39;, &#39;Nieto2022&#39;, &#39;Ofner2017&#39;, &#39;PhysionetMotorImagery&#39;, &#39;Pressel2016&#39;, &#39;Rozado2015&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Shin2017B&#39;, &#39;Stieger2021&#39;, &#39;Tavakolan2017&#39;, &#39;TrianaGuzman2024&#39;, &#39;Wairagkar2018&#39;, &#39;Wang2026&#39;, &#39;Weibo2014&#39;, &#39;Wu2020&#39;, &#39;Yang2025&#39;, &#39;Yi2025&#39;, &#39;Zhang2017&#39;, &#39;Zhou2016&#39;, &#39;Zhou2020&#39;, &#39;Zuo2025&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>['AguileraRodriguez2025', 'AlexandreMotorImagery', 'BCIComp2020UpperLimb', 'BNCI2003-004', 'BNCI2014-001', 'BNCI2014-002', 'BNCI2014-004', 'BNCI2015-001', 'BNCI2015-004', 'BNCI2019-001', 'BNCI2020-001', 'BNCI2022-001', 'BNCI2024-001', 'BNCI2025-001', 'BNCI2025-002', 'Beetl2021-A', 'Beetl2021-B', 'Brandl2020', 'Chang2025', 'Cho2017', 'Dreyer2023', 'Dreyer2023A', 'Dreyer2023B', 'Dreyer2023C', 'FakeDataset-imagery-10-2--60-60--120-120--fake1-fake2-fake3--c3-cz-c4', 'Forenzo2023', 'Gao2026', 'GrosseWentrup2009', 'GuttmannFlury2025-ME', 'GuttmannFlury2025-MI', 'HefmiIch2025', 'Jeong2020', 'Kaya2018', 'Kumar2024', 'Lee2019-MI', 'Liu2024', 'Liu2025', 'Ma2020', 'Nguyen2017-L', 'Nguyen2017-S', 'Nguyen2017-SL', 'Nguyen2017-V', 'Nieto2022', 'Ofner2017', 'PhysionetMotorImagery', 'Pressel2016', 'Rozado2015', 'Schirrmeister2017', 'Shin2017A', 'Shin2017B', 'Stieger2021', 'Tavakolan2017', 'TrianaGuzman2024', 'Wairagkar2018', 'Wang2026', 'Weibo2014', 'Wu2020', 'Yang2025', 'Yi2025', 'Zhang2017', 'Zhou2016', 'Zhou2020', 'Zuo2025']
 </pre></div>
 </div>
 </section>
@@ -862,7 +862,7 @@ before concatenating the output.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Filter bank n-class motor imagery.
 
-    By default, metric is &#39;roc-auc&#39; if 2 classes and &#39;accuracy&#39; if more
+    By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
     Parameters
     ----------
@@ -897,7 +897,7 @@ restricted to left- and right-hand events.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Motor Imagery for left hand/right hand classification.
 
-    Metric is &#39;roc_auc&#39; by default
+    Metric is 'roc_auc' by default
 
     Parameters
     ----------
@@ -915,7 +915,7 @@ contains at least left and right hand events.</p>
 <span class="nb">print</span><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">code</span></a> <span class="k">for</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">compatible_datasets</span></a><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;BNCI2014-001&#39;, &#39;BNCI2014-004&#39;, &#39;Beetl2021-A&#39;, &#39;Beetl2021-B&#39;, &#39;Brandl2020&#39;, &#39;Chang2025&#39;, &#39;Cho2017&#39;, &#39;Dreyer2023&#39;, &#39;Dreyer2023A&#39;, &#39;Dreyer2023B&#39;, &#39;Dreyer2023C&#39;, &#39;Forenzo2023&#39;, &#39;GrosseWentrup2009&#39;, &#39;GuttmannFlury2025-ME&#39;, &#39;GuttmannFlury2025-MI&#39;, &#39;HefmiIch2025&#39;, &#39;Kaya2018&#39;, &#39;Kumar2024&#39;, &#39;Lee2019-MI&#39;, &#39;Liu2024&#39;, &#39;PhysionetMotorImagery&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Stieger2021&#39;, &#39;Wairagkar2018&#39;, &#39;Wang2026&#39;, &#39;Weibo2014&#39;, &#39;Wu2020&#39;, &#39;Yang2025&#39;, &#39;Zhou2016&#39;, &#39;Zhou2020&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>['BNCI2014-001', 'BNCI2014-004', 'Beetl2021-A', 'Beetl2021-B', 'Brandl2020', 'Chang2025', 'Cho2017', 'Dreyer2023', 'Dreyer2023A', 'Dreyer2023B', 'Dreyer2023C', 'Forenzo2023', 'GrosseWentrup2009', 'GuttmannFlury2025-ME', 'GuttmannFlury2025-MI', 'HefmiIch2025', 'Kaya2018', 'Kumar2024', 'Lee2019-MI', 'Liu2024', 'PhysionetMotorImagery', 'Schirrmeister2017', 'Shin2017A', 'Stieger2021', 'Wairagkar2018', 'Wang2026', 'Weibo2014', 'Wu2020', 'Yang2025', 'Zhou2016', 'Zhou2020']
 </pre></div>
 </div>
 <p>So if we apply this to our original dataset, it will only return trials
@@ -925,11 +925,10 @@ corresponding to left- and right-hand motor imagination.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.unique.html#numpy.unique" title="numpy.unique" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">unique</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;left_hand&#39; &#39;right_hand&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>['left_hand' 'right_hand']
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.182 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1153 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.785 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-plot-explore-paradigm-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/f8c9f4692c841c569c6639f1d3e66bf0/plot_explore_paradigm.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_explore_paradigm.ipynb</span></code></a></p>
