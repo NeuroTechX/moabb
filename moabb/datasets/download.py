@@ -30,6 +30,18 @@ class NemarDownloadError(RuntimeError):
     """Raised when a NEMAR download cannot be completed."""
 
 
+class DatasetDownloadError(RuntimeError):
+    """Raised when a download completed but did not deliver the dataset's data.
+
+    Distinct from a transport error: the request succeeded. Repositories
+    increasingly answer a missing file with HTTP 200 and an HTML page, which a
+    status-code check accepts and caches under the requested name. Callers that
+    sweep many datasets need to tell "this upstream is unavailable, skip it"
+    apart from "moabb has a bug", and a bare RuntimeError is indistinguishable
+    from the ones raised for a missing unrar binary or an absent XDF stream.
+    """
+
+
 def get_user_agent():
     """Return a user agent string for outbound requests."""
     try:
@@ -156,7 +168,7 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
 
 
 @verbose
-def data_dl(url, sign, path=None, force_update=False, verbose=None):
+def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
     """Download file from url to specified path.
 
     This function should replace data_path as the MNE will not support the download
@@ -179,6 +191,12 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
         Force update of the dataset even if a local copy exists.
     verbose : bool, str, int, or None
         If not None, override default verbose level (see :func:`mne.verbose`).
+    fname : None | str
+        Name to store the file under, relative to the dataset directory. By
+        default the name is derived from ``url``, which assumes the URL ends in
+        the filename. Pass this for APIs whose download URLs do not: DSpace
+        serves every bitstream from ``.../bitstreams/<uuid>/content``, so
+        URL-derived naming would store each one as ``content``.
 
     Returns
     -------
@@ -189,14 +207,17 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     path = Path(get_dataset_path(sign, path))
     key_dest = "MNE-{:s}-data".format(sign.lower())
     root = path / key_dest
-    destination = _sanitize_path(_normalize_destination(url, root))
-    legacy_destination = _sanitize_path(Path(_url_to_local_path(url, root)))
-    if legacy_destination.exists() and not destination.exists():
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            legacy_destination.replace(destination)
-        except OSError:
-            destination = legacy_destination
+    if fname is not None:
+        destination = _sanitize_path(root / fname)
+    else:
+        destination = _sanitize_path(_normalize_destination(url, root))
+        legacy_destination = _sanitize_path(Path(_url_to_local_path(url, root)))
+        if legacy_destination.exists() and not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                legacy_destination.replace(destination)
+            except OSError:
+                destination = legacy_destination
 
     downloader = choose_downloader(url, progressbar=True)
     if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:

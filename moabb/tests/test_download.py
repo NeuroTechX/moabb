@@ -8,7 +8,9 @@ from pathlib import Path
 import mne
 import pytest
 from mne import get_config, set_config
+from requests.exceptions import HTTPError
 
+import moabb.datasets.brandl2020 as brandl
 import moabb.datasets.download as dl
 import moabb.datasets.romani_bf2025_erp as romani
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
@@ -353,3 +355,131 @@ def test_romani_follows_download_dir_changes(tmp_path, monkeypatch, _isolated_mn
     assert [call["force_update"] for call in calls] == [False, True]
     assert all(call["update_path"] is False for call in calls)
     assert all("config_key" not in call["dataset_params"] for call in calls)
+
+
+# -- Brandl2020 / DepositOnce -------------------------------------------------
+#
+# DepositOnce answers HTTP 200 with an HTML app shell for files it cannot serve,
+# so a status-code-only downloader caches that page under the .mat name. These
+# tests pin the two things that stop it: the download goes to the REST host that
+# actually serves bytes, and the result is rejected unless it really is a MAT
+# file.
+
+
+@pytest.mark.parametrize(
+    "filename, uuid",
+    [
+        ("pp1.mat", "15de7e5f-8e0c-4804-aac4-7452c38baee5"),
+        ("pp16.mat", "358eef6d-bffe-4562-91fb-0173deafa0ed"),
+        ("mnt.mat", "6bc4de0d-4c65-4bd8-96b2-1f921a800ace"),
+    ],
+)
+def test_brandl_bitstream_url_targets_rest_api(filename, uuid, tmp_path, monkeypatch):
+    """The bitstream URL must use the API host and the file's UUID."""
+    seen = {}
+
+    def fake_data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
+        seen["url"], seen["fname"] = url, fname
+        dest = tmp_path / fname
+        dest.write_bytes(b"MATLAB 5.0 MAT-file")
+        return str(dest)
+
+    monkeypatch.setattr(brandl.dl, "data_dl", fake_data_dl)
+    brandl._download_bitstream(filename, str(tmp_path), False, None)
+
+    assert seen["url"] == (
+        f"https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/{uuid}/content"
+    )
+    # Without an explicit name every bitstream would be stored as "content".
+    assert seen["fname"] == filename
+
+
+@pytest.mark.parametrize(
+    "body, reason",
+    [
+        (
+            b"<!DOCTYPE html><html><head><title>DSpace",
+            "the app shell served with HTTP 200",
+        ),
+        (b"", "an empty response"),
+        (b"\x00\x01\x02\x03garbage", "an unrelated binary body"),
+    ],
+)
+def test_brandl_rejects_and_removes_non_mat_download(body, reason, tmp_path, monkeypatch):
+    """A non-MAT payload must raise and must not stay in the cache."""
+    dest = tmp_path / "pp1.mat"
+
+    def fake_data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
+        dest.write_bytes(body)
+        return str(dest)
+
+    monkeypatch.setattr(brandl.dl, "data_dl", fake_data_dl)
+
+    # A dedicated type, so a benchmark sweeping datasets can tell "this upstream
+    # is unavailable, skip it" from "moabb has a bug" without string-matching.
+    with pytest.raises(dl.DatasetDownloadError, match="not a MATLAB file"):
+        brandl._download_bitstream("pp1.mat", str(tmp_path), False, None)
+    # A cached bad file would be served to every later call without a network hit.
+    assert not dest.exists(), f"{reason} was left in the cache"
+
+
+def test_brandl_bitstream_table_is_complete_and_unique():
+    """The UUID table is hand-maintained; check its shape, not its formatting.
+
+    Asserting that the module formats its own constants into a URL cannot fail
+    for the reason the table exists to worry about. These two properties can.
+    """
+    table = brandl._BITSTREAM_UUIDS
+    assert set(table) == {f"pp{i}.mat" for i in range(1, 17)} | {"mnt.mat"}
+    # A copy-paste slip that repeats a UUID would silently download one
+    # subject's recording under another subject's name.
+    assert len(set(table.values())) == len(table), "duplicate bitstream UUID"
+
+
+def test_brandl_stale_uuid_reports_how_to_regenerate(tmp_path, monkeypatch):
+    """A re-ingest answers 404/JSON, which the MAT-magic check never sees."""
+
+    def fake_data_dl(*a, **kw):
+        raise HTTPError("404 Client Error: Not Found")
+
+    monkeypatch.setattr(brandl.dl, "data_dl", fake_data_dl)
+    with pytest.raises(dl.DatasetDownloadError, match=r"stale.*11303/10934\.2"):
+        brandl._download_bitstream("pp1.mat", str(tmp_path), False, None)
+
+
+def test_brandl_unknown_bitstream_name_is_rejected(tmp_path):
+    with pytest.raises(ValueError, match="No DepositOnce bitstream UUID"):
+        brandl._download_bitstream("pp99.mat", str(tmp_path), False, None)
+
+
+@pytest.mark.parametrize(
+    "fname, expected_parts",
+    [
+        ("pp1.mat", ("MNE-brandl2020-data", "pp1.mat")),
+        ("mnt.mat", ("MNE-brandl2020-data", "mnt.mat")),
+    ],
+)
+def test_data_dl_fname_overrides_url_derived_name(
+    fname, expected_parts, tmp_path, monkeypatch
+):
+    """``fname`` names the destination for URLs that do not end in a filename."""
+    captured = {}
+
+    def fake_retrieve(url, known_hash, fname=None, path=None, **kwargs):
+        captured["fname"], captured["path"] = fname, path
+        dest = Path(path) / fname
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(b"MATLAB")
+        return str(dest)
+
+    monkeypatch.setattr(dl, "retrieve", fake_retrieve)
+    result = dl.data_dl(
+        "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/"
+        "15de7e5f-8e0c-4804-aac4-7452c38baee5/content",
+        "Brandl2020",
+        path=str(tmp_path),
+        fname=fname,
+    )
+
+    assert captured["fname"] == fname
+    assert Path(result).parts[-2:] == expected_parts
