@@ -675,10 +675,6 @@ use the standard python logging commands through the top-level moabb module</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines.features</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
-  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
-</pre></div>
-</div>
 <p>In order to create pipelines within a script, you will likely need at least
 the make_pipeline function. They can also be specified via a .yml file. Here
 we will make a couple pipelines just for convenience</p>
@@ -754,15 +750,141 @@ subjects. This also is the correct place to specify multiple threads.</p>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 14:19:18] Multiple instances of codecarbon are allowed to run at the same time.
-2026-08-18 14:19:21,525 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
-2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
-2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
-2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
-2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
-2026-08-18 14:19:21,526 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host 'lampx.tugraz.at'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
+  0%|                                      | 16.4k/42.8M [00:00&lt;04:21, 164kB/s]
+  0%|                                      | 39.9k/42.8M [00:00&lt;03:29, 204kB/s]
+  0%|                                      | 96.3k/42.8M [00:00&lt;01:57, 363kB/s]
+  0%|▏                                      | 144k/42.8M [00:00&lt;01:45, 405kB/s]
+  1%|▏                                      | 224k/42.8M [00:00&lt;01:18, 540kB/s]
+  1%|▎                                      | 312k/42.8M [00:00&lt;01:05, 648kB/s]
+  1%|▍                                      | 465k/42.8M [00:00&lt;00:45, 922kB/s]
+  1%|▌                                     | 616k/42.8M [00:00&lt;00:38, 1.10MB/s]
+  2%|▊                                     | 904k/42.8M [00:00&lt;00:25, 1.63MB/s]
+  3%|█                                    | 1.19M/42.8M [00:01&lt;00:20, 1.99MB/s]
+  4%|█▍                                   | 1.67M/42.8M [00:01&lt;00:14, 2.81MB/s]
+  5%|█▉                                   | 2.24M/42.8M [00:01&lt;00:11, 3.64MB/s]
+  7%|██▊                                  | 3.19M/42.8M [00:01&lt;00:07, 5.35MB/s]
+ 10%|███▋                                 | 4.22M/42.8M [00:01&lt;00:05, 6.77MB/s]
+ 14%|█████▏                               | 6.00M/42.8M [00:01&lt;00:03, 9.94MB/s]
+ 18%|██████▊                              | 7.85M/42.8M [00:01&lt;00:02, 12.4MB/s]
+ 26%|█████████▋                           | 11.2M/42.8M [00:01&lt;00:01, 18.3MB/s]
+ 34%|████████████▍                        | 14.4M/42.8M [00:01&lt;00:01, 22.4MB/s]
+ 44%|████████████████▎                    | 18.8M/42.8M [00:01&lt;00:00, 28.4MB/s]
+ 58%|█████████████████████▎               | 24.7M/42.8M [00:02&lt;00:00, 36.7MB/s]
+ 73%|██████████████████████████▉          | 31.2M/42.8M [00:02&lt;00:00, 43.8MB/s]
+ 88%|████████████████████████████████▌    | 37.7M/42.8M [00:02&lt;00:00, 48.7MB/s]
+  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 137GB/s]
+/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host 'lampx.tugraz.at'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
+  0%|                                     | 8.19k/43.8M [00:00&lt;09:05, 80.2kB/s]
+  0%|                                      | 39.9k/43.8M [00:00&lt;03:25, 213kB/s]
+  0%|                                      | 88.1k/43.8M [00:00&lt;02:12, 328kB/s]
+  0%|                                       | 128k/43.8M [00:00&lt;02:04, 352kB/s]
+  0%|▏                                      | 168k/43.8M [00:00&lt;01:59, 364kB/s]
+  0%|▏                                      | 209k/43.8M [00:00&lt;01:55, 376kB/s]
+  1%|▏                                      | 249k/43.8M [00:00&lt;01:54, 380kB/s]
+  1%|▎                                      | 289k/43.8M [00:00&lt;01:53, 382kB/s]
+  1%|▎                                      | 329k/43.8M [00:00&lt;01:53, 384kB/s]
+  1%|▎                                      | 369k/43.8M [00:01&lt;01:52, 385kB/s]
+  1%|▎                                      | 417k/43.8M [00:01&lt;01:45, 410kB/s]
+  1%|▍                                      | 459k/43.8M [00:01&lt;01:45, 409kB/s]
+  1%|▍                                      | 500k/43.8M [00:01&lt;01:46, 406kB/s]
+  1%|▍                                      | 541k/43.8M [00:01&lt;01:47, 403kB/s]
+  1%|▌                                      | 600k/43.8M [00:01&lt;01:34, 455kB/s]
+  1%|▌                                      | 648k/43.8M [00:01&lt;01:33, 459kB/s]
+  2%|▋                                      | 753k/43.8M [00:01&lt;01:08, 625kB/s]
+  2%|▊                                      | 872k/43.8M [00:01&lt;00:54, 787kB/s]
+  2%|▉                                     | 1.01M/43.8M [00:01&lt;00:45, 948kB/s]
+  3%|▉                                    | 1.17M/43.8M [00:02&lt;00:37, 1.13MB/s]
+  3%|█▏                                   | 1.38M/43.8M [00:02&lt;00:30, 1.40MB/s]
+  4%|█▎                                   | 1.57M/43.8M [00:02&lt;00:27, 1.54MB/s]
+  4%|█▌                                   | 1.87M/43.8M [00:02&lt;00:21, 1.96MB/s]
+  5%|█▊                                   | 2.17M/43.8M [00:02&lt;00:18, 2.24MB/s]
+  6%|██▏                                  | 2.63M/43.8M [00:02&lt;00:14, 2.92MB/s]
+  7%|██▌                                  | 3.10M/43.8M [00:02&lt;00:11, 3.39MB/s]
+  9%|███▎                                 | 3.88M/43.8M [00:02&lt;00:08, 4.66MB/s]
+ 11%|███▉                                 | 4.68M/43.8M [00:02&lt;00:06, 5.59MB/s]
+ 14%|█████▏                               | 6.12M/43.8M [00:02&lt;00:04, 8.11MB/s]
+ 17%|██████▎                              | 7.46M/43.8M [00:03&lt;00:03, 9.58MB/s]
+ 23%|████████▌                            | 10.2M/43.8M [00:03&lt;00:02, 14.6MB/s]
+ 29%|██████████▋                          | 12.7M/43.8M [00:03&lt;00:01, 17.5MB/s]
+ 40%|██████████████▊                      | 17.6M/43.8M [00:03&lt;00:00, 26.5MB/s]
+ 51%|██████████████████▊                  | 22.3M/43.8M [00:03&lt;00:00, 32.4MB/s]
+ 63%|███████████████████████▏             | 27.5M/43.8M [00:03&lt;00:00, 37.5MB/s]
+ 78%|████████████████████████████▋        | 34.0M/43.8M [00:03&lt;00:00, 44.5MB/s]
+ 93%|██████████████████████████████████▏  | 40.5M/43.8M [00:03&lt;00:00, 49.2MB/s]
+  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 202GB/s]
+/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host 'lampx.tugraz.at'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
+  0%|                                     | 8.19k/43.1M [00:00&lt;08:55, 80.4kB/s]
+  0%|                                      | 39.9k/43.1M [00:00&lt;03:19, 216kB/s]
+  0%|                                       | 104k/43.1M [00:00&lt;01:46, 405kB/s]
+  0%|▏                                      | 193k/43.1M [00:00&lt;01:13, 584kB/s]
+  1%|▎                                      | 304k/43.1M [00:00&lt;00:55, 765kB/s]
+  1%|▍                                     | 472k/43.1M [00:00&lt;00:40, 1.06MB/s]
+  2%|▌                                     | 648k/43.1M [00:00&lt;00:33, 1.28MB/s]
+  2%|▊                                     | 961k/43.1M [00:00&lt;00:22, 1.84MB/s]
+  3%|█                                    | 1.25M/43.1M [00:00&lt;00:19, 2.14MB/s]
+  4%|█▌                                   | 1.78M/43.1M [00:01&lt;00:13, 3.09MB/s]
+  5%|█▉                                   | 2.26M/43.1M [00:01&lt;00:11, 3.55MB/s]
+  8%|██▊                                  | 3.24M/43.1M [00:01&lt;00:07, 5.38MB/s]
+ 10%|███▌                                 | 4.21M/43.1M [00:01&lt;00:05, 6.61MB/s]
+ 14%|█████▏                               | 6.01M/43.1M [00:01&lt;00:03, 9.91MB/s]
+ 18%|██████▌                              | 7.62M/43.1M [00:01&lt;00:03, 11.6MB/s]
+ 25%|█████████▏                           | 10.7M/43.1M [00:01&lt;00:01, 17.2MB/s]
+ 32%|███████████▉                         | 13.9M/43.1M [00:01&lt;00:01, 21.3MB/s]
+ 45%|████████████████▌                    | 19.3M/43.1M [00:01&lt;00:00, 30.8MB/s]
+ 57%|█████████████████████▏               | 24.6M/43.1M [00:01&lt;00:00, 37.3MB/s]
+ 69%|█████████████████████████▍           | 29.6M/43.1M [00:02&lt;00:00, 40.3MB/s]
+ 84%|███████████████████████████████      | 36.1M/43.1M [00:02&lt;00:00, 46.4MB/s]
+ 99%|████████████████████████████████████▌| 42.6M/43.1M [00:02&lt;00:00, 50.4MB/s]
+  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 232GB/s]
+/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:1110: InsecureRequestWarning: Unverified HTTPS request is being made to host 'lampx.tugraz.at'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
+  warnings.warn(
+
+  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
+  0%|                                     | 8.19k/44.2M [00:00&lt;09:06, 80.8kB/s]
+  0%|                                      | 39.9k/44.2M [00:00&lt;03:24, 216kB/s]
+  0%|                                       | 113k/44.2M [00:00&lt;01:40, 440kB/s]
+  0%|▏                                      | 176k/44.2M [00:00&lt;01:26, 512kB/s]
+  1%|▎                                      | 312k/44.2M [00:00&lt;00:54, 804kB/s]
+  1%|▍                                      | 432k/44.2M [00:00&lt;00:47, 929kB/s]
+  2%|▌                                     | 696k/44.2M [00:00&lt;00:29, 1.47MB/s]
+  2%|▊                                     | 952k/44.2M [00:00&lt;00:24, 1.79MB/s]
+  3%|█▏                                   | 1.43M/44.2M [00:00&lt;00:15, 2.70MB/s]
+  4%|█▌                                   | 1.90M/44.2M [00:01&lt;00:12, 3.28MB/s]
+  6%|██▏                                  | 2.68M/44.2M [00:01&lt;00:09, 4.59MB/s]
+  8%|██▉                                  | 3.57M/44.2M [00:01&lt;00:06, 5.83MB/s]
+ 11%|████                                 | 4.83M/44.2M [00:01&lt;00:05, 7.79MB/s]
+ 14%|█████▎                               | 6.38M/44.2M [00:01&lt;00:03, 9.97MB/s]
+ 19%|███████                              | 8.43M/44.2M [00:01&lt;00:02, 13.0MB/s]
+ 25%|█████████▏                           | 11.0M/44.2M [00:01&lt;00:02, 16.5MB/s]
+ 32%|███████████▉                         | 14.3M/44.2M [00:01&lt;00:01, 21.4MB/s]
+ 42%|███████████████▌                     | 18.6M/44.2M [00:01&lt;00:00, 27.5MB/s]
+ 53%|███████████████████▌                 | 23.3M/44.2M [00:01&lt;00:00, 32.9MB/s]
+ 64%|███████████████████████▊             | 28.5M/44.2M [00:02&lt;00:00, 37.9MB/s]
+ 73%|███████████████████████████          | 32.3M/44.2M [00:02&lt;00:00, 35.6MB/s]
+ 90%|█████████████████████████████████▍   | 40.0M/44.2M [00:02&lt;00:00, 47.3MB/s]
+  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 218GB/s]
+2026-08-19 15:37:30,481 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
+2026-08-19 15:37:30,481 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
+2026-08-19 15:37:30,482 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-08-19 15:37:30,482 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-08-19 15:37:30,482 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
+2026-08-19 15:37:30,482 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
+2026-08-19 15:37:30,482 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
+2026-08-19 15:37:30,482 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
 /home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
   dset.create_dataset(
 </pre></div>
@@ -774,16 +896,17 @@ provided, MOABB adds a primary <cite>score</cite> plus one column per metric
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
-0  0.729167  0.019233  ...    AM+LDA  9cbb9516-cbd3-4e15-8742-e9acab9e65bb
-1  0.715278  0.018593  ...    AM+LDA  983697d8-8904-4b46-b355-eca8d61a3c12
-2  0.597222  0.017463  ...    AM+LDA  54dc6745-764a-410e-b185-12614fb16199
-3  0.520833  0.018966  ...    AM+LDA  35baf775-b86e-4023-9eaa-07494c1a6a68
-4  0.743056  0.121790  ...    AM+SVM  d7a24224-d078-48be-9a6c-0cb60b7fdede
+0  0.729167  0.013683  ...    AM+LDA  c01805d8-8b13-4734-8d4f-d82398e516e3
+1  0.715278  0.012599  ...    AM+LDA  38acffed-405f-4988-a265-8d93af0a3c68
+2  0.597222  0.012148  ...    AM+LDA  aa2e5477-02d8-484f-8890-89093e16c851
+3  0.520833  0.011845  ...    AM+LDA  55a0df45-0184-41b4-b110-5e35b0db32c2
+4  0.743056  0.153322  ...    AM+SVM  9b61d6c3-c327-4c41-aac5-edaf1ad98650
 
 [5 rows x 15 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.511 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.159 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1054 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-0-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc78b19f551dfa48627d09f644ea18ad/tutorial_0_plot_getting_started.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_0_plot_getting_started.ipynb</span></code></a></p>
