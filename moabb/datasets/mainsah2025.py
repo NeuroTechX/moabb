@@ -509,7 +509,7 @@ def _make_study_metadata(study):
 class Mainsah2025_A(Mainsah2025):
     """BigP3BCI Study A — 6x6 checkerboard/row-column/random (13 healthy subjects)."""
 
-    # nemar_id = "nm000269" pending: NEMAR deposit not yet public
+    nemar_id = "nm000269"
     __init__ = partialmethod(Mainsah2025.__init__, "A")
     METADATA = _make_study_metadata("A")
 

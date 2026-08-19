@@ -75,7 +75,7 @@ class Kaneshiro2015(BaseDataset):
            https://doi.org/10.1371/journal.pone.0135697
     """
 
-    # nemar_id = "nm000263" pending: NEMAR deposit not yet public
+    nemar_id = "nm000263"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=62.5,
