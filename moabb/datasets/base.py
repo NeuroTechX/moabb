@@ -29,8 +29,9 @@ from moabb.datasets.bids_interface import (
     _interface_map,
     get_bids_root,
 )
-from moabb.datasets.download import NemarDownloadError, nemar_dl
+from moabb.datasets.download import NemarDownloadError, nemar_dl, nemar_sourcedata_dl
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
+from moabb.utils import get_download_provider
 
 
 if TYPE_CHECKING:
@@ -926,12 +927,21 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         This function is only useful to download all the dataset at once.
 
+        When the dataset declares a :attr:`nemar_id` and the download provider
+        is not ``"upstream"``, the files come from NEMAR's ``sourcedata/`` --
+        the original pre-BIDS distribution, byte-identical to what the upstream
+        host serves. On any NEMAR failure this falls back to the dataset's own
+        downloader with a warning (unless the provider is pinned to
+        ``"nemar"``). See :meth:`sourcedata_path` and
+        :func:`moabb.set_download_provider`.
 
         Parameters
         ----------
         subject_list : list of int | None
             List of subjects id to download, if None all subjects
-            are downloaded.
+            are downloaded. On the NEMAR path each subject is resolved through
+            the deposit's ``sourcedata_provenance.json``; deposits enriched
+            before that manifest recorded subjects fetch the whole tree.
         path : None | str
             Location of where to look for the data storing location.
             If None, the environment variable or config parameter
@@ -944,33 +954,52 @@ class BaseDataset(metaclass=MetaclassDataset):
         update_path : bool | None
             If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
             config to the given path. If None, the user is prompted.
+            Not used on the NEMAR path.
         accept: bool
-            Accept licence term to download the data, if any. Default: False
+            Accept licence term to download the data, if any. Default: False.
+            Only relevant to the dataset's own downloader; NEMAR mirrors are
+            already public.
         verbose : bool, str, int, or None
             If not None, override default verbose level
             (see :func:`mne.verbose`).
         """
         if subject_list is None:
             subject_list = self.subject_list
+        provider = get_download_provider()
+        if provider == "nemar" and self.nemar_id is None:
+            raise NemarDownloadError(
+                f"Download provider is pinned to 'nemar' but {self.code} declares "
+                "no nemar_id, so it cannot be fetched from NEMAR. Use "
+                "moabb.set_download_provider('auto') to allow the upstream "
+                "downloader for datasets NEMAR does not mirror."
+            )
+        # Prefer NEMAR's `sourcedata/` -- the ORIGINAL pre-BIDS distribution,
+        # byte-identical to what the upstream host serves and stored under the
+        # same upstream filenames. Deliberately not the deposit's BIDS copy:
+        # that is a re-encoding whose events and session/run labels differ from
+        # what each dataset's own loader produces, so substituting it would
+        # silently change results rather than just change where bytes come from.
+        if self.nemar_id is not None and provider != "upstream":
+            try:
+                self._download_nemar_sourcedata(
+                    subject_list=subject_list,
+                    path=path,
+                    force_update=force_update,
+                    verbose=verbose,
+                )
+                return
+            except NemarDownloadError as exc:
+                if provider == "nemar":
+                    raise
+                warnings.warn(
+                    f"Could not download {self.code} sourcedata from NEMAR "
+                    f"({self.nemar_id}); falling back to the dataset data_path "
+                    f"downloader. Original error: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+
         for subject in subject_list:
-            if self.nemar_id is not None:
-                try:
-                    self._download_nemar(
-                        subject=subject,
-                        path=path,
-                        force_update=force_update,
-                        update_path=update_path,
-                        verbose=verbose,
-                    )
-                    continue
-                except NemarDownloadError as exc:
-                    warnings.warn(
-                        f"Could not download {self.code} from NEMAR ({self.nemar_id}); "
-                        "falling back to the dataset data_path downloader. "
-                        f"Original error: {exc}",
-                        RuntimeWarning,
-                        stacklevel=2,
-                    )
             # check if accept is needed
             sig = signature(self.data_path)
             if "accept" in [str(p) for p in sig.parameters]:
@@ -1048,6 +1077,77 @@ class BaseDataset(metaclass=MetaclassDataset):
             subject=self._nemar_subject(subject),
             verbose=verbose,
             **(self.nemar_bids_filters or {}),
+        )
+
+    def _download_nemar_sourcedata(
+        self, subject_list=None, path=None, force_update=False, verbose=None
+    ):
+        """Fetch the original pre-BIDS distribution for a set of subjects.
+
+        Each subject is resolved through the deposit's provenance manifest
+        rather than by pattern-matching the layout, which across the catalogue
+        is genuinely arbitrary -- subjects appear as letters, as ``sub1``, as
+        ``S10_Session_1``, split across two path components, or not at all.
+
+        Raises
+        ------
+        moabb.datasets.download.NemarDownloadError
+            If nemar-py is unavailable, a download fails, or the deposit
+            publishes no ``sourcedata/``.
+        """
+        for subject in subject_list:
+            self.sourcedata_path(
+                subject=subject, path=path, force_update=force_update, verbose=verbose
+            )
+
+    def sourcedata_path(self, subject=None, path=None, force_update=False, verbose=None):
+        """Get the dataset's *original* pre-BIDS distribution from NEMAR.
+
+        Where :meth:`data_path` fetches the original files from the upstream
+        host, this fetches the copy NEMAR mirrors under ``sourcedata/``. The
+        files keep their upstream names, so the two are interchangeable in
+        content -- but NEMAR stays reachable when the upstream host is slow,
+        rate-limited, behind a bot gate, or retired.
+
+        Parameters
+        ----------
+        subject : int | str | None
+            Restrict the download to one subject, resolved through the
+            deposit's ``sourcedata_provenance.json``. Deposits enriched before
+            that manifest recorded subjects fall back to the whole tree with a
+            warning. When ``None`` the whole tree is fetched.
+        path : None | str
+            Base path where MOABB stores datasets.
+        force_update : bool
+            Re-fetch even when a local copy is present.
+        verbose : bool, str, int, or None
+            If not None, override default verbose level.
+
+        Returns
+        -------
+        str
+            Local path to the ``sourcedata`` directory.
+
+        Raises
+        ------
+        ValueError
+            If the dataset declares no ``nemar_id``.
+        moabb.datasets.download.NemarDownloadError
+            If nemar-py is unavailable, the download fails, or the deposit
+            publishes no ``sourcedata/``.
+        """
+        if self.nemar_id is None:
+            raise ValueError(
+                f"{self.code} declares no nemar_id, so its original distribution "
+                "cannot be fetched from NEMAR."
+            )
+        return nemar_sourcedata_dl(
+            self.nemar_id,
+            self.code,
+            path=path,
+            force_update=force_update,
+            subject=subject,
+            verbose=verbose,
         )
 
     def _get_single_subject_data_from_nemar(self, subject, path=None):

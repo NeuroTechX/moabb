@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import os.path as osp
+import warnings
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -300,6 +301,185 @@ def nemar_dl(
     except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
         raise NemarDownloadError(f"Could not download NEMAR dataset {nemar_id}.") from exc
     return str(target_dir)
+
+
+#: Name of the manifest every enriched deposit ships inside ``sourcedata/``.
+SOURCEDATA_PROVENANCE = "sourcedata/sourcedata_provenance.json"
+
+
+def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
+    """Return the ``sourcedata/`` paths belonging to one subject, or ``None``.
+
+    Reads the deposit's ``sourcedata_provenance.json``, which records every
+    file's upstream name, size, SHA-256 and -- for deposits enriched after the
+    subject field was added -- which subject it came from.
+
+    This is deliberately data-driven rather than pattern-driven. ``sourcedata/``
+    preserves whatever layout the authors published, and across the catalogue
+    that is genuinely arbitrary: subjects appear as ``sub-A`` (letters),
+    ``subject_01``, ``sub1``, ``S10_Session_1``, ``session1/s1/sess01_subj01``
+    (subject split across two components), ``subject_01_PC`` / ``_VR`` (two
+    files per subject) -- and in at least one deposit the path carries no
+    subject at all, just an upstream file id. No glob template spans that, so
+    asking the deposit is the only approach that generalises.
+
+    Returns
+    -------
+    list of str | None
+        Include patterns for that subject, or ``None`` when the provenance
+        predates the subject field, in which case the caller should fall back
+        to fetching the whole tree.
+    """
+    provenance = target_dir / SOURCEDATA_PROVENANCE
+    if force_update or not provenance.is_file():
+        try:
+            nemar.download(
+                dataset=nemar_id,
+                target_dir=target_dir,
+                scope="sourcedata",
+                include=SOURCEDATA_PROVENANCE,
+                trust_existing=not force_update,
+            )
+        except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+            raise NemarDownloadError(
+                f"Could not read the sourcedata manifest for {nemar_id}."
+            ) from exc
+    try:
+        record = json.loads(provenance.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise NemarDownloadError(
+            f"NEMAR dataset {nemar_id} has an unreadable sourcedata manifest."
+        ) from exc
+
+    entries = record.get("files") or []
+    if not any("subject" in entry for entry in entries):
+        return None
+    wanted = str(subject)
+    files = [entry["file"] for entry in entries if str(entry.get("subject")) == wanted]
+    if not files:
+        raise NemarDownloadError(
+            f"NEMAR dataset {nemar_id} lists no sourcedata for subject "
+            f"{subject!r}. Known subjects: "
+            f"{sorted({str(e.get('subject')) for e in entries if e.get('subject')})}."
+        )
+    return [f"sourcedata/{name}" for name in files]
+
+
+@verbose
+def nemar_sourcedata_dl(
+    nemar_id,
+    dataset_code,
+    path=None,
+    force_update=False,
+    subject=None,
+    include=None,
+    verbose=None,
+):
+    """Download a NEMAR dataset's ``sourcedata/`` and return its local root.
+
+    ``sourcedata/`` holds the **original, pre-BIDS distribution** as published
+    by the dataset authors, stored under the upstream filenames. It is
+    therefore a drop-in mirror of whatever :meth:`BaseDataset.data_path` would
+    otherwise fetch from the upstream host — useful when that host is slow,
+    rate-limited, behind a bot gate, or gone.
+
+    Parameters
+    ----------
+    nemar_id : str
+        NEMAR dataset identifier.
+    dataset_code : str
+        MOABB dataset code used to choose the local dataset directory.
+    path : None | str
+        Base path where MOABB stores datasets.
+    force_update : bool
+        Re-fetch even when a local copy is already present.
+    subject : int | str | None
+        Restrict the download to one subject, resolved through the deposit's
+        ``sourcedata_provenance.json`` rather than by guessing at the layout.
+        Falls back to fetching the whole tree, with a warning, when the deposit
+        was enriched before that manifest recorded subjects.
+    include : str | list of str | None
+        Explicit path glob(s) relative to the dataset root, for callers that
+        know the layout. Overrides ``subject``. Without either, the whole
+        ``sourcedata/`` tree is downloaded.
+    verbose : bool, str, int, or None
+        If not None, override default verbose level.
+
+    Returns
+    -------
+    str
+        Local path to the downloaded ``sourcedata`` directory.
+
+    Raises
+    ------
+    NemarDownloadError
+        If nemar-py is unavailable, the download fails, or the deposit
+        publishes no ``sourcedata/`` at all.
+    """
+    # Keyed on the NEMAR id, not the MOABB code: one deposit backs several
+    # classes (nm000132 is shared by all seven ErpCore2021 subclasses, nm000250
+    # by four Dreyer2023 ones), and a per-code path would download the same
+    # tree once per class.
+    root = Path(get_dataset_path(dataset_code, path))
+    target_dir = root / "NEMAR" / nemar_id
+
+    if include is None and subject is not None:
+        include = _sourcedata_files_for_subject(
+            target_dir, nemar_id, subject, force_update
+        )
+        if include is None:
+            # warnings.warn, not mne.utils.warn: the latter emits a given
+            # warning once per session, which makes it order-dependent for
+            # anything asserting on it -- and matches what base.py already does
+            # for the sibling upstream fallback.
+            warnings.warn(
+                f"NEMAR dataset {nemar_id} was enriched before its sourcedata "
+                "manifest recorded subjects, so one subject cannot be selected; "
+                "downloading the whole sourcedata/ tree instead.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
+    kwargs = {"include": include} if include is not None else {}
+    sourcedata_dir = target_dir / "sourcedata"
+    what = f"sourcedata/ matching {include!r}" if include else "sourcedata/"
+    missing = (
+        f"NEMAR dataset {nemar_id} published no {what} -- the original "
+        "distribution is not mirrored there."
+    )
+    try:
+        nemar.download(
+            dataset=nemar_id,
+            target_dir=target_dir,
+            scope="sourcedata",
+            trust_existing=not force_update,
+            **kwargs,
+        )
+    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        # nemar-py raises SelectionError (a NemarError) when the scope or the
+        # include glob matches nothing, so "this deposit has no sourcedata/" and
+        # "this subject is not in it" both arrive here rather than as a
+        # successful empty download.
+        raise NemarDownloadError(missing) from exc
+
+    # Ask about the subset this call requested, not the whole tree. `download()`
+    # calls this once per subject into a shared directory, so "the directory has
+    # something in it" is true from the second subject on even when this
+    # subject's fetch matched nothing -- and a before/after diff of the tree
+    # would walk every file twice per subject to find that out.
+    if include is not None:
+        patterns = [include] if isinstance(include, str) else include
+        fetched = any(next(target_dir.glob(p), None) is not None for p in patterns)
+    else:
+        # The manifest does not count: a deposit that publishes only its
+        # provenance has no original distribution to offer.
+        manifest = target_dir / SOURCEDATA_PROVENANCE
+        fetched = sourcedata_dir.is_dir() and any(
+            entry != manifest for entry in sourcedata_dir.rglob("*")
+        )
+    if not fetched:
+        raise NemarDownloadError(missing)
+    return str(sourcedata_dir)
 
 
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)

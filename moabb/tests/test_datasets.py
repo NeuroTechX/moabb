@@ -292,26 +292,29 @@ class Test_Datasets:
         assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
 
     def test_download_prefers_nemar(self, monkeypatch, tmp_path):
+        """``download()`` takes the original distribution from NEMAR.
+
+        It fetches ``sourcedata/`` rather than the deposit's BIDS copy: the
+        BIDS copy is a re-encoding whose events and session/run labels differ
+        from what each dataset's own loader produces.
+        """
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = "nm000001"
         calls = []
 
-        def nemar_dl(*args, **kwargs):
+        def nemar_sourcedata_dl(*args, **kwargs):
             calls.append((args, kwargs))
-            return str(tmp_path / "nemar")
+            return str(tmp_path / "nemar" / "sourcedata")
 
-        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
         dataset.download(subject_list=[1], path=tmp_path)
 
         assert calls == [
             (
                 ("nm000001", dataset.code),
-                {
-                    "path": tmp_path,
-                    "force_update": False,
-                    "subject": "1",
-                    "verbose": None,
-                },
+                {"path": tmp_path, "force_update": False, "subject": 1, "verbose": None},
             )
         ]
 
@@ -320,7 +323,7 @@ class Test_Datasets:
         dataset.nemar_id = "nm000001"
         fallback_calls = []
 
-        def nemar_dl(*args, **kwargs):
+        def nemar_sourcedata_dl(*args, **kwargs):
             raise NemarDownloadError("NEMAR unavailable")
 
         def data_path(
@@ -328,7 +331,9 @@ class Test_Datasets:
         ):
             fallback_calls.append((subject, path, force_update, update_path, verbose))
 
-        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
         monkeypatch.setattr(dataset, "data_path", data_path)
 
         with pytest.warns(RuntimeWarning, match="falling back"):
