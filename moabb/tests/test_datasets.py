@@ -261,6 +261,66 @@ class Test_Datasets:
         assert subjects[0] == "1"
         assert len(dataframe["session"].unique()) == 2
 
+    @pytest.mark.filterwarnings("ignore:TSV file is empty.*:RuntimeWarning")
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    def test_cache_overwrite_without_use(self, tmp_path, caplog):
+        """overwrite_* must erase the cache even when use=False."""
+        dataset = FakeDataset(paradigm="imagery")
+
+        # Populate the cache:
+        _ = dataset.get_data(
+            subjects=[1], cache_config={"save_raw": True, "use": True, "path": tmp_path}
+        )
+
+        # Erase it with use=False:
+        with caplog.at_level(logging.INFO):
+            _ = dataset.get_data(
+                subjects=[1],
+                cache_config={"use": False, "overwrite_raw": True, "path": tmp_path},
+            )
+        assert any("erasing cache" in m for m in caplog.messages)
+
+        # The cache must actually be gone:
+        caplog.clear()
+        with caplog.at_level(logging.INFO):
+            _ = dataset.get_data(
+                subjects=[1], cache_config={"use": True, "path": tmp_path}
+            )
+        assert any("No cache found" in m for m in caplog.messages)
+
+    def test_data_path_uses_download_flags(self):
+        """Every dataset's data_path must honor path and force_update.
+
+        update_path is deprecated (kept for signature compatibility) and
+        verbose has no slot in some downloaders, so only the two flags with
+        defined behavior are enforced.
+        """
+        import ast
+        from pathlib import Path as _Path
+
+        import moabb.datasets as _datasets_pkg
+
+        datasets_dir = _Path(_datasets_pkg.__file__).parent
+        exempt = {
+            "base.py",  # abstract method, no body
+            "fake.py",  # nothing to download
+        }
+        offenders = []
+        for file in sorted(datasets_dir.rglob("*.py")):
+            if file.name in exempt:
+                continue
+            tree = ast.parse(file.read_text())
+            for node in ast.walk(tree):
+                if not (isinstance(node, ast.FunctionDef) and node.name == "data_path"):
+                    continue
+                params = {a.arg for a in node.args.args}
+                used = {n.id for n in ast.walk(node) if isinstance(n, ast.Name)}
+                used |= {n.attr for n in ast.walk(node) if isinstance(n, ast.Attribute)}
+                for flag in ("path", "force_update"):
+                    if flag in params and flag not in used:
+                        offenders.append(f"{file.name}:{node.lineno} ignores {flag!r}")
+        assert not offenders, "data_path ignores download flags:\n" + "\n".join(offenders)
+
     def test_dataset_accept(self):
         """Verify that accept licence is working."""
         # Only BaseShin2017 (bbci_eeg_fnirs) for now
@@ -314,9 +374,32 @@ class Test_Datasets:
         assert calls == [
             (
                 ("nm000001", dataset.code),
-                {"path": tmp_path, "force_update": False, "subject": 1, "verbose": None},
+                {
+                    "path": tmp_path,
+                    "force_update": False,
+                    "subject": "1",
+                    "verbose": None,
+                },
             )
         ]
+
+    def test_sourcedata_path_applies_subject_template(self, monkeypatch, tmp_path):
+        """A dataset's nemar_subject_template maps MOABB ids to NEMAR labels."""
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = "nm000001"
+        dataset.nemar_subject_template = "{subject:03d}"
+        calls = []
+
+        def nemar_sourcedata_dl(*args, **kwargs):
+            calls.append(kwargs)
+            return str(tmp_path)
+
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
+        dataset.sourcedata_path(subject=1, path=tmp_path)
+
+        assert calls[-1]["subject"] == "001"
 
     def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
         dataset = FakeDataset(n_subjects=1)

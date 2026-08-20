@@ -304,9 +304,9 @@ class Lee2024(BaseDataset):
 
         return {"0": runs} if runs else {}
 
-    def _subject_dir(self, subject):
+    def _subject_dir(self, subject, path=None):
         config = _EXPERIMENT_CONFIGS[self._experiment]
-        path = dl.get_dataset_path(_SIGN, None)
+        path = dl.get_dataset_path(_SIGN, path)
         base = Path(path) / f"MNE-{_SIGN}-data" / config["dir_name"]
         subj_str = self._subj_str(subject, config)
         return base / f"Dat_{subj_str}"
@@ -445,7 +445,7 @@ class Lee2024(BaseDataset):
             raise ValueError("Invalid subject number")
 
         config = _EXPERIMENT_CONFIGS[self._experiment]
-        subj_dir = self._subject_dir(subject)
+        subj_dir = self._subject_dir(subject, path)
         subj_str = self._subj_str(subject, config)
 
         import requests as _requests

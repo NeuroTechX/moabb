@@ -233,7 +233,9 @@ class ErpCore2021(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
-        dataset_path = self.download_by_subject(subject=subject, path=path)
+        dataset_path = self.download_by_subject(
+            subject=subject, path=path, force_update=force_update
+        )
 
         # Create a BIDSPath object for the subject
         bids_path = BIDSPath(
@@ -248,7 +250,7 @@ class ErpCore2021(BaseDataset):
 
         return subject_paths
 
-    def download_by_subject(self, subject, path=None):
+    def download_by_subject(self, subject, path=None, force_update=False):
         """
         Download and extract the dataset.
 
@@ -274,7 +276,9 @@ class ErpCore2021(BaseDataset):
             path = mne_path / DATASET_PARAMS[self.task]["folder_name"]
 
         # checking it there is manifest file in the dataset folder.
-        dl.download_if_missing(path / "erpcore_manifest.csv", _manifest_link)
+        dl.download_if_missing(
+            path / "erpcore_manifest.csv", _manifest_link, force_update=force_update
+        )
 
         manifest = pd.read_csv(path / "erpcore_manifest.csv")
 
@@ -292,7 +296,10 @@ class ErpCore2021(BaseDataset):
 
         for _, row in tqdm.tqdm(manifest_subject.iterrows()):
             dl.download_if_missing(
-                path / row["local_path"], row["url"], warn_missing=False
+                path / row["local_path"],
+                row["url"],
+                warn_missing=False,
+                force_update=force_update,
             )
 
         return path

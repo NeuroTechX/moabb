@@ -259,7 +259,7 @@ class Zhang2025(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = Path(dl.get_dataset_path(_SIGN, None)) / f"MNE-{_SIGN}-data"
+        base = Path(dl.get_dataset_path(_SIGN, path)) / f"MNE-{_SIGN}-data"
         base.mkdir(parents=True, exist_ok=True)
 
         fname = f"S{subject}.mat"
@@ -268,7 +268,9 @@ class Zhang2025(BaseDataset):
         if not local.exists() or force_update:
             file_id = _FILE_IDS[subject]
             url = f"https://ndownloader.figshare.com/files/{file_id}"
-            downloaded = dl.data_dl(url, _SIGN)
+            downloaded = dl.data_dl(
+                url, _SIGN, path=path, force_update=force_update, verbose=verbose
+            )
             downloaded = Path(downloaded)
             if downloaded != local:
                 downloaded.rename(local)

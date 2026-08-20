@@ -4,6 +4,7 @@
 # License: BSD Style.
 
 import functools
+import glob as glob_module
 import json
 import logging
 import os
@@ -18,7 +19,7 @@ import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
-from nemar.errors import NemarError
+from nemar.errors import NemarError, SelectionError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
@@ -281,7 +282,7 @@ def nemar_dl(
     Raises
     ------
     NemarDownloadError
-        If nemar-py is unavailable or fails to download the selected files.
+        If nemar-py fails to download the selected files.
     """
     root = Path(get_dataset_path(dataset_code, path))
     target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
@@ -362,7 +363,10 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
             f"{subject!r}. Known subjects: "
             f"{sorted({str(e.get('subject')) for e in entries if e.get('subject')})}."
         )
-    return [f"sourcedata/{name}" for name in files]
+    # Manifest names are literal file paths, but they are consumed as glob
+    # patterns (nemar's include and the local verification below) -- escape
+    # them so names containing [, ], * or ? still match.
+    return ["sourcedata/" + glob_module.escape(name) for name in files]
 
 
 @verbose
@@ -413,8 +417,8 @@ def nemar_sourcedata_dl(
     Raises
     ------
     NemarDownloadError
-        If nemar-py is unavailable, the download fails, or the deposit
-        publishes no ``sourcedata/`` at all.
+        If the download fails or the deposit publishes no ``sourcedata/``
+        at all.
     """
     # Keyed on the NEMAR id, not the MOABB code: one deposit backs several
     # classes (nm000132 is shared by all seven ErpCore2021 subclasses, nm000250
@@ -455,12 +459,18 @@ def nemar_sourcedata_dl(
             trust_existing=not force_update,
             **kwargs,
         )
-    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
-        # nemar-py raises SelectionError (a NemarError) when the scope or the
-        # include glob matches nothing, so "this deposit has no sourcedata/" and
-        # "this subject is not in it" both arrive here rather than as a
-        # successful empty download.
+    except SelectionError as exc:
+        # nemar-py raises SelectionError when the scope or the include glob
+        # matches nothing, so "this deposit has no sourcedata/" and "this
+        # subject is not in it" both arrive here rather than as a successful
+        # empty download.
         raise NemarDownloadError(missing) from exc
+    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        # Transport, verification, or S3 failures are not evidence that the
+        # deposit publishes no sourcedata -- report them as what they are.
+        raise NemarDownloadError(
+            f"Could not download {what} for NEMAR dataset {nemar_id}: {exc}"
+        ) from exc
 
     # Ask about the subset this call requested, not the whole tree. `download()`
     # calls this once per subject into a shared directory, so "the directory has
@@ -623,8 +633,14 @@ def fs_get_file_name(filelist):
     return {str(f["id"]): f["name"] for f in filelist}
 
 
-def download_if_missing(file_path, url, warn_missing=True, verbose=True):
-    """Download file from url to a specified path if it is not already there."""
+def download_if_missing(
+    file_path, url, warn_missing=True, verbose=True, force_update=False
+):
+    """Download file from url to a specified path if it is not already there.
+
+    If ``force_update`` is True, an existing local copy is deleted and
+    downloaded again.
+    """
 
     folder_path = osp.dirname(file_path)
 
@@ -633,6 +649,9 @@ def download_if_missing(file_path, url, warn_missing=True, verbose=True):
         if warn_missing:
             warn(f"Directory {folder_path} not found. Creating directory.")
         os.makedirs(folder_path)
+
+    if force_update and osp.exists(file_path):
+        os.remove(file_path)
 
     # Check if file exists, if not download it
     if not osp.exists(file_path):

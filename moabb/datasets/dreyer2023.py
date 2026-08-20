@@ -351,7 +351,9 @@ class _Dreyer2023Base(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
-        dataset_path = self.download_by_subject(subject=subject, path=path)
+        dataset_path = self.download_by_subject(
+            subject=subject, path=path, force_update=force_update
+        )
 
         tasks = get_entity_vals(dataset_path, "task")
 
@@ -375,7 +377,7 @@ class _Dreyer2023Base(BaseDataset):
 
         return bids_path_list
 
-    def download_by_subject(self, subject, path=None):
+    def download_by_subject(self, subject, path=None, force_update=False):
         """
         Download and extract the dataset.
 
@@ -388,6 +390,9 @@ class _Dreyer2023Base(BaseDataset):
             The path to the directory where the dataset should be downloaded.
             If None, the default directory is used.
 
+        force_update : bool
+            Force re-downloading the files even if local copies exist.
+
         Returns
         -------
         path : str
@@ -396,7 +401,9 @@ class _Dreyer2023Base(BaseDataset):
         path = Path(dl.get_dataset_path(self.code, path)) / (f"MNE-{self.code}-data")
 
         # checking it there is manifest file in the dataset folder.
-        dl.download_if_missing(path / "dreyer2023_manifest.tsv", _manifest_link)
+        dl.download_if_missing(
+            path / "dreyer2023_manifest.tsv", _manifest_link, force_update=force_update
+        )
 
         manifest = pd.read_csv(path / "dreyer2023_manifest.tsv", sep="\t")
 
@@ -413,12 +420,18 @@ class _Dreyer2023Base(BaseDataset):
                 "https://osf.io/download/", ""
             ).replace("/", "")
             dl.download_if_missing(
-                path / row["filename"], download_url, warn_missing=False
+                path / row["filename"],
+                download_url,
+                warn_missing=False,
+                force_update=force_update,
             )
 
         for _, row in manifest_subject.iterrows():
             if row["filename"].endswith(".zip"):
-                if not (path / row["filename"].replace(".zip", "")).exists():
+                if (
+                    force_update
+                    or not (path / row["filename"].replace(".zip", "")).exists()
+                ):
                     with zipfile.ZipFile(path / row["filename"], "r") as zip_ref:
                         zip_ref.extractall(path)
 

@@ -96,10 +96,10 @@ class CacheConfig:
         This flag specifies whether to use the disk cache in case it exists.
         If True, the Raw or Epochs objects returned will not be preloaded
         (this saves some time). Otherwise, they will be preloaded.
-        If use is False, the save_* and overwrite_* keys will be ignored.
+        The save_* and overwrite_* keys apply regardless of this flag.
     overwrite_*: bool
-        This flag specifies whether to overwrite the disk cache in
-        case it exist.
+        This flag specifies whether to erase the corresponding disk cache in
+        case it exists, before re-processing the data.
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
@@ -140,13 +140,11 @@ class CacheConfig:
         Using default parameters:
 
         >>> CacheConfig.make()
-        CacheConfig(save=True, use=True, overwrite=True, path=None)
 
         From a dict:
 
-        >>> dic = {"save": False}
+        >>> dic = {"save_raw": True, "use": True}
         >>> CacheConfig.make(dic)
-        CacheConfig(save=False, use=True, overwrite=True, path=None)
         """
         if dic is None:
             return cls()
@@ -980,24 +978,32 @@ class BaseDataset(metaclass=MetaclassDataset):
         # what each dataset's own loader produces, so substituting it would
         # silently change results rather than just change where bytes come from.
         if self.nemar_id is not None and provider != "upstream":
-            try:
-                self._download_nemar_sourcedata(
-                    subject_list=subject_list,
-                    path=path,
-                    force_update=force_update,
-                    verbose=verbose,
-                )
+            # Fall back per subject, not per batch: one failing subject should
+            # not discard what NEMAR already served for the others.
+            failed_subjects = []
+            for subject in subject_list:
+                try:
+                    self.sourcedata_path(
+                        subject=subject,
+                        path=path,
+                        force_update=force_update,
+                        verbose=verbose,
+                    )
+                except NemarDownloadError as exc:
+                    if provider == "nemar":
+                        raise
+                    failed_subjects.append(subject)
+                    warnings.warn(
+                        f"Could not download {self.code} subject {subject!r} "
+                        f"sourcedata from NEMAR ({self.nemar_id}); falling back "
+                        f"to the dataset data_path downloader for it. "
+                        f"Original error: {exc}",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
+            if not failed_subjects:
                 return
-            except NemarDownloadError as exc:
-                if provider == "nemar":
-                    raise
-                warnings.warn(
-                    f"Could not download {self.code} sourcedata from NEMAR "
-                    f"({self.nemar_id}); falling back to the dataset data_path "
-                    f"downloader. Original error: {exc}",
-                    RuntimeWarning,
-                    stacklevel=2,
-                )
+            subject_list = failed_subjects
 
         for subject in subject_list:
             # check if accept is needed
@@ -1067,7 +1073,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         Raises
         ------
         moabb.datasets.download.NemarDownloadError
-            If nemar-py is unavailable or the NEMAR download fails.
+            If the NEMAR download fails.
         """
         return nemar_dl(
             self.nemar_id,
@@ -1078,27 +1084,6 @@ class BaseDataset(metaclass=MetaclassDataset):
             verbose=verbose,
             **(self.nemar_bids_filters or {}),
         )
-
-    def _download_nemar_sourcedata(
-        self, subject_list=None, path=None, force_update=False, verbose=None
-    ):
-        """Fetch the original pre-BIDS distribution for a set of subjects.
-
-        Each subject is resolved through the deposit's provenance manifest
-        rather than by pattern-matching the layout, which across the catalogue
-        is genuinely arbitrary -- subjects appear as letters, as ``sub1``, as
-        ``S10_Session_1``, split across two path components, or not at all.
-
-        Raises
-        ------
-        moabb.datasets.download.NemarDownloadError
-            If nemar-py is unavailable, a download fails, or the deposit
-            publishes no ``sourcedata/``.
-        """
-        for subject in subject_list:
-            self.sourcedata_path(
-                subject=subject, path=path, force_update=force_update, verbose=verbose
-            )
 
     def sourcedata_path(self, subject=None, path=None, force_update=False, verbose=None):
         """Get the dataset's *original* pre-BIDS distribution from NEMAR.
@@ -1133,14 +1118,18 @@ class BaseDataset(metaclass=MetaclassDataset):
         ValueError
             If the dataset declares no ``nemar_id``.
         moabb.datasets.download.NemarDownloadError
-            If nemar-py is unavailable, the download fails, or the deposit
-            publishes no ``sourcedata/``.
+            If the download fails or the deposit publishes no ``sourcedata/``.
         """
         if self.nemar_id is None:
             raise ValueError(
                 f"{self.code} declares no nemar_id, so its original distribution "
                 "cannot be fetched from NEMAR."
             )
+        # Resolve the subject through nemar_subject_template when the dataset
+        # declares one (mirrors _download_nemar); without a template the raw
+        # MOABB id is what the provenance manifest records.
+        if subject is not None and self.nemar_subject_template is not None:
+            subject = self._nemar_subject(subject)
         return nemar_sourcedata_dl(
             self.nemar_id,
             self.code,
@@ -1341,8 +1330,15 @@ class BaseDataset(metaclass=MetaclassDataset):
         parameters.
         """
         steps = list(process_pipeline.steps)
+        overwrite_requested = (
+            cache_config.overwrite_raw
+            or cache_config.overwrite_epochs
+            or cache_config.overwrite_array
+        )
         splitted_steps = []  # list of (cached_steps, remaining_steps)
-        if cache_config.use:
+        # Also walk the cached prefixes when only erasing (use=False),
+        # so the overwrite_* flags stay effective:
+        if cache_config.use or overwrite_requested:
             splitted_steps += [
                 (steps[:i], steps[i:]) for i in range(len(steps), 0, -1)
             ]  # [len(steps)...1]

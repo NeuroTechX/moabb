@@ -601,8 +601,8 @@ def test_sourcedata_falls_back_to_the_whole_tree_without_subject_records(
 @pytest.mark.parametrize(
     ("n_subjects", "subject_list", "expected"),
     [
-        pytest.param(2, None, [1, 2], id="all-subjects"),
-        pytest.param(3, [1, 2], [1, 2], id="explicit-subject-list"),
+        pytest.param(2, None, ["1", "2"], id="all-subjects"),
+        pytest.param(3, [1, 2], ["1", "2"], id="explicit-subject-list"),
     ],
 )
 def test_download_selects_sourcedata_not_the_bids_copy(
@@ -673,6 +673,57 @@ def test_download_falls_back_to_upstream_when_sourcedata_missing(monkeypatch, tm
 
     with pytest.warns(RuntimeWarning, match="falling back"):
         dataset.download(path=tmp_path)
+
+
+def test_download_falls_back_per_subject(monkeypatch, tmp_path):
+    """One failing subject falls back alone; the others stay on NEMAR."""
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+    fallback_subjects = []
+
+    def _sourcedata(*args, subject=None, **kwargs):
+        if subject == "2":
+            raise dl.NemarDownloadError("transfer failed")
+        return str(tmp_path)
+
+    monkeypatch.setattr(base_module, "nemar_sourcedata_dl", _sourcedata)
+    dataset = FakeDataset(n_subjects=3)
+    dataset.nemar_id = "nm000115"
+    monkeypatch.setattr(
+        dataset, "data_path", lambda subject, **k: fallback_subjects.append(subject)
+    )
+
+    with pytest.warns(RuntimeWarning, match="subject 2"):
+        dataset.download(subject_list=[1, 2, 3], path=tmp_path)
+
+    assert fallback_subjects == [2]
+
+
+def test_set_download_provider_round_trip(_isolated_mne_config, monkeypatch):
+    """The provider switch validates, normalizes, resets, and honors the env var."""
+    from moabb.utils import get_download_provider, set_download_provider
+
+    # set_config writes the env var directly, so pin monkeypatch's recorded
+    # original NOW (while the key is absent) to guarantee teardown removes it.
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "placeholder")
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER")
+
+    assert get_download_provider() == "auto"
+
+    set_download_provider("NEMAR")
+    assert get_download_provider() == "nemar"
+
+    with pytest.raises(ValueError, match="Unknown download provider"):
+        set_download_provider("ftp")
+
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
+    assert get_download_provider() == "upstream"
+
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "carrier-pigeon")
+    assert get_download_provider() == "auto"
+
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER")
+    set_download_provider(None)
+    assert get_download_provider() == "auto"
 
 
 # -- Brandl2020 / DepositOnce -------------------------------------------------

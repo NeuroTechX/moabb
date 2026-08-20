@@ -405,7 +405,7 @@ class Stieger2021(BaseDataset):
                 if self.sessions is not None and ses not in self.sessions:
                     continue
                 fpath = os.path.join(basepath, file_name)
-                if not os.path.exists(fpath):
+                if force_update or not os.path.exists(fpath):
                     pooch.retrieve(
                         url=BASE_URL + id_file_list[file_name],
                         known_hash=hash_file_list[id_file_list[file_name]],
