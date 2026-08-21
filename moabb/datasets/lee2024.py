@@ -5,6 +5,7 @@ DOI: 10.3389/fnhum.2024.1320457
 Data: https://github.com/jml226/Home-Appliance-Control-Dataset
 """
 
+import json
 import logging
 from functools import partialmethod
 from pathlib import Path
@@ -32,6 +33,10 @@ log = logging.getLogger(__name__)
 
 _GITHUB_RAW = (
     "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset/main"
+)
+_GITHUB_API_TREE = (
+    "https://api.github.com/repos/jml226/Home-Appliance-Control-Dataset"
+    "/git/trees/main?recursive=1"
 )
 _DOI = "10.3389/fnhum.2024.1320457"
 _SIGN = "lee2024erp"
@@ -438,6 +443,45 @@ class Lee2024(BaseDataset):
 
         return raw
 
+    _upstream_paths = None
+
+    @classmethod
+    def _upstream_tree(cls):
+        """Blob paths of the upstream repo -- fetched once per process."""
+        if cls._upstream_paths is None:
+            import requests
+
+            resp = requests.get(_GITHUB_API_TREE, timeout=120)
+            resp.raise_for_status()
+            cls._upstream_paths = [
+                e["path"] for e in resp.json()["tree"] if e["type"] == "blob"
+            ]
+        return cls._upstream_paths
+
+    def _subject_files(self, config, subj_str):
+        """One subject's files, as upstream-relative paths under the experiment.
+
+        The NEMAR deposit's provenance manifest is the preferred inventory --
+        it mirrors the upstream names exactly and is already local after the
+        sourcedata store is fetched, so the NEMAR path never contacts the
+        upstream host at all. Without a store (provider ``"upstream"``), the
+        upstream git tree is the authoritative inventory (gh-1142: guessing
+        filename patterns silently dropped 345 files, e.g. subject 8's
+        unpadded ``sub8_*`` names and every ``param.mat``).
+        """
+        store = self._sourcedata_store()
+        manifest = store / "sourcedata_provenance.json" if store else None
+        if manifest and manifest.is_file():
+            rels = (f["file"] for f in json.loads(manifest.read_text())["files"])
+        else:
+            prefix = config["dir_name"] + "/"
+            rels = (
+                path[len(prefix) :]
+                for path in self._upstream_tree()
+                if path.startswith(prefix)
+            )
+        return sorted(r for r in rels if r.startswith(f"Dat_{subj_str}/"))
+
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -445,51 +489,21 @@ class Lee2024(BaseDataset):
             raise ValueError("Invalid subject number")
 
         config = _EXPERIMENT_CONFIGS[self._experiment]
-        subj_dir = self._subject_dir(subject, path)
         subj_str = self._subj_str(subject, config)
-
-        import requests as _requests
-
-        files_to_dl = []
-
-        # Testing blocks.
-        for i in range(1, 31):
-            files_to_dl.append(f"{subj_str}_Testing{i}.mat")
-
-        # Training blocks. Upstream ships combined and per-block files in
-        # mixtures the configs do not capture (AirConditioner is "combined"
-        # yet six subjects also have Training1..50), so request both forms
-        # and let the 404 skip sort out which exist for this subject (gh-1142).
-        if config["has_training"]:
-            files_to_dl.append(f"{subj_str}_Training.mat")
-            files_to_dl.extend(f"{subj_str}_Training{i}.mat" for i in range(1, 51))
-
-        # Calibration signal and recording parameters.
-        files_to_dl += ["cal_sig.mat", "param.mat"]
-
-        subj_dir.mkdir(parents=True, exist_ok=True)
-
-        for fname in files_to_dl:
-            local = subj_dir / fname
-            if local.exists() and not force_update:
-                continue
-            # Subject 8's files carry the UNPADDED id upstream
-            # (Dat_sub08/sub8_Testing1.mat), so a 404 under the padded name
-            # retries unpadded. Any other failure now raises instead of
-            # leaving a silently incomplete directory (gh-1142).
-            for name in dict.fromkeys([fname, fname.replace(subj_str, f"sub{subject}")]):
-                url = f"{_GITHUB_RAW}/{config['dir_name']}/Dat_{subj_str}/{name}"
-                resp = _requests.get(url, stream=True, timeout=120)
-                if resp.status_code == 404:
-                    continue
-                resp.raise_for_status()
-                log.info("Downloading %s ...", name)
-                with open(local, "wb") as fout:
-                    for chunk in resp.iter_content(chunk_size=8192):
-                        fout.write(chunk)
-                break
-
-        return str(subj_dir)
+        unpadded = self._subj_str(subject, {"zero_pad": False})
+        for rel in self._subject_files(config, subj_str):
+            # The loader constructs zero-padded names; subject 8's upstream
+            # files are unpadded (sub8_*), so normalize the local name.
+            local = rel.replace(f"{unpadded}_", f"{subj_str}_")
+            dl.data_dl(
+                f"{_GITHUB_RAW}/{config['dir_name']}/{rel}",
+                _SIGN,
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
+                fname=f"{config['dir_name']}/{local}",
+            )
+        return str(self._subject_dir(subject, path))
 
 
 class Lee2024_TV(Lee2024):

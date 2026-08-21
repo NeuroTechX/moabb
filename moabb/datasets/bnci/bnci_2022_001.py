@@ -299,14 +299,11 @@ def _convert_run_001_2022(
             255: "trajectory_end",
         }
 
-        # The hardware trigger is an 8-bit signal sampled continuously, so one
-        # event pulse can stay non-zero over several consecutive samples.
-        # Annotate only the onset of each pulse (a rising edge or a change of
-        # value); annotating every non-zero sample would turn each pulse into
-        # dozens of duplicated events.
-        trigger = np.asarray(trigger)
-        previous = np.concatenate(([0], trigger[:-1]))
-        event_indices = np.flatnonzero((trigger != 0) & (trigger != previous))
+        # The trigger is sampled continuously, so a pulse spans several
+        # samples; annotate only its onset (rising edge or value change).
+        event_indices = np.flatnonzero(
+            (trigger != 0) & (np.diff(trigger, prepend=0) != 0)
+        )
         if len(event_indices) > 0:
             event_times = event_indices / sfreq
             event_values = trigger[event_indices].astype(int)
@@ -676,14 +673,8 @@ class BNCI2022_001(BNCIBaseDataset):
         super().__init__(
             subjects=list(range(1, 14)),
             sessions_per_subject=1,
-            # Only the trajectory itself is a trial: each of the 32 trajectories
-            # lasts ~90 seconds and starts at trigger code 1. The other trigger
-            # codes (waypoint_miss=16, waypoint_hit=48, trajectory_end=255) are
-            # instantaneous point markers occurring ~1000 times per subject;
-            # epoching them with the 90 s trial interval would produce hundreds
-            # of hours of overlapping epochs per subject. They are therefore not
-            # declared as trial events, but remain available as annotations on
-            # the loaded raw data (see ``_convert_run_001_2022``).
+            # Waypoint/end codes (16/48/255) are instantaneous point markers,
+            # not 90 s trials; see the class docstring.
             events={"trajectory_start": 1},
             code="BNCI2022-001",
             interval=[0, 90],  # Approximately 90 seconds per trajectory

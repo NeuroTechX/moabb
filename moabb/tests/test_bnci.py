@@ -123,26 +123,8 @@ def _load_fake_2022_001_raw(tmp_path):
     return raw, n_traj
 
 
-def test_bnci2022_001_declares_only_trajectory_trials():
-    """Point events must not be declared as 90 s trials.
-
-    The waypoint hit/miss and trajectory-end triggers are instantaneous
-    markers occurring ~1000 times per subject; combined with the 90 s trial
-    interval they made default paradigm epoching try to allocate hundreds of
-    GiB (gh-1143, defect 1). Only the ~90 s trajectory is a trial.
-    """
-    dataset = BNCI2022_001()
-    assert dataset.event_id == {"trajectory_start": 1}
-    assert dataset.interval == [0, 90]
-
-
 def test_bnci2022_001_trigger_pulses_annotated_once(tmp_path):
-    """Each held trigger pulse must yield exactly one annotation.
-
-    The 8-bit hardware trigger holds each event code over several consecutive
-    samples; annotating every non-zero sample multiplied each real event into
-    dozens of duplicates (33k+ events per subject on develop).
-    """
+    """Each held trigger pulse yields one annotation, not one per sample (gh-1143)."""
     raw, n_traj = _load_fake_2022_001_raw(tmp_path)
     desc = raw.annotations.description
     assert np.sum(desc == "trajectory_start") == n_traj
@@ -152,15 +134,10 @@ def test_bnci2022_001_trigger_pulses_annotated_once(tmp_path):
 
 
 def test_bnci2022_001_default_epoching_is_bounded(tmp_path):
-    """Default trial derivation must stay within the recording's duration.
-
-    Applies the dataset's own event_id/interval the way both
-    ``BaseDataset.get_data`` and the paradigm pipelines do (via
-    ``SetRawAnnotations``) and checks that the resulting trials are the
-    n_trajectories 90 s trajectories, not thousands of overlapping 90 s
-    epochs anchored on instantaneous waypoint markers.
-    """
+    """Only the ~90 s trajectories are trials; point markers are not (gh-1143)."""
     dataset = BNCI2022_001()
+    assert dataset.event_id == {"trajectory_start": 1}
+    assert dataset.interval == [0, 90]
     raw, n_traj = _load_fake_2022_001_raw(tmp_path)
     transform = SetRawAnnotations(dataset.event_id, interval=tuple(dataset.interval))
     raw = transform.transform(raw)

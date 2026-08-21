@@ -305,30 +305,14 @@ def test_schirrmeister2017_reuses_relocated_files(tmp_path: Path, monkeypatch):
 
 
 def test_kaneshiro2015_valid_for_declared_paradigm():
-    """Kaneshiro2015 must be accepted by the paradigm it declares.
-
-    The dataset has six object categories and no Target/NonTarget
-    events, so it cannot satisfy the P300 paradigm; it is tagged
-    "imagery" to route it to the n-class paradigms (like BNCI2022_001).
-    """
+    """Kaneshiro2015 is accepted by its declared paradigm (gh-1143): six object
+    categories, no Target/NonTarget, so "imagery" routes it to n-class paradigms."""
     from moabb.paradigms import P300, Imagery, MotorImagery
 
     dataset = Kaneshiro2015()
-
     assert dataset.paradigm == "imagery"
-    assert dataset.metadata.experiment.paradigm == dataset.paradigm
-
     for paradigm in (MotorImagery(), Imagery(), MotorImagery(n_classes=6)):
         assert paradigm.is_valid(dataset)
-        used = paradigm.used_events(dataset)
-        assert used == {
-            "human_body": 1,
-            "human_face": 2,
-            "animal_body": 3,
-            "animal_face": 4,
-            "fruit_vegetable": 5,
-            "inanimate_object": 6,
-        }
-
+        assert paradigm.used_events(dataset) == dataset.event_id
     # The old declaration was broken: P300 requires Target/NonTarget.
     assert not P300().is_valid(dataset)

@@ -72,9 +72,7 @@ class RestingStateToP300Adapter(BaseP300):
         )
 
     def used_events(self, dataset):
-        if self.events is None:
-            return dict(dataset.event_id)
-        return {ev: dataset.event_id[ev] for ev in self.events}
+        return {ev: dataset.event_id[ev] for ev in self.events or dataset.event_id}
 
     def is_valid(self, dataset):
         ret = True
