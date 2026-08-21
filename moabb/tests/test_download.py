@@ -743,6 +743,59 @@ def test_sourcedata_subject_aliases_match_the_manifest(
     assert "sourcedata/" + glob_module.escape(expected_file) in patterns
 
 
+_ERPCORE_FAKE_MANIFEST = """component,participant_id,local_path,url
+N170,sub-001,erpcore/N170/sub-001/eeg/sub-001_task-N170_eeg.set,https://osf.example/n170-sub1
+N170,,erpcore/N170/dataset_description.json,https://osf.example/n170-desc
+P3,sub-001,erpcore/P3/sub-001/eeg/sub-001_task-P3_eeg.set,https://osf.example/p3-sub1
+P3,,erpcore/P3/dataset_description.json,https://osf.example/p3-desc
+"""
+
+
+@pytest.fixture
+def _erpcore_fake_downloads(monkeypatch):
+    """Serve a fake manifest and record every other requested download."""
+    recorded = []
+
+    def _fake(file_path, url, warn_missing=True, verbose=True, force_update=False):
+        target = Path(file_path)
+        if target.name == "erpcore_manifest.csv":
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(_ERPCORE_FAKE_MANIFEST)
+        else:
+            recorded.append((target, url))
+
+    monkeypatch.setattr(dl, "download_if_missing", _fake)
+    return recorded
+
+
+def test_erpcore_components_share_one_bids_root(tmp_path, _erpcore_fake_downloads):
+    """ERP CORE is one BIDS dataset; components are separated by task only."""
+    from moabb.datasets.erpcore2021 import ErpCore2021_N170, ErpCore2021_P3
+
+    root_n170 = ErpCore2021_N170().download_by_subject(subject=1, path=tmp_path)
+    root_p3 = ErpCore2021_P3().download_by_subject(subject=1, path=tmp_path)
+
+    assert root_n170 == root_p3 == tmp_path / "MNE-erpcore2021-data"
+    targets = [target for target, _ in _erpcore_fake_downloads]
+    assert root_n170 / "sub-001" / "eeg" / "sub-001_task-N170_eeg.set" in targets
+    assert root_p3 / "sub-001" / "eeg" / "sub-001_task-P3_eeg.set" in targets
+    # The component prefix is stripped: nothing lands in a per-task subfolder.
+    assert all("erpcore" not in target.parts for target in targets)
+
+
+def test_erpcore_reuses_legacy_per_component_download(tmp_path, _erpcore_fake_downloads):
+    """A pre-existing separated-layout download is read, not re-fetched."""
+    from moabb.datasets.erpcore2021 import ErpCore2021_N170
+
+    legacy_root = tmp_path / "MNE-erpcoren1702021-data"
+    (legacy_root / "sub-001").mkdir(parents=True)
+
+    root = ErpCore2021_N170().download_by_subject(subject=1, path=tmp_path)
+
+    assert root == legacy_root
+    assert _erpcore_fake_downloads == []
+
+
 def test_set_download_provider_round_trip(_isolated_mne_config, monkeypatch):
     """The provider switch validates, normalizes, resets, and honors the env var."""
     from moabb.utils import get_download_provider, set_download_provider

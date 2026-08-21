@@ -32,6 +32,12 @@ _manifest_link = (
     "https://zenodo.org/records/14866307/files/erpcore_manifest.csv?download=1"
 )
 
+# ERP CORE is one BIDS dataset where the component is the ``task-`` entity;
+# every class shares this root and selects its files by task.
+DATASET_FOLDER = "MNE-erpcore2021-data"
+
+# The original distribution shipped one standalone BIDS dataset per component.
+# Kept only to read pre-existing downloads in that layout without re-fetching.
 DATASET_PARAMS = {
     task: {
         "archive_name": f"ERPCORE2021_{task}.zip",
@@ -252,7 +258,14 @@ class ErpCore2021(BaseDataset):
 
     def download_by_subject(self, subject, path=None, force_update=False):
         """
-        Download and extract the dataset.
+        Download the subject's files into the combined BIDS dataset.
+
+        ERP CORE is one BIDS dataset whose components are separated by the
+        ``task-`` entity, so all seven classes share a single root
+        (``MNE-erpcore2021-data``); the per-component filenames never collide
+        because each carries its task. A pre-existing download in the legacy
+        one-dataset-per-component layout is reused as-is instead of
+        re-fetching.
 
         Parameters
         ----------
@@ -263,24 +276,37 @@ class ErpCore2021(BaseDataset):
             The path to the directory where the dataset should be downloaded.
             If None, the default directory is used.
 
+        force_update : bool
+            Force re-downloading the files even if local copies exist.
 
         Returns
         -------
         path : str
-            The dataset path.
+            The BIDS root containing the subject's files.
         """
         if path is not None:
-            path = Path(path) / DATASET_PARAMS[self.task]["folder_name"]
+            root = Path(path) / DATASET_FOLDER
         else:
-            mne_path = Path(dl.get_dataset_path(self.task, path))
-            path = mne_path / DATASET_PARAMS[self.task]["folder_name"]
+            root = Path(dl.get_dataset_path("ERPCORE2021", path)) / DATASET_FOLDER
+
+        # Reuse a legacy per-component download when it already has this
+        # subject and the combined root does not, so existing caches keep
+        # working without a re-download.
+        subject_dir = f"sub-{subject:03d}"
+        legacy_root = root.parent / DATASET_PARAMS[self.task]["folder_name"]
+        if (
+            not force_update
+            and not (root / subject_dir).is_dir()
+            and (legacy_root / subject_dir).is_dir()
+        ):
+            return legacy_root
 
         # checking it there is manifest file in the dataset folder.
         dl.download_if_missing(
-            path / "erpcore_manifest.csv", _manifest_link, force_update=force_update
+            root / "erpcore_manifest.csv", _manifest_link, force_update=force_update
         )
 
-        manifest = pd.read_csv(path / "erpcore_manifest.csv")
+        manifest = pd.read_csv(root / "erpcore_manifest.csv")
 
         manifest_task = manifest[manifest["component"].str.upper() == self.task.upper()]
 
@@ -296,13 +322,13 @@ class ErpCore2021(BaseDataset):
 
         for _, row in tqdm.tqdm(manifest_subject.iterrows()):
             dl.download_if_missing(
-                path / row["local_path"],
+                root / row["local_path"],
                 row["url"],
                 warn_missing=False,
                 force_update=force_update,
             )
 
-        return path
+        return root
 
     def events_path(self, subject):
         """
