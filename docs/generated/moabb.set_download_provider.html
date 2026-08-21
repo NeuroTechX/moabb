@@ -716,6 +716,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.data_dl.html">moabb.datasets.download.data_dl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.nemar_dl.html">moabb.datasets.download.nemar_dl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.nemar_sourcedata_dl.html">moabb.datasets.download.nemar_sourcedata_dl</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_issue_request.html">moabb.datasets.download.fs_issue_request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_list.html">moabb.datasets.download.fs_get_file_list</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.download.fs_get_file_hash.html">moabb.datasets.download.fs_get_file_hash</a></li>
@@ -882,7 +884,7 @@
 <h1>moabb.set_download_provider<a class="headerlink" href="#moabb-set-download-provider" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="moabb.set_download_provider">
-<span class="sig-prename descclassname"><span class="pre">moabb.</span></span><span class="sig-name descname"><span class="pre">set_download_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/utils.py#L286-L322"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.set_download_provider" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">moabb.</span></span><span class="sig-name descname"><span class="pre">set_download_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/utils.py#L286-L326"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.set_download_provider" title="Link to this definition">#</a></dt>
 <dd><p>Choose where MOABB fetches dataset files from.</p>
 <p>Many datasets are mirrored on NEMAR, which also republishes the original
 pre-BIDS distribution under <code class="docutils literal notranslate"><span class="pre">sourcedata/</span></code>. Pinning the provider to
@@ -890,6 +892,9 @@ pre-BIDS distribution under <code class="docutils literal notranslate"><span cla
 are slow, rate-limited, behind a bot gate, or retired – at the cost of
 failing outright, rather than silently falling back, when NEMAR cannot
 serve a dataset.</p>
+<p>The provider governs where <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.download" title="moabb.datasets.base.BaseDataset.download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download()</span></code></a>
+fetches from; loading then serves files from the fetched NEMAR store before
+the URL-derived layout (pinning <code class="docutils literal notranslate"><span class="pre">&quot;upstream&quot;</span></code> opts loading out as well).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>provider</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – One of <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;nemar&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;upstream&quot;</span></code>. Passing
