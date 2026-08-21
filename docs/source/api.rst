@@ -67,6 +67,7 @@ Motor Imagery Datasets
     BNCI2025_001
     BNCI2025_002
     Cho2017
+    Kaneshiro2015
     Dreyer2023
     Dreyer2023A
     Dreyer2023B
@@ -176,7 +177,6 @@ ERP/P300 Datasets
     Lee2021Mobile_ERP
     Chailloux2020
     GuttmannFlury2025_P300
-    Kaneshiro2015
     Lee2024_AC
     Lee2024_BS
     Lee2024_DL
