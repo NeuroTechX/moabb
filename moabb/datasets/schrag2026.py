@@ -14,9 +14,9 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from mne.utils import _soft_import
 
 from . import download as dl
+from ._xdf import read_xdf
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
@@ -125,7 +125,7 @@ class Schrag2026Pediatric(BaseDataset):
 
     .. note::
         The dataset ships as a single ~1.2 GB ``DatasetData.zip`` on
-        Zenodo. Subjects are extracted on demand; ``pyxdf`` is required
+        Zenodo. Subjects are extracted on demand.
         (``pip install moabb[xdf]``).
 
     References
@@ -349,12 +349,7 @@ def _load_xdf_streams(fpath):
     empty ``gUSBamp-1Markers`` stream that wins a type-based ``"Markers"``
     match in some files (it appears first in the XDF stream order).
     """
-    pyxdf = _soft_import("pyxdf", "loading XDF data for Schrag2026Pediatric")
-    streams, _ = pyxdf.load_xdf(
-        str(fpath),
-        select_streams=[{"type": "EEG"}, {"name": "UnityMarkerStream"}],
-        verbose=False,
-    )
+    streams, _ = read_xdf(str(fpath))
     eeg_stream = marker_stream = None
     for s in streams:
         if s["info"]["type"][0] == "EEG":

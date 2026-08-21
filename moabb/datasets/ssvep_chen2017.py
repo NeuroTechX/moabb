@@ -4,7 +4,6 @@ Chen et al. (2017), PLOS ONE.
 DOI: 10.1371/journal.pone.0178385
 """
 
-import importlib
 import logging
 import zipfile
 from pathlib import Path
@@ -16,6 +15,7 @@ from mne.io import RawArray
 from scipy.io import loadmat
 
 from . import download as dl
+from ._xdf import read_xdf
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
@@ -57,7 +57,6 @@ class Chen2017SingleFlicker(BaseDataset):
     - **Session "0" (training)**: Structured calibration data from ``.xdf``
       files recorded at 2048 Hz. Each subject has 2 runs of 100 trials
       (50 per direction, 200 total), with ~3.5 s per trial. Requires
-      ``pyxdf`` (install with ``pip install moabb[xdf]``).
     - **Session "1" (online)**: Adaptive BCI game data from ``.mat`` files
       recorded at 512 Hz. Variable-length trials from approximately 16 game
       rounds per subject.
@@ -199,7 +198,7 @@ class Chen2017SingleFlicker(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for one subject with training and online sessions.
 
-        Session "0" (training): XDF calibration data at 2048 Hz (requires pyxdf).
+        Session "0" (training): XDF calibration data at 2048 Hz.
         Session "1" (online): MAT game data at 512 Hz.
         """
         file_paths = self.data_path(subject)
@@ -230,15 +229,7 @@ class Chen2017SingleFlicker(BaseDataset):
         stream with direction labels ("N", "E", "W", "S", "0").
         Channels 1:33 (A1-A32) are extracted as EEG.
         """
-        try:
-            pyxdf = importlib.import_module("pyxdf")
-        except ImportError as exc:
-            raise ImportError(
-                "The 'pyxdf' package is required to load XDF training data for "
-                "Chen2017SingleFlicker. Install it with `pip install moabb[xdf]`."
-            ) from exc
-
-        streams, _ = pyxdf.load_xdf(str(xdf_path))
+        streams, _ = read_xdf(str(xdf_path))
 
         # Find EEG and Marker streams
         eeg_stream = None

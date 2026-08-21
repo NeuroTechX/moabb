@@ -14,9 +14,11 @@ def _chunk(tag, body):
 
 def _write_xdf(path):
     eeg_xml = (
-        b"<info><name>EEG</name><type>EEG</type><channel_count>2</channel_count>"
-        b"<nominal_srate>500</nominal_srate>"
-        b"<channel_format>float32</channel_format></info>"
+        b"<info><name>gUSBamp</name><type>EEG</type>"
+        b"<channel_count>2</channel_count><nominal_srate>500</nominal_srate>"
+        b"<channel_format>float32</channel_format>"
+        b"<desc><channels><channel><label>C3</label></channel>"
+        b"<channel><label>C4</label></channel></channels></desc></info>"
     )
     mark_xml = (
         b"<info><name>Game</name><type>Markers</type><channel_count>1"
@@ -53,14 +55,22 @@ def test_read_xdf_numeric_string_and_quirky_footer(tmp_path):
     path = tmp_path / "rec.xdf"
     _write_xdf(path)
 
-    streams = read_xdf(str(path))
+    streams, header = read_xdf(str(path))
 
-    eeg = streams[1]
-    assert eeg["info"]["type"] == "EEG"
-    np.testing.assert_array_equal(eeg["series"], np.arange(8, dtype="<f4").reshape(4, 2))
-    np.testing.assert_allclose(eeg["stamps"], 10.0 + np.arange(4) / 500)
-    assert eeg["clock_offsets"] == [(10.0, 0.001)]
+    assert header == {"version": ["1.0"]}
+    eeg, markers = streams
+    assert eeg["info"]["type"] == ["EEG"]
+    np.testing.assert_array_equal(
+        eeg["time_series"], np.arange(8, dtype="<f4").reshape(4, 2)
+    )
+    np.testing.assert_allclose(eeg["time_stamps"], 10.0 + np.arange(4) / 500)
+    # nested desc, pyxdf-shaped (used by Schrag2026 for channel labels)
+    channels = eeg["info"]["desc"][0]["channels"][0]["channel"]
+    assert [c["label"][0] for c in channels] == ["C3", "C4"]
 
-    markers = streams[2]
-    assert [row[0] for row in markers["series"]] == ["AVANZAR", "Spoken AVANZAR"]
-    np.testing.assert_allclose(markers["stamps"], [10.004, 10.006])
+    assert markers["info"]["name"] == ["Game"]
+    assert [row[0] for row in markers["time_series"]] == [
+        "AVANZAR",
+        "Spoken AVANZAR",
+    ]
+    np.testing.assert_allclose(markers["time_stamps"], [10.004, 10.006])

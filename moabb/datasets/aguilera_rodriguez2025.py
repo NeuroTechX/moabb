@@ -307,22 +307,24 @@ class AguileraRodriguez2025(BaseDataset):
             elif session == 2:
                 # Gamified (XDF), via MOABB's built-in reader: these files'
                 # non-conforming footer (float sample_count) crashes pyxdf.
-                streams = read_xdf(fpath)
-                eeg_stream = next(
-                    (s for s in streams.values() if s["info"]["type"] == "EEG"), None
-                )
-                marker_stream = next(
-                    (s for s in streams.values() if s["info"]["type"] == "Markers"), None
-                )
+                streams, _ = read_xdf(fpath)
+                eeg_stream = None
+                marker_stream = None
+                for stream in streams:
+                    if stream["info"]["type"][0] == "EEG":
+                        eeg_stream = stream
+                    elif stream["info"]["type"][0] == "Markers":
+                        marker_stream = stream
+
                 if eeg_stream is None or marker_stream is None:
                     raise RuntimeError(
                         f"EEG or Marker stream not found for subject {subject}"
                     )
 
-                data_exp = eeg_stream["series"].T
-                t_start = eeg_stream["stamps"][0]
-                onsets = marker_stream["stamps"] - t_start
-                descriptions = [str(row[0]) for row in marker_stream["series"]]
+                data_exp = eeg_stream["time_series"].T
+                t_start = eeg_stream["time_stamps"][0]
+                onsets = marker_stream["time_stamps"] - t_start
+                descriptions = [str(t[0]) for t in marker_stream["time_series"]]
 
                 new_onsets, new_descriptions = [], []
                 for onset, descrp in zip(onsets, descriptions):
