@@ -309,7 +309,7 @@ class Test_Datasets:
         for file in sorted(datasets_dir.rglob("*.py")):
             if file.name in exempt:
                 continue
-            tree = ast.parse(file.read_text())
+            tree = ast.parse(file.read_text(encoding="utf-8"))
             for node in ast.walk(tree):
                 if not (isinstance(node, ast.FunctionDef) and node.name == "data_path"):
                     continue
