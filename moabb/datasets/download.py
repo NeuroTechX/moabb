@@ -25,6 +25,7 @@ from mne.utils import _url_to_local_path, verbose, warn
 from nemar.errors import NemarError, SelectionError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
+from pooch.utils import unique_file_name
 from requests.exceptions import HTTPError
 
 
@@ -215,14 +216,19 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
     path = get_dataset_path(sign, path)
     key_dest = "MNE-{:s}-data".format(sign.lower())
     destination = _url_to_local_path(url, osp.join(path, key_dest))
-    if not force_update and not osp.isfile(destination):
+    # retrieve() below treats `destination` as a directory and stores the file
+    # inside it under pooch's unique name; several loaders then listdir() that
+    # directory. Fill the store copy at the same wrapped path -- a plain file
+    # at `destination` would shadow the directory and break those loaders.
+    wrapped = osp.join(destination, unique_file_name(url))
+    if not force_update and not osp.isfile(wrapped):
         mirror = _store_lookup(url)
         if mirror is not None:
-            os.makedirs(osp.dirname(destination), exist_ok=True)
+            os.makedirs(destination, exist_ok=True)
             try:
-                os.link(mirror, destination)
+                os.link(mirror, wrapped)
             except OSError:
-                shutil.copy2(mirror, destination)
+                shutil.copy2(mirror, wrapped)
     # Fetch the file
     if not osp.isfile(destination) or force_update:
         if osp.isfile(destination):

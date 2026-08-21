@@ -886,6 +886,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
 
+        self._prefetch_nemar_sourcedata(subjects)
+
         results = Parallel(n_jobs=n_jobs)(
             delayed(self._get_selected_subject_data)(
                 subject, cache_config, process_pipeline, str_sessions, pat
@@ -1090,6 +1092,43 @@ class BaseDataset(metaclass=MetaclassDataset):
             verbose=verbose,
             **(self.nemar_bids_filters or {}),
         )
+
+    def _prefetch_nemar_sourcedata(self, subjects, verbose=None):
+        """Fill the NEMAR sourcedata store for these subjects before loading.
+
+        :meth:`get_data` serves loads through the store (see
+        :meth:`_sourcedata_store`), but the store only has content once
+        something fetched it -- previously that something was an explicit
+        :meth:`download` call, so a plain ``get_data()`` on a fresh machine
+        still reached the upstream host even with the provider pinned to
+        ``"nemar"``. Fetch each requested subject's ``sourcedata/`` here,
+        with the provider policy :meth:`download` already implements:
+        ``"upstream"`` skips NEMAR entirely, ``"nemar"`` treats a failure as
+        fatal rather than silently reaching the host the caller opted out
+        of, and ``"auto"`` warns per subject and leaves that subject to the
+        dataset's own downloader. A non-empty store is trusted as-is and
+        costs no network at all -- refresh or extend it with
+        :meth:`download` (``force_update=True`` to refetch).
+        """
+        provider = get_download_provider()
+        if self.nemar_id is None or provider == "upstream":
+            return
+        store = self._sourcedata_store()
+        if store is not None and store.is_dir() and any(store.iterdir()):
+            return
+        for subject in subjects:
+            try:
+                self.sourcedata_path(subject=subject, verbose=verbose)
+            except NemarDownloadError as exc:
+                if provider == "nemar":
+                    raise
+                warnings.warn(
+                    f"Could not fetch {self.code} subject {subject!r} "
+                    f"sourcedata from NEMAR ({self.nemar_id}); its load will "
+                    f"use the dataset's own downloader. Original error: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
 
     def _sourcedata_store(self):
         """Local NEMAR sourcedata store to serve this dataset's loads from.
