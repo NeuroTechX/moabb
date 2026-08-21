@@ -58,19 +58,21 @@ def _store_lookup(url, fname=None):
     """Serve ``url``'s file from the active local store, if present.
 
     The store keeps the upstream relative layout, so the file is probed by the
-    trailing segments of the URL path, longest tail first; an explicit
-    ``fname`` is probed as-is. A miss returns None and the caller downloads.
+    trailing segments of the URL path, longest tail first. An explicit
+    ``fname`` is probed first, but the URL tails remain fallbacks: a caller's
+    ``fname`` names the *destination* (e.g. Lee2024 prefixes the experiment
+    directory and zero-pads subject 8), while the store keeps the upstream
+    names, so the two can legitimately differ. A miss returns None and the
+    caller downloads.
     """
     store = _ACTIVE_STORE.get()
     if store is None:
         return None
-    if fname is not None:
-        tails = [PurePosixPath(fname).parts]
-    else:
-        parts = PurePosixPath(urlparse(url).path).parts
-        # ponytail: three trailing segments cover every current dataset layout;
-        # deepen if a deposit ever nests further.
-        tails = [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
+    tails = [PurePosixPath(fname).parts] if fname is not None else []
+    parts = PurePosixPath(urlparse(url).path).parts
+    # ponytail: three trailing segments cover every current dataset layout;
+    # deepen if a deposit ever nests further.
+    tails += [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
     for tail in tails:
         if not tail:
             continue
