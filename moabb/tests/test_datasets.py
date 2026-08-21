@@ -1755,3 +1755,36 @@ def test_constructor_summary_table_cross_ref(dataset_cls):
         warnings.warn(
             f"{name} summary CSV mismatch: {'; '.join(mismatches)}", stacklevel=1
         )
+
+
+def test_lee2024_data_path_requests_every_upstream_form(tmp_path, monkeypatch):
+    """gh-1142: padded AND unpadded names, both training forms, param.mat;
+    a non-404 failure raises instead of leaving a silently incomplete dir."""
+    import requests
+
+    from moabb.datasets import Lee2024_DL
+
+    seen = []
+
+    class _NotFound:
+        status_code = 404
+
+    monkeypatch.setattr(requests, "get", lambda url, **k: seen.append(url) or _NotFound())
+    dataset = Lee2024_DL()
+    dataset.data_path(8, path=str(tmp_path))
+    urls = "\n".join(seen)
+    assert "sub08_Testing1.mat" in urls  # padded first
+    assert "sub8_Testing1.mat" in urls  # unpadded retry (upstream layout)
+    assert "sub08_Training.mat" in urls  # combined form
+    assert "sub08_Training50.mat" in urls  # per-block form
+    assert "param.mat" in urls
+
+    class _Boom:
+        status_code = 500
+
+        def raise_for_status(self):
+            raise requests.HTTPError("500")
+
+    monkeypatch.setattr(requests, "get", lambda url, **k: _Boom())
+    with pytest.raises(requests.HTTPError):
+        dataset.data_path(1, path=str(tmp_path))

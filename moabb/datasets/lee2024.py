@@ -456,17 +456,16 @@ class Lee2024(BaseDataset):
         for i in range(1, 31):
             files_to_dl.append(f"{subj_str}_Testing{i}.mat")
 
-        # Training blocks (per-block).
-        if config["has_training"] and not config["training_combined"]:
-            for i in range(1, 51):
-                files_to_dl.append(f"{subj_str}_Training{i}.mat")
-
-        # Combined training.
-        if config["has_training"] and config["training_combined"]:
+        # Training blocks. Upstream ships combined and per-block files in
+        # mixtures the configs do not capture (AirConditioner is "combined"
+        # yet six subjects also have Training1..50), so request both forms
+        # and let the 404 skip sort out which exist for this subject (gh-1142).
+        if config["has_training"]:
             files_to_dl.append(f"{subj_str}_Training.mat")
+            files_to_dl.extend(f"{subj_str}_Training{i}.mat" for i in range(1, 51))
 
-        # Calibration signal.
-        files_to_dl.append("cal_sig.mat")
+        # Calibration signal and recording parameters.
+        files_to_dl += ["cal_sig.mat", "param.mat"]
 
         subj_dir.mkdir(parents=True, exist_ok=True)
 
@@ -474,19 +473,21 @@ class Lee2024(BaseDataset):
             local = subj_dir / fname
             if local.exists() and not force_update:
                 continue
-            dir_name = config["dir_name"]
-            url = f"{_GITHUB_RAW}/{dir_name}/Dat_{subj_str}/{fname}"
-            log.info("Downloading %s ...", fname)
-            try:
+            # Subject 8's files carry the UNPADDED id upstream
+            # (Dat_sub08/sub8_Testing1.mat), so a 404 under the padded name
+            # retries unpadded. Any other failure now raises instead of
+            # leaving a silently incomplete directory (gh-1142).
+            for name in dict.fromkeys([fname, fname.replace(subj_str, f"sub{subject}")]):
+                url = f"{_GITHUB_RAW}/{config['dir_name']}/Dat_{subj_str}/{name}"
                 resp = _requests.get(url, stream=True, timeout=120)
                 if resp.status_code == 404:
                     continue
                 resp.raise_for_status()
+                log.info("Downloading %s ...", name)
                 with open(local, "wb") as fout:
                     for chunk in resp.iter_content(chunk_size=8192):
                         fout.write(chunk)
-            except Exception as e:
-                log.warning("Download failed for %s: %s", fname, e)
+                break
 
         return str(subj_dir)
 
