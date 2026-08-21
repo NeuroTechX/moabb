@@ -1091,3 +1091,72 @@ def test_data_dl_fname_overrides_url_derived_name(
 
     assert captured["fname"] == fname
     assert Path(result).parts[-2:] == expected_parts
+
+
+# --------------------------------------------------------------------------
+# get_data(): prefetching the NEMAR sourcedata store
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("provider", "expectation"),
+    [
+        pytest.param("upstream", "skipped", id="upstream-skips-nemar"),
+        pytest.param("nemar", "raised", id="nemar-treats-failure-as-fatal"),
+        pytest.param("auto", "warned", id="auto-warns-and-falls-back"),
+    ],
+)
+def test_prefetch_follows_the_provider(monkeypatch, provider, expectation):
+    dataset = FakeDataset()
+    dataset.nemar_id = "nm000341"
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: provider)
+
+    calls = []
+
+    def failing_fetch(subject=None, verbose=None):
+        calls.append(subject)
+        raise dl.NemarDownloadError("mirror unavailable")
+
+    monkeypatch.setattr(dataset, "sourcedata_path", failing_fetch)
+
+    if expectation == "raised":
+        with pytest.raises(dl.NemarDownloadError):
+            dataset._prefetch_nemar_sourcedata([1, 2])
+        assert calls == [1]
+    elif expectation == "warned":
+        with pytest.warns(RuntimeWarning, match="own downloader"):
+            dataset._prefetch_nemar_sourcedata([1, 2])
+        assert calls == [1, 2]  # per subject, not per batch
+    else:
+        dataset._prefetch_nemar_sourcedata([1, 2])
+        assert calls == []
+
+
+def test_prefetch_skips_datasets_without_a_nemar_id(monkeypatch):
+    dataset = FakeDataset()
+    assert dataset.nemar_id is None
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "nemar")
+
+    def unexpected(**kwargs):  # pragma: no cover - the assertion is the test
+        raise AssertionError("should not fetch without a nemar_id")
+
+    monkeypatch.setattr(dataset, "sourcedata_path", unexpected)
+    dataset._prefetch_nemar_sourcedata([1])
+
+
+def test_get_data_prefetches_the_requested_subjects(monkeypatch):
+    dataset = FakeDataset(n_subjects=3)
+    dataset.nemar_id = "nm000341"
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+
+    fetched = []
+    monkeypatch.setattr(
+        dataset,
+        "sourcedata_path",
+        lambda subject=None, verbose=None: fetched.append(subject),
+    )
+
+    data = dataset.get_data(subjects=[1, 3])
+
+    assert fetched == [1, 3]
+    assert sorted(data) == [1, 3]
