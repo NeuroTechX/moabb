@@ -691,31 +691,6 @@ and epochs are extracted from 10 to 50 seconds after event tagging.</p></li>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">S</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.RestingStateToP300Adapter.html#moabb.paradigms.RestingStateToP300Adapter" title="moabb.paradigms.RestingStateToP300Adapter" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">.</span><span class="n">psd</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <a href="../../generated/moabb.datasets.Cattan2019_PHMD.html#moabb.datasets.Cattan2019_PHMD" title="moabb.datasets.Cattan2019_PHMD" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.0.
-Preparing to download nm000341 from https://data.nemar.org/
-Retrieving 5 of 119 manifest files (16 concurrent downloads).
-primary backend failed; falling back to next layer: 'README.md' is not annexed (no sha256/md5 checksum on the manifest entry); the S3 backend has nothing to fetch.
-
-Overall:   0%|          | 0.00/10.6k [00:00&lt;?, ?B/s]
-Overall:   9%|▉         | 1.00k/10.6k [00:00&lt;00:01, 6.30kB/s]
-Overall:  16%|█▋        | 1.74k/10.6k [00:00&lt;00:02, 4.39kB/s]
-Overall:  43%|████▎     | 4.63k/10.6k [00:00&lt;00:00, 11.9kB/s]
-Finished downloading nm000341 v1.0.5.
-This is nemar-py 0.3.0.
-Preparing to download nm000341 from https://data.nemar.org/
-Retrieving 5 of 119 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/23.9M [00:00&lt;?, ?B/s]
-S3:   4%|▍         | 1.00M/23.9M [00:00&lt;00:15, 1.58MB/s]
-S3:   8%|▊         | 2.00M/23.9M [00:00&lt;00:07, 3.08MB/s]
-S3:  13%|█▎        | 3.00M/23.9M [00:00&lt;00:04, 4.50MB/s]
-S3:  25%|██▌       | 6.00M/23.9M [00:00&lt;00:01, 10.2MB/s]
-S3:  46%|████▌     | 11.0M/23.9M [00:01&lt;00:00, 19.6MB/s]
-S3:  80%|███████▉  | 19.0M/23.9M [00:01&lt;00:00, 34.1MB/s]
-S3: 100%|██████████| 23.9M/23.9M [00:01&lt;00:00, 19.6MB/s]
-Finished downloading nm000341 v1.0.5.
-</pre></div>
-</div>
 </section>
 <section id="display-of-the-data">
 <h2>Display of the data<a class="headerlink" href="#display-of-the-data" title="Link to this heading">#</a></h2>
@@ -735,8 +710,7 @@ using the selected channel specified at the beginning of the script.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.show.html#matplotlib.figure.Figure.show" title="matplotlib.figure.Figure.show" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_phmd_ml_spectrum_001.png" srcset="../../_images/sphx_glr_plot_phmd_ml_spectrum_001.png" alt="PSD for Channel Cz" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.516 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  606 MB</p>
+<img src="../../_images/sphx_glr_plot_phmd_ml_spectrum_001.png" srcset="../../_images/sphx_glr_plot_phmd_ml_spectrum_001.png" alt="PSD for Channel Cz" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.631 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-phmd-ml-spectrum-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/c4e0951cfc5d57a8753186079b8fb5d9/plot_phmd_ml_spectrum.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_phmd_ml_spectrum.ipynb</span></code></a></p>
