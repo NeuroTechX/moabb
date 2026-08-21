@@ -25,6 +25,7 @@ from mne.utils import _url_to_local_path, verbose, warn
 from nemar.errors import NemarError, SelectionError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
+from pooch.utils import unique_file_name
 from requests.exceptions import HTTPError
 
 
@@ -57,19 +58,21 @@ def _store_lookup(url, fname=None):
     """Serve ``url``'s file from the active local store, if present.
 
     The store keeps the upstream relative layout, so the file is probed by the
-    trailing segments of the URL path, longest tail first; an explicit
-    ``fname`` is probed as-is. A miss returns None and the caller downloads.
+    trailing segments of the URL path, longest tail first. An explicit
+    ``fname`` is probed first, but the URL tails remain fallbacks: a caller's
+    ``fname`` names the *destination* (e.g. Lee2024 prefixes the experiment
+    directory and zero-pads subject 8), while the store keeps the upstream
+    names, so the two can legitimately differ. A miss returns None and the
+    caller downloads.
     """
     store = _ACTIVE_STORE.get()
     if store is None:
         return None
-    if fname is not None:
-        tails = [PurePosixPath(fname).parts]
-    else:
-        parts = PurePosixPath(urlparse(url).path).parts
-        # ponytail: three trailing segments cover every current dataset layout;
-        # deepen if a deposit ever nests further.
-        tails = [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
+    tails = [PurePosixPath(fname).parts] if fname is not None else []
+    parts = PurePosixPath(urlparse(url).path).parts
+    # ponytail: three trailing segments cover every current dataset layout;
+    # deepen if a deposit ever nests further.
+    tails += [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
     for tail in tails:
         if not tail:
             continue
@@ -215,14 +218,19 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
     path = get_dataset_path(sign, path)
     key_dest = "MNE-{:s}-data".format(sign.lower())
     destination = _url_to_local_path(url, osp.join(path, key_dest))
-    if not force_update and not osp.isfile(destination):
+    # retrieve() below treats `destination` as a directory and stores the file
+    # inside it under pooch's unique name; several loaders then listdir() that
+    # directory. Fill the store copy at the same wrapped path -- a plain file
+    # at `destination` would shadow the directory and break those loaders.
+    wrapped = osp.join(destination, unique_file_name(url))
+    if not force_update and not osp.isfile(wrapped):
         mirror = _store_lookup(url)
         if mirror is not None:
-            os.makedirs(osp.dirname(destination), exist_ok=True)
+            os.makedirs(destination, exist_ok=True)
             try:
-                os.link(mirror, destination)
+                os.link(mirror, wrapped)
             except OSError:
-                shutil.copy2(mirror, destination)
+                shutil.copy2(mirror, wrapped)
     # Fetch the file
     if not osp.isfile(destination) or force_update:
         if osp.isfile(destination):
