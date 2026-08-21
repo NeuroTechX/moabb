@@ -769,6 +769,9 @@ class TestRestingState:
 
     def test_RestingState_default_values(self):
         paradigm = RestingStateToP300Adapter()
+        # gh-1143: events=None must mean "all of the dataset's events"
+        dataset = FakeDataset(paradigm="rstate", event_list=["Open", "Close"])
+        assert paradigm.used_events(dataset) == dataset.event_id
         assert paradigm.tmin == 10
         assert paradigm.tmax == 50
         assert paradigm.fmin == 1

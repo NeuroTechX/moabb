@@ -1,4 +1,5 @@
 import inspect
+import json
 import logging
 import re
 import warnings
@@ -1755,3 +1756,54 @@ def test_constructor_summary_table_cross_ref(dataset_cls):
         warnings.warn(
             f"{name} summary CSV mismatch: {'; '.join(mismatches)}", stacklevel=1
         )
+
+
+def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monkeypatch):
+    """gh-1142: the file list comes from a real inventory (NEMAR manifest or
+    upstream git tree), subject 8's unpadded upstream names are normalized to
+    the padded names the loader reads, and every fetch goes through data_dl."""
+    import moabb.datasets.download as dl
+    from moabb.datasets import Lee2024_DL
+    from moabb.datasets.lee2024 import Lee2024
+
+    inventory = [
+        "Doorlock/Dat_sub08/sub8_Testing1.mat",
+        "Doorlock/Dat_sub08/cal_sig.mat",
+        "Doorlock/Dat_sub01/sub01_Testing1.mat",
+        "Doorlock/Dat_sub01/param.mat",
+    ]
+    monkeypatch.setattr(Lee2024, "_upstream_paths", inventory)
+    calls = []
+    monkeypatch.setattr(
+        dl, "data_dl", lambda url, sign, fname=None, **k: calls.append((url, fname))
+    )
+
+    Lee2024_DL().data_path(8, path=str(tmp_path))
+    assert calls == [
+        (
+            "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset"
+            "/main/Doorlock/Dat_sub08/cal_sig.mat",
+            "Doorlock/Dat_sub08/cal_sig.mat",
+        ),
+        (
+            "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset"
+            "/main/Doorlock/Dat_sub08/sub8_Testing1.mat",
+            "Doorlock/Dat_sub08/sub08_Testing1.mat",  # padded for the loader
+        ),
+    ]
+
+    calls.clear()
+    # With a NEMAR store manifest present, the inventory is read from it and
+    # the upstream tree is never consulted.
+    store = tmp_path / "store"
+    store.mkdir()
+    (store / "sourcedata_provenance.json").write_text(
+        json.dumps({"files": [{"file": "Dat_sub01/sub01_Testing1.mat"}]})
+    )
+    dataset = Lee2024_DL()
+    monkeypatch.setattr(dataset, "_sourcedata_store", lambda: store)
+    monkeypatch.setattr(
+        Lee2024, "_upstream_tree", classmethod(lambda cls: pytest.fail("tree used"))
+    )
+    dataset.data_path(1, path=str(tmp_path))
+    assert [fname for _, fname in calls] == ["Doorlock/Dat_sub01/sub01_Testing1.mat"]

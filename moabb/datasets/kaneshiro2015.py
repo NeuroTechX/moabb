@@ -98,7 +98,7 @@ class Kaneshiro2015(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
-            paradigm="p300",
+            paradigm="imagery",  # 6-class visual ERP, no Target/NonTarget
             n_classes=6,
             class_labels=list(_EVENTS.keys()),
             trial_duration=0.496,
@@ -143,7 +143,7 @@ class Kaneshiro2015(BaseDataset):
             events=dict(_EVENTS),
             code="Kaneshiro2015",
             interval=[0, 0.496],
-            paradigm="p300",
+            paradigm="imagery",  # 6-class visual ERP, no Target/NonTarget
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,

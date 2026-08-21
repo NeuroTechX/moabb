@@ -1189,3 +1189,27 @@ def test_get_data_prefetches_the_requested_subjects(monkeypatch):
 
     assert fetched == [1, 3]
     assert sorted(data) == [1, 3]
+
+
+def test_store_lookup_falls_back_to_url_tails_when_fname_differs(tmp_path, monkeypatch):
+    """gh-1151 review: fname names the destination (experiment prefix, padded
+    subject), the store keeps upstream names -- the URL tails must still hit."""
+    store = tmp_path / "store"
+    (store / "Dat_sub08").mkdir(parents=True)
+    (store / "Dat_sub08" / "sub8_Testing1.mat").write_text("mirrored")
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+
+    url = (
+        "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset"
+        "/main/Doorlock/Dat_sub08/sub8_Testing1.mat"
+    )
+    with dl.active_sourcedata_store(store):
+        path = dl.data_dl(
+            url,
+            "lee2024erp",
+            path=tmp_path,
+            fname="Doorlock/Dat_sub08/sub08_Testing1.mat",
+        )
+
+    assert Path(path).read_text() == "mirrored"
+    assert Path(path).name == "sub08_Testing1.mat"  # destination keeps fname

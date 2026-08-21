@@ -14,6 +14,7 @@ from moabb.datasets import schirrmeister2017
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.braininvaders import BI2015b
 from moabb.datasets.hefmi_ich2025 import HefmiIch2025
+from moabb.datasets.kaneshiro2015 import Kaneshiro2015
 from moabb.datasets.kojima2024a import Kojima2024A
 from moabb.datasets.mainsah2025 import _parse_manifest
 from moabb.datasets.schirrmeister2017 import Schirrmeister2017
@@ -301,3 +302,17 @@ def test_schirrmeister2017_reuses_relocated_files(tmp_path: Path, monkeypatch):
 
     dataset = Schirrmeister2017()
     assert dataset.data_path(1, path=str(tmp_path)) == relocated
+
+
+def test_kaneshiro2015_valid_for_declared_paradigm():
+    """Kaneshiro2015 is accepted by its declared paradigm (gh-1143): six object
+    categories, no Target/NonTarget, so "imagery" routes it to n-class paradigms."""
+    from moabb.paradigms import P300, Imagery, MotorImagery
+
+    dataset = Kaneshiro2015()
+    assert dataset.paradigm == "imagery"
+    for paradigm in (MotorImagery(), Imagery(), MotorImagery(n_classes=6)):
+        assert paradigm.is_valid(dataset)
+        assert paradigm.used_events(dataset) == dataset.event_id
+    # The old declaration was broken: P300 requires Target/NonTarget.
+    assert not P300().is_valid(dataset)
