@@ -69,8 +69,5 @@ def test_read_xdf_numeric_string_and_quirky_footer(tmp_path):
     assert [c["label"][0] for c in channels] == ["C3", "C4"]
 
     assert markers["info"]["name"] == ["Game"]
-    assert [row[0] for row in markers["time_series"]] == [
-        "AVANZAR",
-        "Spoken AVANZAR",
-    ]
+    assert [row[0] for row in markers["time_series"]] == ["AVANZAR", "Spoken AVANZAR"]
     np.testing.assert_allclose(markers["time_stamps"], [10.004, 10.006])
