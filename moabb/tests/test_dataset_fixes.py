@@ -233,7 +233,7 @@ def test_kojima2024_removes_invalid_cached_manifest(tmp_path: Path, monkeypatch)
     manifest_path.parent.mkdir()
     manifest_path.write_text("<html>upstream error</html>")
     monkeypatch.setattr(
-        "moabb.datasets.kojima2024a.dl.download_if_missing", lambda *args: None
+        "moabb.datasets.kojima2024a.dl.download_if_missing", lambda *args, **kwargs: None
     )
 
     with pytest.raises(RuntimeError, match="invalid and has been removed"):
