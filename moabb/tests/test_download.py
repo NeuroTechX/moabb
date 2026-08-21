@@ -903,6 +903,35 @@ def test_data_dl_store_survives_dataset_moves(tmp_path, monkeypatch):
     assert (store / "train" / "1.edf").read_text() == "train"
 
 
+def test_data_path_store_fill_matches_pooch_layout(tmp_path, monkeypatch):
+    """A store hit must land inside retrieve()'s wrapper directory.
+
+    The deprecated ``data_path`` passes its destination to ``pooch.retrieve``
+    as the *directory*, which stores ``<md5(url)>-<basename>`` inside it, and
+    loaders such as Rodrigues2017's then ``os.listdir()`` that directory. A
+    store hit written as a plain file at the destination shadows the wrapper
+    directory and turns those loads into ``NotADirectoryError``.
+    """
+    from pooch.utils import unique_file_name
+
+    store = tmp_path / "NEMAR" / "nm000221" / "sourcedata"
+    store.mkdir(parents=True)
+    # nm000221 stores the upstream basenames flat, as the real deposit does.
+    (store / "subject_01.mat").write_text("mirrored")
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+
+    url = "https://zenodo.org/record/2348892/files/subject_01.mat"
+    with dl.active_sourcedata_store(store):
+        returned = dl.data_path(url, "ALPHAWAVES", path=tmp_path)
+
+    returned = Path(returned)
+    assert returned.is_dir()
+    wrapped = returned / unique_file_name(url)
+    assert wrapped.is_file()
+    assert wrapped.read_text() == "mirrored"
+    assert os.listdir(returned) == [unique_file_name(url)]
+
+
 def test_get_data_reads_the_nemar_store_end_to_end(tmp_path, monkeypatch):
     """The loader resolves and publishes the dataset's store down to data_dl."""
     monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
