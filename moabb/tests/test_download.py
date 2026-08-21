@@ -796,6 +796,63 @@ def test_erpcore_reuses_legacy_per_component_download(tmp_path, _erpcore_fake_do
     assert _erpcore_fake_downloads == []
 
 
+_DREYER_FAKE_MANIFEST = (
+    "filename\turl\n"
+    "sub-01.zip\thttps://osf.io/download/aaa01\n"
+    "sub-61.zip\thttps://osf.io/download/aaa61\n"
+    "montage.txt\thttps://osf.io/download/mont\n"
+)
+
+
+@pytest.fixture
+def _dreyer_fake_downloads(monkeypatch):
+    """Serve a fake manifest, materialize tiny zips, record other downloads."""
+    import zipfile as _zipfile
+
+    recorded = []
+
+    def _fake(file_path, url, warn_missing=True, verbose=True, force_update=False):
+        target = Path(file_path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.name == "dreyer2023_manifest.tsv":
+            target.write_text(_DREYER_FAKE_MANIFEST)
+            return
+        recorded.append((target, url))
+        if target.suffix == ".zip":
+            with _zipfile.ZipFile(target, "w") as archive:
+                archive.writestr(f"{target.stem}/dummy.edf", "x")
+
+    monkeypatch.setattr(dl, "download_if_missing", _fake)
+    return recorded
+
+
+def test_dreyer2023_classes_share_one_root(tmp_path, _dreyer_fake_downloads):
+    """Dreyer2023 A/B/C select subject ranges of one globally numbered dataset."""
+    from moabb.datasets.dreyer2023 import Dreyer2023A, Dreyer2023B
+
+    root_a = Dreyer2023A().download_by_subject(subject=1, path=tmp_path)
+    root_b = Dreyer2023B().download_by_subject(subject=61, path=tmp_path)
+
+    assert root_a == root_b == tmp_path / "MNE-dreyer2023-data"
+    assert (root_a / "sub-01").is_dir()  # the zip really extracted here
+    assert (root_b / "sub-61").is_dir()
+    targets = [target.name for target, _ in _dreyer_fake_downloads]
+    assert targets.count("montage.txt") == 2  # requested per call, stored once
+
+
+def test_dreyer2023_reuses_legacy_per_class_download(tmp_path, _dreyer_fake_downloads):
+    """A pre-existing per-class download is read, not re-fetched."""
+    from moabb.datasets.dreyer2023 import Dreyer2023A
+
+    legacy_root = tmp_path / "MNE-Dreyer2023A-data"
+    (legacy_root / "sub-01").mkdir(parents=True)
+
+    root = Dreyer2023A().download_by_subject(subject=1, path=tmp_path)
+
+    assert root == legacy_root
+    assert _dreyer_fake_downloads == []
+
+
 def test_set_download_provider_round_trip(_isolated_mne_config, monkeypatch):
     """The provider switch validates, normalizes, resets, and honors the env var."""
     from moabb.utils import get_download_provider, set_download_provider
