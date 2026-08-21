@@ -3,13 +3,17 @@
 #         Bruno Aristimunha <b.aristimunha@gmail.com>
 # License: BSD Style.
 
+import contextlib
+import contextvars
 import functools
+import glob as glob_module
 import json
 import logging
 import os
 import os.path as osp
+import shutil
 import warnings
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
 import nemar
@@ -18,13 +22,66 @@ import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
-from nemar.errors import NemarError
+from nemar.errors import NemarError, SelectionError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
 
 
 logger = logging.getLogger(__name__)
+
+#: Local directory mirroring the upstream files of the dataset whose loader is
+#: currently executing (its NEMAR sourcedata store), or None. Set by
+#: ``BaseDataset`` around ``_get_single_subject_data`` so the URL downloaders
+#: below can serve prefetched files without threading a parameter through
+#: every dataset's ``data_path``.
+_ACTIVE_STORE = contextvars.ContextVar("moabb_active_sourcedata_store", default=None)
+
+
+@contextlib.contextmanager
+def active_sourcedata_store(store):
+    """Declare the local store that mirrors upstream files for these downloads."""
+    token = _ACTIVE_STORE.set(store)
+    try:
+        yield
+    finally:
+        _ACTIVE_STORE.reset(token)
+
+
+def nemar_store(dataset_code, nemar_id, path=None):
+    """The on-disk root of a NEMAR deposit -- shared by its writer and readers."""
+    return Path(get_dataset_path(dataset_code, path)) / "NEMAR" / nemar_id
+
+
+def _store_lookup(url, fname=None):
+    """Serve ``url``'s file from the active local store, if present.
+
+    The store keeps the upstream relative layout, so the file is probed by the
+    trailing segments of the URL path, longest tail first; an explicit
+    ``fname`` is probed as-is. A miss returns None and the caller downloads.
+    """
+    store = _ACTIVE_STORE.get()
+    if store is None:
+        return None
+    if fname is not None:
+        tails = [PurePosixPath(fname).parts]
+    else:
+        parts = PurePosixPath(urlparse(url).path).parts
+        # ponytail: three trailing segments cover every current dataset layout;
+        # deepen if a deposit ever nests further.
+        tails = [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
+    for tail in tails:
+        if not tail:
+            continue
+        candidate = Path(store).joinpath(*tail)
+        if candidate.is_file():
+            logger.info(
+                "Filling %s from the local NEMAR store instead of downloading %s.",
+                candidate.name,
+                url,
+            )
+            return str(candidate)
+    return None
 
 
 class NemarDownloadError(RuntimeError):
@@ -158,6 +215,14 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
     path = get_dataset_path(sign, path)
     key_dest = "MNE-{:s}-data".format(sign.lower())
     destination = _url_to_local_path(url, osp.join(path, key_dest))
+    if not force_update and not osp.isfile(destination):
+        mirror = _store_lookup(url)
+        if mirror is not None:
+            os.makedirs(osp.dirname(destination), exist_ok=True)
+            try:
+                os.link(mirror, destination)
+            except OSError:
+                shutil.copy2(mirror, destination)
     # Fetch the file
     if not osp.isfile(destination) or force_update:
         if osp.isfile(destination):
@@ -220,6 +285,18 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
             except OSError:
                 destination = legacy_destination
 
+    # Fill a missing destination from the governed NEMAR store instead of the
+    # network. Hardlinked so datasets that move their files cannot gut the
+    # store; the normal flow below then validates and returns the destination.
+    if not force_update and not destination.is_file():
+        mirror = _store_lookup(url, fname=fname)
+        if mirror is not None:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                os.link(mirror, destination)
+            except OSError:
+                shutil.copy2(mirror, destination)
+
     downloader = choose_downloader(url, progressbar=True)
     if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
         downloader.kwargs.setdefault("verify", False)
@@ -281,7 +358,7 @@ def nemar_dl(
     Raises
     ------
     NemarDownloadError
-        If nemar-py is unavailable or fails to download the selected files.
+        If nemar-py fails to download the selected files.
     """
     root = Path(get_dataset_path(dataset_code, path))
     target_dir = root / f"MNE-{dataset_code.lower()}-data" / nemar_id
@@ -340,9 +417,16 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
                 include=SOURCEDATA_PROVENANCE,
                 trust_existing=not force_update,
             )
+        except SelectionError as exc:
+            # The deposit lists no sourcedata_provenance.json at all -- either
+            # it publishes no sourcedata/ or it predates provenance enrichment.
+            raise NemarDownloadError(
+                f"NEMAR dataset {nemar_id} publishes no sourcedata manifest -- "
+                "the original distribution is not mirrored there."
+            ) from exc
         except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
             raise NemarDownloadError(
-                f"Could not read the sourcedata manifest for {nemar_id}."
+                f"Could not fetch the sourcedata manifest for {nemar_id}: {exc}"
             ) from exc
     try:
         record = json.loads(provenance.read_text(encoding="utf-8"))
@@ -354,15 +438,23 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     entries = record.get("files") or []
     if not any("subject" in entry for entry in entries):
         return None
-    wanted = str(subject)
-    files = [entry["file"] for entry in entries if str(entry.get("subject")) == wanted]
+    candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
+    wanted = {str(candidate) for candidate in candidates}
+    files = [
+        entry["file"]
+        for entry in entries
+        if entry.get("file") and str(entry.get("subject")) in wanted
+    ]
     if not files:
         raise NemarDownloadError(
             f"NEMAR dataset {nemar_id} lists no sourcedata for subject "
             f"{subject!r}. Known subjects: "
             f"{sorted({str(e.get('subject')) for e in entries if e.get('subject')})}."
         )
-    return [f"sourcedata/{name}" for name in files]
+    # Manifest names are literal file paths, but they are consumed as glob
+    # patterns (nemar's include and the local verification below) -- escape
+    # them so names containing [, ], * or ? still match.
+    return ["sourcedata/" + glob_module.escape(name) for name in files]
 
 
 @verbose
@@ -393,9 +485,11 @@ def nemar_sourcedata_dl(
         Base path where MOABB stores datasets.
     force_update : bool
         Re-fetch even when a local copy is already present.
-    subject : int | str | None
+    subject : int | str | list | None
         Restrict the download to one subject, resolved through the deposit's
         ``sourcedata_provenance.json`` rather than by guessing at the layout.
+        A list is treated as aliases for the same subject (e.g. the raw MOABB
+        id and its ``nemar_subject_template`` form) and matches any of them.
         Falls back to fetching the whole tree, with a warning, when the deposit
         was enriched before that manifest recorded subjects.
     include : str | list of str | None
@@ -413,15 +507,14 @@ def nemar_sourcedata_dl(
     Raises
     ------
     NemarDownloadError
-        If nemar-py is unavailable, the download fails, or the deposit
-        publishes no ``sourcedata/`` at all.
+        If the download fails or the deposit publishes no ``sourcedata/``
+        at all.
     """
     # Keyed on the NEMAR id, not the MOABB code: one deposit backs several
     # classes (nm000132 is shared by all seven ErpCore2021 subclasses, nm000250
     # by four Dreyer2023 ones), and a per-code path would download the same
     # tree once per class.
-    root = Path(get_dataset_path(dataset_code, path))
-    target_dir = root / "NEMAR" / nemar_id
+    target_dir = nemar_store(dataset_code, nemar_id, path)
 
     if include is None and subject is not None:
         include = _sourcedata_files_for_subject(
@@ -455,12 +548,18 @@ def nemar_sourcedata_dl(
             trust_existing=not force_update,
             **kwargs,
         )
-    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
-        # nemar-py raises SelectionError (a NemarError) when the scope or the
-        # include glob matches nothing, so "this deposit has no sourcedata/" and
-        # "this subject is not in it" both arrive here rather than as a
-        # successful empty download.
+    except SelectionError as exc:
+        # nemar-py raises SelectionError when the scope or the include glob
+        # matches nothing, so "this deposit has no sourcedata/" and "this
+        # subject is not in it" both arrive here rather than as a successful
+        # empty download.
         raise NemarDownloadError(missing) from exc
+    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        # Transport, verification, or S3 failures are not evidence that the
+        # deposit publishes no sourcedata -- report them as what they are.
+        raise NemarDownloadError(
+            f"Could not download {what} for NEMAR dataset {nemar_id}: {exc}"
+        ) from exc
 
     # Ask about the subset this call requested, not the whole tree. `download()`
     # calls this once per subject into a shared directory, so "the directory has
@@ -623,8 +722,14 @@ def fs_get_file_name(filelist):
     return {str(f["id"]): f["name"] for f in filelist}
 
 
-def download_if_missing(file_path, url, warn_missing=True, verbose=True):
-    """Download file from url to a specified path if it is not already there."""
+def download_if_missing(
+    file_path, url, warn_missing=True, verbose=True, force_update=False
+):
+    """Download file from url to a specified path if it is not already there.
+
+    If ``force_update`` is True, an existing local copy is deleted and
+    downloaded again.
+    """
 
     folder_path = osp.dirname(file_path)
 
@@ -633,6 +738,9 @@ def download_if_missing(file_path, url, warn_missing=True, verbose=True):
         if warn_missing:
             warn(f"Directory {folder_path} not found. Creating directory.")
         os.makedirs(folder_path)
+
+    if force_update and osp.exists(file_path):
+        os.remove(file_path)
 
     # Check if file exists, if not download it
     if not osp.exists(file_path):

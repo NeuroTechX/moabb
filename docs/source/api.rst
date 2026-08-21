@@ -316,6 +316,8 @@ Utilities
 
     download.data_path
     download.data_dl
+    download.nemar_dl
+    download.nemar_sourcedata_dl
     download.fs_issue_request
     download.fs_get_file_list
     download.fs_get_file_hash

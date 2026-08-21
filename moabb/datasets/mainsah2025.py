@@ -368,7 +368,10 @@ class Mainsah2025(BaseDataset):
             for rel_path in subj_manifest[session]:
                 local_file = root / rel_path
                 dl.download_if_missing(
-                    str(local_file), _BASE_URL + rel_path, warn_missing=False
+                    str(local_file),
+                    _BASE_URL + rel_path,
+                    warn_missing=False,
+                    force_update=force_update,
                 )
                 local_paths.append(str(local_file))
 

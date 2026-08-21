@@ -239,6 +239,8 @@ class Rodrigues2017(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = "{:s}subject_{:02d}.mat".format(ALPHAWAVES_URL, subject)
-        file_path = dl.data_path(url, "ALPHAWAVES")
+        file_path = dl.data_path(
+            url, "ALPHAWAVES", path=path, force_update=force_update, verbose=verbose
+        )
 
         return [file_path]

@@ -293,6 +293,10 @@ def set_download_provider(provider):
     failing outright, rather than silently falling back, when NEMAR cannot
     serve a dataset.
 
+    The provider governs where :meth:`~moabb.datasets.base.BaseDataset.download`
+    fetches from; loading then serves files from the fetched NEMAR store before
+    the URL-derived layout (pinning ``"upstream"`` opts loading out as well).
+
     Parameters
     ----------
     provider : str | None

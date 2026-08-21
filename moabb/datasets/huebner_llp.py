@@ -117,12 +117,14 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         url = f"{self._src_url}subject{subject:02d}.zip"
-        zipfile_path = Path(dl.data_dl(url, "llp"))
+        zipfile_path = Path(
+            dl.data_dl(url, "llp", path=path, force_update=force_update, verbose=verbose)
+        )
         zipfile_extracted_path = zipfile_path.parent
 
         subject_dir_path = zipfile_extracted_path / f"subject{subject:02d}"
 
-        if not subject_dir_path.is_dir():
+        if force_update or not subject_dir_path.is_dir():
             _BaseVisualMatrixSpellerDataset._extract_data(
                 zipfile_extracted_path, zipfile_path
             )

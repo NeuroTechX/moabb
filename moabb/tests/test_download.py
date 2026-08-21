@@ -1,9 +1,12 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
+import contextlib
 import inspect
 import json
 import os
+import socket
 import sys
+import zipfile
 from pathlib import Path, PurePath
 from types import SimpleNamespace
 
@@ -17,6 +20,8 @@ import moabb.datasets.download as dl
 import moabb.datasets.romani_bf2025_erp as romani
 from moabb.datasets import base as base_module
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
+from moabb.datasets.dreyer2023 import Dreyer2023A, Dreyer2023B
+from moabb.datasets.erpcore2021 import ErpCore2021_N170, ErpCore2021_P3
 from moabb.datasets.fake import FakeDataset
 from moabb.datasets.utils import dataset_list
 from moabb.utils import set_download_dir
@@ -673,6 +678,291 @@ def test_download_falls_back_to_upstream_when_sourcedata_missing(monkeypatch, tm
 
     with pytest.warns(RuntimeWarning, match="falling back"):
         dataset.download(path=tmp_path)
+
+
+def test_download_falls_back_per_subject(monkeypatch, tmp_path):
+    """One failing subject falls back alone; the others stay on NEMAR."""
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+    fallback_subjects = []
+
+    def _sourcedata(*args, subject=None, **kwargs):
+        if subject == 2:
+            raise dl.NemarDownloadError("transfer failed")
+        return str(tmp_path)
+
+    monkeypatch.setattr(base_module, "nemar_sourcedata_dl", _sourcedata)
+    dataset = FakeDataset(n_subjects=3)
+    dataset.nemar_id = "nm000115"
+    monkeypatch.setattr(
+        dataset, "data_path", lambda subject, **k: fallback_subjects.append(subject)
+    )
+
+    with pytest.warns(RuntimeWarning, match="subject 2"):
+        dataset.download(subject_list=[1, 2, 3], path=tmp_path)
+
+    assert fallback_subjects == [2]
+
+
+@pytest.mark.parametrize(
+    ("manifest_subject", "expected_file"),
+    [
+        pytest.param("1", "subject_1.mat", id="raw-moabb-id"),
+        pytest.param("001", "sub-001[a].mat", id="templated-label"),
+    ],
+)
+def test_sourcedata_subject_aliases_match_the_manifest(
+    tmp_path, manifest_subject, expected_file
+):
+    """A subject alias list matches manifests keyed by either convention.
+
+    Also pins that manifest names reach the caller glob-escaped, so a
+    filename containing ``[`` still selects and verifies.
+    """
+    target = tmp_path / "NEMAR" / "nm000001"
+    provenance = target / dl.SOURCEDATA_PROVENANCE
+    provenance.parent.mkdir(parents=True)
+    provenance.write_text(
+        json.dumps(
+            {
+                "dataset": "nm000001",
+                "files": [
+                    {"file": "subject_1.mat", "subject": "1"},
+                    {"file": "sub-001[a].mat", "subject": "001"},
+                    {"file": "subject_2.mat", "subject": "2"},
+                ],
+            }
+        )
+    )
+
+    patterns = dl._sourcedata_files_for_subject(
+        target, "nm000001", [1, "001"], force_update=False
+    )
+
+    import glob as glob_module
+
+    assert patterns == [
+        "sourcedata/" + glob_module.escape("subject_1.mat"),
+        "sourcedata/" + glob_module.escape("sub-001[a].mat"),
+    ]
+    # Both conventions resolve; the parametrized entry is among the matches.
+    assert "sourcedata/" + glob_module.escape(expected_file) in patterns
+
+
+# Split-family regression data: each spec is one dataset published as a single
+# combined store whose classes previously downloaded into per-class folders.
+_FAMILY_MANIFESTS = {
+    "erpcore_manifest.csv": (
+        "component,participant_id,local_path,url\n"
+        "N170,sub-001,erpcore/N170/sub-001/eeg/sub-001_task-N170_eeg.set,https://osf.example/n170-sub1\n"
+        "N170,,erpcore/N170/dataset_description.json,https://osf.example/n170-desc\n"
+        "P3,sub-001,erpcore/P3/sub-001/eeg/sub-001_task-P3_eeg.set,https://osf.example/p3-sub1\n"
+        "P3,,erpcore/P3/dataset_description.json,https://osf.example/p3-desc\n"
+    ),
+    "dreyer2023_manifest.tsv": (
+        "filename\turl\n"
+        "sub-01.zip\thttps://osf.io/download/aaa01\n"
+        "sub-61.zip\thttps://osf.io/download/aaa61\n"
+        "montage.txt\thttps://osf.io/download/mont\n"
+    ),
+}
+
+_FAMILIES = [
+    pytest.param(
+        {
+            "classes": ((ErpCore2021_N170, 1), (ErpCore2021_P3, 1)),
+            "root": "MNE-erpcore2021-data",
+            "legacy": ("MNE-erpcoren1702021-data", "sub-001"),
+            "expected": (
+                "sub-001/eeg/sub-001_task-N170_eeg.set",
+                "sub-001/eeg/sub-001_task-P3_eeg.set",
+            ),
+        },
+        id="erpcore2021-task-entity",
+    ),
+    pytest.param(
+        {
+            "classes": ((Dreyer2023A, 1), (Dreyer2023B, 61)),
+            "root": "MNE-dreyer2023-data",
+            "legacy": ("MNE-Dreyer2023A-data", "sub-01"),
+            # expected: dirs extracted from the per-subject zips
+            "expected": ("sub-01", "sub-61"),
+        },
+        id="dreyer2023-subject-ranges",
+    ),
+]
+
+
+@pytest.fixture
+def _family_downloads(monkeypatch):
+    """Serve fake manifests; materialize and record every other download."""
+    recorded = []
+
+    def _fake(file_path, url, warn_missing=True, verbose=True, force_update=False):
+        target = Path(file_path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.name in _FAMILY_MANIFESTS:
+            target.write_text(_FAMILY_MANIFESTS[target.name])
+            return
+        recorded.append(target)
+        if target.suffix == ".zip":
+            with zipfile.ZipFile(target, "w") as archive:
+                archive.writestr(f"{target.stem}/dummy.edf", "x")
+        else:
+            target.touch()
+
+    monkeypatch.setattr(dl, "download_if_missing", _fake)
+    return recorded
+
+
+@pytest.mark.parametrize("family", _FAMILIES)
+def test_split_family_shares_one_root(tmp_path, _family_downloads, family):
+    """Both classes resolve to one shared root holding both subjects' files."""
+    (cls_a, subj_a), (cls_b, subj_b) = family["classes"]
+
+    root_a = cls_a().download_by_subject(subject=subj_a, path=tmp_path)
+    root_b = cls_b().download_by_subject(subject=subj_b, path=tmp_path)
+
+    assert root_a == root_b == tmp_path / family["root"]
+    assert all((root_a / relpath).exists() for relpath in family["expected"])
+
+
+@pytest.mark.parametrize("family", _FAMILIES)
+def test_split_family_reuses_legacy_download(tmp_path, _family_downloads, family):
+    """A pre-existing per-class download is read as-is, not re-fetched."""
+    (cls_a, subj_a), _ = family["classes"]
+    legacy_name, subject_dir = family["legacy"]
+    legacy_root = tmp_path / legacy_name
+    (legacy_root / subject_dir).mkdir(parents=True)
+
+    assert cls_a().download_by_subject(subject=subj_a, path=tmp_path) == legacy_root
+    assert _family_downloads == []
+
+
+def _forbid_connect(self, address):
+    raise AssertionError(f"network touched: {address}")
+
+
+def _fake_retrieve(url, known_hash, fname, path, **kwargs):
+    """Minimal pooch.retrieve: keep a hash-matching local file, else 'download'."""
+    target = Path(path) / fname
+    if known_hash and target.is_file() and dl.file_hash(str(target)) == known_hash:
+        return str(target)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("upstream")
+    return str(target)
+
+
+@pytest.mark.parametrize(
+    ("active", "force_update", "expected"),
+    [
+        pytest.param(True, False, "mirrored", id="store-fills-missing-destination"),
+        pytest.param(False, False, "upstream", id="no-active-store-downloads"),
+        pytest.param(True, True, "upstream", id="force-update-refetches"),
+    ],
+)
+def test_data_dl_source_resolution(tmp_path, monkeypatch, active, force_update, expected):
+    """Where the bytes come from: the active NEMAR store or the upstream host."""
+    store = tmp_path / "NEMAR" / "nm000900" / "sourcedata"
+    store.mkdir(parents=True)
+    (store / "foo.mat").write_text("mirrored")
+    monkeypatch.setattr(dl, "retrieve", _fake_retrieve)
+
+    context = dl.active_sourcedata_store(store) if active else contextlib.nullcontext()
+    with context:
+        result = dl.data_dl(
+            "https://example.com/data/foo.mat",
+            "fakestore",
+            path=tmp_path,
+            force_update=force_update,
+        )
+
+    assert Path(result).read_text() == expected
+    assert not str(result).startswith(str(store))
+
+
+def test_data_dl_store_survives_dataset_moves(tmp_path, monkeypatch):
+    """gh-1147 regression: a dataset moving data_dl's return must not gut the store.
+
+    The upstream host is down (sockets forbidden); two store files share a
+    basename, so the URL-path tail picks the right one, twice in a row.
+    """
+    store = tmp_path / "NEMAR" / "nm000172" / "sourcedata"
+    (store / "train").mkdir(parents=True)
+    (store / "test").mkdir(parents=True)
+    (store / "train" / "1.edf").write_text("train")
+    (store / "test" / "1.edf").write_text("test")
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+
+    url = "https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data/train/1.edf"
+    with dl.active_sourcedata_store(store):
+        first = dl.data_dl(url, "SCHIRRMEISTER2017", path=tmp_path)
+        Path(first).rename(tmp_path / "moved-away.edf")
+        again = dl.data_dl(url, "SCHIRRMEISTER2017", path=tmp_path)
+
+    assert Path(again).read_text() == "train"
+    assert (store / "train" / "1.edf").read_text() == "train"
+
+
+def test_get_data_reads_the_nemar_store_end_to_end(tmp_path, monkeypatch):
+    """The loader resolves and publishes the dataset's store down to data_dl."""
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+    resolved = []
+
+    class _StoreBackedDataset(FakeDataset):
+        nemar_id = "nm000901"
+
+        def data_path(
+            self, subject, path=None, force_update=False, update_path=None, verbose=None
+        ):
+            resolved.append(
+                dl.data_dl("https://example.com/foo.mat", "fakestore", path=tmp_path)
+            )
+            return resolved[-1]
+
+        def _get_single_subject_data(self, subject):
+            self.data_path(subject)
+            return super()._get_single_subject_data(subject)
+
+    dataset = _StoreBackedDataset(n_subjects=1, paradigm="imagery")
+    # Populate the store exactly where the dataset resolves it.
+    store = Path(dataset._sourcedata_store())
+    store.mkdir(parents=True, exist_ok=True)
+    (store / "foo.mat").write_text("mirrored")
+
+    dataset.get_data(subjects=[1])
+
+    assert len(resolved) == 1
+    assert Path(resolved[0]).read_text() == "mirrored"
+    assert (store / "foo.mat").is_file()
+
+
+def test_set_download_provider_round_trip(_isolated_mne_config, monkeypatch):
+    """The provider switch validates, normalizes, resets, and honors the env var."""
+    from moabb.utils import get_download_provider, set_download_provider
+
+    # set_config writes the env var directly, so pin monkeypatch's recorded
+    # original NOW (while the key is absent) to guarantee teardown removes it.
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "placeholder")
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER")
+
+    assert get_download_provider() == "auto"
+
+    set_download_provider("NEMAR")
+    assert get_download_provider() == "nemar"
+
+    with pytest.raises(ValueError, match="Unknown download provider"):
+        set_download_provider("ftp")
+
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
+    assert get_download_provider() == "upstream"
+
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "carrier-pigeon")
+    assert get_download_provider() == "auto"
+
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER")
+    set_download_provider(None)
+    assert get_download_provider() == "auto"
 
 
 # -- Brandl2020 / DepositOnce -------------------------------------------------

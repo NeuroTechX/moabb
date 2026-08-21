@@ -40,7 +40,7 @@ FILES.append("https://dataverse.harvard.edu/api/access/datafile/2499182")
 FILES.append("https://dataverse.harvard.edu/api/access/datafile/2499179")
 
 
-def eeg_data_path(base_path, subject):
+def eeg_data_path(base_path, subject, force_update=False):
     file1_subj = ["cl", "cyy", "kyf", "lnn"]
     file2_subj = ["ls", "ry", "wcf"]
     file3_subj = ["wx", "yyx", "zd"]
@@ -67,7 +67,9 @@ def eeg_data_path(base_path, subject):
         os.remove(os.path.join(base_path, dataname + ".zip"))
         shutil.rmtree(os.path.join(base_path, dataname + ".zip.unzip"))
 
-    if not os.path.isfile(os.path.join(base_path, "subject_{}.mat".format(subject))):
+    if force_update or not os.path.isfile(
+        os.path.join(base_path, "subject_{}.mat".format(subject))
+    ):
         if subject in range(1, 5):
             get_subjects(list(range(1, 5)), file1_subj, 0)
         elif subject in range(5, 8):
@@ -419,4 +421,4 @@ class Weibo2014(BaseDataset):
         basepath = os.path.join(path, "MNE-weibo-2014")
         if not os.path.isdir(basepath):
             os.makedirs(basepath)
-        return eeg_data_path(basepath, subject)
+        return eeg_data_path(basepath, subject, force_update=force_update)
