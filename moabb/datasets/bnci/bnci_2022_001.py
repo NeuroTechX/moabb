@@ -299,8 +299,14 @@ def _convert_run_001_2022(
             255: "trajectory_end",
         }
 
-        # Find non-zero trigger positions
-        event_indices = np.where(trigger != 0)[0]
+        # The hardware trigger is an 8-bit signal sampled continuously, so one
+        # event pulse can stay non-zero over several consecutive samples.
+        # Annotate only the onset of each pulse (a rising edge or a change of
+        # value); annotating every non-zero sample would turn each pulse into
+        # dozens of duplicated events.
+        trigger = np.asarray(trigger)
+        previous = np.concatenate(([0], trigger[:-1]))
+        event_indices = np.flatnonzero((trigger != 0) & (trigger != previous))
         if len(event_indices) > 0:
             event_times = event_indices / sfreq
             event_values = trigger[event_indices].astype(int)
@@ -380,6 +386,15 @@ class BNCI2022_001(BNCIBaseDataset):
     - waypoint_miss (16): Drone failed to pass through waypoint
     - waypoint_hit (48): Drone successfully passed through waypoint
     - trajectory_end (255): End of trajectory (3s after final waypoint)
+
+    Only ``trajectory_start`` is declared as a trial event (``events``), matching
+    the ~90 second trajectory ``interval``: paradigms therefore epoch the 32
+    trajectories per subject. The waypoint and trajectory-end codes mark
+    instantaneous point events (roughly a thousand per subject), so epoching
+    them with the 90 s trial window is not meaningful. They are still annotated
+    on the raw data returned by the loader; to analyse them, epoch the raw
+    annotations directly or pass a custom ``process_pipeline`` to
+    :meth:`~moabb.datasets.base.BaseDataset.get_data`.
 
     **Data Organization**
 
@@ -661,12 +676,15 @@ class BNCI2022_001(BNCIBaseDataset):
         super().__init__(
             subjects=list(range(1, 14)),
             sessions_per_subject=1,
-            events={
-                "trajectory_start": 1,
-                "waypoint_miss": 16,
-                "waypoint_hit": 48,
-                "trajectory_end": 255,
-            },
+            # Only the trajectory itself is a trial: each of the 32 trajectories
+            # lasts ~90 seconds and starts at trigger code 1. The other trigger
+            # codes (waypoint_miss=16, waypoint_hit=48, trajectory_end=255) are
+            # instantaneous point markers occurring ~1000 times per subject;
+            # epoching them with the 90 s trial interval would produce hundreds
+            # of hours of overlapping epochs per subject. They are therefore not
+            # declared as trial events, but remain available as annotations on
+            # the loaded raw data (see ``_convert_run_001_2022``).
+            events={"trajectory_start": 1},
             code="BNCI2022-001",
             interval=[0, 90],  # Approximately 90 seconds per trajectory
             paradigm="imagery",  # For compatibility
