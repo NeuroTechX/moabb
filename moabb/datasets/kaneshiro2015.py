@@ -98,7 +98,7 @@ class Kaneshiro2015(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
-            paradigm="p300",
+            paradigm="imagery",  # 6-class visual ERP, no Target/NonTarget
             n_classes=6,
             class_labels=list(_EVENTS.keys()),
             trial_duration=0.496,
@@ -143,7 +143,11 @@ class Kaneshiro2015(BaseDataset):
             events=dict(_EVENTS),
             code="Kaneshiro2015",
             interval=[0, 0.496],
-            paradigm="p300",
+            # Six object categories with no Target/NonTarget structure, so
+            # the P300 paradigm cannot process this dataset. The "imagery"
+            # tag routes it to the n-class paradigms (as done for other
+            # non-MI multiclass datasets, e.g. BNCI2022_001).
+            paradigm="imagery",
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
