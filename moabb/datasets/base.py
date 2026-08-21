@@ -29,7 +29,13 @@ from moabb.datasets.bids_interface import (
     _interface_map,
     get_bids_root,
 )
-from moabb.datasets.download import NemarDownloadError, nemar_dl, nemar_sourcedata_dl
+from moabb.datasets.download import (
+    NemarDownloadError,
+    active_sourcedata_store,
+    nemar_dl,
+    nemar_sourcedata_dl,
+    nemar_store,
+)
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 from moabb.utils import get_download_provider
 
@@ -1085,6 +1091,16 @@ class BaseDataset(metaclass=MetaclassDataset):
             **(self.nemar_bids_filters or {}),
         )
 
+    def _sourcedata_store(self):
+        """Local NEMAR sourcedata store to serve this dataset's loads from.
+
+        None when the dataset has no deposit or the provider is pinned to
+        ``"upstream"`` -- the one place that policy lives.
+        """
+        if self.nemar_id is None or get_download_provider() == "upstream":
+            return None
+        return nemar_store(self.code, self.nemar_id) / "sourcedata"
+
     def sourcedata_path(self, subject=None, path=None, force_update=False, verbose=None):
         """Get the dataset's *original* pre-BIDS distribution from NEMAR.
 
@@ -1352,7 +1368,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             sessions_data = None
             # Load and eventually overwrite:
             if len(cached_steps) == 0:  # last option: we don't use cache
-                sessions_data = self._get_single_subject_data(subject)
+                with active_sourcedata_store(self._sourcedata_store()):
+                    sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
                 # Enrich raw.info from METADATA (sex, hand, age, line_freq)
                 metadata = getattr(self, "METADATA", None)

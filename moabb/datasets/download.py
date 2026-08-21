@@ -3,14 +3,17 @@
 #         Bruno Aristimunha <b.aristimunha@gmail.com>
 # License: BSD Style.
 
+import contextlib
+import contextvars
 import functools
 import glob as glob_module
 import json
 import logging
 import os
 import os.path as osp
+import shutil
 import warnings
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
 import nemar
@@ -26,6 +29,59 @@ from requests.exceptions import HTTPError
 
 
 logger = logging.getLogger(__name__)
+
+#: Local directory mirroring the upstream files of the dataset whose loader is
+#: currently executing (its NEMAR sourcedata store), or None. Set by
+#: ``BaseDataset`` around ``_get_single_subject_data`` so the URL downloaders
+#: below can serve prefetched files without threading a parameter through
+#: every dataset's ``data_path``.
+_ACTIVE_STORE = contextvars.ContextVar("moabb_active_sourcedata_store", default=None)
+
+
+@contextlib.contextmanager
+def active_sourcedata_store(store):
+    """Declare the local store that mirrors upstream files for these downloads."""
+    token = _ACTIVE_STORE.set(store)
+    try:
+        yield
+    finally:
+        _ACTIVE_STORE.reset(token)
+
+
+def nemar_store(dataset_code, nemar_id, path=None):
+    """The on-disk root of a NEMAR deposit -- shared by its writer and readers."""
+    return Path(get_dataset_path(dataset_code, path)) / "NEMAR" / nemar_id
+
+
+def _store_lookup(url, fname=None):
+    """Serve ``url``'s file from the active local store, if present.
+
+    The store keeps the upstream relative layout, so the file is probed by the
+    trailing segments of the URL path, longest tail first; an explicit
+    ``fname`` is probed as-is. A miss returns None and the caller downloads.
+    """
+    store = _ACTIVE_STORE.get()
+    if store is None:
+        return None
+    if fname is not None:
+        tails = [PurePosixPath(fname).parts]
+    else:
+        parts = PurePosixPath(urlparse(url).path).parts
+        # ponytail: three trailing segments cover every current dataset layout;
+        # deepen if a deposit ever nests further.
+        tails = [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
+    for tail in tails:
+        if not tail:
+            continue
+        candidate = Path(store).joinpath(*tail)
+        if candidate.is_file():
+            logger.info(
+                "Serving %s from the local NEMAR store instead of %s.",
+                candidate.name,
+                url,
+            )
+            return str(candidate)
+    return None
 
 
 class NemarDownloadError(RuntimeError):
@@ -156,6 +212,10 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
     """  # noqa: E501
+    if not force_update:
+        mirror = _store_lookup(url)
+        if mirror is not None:
+            return mirror
     path = get_dataset_path(sign, path)
     key_dest = "MNE-{:s}-data".format(sign.lower())
     destination = _url_to_local_path(url, osp.join(path, key_dest))
@@ -209,6 +269,14 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
     path = Path(get_dataset_path(sign, path))
     key_dest = "MNE-{:s}-data".format(sign.lower())
     root = path / key_dest
+
+    # The governed store answers first; the URL-derived trees below are kept
+    # as lookups only so existing installs never re-download.
+    if not force_update:
+        mirror = _store_lookup(url, fname=fname)
+        if mirror is not None:
+            return mirror
+
     if fname is not None:
         destination = _sanitize_path(root / fname)
     else:
@@ -438,8 +506,7 @@ def nemar_sourcedata_dl(
     # classes (nm000132 is shared by all seven ErpCore2021 subclasses, nm000250
     # by four Dreyer2023 ones), and a per-code path would download the same
     # tree once per class.
-    root = Path(get_dataset_path(dataset_code, path))
-    target_dir = root / "NEMAR" / nemar_id
+    target_dir = nemar_store(dataset_code, nemar_id, path)
 
     if include is None and subject is not None:
         include = _sourcedata_files_for_subject(
@@ -666,6 +733,17 @@ def download_if_missing(
 
     if force_update and osp.exists(file_path):
         os.remove(file_path)
+
+    # Materialize the file from the active NEMAR store when it has it --
+    # callers expect the file at file_path, so link (or copy) it into place.
+    if not osp.exists(file_path) and not force_update:
+        mirror = _store_lookup(url, fname=osp.basename(file_path))
+        if mirror is not None:
+            try:
+                os.link(mirror, file_path)
+            except OSError:
+                shutil.copy2(mirror, file_path)
+            return file_path
 
     # Check if file exists, if not download it
     if not osp.exists(file_path):
