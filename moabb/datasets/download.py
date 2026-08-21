@@ -76,7 +76,7 @@ def _store_lookup(url, fname=None):
         candidate = Path(store).joinpath(*tail)
         if candidate.is_file():
             logger.info(
-                "Serving %s from the local NEMAR store instead of %s.",
+                "Filling %s from the local NEMAR store instead of downloading %s.",
                 candidate.name,
                 url,
             )
@@ -212,13 +212,17 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
     """  # noqa: E501
-    if not force_update:
-        mirror = _store_lookup(url)
-        if mirror is not None:
-            return mirror
     path = get_dataset_path(sign, path)
     key_dest = "MNE-{:s}-data".format(sign.lower())
     destination = _url_to_local_path(url, osp.join(path, key_dest))
+    if not force_update and not osp.isfile(destination):
+        mirror = _store_lookup(url)
+        if mirror is not None:
+            os.makedirs(osp.dirname(destination), exist_ok=True)
+            try:
+                os.link(mirror, destination)
+            except OSError:
+                shutil.copy2(mirror, destination)
     # Fetch the file
     if not osp.isfile(destination) or force_update:
         if osp.isfile(destination):
@@ -269,14 +273,6 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
     path = Path(get_dataset_path(sign, path))
     key_dest = "MNE-{:s}-data".format(sign.lower())
     root = path / key_dest
-
-    # The governed store answers first; the URL-derived trees below are kept
-    # as lookups only so existing installs never re-download.
-    if not force_update:
-        mirror = _store_lookup(url, fname=fname)
-        if mirror is not None:
-            return mirror
-
     if fname is not None:
         destination = _sanitize_path(root / fname)
     else:
@@ -288,6 +284,18 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
                 legacy_destination.replace(destination)
             except OSError:
                 destination = legacy_destination
+
+    # Fill a missing destination from the governed NEMAR store instead of the
+    # network. Hardlinked so datasets that move their files cannot gut the
+    # store; the normal flow below then validates and returns the destination.
+    if not force_update and not destination.is_file():
+        mirror = _store_lookup(url, fname=fname)
+        if mirror is not None:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                os.link(mirror, destination)
+            except OSError:
+                shutil.copy2(mirror, destination)
 
     downloader = choose_downloader(url, progressbar=True)
     if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
@@ -733,17 +741,6 @@ def download_if_missing(
 
     if force_update and osp.exists(file_path):
         os.remove(file_path)
-
-    # Materialize the file from the active NEMAR store when it has it --
-    # callers expect the file at file_path, so link (or copy) it into place.
-    if not osp.exists(file_path) and not force_update:
-        mirror = _store_lookup(url, fname=osp.basename(file_path))
-        if mirror is not None:
-            try:
-                os.link(mirror, file_path)
-            except OSError:
-                shutil.copy2(mirror, file_path)
-            return file_path
 
     # Check if file exists, if not download it
     if not osp.exists(file_path):

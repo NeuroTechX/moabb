@@ -853,43 +853,52 @@ def test_dreyer2023_reuses_legacy_per_class_download(tmp_path, _dreyer_fake_down
     assert _dreyer_fake_downloads == []
 
 
-def test_data_dl_serves_the_nemar_sourcedata_store(tmp_path, monkeypatch):
-    """The governed NEMAR store answers first; the URL tree is only a lookup.
+def _forbid_connect(self, address):
+    raise AssertionError(f"network touched: {address}")
 
-    Reproducer shape from gh-1147: sourcedata was fetched by ``download()``,
-    the upstream host is down, and ``data_dl`` must not touch the network.
-    Two files share a basename, so the URL-path suffix disambiguates.
+
+def _fake_retrieve(url, known_hash, fname, path, **kwargs):
+    target = Path(path) / fname
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("upstream")
+    return str(target)
+
+
+def test_data_dl_serves_the_nemar_sourcedata_store(tmp_path, monkeypatch):
+    """A missing destination is filled from the NEMAR store, not the network.
+
+    Reproducer shape from gh-1147: sourcedata was fetched by ``download()``
+    and the upstream host is down. The returned path is the normal
+    URL-derived destination (datasets may move it), the bytes come from the
+    store, and the store file survives. Two files share a basename, so the
+    URL-path tail picks the right one.
     """
+    import socket
+
     store = tmp_path / "NEMAR" / "nm000172" / "sourcedata"
     (store / "train").mkdir(parents=True)
     (store / "test").mkdir(parents=True)
     (store / "train" / "1.edf").write_text("train")
     (store / "test" / "1.edf").write_text("test")
-    monkeypatch.setattr(
-        dl,
-        "retrieve",
-        lambda *a, **k: (_ for _ in ()).throw(AssertionError("network touched")),
-    )
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
 
     url = "https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data/train/1.edf"
     with dl.active_sourcedata_store(store):
         result = dl.data_dl(url, "SCHIRRMEISTER2017", path=tmp_path)
+        # A dataset may move the returned file; the store must survive that.
+        Path(result).rename(tmp_path / "moved-away.edf")
+        again = dl.data_dl(url, "SCHIRRMEISTER2017", path=tmp_path)
 
-    assert result == str(store / "train" / "1.edf")
+    assert Path(result).name == "1.edf" and not str(result).startswith(str(store))
+    assert Path(again).read_text() == "train"
+    assert (store / "train" / "1.edf").read_text() == "train"
 
 
 def test_data_dl_without_active_dataset_keeps_url_layout(tmp_path, monkeypatch):
-    """No active nemar_id (e.g. a direct data_path call): behavior unchanged."""
+    """No active store (e.g. a direct data_path call): behavior unchanged."""
     store = tmp_path / "NEMAR" / "nm000172" / "sourcedata"
     store.mkdir(parents=True)
     (store / "1.edf").write_text("mirrored")
-
-    def _fake_retrieve(url, known_hash, fname, path, **kwargs):
-        target = Path(path) / fname
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text("upstream")
-        return str(target)
-
     monkeypatch.setattr(dl, "retrieve", _fake_retrieve)
 
     result = dl.data_dl(
@@ -904,15 +913,6 @@ def test_data_dl_force_update_refetches_upstream(tmp_path, monkeypatch):
     store = tmp_path / "NEMAR" / "nm000900" / "sourcedata"
     store.mkdir(parents=True)
     (store / "foo.mat").write_text("mirrored")
-    calls = []
-
-    def _fake_retrieve(url, known_hash, fname, path, **kwargs):
-        calls.append(url)
-        target = Path(path) / fname
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text("fresh")
-        return str(target)
-
     monkeypatch.setattr(dl, "retrieve", _fake_retrieve)
 
     with dl.active_sourcedata_store(store):
@@ -920,17 +920,15 @@ def test_data_dl_force_update_refetches_upstream(tmp_path, monkeypatch):
             "https://example.com/foo.mat", "fakestore", path=tmp_path, force_update=True
         )
 
-    assert calls and Path(result).read_text() == "fresh"
+    assert Path(result).read_text() == "upstream"
 
 
 def test_get_data_reads_the_nemar_store_end_to_end(tmp_path, monkeypatch):
     """The loader resolves and publishes the dataset's store down to data_dl."""
+    import socket
+
     monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
-    monkeypatch.setattr(
-        dl,
-        "retrieve",
-        lambda *a, **k: (_ for _ in ()).throw(AssertionError("network touched")),
-    )
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
     resolved = []
 
     class _StoreBackedDataset(FakeDataset):
@@ -956,25 +954,9 @@ def test_get_data_reads_the_nemar_store_end_to_end(tmp_path, monkeypatch):
 
     dataset.get_data(subjects=[1])
 
-    assert resolved == [str(store / "foo.mat")]
-
-
-def test_download_if_missing_materializes_from_the_store(tmp_path, monkeypatch):
-    """Manifest-based datasets get the store file linked into place."""
-    store = tmp_path / "NEMAR" / "nm000902" / "sourcedata"
-    store.mkdir(parents=True)
-    (store / "sub-01.zip").write_text("mirrored")
-    monkeypatch.setattr(
-        dl,
-        "retrieve",
-        lambda *a, **k: (_ for _ in ()).throw(AssertionError("network touched")),
-    )
-    target = tmp_path / "MNE-x-data" / "sub-01.zip"
-
-    with dl.active_sourcedata_store(store):
-        dl.download_if_missing(str(target), "https://example.com/sub-01.zip")
-
-    assert target.read_text() == "mirrored"
+    assert len(resolved) == 1
+    assert Path(resolved[0]).read_text() == "mirrored"
+    assert (store / "foo.mat").is_file()
 
 
 def test_set_download_provider_round_trip(_isolated_mne_config, monkeypatch):

@@ -3,7 +3,6 @@
 from sklearn.pipeline import Pipeline
 
 from ..base import BaseDataset
-from ..download import active_sourcedata_store
 
 
 class CompoundDataset(BaseDataset):
@@ -139,8 +138,7 @@ class CompoundDataset(BaseDataset):
     def _get_single_subject_data(self, shopped_subject):
         """Return data for a single subject."""
         dataset, subject, sessions, runs = self.subjects_list[shopped_subject - 1]
-        with active_sourcedata_store(dataset._sourcedata_store()):
-            subject_data = dataset._get_single_subject_data(subject)
+        subject_data = dataset._get_single_subject_data(subject)
         if sessions is None:
             return subject_data
         elif isinstance(sessions, list):
@@ -170,11 +168,10 @@ class CompoundDataset(BaseDataset):
         verbose=None,
     ):
         dataset, subject, _, _ = self.subjects_list[shopped_subject - 1]
-        with active_sourcedata_store(dataset._sourcedata_store()):
-            return dataset.data_path(
-                subject,
-                path=path,
-                force_update=force_update,
-                update_path=update_path,
-                verbose=verbose,
-            )
+        return dataset.data_path(
+            subject,
+            path=path,
+            force_update=force_update,
+            update_path=update_path,
+            verbose=verbose,
+        )
