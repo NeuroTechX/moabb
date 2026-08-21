@@ -63,7 +63,8 @@ def test_read_xdf_numeric_string_and_quirky_footer(tmp_path):
     np.testing.assert_array_equal(
         eeg["time_series"], np.arange(8, dtype="<f4").reshape(4, 2)
     )
-    np.testing.assert_allclose(eeg["time_stamps"], 10.0 + np.arange(4) / 500)
+    # the single recorded clock offset (+0.001) is applied, as pyxdf does
+    np.testing.assert_allclose(eeg["time_stamps"], 10.001 + np.arange(4) / 500)
     # nested desc, pyxdf-shaped (used by Schrag2026 for channel labels)
     channels = eeg["info"]["desc"][0]["channels"][0]["channel"]
     assert [c["label"][0] for c in channels] == ["C3", "C4"]
