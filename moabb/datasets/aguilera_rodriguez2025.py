@@ -9,9 +9,9 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from mne.utils import _soft_import
 
 from . import download as dl
+from ._xdf import read_xdf
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
@@ -146,7 +146,6 @@ class AguileraRodriguez2025(BaseDataset):
 
     .. note::
         Session 2 (gamified paradigm) is distributed as XDF and requires the
-        optional ``pyxdf`` dependency (install with ``pip install moabb[xdf]``).
         Session 1 (traditional paradigm, EDF) works without it — restrict with
         ``AguileraRodriguez2025(sessions=[1])``.
     """
@@ -306,30 +305,24 @@ class AguileraRodriguez2025(BaseDataset):
                 sessions[session_name]["0"] = raw
 
             elif session == 2:
-                # Gamified (XDF) — pyxdf is an optional dependency
-                # (install via `pip install moabb[xdf]`).
-                pyxdf = _soft_import(
-                    "pyxdf",
-                    "loading XDF gamified-paradigm data for AguileraRodriguez2025",
+                # Gamified (XDF), via MOABB's built-in reader: these files'
+                # non-conforming footer (float sample_count) crashes pyxdf.
+                streams = read_xdf(fpath)
+                eeg_stream = next(
+                    (s for s in streams.values() if s["info"]["type"] == "EEG"), None
                 )
-                streams, _ = pyxdf.load_xdf(fpath)
-                eeg_stream = None
-                marker_stream = None
-                for stream in streams:
-                    if stream["info"]["type"][0] == "EEG":
-                        eeg_stream = stream
-                    elif stream["info"]["type"][0] == "Markers":
-                        marker_stream = stream
-
+                marker_stream = next(
+                    (s for s in streams.values() if s["info"]["type"] == "Markers"), None
+                )
                 if eeg_stream is None or marker_stream is None:
                     raise RuntimeError(
                         f"EEG or Marker stream not found for subject {subject}"
                     )
 
-                data_exp = eeg_stream["time_series"].T
-                t_start = eeg_stream["time_stamps"][0]
-                onsets = marker_stream["time_stamps"] - t_start
-                descriptions = [str(t[0]) for t in marker_stream["time_series"]]
+                data_exp = eeg_stream["series"].T
+                t_start = eeg_stream["stamps"][0]
+                onsets = marker_stream["stamps"] - t_start
+                descriptions = [str(row[0]) for row in marker_stream["series"]]
 
                 new_onsets, new_descriptions = [], []
                 for onset, descrp in zip(onsets, descriptions):
