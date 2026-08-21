@@ -341,9 +341,16 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
                 include=SOURCEDATA_PROVENANCE,
                 trust_existing=not force_update,
             )
+        except SelectionError as exc:
+            # The deposit lists no sourcedata_provenance.json at all -- either
+            # it publishes no sourcedata/ or it predates provenance enrichment.
+            raise NemarDownloadError(
+                f"NEMAR dataset {nemar_id} publishes no sourcedata manifest -- "
+                "the original distribution is not mirrored there."
+            ) from exc
         except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
             raise NemarDownloadError(
-                f"Could not read the sourcedata manifest for {nemar_id}."
+                f"Could not fetch the sourcedata manifest for {nemar_id}: {exc}"
             ) from exc
     try:
         record = json.loads(provenance.read_text(encoding="utf-8"))
@@ -355,8 +362,13 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     entries = record.get("files") or []
     if not any("subject" in entry for entry in entries):
         return None
-    wanted = str(subject)
-    files = [entry["file"] for entry in entries if str(entry.get("subject")) == wanted]
+    candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
+    wanted = {str(candidate) for candidate in candidates}
+    files = [
+        entry["file"]
+        for entry in entries
+        if entry.get("file") and str(entry.get("subject")) in wanted
+    ]
     if not files:
         raise NemarDownloadError(
             f"NEMAR dataset {nemar_id} lists no sourcedata for subject "
@@ -397,9 +409,11 @@ def nemar_sourcedata_dl(
         Base path where MOABB stores datasets.
     force_update : bool
         Re-fetch even when a local copy is already present.
-    subject : int | str | None
+    subject : int | str | list | None
         Restrict the download to one subject, resolved through the deposit's
         ``sourcedata_provenance.json`` rather than by guessing at the layout.
+        A list is treated as aliases for the same subject (e.g. the raw MOABB
+        id and its ``nemar_subject_template`` form) and matches any of them.
         Falls back to fetching the whole tree, with a warning, when the deposit
         was enriched before that manifest recorded subjects.
     include : str | list of str | None

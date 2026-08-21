@@ -601,8 +601,8 @@ def test_sourcedata_falls_back_to_the_whole_tree_without_subject_records(
 @pytest.mark.parametrize(
     ("n_subjects", "subject_list", "expected"),
     [
-        pytest.param(2, None, ["1", "2"], id="all-subjects"),
-        pytest.param(3, [1, 2], ["1", "2"], id="explicit-subject-list"),
+        pytest.param(2, None, [1, 2], id="all-subjects"),
+        pytest.param(3, [1, 2], [1, 2], id="explicit-subject-list"),
     ],
 )
 def test_download_selects_sourcedata_not_the_bids_copy(
@@ -681,7 +681,7 @@ def test_download_falls_back_per_subject(monkeypatch, tmp_path):
     fallback_subjects = []
 
     def _sourcedata(*args, subject=None, **kwargs):
-        if subject == "2":
+        if subject == 2:
             raise dl.NemarDownloadError("transfer failed")
         return str(tmp_path)
 
@@ -696,6 +696,51 @@ def test_download_falls_back_per_subject(monkeypatch, tmp_path):
         dataset.download(subject_list=[1, 2, 3], path=tmp_path)
 
     assert fallback_subjects == [2]
+
+
+@pytest.mark.parametrize(
+    ("manifest_subject", "expected_file"),
+    [
+        pytest.param("1", "subject_1.mat", id="raw-moabb-id"),
+        pytest.param("001", "sub-001[a].mat", id="templated-label"),
+    ],
+)
+def test_sourcedata_subject_aliases_match_the_manifest(
+    tmp_path, manifest_subject, expected_file
+):
+    """A subject alias list matches manifests keyed by either convention.
+
+    Also pins that manifest names reach the caller glob-escaped, so a
+    filename containing ``[`` still selects and verifies.
+    """
+    target = tmp_path / "NEMAR" / "nm000001"
+    provenance = target / dl.SOURCEDATA_PROVENANCE
+    provenance.parent.mkdir(parents=True)
+    provenance.write_text(
+        json.dumps(
+            {
+                "dataset": "nm000001",
+                "files": [
+                    {"file": "subject_1.mat", "subject": "1"},
+                    {"file": "sub-001[a].mat", "subject": "001"},
+                    {"file": "subject_2.mat", "subject": "2"},
+                ],
+            }
+        )
+    )
+
+    patterns = dl._sourcedata_files_for_subject(
+        target, "nm000001", [1, "001"], force_update=False
+    )
+
+    import glob as glob_module
+
+    assert patterns == [
+        "sourcedata/" + glob_module.escape("subject_1.mat"),
+        "sourcedata/" + glob_module.escape("sub-001[a].mat"),
+    ]
+    # Both conventions resolve; the parametrized entry is among the matches.
+    assert "sourcedata/" + glob_module.escape(expected_file) in patterns
 
 
 def test_set_download_provider_round_trip(_isolated_mne_config, monkeypatch):

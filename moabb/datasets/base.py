@@ -1125,11 +1125,13 @@ class BaseDataset(metaclass=MetaclassDataset):
                 f"{self.code} declares no nemar_id, so its original distribution "
                 "cannot be fetched from NEMAR."
             )
-        # Resolve the subject through nemar_subject_template when the dataset
-        # declares one (mirrors _download_nemar); without a template the raw
-        # MOABB id is what the provenance manifest records.
-        if subject is not None and self.nemar_subject_template is not None:
-            subject = self._nemar_subject(subject)
+        # Provenance manifests observed in the wild record raw MOABB ids, but
+        # a dataset's nemar_subject_template documents how its deposit labels
+        # subjects -- match both rather than betting on one convention.
+        if subject is not None:
+            label = self._nemar_subject(subject)
+            if label is not None and str(label) != str(subject):
+                subject = [subject, label]
         return nemar_sourcedata_dl(
             self.nemar_id,
             self.code,
