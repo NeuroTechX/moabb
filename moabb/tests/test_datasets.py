@@ -378,15 +378,24 @@ class Test_Datasets:
             )
         ]
 
-    def test_sourcedata_path_applies_subject_template(self, monkeypatch, tmp_path):
-        """A custom nemar_subject_template adds the deposit label as an alias.
+    @pytest.mark.parametrize(
+        ("template", "expected"),
+        [
+            pytest.param("{subject:03d}", [1, "001"], id="custom-template-adds-alias"),
+            pytest.param("{subject}", 1, id="default-template-raw-id"),
+        ],
+    )
+    def test_sourcedata_path_subject_aliases(
+        self, monkeypatch, tmp_path, template, expected
+    ):
+        """A distinct nemar_subject_template adds the deposit label as an alias.
 
         Provenance manifests observed in the wild key subjects by the raw
         MOABB id, so both forms are offered rather than betting on one.
         """
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = "nm000001"
-        dataset.nemar_subject_template = "{subject:03d}"
+        dataset.nemar_subject_template = template
         calls = []
 
         def nemar_sourcedata_dl(*args, **kwargs):
@@ -398,7 +407,7 @@ class Test_Datasets:
         )
         dataset.sourcedata_path(subject=1, path=tmp_path)
 
-        assert calls[-1]["subject"] == [1, "001"]
+        assert calls[-1]["subject"] == expected
 
     def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
         dataset = FakeDataset(n_subjects=1)
