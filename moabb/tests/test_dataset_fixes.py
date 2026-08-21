@@ -14,6 +14,7 @@ from moabb.datasets import schirrmeister2017
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.braininvaders import BI2015b
 from moabb.datasets.hefmi_ich2025 import HefmiIch2025
+from moabb.datasets.kaneshiro2015 import Kaneshiro2015
 from moabb.datasets.kojima2024a import Kojima2024A
 from moabb.datasets.mainsah2025 import _parse_manifest
 from moabb.datasets.schirrmeister2017 import Schirrmeister2017
@@ -301,3 +302,33 @@ def test_schirrmeister2017_reuses_relocated_files(tmp_path: Path, monkeypatch):
 
     dataset = Schirrmeister2017()
     assert dataset.data_path(1, path=str(tmp_path)) == relocated
+
+
+def test_kaneshiro2015_valid_for_declared_paradigm():
+    """Kaneshiro2015 must be accepted by the paradigm it declares.
+
+    The dataset has six object categories and no Target/NonTarget
+    events, so it cannot satisfy the P300 paradigm; it is tagged
+    "imagery" to route it to the n-class paradigms (like BNCI2022_001).
+    """
+    from moabb.paradigms import P300, Imagery, MotorImagery
+
+    dataset = Kaneshiro2015()
+
+    assert dataset.paradigm == "imagery"
+    assert dataset.metadata.experiment.paradigm == dataset.paradigm
+
+    for paradigm in (MotorImagery(), Imagery(), MotorImagery(n_classes=6)):
+        assert paradigm.is_valid(dataset)
+        used = paradigm.used_events(dataset)
+        assert used == {
+            "human_body": 1,
+            "human_face": 2,
+            "animal_body": 3,
+            "animal_face": 4,
+            "fruit_vegetable": 5,
+            "inanimate_object": 6,
+        }
+
+    # The old declaration was broken: P300 requires Target/NonTarget.
+    assert not P300().is_valid(dataset)
