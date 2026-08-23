@@ -2,6 +2,42 @@
     "_metadata": {
         "total": 156
     },
+    "10.1038/s41467-026-75435-5": {
+        "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41467-026-75435-5"
+    },
+    "10.1184/R1/32293995.v1": {
+        "title": "EEG Datasets for Sensory-Guided Joint Learning in Motor Imagery Brain-Computer Interfaces",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1184/R1/32293995.v1"
+    },
+    "10.1109/BCI69045.2026.11435072": {
+        "title": "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors.",
+        "authors": [
+            "Lena\u00efg Gu\u00e9ho",
+            "Laurent Bougrain",
+            "Cyril Plapous",
+            "Patrick H\u00e9naff",
+            "Rozenn Nicol"
+        ],
+        "year": 2026,
+        "doi": "10.1109/BCI69045.2026.11435072"
+    },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
         "authors": [
@@ -126,18 +162,6 @@
         ],
         "year": 2023,
         "doi": "10.1016/j.neuroimage.2023.120446"
-    },
-    "10.1038/s41467-026-75435-5": {
-        "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
-        "authors": [
-            "Hanwen Wang",
-            "Yisha Zhang",
-            "Maxim Karrenbach",
-            "Yidan Ding",
-            "Bin He"
-        ],
-        "year": 2026,
-        "doi": "10.1038/s41467-026-75435-5"
     },
     "10.1038/s41597-020-0535-2": {
         "title": "Multi-channel EEG recording during motor imagery of different joints from the same limb",
@@ -637,18 +661,6 @@
             "Jose del R. Millan"
         ]
     },
-    "10.1109/BCI69045.2026.11435072": {
-        "title": "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors.",
-        "authors": [
-            "Lena\u00efg Gu\u00e9ho",
-            "Laurent Bougrain",
-            "Cyril Plapous",
-            "Patrick H\u00e9naff",
-            "Rozenn Nicol"
-        ],
-        "year": 2026,
-        "doi": "10.1109/BCI69045.2026.11435072"
-    },
     "10.1109/MCI.2018.2807039": {
         "title": "Unsupervised Learning for Brain-Computer Interfaces Based on Event-Related Potentials: Review and Online Comparison [Research Frontier]",
         "authors": [
@@ -824,18 +836,6 @@
         ],
         "year": 2017,
         "doi": "10.1117/12.2255697"
-    },
-    "10.1184/R1/32293995.v1": {
-        "title": "EEG Datasets for Sensory-Guided Joint Learning in Motor Imagery Brain-Computer Interfaces",
-        "authors": [
-            "Hanwen Wang",
-            "Yisha Zhang",
-            "Maxim Karrenbach",
-            "Yidan Ding",
-            "Bin He"
-        ],
-        "year": 2026,
-        "doi": "10.1184/R1/32293995.v1"
     },
     "10.13026/0byy-ry86": {
         "title": "bigP3BCI: An Open, Diverse and Machine Learning Ready P300-based Brain-Computer Interface Dataset",
@@ -1452,17 +1452,6 @@
         "year": 2026,
         "doi": "10.5281/zenodo.19440997"
     },
-    "10.5281/zenodo.20848097": {
-        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
-        "authors": [
-            "Emily Schrag",
-            "Daniel Comaduran Marquez",
-            "Adam Kirton",
-            "Eli Kinney-Lang"
-        ],
-        "year": 2026,
-        "doi": "10.5281/zenodo.20848097"
-    },
     "10.5281/zenodo.2222268": {
         "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
         "authors": [
@@ -1849,5 +1838,16 @@
             "Shuang Qiu",
             "Huiguang He"
         ]
+    },
+    "10.5281/zenodo.20848097": {
+        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.20848097"
     }
 }
