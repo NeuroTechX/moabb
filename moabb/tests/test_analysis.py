@@ -167,6 +167,95 @@ class TestStats:
         assert p1vsp2 >= 1 / n_perms, f"P-values cannot be zero {pvals}"
 
 
+class TestCorrectedTtest:
+    """Tests for the Nadeau & Bengio corrected resampled t-test."""
+
+    n_train, n_test = 80, 20  # a 5-fold split of 100 examples
+
+    def toy_scores(self, seed=42, n_resamples=10, delta=0.05):
+        rng = np.random.RandomState(seed)
+        base = 0.7 + 0.02 * rng.randn(n_resamples)
+        return pd.DataFrame(
+            {
+                "pipeline_1": base + delta,
+                "pipeline_2": base - 0.01 * rng.randn(n_resamples),
+            }
+        )
+
+    def test_matches_manual_formula_and_scales_ttest_rel(self):
+        from scipy import stats
+
+        df = self.toy_scores()
+        n = df.shape[0]
+        x = (df["pipeline_1"] - df["pipeline_2"]).to_numpy()
+
+        # manual Nadeau & Bengio statistic
+        t_corr = x.mean() / np.sqrt((1 / n + self.n_test / self.n_train) * x.var(ddof=1))
+        expected = stats.t.sf(t_corr, df=n - 1)
+
+        pvals = ma.compute_pvals_corrected_ttest(df, self.n_train, self.n_test)
+        assert pvals.shape == (2, 2)
+        assert np.isclose(pvals[0, 1], expected), pvals
+
+        # the corrected statistic is the standard paired t statistic
+        # shrunk by sqrt((1/n) / (1/n + n2/n1))
+        t_rel = stats.ttest_rel(df["pipeline_1"], df["pipeline_2"]).statistic
+        shrink = np.sqrt((1 / n) / (1 / n + self.n_test / self.n_train))
+        assert np.isclose(t_corr, t_rel * shrink)
+
+    def test_more_conservative_than_uncorrected(self):
+        from scipy import stats
+
+        df = self.toy_scores()
+        pvals = ma.compute_pvals_corrected_ttest(df, self.n_train, self.n_test)
+        # one-sided p-value of the naive resampled (paired) t-test
+        p_naive = stats.ttest_rel(
+            df["pipeline_1"], df["pipeline_2"], alternative="greater"
+        ).pvalue
+        assert pvals[0, 1] > p_naive, (pvals[0, 1], p_naive)
+
+        # the correction grows with the test/train ratio
+        p_10fold = ma.compute_pvals_corrected_ttest(df, 90, 10)[0, 1]
+        p_2fold = ma.compute_pvals_corrected_ttest(df, 50, 50)[0, 1]
+        assert p_naive < p_10fold < pvals[0, 1] < p_2fold
+
+    def test_matrix_properties_and_input_validation(self):
+        import pytest
+
+        rng = np.random.RandomState(7)
+        df = pd.DataFrame(
+            {
+                "pipeline_1": 0.8 + 0.02 * rng.randn(10),
+                "pipeline_2": 0.7 + 0.02 * rng.randn(10),
+                "pipeline_3": 0.7 + 0.02 * rng.randn(10),
+            }
+        )
+        pvals = ma.compute_pvals_corrected_ttest(df, self.n_train, self.n_test)
+        assert pvals.shape == (3, 3)
+        assert np.allclose(np.diag(pvals), 0)
+        # one-tailed complementarity: p[i, j] + p[j, i] == 1
+        off = ~np.eye(3, dtype=bool)
+        assert np.allclose((pvals + pvals.T)[off], 1)
+        # p-values stay strictly inside (0, 1) for Stouffer's method,
+        # even for a deterministic (zero-variance) difference
+        det = pd.DataFrame({"pipeline_1": [1.0] * 10, "pipeline_2": [0.0] * 10})
+        p_det = ma.compute_pvals_corrected_ttest(det, self.n_train, self.n_test)
+        assert 0 < p_det[0, 1] < p_det[1, 0] < 1
+        # identical pipelines -> t = 0 -> p = 0.5
+        same = pd.DataFrame({"pipeline_1": [0.7] * 10, "pipeline_2": [0.7] * 10})
+        p_same = ma.compute_pvals_corrected_ttest(same, self.n_train, self.n_test)
+        assert np.allclose(p_same[0, 1], 0.5)
+
+        with pytest.raises(ValueError, match="order"):
+            ma.compute_pvals_corrected_ttest(
+                df, self.n_train, self.n_test, order=["pipeline_1", "wrong"]
+            )
+        with pytest.raises(ValueError, match="resamples"):
+            ma.compute_pvals_corrected_ttest(df.iloc[:1], self.n_train, self.n_test)
+        with pytest.raises(ValueError, match="positive"):
+            ma.compute_pvals_corrected_ttest(df, 0, self.n_test)
+
+
 class TestResults:
     def setup_method(self, method):
         self.obj = Results(
