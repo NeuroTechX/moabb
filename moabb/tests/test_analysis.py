@@ -177,6 +177,14 @@ class TestStats:
         with pytest.raises(ValueError, match="finite"):
             function(df)
 
+    @pytest.mark.parametrize(
+        "function", [ma.compute_pvals_wilcoxon, ma.compute_pvals_perm, ma.compute_effect]
+    )
+    def test_score_statistics_reject_empty_values(self, function):
+        df = pd.DataFrame(columns=["pipeline_1", "pipeline_2"], dtype=float)
+        with pytest.raises(ValueError, match="empty"):
+            function(df)
+
     @pytest.mark.parametrize("n_subjects", [22, 25, 40])
     def test_wilcoxon_identical_pipelines(self, n_subjects):
         # Wilcoxon is undefined when every paired difference is zero. SciPy
@@ -226,6 +234,23 @@ class TestStats:
         assert effect[1, 0] == 0.0, f"Identical pipelines have no effect {effect}"
         assert effect[2, 0] == np.inf, f"A constant gain is unbounded {effect}"
         assert effect[0, 2] == -np.inf, f"A constant loss is unbounded {effect}"
+
+    def test_compute_effect_single_observation_constant_difference(self):
+        df = pd.DataFrame(
+            {
+                "pipeline_1": [0.5],
+                "pipeline_2": [0.5],
+                "pipeline_3": [0.75],
+                "pipeline_4": [0.25],
+            }
+        )
+        effect = ma.compute_effect(df)
+        assert effect[0, 1] == 0.0, f"Identical pipelines have no effect {effect}"
+        assert effect[1, 0] == 0.0, f"Identical pipelines have no effect {effect}"
+        assert effect[2, 0] == np.inf, f"A constant gain is unbounded {effect}"
+        assert effect[0, 2] == -np.inf, f"A constant loss is unbounded {effect}"
+        assert effect[3, 0] == -np.inf, f"A constant loss is unbounded {effect}"
+        assert effect[0, 3] == np.inf, f"A constant gain is unbounded {effect}"
 
     def test_dataset_statistics_no_nan_for_identical_pipelines(self):
         # End-to-end check of the path reported in issue #678: two pipelines
@@ -355,6 +380,11 @@ class TestCorrectedTtest:
             ma.compute_pvals_corrected_ttest(df, n_train=invalid, n_test=20)
         with pytest.raises(ValueError, match="finite"):
             ma.compute_pvals_corrected_ttest(df, n_train=80, n_test=invalid)
+
+    def test_rejects_empty_scores(self):
+        df = pd.DataFrame(columns=["pipeline_1", "pipeline_2"], dtype=float)
+        with pytest.raises(ValueError, match="empty"):
+            ma.compute_pvals_corrected_ttest(df, n_train=80, n_test=20)
 
 
 class TestResults:

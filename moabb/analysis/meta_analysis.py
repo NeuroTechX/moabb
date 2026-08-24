@@ -15,6 +15,8 @@ log = logging.getLogger(__name__)
 def _validate_finite_scores(data, *, name="score data"):
     """Return numeric score data after rejecting NaN and infinities."""
     values = np.asarray(data, dtype=float)
+    if values.size == 0:
+        raise ValueError(f"{name} must not be empty")
     if not np.isfinite(values).all():
         raise ValueError(f"{name} must contain only finite values")
     return values
@@ -387,8 +389,10 @@ def compute_effect(df, order=None):
             if i != j:
                 # for now it's just the standardized difference
                 diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
-                mean, std = diffs.mean(), diffs.std()
-                if std == 0:
+                mean = diffs.mean()
+                # Keep the sample-std (ddof=1) semantics for nonconstant
+                # samples, but treat a nonempty constant difference directly.
+                if (diffs == diffs.iloc[0]).all():
                     # The paired differences have no spread, so the standardized
                     # difference is 0/0 when the two pipelines score identically
                     # and c/0 when they differ by a constant. Identical pipelines
@@ -398,6 +402,7 @@ def compute_effect(df, order=None):
                     # the infinity deliberate rather than a division accident.
                     out[i, j] = 0.0 if mean == 0 else np.copysign(np.inf, mean)
                 else:
+                    std = diffs.std()
                     out[i, j] = mean / std
     return out
 
