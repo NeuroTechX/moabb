@@ -343,13 +343,17 @@ class Hinss2021(BaseDataset):
         # check if has the .zip
         url = f"{URL}P{subject:02}.zip"
 
-        path_zip = dl.data_dl(url, "Neuroergonomics2021")
+        path_zip = dl.data_dl(
+            url,
+            "Neuroergonomics2021",
+            path=path,
+            force_update=force_update,
+            verbose=verbose,
+        )
         path_folder = path_zip.strip(f"P{subject:02}.zip")
 
         # check if has to unzip
-        if not (osp.isdir(path_folder + f"P{subject:02}")) and not (
-            osp.isdir(path_folder + f"P{subject:02}")
-        ):
+        if force_update or not (osp.isdir(path_folder + f"P{subject:02}")):
             zip_ref = z.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 

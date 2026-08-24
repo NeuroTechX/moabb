@@ -12,6 +12,24 @@ from sklearn.utils import check_random_state
 log = logging.getLogger(__name__)
 
 
+def _validate_finite_scores(data, *, name="score data"):
+    """Return numeric score data after rejecting NaN and infinities."""
+    values = np.asarray(data, dtype=float)
+    if values.size == 0:
+        raise ValueError(f"{name} must not be empty")
+    if not np.isfinite(values).all():
+        raise ValueError(f"{name} must contain only finite values")
+    return values
+
+
+# Stouffer's method, used by combine_pvalues, turns a p-value of exactly 0 or 1
+# into an infinite z-score. The permutation branch already keeps its p-values
+# strictly inside (0, 1); these are the tightest bounds that do the same for the
+# Wilcoxon branch without moving any p-value that is already valid.
+_P_FLOOR = np.nextafter(0.0, 1.0)
+_P_CEIL = np.nextafter(1.0, 0.0)
+
+
 def collapse_session_scores(df):
     """Prepare results dataframe for computing statistics.
 
@@ -113,6 +131,7 @@ def compute_pvals_wilcoxon(df, order=None):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
+    _validate_finite_scores(df)
     if order is None:
         order = df.columns
     else:
@@ -125,13 +144,28 @@ def compute_pvals_wilcoxon(df, order=None):
             if i != j:
                 pipe1 = order[i]
                 pipe2 = order[j]
+                diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
+                if (diffs == 0).all():
+                    # Wilcoxon is undefined when every paired difference is
+                    # zero. Old SciPy raised ValueError here; current SciPy
+                    # returns 1.0 from its exact method but NaN from the normal
+                    # approximation it switches to on larger samples, so the
+                    # result silently depended on the number of subjects. The
+                    # two pipelines are indistinguishable, so the one-tailed
+                    # p-value is 0.5 in both directions, which is what the exact
+                    # method already yields.
+                    out[i, j] = 0.5
+                    continue
                 p = stats.wilcoxon(df.loc[:, pipe1], df.loc[:, pipe2])[1]
                 p /= 2
                 # we want the one-tailed p-value
-                diff = (df.loc[:, pipe1] - df.loc[:, pipe2]).mean()
-                if diff < 0:
+                if diffs.mean() < 0:
                     p = 1 - p  # was in the other side of the distribution
-                out[i, j] = p
+                # Keep p strictly inside (0, 1) so Stouffer's method stays
+                # finite, as the permutation branch already does. The normal
+                # approximation can underflow to an exact 0, which the one-tailed
+                # flip then turns into an exact 1.
+                out[i, j] = min(max(p, _P_FLOOR), _P_CEIL)
     return out
 
 
@@ -228,6 +262,7 @@ def compute_pvals_perm(df, order=None, seed=None):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         pvalues
     """
+    _validate_finite_scores(df)
     if order is None:
         order = df.columns
     else:
@@ -248,6 +283,142 @@ def compute_pvals_perm(df, order=None, seed=None):
     return p
 
 
+def _corrected_resampled_ttest(data, n_train, n_test):
+    """Nadeau & Bengio corrected resampled t-test.
+
+    Computes one-tailed p-values for the paired differences in ``data``
+    using the variance correction of Nadeau & Bengio, which accounts for
+    the dependence between resampled train/test splits (e.g. the folds of
+    a (repeated) k-fold cross-validation). The naive resampled t-test
+    treats the per-fold scores as independent, which underestimates the
+    variance and inflates type-I errors; the corrected statistic is
+
+    .. math::
+
+        t = \\frac{\\frac{1}{n} \\sum_{j=1}^{n} x_j}
+                 {\\sqrt{(\\frac{1}{n} + \\frac{n_2}{n_1})\\,\\hat\\sigma^2}}
+
+    where :math:`x_j` is the score difference on resample :math:`j`,
+    :math:`n` is the number of resamples, :math:`n_1` and :math:`n_2` are
+    the number of training and testing examples of each split, and
+    :math:`\\hat\\sigma^2` is the sample variance of the :math:`x_j`.
+    Under the null hypothesis, :math:`t` follows a Student distribution
+    with :math:`n - 1` degrees of freedom.
+
+    Parameters
+    ----------
+    data: ndarray of shape (n_resamples, n_pipelines, n_pipelines)
+        Differences between scores for each pair of pipelines per
+        cross-validation resample.
+    n_train: int
+        Number of training examples in each resample.
+    n_test: int
+        Number of testing examples in each resample.
+
+    Returns
+    -------
+    pvals: ndarray of shape (n_pipelines, n_pipelines)
+        One-tailed p-values; ``pvals[i, j]`` is small when pipeline ``i``
+        scores significantly higher than pipeline ``j``. The diagonal
+        is 0, following :func:`compute_pvals_wilcoxon`.
+
+    References
+    ----------
+    .. [1] Nadeau, C., & Bengio, Y. (1999). Inference for the
+       generalization error. Advances in Neural Information Processing
+       Systems 12; extended version in Machine Learning, 52, 239-281
+       (2003). https://doi.org/10.1023/A:1024068626366
+    .. [2] Bouckaert, R. R., & Frank, E. (2004). Evaluating the
+       replicability of significance tests for comparing learning
+       algorithms. PAKDD 2004.
+       https://doi.org/10.1007/978-3-540-24775-3_3
+    """
+    _validate_finite_scores(data, name="corrected t-test score differences")
+    n_train, n_test = _validate_finite_scores(
+        [n_train, n_test], name="n_train and n_test"
+    )
+    n = data.shape[0]
+    if n < 2:
+        raise ValueError(
+            f"The corrected resampled t-test needs at least 2 resamples, got {n}"
+        )
+    if n_train <= 0 or n_test <= 0:
+        raise ValueError(
+            f"n_train and n_test must be positive, got n_train={n_train}, n_test={n_test}"
+        )
+    mean = data.mean(axis=0)
+    var = data.var(axis=0, ddof=1)
+    denom = np.sqrt((1.0 / n + n_test / n_train) * var)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        t = mean / denom
+    # 0/0 (all differences identical and zero-mean) -> no evidence, t = 0
+    t[np.isnan(t)] = 0.0
+    pvals = stats.t.sf(t, df=n - 1)
+    # Keep p-values strictly inside (0, 1): 0 and 1 are invalid inputs
+    # for Stouffer's method used in combine_pvalues.
+    eps = np.finfo(np.float64).eps
+    pvals = np.clip(pvals, eps, 1 - eps)
+    np.fill_diagonal(pvals, 0.0)
+    return pvals
+
+
+def compute_pvals_corrected_ttest(df, n_train, n_test, order=None):
+    """Compute the Nadeau & Bengio corrected resampled t-test.
+
+    Returns a kxk matrix of one-tailed p-values comparing each pair of
+    pipelines with the corrected resampled t-test of Nadeau & Bengio
+    [1]_. Use this test when the rows of ``df`` are scores of overlapping
+    cross-validation resamples (e.g. the folds of a within-session
+    (repeated) k-fold evaluation): the folds share training examples, so
+    a standard paired t-test underestimates the variance and is
+    overconfident. The correction inflates the variance by
+    :math:`n_2 / n_1`, the test/train ratio of each split.
+
+    For k-fold cross-validation repeated r times on ``m`` examples, use
+    ``n_test = m // k`` and ``n_train = m - n_test`` and pass the
+    ``n = r * k`` per-fold scores as rows.
+
+    Parameters
+    ----------
+    df: :class:`pandas.DataFrame`
+        Scores of each cross-validation resample; samples (resamples) are
+        index, columns are pipelines, and values are scores.
+    n_train: int
+        Number of training examples in each resample.
+    n_test: int
+        Number of testing examples in each resample.
+    order: list of length (n_pipelines)
+        Names corresponding to df columns.
+
+    Returns
+    -------
+    pvals: ndarray of shape (n_pipelines, n_pipelines)
+        One-tailed p-values; ``pvals[i, j]`` is small when pipeline ``i``
+        scores significantly higher than pipeline ``j``.
+
+    References
+    ----------
+    .. [1] Nadeau, C., & Bengio, Y. (1999). Inference for the
+       generalization error. Advances in Neural Information Processing
+       Systems 12; extended version in Machine Learning, 52, 239-281
+       (2003). https://doi.org/10.1023/A:1024068626366
+    """
+    if order is None:
+        order = df.columns
+    else:
+        if set(order) != set(df.columns):
+            raise ValueError("provided order does not have all columns of dataframe")
+    # reshape df into matrix (n_resamples, k, k) of differences
+    data = np.zeros((df.shape[0], len(order), len(order)))
+    for i in range(len(order) - 1):
+        for j in range(i + 1, len(order)):
+            pipe1 = order[i]
+            pipe2 = order[j]
+            data[:, i, j] = df.loc[:, pipe1] - df.loc[:, pipe2]
+            data[:, j, i] = df.loc[:, pipe2] - df.loc[:, pipe1]
+    return _corrected_resampled_ttest(data, n_train, n_test)
+
+
 def compute_effect(df, order=None):
     """Compute effect size across datasets.
 
@@ -266,6 +437,7 @@ def compute_effect(df, order=None):
     effect: ndarray of shape (n_pipelines, n_pipelines)
         array of effect size
     """
+    _validate_finite_scores(df)
     if order is None:
         order = df.columns
     else:
@@ -278,8 +450,21 @@ def compute_effect(df, order=None):
             if i != j:
                 # for now it's just the standardized difference
                 diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
-                diffs = diffs.mean() / diffs.std()
-                out[i, j] = diffs
+                mean = diffs.mean()
+                # Keep the sample-std (ddof=1) semantics for nonconstant
+                # samples, but treat a nonempty constant difference directly.
+                if (diffs == diffs.iloc[0]).all():
+                    # The paired differences have no spread, so the standardized
+                    # difference is 0/0 when the two pipelines score identically
+                    # and c/0 when they differ by a constant. Identical pipelines
+                    # have no effect, so report 0 rather than the NaN (plus
+                    # RuntimeWarning) that NumPy would produce. A constant offset
+                    # really is an unbounded effect, so keep the sign and make
+                    # the infinity deliberate rather than a division accident.
+                    out[i, j] = 0.0 if mean == 0 else np.copysign(np.inf, mean)
+                else:
+                    std = diffs.std()
+                    out[i, j] = mean / std
     return out
 
 

@@ -36,11 +36,11 @@ from .base import BaseDataset
 SHIN_URL = "http://doc.ml.tu-berlin.de/hBCI"
 
 
-def eeg_data_path(base_path, subject, accept):
+def eeg_data_path(base_path, subject, accept, force_update=False):
     datapath = op.join(
         base_path, "EEG", "subject {:02d}".format(subject), "with occular artifact"
     )
-    if not op.isfile(op.join(datapath, "cnt.mat")):
+    if force_update or not op.isfile(op.join(datapath, "cnt.mat")):
         if not op.isdir(op.join(base_path, "EEG")):
             os.makedirs(op.join(base_path, "EEG"))
         intervals = [[1, 5], [6, 10], [11, 15], [16, 20], [21, 25], [26, 29]]
@@ -70,9 +70,9 @@ def eeg_data_path(base_path, subject, accept):
     return [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
 
 
-def fnirs_data_path(path, subject, accept):
+def fnirs_data_path(path, subject, accept, force_update=False):
     datapath = op.join(path, "NIRS", "subject {:02d}".format(subject))
-    if not op.isfile(op.join(datapath, "mrk.mat")):
+    if force_update or not op.isfile(op.join(datapath, "mrk.mat")):
         # fNIRS
         if not op.isfile(op.join(path, "fNIRS.zip")):
             if not accept:
@@ -216,10 +216,18 @@ class BaseShin2017(BaseDataset):
             os.makedirs(op.join(path, "MNE-eegfnirs-data"))
         if self.fnirs:
             return fnirs_data_path(
-                op.join(path, "MNE-eegfnirs-data"), subject, self.accept
+                op.join(path, "MNE-eegfnirs-data"),
+                subject,
+                self.accept,
+                force_update=force_update,
             )
         else:
-            return eeg_data_path(op.join(path, "MNE-eegfnirs-data"), subject, self.accept)
+            return eeg_data_path(
+                op.join(path, "MNE-eegfnirs-data"),
+                subject,
+                self.accept,
+                force_update=force_update,
+            )
 
 
 class Shin2017A(BaseShin2017):

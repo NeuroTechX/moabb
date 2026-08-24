@@ -486,7 +486,9 @@ class Kojima2024A(BaseDataset):
 
         return subject_id
 
-    def data_path(self, subject, path=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         """
         Return the data paths of a single subject.
 
@@ -500,6 +502,12 @@ class Kojima2024A(BaseDataset):
             If it doesn't exist, the “~/mne_data” directory is used. If the
             dataset is not found under the given path, the data
             will be automatically downloaded to the specified folder.
+        force_update : bool
+            Force update of the dataset even if a local copy exists.
+        update_path : bool | None
+            Unused, kept for signature compatibility.
+        verbose : bool, str, int, or None
+            If not None, override default verbose level (see mne.verbose()).
 
         Returns
         -------
@@ -511,7 +519,9 @@ class Kojima2024A(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
-        dataset_path = self.download_by_subject(subject=subject, path=path)
+        dataset_path = self.download_by_subject(
+            subject=subject, path=path, force_update=force_update
+        )
 
         subject_id = self.convert_subject_to_subject_id(subject)
 
@@ -524,7 +534,7 @@ class Kojima2024A(BaseDataset):
 
         return paths
 
-    def download_by_subject(self, subject, path=None):
+    def download_by_subject(self, subject, path=None, force_update=False):
         """
         Download and extract the dataset.
 
@@ -547,17 +557,30 @@ class Kojima2024A(BaseDataset):
         path = Path(dl.get_dataset_path(self.code, path)) / (f"MNE-{self.code}-data")
 
         # checking it there is manifest file in the dataset folder.
-        dl.download_if_missing(path / "kojima2024_manifest.json", _manifest_link)
+        dl.download_if_missing(
+            path / "kojima2024_manifest.json", _manifest_link, force_update=force_update
+        )
 
-        with open(path / "kojima2024_manifest.json", "r") as f:
-            manifest = json.load(f)
+        manifest_path = path / "kojima2024_manifest.json"
+        try:
+            with open(manifest_path, "r") as f:
+                manifest = json.load(f)
+        except json.JSONDecodeError as err:
+            manifest_path.unlink(missing_ok=True)
+            raise RuntimeError(
+                "Downloaded Kojima2024 manifest is invalid and has been removed; retry "
+                "once the upstream service is available."
+            ) from err
 
         files = self._get_files_list(subject, manifest)
 
         for file in tqdm(files):
             download_url = _api_base_url + str(file["file_id"])
             dl.download_if_missing(
-                path / file["directory"] / file["fname"], download_url, warn_missing=False
+                path / file["directory"] / file["fname"],
+                download_url,
+                warn_missing=False,
+                force_update=force_update,
             )
 
         return path

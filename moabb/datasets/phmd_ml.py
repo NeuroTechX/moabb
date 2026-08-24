@@ -225,6 +225,8 @@ class Cattan2019_PHMD(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = "{:s}subject_{:02d}.mat".format(HEADMOUNTED_URL, subject)
-        file_path = dl.data_path(url, "HEADMOUNTED")
+        file_path = dl.data_path(
+            url, "HEADMOUNTED", path=path, force_update=force_update, verbose=verbose
+        )
 
         return [file_path]

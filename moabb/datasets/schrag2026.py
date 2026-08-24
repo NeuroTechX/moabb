@@ -14,9 +14,9 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from mne.utils import _soft_import
 
 from . import download as dl
+from ._xdf import read_xdf
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
@@ -37,8 +37,11 @@ from .utils import safe_extract_zip
 log = logging.getLogger(__name__)
 
 _SIGN = "Schrag2026"
-_ZENODO_URL = "https://zenodo.org/api/records/19440997/files/DatasetData.zip/content"
-_DOI = "10.5281/zenodo.19440997"
+# Version 3.0 ships one archive per subject (~20-40 MB) instead of the single
+# ~1.2 GB DatasetData.zip of version 1.0, so only the requested subject is
+# fetched. It is also the version the authors relicensed to CC-BY-4.0.
+_ZENODO_URL = "https://zenodo.org/api/records/20848097/files/P{subject:03d}.zip/content"
+_DOI = "10.5281/zenodo.20848097"
 _PREPRINT_DOI = "10.21203/rs.3.rs-9347306/v1"
 
 # 16 channels in the order recorded by g.USBamp (Schrag 2026, sec. EEG Acquisition).
@@ -124,8 +127,8 @@ class Schrag2026Pediatric(BaseDataset):
         currently exposed by this loader).
 
     .. note::
-        The dataset ships as a single ~1.2 GB ``DatasetData.zip`` on
-        Zenodo. Subjects are extracted on demand; ``pyxdf`` is required
+        Zenodo publishes one archive per subject, so loading a subject
+        downloads only that subject (~20-40 MB).
         (``pip install moabb[xdf]``).
 
     References
@@ -202,9 +205,12 @@ class Schrag2026Pediatric(BaseDataset):
             institution="University of Calgary",
             country="CA",
             repository="Zenodo",
-            # Zenodo deposit registers cc-by-nd-4.0; the preprint PDF says
-            # CC-BY-4.0. Zenodo metadata is authoritative for the data.
-            license="CC-BY-ND-4.0",
+            # Versions 1.0 and 2 registered cc-by-nd-4.0 while the preprint
+            # said CC-BY-4.0; the authors resolved that in version 3.0, whose
+            # Zenodo record registers cc-by-4.0. (The dataset_description.json
+            # inside the v3.0 archive still carries the superseded ND string;
+            # the Zenodo record is authoritative.)
+            license="CC-BY-4.0",
             publication_year=2026,
             ethics_approval=[
                 "University of Calgary Conjoint Health Research Ethics Board, REB25-0723"
@@ -313,19 +319,23 @@ class Schrag2026Pediatric(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number: {subject}")
 
-        zip_path = Path(dl.data_dl(_ZENODO_URL, _SIGN, path, force_update, verbose))
-        # data_dl strips file extensions; rename so zipfile opens by name.
-        if zip_path.suffix != ".zip":
-            target = zip_path.with_suffix(".zip")
-            if not target.exists():
-                zip_path.rename(target)
-            zip_path = target
+        # The Zenodo download URL ends in "/content", so name the file
+        # explicitly rather than letting it be derived from the URL.
+        archive = f"P{subject:03d}.zip"
+        zip_path = Path(
+            dl.data_dl(
+                _ZENODO_URL.format(subject=subject),
+                _SIGN,
+                path,
+                force_update,
+                verbose,
+                fname=archive,
+            )
+        )
 
-        # The single ~1.2 GB archive holds every subject; extract just the one
-        # requested on demand instead of unpacking all 47.
-        subject_dir = zip_path.parent / "DatasetData" / f"P{subject:03d}"
+        subject_dir = zip_path.parent / f"P{subject:03d}"
         if force_update or not (subject_dir / "EEG").is_dir():
-            prefix = f"DatasetData/P{subject:03d}/"
+            prefix = f"P{subject:03d}/"
             # ponytail: plain extract, no temp-dir staging. Two workers
             # unpacking the same subject concurrently could race; restore
             # atomic os.replace staging if data_path ever runs in parallel.
@@ -349,12 +359,7 @@ def _load_xdf_streams(fpath):
     empty ``gUSBamp-1Markers`` stream that wins a type-based ``"Markers"``
     match in some files (it appears first in the XDF stream order).
     """
-    pyxdf = _soft_import("pyxdf", "loading XDF data for Schrag2026Pediatric")
-    streams, _ = pyxdf.load_xdf(
-        str(fpath),
-        select_streams=[{"type": "EEG"}, {"name": "UnityMarkerStream"}],
-        verbose=False,
-    )
+    streams, _ = read_xdf(str(fpath))
     eeg_stream = marker_stream = None
     for s in streams:
         if s["info"]["type"][0] == "EEG":

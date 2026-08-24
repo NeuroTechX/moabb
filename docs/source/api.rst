@@ -67,6 +67,7 @@ Motor Imagery Datasets
     BNCI2025_001
     BNCI2025_002
     Cho2017
+    Kaneshiro2015
     Dreyer2023
     Dreyer2023A
     Dreyer2023B
@@ -176,7 +177,6 @@ ERP/P300 Datasets
     Lee2021Mobile_ERP
     Chailloux2020
     GuttmannFlury2025_P300
-    Kaneshiro2015
     Lee2024_AC
     Lee2024_BS
     Lee2024_DL
@@ -316,6 +316,8 @@ Utilities
 
     download.data_path
     download.data_dl
+    download.nemar_dl
+    download.nemar_sourcedata_dl
     download.fs_issue_request
     download.fs_get_file_list
     download.fs_get_file_hash
@@ -548,6 +550,7 @@ Statistics
 
     meta_analysis.find_significant_differences
     meta_analysis.compute_dataset_statistics
+    meta_analysis.compute_pvals_corrected_ttest
     meta_analysis.combine_effects
     meta_analysis.combine_pvalues
     meta_analysis.collapse_session_scores
@@ -565,6 +568,8 @@ Utils
     set_log_level
     setup_seed
     set_download_dir
+    set_download_provider
+    get_download_provider
     make_process_pipelines
 
 Benchmark
