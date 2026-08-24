@@ -45,32 +45,32 @@ def collapse_session_scores(df):
         and values are scores
     """
     return (
-        df.groupby(["pipeline", "dataset", "subject"])
+        df.groupby(["pipeline", "dataset", "subject"], sort=False)
         .mean(numeric_only=True)
         .reset_index()
     )
 
 
-def compute_lowest_subject_scores(df, percentile=20):
-    """Score of a pipeline on its lowest performing subjects.
+def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
+    """Score pipelines on subjects selected from a reference pipeline.
 
-    For every (dataset, pipeline) pair, rank the subjects by score and keep
-    only the ``percentile`` percent that score lowest, then average over them.
+    For every dataset, rank subjects by the score of ``reference_pipeline``
+    and keep only the ``percentile`` percent that score lowest. Every pipeline
+    is then averaged over that same cohort.
 
-    Paradigms such as ERP, SSVEP and c-VEP saturate near a perfect score on
-    most subjects, so a mean over the whole cohort is dominated by subjects
-    that no longer discriminate between pipelines. The subjects a pipeline
-    handles worst are where the remaining differences are, which is what the
-    F1@20% metric of [1]_ reports.
-
-    Scores are first averaged over the sessions of a subject, so every subject
-    weighs the same regardless of how many sessions it contributes.
+    The supplied session scores are first macro-averaged per subject, so every
+    subject weighs the same regardless of how many sessions it contributes.
+    This helper does not recompute subject-level F1 scores from predictions.
 
     Parameters
     ----------
     df: :class:`pandas.DataFrame`
         results obtained by an evaluation, with at least the ``dataset``,
         ``pipeline``, ``subject`` and ``score`` columns
+    reference_pipeline: str
+        Pipeline whose per-subject scores define the lowest-performing cohort
+        separately for each dataset. Every pipeline in a dataset must contain
+        exactly the same subjects as this reference.
     percentile: float, default=20
         percentage of subjects to keep, in ``(0, 100]``. The number of
         retained subjects is rounded up, and is at least one, so a value
@@ -84,31 +84,53 @@ def compute_lowest_subject_scores(df, percentile=20):
 
     References
     ----------
-    .. [1] Gnassounou, T., Collas, A., Flamary, R., Gramfort, A., 2025.
-           Multi-Source and Test-Time Domain Adaptation on Multivariate
-           Signals using Spatio-Temporal Monge Alignment.
+    .. [1] Gnassounou, T., Collas, A., Flamary, R., and Gramfort, A. (2025).
+           PSDNorm: Test-Time Temporal Normalization for Deep Learning in
+           Sleep Staging.
            https://arxiv.org/abs/2503.04582
     """
     if not 0 < percentile <= 100:
         raise ValueError(f"percentile must be in (0, 100], got {percentile}")
 
+    _validate_finite_scores(df["score"], name="raw scores")
     subject_scores = collapse_session_scores(df)
     rows = []
-    for (dataset, pipeline), group in subject_scores.groupby(
-        ["dataset", "pipeline"], sort=False
-    ):
-        n_keep = max(1, int(np.ceil(len(group) * percentile / 100)))
-        # Sorting on the subject as well keeps the selection stable when
-        # several subjects share the score at the cut-off.
-        lowest = group.sort_values(["score", "subject"], kind="stable").head(n_keep)
-        rows.append(
-            {
-                "dataset": dataset,
-                "pipeline": pipeline,
-                "score": lowest["score"].mean(),
-                "n_subjects": n_keep,
-            }
+    for dataset, dataset_scores in subject_scores.groupby("dataset", sort=False):
+        reference_scores = dataset_scores[
+            dataset_scores["pipeline"] == reference_pipeline
+        ]
+        if reference_scores.empty:
+            raise ValueError(
+                f"reference pipeline {reference_pipeline!r} is missing from "
+                f"dataset {dataset!r}"
+            )
+
+        reference_subjects = set(reference_scores["subject"])
+        n_keep = max(1, int(np.ceil(len(reference_subjects) * percentile / 100)))
+        selected_subjects = set(
+            reference_scores.sort_values("score", kind="stable")
+            .head(n_keep)["subject"]
+            .tolist()
         )
+
+        for pipeline, pipeline_scores in dataset_scores.groupby("pipeline", sort=False):
+            if set(pipeline_scores["subject"]) != reference_subjects:
+                raise ValueError(
+                    f"pipeline {pipeline!r} in dataset {dataset!r} must contain "
+                    f"the same subjects as reference pipeline "
+                    f"{reference_pipeline!r}"
+                )
+            selected_scores = pipeline_scores[
+                pipeline_scores["subject"].map(selected_subjects.__contains__)
+            ]
+            rows.append(
+                {
+                    "dataset": dataset,
+                    "pipeline": pipeline,
+                    "score": selected_scores["score"].mean(),
+                    "n_subjects": n_keep,
+                }
+            )
     return pd.DataFrame(rows, columns=["dataset", "pipeline", "score", "n_subjects"])
 
 
