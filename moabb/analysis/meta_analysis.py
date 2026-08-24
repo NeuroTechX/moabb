@@ -12,6 +12,24 @@ from sklearn.utils import check_random_state
 log = logging.getLogger(__name__)
 
 
+def _validate_finite_scores(data, *, name="score data"):
+    """Return numeric score data after rejecting NaN and infinities."""
+    values = np.asarray(data, dtype=float)
+    if values.size == 0:
+        raise ValueError(f"{name} must not be empty")
+    if not np.isfinite(values).all():
+        raise ValueError(f"{name} must contain only finite values")
+    return values
+
+
+# Stouffer's method, used by combine_pvalues, turns a p-value of exactly 0 or 1
+# into an infinite z-score. The permutation branch already keeps its p-values
+# strictly inside (0, 1); these are the tightest bounds that do the same for the
+# Wilcoxon branch without moving any p-value that is already valid.
+_P_FLOOR = np.nextafter(0.0, 1.0)
+_P_CEIL = np.nextafter(1.0, 0.0)
+
+
 def collapse_session_scores(df):
     """Prepare results dataframe for computing statistics.
 
@@ -52,6 +70,7 @@ def compute_pvals_wilcoxon(df, order=None):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
+    _validate_finite_scores(df)
     if order is None:
         order = df.columns
     else:
@@ -64,13 +83,28 @@ def compute_pvals_wilcoxon(df, order=None):
             if i != j:
                 pipe1 = order[i]
                 pipe2 = order[j]
+                diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
+                if (diffs == 0).all():
+                    # Wilcoxon is undefined when every paired difference is
+                    # zero. Old SciPy raised ValueError here; current SciPy
+                    # returns 1.0 from its exact method but NaN from the normal
+                    # approximation it switches to on larger samples, so the
+                    # result silently depended on the number of subjects. The
+                    # two pipelines are indistinguishable, so the one-tailed
+                    # p-value is 0.5 in both directions, which is what the exact
+                    # method already yields.
+                    out[i, j] = 0.5
+                    continue
                 p = stats.wilcoxon(df.loc[:, pipe1], df.loc[:, pipe2])[1]
                 p /= 2
                 # we want the one-tailed p-value
-                diff = (df.loc[:, pipe1] - df.loc[:, pipe2]).mean()
-                if diff < 0:
+                if diffs.mean() < 0:
                     p = 1 - p  # was in the other side of the distribution
-                out[i, j] = p
+                # Keep p strictly inside (0, 1) so Stouffer's method stays
+                # finite, as the permutation branch already does. The normal
+                # approximation can underflow to an exact 0, which the one-tailed
+                # flip then turns into an exact 1.
+                out[i, j] = min(max(p, _P_FLOOR), _P_CEIL)
     return out
 
 
@@ -167,6 +201,7 @@ def compute_pvals_perm(df, order=None, seed=None):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         pvalues
     """
+    _validate_finite_scores(df)
     if order is None:
         order = df.columns
     else:
@@ -237,6 +272,10 @@ def _corrected_resampled_ttest(data, n_train, n_test):
        algorithms. PAKDD 2004.
        https://doi.org/10.1007/978-3-540-24775-3_3
     """
+    _validate_finite_scores(data, name="corrected t-test score differences")
+    n_train, n_test = _validate_finite_scores(
+        [n_train, n_test], name="n_train and n_test"
+    )
     n = data.shape[0]
     if n < 2:
         raise ValueError(
@@ -337,6 +376,7 @@ def compute_effect(df, order=None):
     effect: ndarray of shape (n_pipelines, n_pipelines)
         array of effect size
     """
+    _validate_finite_scores(df)
     if order is None:
         order = df.columns
     else:
@@ -349,8 +389,21 @@ def compute_effect(df, order=None):
             if i != j:
                 # for now it's just the standardized difference
                 diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
-                diffs = diffs.mean() / diffs.std()
-                out[i, j] = diffs
+                mean = diffs.mean()
+                # Keep the sample-std (ddof=1) semantics for nonconstant
+                # samples, but treat a nonempty constant difference directly.
+                if (diffs == diffs.iloc[0]).all():
+                    # The paired differences have no spread, so the standardized
+                    # difference is 0/0 when the two pipelines score identically
+                    # and c/0 when they differ by a constant. Identical pipelines
+                    # have no effect, so report 0 rather than the NaN (plus
+                    # RuntimeWarning) that NumPy would produce. A constant offset
+                    # really is an unbounded effect, so keep the sign and make
+                    # the infinity deliberate rather than a division accident.
+                    out[i, j] = 0.0 if mean == 0 else np.copysign(np.inf, mean)
+                else:
+                    std = diffs.std()
+                    out[i, j] = mean / std
     return out
 
 
