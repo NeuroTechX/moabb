@@ -45,7 +45,7 @@ def collapse_session_scores(df):
         and values are scores
     """
     return (
-        df.groupby(["pipeline", "dataset", "subject"], sort=False)
+        df.groupby(["pipeline", "dataset", "subject"], sort=False, observed=True)
         .mean(numeric_only=True)
         .reset_index()
     )
@@ -92,10 +92,18 @@ def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
     if not 0 < percentile <= 100:
         raise ValueError(f"percentile must be in (0, 100], got {percentile}")
 
-    _validate_finite_scores(df["score"], name="raw scores")
-    subject_scores = collapse_session_scores(df)
+    score_values = _validate_finite_scores(df["score"], name="raw scores")
+    for column in ("dataset", "pipeline", "subject"):
+        if df[column].isna().any():
+            raise ValueError(f"{column} must not contain missing values")
+
+    validated_df = df.copy()
+    validated_df["score"] = score_values
+    subject_scores = collapse_session_scores(validated_df)
     rows = []
-    for dataset, dataset_scores in subject_scores.groupby("dataset", sort=False):
+    for dataset, dataset_scores in subject_scores.groupby(
+        "dataset", sort=False, observed=True
+    ):
         reference_scores = dataset_scores[
             dataset_scores["pipeline"] == reference_pipeline
         ]
@@ -113,7 +121,9 @@ def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
             .tolist()
         )
 
-        for pipeline, pipeline_scores in dataset_scores.groupby("pipeline", sort=False):
+        for pipeline, pipeline_scores in dataset_scores.groupby(
+            "pipeline", sort=False, observed=True
+        ):
             if set(pipeline_scores["subject"]) != reference_subjects:
                 raise ValueError(
                     f"pipeline {pipeline!r} in dataset {dataset!r} must contain "

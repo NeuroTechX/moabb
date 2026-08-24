@@ -480,6 +480,52 @@ class TestLowestSubjectScores:
         with pytest.raises(ValueError, match="raw scores.*empty"):
             ma.compute_lowest_subject_scores(df, "reference", percentile=50)
 
+    def test_ignores_unused_categorical_group_levels(self):
+        df = pd.concat(
+            [
+                _results_df([0.1, 0.8], pipeline="reference"),
+                _results_df([0.9, 0.2], pipeline="candidate"),
+            ],
+            ignore_index=True,
+        )
+        df["dataset"] = pd.Categorical(df["dataset"], categories=["d1", "unused_dataset"])
+        df["pipeline"] = pd.Categorical(
+            df["pipeline"], categories=["reference", "candidate", "unused_pipeline"]
+        )
+
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+        assert list(out[["dataset", "pipeline"]].itertuples(index=False, name=None)) == [
+            ("d1", "reference"),
+            ("d1", "candidate"),
+        ]
+        assert np.isfinite(out["score"]).all()
+
+    @pytest.mark.parametrize("column", ["dataset", "pipeline", "subject"])
+    def test_rejects_missing_cohort_identities(self, column):
+        df = _results_df([0.1, 0.8], pipeline="reference")
+        df.loc[1, column] = None
+
+        with pytest.raises(ValueError, match=column):
+            ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+    def test_coerces_numeric_object_scores_without_mutating_input(self):
+        df = pd.concat(
+            [
+                _results_df(["0.1", "0.8"], pipeline="reference"),
+                _results_df(["0.9", "0.05"], pipeline="candidate"),
+            ],
+            ignore_index=True,
+        )
+        original = df.copy(deep=True)
+
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+        scores = out.set_index("pipeline")["score"]
+        assert scores["reference"] == pytest.approx(0.1)
+        assert scores["candidate"] == pytest.approx(0.9)
+        pd.testing.assert_frame_equal(df, original)
+
     def test_stably_ranks_mixed_subject_identifiers(self):
         df = pd.DataFrame(
             [
