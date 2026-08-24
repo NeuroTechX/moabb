@@ -1,4 +1,3 @@
-import logging
 import os
 import shutil
 import warnings
@@ -169,6 +168,15 @@ class TestStats:
         p1vsp2 = pvals[0, 1]
         assert p1vsp2 >= 1 / n_perms, f"P-values cannot be zero {pvals}"
 
+    @pytest.mark.parametrize(
+        "function", [ma.compute_pvals_wilcoxon, ma.compute_pvals_perm, ma.compute_effect]
+    )
+    @pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf])
+    def test_score_statistics_reject_nonfinite_values(self, function, invalid):
+        df = pd.DataFrame({"pipeline_1": [0.7, invalid], "pipeline_2": [0.6, 0.5]})
+        with pytest.raises(ValueError, match="finite"):
+            function(df)
+
     @pytest.mark.parametrize("n_subjects", [22, 25, 40])
     def test_wilcoxon_identical_pipelines(self, n_subjects):
         # Wilcoxon is undefined when every paired difference is zero. SciPy
@@ -242,63 +250,111 @@ class TestStats:
         assert np.isfinite(dfP.to_numpy(dtype=float)[offdiag]).all(), dfP
         assert np.isfinite(dfT.to_numpy(dtype=float)[offdiag]).all(), dfT
 
-    @staticmethod
-    def _stats_with_missing_pair():
-        """Two datasets where only D1 ran pipeline_1 against pipeline_2.
 
-        ``pivot_table`` leaves a NaN in the (D2, pipeline_1) x pipeline_2 cell,
-        which ``combine_pvalues`` then turns into a NaN combined p-value.
-        """
-        pipelines = ["pipeline_1", "pipeline_2", "pipeline_3"]
-        rows = [
+class TestCorrectedTtest:
+    """Tests for the Nadeau & Bengio corrected resampled t-test."""
+
+    n_train, n_test = 80, 20  # a 5-fold split of 100 examples
+
+    def toy_scores(self, seed=42, n_resamples=10, delta=0.05):
+        rng = np.random.RandomState(seed)
+        base = 0.7 + 0.02 * rng.randn(n_resamples)
+        return pd.DataFrame(
             {
-                "dataset": "D1",
-                "pipe1": pipe1,
-                "pipe2": pipe2,
-                "p": 0.3,
-                "smd": 0.1,
-                "nsub": 10,
+                "pipeline_1": base + delta,
+                "pipeline_2": base - 0.01 * rng.randn(n_resamples),
             }
-            for pipe1 in pipelines
-            for pipe2 in pipelines
-            if pipe1 != pipe2
-        ]
-        for pipe in ("pipeline_1", "pipeline_2"):
-            rows.append(
-                {
-                    "dataset": "D2",
-                    "pipe1": pipe,
-                    "pipe2": "pipeline_3",
-                    "p": 0.4,
-                    "smd": 0.2,
-                    "nsub": 10,
-                }
-            )
-            rows.append(
-                {
-                    "dataset": "D2",
-                    "pipe1": "pipeline_3",
-                    "pipe2": pipe,
-                    "p": 0.6,
-                    "smd": -0.2,
-                    "nsub": 10,
-                }
-            )
-        return pd.DataFrame(rows)
+        )
 
-    def test_find_significant_differences_turns_nan_into_one(self, caplog):
-        # The NaN backstop was written but left commented out, with a bare
-        # print("NaN") standing in for it. See issue #678.
-        stats_df = self._stats_with_missing_pair()
-        with caplog.at_level(logging.INFO, logger="moabb.analysis.meta_analysis"):
-            dfP, _ = ma.find_significant_differences(stats_df)
-        assert dfP.loc["pipeline_1", "pipeline_2"] == 1.0, dfP
-        assert dfP.loc["pipeline_2", "pipeline_1"] == 1.0, dfP
-        assert "NaN p-value found, turned to 1" in caplog.text
+    def test_matches_manual_formula_and_scales_ttest_rel(self):
+        from scipy import stats
 
-    def test_find_significant_differences_does_not_print(self, capsys):
-        ma.find_significant_differences(self._stats_with_missing_pair())
-        assert capsys.readouterr().out == "", "find_significant_differences must be quiet"
+        df = self.toy_scores()
+        n = df.shape[0]
+        x = (df["pipeline_1"] - df["pipeline_2"]).to_numpy()
+
+        # manual Nadeau & Bengio statistic
+        t_corr = x.mean() / np.sqrt((1 / n + self.n_test / self.n_train) * x.var(ddof=1))
+        expected = stats.t.sf(t_corr, df=n - 1)
+
+        pvals = ma.compute_pvals_corrected_ttest(df, self.n_train, self.n_test)
+        assert pvals.shape == (2, 2)
+        assert np.isclose(pvals[0, 1], expected), pvals
+
+        # the corrected statistic is the standard paired t statistic
+        # shrunk by sqrt((1/n) / (1/n + n2/n1))
+        t_rel = stats.ttest_rel(df["pipeline_1"], df["pipeline_2"]).statistic
+        shrink = np.sqrt((1 / n) / (1 / n + self.n_test / self.n_train))
+        assert np.isclose(t_corr, t_rel * shrink)
+
+    def test_more_conservative_than_uncorrected(self):
+        from scipy import stats
+
+        df = self.toy_scores()
+        pvals = ma.compute_pvals_corrected_ttest(df, self.n_train, self.n_test)
+        # one-sided p-value of the naive resampled (paired) t-test
+        p_naive = stats.ttest_rel(
+            df["pipeline_1"], df["pipeline_2"], alternative="greater"
+        ).pvalue
+        assert pvals[0, 1] > p_naive, (pvals[0, 1], p_naive)
+
+        # the correction grows with the test/train ratio
+        p_10fold = ma.compute_pvals_corrected_ttest(df, 90, 10)[0, 1]
+        p_2fold = ma.compute_pvals_corrected_ttest(df, 50, 50)[0, 1]
+        assert p_naive < p_10fold < pvals[0, 1] < p_2fold
+
+    def test_matrix_properties_and_input_validation(self):
+        import pytest
+
+        rng = np.random.RandomState(7)
+        df = pd.DataFrame(
+            {
+                "pipeline_1": 0.8 + 0.02 * rng.randn(10),
+                "pipeline_2": 0.7 + 0.02 * rng.randn(10),
+                "pipeline_3": 0.7 + 0.02 * rng.randn(10),
+            }
+        )
+        pvals = ma.compute_pvals_corrected_ttest(df, self.n_train, self.n_test)
+        assert pvals.shape == (3, 3)
+        assert np.allclose(np.diag(pvals), 0)
+        # one-tailed complementarity: p[i, j] + p[j, i] == 1
+        off = ~np.eye(3, dtype=bool)
+        assert np.allclose((pvals + pvals.T)[off], 1)
+        # p-values stay strictly inside (0, 1) for Stouffer's method,
+        # even for a deterministic (zero-variance) difference
+        det = pd.DataFrame({"pipeline_1": [1.0] * 10, "pipeline_2": [0.0] * 10})
+        p_det = ma.compute_pvals_corrected_ttest(det, self.n_train, self.n_test)
+        assert 0 < p_det[0, 1] < p_det[1, 0] < 1
+        # identical pipelines -> t = 0 -> p = 0.5
+        same = pd.DataFrame({"pipeline_1": [0.7] * 10, "pipeline_2": [0.7] * 10})
+        p_same = ma.compute_pvals_corrected_ttest(same, self.n_train, self.n_test)
+        assert np.allclose(p_same[0, 1], 0.5)
+
+        with pytest.raises(ValueError, match="order"):
+            ma.compute_pvals_corrected_ttest(
+                df, self.n_train, self.n_test, order=["pipeline_1", "wrong"]
+            )
+        with pytest.raises(ValueError, match="resamples"):
+            ma.compute_pvals_corrected_ttest(df.iloc[:1], self.n_train, self.n_test)
+        with pytest.raises(ValueError, match="positive"):
+            ma.compute_pvals_corrected_ttest(df, 0, self.n_test)
+
+    @pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf])
+    def test_rejects_nonfinite_scores(self, invalid):
+        df = pd.DataFrame(
+            {"pipeline_1": [0.72, 0.74, 0.76], "pipeline_2": [0.68, 0.69, 0.70]}
+        )
+        df.iloc[0, 0] = invalid
+        with pytest.raises(ValueError, match="finite"):
+            ma.compute_pvals_corrected_ttest(df, n_train=80, n_test=20)
+
+    @pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf])
+    def test_rejects_nonfinite_train_test_sizes(self, invalid):
+        df = self.toy_scores()
+        with pytest.raises(ValueError, match="finite"):
+            ma.compute_pvals_corrected_ttest(df, n_train=invalid, n_test=20)
+        with pytest.raises(ValueError, match="finite"):
+            ma.compute_pvals_corrected_ttest(df, n_train=80, n_test=invalid)
 
 
 class TestResults:

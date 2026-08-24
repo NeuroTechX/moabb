@@ -9,9 +9,9 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from mne.utils import _soft_import
 
 from . import download as dl
+from ._xdf import read_xdf
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
@@ -146,12 +146,11 @@ class AguileraRodriguez2025(BaseDataset):
 
     .. note::
         Session 2 (gamified paradigm) is distributed as XDF and requires the
-        optional ``pyxdf`` dependency (install with ``pip install moabb[xdf]``).
         Session 1 (traditional paradigm, EDF) works without it — restrict with
         ``AguileraRodriguez2025(sessions=[1])``.
     """
 
-    # nemar_id = "nm000174" pending: NEMAR deposit not yet public
+    nemar_id = "nm000174"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -306,13 +305,9 @@ class AguileraRodriguez2025(BaseDataset):
                 sessions[session_name]["0"] = raw
 
             elif session == 2:
-                # Gamified (XDF) — pyxdf is an optional dependency
-                # (install via `pip install moabb[xdf]`).
-                pyxdf = _soft_import(
-                    "pyxdf",
-                    "loading XDF gamified-paradigm data for AguileraRodriguez2025",
-                )
-                streams, _ = pyxdf.load_xdf(fpath)
+                # Gamified (XDF), via MOABB's built-in reader: these files'
+                # non-conforming footer (float sample_count) crashes pyxdf.
+                streams, _ = read_xdf(fpath)
                 eeg_stream = None
                 marker_stream = None
                 for stream in streams:

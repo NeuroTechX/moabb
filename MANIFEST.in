@@ -1,6 +1,5 @@
-include README.rst
-include LICENSE.txt
-include NOTICE.txt
+include README.md
+include LICENSE
 
 include moabb/datasets/summary_*.csv
 

@@ -168,5 +168,10 @@ class CompoundDataset(BaseDataset):
         verbose=None,
     ):
         dataset, subject, _, _ = self.subjects_list[shopped_subject - 1]
-        path = dataset.data_path(subject)
-        return path
+        return dataset.data_path(
+            subject,
+            path=path,
+            force_update=force_update,
+            update_path=update_path,
+            verbose=verbose,
+        )

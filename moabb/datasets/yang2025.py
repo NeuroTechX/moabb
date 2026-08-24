@@ -331,7 +331,9 @@ class Yang2025(BaseDataset):
 
         # Check if data already extracted (look for the extracted directory)
         extracted_dir = basepath / "WBCIC_SHU Motor Imagery dataset"
-        already_extracted = extracted_dir.is_dir() and any(extracted_dir.rglob("*.mat"))
+        already_extracted = extracted_dir.is_dir() and any(
+            extracted_dir.rglob("data.bdf")
+        )
 
         # Single 65.6 GB ZIP - download if needed.
         zip_path = basepath / "WBCIC_SHU_Motor_Imagery_dataset.zip"
