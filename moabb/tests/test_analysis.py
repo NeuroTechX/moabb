@@ -387,6 +387,208 @@ class TestCorrectedTtest:
             ma.compute_pvals_corrected_ttest(df, n_train=80, n_test=20)
 
 
+def _results_df(scores, dataset="d1", pipeline="p1", sessions=("0",)):
+    """Build an evaluation-like dataframe from per-subject scores."""
+    return pd.DataFrame(
+        [
+            {
+                "dataset": dataset,
+                "pipeline": pipeline,
+                "subject": subject,
+                "session": session,
+                "score": score,
+            }
+            for subject, score in enumerate(scores, start=1)
+            for session in sessions
+        ]
+    )
+
+
+class TestLowestSubjectScores:
+    def test_keeps_the_worst_subjects(self):
+        df = _results_df([0.9, 0.5, 1.0, 0.6, 0.95, 0.99, 0.98, 0.97, 0.96, 0.94])
+        out = ma.compute_lowest_subject_scores(df, "p1", percentile=20)
+        assert len(out) == 1
+        # 20% of 10 subjects, so the two worst: 0.5 and 0.6.
+        assert out.loc[0, "n_subjects"] == 2
+        assert out.loc[0, "score"] == pytest.approx(0.55)
+
+    def test_rounds_the_subject_count_up(self):
+        df = _results_df([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7])
+        out = ma.compute_lowest_subject_scores(df, "p1", percentile=20)
+        # 20% of 7 subjects is 1.4, rounded up to 2.
+        assert out.loc[0, "n_subjects"] == 2
+        assert out.loc[0, "score"] == pytest.approx(0.15)
+
+    def test_always_keeps_at_least_one_subject(self):
+        df = _results_df([0.3, 0.4, 0.5])
+        out = ma.compute_lowest_subject_scores(df, "p1", percentile=1)
+        assert out.loc[0, "n_subjects"] == 1
+        assert out.loc[0, "score"] == pytest.approx(0.3)
+
+    def test_full_percentile_matches_the_plain_mean(self):
+        scores = [0.4, 0.6, 0.8, 1.0]
+        out = ma.compute_lowest_subject_scores(_results_df(scores), "p1", percentile=100)
+        assert out.loc[0, "n_subjects"] == len(scores)
+        assert out.loc[0, "score"] == pytest.approx(np.mean(scores))
+
+    def test_uses_the_reference_cohort_for_every_pipeline(self):
+        df = pd.concat(
+            [
+                _results_df([0.1, 0.8], pipeline="reference"),
+                _results_df([0.9, 0.05], pipeline="candidate"),
+            ],
+            ignore_index=True,
+        )
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+        scores = out.set_index("pipeline")["score"]
+        assert scores["reference"] == pytest.approx(0.1)
+        assert scores["candidate"] == pytest.approx(0.9)
+        assert out["n_subjects"].tolist() == [1, 1]
+
+    def test_rejects_a_missing_reference_pipeline(self):
+        df = _results_df([0.1, 0.2], pipeline="candidate")
+        with pytest.raises(ValueError, match="reference pipeline"):
+            ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+    @pytest.mark.parametrize("candidate_scores", [[0.3], [0.3, 0.4, 0.5]])
+    def test_rejects_subject_coverage_different_from_reference(self, candidate_scores):
+        df = pd.concat(
+            [
+                _results_df([0.1, 0.2], pipeline="reference"),
+                _results_df(candidate_scores, pipeline="candidate"),
+            ],
+            ignore_index=True,
+        )
+        with pytest.raises(ValueError, match="same subjects"):
+            ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+    @pytest.mark.parametrize("invalid", [np.nan, np.inf, -np.inf])
+    def test_rejects_nonfinite_raw_session_scores(self, invalid):
+        df = pd.concat(
+            [
+                _results_df([0.5], pipeline="reference", sessions=("0",)),
+                _results_df([invalid], pipeline="reference", sessions=("1",)),
+            ],
+            ignore_index=True,
+        )
+        with pytest.raises(ValueError, match="raw scores.*finite"):
+            ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+    def test_rejects_empty_results(self):
+        df = pd.DataFrame(columns=["dataset", "pipeline", "subject", "score"])
+        with pytest.raises(ValueError, match="raw scores.*empty"):
+            ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+    def test_ignores_unused_categorical_group_levels(self):
+        df = pd.concat(
+            [
+                _results_df([0.1, 0.8], pipeline="reference"),
+                _results_df([0.9, 0.2], pipeline="candidate"),
+            ],
+            ignore_index=True,
+        )
+        df["dataset"] = pd.Categorical(df["dataset"], categories=["d1", "unused_dataset"])
+        df["pipeline"] = pd.Categorical(
+            df["pipeline"], categories=["reference", "candidate", "unused_pipeline"]
+        )
+
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+        assert list(out[["dataset", "pipeline"]].itertuples(index=False, name=None)) == [
+            ("d1", "reference"),
+            ("d1", "candidate"),
+        ]
+        assert np.isfinite(out["score"]).all()
+
+    @pytest.mark.parametrize("column", ["dataset", "pipeline", "subject"])
+    def test_rejects_missing_cohort_identities(self, column):
+        df = _results_df([0.1, 0.8], pipeline="reference")
+        df.loc[1, column] = None
+
+        with pytest.raises(ValueError, match=column):
+            ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+    def test_coerces_numeric_object_scores_without_mutating_input(self):
+        df = pd.concat(
+            [
+                _results_df(["0.1", "0.8"], pipeline="reference"),
+                _results_df(["0.9", "0.05"], pipeline="candidate"),
+            ],
+            ignore_index=True,
+        )
+        original = df.copy(deep=True)
+
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+
+        scores = out.set_index("pipeline")["score"]
+        assert scores["reference"] == pytest.approx(0.1)
+        assert scores["candidate"] == pytest.approx(0.9)
+        pd.testing.assert_frame_equal(df, original)
+
+    def test_stably_ranks_mixed_subject_identifiers(self):
+        df = pd.DataFrame(
+            [
+                ("reference", 1, 0.2),
+                ("reference", "2", 0.2),
+                ("reference", ("subject", 3), 0.2),
+                ("candidate", 1, 0.9),
+                ("candidate", "2", 0.8),
+                ("candidate", ("subject", 3), 0.7),
+            ],
+            columns=["pipeline", "subject", "score"],
+        )
+        df["dataset"] = "d1"
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+        scores = out.set_index("pipeline")["score"]
+        assert scores["reference"] == pytest.approx(0.2)
+        assert scores["candidate"] == pytest.approx(0.85)
+        assert out["n_subjects"].tolist() == [2, 2]
+
+    def test_sessions_are_averaged_before_ranking(self):
+        # Subject 1 holds the single worst session (0.1) but averages 0.5,
+        # above subject 2. Ranking the raw rows would pick subject 1.
+        df = pd.concat(
+            [
+                _results_df([0.1, 0.35], pipeline="reference", sessions=("0",)),
+                _results_df([0.9, 0.35], pipeline="reference", sessions=("1",)),
+                _results_df([0.9, 0.6], pipeline="candidate", sessions=("0",)),
+                _results_df([0.9, 0.6], pipeline="candidate", sessions=("1",)),
+            ],
+            ignore_index=True,
+        )
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+        scores = out.set_index("pipeline")["score"]
+        assert scores["reference"] == pytest.approx(0.35)
+        assert scores["candidate"] == pytest.approx(0.6)
+        assert out["n_subjects"].tolist() == [1, 1]
+
+    def test_uses_a_separate_reference_cohort_for_each_dataset(self):
+        df = pd.concat(
+            [
+                _results_df([0.1, 0.8], dataset="d1", pipeline="reference"),
+                _results_df([0.9, 0.2], dataset="d1", pipeline="candidate"),
+                _results_df([0.8, 0.1], dataset="d2", pipeline="reference"),
+                _results_df([0.9, 0.2], dataset="d2", pipeline="candidate"),
+            ],
+            ignore_index=True,
+        )
+        out = ma.compute_lowest_subject_scores(df, "reference", percentile=50)
+        assert len(out) == 4
+        scores = out.set_index(["dataset", "pipeline"])["score"]
+        assert scores[("d1", "reference")] == pytest.approx(0.1)
+        assert scores[("d1", "candidate")] == pytest.approx(0.9)
+        assert scores[("d2", "reference")] == pytest.approx(0.1)
+        assert scores[("d2", "candidate")] == pytest.approx(0.2)
+
+    @pytest.mark.parametrize("percentile", [0, -5, 101])
+    def test_rejects_an_invalid_percentile(self, percentile):
+        with pytest.raises(ValueError, match="percentile"):
+            ma.compute_lowest_subject_scores(
+                _results_df([0.5]), "p1", percentile=percentile
+            )
+
+
 class TestResults:
     def setup_method(self, method):
         self.obj = Results(
