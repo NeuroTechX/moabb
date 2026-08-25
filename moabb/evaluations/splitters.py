@@ -71,6 +71,20 @@ def _resolved_inner_kwargs(cv_class, direct_kwargs, resolved, control_keys):
     return inner_kwargs
 
 
+def _public_cv_kwargs(direct_kwargs, resolved, control_keys):
+    """Preserve visible non-wrapper kwargs without exposing the envelope."""
+    public_kwargs = dict(direct_kwargs)
+    if resolved is not None:
+        public_kwargs.update(
+            {
+                name: value
+                for name, value in resolved.inner_kwargs.items()
+                if name not in control_keys
+            }
+        )
+    return public_kwargs
+
+
 def _copy_random_state(random_state):
     """Copy an RNG state without advancing the caller-owned stream."""
     source = check_random_state(random_state)
@@ -180,9 +194,10 @@ class WithinSessionSplitter(BaseCrossValidator):
         # ``groups`` is only forwarded to a group-aware inner cv; ``None`` keeps
         # the legacy (StratifiedKFold on labels) behaviour.
         self.groups = groups
-        self.cv_kwargs = cv_kwargs
+        control_keys = {"shuffle", "random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
         self._cv_kwargs = _resolved_inner_kwargs(
-            cv_class, cv_kwargs, resolved_cv, {"shuffle", "random_state"}
+            cv_class, cv_kwargs, resolved_cv, control_keys
         )
 
         # Normalize RandomState to int seed so check_random_state() always
@@ -364,9 +379,10 @@ class WithinSubjectSplitter(BaseCrossValidator):
         # ``groups`` is only forwarded to a group-aware inner cv; ``None`` keeps
         # the legacy (StratifiedKFold on labels) behaviour.
         self.groups = groups
-        self.cv_kwargs = cv_kwargs
+        control_keys = {"shuffle", "random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
         self._cv_kwargs = _resolved_inner_kwargs(
-            cv_class, cv_kwargs, resolved_cv, {"shuffle", "random_state"}
+            cv_class, cv_kwargs, resolved_cv, control_keys
         )
 
         # Normalize RandomState to int seed so check_random_state() always
@@ -555,9 +571,10 @@ class CrossSessionSplitter(BaseCrossValidator):
         # ``groups`` is the within-subject held-out axis (default: sessions),
         # resolved per subject and fed to the stock sklearn cv_class.
         self.groups = groups
-        self.cv_kwargs = cv_kwargs
+        control_keys = {"shuffle", "random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
         self._cv_kwargs = _resolved_inner_kwargs(
-            cv_class, cv_kwargs, resolved_cv, {"shuffle", "random_state"}
+            cv_class, cv_kwargs, resolved_cv, control_keys
         )
 
         self.shuffle = shuffle
@@ -778,9 +795,10 @@ class CrossSubjectSplitter(BaseCrossValidator):
         self.calibration_size = calibration_size
         self.calibration_labeled = calibration_labeled
         self.random_state = random_state
-        self.cv_kwargs = cv_kwargs
+        control_keys = {"random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
         self._cv_kwargs = _resolved_inner_kwargs(
-            cv_class, cv_kwargs, resolved_cv, {"random_state"}
+            cv_class, cv_kwargs, resolved_cv, control_keys
         )
 
         random_state_capability = _cv_keyword_capability(self.cv_class, "random_state")

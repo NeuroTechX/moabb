@@ -862,6 +862,77 @@ def test_known_false_random_state_remains_evaluation_wrapper_only(
 
 
 @pytest.mark.parametrize(
+    "evaluation_class,groups,partition_columns,expected_folds",
+    EVALUATION_CASES,
+    ids=["within-session", "within-subject", "cross-session", "cross-subject"],
+)
+@pytest.mark.parametrize("update_mode", ["mutate", "replace"])
+def test_updated_evaluation_cv_kwargs_preserve_wrapper_only_seed(
+    tmp_path,
+    small_evaluation_data,
+    evaluation_class,
+    groups,
+    partition_columns,
+    expected_folds,
+    update_mode,
+):
+    """A seed added after construction remains wrapper-only for LOGO."""
+    del partition_columns
+    fake_dataset, y, metadata = small_evaluation_data
+    evaluation = _make_evaluation(
+        evaluation_class,
+        fake_dataset,
+        tmp_path,
+        cv_class=LeaveOneGroupOut,
+        cv_kwargs={},
+        groups=groups,
+    )
+    if update_mode == "mutate":
+        evaluation.cv_kwargs["random_state"] = 17
+    else:
+        evaluation.cv_kwargs = {"random_state": 17}
+
+    splitter = evaluation._create_splitter()
+    folds = list(splitter.split(y, metadata))
+
+    assert splitter.random_state == 17
+    assert splitter.cv_kwargs == {}
+    assert splitter._cv_kwargs == {}
+    assert len(folds) == expected_folds
+    _assert_held_out_groups_are_disjoint(folds, metadata, groups)
+
+
+@pytest.mark.parametrize(
+    "evaluation_class,groups,expected_cv_kwargs",
+    [
+        (ev.WithinSessionEvaluation, _group_run, {"n_splits": 2}),
+        (ev.WithinSubjectEvaluation, _group_session, {"n_splits": 2}),
+        (ev.CrossSessionEvaluation, _group_session, {"n_splits": 2}),
+        (ev.CrossSubjectEvaluation, _group_subject, {"n_splits": 2, "shuffle": True}),
+    ],
+    ids=["within-session", "within-subject", "cross-session", "cross-subject"],
+)
+def test_evaluation_inner_settings_remain_public_on_splitter(
+    tmp_path, small_evaluation_data, evaluation_class, groups, expected_cv_kwargs
+):
+    """Evaluation-routed non-wrapper settings remain in public cv_kwargs."""
+    fake_dataset, _, _ = small_evaluation_data
+    evaluation = _make_evaluation(
+        evaluation_class,
+        fake_dataset,
+        tmp_path,
+        cv_class=GroupKFold,
+        cv_kwargs={"n_splits": 2, "shuffle": True, "random_state": 17},
+        groups=groups,
+    )
+
+    splitter = evaluation._create_splitter()
+
+    assert splitter.cv_kwargs == expected_cv_kwargs
+    assert splitter._cv_kwargs["n_splits"] == 2
+
+
+@pytest.mark.parametrize(
     "evaluation_class,groups,expected_folds",
     [
         (ev.WithinSessionEvaluation, _stable_partition_groups, 8),

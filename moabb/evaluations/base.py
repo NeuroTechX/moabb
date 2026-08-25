@@ -453,6 +453,7 @@ class BaseEvaluation(ABC):
         self.n_splits = n_splits
         self.cv_class = cv_class
         self.cv_kwargs = {} if cv_kwargs is None else cv_kwargs
+        self._cv_internal_keys = frozenset()
         self._cv_explicit_keys = frozenset(self.cv_kwargs)
         self.groups = groups
         self.save_model = save_model
@@ -552,7 +553,9 @@ class BaseEvaluation(ABC):
                 if _cv_keyword_capability(cv_class, name) is True
             }
         cv_kwargs.update(self.cv_kwargs)
-        return cv_class, _ResolvedCV(cv_kwargs, self._cv_explicit_keys)
+        explicit_keys = frozenset(self.cv_kwargs) - self._cv_internal_keys
+        self._cv_explicit_keys = explicit_keys
+        return cv_class, _ResolvedCV(cv_kwargs, explicit_keys)
 
     def _load_data(
         self, dataset, run_pipes, process_pipeline, postprocess_pipeline, subjects=None

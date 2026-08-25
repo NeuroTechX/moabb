@@ -507,7 +507,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
         cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
-        explicit_cv_keys = frozenset(cv_kwargs)
+        internal_cv_keys = frozenset()
 
         if cs_mode is None:
             cs_mode = CrossSubjectMode.TRAIN
@@ -529,6 +529,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if not has_manual_calibration:
             cv_kwargs["calibration_size"] = cs_mode.calibration_size
             cv_kwargs["calibration_labeled"] = cs_mode.calibration_labeled
+            internal_cv_keys = frozenset({"calibration_size", "calibration_labeled"})
 
         self.trialwise = cs_mode.trialwise
 
@@ -539,7 +540,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         kwargs["cv_kwargs"] = cv_kwargs
         super().__init__(*args, **kwargs)
-        self._cv_explicit_keys = explicit_cv_keys
+        self._cv_internal_keys = internal_cv_keys
+        self._cv_explicit_keys = frozenset(self.cv_kwargs) - internal_cv_keys
 
     def _create_splitter(self):
         """Create the CrossSubjectSplitter for parallel evaluation.
