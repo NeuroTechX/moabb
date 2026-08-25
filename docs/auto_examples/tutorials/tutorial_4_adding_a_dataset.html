@@ -813,10 +813,64 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
-0    1.0  0.016571     40.0  ...  ExampleDataset       MDM
-1    1.0  0.015933     40.0  ...  ExampleDataset       MDM
-2    1.0  0.015652     40.0  ...  ExampleDataset       MDM
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|▏                                     | 12.3k/2.77M [00:00&lt;00:27, 102kB/s]
+  3%|█▏                                    | 85.0k/2.77M [00:00&lt;00:09, 294kB/s]
+  8%|██▉                                    | 210k/2.77M [00:00&lt;00:05, 471kB/s]
+ 15%|█████▊                                 | 409k/2.77M [00:00&lt;00:03, 702kB/s]
+ 22%|████████▌                              | 604k/2.77M [00:00&lt;00:02, 818kB/s]
+ 29%|███████████▎                           | 801k/2.77M [00:01&lt;00:02, 887kB/s]
+ 35%|█████████████▊                         | 981k/2.77M [00:01&lt;00:01, 902kB/s]
+ 44%|████████████████▍                    | 1.23M/2.77M [00:01&lt;00:01, 1.02MB/s]
+ 53%|███████████████████▍                 | 1.46M/2.77M [00:01&lt;00:01, 1.07MB/s]
+ 61%|██████████████████████▌              | 1.68M/2.77M [00:01&lt;00:00, 1.11MB/s]
+ 69%|█████████████████████████▌           | 1.91M/2.77M [00:02&lt;00:00, 1.13MB/s]
+ 77%|████████████████████████████▍        | 2.12M/2.77M [00:02&lt;00:00, 1.12MB/s]
+ 86%|███████████████████████████████▋     | 2.37M/2.77M [00:02&lt;00:00, 1.17MB/s]
+ 92%|█████████████████████████████████▉   | 2.53M/2.77M [00:02&lt;00:00, 1.07MB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 9.30GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  1%|▏                                     | 17.4k/2.77M [00:00&lt;00:18, 151kB/s]
+  3%|█▏                                    | 82.9k/2.77M [00:00&lt;00:08, 320kB/s]
+  7%|██▊                                    | 198k/2.77M [00:00&lt;00:05, 470kB/s]
+ 13%|████▉                                  | 346k/2.77M [00:00&lt;00:03, 714kB/s]
+ 18%|██████▊                                | 484k/2.77M [00:00&lt;00:03, 758kB/s]
+ 28%|██████████▍                           | 762k/2.77M [00:00&lt;00:01, 1.03MB/s]
+ 37%|█████████████▋                       | 1.02M/2.77M [00:01&lt;00:01, 1.15MB/s]
+ 48%|█████████████████▌                   | 1.31M/2.77M [00:01&lt;00:00, 1.52MB/s]
+ 54%|███████████████████▊                 | 1.48M/2.77M [00:01&lt;00:00, 1.30MB/s]
+ 64%|███████████████████████▌             | 1.76M/2.77M [00:01&lt;00:00, 1.35MB/s]
+ 72%|██████████████████████████▌          | 1.99M/2.77M [00:01&lt;00:00, 1.30MB/s]
+ 80%|█████████████████████████████▍       | 2.20M/2.77M [00:01&lt;00:00, 1.24MB/s]
+ 88%|████████████████████████████████▋    | 2.45M/2.77M [00:02&lt;00:00, 1.26MB/s]
+ 96%|███████████████████████████████████▌ | 2.66M/2.77M [00:02&lt;00:00, 1.21MB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 10.3GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  1%|▏                                     | 14.3k/2.77M [00:00&lt;00:21, 126kB/s]
+  3%|█▎                                    | 95.2k/2.77M [00:00&lt;00:06, 389kB/s]
+  7%|██▌                                    | 182k/2.77M [00:00&lt;00:04, 540kB/s]
+ 10%|███▋                                   | 264k/2.77M [00:00&lt;00:04, 507kB/s]
+ 15%|█████▊                                 | 411k/2.77M [00:00&lt;00:03, 615kB/s]
+ 21%|████████                               | 574k/2.77M [00:00&lt;00:03, 703kB/s]
+ 27%|██████████▍                            | 738k/2.77M [00:01&lt;00:02, 754kB/s]
+ 36%|██████████████                         | 999k/2.77M [00:01&lt;00:01, 953kB/s]
+ 43%|████████████████▍                     | 1.20M/2.77M [00:01&lt;00:01, 973kB/s]
+ 51%|██████████████████▊                  | 1.41M/2.77M [00:01&lt;00:01, 1.01MB/s]
+ 60%|██████████████████████▎              | 1.67M/2.77M [00:01&lt;00:00, 1.12MB/s]
+ 69%|█████████████████████████▋           | 1.92M/2.77M [00:02&lt;00:00, 1.16MB/s]
+ 78%|████████████████████████████▉        | 2.16M/2.77M [00:02&lt;00:00, 1.20MB/s]
+ 86%|███████████████████████████████▊     | 2.37M/2.77M [00:02&lt;00:00, 1.17MB/s]
+ 93%|██████████████████████████████████▍  | 2.57M/2.77M [00:02&lt;00:00, 1.12MB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 10.9GB/s]
+   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
+0    1.0  0.016760     40.0  ...  ExampleDataset       MDM
+1    1.0  0.016638     40.0  ...  ExampleDataset       MDM
+2    1.0  0.016977     40.0  ...  ExampleDataset       MDM
 
 [3 rows x 13 columns]
 </pre></div>
@@ -940,7 +994,8 @@ dataset’s own <code class="docutils literal notranslate"><span class="pre">dat
 <li><p>If a NEMAR download fails at runtime, MOABB emits a warning and
 automatically falls back to <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.109 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.328 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  553 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>
