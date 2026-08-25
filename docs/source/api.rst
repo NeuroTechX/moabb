@@ -554,6 +554,7 @@ Statistics
     meta_analysis.combine_effects
     meta_analysis.combine_pvalues
     meta_analysis.collapse_session_scores
+    meta_analysis.compute_lowest_subject_scores
 
 -----
 Utils
