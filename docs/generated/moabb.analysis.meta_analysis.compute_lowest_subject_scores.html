@@ -11,16 +11,16 @@
     <link rel="icon" href="../_static/favicon.svg" type="image/svg+xml">
     <link rel="icon" sizes="144x144" href="../_static/favicon-144.png" type="image/png">
     <link rel="mask-icon" href="../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
-    <link rel="apple-touch-icon" sizes="500x500" href="../_static/favicon-500.png" type="image/png"><meta property="og:title" content="moabb.evaluations.CrossSubjectSplitter" />
+    <link rel="apple-touch-icon" sizes="500x500" href="../_static/favicon-500.png" type="image/png"><meta property="og:title" content="moabb.analysis.meta_analysis.compute_lowest_subject_scores" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://moabb.neurotechx.com/docs/generated/moabb.evaluations.CrossSubjectSplitter.html" />
+<meta property="og:url" content="https://moabb.neurotechx.com/docs/generated/moabb.analysis.meta_analysis.compute_lowest_subject_scores.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@NeuroTechX" />
 
-    <title>moabb.evaluations.CrossSubjectSplitter &#8212; MOABB Documentation</title>
+    <title>moabb.analysis.meta_analysis.compute_lowest_subject_scores &#8212; MOABB Documentation</title>
   
   
   
@@ -90,7 +90,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.evaluations.CrossSubjectSplitter';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.analysis.meta_analysis.compute_lowest_subject_scores';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.0/js/dataTables.js"></script>
@@ -105,12 +105,12 @@
     <script src="../_static/js/sortable-numeric.js?v=9b328e85"></script>
     <script src="../_static/js/section-nav-hierarchy.js?v=c53969c2"></script>
     <script src="../_static/js/macro-table.js?v=c799a707"></script>
-    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.evaluations.CrossSubjectSplitter.html" />
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.analysis.meta_analysis.compute_lowest_subject_scores.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.evaluations.CrossSubjectMode" href="moabb.evaluations.CrossSubjectMode.html" />
-    <link rel="prev" title="moabb.evaluations.CrossSessionSplitter" href="moabb.evaluations.CrossSessionSplitter.html" />
-    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.evaluations.CrossSubjectSplitter.html" />
+    <link rel="next" title="moabb.set_log_level" href="moabb.set_log_level.html" />
+    <link rel="prev" title="moabb.analysis.meta_analysis.collapse_session_scores" href="moabb.analysis.meta_analysis.collapse_session_scores.html" />
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/generated/moabb.analysis.meta_analysis.compute_lowest_subject_scores.html" />
 
     
     
@@ -131,8 +131,8 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "moabb.evaluations.CrossSubjectSplitter",
-          "item": "https://moabb.neurotechx.com/docs/generated/moabb.evaluations.CrossSubjectSplitter.html"
+          "name": "moabb.analysis.meta_analysis.compute_lowest_subject_scores",
+          "item": "https://moabb.neurotechx.com/docs/generated/moabb.analysis.meta_analysis.compute_lowest_subject_scores.html"
         }
       ]
     }
@@ -770,11 +770,11 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSessionSplitter.html">moabb.evaluations.WithinSessionSplitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.WithinSubjectSplitter.html">moabb.evaluations.WithinSubjectSplitter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSessionSplitter.html">moabb.evaluations.CrossSessionSplitter</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">moabb.evaluations.CrossSubjectSplitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSubjectSplitter.html">moabb.evaluations.CrossSubjectSplitter</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.evaluations.CrossSubjectMode.html">moabb.evaluations.CrossSubjectMode</a></li>
@@ -805,14 +805,14 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.meta_analysis_plot.html">moabb.analysis.plotting.meta_analysis_plot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.dataset_bubble_plot.html">moabb.analysis.plotting.dataset_bubble_plot</a></li>
 </ul>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.find_significant_differences.html">moabb.analysis.meta_analysis.find_significant_differences</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.compute_dataset_statistics.html">moabb.analysis.meta_analysis.compute_dataset_statistics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.compute_pvals_corrected_ttest.html">moabb.analysis.meta_analysis.compute_pvals_corrected_ttest</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.combine_effects.html">moabb.analysis.meta_analysis.combine_effects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.combine_pvalues.html">moabb.analysis.meta_analysis.combine_pvalues</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.collapse_session_scores.html">moabb.analysis.meta_analysis.collapse_session_scores</a></li>
-<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.meta_analysis.compute_lowest_subject_scores.html">moabb.analysis.meta_analysis.compute_lowest_subject_scores</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">moabb.analysis.meta_analysis.compute_lowest_subject_scores</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.set_log_level.html">moabb.set_log_level</a></li>
@@ -867,7 +867,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API and Main Concepts</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">moabb.evaluations.CrossSubjectSplitter</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">moabb.analysis.meta_analysis.compute_lowest_subject_scores</span></li>
   </ul>
 </nav>
 </div>
@@ -882,105 +882,49 @@
 <div>
   
   
-  <section id="moabb-evaluations-crosssubjectsplitter">
-<h1>moabb.evaluations.CrossSubjectSplitter<a class="headerlink" href="#moabb-evaluations-crosssubjectsplitter" title="Link to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.evaluations.</span></span><span class="sig-name descname"><span class="pre">CrossSubjectSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cv_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseCrossValidator</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'sklearn.model_selection._split.LeaveOneGroupOut'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'subject'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_labeled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**cv_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L596-L769"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter" title="Link to this definition">#</a></dt>
-<dd><p>Data splitter for cross subject evaluation.</p>
-<p>This splitter enables cross-subject evaluation by performing a Leave-One-Session-Out (LOSO)
-cross-validation on the dataset.</p>
-<p>It assumes that the entire metainformation across all subjects is already loaded.</p>
-<p>Unlike the <cite>CrossSubjectEvaluation</cite> class from <cite>moabb.evaluation</cite>, which manages
-the complete evaluation process end-to-end, this splitter is solely responsible
-for dividing the data into training and testing sets based on subjects.</p>
-<img alt="The schematic diagram of the CrossSubject split" class="align-center" src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/crosssubj.png" />
-<p>The splitting strategy for the subjects can be changed by passing the
-<cite>cv_class</cite> and <cite>cv_kwargs</cite> arguments. By default, it uses LeaveOneGroupOut,
-which performs Leave-One-Subject-Out cross-validation.</p>
+  <section id="moabb-analysis-meta-analysis-compute-lowest-subject-scores">
+<h1>moabb.analysis.meta_analysis.compute_lowest_subject_scores<a class="headerlink" href="#moabb-analysis-meta-analysis-compute-lowest-subject-scores" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="moabb.analysis.meta_analysis.compute_lowest_subject_scores">
+<span class="sig-prename descclassname"><span class="pre">moabb.analysis.meta_analysis.</span></span><span class="sig-name descname"><span class="pre">compute_lowest_subject_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/analysis/meta_analysis.py#L54-L144"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.analysis.meta_analysis.compute_lowest_subject_scores" title="Link to this definition">#</a></dt>
+<dd><p>Score pipelines on subjects selected from a reference pipeline.</p>
+<p>For every dataset, rank subjects by the score of <code class="docutils literal notranslate"><span class="pre">reference_pipeline</span></code>
+and keep only the <code class="docutils literal notranslate"><span class="pre">percentile</span></code> percent that score lowest. Every pipeline
+is then averaged over that same cohort.</p>
+<p>The supplied session scores are first macro-averaged per subject, so every
+subject weighs the same regardless of how many sessions it contributes.
+This helper does not recompute subject-level F1 scores from predictions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cv_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – Cross-validation strategy for splitting the subjects between train and test sets.
-By default, use LeaveOneGroupOut, which keeps one subject as a test.
-Defaults to <code class="docutils literal notranslate"><span class="pre">LeaveOneGroupOut</span></code>.</p></li>
-<li><p><strong>groups</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, or </em><em>callable</em>) – What defines a fold: a metadata column name (<code class="docutils literal notranslate"><span class="pre">&quot;subject&quot;</span></code>), a list of
-column names combined into a compound key (<code class="docutils literal notranslate"><span class="pre">[&quot;subject&quot;,</span> <span class="pre">&quot;session&quot;]</span></code>),
-or a callable <code class="docutils literal notranslate"><span class="pre">metadata</span> <span class="pre">-&gt;</span> <span class="pre">array</span></code>. Passed straight to the stock
-scikit-learn <code class="docutils literal notranslate"><span class="pre">cv_class</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;subject&quot;</span></code>.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>None</em>) – Controls the randomness of the cross-validation.
-Pass an int for reproducible output across multiple calls.
-Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>calibration_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.0</em>) – Fraction of each held-out subject/session pair reserved for
-calibration. Values in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> yield
-<code class="docutils literal notranslate"><span class="pre">(train,</span> <span class="pre">calibration,</span> <span class="pre">test)</span></code>; <code class="docutils literal notranslate"><span class="pre">0</span></code> keeps the ordinary
-<code class="docutils literal notranslate"><span class="pre">(train,</span> <span class="pre">test)</span></code> split, and <code class="docutils literal notranslate"><span class="pre">1</span></code> uses the full target block both for
-unlabeled adaptation and scoring.</p></li>
-<li><p><strong>calibration_labeled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, route labels with the calibration slice. Labeled calibration
-is limited to at most half of the target trials.</p></li>
-<li><p><strong>cv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Additional arguments to pass to the inner cross-validation strategy.
-A callable value is resolved against the metadata at <code class="docutils literal notranslate"><span class="pre">split</span></code> time
-(e.g. <code class="docutils literal notranslate"><span class="pre">cv_class=PredefinedSplit</span></code> with a <code class="docutils literal notranslate"><span class="pre">test_fold</span></code> callable).</p></li>
+<li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – results obtained by an evaluation, with at least the <code class="docutils literal notranslate"><span class="pre">dataset</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">subject</span></code> and <code class="docutils literal notranslate"><span class="pre">score</span></code> columns</p></li>
+<li><p><strong>reference_pipeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Pipeline whose per-subject scores define the lowest-performing cohort
+separately for each dataset. Every pipeline in a dataset must contain
+exactly the same subjects as this reference.</p></li>
+<li><p><strong>percentile</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=20</em>) – percentage of subjects to keep, in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100]</span></code>. The number of
+retained subjects is rounded up, and is at least one, so a value
+small enough always falls back to the single worst subject.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>train</strong> (<em>ndarray</em>) – The training set indices for that split.</p></li>
-<li><p><strong>calibration</strong> (<em>ndarray</em>) – The held-out calibration indices, yielded only when
-<code class="docutils literal notranslate"><span class="pre">calibration_size</span></code> is greater than zero.</p></li>
-<li><p><strong>test</strong> (<em>ndarray</em>) – The testing set indices for that split.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter.get_metadata">
-<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L767-L769"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.get_metadata" title="Link to this definition">#</a></dt>
-<dd><p>Return metadata for the most recent split.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter.get_n_splits">
-<span class="sig-name descname"><span class="pre">get_n_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L688-L713"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.get_n_splits" title="Link to this definition">#</a></dt>
-<dd><p>Return the number of splits for the cross-validation.</p>
-<p>The number of splits is the number of subjects times the number of splits
-of the inner cross-validation strategy.</p>
-<p>We try to keep the same behaviour as the sklearn cross-validation classes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>metadata</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – The metadata containing the subject and session information.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>n_splits</strong> – The number of splits for the cross-validation</p>
+<dd class="field-even"><p><strong>scores</strong> – One row per (dataset, pipeline) pair, with the mean <code class="docutils literal notranslate"><span class="pre">score</span></code> over
+the retained subjects and the <code class="docutils literal notranslate"><span class="pre">n_subjects</span></code> that were retained.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.evaluations.CrossSubjectSplitter.split">
-<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/splitters.py#L715-L765"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.CrossSubjectSplitter.split" title="Link to this definition">#</a></dt>
-<dd><p>Generate indices to split data into training and test set.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training data, where <cite>n_samples</cite> is the number of samples
-and <cite>n_features</cite> is the number of features.</p></li>
-<li><p><strong>y</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – The target variable for supervised learning problems.</p></li>
-<li><p><strong>groups</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – Group labels for the samples used while splitting the dataset into
-train/test set.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>train</strong> (<em>ndarray</em>) – The training set indices for that split.</p></li>
-<li><p><strong>test</strong> (<em>ndarray</em>) – The testing set indices for that split.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="rf3649ff9461f-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Gnassounou, T., Collas, A., Flamary, R., and Gramfort, A. (2025).
+PSDNorm: Test-Time Temporal Normalization for Deep Learning in
+Sleep Staging.
+<a class="reference external" href="https://arxiv.org/abs/2503.04582">https://arxiv.org/abs/2503.04582</a></p>
+</div>
+</div>
 </dd></dl>
 
 <div style='clear:both'></div></section>
@@ -996,20 +940,20 @@ train/test set.</p></li>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.evaluations.CrossSessionSplitter.html"
+       href="moabb.analysis.meta_analysis.collapse_session_scores.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.evaluations.CrossSessionSplitter</p>
+        <p class="prev-next-title">moabb.analysis.meta_analysis.collapse_session_scores</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.evaluations.CrossSubjectMode.html"
+       href="moabb.set_log_level.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.evaluations.CrossSubjectMode</p>
+        <p class="prev-next-title">moabb.set_log_level</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1032,12 +976,7 @@ train/test set.</p></li>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.evaluations.CrossSubjectSplitter"><code class="docutils literal notranslate"><span class="pre">CrossSubjectSplitter</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.evaluations.CrossSubjectSplitter.get_metadata"><code class="docutils literal notranslate"><span class="pre">CrossSubjectSplitter.get_metadata()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.evaluations.CrossSubjectSplitter.get_n_splits"><code class="docutils literal notranslate"><span class="pre">CrossSubjectSplitter.get_n_splits()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.evaluations.CrossSubjectSplitter.split"><code class="docutils literal notranslate"><span class="pre">CrossSubjectSplitter.split()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.analysis.meta_analysis.compute_lowest_subject_scores"><code class="docutils literal notranslate"><span class="pre">compute_lowest_subject_scores()</span></code></a></li>
 </ul>
   </nav></div>
 
