@@ -1,5 +1,6 @@
 import inspect
 import logging
+from dataclasses import dataclass
 from typing import Optional, Union
 from warnings import warn
 
@@ -21,6 +22,67 @@ log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
+
+
+@dataclass(frozen=True)
+class _ResolvedCV:
+    """Resolved inner-CV kwargs with their caller-supplied provenance."""
+
+    inner_kwargs: dict
+    explicit_keys: frozenset[str]
+
+
+_RESOLVED_CV_KEY = "_moabb_resolved_cv"
+
+
+def _cv_keyword_capability(cv_class, name):
+    """Return whether ``cv_class`` is known to accept ``name`` as a keyword."""
+    try:
+        parameters = inspect.signature(cv_class).parameters
+    except (TypeError, ValueError):
+        return None
+
+    parameter = parameters.get(name)
+    if parameter is not None:
+        return parameter.kind in {
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            inspect.Parameter.KEYWORD_ONLY,
+        }
+    return any(
+        parameter.kind is inspect.Parameter.VAR_KEYWORD
+        for parameter in parameters.values()
+    )
+
+
+def _resolved_inner_kwargs(cv_class, direct_kwargs, resolved, control_keys):
+    """Combine direct and evaluation-routed kwargs without losing provenance."""
+    inner_kwargs = dict(direct_kwargs)
+    if resolved is None:
+        return inner_kwargs
+
+    for name, value in resolved.inner_kwargs.items():
+        is_known_wrapper_only = (
+            name in resolved.explicit_keys
+            and name in control_keys
+            and _cv_keyword_capability(cv_class, name) is False
+        )
+        if not is_known_wrapper_only:
+            inner_kwargs[name] = value
+    return inner_kwargs
+
+
+def _public_cv_kwargs(direct_kwargs, resolved, control_keys):
+    """Preserve visible non-wrapper kwargs without exposing the envelope."""
+    public_kwargs = dict(direct_kwargs)
+    if resolved is not None:
+        public_kwargs.update(
+            {
+                name: value
+                for name, value in resolved.inner_kwargs.items()
+                if name not in control_keys
+            }
+        )
+    return public_kwargs
 
 
 def _copy_random_state(random_state):
@@ -120,14 +182,23 @@ class WithinSessionSplitter(BaseCrossValidator):
         groups=None,
         **cv_kwargs,
     ):
+        resolved_cv = cv_kwargs.pop(_RESOLVED_CV_KEY, None)
+        if resolved_cv is not None:
+            if "shuffle" in resolved_cv.explicit_keys:
+                shuffle = resolved_cv.inner_kwargs["shuffle"]
+            if "random_state" in resolved_cv.explicit_keys:
+                random_state = resolved_cv.inner_kwargs["random_state"]
         self.cv_class = cv_class
         self.n_folds = n_folds
         self.shuffle = shuffle
         # ``groups`` is only forwarded to a group-aware inner cv; ``None`` keeps
         # the legacy (StratifiedKFold on labels) behaviour.
         self.groups = groups
-        self.cv_kwargs = cv_kwargs
-        self._cv_kwargs = dict(**cv_kwargs)
+        control_keys = {"shuffle", "random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
+        self._cv_kwargs = _resolved_inner_kwargs(
+            cv_class, cv_kwargs, resolved_cv, control_keys
+        )
 
         # Normalize RandomState to int seed so check_random_state() always
         # creates independent instances in split().
@@ -140,16 +211,25 @@ class WithinSessionSplitter(BaseCrossValidator):
         if not shuffle and random_state is not None:
             raise ValueError("random_state should be None when shuffle is False")
 
-        # Create a dictionary of parameters by adding arguments only if they
-        # are part of the inner cross-validation strategy's signature
-        params = inspect.signature(self.cv_class).parameters
+        self._random_state_capability = _cv_keyword_capability(
+            self.cv_class, "random_state"
+        )
         for p, v in [
             ("n_splits", n_folds),
             ("shuffle", shuffle),
             ("random_state", self._rng),
         ]:
-            if p in params and p not in cv_kwargs:
+            capability = _cv_keyword_capability(self.cv_class, p)
+            if capability is True and p not in self._cv_kwargs:
                 self._cv_kwargs[p] = v
+            elif (
+                resolved_cv is None
+                and p == "random_state"
+                and capability is None
+                and random_state is not None
+                and p not in self._cv_kwargs
+            ):
+                self._cv_kwargs[p] = random_state
         # Detect whether the cv_class consumes the groups parameter
         self._cv_uses_groups = issubclass(self.cv_class, GroupsConsumerMixin)
         self._last_split_metadata = None
@@ -208,8 +288,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                 # splits are deterministic and independent of how many
                 # subjects/sessions exist (matching legacy per-subject behavior).
                 cv_kwargs = dict(self._cv_kwargs)
-                params = inspect.signature(self.cv_class).parameters
-                if "random_state" in params and self.shuffle:
+                if self._random_state_capability is True and self.shuffle:
                     cv_kwargs["random_state"] = check_random_state(self.random_state)
 
                 # Instantiate a new internal splitter for each session, resolving
@@ -288,14 +367,23 @@ class WithinSubjectSplitter(BaseCrossValidator):
         groups=None,
         **cv_kwargs,
     ):
+        resolved_cv = cv_kwargs.pop(_RESOLVED_CV_KEY, None)
+        if resolved_cv is not None:
+            if "shuffle" in resolved_cv.explicit_keys:
+                shuffle = resolved_cv.inner_kwargs["shuffle"]
+            if "random_state" in resolved_cv.explicit_keys:
+                random_state = resolved_cv.inner_kwargs["random_state"]
         self.cv_class = cv_class
         self.n_folds = n_folds
         self.shuffle = shuffle
         # ``groups`` is only forwarded to a group-aware inner cv; ``None`` keeps
         # the legacy (StratifiedKFold on labels) behaviour.
         self.groups = groups
-        self.cv_kwargs = cv_kwargs
-        self._cv_kwargs = dict(**cv_kwargs)
+        control_keys = {"shuffle", "random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
+        self._cv_kwargs = _resolved_inner_kwargs(
+            cv_class, cv_kwargs, resolved_cv, control_keys
+        )
 
         # Normalize RandomState to int seed so check_random_state() always
         # creates independent instances in split().
@@ -308,16 +396,25 @@ class WithinSubjectSplitter(BaseCrossValidator):
         if not shuffle and random_state is not None:
             raise ValueError("random_state should be None when shuffle is False")
 
-        # Create a dictionary of parameters by adding arguments only if they
-        # are part of the inner cross-validation strategy's signature
-        params = inspect.signature(self.cv_class).parameters
+        self._random_state_capability = _cv_keyword_capability(
+            self.cv_class, "random_state"
+        )
         for p, v in [
             ("n_splits", n_folds),
             ("shuffle", shuffle),
             ("random_state", self._rng),
         ]:
-            if p in params and p not in cv_kwargs:
+            capability = _cv_keyword_capability(self.cv_class, p)
+            if capability is True and p not in self._cv_kwargs:
                 self._cv_kwargs[p] = v
+            elif (
+                resolved_cv is None
+                and p == "random_state"
+                and capability is None
+                and random_state is not None
+                and p not in self._cv_kwargs
+            ):
+                self._cv_kwargs[p] = random_state
         # Detect whether the cv_class consumes the groups parameter
         self._cv_uses_groups = issubclass(self.cv_class, GroupsConsumerMixin)
         self._last_split_metadata = None
@@ -371,8 +468,6 @@ class WithinSubjectSplitter(BaseCrossValidator):
         if self.shuffle:
             rng.shuffle(subjects)
 
-        params = inspect.signature(self.cv_class).parameters
-
         for subject in subjects:
             subject_mask = metadata["subject"] == subject
             subject_indices = all_index[subject_mask]
@@ -383,7 +478,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
             # callable cv_kwargs against this subject's metadata slice and
             # sharing the reseeded RNG (reproducible across subjects, per #1107).
             cv_kwargs = _materialize_cv_kwargs(self._cv_kwargs, subject_metadata)
-            if self.shuffle and "random_state" in params:
+            if self.shuffle and self._random_state_capability is True:
                 cv_kwargs["random_state"] = rng
             splitter = self.cv_class(**cv_kwargs)
 
@@ -466,23 +561,29 @@ class CrossSessionSplitter(BaseCrossValidator):
         groups="session",
         **cv_kwargs,
     ):
+        resolved_cv = cv_kwargs.pop(_RESOLVED_CV_KEY, None)
+        if resolved_cv is not None:
+            if "shuffle" in resolved_cv.explicit_keys:
+                shuffle = resolved_cv.inner_kwargs["shuffle"]
+            if "random_state" in resolved_cv.explicit_keys:
+                random_state = resolved_cv.inner_kwargs["random_state"]
         self.cv_class = cv_class
         # ``groups`` is the within-subject held-out axis (default: sessions),
         # resolved per subject and fed to the stock sklearn cv_class.
         self.groups = groups
-        self.cv_kwargs = cv_kwargs
-        self._cv_kwargs = dict(**cv_kwargs)
+        control_keys = {"shuffle", "random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
+        self._cv_kwargs = _resolved_inner_kwargs(
+            cv_class, cv_kwargs, resolved_cv, control_keys
+        )
 
         self.shuffle = shuffle
         self.random_state = random_state
 
-        params = inspect.signature(self.cv_class).parameters
-        # When shuffle=True, only allow cv_classes that explicitly support shuffling
-        # (i.e., have a 'shuffle' parameter)
-        # changing here
-        params_key = params.keys()
+        shuffle_capability = _cv_keyword_capability(self.cv_class, "shuffle")
+        random_state_capability = _cv_keyword_capability(self.cv_class, "random_state")
 
-        if shuffle and ("shuffle" not in params_key and "random_state" not in params_key):
+        if shuffle and shuffle_capability is False and random_state_capability is False:
             raise ValueError(
                 f"Shuffling is not supported for {cv_class.__name__}. "
                 "Choose a different `cv_class` or use `shuffle=False`. "
@@ -490,15 +591,24 @@ class CrossSessionSplitter(BaseCrossValidator):
                 "CrossSessionSplitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)"
             )
 
-        if not shuffle and "shuffle" in params and random_state is not None:
+        if not shuffle and shuffle_capability is True and random_state is not None:
             raise ValueError(
                 "`random_state` should be None when `shuffle` is False for {cv_class.__name__}"
             )
 
-        self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
+        self._need_rng = random_state_capability is True and (
+            shuffle or shuffle_capability is False
+        )
 
-        if "shuffle" in params:
+        if shuffle_capability is True and "shuffle" not in self._cv_kwargs:
             self._cv_kwargs["shuffle"] = shuffle
+        if (
+            resolved_cv is None
+            and random_state_capability is None
+            and random_state is not None
+            and "random_state" not in self._cv_kwargs
+        ):
+            self._cv_kwargs["random_state"] = random_state
 
         # Detect whether the cv_class uses the groups parameter
         self._cv_uses_groups = issubclass(cv_class, GroupsConsumerMixin)
@@ -672,6 +782,9 @@ class CrossSubjectSplitter(BaseCrossValidator):
         calibration_labeled: bool = False,
         **cv_kwargs,
     ):
+        resolved_cv = cv_kwargs.pop(_RESOLVED_CV_KEY, None)
+        if resolved_cv is not None and "random_state" in resolved_cv.explicit_keys:
+            random_state = resolved_cv.inner_kwargs["random_state"]
         validate_transfer_protocol(calibration_size, calibration_labeled)
 
         self.cv_class = cv_class
@@ -682,11 +795,21 @@ class CrossSubjectSplitter(BaseCrossValidator):
         self.calibration_size = calibration_size
         self.calibration_labeled = calibration_labeled
         self.random_state = random_state
-        self.cv_kwargs = cv_kwargs
-        self._cv_kwargs = dict(**cv_kwargs)
+        control_keys = {"random_state"}
+        self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
+        self._cv_kwargs = _resolved_inner_kwargs(
+            cv_class, cv_kwargs, resolved_cv, control_keys
+        )
 
-        params = inspect.signature(self.cv_class).parameters
-        if "random_state" in params:
+        random_state_capability = _cv_keyword_capability(self.cv_class, "random_state")
+        if random_state_capability is True and "random_state" not in self._cv_kwargs:
+            self._cv_kwargs["random_state"] = random_state
+        elif (
+            resolved_cv is None
+            and random_state_capability is None
+            and random_state is not None
+            and "random_state" not in self._cv_kwargs
+        ):
             self._cv_kwargs["random_state"] = random_state
 
         # Detect whether the cv_class uses the groups parameter
@@ -840,8 +963,10 @@ class CrossDatasetSplitter(BaseCrossValidator):
         self.random_state = random_state
         self._last_split_metadata = None
 
-        params = inspect.signature(self.cv_class).parameters
-        if "random_state" in params:
+        random_state_capability = _cv_keyword_capability(self.cv_class, "random_state")
+        if random_state_capability is True:
+            self._cv_kwargs["random_state"] = random_state
+        elif random_state_capability is None and random_state is not None:
             self._cv_kwargs["random_state"] = random_state
 
         # Detect whether the cv_class uses the groups parameter
