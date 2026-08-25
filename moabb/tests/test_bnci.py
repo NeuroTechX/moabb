@@ -1,10 +1,12 @@
 from types import SimpleNamespace
 
 import numpy as np
+from scipy.io import savemat
 
-from moabb.datasets import BNCI2014_001, BNCI2014_008
+from moabb.datasets import BNCI2014_001, BNCI2014_008, BNCI2022_001
 from moabb.datasets.bnci.base import _BNCI_ARTIFACT_ANNOTATION_DESCRIPTION, _convert_run
-from moabb.datasets.preprocessing import _is_preserved_annotation
+from moabb.datasets.bnci.bnci_2022_001 import _convert_run_001_2022
+from moabb.datasets.preprocessing import SetRawAnnotations, _is_preserved_annotation
 
 
 def _fake_mi_run():
@@ -77,6 +79,74 @@ def test_bnci_artifact_markers_survive_event_rederivation():
     """
     for description in _BNCI_ARTIFACT_ANNOTATION_DESCRIPTION.values():
         assert _is_preserved_annotation(description)
+
+
+def _fake_2022_001_mat(path, sfreq=128, n_trajectories=3, pulse_samples=13):
+    """Write a synthetic BNCI2022-001 task MAT file and return layout info.
+
+    Mimics the public release structure (``EEG``, ``EOG``, ``Trigger``,
+    ``Header``): each ~90 s trajectory starts with a trigger pulse of code 1,
+    contains 4 waypoint pulses (codes 48/16 alternating) and ends with a code
+    255 pulse. As in the real recordings, the hardware trigger holds each code
+    for several consecutive samples (``pulse_samples``).
+    """
+    traj_samples = 92 * sfreq  # ~90 s trajectory + 2 s gap
+    n_samples = n_trajectories * traj_samples
+    trigger = np.zeros(n_samples)
+    for k in range(n_trajectories):
+        t0 = k * traj_samples
+        trigger[t0 : t0 + pulse_samples] = 1
+        for w in range(4):
+            p = t0 + (w + 1) * 10 * sfreq
+            trigger[p : p + pulse_samples] = 48 if w % 2 == 0 else 16
+        end = t0 + 90 * sfreq
+        trigger[end : end + pulse_samples] = 255
+    rng = np.random.RandomState(42)
+    savemat(
+        path,
+        {
+            "EEG": rng.standard_normal((n_samples, 64)) * 10.0,  # microvolts
+            "EOG": rng.standard_normal((n_samples, 3)) * 10.0,
+            "Trigger": trigger,
+            "Header": {"fs": float(sfreq)},
+        },
+    )
+    return n_trajectories
+
+
+def _load_fake_2022_001_raw(tmp_path):
+    mat_path = str(tmp_path / "s1w.mat")
+    n_traj = _fake_2022_001_mat(mat_path)
+    ch_names = [f"EEG{i:02d}" for i in range(1, 65)] + ["EOG1", "EOG2", "EOG3"]
+    ch_types = ["eeg"] * 64 + ["eog"] * 3
+    raw = _convert_run_001_2022(mat_path, ch_names, ch_types, subject_id=1)
+    return raw, n_traj
+
+
+def test_bnci2022_001_trigger_pulses_annotated_once(tmp_path):
+    """Each held trigger pulse yields one annotation, not one per sample (gh-1143)."""
+    raw, n_traj = _load_fake_2022_001_raw(tmp_path)
+    desc = raw.annotations.description
+    assert np.sum(desc == "trajectory_start") == n_traj
+    assert np.sum(desc == "waypoint_hit") == 2 * n_traj
+    assert np.sum(desc == "waypoint_miss") == 2 * n_traj
+    assert np.sum(desc == "trajectory_end") == n_traj
+
+
+def test_bnci2022_001_default_epoching_is_bounded(tmp_path):
+    """Only the ~90 s trajectories are trials; point markers are not (gh-1143)."""
+    dataset = BNCI2022_001()
+    assert dataset.event_id == {"trajectory_start": 1}
+    assert dataset.interval == [0, 90]
+    raw, n_traj = _load_fake_2022_001_raw(tmp_path)
+    transform = SetRawAnnotations(dataset.event_id, interval=tuple(dataset.interval))
+    raw = transform.transform(raw)
+
+    trial_annotations = raw.annotations
+    assert set(trial_annotations.description) == {"trajectory_start"}
+    assert len(trial_annotations) == n_traj
+    # total epoched time cannot exceed the recording length
+    assert trial_annotations.duration.sum() <= raw.times[-1]
 
 
 def test_bnci2014_001_metadata():

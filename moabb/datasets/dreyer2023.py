@@ -40,6 +40,10 @@ _metainfo_link = "https://osf.io/download/67c9e8234f014fc76e0411ba/"
 _osf_tag = "8tdk5"
 _api_base_url = f"https://files.de-1.osf.io/v1/resources/{_osf_tag}/providers/osfstorage/"
 
+# Dreyer2023 is one dataset with globally numbered subjects; the A/B/C classes
+# only select subject ranges, so every class shares this root.
+DATASET_FOLDER = "MNE-dreyer2023-data"
+
 
 class _Dreyer2023Base(BaseDataset):
     """
@@ -351,7 +355,9 @@ class _Dreyer2023Base(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
-        dataset_path = self.download_by_subject(subject=subject, path=path)
+        dataset_path = self.download_by_subject(
+            subject=subject, path=path, force_update=force_update
+        )
 
         tasks = get_entity_vals(dataset_path, "task")
 
@@ -375,9 +381,15 @@ class _Dreyer2023Base(BaseDataset):
 
         return bids_path_list
 
-    def download_by_subject(self, subject, path=None):
+    def download_by_subject(self, subject, path=None, force_update=False):
         """
-        Download and extract the dataset.
+        Download and extract the subject's files into the shared dataset root.
+
+        Dreyer2023 is one dataset with globally numbered subjects; the A/B/C
+        classes only select subject ranges, so all four classes share a single
+        ``MNE-dreyer2023-data`` root instead of one folder per class. A
+        pre-existing download in the legacy per-class layout is reused as-is
+        instead of re-fetching.
 
         Parameters
         ----------
@@ -388,17 +400,33 @@ class _Dreyer2023Base(BaseDataset):
             The path to the directory where the dataset should be downloaded.
             If None, the default directory is used.
 
+        force_update : bool
+            Force re-downloading the files even if local copies exist.
+
         Returns
         -------
         path : str
-            The dataset path.
+            The dataset root containing the subject's files.
         """
-        path = Path(dl.get_dataset_path(self.code, path)) / (f"MNE-{self.code}-data")
+        root = Path(dl.get_dataset_path("Dreyer2023", path)) / DATASET_FOLDER
+
+        # Reuse a legacy per-class download when it already has this subject
+        # and the shared root does not, so existing caches keep working.
+        subject_dir = f"sub-{subject:02d}"
+        legacy_root = root.parent / f"MNE-{self.code}-data"
+        if (
+            not force_update
+            and not (root / subject_dir).is_dir()
+            and (legacy_root / subject_dir).is_dir()
+        ):
+            return legacy_root
 
         # checking it there is manifest file in the dataset folder.
-        dl.download_if_missing(path / "dreyer2023_manifest.tsv", _manifest_link)
+        dl.download_if_missing(
+            root / "dreyer2023_manifest.tsv", _manifest_link, force_update=force_update
+        )
 
-        manifest = pd.read_csv(path / "dreyer2023_manifest.tsv", sep="\t")
+        manifest = pd.read_csv(root / "dreyer2023_manifest.tsv", sep="\t")
 
         subject_index = manifest["filename"] == f"sub-{subject:02d}.zip"
 
@@ -413,16 +441,22 @@ class _Dreyer2023Base(BaseDataset):
                 "https://osf.io/download/", ""
             ).replace("/", "")
             dl.download_if_missing(
-                path / row["filename"], download_url, warn_missing=False
+                root / row["filename"],
+                download_url,
+                warn_missing=False,
+                force_update=force_update,
             )
 
         for _, row in manifest_subject.iterrows():
             if row["filename"].endswith(".zip"):
-                if not (path / row["filename"].replace(".zip", "")).exists():
-                    with zipfile.ZipFile(path / row["filename"], "r") as zip_ref:
-                        zip_ref.extractall(path)
+                if (
+                    force_update
+                    or not (root / row["filename"].replace(".zip", "")).exists()
+                ):
+                    with zipfile.ZipFile(root / row["filename"], "r") as zip_ref:
+                        zip_ref.extractall(root)
 
-        return path
+        return root
 
     def get_subject_info(self, path=None):
         """
@@ -433,7 +467,7 @@ class _Dreyer2023Base(BaseDataset):
         :class:`pandas.DataFrame`
             A DataFrame containing the demographic information of the subjects.
         """
-        path = Path(dl.get_dataset_path(self.code, path)) / (f"MNE-{self.code}-data")
+        path = Path(dl.get_dataset_path("Dreyer2023", path)) / DATASET_FOLDER
 
         # checking it there is manifest file in the dataset folder.
         dl.download_if_missing(path / "performance.csv", _metainfo_link)

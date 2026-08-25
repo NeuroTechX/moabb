@@ -100,7 +100,7 @@ Changelog = "https://moabb.neurotechx.com/docs/whats_new.html"
 carbonemission = ["codecarbon>=2.1.4"]
 deeplearning = ["braindecode>=0.8.1"]
 optuna = ["optuna>=3.6.1", "optuna-integration>=3.6.0"]
-xdf = ["pyxdf>=1.16.4"]
+xdf = []  # XDF reading is built in now (moabb.datasets._xdf); kept so `moabb[xdf]` installs still work
 interactive = ["plotly>=5.18.0"]
 tests = [
     "pytest>=8.3.5,<9.1",  # pytest 9.1.0 changed IdMaker's signature, which breaks pytest_cases 3.10.1 (crash at collection time). Remove the cap once pytest_cases supports pytest >=9.1.
@@ -131,7 +131,6 @@ all = [
     "moabb[carbonemission]",
     "moabb[deeplearning]",
     "moabb[optuna]",
-    "moabb[xdf]",
     "moabb[interactive]",
     "moabb[tests]",
     "moabb[docs]",

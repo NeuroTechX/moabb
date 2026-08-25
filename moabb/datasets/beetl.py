@@ -84,7 +84,7 @@ class Beetl2021_A(BaseDataset):
     .. [2] Competition: https://beetl.ai/introduction
     """
 
-    # nemar_id = "nm000220" pending: NEMAR deposit not yet public
+    nemar_id = "nm000220"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -496,7 +496,7 @@ class Beetl2021_A(BaseDataset):
                 extract_dir = base_path / os.path.splitext(file_name)[0]
 
                 # Step 1: Download the zip file if not already downloaded
-                if not os.path.exists(file_path):
+                if force_update or not os.path.exists(file_path):
                     pooch.retrieve(
                         url=BASE_URL + id_file_list[file_name],
                         known_hash=hash_file_list[id_file_list[file_name]],
@@ -506,7 +506,7 @@ class Beetl2021_A(BaseDataset):
                     )
 
                 # Step 2: Unzip the file if not already extracted
-                if not extract_dir.exists():
+                if force_update or not extract_dir.exists():
                     with zipfile.ZipFile(file_path, "r") as zip_ref:
                         zip_ref.extractall(base_path)
 
@@ -579,7 +579,7 @@ class Beetl2021_B(BaseDataset):
     .. [2] Competition: https://beetl.ai/introduction
     """
 
-    # nemar_id = "nm000274" pending: NEMAR deposit not yet public
+    nemar_id = "nm000274"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
@@ -950,7 +950,7 @@ class Beetl2021_B(BaseDataset):
                 extract_dir = base_path / os.path.splitext(file_name)[0]
 
                 # Step 1: Download the zip file if not already downloaded
-                if not os.path.exists(file_path):
+                if force_update or not os.path.exists(file_path):
                     pooch.retrieve(
                         url=BASE_URL + id_file_list[file_name],
                         known_hash=hash_file_list[id_file_list[file_name]],
@@ -960,7 +960,7 @@ class Beetl2021_B(BaseDataset):
                     )
 
                 # Step 2: Unzip the file if not already extracted
-                if not extract_dir.exists():
+                if force_update or not extract_dir.exists():
                     with zipfile.ZipFile(file_path, "r") as zip_ref:
                         zip_ref.extractall(base_path)
 

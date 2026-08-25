@@ -234,8 +234,8 @@ def _parse_manifest(manifest_path):
                 continue
             path = parts[1]
             m = re.match(
-                r"bigP3BCI-data/Study(\w+)/(\w+)/SE(\d+)/"
-                r"(Test|Train)/(\w+)/(.+\.edf)",
+                r"bigP3BCI-data/Study([\w-]+)/([\w-]+)/SE(\d+)/"
+                r"(Test|Train)/([\w-]+)/(.+\.edf)",
                 path,
             )
             if not m:
@@ -368,7 +368,10 @@ class Mainsah2025(BaseDataset):
             for rel_path in subj_manifest[session]:
                 local_file = root / rel_path
                 dl.download_if_missing(
-                    str(local_file), _BASE_URL + rel_path, warn_missing=False
+                    str(local_file),
+                    _BASE_URL + rel_path,
+                    warn_missing=False,
+                    force_update=force_update,
                 )
                 local_paths.append(str(local_file))
 
@@ -509,7 +512,7 @@ def _make_study_metadata(study):
 class Mainsah2025_A(Mainsah2025):
     """BigP3BCI Study A — 6x6 checkerboard/row-column/random (13 healthy subjects)."""
 
-    # nemar_id = "nm000269" pending: NEMAR deposit not yet public
+    nemar_id = "nm000269"
     __init__ = partialmethod(Mainsah2025.__init__, "A")
     METADATA = _make_study_metadata("A")
 

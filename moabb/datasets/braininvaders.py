@@ -406,7 +406,7 @@ def _bi_data_path(  # noqa: C901
             osp.join(
                 path_folder,
                 f"group_{(subject + 1) // 2:02}",
-                f"group_{(subject + 1) // 2:02}_s{i}",
+                f"group_{(subject + 1) // 2:02}_s{i}.mat",
             )
             for i in range(1, 5)
         ]

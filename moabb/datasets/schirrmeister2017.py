@@ -1,6 +1,5 @@
 import logging
 import os
-import shutil
 
 import mne
 from mne.channels import make_standard_montage
@@ -381,29 +380,25 @@ class Schirrmeister2017(BaseDataset):
         base_path = dl.get_dataset_path("SCHIRRMEISTER2017", path)
         dataset_folder = os.path.join(base_path, "MNE-schirrmeister2017-data")
 
-        # Create subfolder paths
         paths = []
         for t in ["train", "test"]:
-            url = _url(t)
-            # Extract subfolder name from URL
-            subfolder = t
+            # Earlier versions of this loader moved the downloaded file out of
+            # the location owned by ``data_dl`` into ``<dataset_folder>/<t>/``.
+            # Keep reading from there so an existing local copy is not
+            # downloaded again, but never write to it: moving the file away
+            # makes ``data_dl`` miss its own cache and re-fetch the recording.
+            legacy_path = os.path.join(dataset_folder, t, "{:d}.edf".format(subject))
+            if os.path.isfile(legacy_path):
+                if not force_update:
+                    paths.append(legacy_path)
+                    continue
+                # A refreshed copy is written to the canonical location, so
+                # drop the stale one instead of letting it shadow the new file.
+                os.remove(legacy_path)
 
-            # Download the file to a temporary location
-            temp_path = dl.data_dl(url, "SCHIRRMEISTER2017", path, force_update, verbose)
-
-            # Create the proper subfolder structure
-            subfolder_path = os.path.join(dataset_folder, subfolder)
-            os.makedirs(subfolder_path, exist_ok=True)
-
-            # Move file to the correct subfolder
-            filename = os.path.basename(temp_path)
-            new_path = os.path.join(subfolder_path, filename)
-
-            # If file already exists in target location, no need to move it
-            if not os.path.exists(new_path):
-                shutil.move(temp_path, new_path)
-
-            paths.append(new_path)
+            paths.append(
+                dl.data_dl(_url(t), "SCHIRRMEISTER2017", path, force_update, verbose)
+            )
 
         return paths
 
