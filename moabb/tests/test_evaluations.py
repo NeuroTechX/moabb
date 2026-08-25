@@ -12,7 +12,12 @@ from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
-from sklearn.model_selection import GroupShuffleSplit
+from sklearn.model_selection import (
+    GroupKFold,
+    GroupShuffleSplit,
+    LeaveOneGroupOut,
+    PredefinedSplit,
+)
 from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_digest, get_string_rep
@@ -29,6 +34,118 @@ from moabb.paradigms.motor_imagery import FakeImageryParadigm
 def _identity(x):
     """Identity function (replaces lambda to avoid MOABB hash warnings)."""
     return x
+
+
+class OpaqueLeaveOneGroupOut(LeaveOneGroupOut):
+    """Real group CV whose constructor signature cannot be inspected."""
+
+    __signature__ = object()
+
+
+class OpaqueGroupKFold(GroupKFold):
+    """Real shuffled group CV whose constructor signature is opaque."""
+
+    __signature__ = object()
+
+
+class VariadicGroupKFold(GroupKFold):
+    """GroupKFold accepting all constructor settings through ``**kwargs``."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class PositionalOnlyGroupKFold(GroupKFold):
+    """GroupKFold whose named fold count cannot be supplied by keyword."""
+
+    def __init__(self, n_splits=2, /, **kwargs):
+        super().__init__(n_splits=n_splits, **kwargs)
+
+
+def _group_run(metadata):
+    return metadata["run"].to_numpy()
+
+
+def _group_session(metadata):
+    return metadata["session"].to_numpy()
+
+
+def _group_subject(metadata):
+    return metadata["subject"].to_numpy()
+
+
+def _group_session_run(metadata):
+    return (
+        metadata["session"].astype(str) + "::" + metadata["run"].astype(str)
+    ).to_numpy()
+
+
+def _stable_partition_groups(metadata):
+    return metadata.index.to_numpy() % 5
+
+
+def _target_test_fold(metadata):
+    return np.where((metadata["subject"] == 1) & (metadata["session"] == "0"), 0, -1)
+
+
+def _partition_slices(metadata, partition_columns):
+    if not partition_columns:
+        return [((), metadata)]
+    grouper = (
+        partition_columns[0] if len(partition_columns) == 1 else list(partition_columns)
+    )
+    return list(metadata.groupby(grouper, sort=False))
+
+
+def _held_out_group_tuple(values):
+    return tuple(sorted(set(np.asarray(values).tolist()), key=repr))
+
+
+def _canonical_inner_assignments(folds, metadata, partition_columns, group_callable):
+    assignments = {}
+    for key, partition in _partition_slices(metadata, partition_columns):
+        key = key if isinstance(key, tuple) else (key,)
+        partition_groups = pd.Series(
+            group_callable(partition), index=partition.index, dtype=object
+        )
+        partition_index = partition.index.to_numpy()
+        held_out = []
+        for _train, test in folds:
+            test_in_partition = np.intersect1d(test, partition_index)
+            if test_in_partition.size:
+                held_out.append(
+                    _held_out_group_tuple(partition_groups.loc[test_in_partition])
+                )
+        assignments[key] = tuple(sorted(held_out, key=repr))
+    return assignments
+
+
+def _expected_group_kfold_assignments(metadata, partition_columns, group_callable, seed):
+    assignments = {}
+    for key, partition in _partition_slices(metadata, partition_columns):
+        key = key if isinstance(key, tuple) else (key,)
+        groups = np.asarray(group_callable(partition))
+        splitter = GroupKFold(n_splits=3, shuffle=True, random_state=seed)
+        held_out = [
+            _held_out_group_tuple(groups[test])
+            for _train, test in splitter.split(np.zeros(len(partition)), groups=groups)
+        ]
+        assignments[key] = tuple(sorted(held_out, key=repr))
+    return assignments
+
+
+def _assert_same_folds(first, second):
+    assert len(first) == len(second)
+    for (train_first, test_first), (train_second, test_second) in zip(first, second):
+        assert np.array_equal(train_first, train_second)
+        assert np.array_equal(test_first, test_second)
+
+
+def _assert_held_out_groups_are_disjoint(folds, metadata, group_callable):
+    for train, test in folds:
+        train_groups = set(group_callable(metadata.loc[train]).tolist())
+        test_groups = set(group_callable(metadata.loc[test]).tolist())
+        assert train_groups.isdisjoint(test_groups)
 
 
 try:
@@ -519,20 +636,354 @@ def test_custom_cv_receives_compatible_defaults_and_overrides(tmp_path):
     assert splitter.random_state == 17
 
 
-def test_variadic_custom_cv_receives_compatible_defaults(tmp_path):
-    class KeywordCV:
-        def __init__(self, **kwargs):
-            self.kwargs = kwargs
+@pytest.fixture(scope="module")
+def small_evaluation_data():
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+    return dataset, y, metadata
+
+
+@pytest.fixture(scope="module")
+def seed_sensitive_evaluation_data():
+    seed_dataset = FakeDataset(
+        ["left_hand", "right_hand"], n_subjects=5, n_sessions=4, n_runs=2, seed=21
+    )
+    _, y, metadata = FakeImageryParadigm().get_data(seed_dataset)
+    return seed_dataset, y, metadata
+
+
+EVALUATION_CASES = [
+    (ev.WithinSessionEvaluation, _group_run, ("subject", "session"), 8),
+    (ev.WithinSubjectEvaluation, _group_session, ("subject",), 4),
+    (ev.CrossSessionEvaluation, _group_session, ("subject",), 4),
+    (ev.CrossSubjectEvaluation, _group_subject, (), 2),
+]
+
+
+SEED_SENSITIVE_EVALUATION_CASES = [
+    (ev.WithinSessionEvaluation, _stable_partition_groups, ("subject", "session"), 60),
+    (ev.WithinSubjectEvaluation, _group_session_run, ("subject",), 15),
+    (ev.CrossSessionEvaluation, _group_session, ("subject",), 15),
+    (ev.CrossSubjectEvaluation, _group_subject, (), 3),
+]
+
+
+def _make_evaluation(
+    evaluation_class,
+    fake_dataset,
+    tmp_path,
+    *,
+    cv_class,
+    cv_kwargs,
+    groups,
+    n_splits=3,
+    random_state=None,
+):
+    return evaluation_class(
+        paradigm=FakeImageryParadigm(),
+        datasets=[fake_dataset],
+        hdf5_path=tmp_path,
+        n_splits=n_splits,
+        random_state=random_state,
+        cv_class=cv_class,
+        cv_kwargs=dict(cv_kwargs),
+        groups=groups,
+    )
+
+
+@pytest.mark.parametrize(
+    "evaluation_class,groups,partition_columns,expected_folds",
+    SEED_SENSITIVE_EVALUATION_CASES,
+    ids=["within-session", "within-subject", "cross-session", "cross-subject"],
+)
+def test_group_kfold_seed_pair_changes_canonical_assignments(
+    seed_sensitive_evaluation_data,
+    evaluation_class,
+    groups,
+    partition_columns,
+    expected_folds,
+):
+    """The fixed seed pair changes real inner-group assignments on each fixture."""
+    del evaluation_class, expected_folds
+    _, _, metadata = seed_sensitive_evaluation_data
+    expected_17 = _expected_group_kfold_assignments(
+        metadata, partition_columns, groups, seed=17
+    )
+    expected_18 = _expected_group_kfold_assignments(
+        metadata, partition_columns, groups, seed=18
+    )
+    assert expected_17 != expected_18
+
+
+@pytest.mark.parametrize(
+    "evaluation_class,groups,partition_columns,expected_folds",
+    EVALUATION_CASES,
+    ids=["within-session", "within-subject", "cross-session", "cross-subject"],
+)
+def test_opaque_cv_class_does_not_receive_implicit_defaults(
+    tmp_path,
+    small_evaluation_data,
+    evaluation_class,
+    groups,
+    partition_columns,
+    expected_folds,
+):
+    """Opaque LOGO classes execute without guessed fold/shuffle/seed defaults."""
+    del partition_columns
+    fake_dataset, y, metadata = small_evaluation_data
+    evaluation = _make_evaluation(
+        evaluation_class,
+        fake_dataset,
+        tmp_path,
+        cv_class=OpaqueLeaveOneGroupOut,
+        cv_kwargs={},
+        groups=groups,
+    )
+    folds = list(evaluation._create_splitter().split(y, metadata))
+    assert len(folds) == expected_folds
+    _assert_held_out_groups_are_disjoint(folds, metadata, groups)
+
+
+@pytest.mark.parametrize(
+    "evaluation_class,groups,partition_columns,expected_folds",
+    SEED_SENSITIVE_EVALUATION_CASES,
+    ids=["within-session", "within-subject", "cross-session", "cross-subject"],
+)
+def test_opaque_group_kfold_preserves_explicit_shuffle_and_seed(
+    tmp_path,
+    seed_sensitive_evaluation_data,
+    evaluation_class,
+    groups,
+    partition_columns,
+    expected_folds,
+):
+    """Opaque explicit shuffle/seed reach the real inner GroupKFold."""
+    fake_dataset, y, metadata = seed_sensitive_evaluation_data
+
+    def run(seed, suffix):
+        evaluation = _make_evaluation(
+            evaluation_class,
+            fake_dataset,
+            tmp_path / suffix,
+            cv_class=OpaqueGroupKFold,
+            cv_kwargs={"n_splits": 3, "shuffle": True, "random_state": seed},
+            groups=groups,
+        )
+        return list(evaluation._create_splitter().split(y, metadata))
+
+    folds_17 = run(17, "seed-17")
+    folds_17_repeat = run(17, "seed-17-repeat")
+    folds_18 = run(18, "seed-18")
+    assert len(folds_17) == expected_folds
+    assert len(folds_18) == expected_folds
+    _assert_same_folds(folds_17, folds_17_repeat)
+
+    observed_17 = _canonical_inner_assignments(
+        folds_17, metadata, partition_columns, groups
+    )
+    observed_17_repeat = _canonical_inner_assignments(
+        folds_17_repeat, metadata, partition_columns, groups
+    )
+    observed_18 = _canonical_inner_assignments(
+        folds_18, metadata, partition_columns, groups
+    )
+    expected_17 = _expected_group_kfold_assignments(
+        metadata, partition_columns, groups, seed=17
+    )
+    expected_18 = _expected_group_kfold_assignments(
+        metadata, partition_columns, groups, seed=18
+    )
+    assert observed_17 == expected_17
+    assert observed_17_repeat == observed_17
+    assert observed_18 == expected_18
+    assert observed_18 != observed_17
+
+
+def test_known_false_shuffle_remains_cross_session_wrapper_only(
+    tmp_path, small_evaluation_data
+):
+    """GroupShuffleSplit uses wrapper shuffle without receiving that keyword."""
+    fake_dataset, y, metadata = small_evaluation_data
+
+    def run(suffix):
+        evaluation = _make_evaluation(
+            ev.CrossSessionEvaluation,
+            fake_dataset,
+            tmp_path / suffix,
+            cv_class=GroupShuffleSplit,
+            cv_kwargs={"n_splits": 2, "shuffle": True},
+            groups=_group_session,
+            random_state=17,
+        )
+        return list(evaluation._create_splitter().split(y, metadata))
+
+    folds = run("first")
+    repeated = run("repeat")
+    assert len(folds) == 4
+    _assert_held_out_groups_are_disjoint(folds, metadata, _group_session)
+    _assert_same_folds(folds, repeated)
+
+
+@pytest.mark.parametrize(
+    "evaluation_class,groups,partition_columns,expected_folds",
+    EVALUATION_CASES,
+    ids=["within-session", "within-subject", "cross-session", "cross-subject"],
+)
+def test_known_false_random_state_remains_evaluation_wrapper_only(
+    tmp_path,
+    small_evaluation_data,
+    evaluation_class,
+    groups,
+    partition_columns,
+    expected_folds,
+):
+    """A LOGO-incompatible seed remains deterministic wrapper state."""
+    del partition_columns
+    fake_dataset, y, metadata = small_evaluation_data
+
+    def create(suffix):
+        evaluation = _make_evaluation(
+            evaluation_class,
+            fake_dataset,
+            tmp_path / suffix,
+            cv_class=LeaveOneGroupOut,
+            cv_kwargs={"random_state": 17},
+            groups=groups,
+        )
+        return evaluation._create_splitter()
+
+    splitter = create("first")
+    repeated_splitter = create("repeat")
+    folds = list(splitter.split(y, metadata))
+    repeated = list(repeated_splitter.split(y, metadata))
+    assert splitter.random_state == 17
+    assert len(folds) == expected_folds
+    _assert_held_out_groups_are_disjoint(folds, metadata, groups)
+    _assert_same_folds(folds, repeated)
+
+
+@pytest.mark.parametrize(
+    "evaluation_class,groups,expected_folds",
+    [
+        (ev.WithinSessionEvaluation, _stable_partition_groups, 8),
+        (ev.WithinSubjectEvaluation, _stable_partition_groups, 4),
+    ],
+    ids=["within-session", "within-subject"],
+)
+def test_variadic_cv_class_receives_within_defaults(
+    tmp_path, small_evaluation_data, evaluation_class, groups, expected_folds
+):
+    """Within defaults reach real variadic group cross-validators."""
+    fake_dataset, y, metadata = small_evaluation_data
+    evaluation = _make_evaluation(
+        evaluation_class,
+        fake_dataset,
+        tmp_path,
+        cv_class=VariadicGroupKFold,
+        cv_kwargs={"shuffle": False},
+        groups=groups,
+        n_splits=2,
+    )
+    folds = list(evaluation._create_splitter().split(y, metadata))
+    assert len(folds) == expected_folds
+    _assert_held_out_groups_are_disjoint(folds, metadata, groups)
+
+
+def test_variadic_cv_class_supports_cross_session_shuffle(
+    tmp_path, small_evaluation_data
+):
+    """Cross-session accepts real variadic CV shuffle and seed defaults."""
+    fake_dataset, y, metadata = small_evaluation_data
+    evaluation = _make_evaluation(
+        ev.CrossSessionEvaluation,
+        fake_dataset,
+        tmp_path,
+        cv_class=VariadicGroupKFold,
+        cv_kwargs={"n_splits": 2, "shuffle": True},
+        groups=_group_session,
+        random_state=17,
+    )
+    folds = list(evaluation._create_splitter().split(y, metadata))
+    assert len(folds) == 4
+    _assert_held_out_groups_are_disjoint(folds, metadata, _group_session)
+
+
+def test_variadic_custom_cv_receives_compatible_defaults(
+    tmp_path, seed_sensitive_evaluation_data
+):
+    """Cross-subject preserves its already-supported variadic default path."""
+    fake_dataset, y, metadata = seed_sensitive_evaluation_data
 
     evaluation = ev.CrossSubjectEvaluation(
         paradigm=FakeImageryParadigm(),
-        datasets=[dataset],
+        datasets=[fake_dataset],
         hdf5_path=tmp_path,
         n_splits=3,
-        cv_class=KeywordCV,
+        cv_class=VariadicGroupKFold,
+        groups=_group_subject,
     )
     splitter = evaluation._create_splitter()
-    assert splitter._cv_kwargs["n_splits"] == 3
+    folds = list(splitter.split(y, metadata))
+    assert len(folds) == 3
+    _assert_held_out_groups_are_disjoint(folds, metadata, _group_subject)
+
+
+@pytest.mark.parametrize(
+    "evaluation_class", [ev.WithinSessionEvaluation, ev.WithinSubjectEvaluation]
+)
+def test_explicit_random_state_is_not_silently_cleared(tmp_path, evaluation_class):
+    """An explicit seed reaches existing shuffle=False validation."""
+    evaluation = evaluation_class(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        random_state=42,
+        cv_kwargs={"shuffle": False, "random_state": 17},
+    )
+    with pytest.raises(
+        ValueError, match="random_state should be None when shuffle is False"
+    ):
+        evaluation._create_splitter()
+
+
+def test_positional_only_cv_parameter_does_not_receive_implicit_keyword(
+    tmp_path, seed_sensitive_evaluation_data
+):
+    """A positional-only n_splits name is not treated as keyword support."""
+    fake_dataset, y, metadata = seed_sensitive_evaluation_data
+    evaluation = _make_evaluation(
+        ev.CrossSubjectEvaluation,
+        fake_dataset,
+        tmp_path,
+        cv_class=PositionalOnlyGroupKFold,
+        cv_kwargs={},
+        groups=_group_subject,
+        n_splits=3,
+    )
+    folds = list(evaluation._create_splitter().split(y, metadata))
+    assert len(folds) == 2
+    _assert_held_out_groups_are_disjoint(folds, metadata, _group_subject)
+
+
+def test_cross_subject_evaluation_materializes_callable_test_fold(
+    tmp_path, small_evaluation_data
+):
+    """Evaluation-level callable CV kwargs resolve against real metadata."""
+    fake_dataset, y, metadata = small_evaluation_data
+    evaluation = _make_evaluation(
+        ev.CrossSubjectEvaluation,
+        fake_dataset,
+        tmp_path,
+        cv_class=PredefinedSplit,
+        cv_kwargs={"test_fold": _target_test_fold},
+        groups=None,
+    )
+    folds = list(evaluation._create_splitter().split(y, metadata))
+    assert len(folds) == 1
+    train, test = folds[0]
+    test_metadata = metadata.loc[test]
+    assert set(test_metadata["subject"]) == {1}
+    assert set(test_metadata["session"]) == {"0"}
+    assert len(train) + len(test) == len(metadata)
 
 
 class Test_CrossSubj(TestWithinSess):

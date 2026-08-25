@@ -1,4 +1,3 @@
-import inspect
 import logging
 import math
 from abc import ABC, abstractmethod
@@ -26,6 +25,7 @@ from moabb.datasets.base import (  # noqa: F401 - CacheConfig used in type hints
     BaseDataset,
     CacheConfig,
 )
+from moabb.evaluations.splitters import _cv_keyword_capability, _ResolvedCV
 from moabb.evaluations.utils import (
     Emissions,
     _carbonfootprint,
@@ -453,6 +453,7 @@ class BaseEvaluation(ABC):
         self.n_splits = n_splits
         self.cv_class = cv_class
         self.cv_kwargs = {} if cv_kwargs is None else cv_kwargs
+        self._cv_explicit_keys = frozenset(self.cv_kwargs)
         self.groups = groups
         self.save_model = save_model
         self.cache_config = cache_config
@@ -545,18 +546,13 @@ class BaseEvaluation(ABC):
         cv_class = default_class if self.cv_class is None else self.cv_class
         cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
         if self.cv_class is not None:
-            parameters = inspect.signature(cv_class).parameters
-            accepts_kwargs = any(
-                parameter.kind is inspect.Parameter.VAR_KEYWORD
-                for parameter in parameters.values()
-            )
             cv_kwargs = {
                 name: value
                 for name, value in cv_kwargs.items()
-                if accepts_kwargs or name in parameters
+                if _cv_keyword_capability(cv_class, name) is True
             }
         cv_kwargs.update(self.cv_kwargs)
-        return cv_class, cv_kwargs
+        return cv_class, _ResolvedCV(cv_kwargs, self._cv_explicit_keys)
 
     def _load_data(
         self, dataset, run_pipes, process_pipeline, postprocess_pipeline, subjects=None

@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from sklearn.model_selection import (
+    GroupKFold,
     GroupShuffleSplit,
     KFold,
     LeaveOneGroupOut,
@@ -38,6 +39,87 @@ def data():
     )
     paradigm = FakeImageryParadigm()
     return paradigm.get_data(dataset=dataset)
+
+
+@pytest.fixture(scope="module")
+def small_data():
+    dataset = FakeDataset(
+        ["left_hand", "right_hand"], n_subjects=2, n_sessions=2, n_runs=2, seed=12
+    )
+    return FakeImageryParadigm().get_data(dataset=dataset)
+
+
+class OpaqueLeaveOneGroupOut(LeaveOneGroupOut):
+    """Real group CV whose constructor signature cannot be inspected."""
+
+    __signature__ = object()
+
+
+class OpaqueGroupKFold(GroupKFold):
+    """Real shuffled group CV whose constructor signature is opaque."""
+
+    __signature__ = object()
+
+
+def _group_run(metadata):
+    return metadata["run"].to_numpy()
+
+
+def _group_session(metadata):
+    return metadata["session"].to_numpy()
+
+
+def _group_subject(metadata):
+    return metadata["subject"].to_numpy()
+
+
+def _group_dataset(metadata):
+    return metadata["dataset"].to_numpy()
+
+
+def _assert_same_split_arrays(first, second):
+    assert len(first) == len(second)
+    for (train_first, test_first), (train_second, test_second) in zip(first, second):
+        assert np.array_equal(train_first, train_second)
+        assert np.array_equal(test_first, test_second)
+
+
+def _assert_disjoint_split_groups(folds, metadata, group_callable):
+    for train, test in folds:
+        train_groups = set(group_callable(metadata.loc[train]).tolist())
+        test_groups = set(group_callable(metadata.loc[test]).tolist())
+        assert train_groups.isdisjoint(test_groups)
+
+
+def _canonical_dataset_assignments(folds, metadata):
+    return tuple(
+        sorted(
+            (tuple(sorted(set(metadata.loc[test, "dataset"]))) for _train, test in folds),
+            key=repr,
+        )
+    )
+
+
+def _direct_dataset_group_kfold_assignments(metadata, seed):
+    groups = metadata["dataset"].to_numpy()
+    splitter = GroupKFold(n_splits=3, shuffle=True, random_state=seed)
+    return tuple(
+        sorted(
+            (
+                tuple(sorted(set(groups[test])))
+                for _train, test in splitter.split(np.zeros(len(metadata)), groups=groups)
+            ),
+            key=repr,
+        )
+    )
+
+
+def _four_equal_dataset_groups(data):
+    _, y, metadata = data
+    selected_subjects = metadata["subject"].unique()[:4]
+    mask = metadata["subject"].isin(selected_subjects)
+    metadata = _metadata_with_dataset_column(metadata.loc[mask], n_datasets=4)
+    return y[mask.to_numpy()], metadata
 
 
 # Split done for the Within Session evaluation
@@ -999,6 +1081,95 @@ def test_cross_dataset_group_column_backcompat(data):
     meta = split.get_metadata()
     assert "test_dataset" in meta
     assert "train_datasets" in meta
+
+
+@pytest.mark.parametrize(
+    "splitter_class,groups,expected_folds",
+    [
+        (WithinSessionSplitter, _group_run, 8),
+        (WithinSubjectSplitter, _group_session, 4),
+        (CrossSessionSplitter, _group_session, 4),
+        (CrossSubjectSplitter, _group_subject, 2),
+        (CrossDatasetSplitter, _group_dataset, 3),
+    ],
+    ids=[
+        "within-session",
+        "within-subject",
+        "cross-session",
+        "cross-subject",
+        "cross-dataset",
+    ],
+)
+def test_known_false_random_state_remains_direct_splitter_only(
+    data, small_data, splitter_class, groups, expected_folds
+):
+    """A LOGO-incompatible public seed remains deterministic splitter state."""
+    if splitter_class is CrossDatasetSplitter:
+        _, y, metadata = data
+        metadata = _metadata_with_dataset_column(metadata)
+    else:
+        _, y, metadata = small_data
+
+    def create():
+        return splitter_class(cv_class=LeaveOneGroupOut, groups=groups, random_state=17)
+
+    splitter = create()
+    repeated_splitter = create()
+    folds = list(splitter.split(y, metadata))
+    repeated = list(repeated_splitter.split(y, metadata))
+    assert splitter.random_state == 17
+    assert len(folds) == expected_folds
+    _assert_disjoint_split_groups(folds, metadata, groups)
+    _assert_same_split_arrays(folds, repeated)
+
+
+def test_cross_dataset_opaque_cv_class_splits(data):
+    """Opaque LOGO executes real dataset-group splits without guessed defaults."""
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    splitter = CrossDatasetSplitter(
+        cv_class=OpaqueLeaveOneGroupOut, groups=_group_dataset
+    )
+    folds = list(splitter.split(y, metadata))
+    assert len(folds) == 3
+    _assert_disjoint_split_groups(folds, metadata, _group_dataset)
+
+
+def test_cross_dataset_group_kfold_seed_pair_changes_canonical_assignments(data):
+    """The fixed seed pair changes the direct four-dataset oracle."""
+    _, metadata = _four_equal_dataset_groups(data)
+    expected_17 = _direct_dataset_group_kfold_assignments(metadata, seed=17)
+    expected_18 = _direct_dataset_group_kfold_assignments(metadata, seed=18)
+    assert expected_17 != expected_18
+
+
+def test_cross_dataset_opaque_group_kfold_preserves_explicit_seed(data):
+    """Opaque direct dataset CV preserves a caller-selected non-None seed."""
+    y, metadata = _four_equal_dataset_groups(data)
+
+    def run(seed):
+        splitter = CrossDatasetSplitter(
+            cv_class=OpaqueGroupKFold,
+            groups=_group_dataset,
+            n_splits=3,
+            shuffle=True,
+            random_state=seed,
+        )
+        return list(splitter.split(y, metadata))
+
+    folds_17 = run(17)
+    folds_17_repeat = run(17)
+    folds_18 = run(18)
+    observed_17 = _canonical_dataset_assignments(folds_17, metadata)
+    observed_18 = _canonical_dataset_assignments(folds_18, metadata)
+    expected_17 = _direct_dataset_group_kfold_assignments(metadata, seed=17)
+    expected_18 = _direct_dataset_group_kfold_assignments(metadata, seed=18)
+    assert len(folds_17) == 3
+    assert len(folds_18) == 3
+    _assert_same_split_arrays(folds_17, folds_17_repeat)
+    assert observed_17 == expected_17
+    assert observed_18 == expected_18
+    assert observed_18 != observed_17
 
 
 def test_cross_session_groups_default_and_callable(data):
