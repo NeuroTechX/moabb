@@ -1,47 +1,28 @@
 r"""
-=====================================================
-Geometry-Aware recentering for cross-session transfer
-=====================================================
-EEG covariance statistics drift from session to session (electrode
-repositioning, impedance changes, baseline arousal): the same mental task
-produces differently-shaped data on each recording. A classical Riemannian
-tangent-space pipeline (:class:`pyriemann.tangentspace.TangentSpace`) is
-already a strong baseline for motor-imagery decoding, but its tangent-space
-reference point is normally *frozen* at training time — so it does not
-correct for this drift. Setting ``tsupdate=True`` re-estimates that reference
-point, unsupervised, from each new (unlabelled) evaluation batch: a
-**single, label-free correction** cheap enough to put in front of any linear
-classifier [1]_.
+==========================================================
+Comparing fitted and test-batch tangent-space references
+==========================================================
+Riemannian tangent-space projection maps symmetric positive-definite covariance
+matrices to vectors around a reference matrix [1]_, [2]_. With
+:class:`pyriemann.tangentspace.TangentSpace`, ``tsupdate=False`` estimates that
+reference during ``fit`` and reuses it during ``transform``. By contrast,
+``tsupdate=True`` estimates a reference from all matrices passed to each
+``transform`` call.
 
-In a controlled, feature-matched benchmark across eight public MOABB
-motor-imagery datasets, Rahimipour, Yang & Van Hulle (in preparation) [1]_
-show that this recentering step accounts for a large, statistically decisive
-cross-session gain (Cohen's d = 1.06-1.50, all p_FDR < 1.1e-12) over its
-recentering-free twin, while the same two pipelines are statistically
-indistinguishable within-session (d ~ 0) — a double dissociation showing the
-gain is attributable to recentering specifically, not to the choice of final
-classifier. The same study found that substantially more complex deep
-sequence models (a bidirectional Mamba mixture-of-experts, an SPDNet-style
-network), given the *same* covariance features and a fair training budget,
-did not recover this gain and in fact underperformed the simple recentering
-pipeline in both protocols.
-
-This example reproduces the core comparison — recentering on vs. off — on
-the workhorse tangent-space + logistic-regression pipeline, following the
-within/cross double-dissociation design of [1]_.
+The updated setting does not use evaluation labels, but it is transductive:
+each prediction depends on the other samples in the same evaluation batch.
+Its output can therefore depend on batch size and composition, and pyRiemann
+documents it as incompatible with online use. This example reports both
+settings for four subjects from one public motor-imagery dataset under MOABB's
+within-session and cross-session protocols. It is an illustration, not a
+benchmark or evidence that either reference policy is generally better.
 
 Note
 ----
-Unlike :class:`moabb.datasets.preprocessing.EuclideanAlignment`, which
-whitens raw *trials* before any covariance step, this example acts on the
-tangent-space *reference point* used to linearise the SPD manifold — the
-mechanism is closely related to :class:`pyriemann.transfer.TLCenter`
-(matrix/tangent-vector recentering for transfer learning), but is expressed
-here directly via ``TangentSpace(tsupdate=True)`` on a single target session,
-matching how the study in [1]_ evaluates it under MOABB's
-:class:`~moabb.evaluations.CrossSessionEvaluation` /
-:class:`~moabb.evaluations.WithinSessionEvaluation` protocols, with no
-domain-encoding machinery required.
+This example changes only the reference used by the tangent-space projection.
+It is distinct from :class:`moabb.datasets.preprocessing.EuclideanAlignment`,
+which whitens raw trials before covariance estimation, and from domain-aware
+transfer estimators such as :class:`pyriemann.transfer.TLCenter`.
 """
 
 # Authors: Meysam Rahimipour <rahimipour.2110739@studenti.uniroma1.it>
@@ -69,15 +50,14 @@ mne.set_log_level("WARNING")  # keep the gallery output readable
 # Build the two pipelines
 # ------------------------
 #
-# Both pipelines are identical except for one flag: whether the tangent-space
-# reference point is re-estimated at transform time (``tsupdate=True``,
-# "Geometry-Aware") or frozen from the training data ("TS + LR", the
-# recentering-free twin). Holding the classifier and covariance estimator
-# fixed isolates recentering as the only difference between the two.
+# Both pipelines are identical except for whether the tangent-space reference
+# comes from the evaluation batch or the fitted training data. Holding the
+# covariance estimator and classifier fixed makes that policy the only pipeline
+# difference in this illustrative run.
 
 
 def make_ts_pipeline(tsupdate):
-    """Build the tangent-space pipeline, with recentering on (``True``) or off."""
+    """Build a tangent-space pipeline with a fitted or updated reference."""
     return make_pipeline(
         Covariances(estimator="oas"),
         TangentSpace(metric="riemann", tsupdate=tsupdate),
@@ -86,18 +66,17 @@ def make_ts_pipeline(tsupdate):
 
 
 pipelines = {
-    "Geometry-Aware (recenter)": make_ts_pipeline(tsupdate=True),
-    "TS + LR (no recenter)": make_ts_pipeline(tsupdate=False),
+    "Updated test-batch reference": make_ts_pipeline(tsupdate=True),
+    "Frozen training reference": make_ts_pipeline(tsupdate=False),
 }
 
 ###############################################################################
-# Cross-session evaluation: where recentering should matter
-# ------------------------------------------------------------
+# Cross-session evaluation
+# ------------------------
 #
 # :class:`~moabb.evaluations.CrossSessionEvaluation` trains on one session and
-# tests on another (MOABB's standard leave-one-session-out protocol) — exactly
-# the setting where between-session covariance drift is present for
-# recentering to correct.
+# tests on another using MOABB's leave-one-session-out protocol. We record the
+# observed scores without prespecifying which reference policy should win.
 
 dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:4]  # keep the example fast
@@ -113,14 +92,12 @@ cross_session_eval = CrossSessionEvaluation(
 cross_results = cross_session_eval.process(pipelines)
 
 ###############################################################################
-# Within-session evaluation: the control condition
-# ---------------------------------------------------
+# Within-session evaluation
+# -------------------------
 #
 # :class:`~moabb.evaluations.WithinSessionEvaluation` trains and tests within
-# the *same* recording session, so there is no between-session shift for
-# recentering to correct. Per [1]_, recentering should therefore make little
-# to no difference here — the mechanism-isolating control for the
-# cross-session result above.
+# each recording session. This supplies a second evaluation context for the
+# same two pipeline settings; it is not a no-shift control condition.
 
 within_session_eval = WithinSessionEvaluation(
     paradigm=paradigm,
@@ -132,12 +109,11 @@ within_session_eval = WithinSessionEvaluation(
 within_results = within_session_eval.process(pipelines)
 
 ###############################################################################
-# The double dissociation
-# -------------------------
+# Observed scores
+# ---------------
 #
-# Plot the mean score per pipeline in both protocols side by side. Per [1]_,
-# the expected pattern is: a clear Geometry-Aware advantage cross-session,
-# and near-parity within-session.
+# Plot the mean score per pipeline in both protocols side by side. These means
+# summarize this four-subject run only; no inferential statistic is computed.
 
 cross_means = cross_results.groupby("pipeline")["score"].mean()
 within_means = within_results.groupby("pipeline")["score"].mean()
@@ -150,9 +126,9 @@ for i, name in enumerate(names):
     vals = [within_means[name], cross_means[name]]
     ax.bar(x + i * width, vals, width, label=name)
 ax.set_xticks(x + width / 2)
-ax.set_xticklabels(["Within-session\n(no drift)", "Cross-session\n(drift)"])
+ax.set_xticklabels(["Within-session", "Cross-session"])
 ax.set_ylabel("Mean score")
-ax.set_title("Recentering helps specifically where there is drift to correct")
+ax.set_title("Fitted vs test-batch tangent-space reference")
 ax.legend()
 fig.tight_layout()
 plt.show()
@@ -161,11 +137,10 @@ print("Within-session means:\n", within_means)
 print("\nCross-session means:\n", cross_means)
 
 ###############################################################################
-# Using it inside your own evaluation
-# --------------------------------------
+# Choosing a reference policy
+# ---------------------------
 #
-# The recentering step is a single argument, no new dependency, and drops
-# into any tangent-space pipeline::
+# The policy is controlled by one argument::
 #
 #     from pyriemann.estimation import Covariances
 #     from pyriemann.tangentspace import TangentSpace
@@ -173,28 +148,31 @@ print("\nCross-session means:\n", cross_means)
 #     from sklearn.pipeline import make_pipeline
 #
 #     pipelines = {
-#         "Geometry-Aware": make_pipeline(
+#         "Updated test-batch reference": make_pipeline(
 #             Covariances(estimator="oas"),
 #             TangentSpace(metric="riemann", tsupdate=True),
 #             LogisticRegression(max_iter=1000),
-#         )
+#         ),
+#         "Frozen training reference": make_pipeline(
+#             Covariances(estimator="oas"),
+#             TangentSpace(metric="riemann", tsupdate=False),
+#             LogisticRegression(max_iter=1000),
+#         ),
 #     }
 #
-# As in the note above, use ``tsupdate=True`` under
-# :class:`~moabb.evaluations.CrossSessionEvaluation` /
-# :class:`~moabb.evaluations.CrossSubjectEvaluation` (there is a shift to
-# correct), and ``tsupdate=False`` under
-# :class:`~moabb.evaluations.WithinSessionEvaluation` (there is not) — mixing
-# these up is exactly the confound the double-dissociation design in [1]_ is
-# built to rule out.
-#
-# For the full eight-dataset benchmark, deep-model comparison (bidirectional
-# Mamba mixture-of-experts, SPDNet), and complete statistical validation
-# (Friedman omnibus, FDR/Holm-corrected Wilcoxon, Cohen's d, bootstrap CIs,
-# Critical-Difference analysis), see [1]_.
+# Use ``tsupdate=True`` only when transductive access to the complete prediction
+# batch matches the intended deployment and evaluation contract. Use
+# ``tsupdate=False`` when predictions must depend only on fitted training state,
+# including online or independently processed samples. The evaluation class
+# alone does not determine that choice.
 #
 # References
 # ----------
-# .. [1] Rahimipour, M., Yang, L., & Van Hulle, M. Simple Geometric
-#        Recentering Rivals Deep Sequence Models for Cross-Session EEG
-#        Motor-Imagery Decoding. In preparation, 2026.
+# .. [1] A. Barachant, S. Bonnet, M. Congedo, and C. Jutten. Multiclass
+#        Brain-Computer Interface Classification by Riemannian Geometry.
+#        IEEE Transactions on Biomedical Engineering, 59(4):920-928, 2012.
+#        doi:10.1109/TBME.2011.2172210.
+# .. [2] A. Barachant, S. Bonnet, M. Congedo, and C. Jutten. Classification of
+#        covariance matrices using a Riemannian-based kernel for BCI
+#        applications. Neurocomputing, 112:172-178, 2013.
+#        doi:10.1016/j.neucom.2012.12.039.
