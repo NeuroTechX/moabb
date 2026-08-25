@@ -18,6 +18,7 @@ from sklearn.model_selection import (
 )
 from sklearn.utils import check_random_state
 
+import moabb.evaluations.splitters as splitters_module
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.splitters import (
     CrossDatasetSplitter,
@@ -680,6 +681,140 @@ def test_learning_curve_subsample_keeps_test_folds_and_ungrouped_splits():
 
     # The ungrouped branch still draws distinct subsamples per permutation.
     assert len({train for train, _ in ungrouped}) == len(ungrouped)
+
+
+def _assert_random_states_equal(left, right):
+    """Assert equality of the full NumPy RandomState state tuple."""
+    assert left[0] == right[0]
+    np.testing.assert_array_equal(left[1], right[1])
+    assert left[2:] == right[2:]
+
+
+def test_learning_curve_grouped_base_splitter_stays_lazy(monkeypatch):
+    """One requested split must consume only one grouped base permutation."""
+    base_yields = []
+
+    class CountingGroupShuffleSplit:
+        def __init__(self, n_splits, test_size, random_state):
+            self.n_splits = n_splits
+
+        def split(self, X, y, groups):
+            for perm_i in range(self.n_splits):
+                base_yields.append(perm_i)
+                test_mask = groups == perm_i % len(np.unique(groups))
+                yield np.flatnonzero(~test_mask), np.flatnonzero(test_mask)
+
+    monkeypatch.setattr(splitters_module, "GroupShuffleSplit", CountingGroupShuffleSplit)
+    y = np.array([0, 1] * 50)
+    groups = np.repeat(np.arange(5), 20)
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "ratio", "value": [1.0]},
+        n_perms=50,
+        test_size=0.2,
+        random_state=42,
+    )
+
+    iterator = splitter.split(np.arange(len(y)), y, groups=groups)
+    next(iterator)
+
+    assert base_yields == [0]
+
+
+@pytest.mark.parametrize("random_state_kind", ["shared", "global"])
+def test_learning_curve_partial_iteration_advances_only_one_base_fold(random_state_kind):
+    """Private subsampling must not pre-consume the caller-owned RNG stream."""
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    kwargs = {
+        "data_size": {"policy": "per_class", "value": [2, 5, 10]},
+        "n_perms": 5,
+        "test_size": 0.2,
+    }
+
+    if random_state_kind == "shared":
+        direct_rng = np.random.RandomState(42)
+        next(
+            GroupShuffleSplit(n_splits=5, test_size=0.2, random_state=direct_rng).split(
+                np.arange(len(y)), y, groups
+            )
+        )
+        expected_state = direct_rng.get_state()
+
+        actual_rng = np.random.RandomState(42)
+        next(
+            LearningCurveSplitter(**kwargs, random_state=actual_rng).split(
+                np.arange(len(y)), y, groups=groups
+            )
+        )
+        actual_state = actual_rng.get_state()
+    else:
+        np.random.seed(42)
+        next(
+            GroupShuffleSplit(n_splits=5, test_size=0.2, random_state=None).split(
+                np.arange(len(y)), y, groups
+            )
+        )
+        expected_state = np.random.get_state()
+
+        np.random.seed(42)
+        next(
+            LearningCurveSplitter(**kwargs, random_state=None).split(
+                np.arange(len(y)), y, groups=groups
+            )
+        )
+        actual_state = np.random.get_state()
+
+    _assert_random_states_equal(actual_state, expected_state)
+
+
+@pytest.mark.parametrize(
+    ("policy", "values", "expected_counts"),
+    [
+        ("ratio", [0.1, 0.25, 0.5], {16: 5, 40: 3, 80: 1}),
+        ("per_class", [2, 5, 10], {4: 5, 10: 3, 20: 1}),
+    ],
+)
+def test_learning_curve_grouped_vector_permutations_are_nested_and_reproducible(
+    policy, values, expected_counts
+):
+    """Both policies honor vector counts, nesting, grouping, and RNG modes."""
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    kwargs = {
+        "data_size": {"policy": policy, "value": values},
+        "n_perms": [5, 3, 1],
+        "test_size": 0.2,
+    }
+
+    def run(random_state):
+        splitter = LearningCurveSplitter(**kwargs, random_state=random_state)
+        result = []
+        for train, test in splitter.split(np.arange(len(y)), y, groups=groups):
+            metadata = splitter.get_metadata()
+            result.append((metadata["permutation"], tuple(train), tuple(test)))
+        return result
+
+    first = run(42)
+    assert first == run(42)
+    assert len(first) == sum(expected_counts.values())
+    assert {
+        size: sum(len(train) == size for _, train, _ in first) for size in expected_counts
+    } == expected_counts
+
+    by_permutation = {}
+    for permutation, train, test in first:
+        assert not set(groups[list(train)]) & set(groups[list(test)])
+        by_permutation.setdefault(permutation, []).append(set(train))
+    for subsets in by_permutation.values():
+        for smaller, larger in zip(subsets, subsets[1:]):
+            assert smaller < larger
+
+    shared = np.random.RandomState(42)
+    assert run(shared) != run(shared)
+    np.random.seed(42)
+    global_first = run(None)
+    np.random.seed(42)
+    assert global_first == run(None)
 
 
 @pytest.mark.parametrize(

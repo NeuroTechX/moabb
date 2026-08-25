@@ -23,6 +23,14 @@ log = logging.getLogger(__name__)
 Vector = Union[list, tuple, np.ndarray]
 
 
+def _copy_random_state(random_state):
+    """Copy an RNG state without advancing the caller-owned stream."""
+    source = check_random_state(random_state)
+    copied = np.random.RandomState()
+    copied.set_state(source.get_state())
+    return copied
+
+
 def _splitter_metadata(splitter):
     """Return metadata from an inner splitter when available."""
     if hasattr(splitter, "get_metadata"):
@@ -920,10 +928,12 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
         decreasing (more permutations for smaller data sizes).
     test_size : float
         Fraction of data to use for testing. Defaults to ``0.2``.
-    random_state : int or None
+    random_state : int, :class:`numpy.random.RandomState`, or None
         Controls the randomness of the permutations. Pass an int for
-        reproducible output across multiple function calls.
-        Defaults to ``None``.
+        reproducible output across multiple function calls. A shared
+        ``RandomState`` is stateful and advances only as its base folds are
+        consumed. ``None`` uses NumPy's process-global random state. Defaults
+        to ``None``.
 
     Attributes
     ----------
@@ -969,7 +979,7 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
         data_size: dict,
         n_perms: Union[int, Vector],
         test_size: float = 0.2,
-        random_state: Optional[int] = None,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
         # The following are accepted but not used (for compatibility with parent splitters)
         n_splits: Optional[int] = None,
         shuffle: bool = True,
@@ -1124,6 +1134,10 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             )
             base_splits = splitter.split(X, y)
         else:
+            # The grouped base splitter owns the caller/global RNG stream.
+            # Copy its initial state for subsampling so requesting one result
+            # neither consumes future base folds nor changes their test sets.
+            subsample_rng = _copy_random_state(self.random_state)
             splitter = GroupShuffleSplit(
                 n_splits=max_perms,
                 test_size=self.test_size,
@@ -1131,18 +1145,11 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             )
             base_splits = splitter.split(X, y, groups=groups)
 
-        if groups is not None:
-            # `_get_data_size_subsets` takes a prefix, so the training indices
-            # have to be shuffled. StratifiedShuffleSplit already returns them
-            # shuffled; GroupShuffleSplit returns them ascending.
-            # Drained first: a parent splitter may pass a shared RandomState, and
-            # drawing from it before these are consumed would move the test folds.
-            base_splits = list(base_splits)
-            subsample_rng = check_random_state(self.random_state)
-
         # Generate all permutations
         for perm_i, (train_idx_full, test_idx) in enumerate(base_splits):
             if groups is not None:
+                # `_get_data_size_subsets` takes a prefix, while
+                # GroupShuffleSplit returns ascending training indices.
                 train_idx_full = subsample_rng.permutation(train_idx_full)
             # For this permutation, get the training data labels
             y_train_full = y[train_idx_full]
