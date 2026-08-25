@@ -646,14 +646,33 @@ def test_learning_curve_subsample_keeps_test_folds_and_ungrouped_splits():
         "random_state": 42,
     }
 
-    def run(g):
-        splitter = LearningCurveSplitter(**kwargs)
+    def run(g, random_state=42):
+        splitter = LearningCurveSplitter(**(kwargs | {"random_state": random_state}))
         return [
             (tuple(sorted(train)), tuple(sorted(test)))
             for train, test in splitter.split(np.arange(len(y)), y, groups=g)
         ]
 
     grouped, ungrouped = run(groups), run(None)
+
+    # Draining the grouped base splitter before subsampling must preserve its
+    # test folds, including when its random state is a shared mutable object.
+    for random_state_factory in (lambda: 42, lambda: np.random.RandomState(42)):
+        expected = [
+            tuple(sorted(test))
+            for _, test in GroupShuffleSplit(
+                n_splits=kwargs["n_perms"],
+                test_size=kwargs["test_size"],
+                random_state=random_state_factory(),
+            ).split(np.arange(len(y)), y, groups)
+        ]
+        actual = [
+            test
+            for _, test in run(groups, random_state_factory())[
+                :: len(kwargs["data_size"]["value"])
+            ]
+        ]
+        assert actual == expected
 
     # Every group appears in exactly one side of each split.
     for train, test in grouped:
