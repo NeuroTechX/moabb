@@ -603,6 +603,66 @@ def test_learning_curve_splitter_metadata():
         assert meta["permutation"] is not None
 
 
+def test_learning_curve_subsample_is_random_with_groups():
+    """Each permutation must draw its own training set when groups are passed.
+
+    ``== n_perms``, not ``> 1``: several training pools are possible, so the
+    ascending prefix already differs between some permutations and ``> 1`` passes
+    with or without the fix.
+    """
+    n_perms = 5
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "per_class", "value": [2, 5, 10]},
+        n_perms=n_perms,
+        test_size=0.2,
+        random_state=42,
+    )
+
+    trains = [
+        tuple(sorted(train))
+        for train, _ in splitter.split(np.arange(len(y)), y, groups=groups)
+    ]
+
+    by_size = {}
+    for train in trains:
+        by_size.setdefault(len(train), set()).add(train)
+    for size, distinct in by_size.items():
+        assert len(distinct) == n_perms, (
+            f"{n_perms} permutations produced {len(distinct)} distinct "
+            f"{size}-sample training sets"
+        )
+
+
+def test_learning_curve_subsample_keeps_test_folds_and_ungrouped_splits():
+    """The shuffle must move the training subsample and nothing else."""
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    kwargs = {
+        "data_size": {"policy": "per_class", "value": [2, 5, 10]},
+        "n_perms": 5,
+        "test_size": 0.2,
+        "random_state": 42,
+    }
+
+    def run(g):
+        splitter = LearningCurveSplitter(**kwargs)
+        return [
+            (tuple(sorted(train)), tuple(sorted(test)))
+            for train, test in splitter.split(np.arange(len(y)), y, groups=g)
+        ]
+
+    grouped, ungrouped = run(groups), run(None)
+
+    # Every group appears in exactly one side of each split.
+    for train, test in grouped:
+        assert not set(groups[list(train)]) & set(groups[list(test)])
+
+    # The ungrouped branch still draws distinct subsamples per permutation.
+    assert len({train for train, _ in ungrouped}) == len(ungrouped)
+
+
 @pytest.mark.parametrize(
     "splitter",
     [

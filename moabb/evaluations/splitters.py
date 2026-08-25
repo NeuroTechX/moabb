@@ -1131,8 +1131,19 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             )
             base_splits = splitter.split(X, y, groups=groups)
 
+        if groups is not None:
+            # `_get_data_size_subsets` takes a prefix, so the training indices
+            # have to be shuffled. StratifiedShuffleSplit already returns them
+            # shuffled; GroupShuffleSplit returns them ascending.
+            # Drained first: a parent splitter may pass a shared RandomState, and
+            # drawing from it before these are consumed would move the test folds.
+            base_splits = list(base_splits)
+            subsample_rng = check_random_state(self.random_state)
+
         # Generate all permutations
         for perm_i, (train_idx_full, test_idx) in enumerate(base_splits):
+            if groups is not None:
+                train_idx_full = subsample_rng.permutation(train_idx_full)
             # For this permutation, get the training data labels
             y_train_full = y[train_idx_full]
 
