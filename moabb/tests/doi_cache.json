@@ -1,6 +1,30 @@
 {
     "_metadata": {
-        "total": 153
+        "total": 156
+    },
+    "10.1038/s41467-026-75435-5": {
+        "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41467-026-75435-5"
+    },
+    "10.1184/R1/32293995.v1": {
+        "title": "EEG Datasets for Sensory-Guided Joint Learning in Motor Imagery Brain-Computer Interfaces",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1184/R1/32293995.v1"
     },
     "10.1109/BCI69045.2026.11435072": {
         "title": "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors.",
@@ -1814,5 +1838,16 @@
             "Shuang Qiu",
             "Huiguang He"
         ]
+    },
+    "10.5281/zenodo.20848097": {
+        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.20848097"
     }
 }

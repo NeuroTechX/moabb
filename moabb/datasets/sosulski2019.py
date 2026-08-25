@@ -379,12 +379,18 @@ class Sosulski2019(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         # Download the main ZIP file containing all subjects
-        path_zip = dl.data_dl(SPOT_PILOT_P300_URL, "spot")
+        path_zip = dl.data_dl(
+            SPOT_PILOT_P300_URL,
+            "spot",
+            path=path,
+            force_update=force_update,
+            verbose=verbose,
+        )
         path_base = os.path.dirname(path_zip)
         path_extracted = os.path.join(path_base, "extracted")
 
         # Extract main ZIP if not already done
-        if not os.path.isdir(path_extracted):
+        if force_update or not os.path.isdir(path_extracted):
             with zipfile.ZipFile(path_zip, "r") as zip_ref:
                 zip_ref.extractall(path_extracted)
 
@@ -393,7 +399,7 @@ class Sosulski2019(BaseDataset):
         subject_zip_path = os.path.join(path_extracted, subject_zip_name)
         path_folder = os.path.join(path_extracted, f"subject{subject}")
 
-        if not os.path.isdir(path_folder):
+        if force_update or not os.path.isdir(path_folder):
             if os.path.exists(subject_zip_path):
                 with zipfile.ZipFile(subject_zip_path, "r") as zip_ref:
                     zip_ref.extractall(path_extracted)

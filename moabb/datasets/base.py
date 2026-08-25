@@ -29,8 +29,15 @@ from moabb.datasets.bids_interface import (
     _interface_map,
     get_bids_root,
 )
-from moabb.datasets.download import NemarDownloadError, nemar_dl
+from moabb.datasets.download import (
+    NemarDownloadError,
+    active_sourcedata_store,
+    nemar_dl,
+    nemar_sourcedata_dl,
+    nemar_store,
+)
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
+from moabb.utils import get_download_provider
 
 
 if TYPE_CHECKING:
@@ -95,10 +102,10 @@ class CacheConfig:
         This flag specifies whether to use the disk cache in case it exists.
         If True, the Raw or Epochs objects returned will not be preloaded
         (this saves some time). Otherwise, they will be preloaded.
-        If use is False, the save_* and overwrite_* keys will be ignored.
+        The save_* and overwrite_* keys apply regardless of this flag.
     overwrite_*: bool
-        This flag specifies whether to overwrite the disk cache in
-        case it exist.
+        This flag specifies whether to erase the corresponding disk cache in
+        case it exists, before re-processing the data.
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
@@ -139,13 +146,11 @@ class CacheConfig:
         Using default parameters:
 
         >>> CacheConfig.make()
-        CacheConfig(save=True, use=True, overwrite=True, path=None)
 
         From a dict:
 
-        >>> dic = {"save": False}
+        >>> dic = {"save_raw": True, "use": True}
         >>> CacheConfig.make(dic)
-        CacheConfig(save=False, use=True, overwrite=True, path=None)
         """
         if dic is None:
             return cls()
@@ -881,6 +886,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
 
+        self._prefetch_nemar_sourcedata(subjects)
+
         results = Parallel(n_jobs=n_jobs)(
             delayed(self._get_selected_subject_data)(
                 subject, cache_config, process_pipeline, str_sessions, pat
@@ -926,12 +933,21 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         This function is only useful to download all the dataset at once.
 
+        When the dataset declares a :attr:`nemar_id` and the download provider
+        is not ``"upstream"``, the files come from NEMAR's ``sourcedata/`` --
+        the original pre-BIDS distribution, byte-identical to what the upstream
+        host serves. On any NEMAR failure this falls back to the dataset's own
+        downloader with a warning (unless the provider is pinned to
+        ``"nemar"``). See :meth:`sourcedata_path` and
+        :func:`moabb.set_download_provider`.
 
         Parameters
         ----------
         subject_list : list of int | None
             List of subjects id to download, if None all subjects
-            are downloaded.
+            are downloaded. On the NEMAR path each subject is resolved through
+            the deposit's ``sourcedata_provenance.json``; deposits enriched
+            before that manifest recorded subjects fetch the whole tree.
         path : None | str
             Location of where to look for the data storing location.
             If None, the environment variable or config parameter
@@ -944,33 +960,60 @@ class BaseDataset(metaclass=MetaclassDataset):
         update_path : bool | None
             If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
             config to the given path. If None, the user is prompted.
+            Not used on the NEMAR path.
         accept: bool
-            Accept licence term to download the data, if any. Default: False
+            Accept licence term to download the data, if any. Default: False.
+            Only relevant to the dataset's own downloader; NEMAR mirrors are
+            already public.
         verbose : bool, str, int, or None
             If not None, override default verbose level
             (see :func:`mne.verbose`).
         """
         if subject_list is None:
             subject_list = self.subject_list
-        for subject in subject_list:
-            if self.nemar_id is not None:
+        provider = get_download_provider()
+        if provider == "nemar" and self.nemar_id is None:
+            raise NemarDownloadError(
+                f"Download provider is pinned to 'nemar' but {self.code} declares "
+                "no nemar_id, so it cannot be fetched from NEMAR. Use "
+                "moabb.set_download_provider('auto') to allow the upstream "
+                "downloader for datasets NEMAR does not mirror."
+            )
+        # Prefer NEMAR's `sourcedata/` -- the ORIGINAL pre-BIDS distribution,
+        # byte-identical to what the upstream host serves and stored under the
+        # same upstream filenames. Deliberately not the deposit's BIDS copy:
+        # that is a re-encoding whose events and session/run labels differ from
+        # what each dataset's own loader produces, so substituting it would
+        # silently change results rather than just change where bytes come from.
+        if self.nemar_id is not None and provider != "upstream":
+            # Fall back per subject, not per batch: one failing subject should
+            # not discard what NEMAR already served for the others.
+            failed_subjects = []
+            for subject in subject_list:
                 try:
-                    self._download_nemar(
+                    self.sourcedata_path(
                         subject=subject,
                         path=path,
                         force_update=force_update,
-                        update_path=update_path,
                         verbose=verbose,
                     )
-                    continue
                 except NemarDownloadError as exc:
+                    if provider == "nemar":
+                        raise
+                    failed_subjects.append(subject)
                     warnings.warn(
-                        f"Could not download {self.code} from NEMAR ({self.nemar_id}); "
-                        "falling back to the dataset data_path downloader. "
+                        f"Could not download {self.code} subject {subject!r} "
+                        f"sourcedata from NEMAR ({self.nemar_id}); falling back "
+                        f"to the dataset data_path downloader for it. "
                         f"Original error: {exc}",
                         RuntimeWarning,
                         stacklevel=2,
                     )
+            if not failed_subjects:
+                return
+            subject_list = failed_subjects
+
+        for subject in subject_list:
             # check if accept is needed
             sig = signature(self.data_path)
             if "accept" in [str(p) for p in sig.parameters]:
@@ -1038,7 +1081,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         Raises
         ------
         moabb.datasets.download.NemarDownloadError
-            If nemar-py is unavailable or the NEMAR download fails.
+            If the NEMAR download fails.
         """
         return nemar_dl(
             self.nemar_id,
@@ -1048,6 +1091,109 @@ class BaseDataset(metaclass=MetaclassDataset):
             subject=self._nemar_subject(subject),
             verbose=verbose,
             **(self.nemar_bids_filters or {}),
+        )
+
+    def _prefetch_nemar_sourcedata(self, subjects, verbose=None):
+        """Fill the NEMAR sourcedata store for these subjects before loading.
+
+        :meth:`get_data` serves loads through the store (see
+        :meth:`_sourcedata_store`), but the store only has content once
+        something fetched it -- previously that something was an explicit
+        :meth:`download` call, so a plain ``get_data()`` on a fresh machine
+        still reached the upstream host even with the provider pinned to
+        ``"nemar"``. Fetch each requested subject's ``sourcedata/`` here,
+        with the provider policy :meth:`download` already implements:
+        ``"upstream"`` skips NEMAR entirely, ``"nemar"`` treats a failure as
+        fatal rather than silently reaching the host the caller opted out
+        of, and ``"auto"`` warns per subject and leaves that subject to the
+        dataset's own downloader. A non-empty store is trusted as-is and
+        costs no network at all -- refresh or extend it with
+        :meth:`download` (``force_update=True`` to refetch).
+        """
+        provider = get_download_provider()
+        if self.nemar_id is None or provider == "upstream":
+            return
+        store = self._sourcedata_store()
+        if store is not None and store.is_dir() and any(store.iterdir()):
+            return
+        for subject in subjects:
+            try:
+                self.sourcedata_path(subject=subject, verbose=verbose)
+            except NemarDownloadError as exc:
+                if provider == "nemar":
+                    raise
+                warnings.warn(
+                    f"Could not fetch {self.code} subject {subject!r} "
+                    f"sourcedata from NEMAR ({self.nemar_id}); its load will "
+                    f"use the dataset's own downloader. Original error: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+
+    def _sourcedata_store(self):
+        """Local NEMAR sourcedata store to serve this dataset's loads from.
+
+        None when the dataset has no deposit or the provider is pinned to
+        ``"upstream"`` -- the one place that policy lives.
+        """
+        if self.nemar_id is None or get_download_provider() == "upstream":
+            return None
+        return nemar_store(self.code, self.nemar_id) / "sourcedata"
+
+    def sourcedata_path(self, subject=None, path=None, force_update=False, verbose=None):
+        """Get the dataset's *original* pre-BIDS distribution from NEMAR.
+
+        Where :meth:`data_path` fetches the original files from the upstream
+        host, this fetches the copy NEMAR mirrors under ``sourcedata/``. The
+        files keep their upstream names, so the two are interchangeable in
+        content -- but NEMAR stays reachable when the upstream host is slow,
+        rate-limited, behind a bot gate, or retired.
+
+        Parameters
+        ----------
+        subject : int | str | None
+            Restrict the download to one subject, resolved through the
+            deposit's ``sourcedata_provenance.json``. Deposits enriched before
+            that manifest recorded subjects fall back to the whole tree with a
+            warning. When ``None`` the whole tree is fetched.
+        path : None | str
+            Base path where MOABB stores datasets.
+        force_update : bool
+            Re-fetch even when a local copy is present.
+        verbose : bool, str, int, or None
+            If not None, override default verbose level.
+
+        Returns
+        -------
+        str
+            Local path to the ``sourcedata`` directory.
+
+        Raises
+        ------
+        ValueError
+            If the dataset declares no ``nemar_id``.
+        moabb.datasets.download.NemarDownloadError
+            If the download fails or the deposit publishes no ``sourcedata/``.
+        """
+        if self.nemar_id is None:
+            raise ValueError(
+                f"{self.code} declares no nemar_id, so its original distribution "
+                "cannot be fetched from NEMAR."
+            )
+        # Provenance manifests observed in the wild record raw MOABB ids, but
+        # a dataset's nemar_subject_template documents how its deposit labels
+        # subjects -- match both rather than betting on one convention.
+        if subject is not None:
+            label = self._nemar_subject(subject)
+            if label is not None and str(label) != str(subject):
+                subject = [subject, label]
+        return nemar_sourcedata_dl(
+            self.nemar_id,
+            self.code,
+            path=path,
+            force_update=force_update,
+            subject=subject,
+            verbose=verbose,
         )
 
     def _get_single_subject_data_from_nemar(self, subject, path=None):
@@ -1241,8 +1387,15 @@ class BaseDataset(metaclass=MetaclassDataset):
         parameters.
         """
         steps = list(process_pipeline.steps)
+        overwrite_requested = (
+            cache_config.overwrite_raw
+            or cache_config.overwrite_epochs
+            or cache_config.overwrite_array
+        )
         splitted_steps = []  # list of (cached_steps, remaining_steps)
-        if cache_config.use:
+        # Also walk the cached prefixes when only erasing (use=False),
+        # so the overwrite_* flags stay effective:
+        if cache_config.use or overwrite_requested:
             splitted_steps += [
                 (steps[:i], steps[i:]) for i in range(len(steps), 0, -1)
             ]  # [len(steps)...1]
@@ -1254,7 +1407,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             sessions_data = None
             # Load and eventually overwrite:
             if len(cached_steps) == 0:  # last option: we don't use cache
-                sessions_data = self._get_single_subject_data(subject)
+                with active_sourcedata_store(self._sourcedata_store()):
+                    sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
                 # Enrich raw.info from METADATA (sex, hand, age, line_freq)
                 metadata = getattr(self, "METADATA", None)

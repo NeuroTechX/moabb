@@ -118,7 +118,7 @@ class TrianaGuzman2024(BaseBIDSDataset):
            https://doi.org/10.3389/fninf.2022.961089
     """
 
-    # nemar_id = "nm000164" pending: NEMAR deposit not yet public
+    nemar_id = "on005342"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

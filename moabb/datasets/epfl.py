@@ -351,11 +351,15 @@ class EPFLP300(BaseDataset):
 
         # check if has the .zip
         url = "{:s}subject{:d}.zip".format(EPFLP300_URL, subject)
-        path_zip = dl.data_dl(url, "EPFLP300")
+        path_zip = dl.data_dl(
+            url, "EPFLP300", path=path, force_update=force_update, verbose=verbose
+        )
         path_folder = path_zip.strip("subject{:d}.zip".format(subject))
 
         # check if has to unzip
-        if not (os.path.isdir(path_folder + "subject{:d}".format(subject))):
+        if force_update or not (
+            os.path.isdir(path_folder + "subject{:d}".format(subject))
+        ):
             logger.info("unzip", path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)

@@ -421,8 +421,8 @@ class Speier2017(BaseDataset):
 
         return raw
 
-    def _subject_dir(self, subject):
-        path = dl.get_dataset_path(_SIGN, None)
+    def _subject_dir(self, subject, path=None):
+        path = dl.get_dataset_path(_SIGN, path)
         return Path(path) / f"MNE-{_SIGN}-data"
 
     def data_path(
@@ -431,7 +431,7 @@ class Speier2017(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = self._subject_dir(subject)
+        base = self._subject_dir(subject, path)
         base.mkdir(parents=True, exist_ok=True)
 
         conditions = ["FF", "Inv"]

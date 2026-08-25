@@ -455,6 +455,38 @@ def test_within_n_splits_drives_n_folds(klass):
                 os.remove(e.results.filepath)
 
 
+def test_resolve_cv_honours_cv_kwargs_without_forcing_defaults():
+    """``cv_kwargs`` always reaches the splitter; ``default_kwargs`` never
+    reaches a user-supplied ``cv_class`` that cannot accept it."""
+    from sklearn.model_selection import LeaveOneGroupOut
+
+    kw = {
+        "paradigm": FakeImageryParadigm(),
+        "datasets": [dataset],
+        "hdf5_path": "res_test",
+    }
+    evals = []
+    try:
+        # Default cv_class: cv_kwargs must survive (this is how
+        # calibration_size is passed).
+        e = ev.CrossSubjectEvaluation(cv_kwargs={"calibration_size": 0.5}, **kw)
+        evals.append(e)
+        assert e._create_splitter().calibration_size == 0.5
+
+        # User-supplied cv_class: n_splits is a default of GroupKFold, not of
+        # LeaveOneGroupOut, which takes no arguments at all.
+        e = ev.CrossSubjectEvaluation(cv_class=LeaveOneGroupOut, n_splits=3, **kw)
+        evals.append(e)
+        splitter = e._create_splitter()
+        assert splitter._cv_kwargs == {}
+        _, y, metadata = FakeImageryParadigm().get_data(dataset)
+        assert splitter.get_n_splits(metadata) == metadata["subject"].nunique()
+    finally:
+        for e in evals:
+            if os.path.isfile(e.results.filepath):
+                os.remove(e.results.filepath)
+
+
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
         self.eval = ev.CrossSubjectEvaluation(
@@ -1068,3 +1100,266 @@ class TestAggregateFoldResults:
         assert len(agg) == 1
         # Non-numeric fold is coerced to NaN and skipped by mean -> only 0.7 left.
         np.testing.assert_almost_equal(agg[0]["score"], 0.7)
+
+
+# Transfer-learning calibration through the stock CrossSubjectEvaluation.
+_TRANSFER_CAPTURE = []
+
+
+class _TransferRecorder(sklearn.base.TransformerMixin, sklearn.base.BaseEstimator):
+    """A target-aware step that records the transfer metadata it is routed."""
+
+    def fit(self, X, y=None, subjects=None, X_target_unlabeled=None):
+        _TRANSFER_CAPTURE.append(
+            {
+                "n_subjects": 0 if subjects is None else len(subjects),
+                "n_target": 0 if X_target_unlabeled is None else len(X_target_unlabeled),
+            }
+        )
+        return self
+
+    def transform(self, X):
+        return X
+
+
+def test_cross_subject_calibration_routes_to_estimator():
+    """calibration_size>0 routes subjects + the (raw) calibration slice to the
+    steps that request it, via the unchanged CrossSubjectEvaluation."""
+    from sklearn import config_context
+
+    _TRANSFER_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _TransferRecorder().set_fit_request(subjects=True, X_target_unlabeled=True)
+    pipe = make_pipeline(Covariances("oas"), step, CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=9)
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        cv_kwargs={"calibration_size": 0.5},
+        overwrite=True,
+        n_jobs=1,
+        suffix="calibroute",
+    )
+    results = evaluation.process(pipelines=OrderedDict([("T", pipe)]))
+
+    assert len(results) > 0
+    assert _TRANSFER_CAPTURE, "transfer step was never fitted"
+    assert all(c["n_subjects"] > 0 for c in _TRANSFER_CAPTURE)
+    assert all(c["n_target"] > 0 for c in _TRANSFER_CAPTURE)
+
+
+def test_cross_subject_calibration_leaves_plain_pipeline_unaffected():
+    """A plain pipeline runs through calibration_size>0 unchanged (calib ignored)."""
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=9)
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        cv_kwargs={"calibration_size": 0.5},
+        overwrite=True,
+        n_jobs=1,
+        suffix="calibplain",
+    )
+    results = evaluation.process(pipelines=OrderedDict([("P", pipe)]))
+    assert len(results) > 0
+
+
+def test_cross_subject_calibration_with_custom_cv():
+    """cv_class is exposed (like WithinSession) and composes with calibration."""
+    from sklearn import config_context
+    from sklearn.model_selection import GroupShuffleSplit
+
+    _TRANSFER_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _TransferRecorder().set_fit_request(subjects=True, X_target_unlabeled=True)
+    pipe = make_pipeline(Covariances("oas"), step, CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=5, n_sessions=2, seed=9)
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        cv_class=GroupShuffleSplit,
+        cv_kwargs={"calibration_size": 0.5, "n_splits": 2},
+        random_state=0,
+        overwrite=True,
+        n_jobs=1,
+        suffix="calibcv",
+    )
+    results = evaluation.process(pipelines=OrderedDict([("T", pipe)]))
+
+    assert len(results) > 0
+    assert _TRANSFER_CAPTURE, "transfer step was never fitted"
+    assert all(c["n_subjects"] > 0 and c["n_target"] > 0 for c in _TRANSFER_CAPTURE)
+
+
+# ---------------------------------------------------------------------------
+# CrossSubjectMode presets and the trialwise scoring guarantee.
+# ---------------------------------------------------------------------------
+
+
+class _PredictSpy(sklearn.base.ClassifierMixin, sklearn.base.BaseEstimator):
+    """Records the batch size of every predict/score call."""
+
+    def __init__(self):
+        self.calls = []
+
+    def fit(self, X, y):
+        self.classes_ = np.unique(y)
+        return self
+
+    def predict(self, X):
+        self.calls.append(("predict", len(X)))
+        return np.zeros(len(X), dtype=int)
+
+    def score(self, X, y):
+        self.calls.append(("score", len(X)))
+        return 1.0
+
+
+def test_trialwise_score_predicts_one_trial_at_a_time():
+    """FrozenEstimator + LeaveOneOut isolates every target prediction."""
+    from moabb.evaluations.base import _score_trialwise
+
+    X = np.random.RandomState(0).randn(8, 3)
+    y = np.array([0, 1] * 4)
+
+    spy = _PredictSpy().fit(X, y)
+    score = _score_trialwise(spy, X, y, "accuracy")
+
+    assert score == {"score": 0.5}
+    assert spy.calls, "the frozen estimator was never called"
+    assert {n for _, n in spy.calls} == {1}
+
+
+def test_trialwise_score_refuses_passthrough_scoring():
+    """scoring=None must not silently call the estimator on the whole block.
+
+    ``check_scoring(estimator, scoring=None)`` returns a passthrough scorer that
+    calls ``estimator.score(X, y)``. If that is delegated to the frozen
+    estimator, the whole target test block goes through in one call and the
+    trialwise guarantee is void.
+    """
+    from moabb.evaluations.base import _score_trialwise
+
+    X = np.random.RandomState(0).randn(8, 3)
+    y = np.array([0, 1] * 4)
+
+    spy = _PredictSpy().fit(X, y)
+    with pytest.raises(TypeError, match="Trialwise scoring supports"):
+        _score_trialwise(spy, X, y, None)
+    assert spy.calls == []
+
+
+def test_trialwise_score_supports_probability_scorers():
+    """The official CV recipe also supports metrics such as ROC AUC."""
+    from moabb.evaluations.base import _score_trialwise
+
+    X = np.random.RandomState(0).randn(8, 3)
+    y = np.array([0, 1] * 4)
+
+    score = _score_trialwise(LDA().fit(X, y), X, y, "roc_auc")
+    assert 0.0 <= score["score"] <= 1.0
+
+
+@pytest.mark.parametrize(
+    "mode,calibration_size,calibration_labeled,trialwise",
+    [
+        ("TRAIN", 0.0, False, False),
+        ("TRAIN_TRIALWISE", 0.0, False, True),
+        ("TRAIN_AND_TARGET_UNLABELED_20P", 0.2, False, False),
+        ("TRAIN_AND_TARGET_UNLABELED_50P", 0.5, False, False),
+        ("TRAIN_AND_TARGET_UNLABELED_FULL", 1.0, False, False),
+        ("TRAIN_AND_TARGET_LABELED_20P", 0.2, True, False),
+        ("TRAIN_AND_TARGET_LABELED_50P", 0.5, True, False),
+    ],
+)
+def test_cs_mode_resolves_to_splitter_kwargs(
+    mode, calibration_size, calibration_labeled, trialwise
+):
+    """Every CrossSubjectMode maps to the documented calibration settings."""
+    from moabb.evaluations import CrossSubjectMode
+
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path="res_test",
+        cs_mode=getattr(CrossSubjectMode, mode),
+    )
+    try:
+        splitter = evaluation._create_splitter()
+        assert splitter.calibration_size == calibration_size
+        assert splitter.calibration_labeled is calibration_labeled
+        assert evaluation.trialwise is trialwise
+        # A plain string is accepted and normalised to the enum member.
+        by_value = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
+            cs_mode=getattr(CrossSubjectMode, mode).value,
+        )
+        assert by_value.cs_mode is getattr(CrossSubjectMode, mode)
+    finally:
+        if os.path.isfile(evaluation.results.filepath):
+            os.remove(evaluation.results.filepath)
+
+
+def test_cs_mode_rejects_manual_calibration_kwargs():
+    """cs_mode and manual calibration kwargs are mutually exclusive."""
+    from moabb.evaluations import CrossSubjectMode
+
+    with pytest.raises(ValueError, match="not both"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
+            cs_mode=CrossSubjectMode.TRAIN_AND_TARGET_UNLABELED_20P,
+            cv_kwargs={"calibration_size": 0.5},
+        )
+
+
+def test_cs_mode_rejects_labeled_calibration_above_half():
+    """calibration_labeled=True is capped at calibration_size <= 0.5."""
+    with pytest.raises(ValueError, match="calibration_labeled"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
+            cv_kwargs={"calibration_size": 1.0, "calibration_labeled": True},
+        )
+
+
+def test_cs_mode_trialwise_runs_end_to_end():
+    """TRAIN_TRIALWISE uses frozen leave-one-out predictions and still reports
+    per-session rows, matching the blockwise TRAIN baseline."""
+    from moabb.evaluations import CrossSubjectMode
+
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=9)
+
+    scores = {}
+    for mode, suffix in [
+        (CrossSubjectMode.TRAIN, "csmodetrain"),
+        (CrossSubjectMode.TRAIN_TRIALWISE, "csmodetrialwise"),
+    ]:
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[ds],
+            cs_mode=mode,
+            overwrite=True,
+            n_jobs=1,
+            suffix=suffix,
+        )
+        results = evaluation.process(pipelines=OrderedDict([("P", pipe)]))
+        scores[mode] = results
+
+    assert len(scores[CrossSubjectMode.TRAIN_TRIALWISE]) == len(
+        scores[CrossSubjectMode.TRAIN]
+    )
+    # Trialwise vs blockwise only changes the batching, not the predictions,
+    # for a pipeline that treats trials independently.
+    np.testing.assert_allclose(
+        scores[CrossSubjectMode.TRAIN_TRIALWISE]["score"].to_numpy(),
+        scores[CrossSubjectMode.TRAIN]["score"].to_numpy(),
+    )

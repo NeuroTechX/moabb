@@ -27,7 +27,7 @@ from pyriemann.channelselection import ElectrodeSelection
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import Xdawn
 from pyriemann.tangentspace import TangentSpace
-from sklearn.base import TransformerMixin
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
@@ -52,7 +52,7 @@ set_log_level("info")
 # select electrodes based on the covariance information
 
 
-class EpochSelectChannel(TransformerMixin):
+class EpochSelectChannel(TransformerMixin, BaseEstimator):
     """Select channels based on covariance information."""
 
     def __init__(self, n_chan, cov_est):

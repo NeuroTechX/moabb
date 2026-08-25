@@ -336,8 +336,10 @@ def _build_summary_cards(df: pd.DataFrame) -> str:
     )
 
 
-def _paradigm_tag(paradigm: str) -> str:
+def _paradigm_tag(paradigm: str | None) -> str:
     """Render a color-coded paradigm pill."""
+    if not paradigm:
+        return ""
     label = _PARADIGM_LABELS.get(paradigm, paradigm)
     color = _PARADIGM_COLORS.get(paradigm, "#757575")
     return (
@@ -381,8 +383,10 @@ def _doi_link(doi: str | None) -> str:
     )
 
 
-def _dataset_link(name: str) -> str:
+def _dataset_link(name: str | None) -> str:
     """Link to the auto-generated dataset documentation page."""
+    if not name:
+        return ""
     url = f"generated/moabb.datasets.{name}.html"
     return f'<a class="mt-dataset-link" href="{html.escape(url)}">{html.escape(name)}</a>'
 

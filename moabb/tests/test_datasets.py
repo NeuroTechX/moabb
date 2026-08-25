@@ -1,4 +1,5 @@
 import inspect
+import json
 import logging
 import re
 import warnings
@@ -58,6 +59,7 @@ NEMAR_ID_EXEMPT = {
     "FakeVirtualRealityDataset",
     "Schrag2026Pediatric",
     "Lenaig2026",
+    "Wang2026",
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
@@ -69,7 +71,6 @@ NEMAR_ID_PENDING = {
     "BNCI2020_001": "nm000178",
     "Beetl2021_A": "nm000220",
     "Beetl2021_B": "nm000274",
-    "Chailloux2020": "nm000262",
     "Kaneshiro2015": "nm000263",
     "Kumar2024": "nm000177",
     "Lee2019_SSVEP": "nm000273",
@@ -79,7 +80,6 @@ NEMAR_ID_PENDING = {
     "Nguyen2017_SL": "nm000224",
     "Nguyen2017_V": "nm000261",
     "Pressel2016": "nm000258",
-    "TrianaGuzman2024": "nm000164",
 }
 
 
@@ -262,6 +262,66 @@ class Test_Datasets:
         assert subjects[0] == "1"
         assert len(dataframe["session"].unique()) == 2
 
+    @pytest.mark.filterwarnings("ignore:TSV file is empty.*:RuntimeWarning")
+    @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
+    def test_cache_overwrite_without_use(self, tmp_path, caplog):
+        """overwrite_* must erase the cache even when use=False."""
+        dataset = FakeDataset(paradigm="imagery")
+
+        # Populate the cache:
+        _ = dataset.get_data(
+            subjects=[1], cache_config={"save_raw": True, "use": True, "path": tmp_path}
+        )
+
+        # Erase it with use=False:
+        with caplog.at_level(logging.INFO):
+            _ = dataset.get_data(
+                subjects=[1],
+                cache_config={"use": False, "overwrite_raw": True, "path": tmp_path},
+            )
+        assert any("erasing cache" in m for m in caplog.messages)
+
+        # The cache must actually be gone:
+        caplog.clear()
+        with caplog.at_level(logging.INFO):
+            _ = dataset.get_data(
+                subjects=[1], cache_config={"use": True, "path": tmp_path}
+            )
+        assert any("No cache found" in m for m in caplog.messages)
+
+    def test_data_path_uses_download_flags(self):
+        """Every dataset's data_path must honor path and force_update.
+
+        update_path is deprecated (kept for signature compatibility) and
+        verbose has no slot in some downloaders, so only the two flags with
+        defined behavior are enforced.
+        """
+        import ast
+        from pathlib import Path as _Path
+
+        import moabb.datasets as _datasets_pkg
+
+        datasets_dir = _Path(_datasets_pkg.__file__).parent
+        exempt = {
+            "base.py",  # abstract method, no body
+            "fake.py",  # nothing to download
+        }
+        offenders = []
+        for file in sorted(datasets_dir.rglob("*.py")):
+            if file.name in exempt:
+                continue
+            tree = ast.parse(file.read_text(encoding="utf-8"))
+            for node in ast.walk(tree):
+                if not (isinstance(node, ast.FunctionDef) and node.name == "data_path"):
+                    continue
+                params = {a.arg for a in node.args.args}
+                used = {n.id for n in ast.walk(node) if isinstance(n, ast.Name)}
+                used |= {n.attr for n in ast.walk(node) if isinstance(n, ast.Attribute)}
+                for flag in ("path", "force_update"):
+                    if flag in params and flag not in used:
+                        offenders.append(f"{file.name}:{node.lineno} ignores {flag!r}")
+        assert not offenders, "data_path ignores download flags:\n" + "\n".join(offenders)
+
     def test_dataset_accept(self):
         """Verify that accept licence is working."""
         # Only BaseShin2017 (bbci_eeg_fnirs) for now
@@ -293,35 +353,69 @@ class Test_Datasets:
         assert re.fullmatch(NEMAR_ID_PATTERN, nemar_id)
 
     def test_download_prefers_nemar(self, monkeypatch, tmp_path):
+        """``download()`` takes the original distribution from NEMAR.
+
+        It fetches ``sourcedata/`` rather than the deposit's BIDS copy: the
+        BIDS copy is a re-encoding whose events and session/run labels differ
+        from what each dataset's own loader produces.
+        """
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = "nm000001"
         calls = []
 
-        def nemar_dl(*args, **kwargs):
+        def nemar_sourcedata_dl(*args, **kwargs):
             calls.append((args, kwargs))
-            return str(tmp_path / "nemar")
+            return str(tmp_path / "nemar" / "sourcedata")
 
-        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
         dataset.download(subject_list=[1], path=tmp_path)
 
         assert calls == [
             (
                 ("nm000001", dataset.code),
-                {
-                    "path": tmp_path,
-                    "force_update": False,
-                    "subject": "1",
-                    "verbose": None,
-                },
+                {"path": tmp_path, "force_update": False, "subject": 1, "verbose": None},
             )
         ]
+
+    @pytest.mark.parametrize(
+        ("template", "expected"),
+        [
+            pytest.param("{subject:03d}", [1, "001"], id="custom-template-adds-alias"),
+            pytest.param("{subject}", 1, id="default-template-raw-id"),
+        ],
+    )
+    def test_sourcedata_path_subject_aliases(
+        self, monkeypatch, tmp_path, template, expected
+    ):
+        """A distinct nemar_subject_template adds the deposit label as an alias.
+
+        Provenance manifests observed in the wild key subjects by the raw
+        MOABB id, so both forms are offered rather than betting on one.
+        """
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = "nm000001"
+        dataset.nemar_subject_template = template
+        calls = []
+
+        def nemar_sourcedata_dl(*args, **kwargs):
+            calls.append(kwargs)
+            return str(tmp_path)
+
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
+        dataset.sourcedata_path(subject=1, path=tmp_path)
+
+        assert calls[-1]["subject"] == expected
 
     def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = "nm000001"
         fallback_calls = []
 
-        def nemar_dl(*args, **kwargs):
+        def nemar_sourcedata_dl(*args, **kwargs):
             raise NemarDownloadError("NEMAR unavailable")
 
         def data_path(
@@ -329,7 +423,9 @@ class Test_Datasets:
         ):
             fallback_calls.append((subject, path, force_update, update_path, verbose))
 
-        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
         monkeypatch.setattr(dataset, "data_path", data_path)
 
         with pytest.warns(RuntimeWarning, match="falling back"):
@@ -1660,3 +1756,54 @@ def test_constructor_summary_table_cross_ref(dataset_cls):
         warnings.warn(
             f"{name} summary CSV mismatch: {'; '.join(mismatches)}", stacklevel=1
         )
+
+
+def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monkeypatch):
+    """gh-1142: the file list comes from a real inventory (NEMAR manifest or
+    upstream git tree), subject 8's unpadded upstream names are normalized to
+    the padded names the loader reads, and every fetch goes through data_dl."""
+    import moabb.datasets.download as dl
+    from moabb.datasets import Lee2024_DL
+    from moabb.datasets.lee2024 import Lee2024
+
+    inventory = [
+        "Doorlock/Dat_sub08/sub8_Testing1.mat",
+        "Doorlock/Dat_sub08/cal_sig.mat",
+        "Doorlock/Dat_sub01/sub01_Testing1.mat",
+        "Doorlock/Dat_sub01/param.mat",
+    ]
+    monkeypatch.setattr(Lee2024, "_upstream_paths", inventory)
+    calls = []
+    monkeypatch.setattr(
+        dl, "data_dl", lambda url, sign, fname=None, **k: calls.append((url, fname))
+    )
+
+    Lee2024_DL().data_path(8, path=str(tmp_path))
+    assert calls == [
+        (
+            "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset"
+            "/main/Doorlock/Dat_sub08/cal_sig.mat",
+            "Doorlock/Dat_sub08/cal_sig.mat",
+        ),
+        (
+            "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset"
+            "/main/Doorlock/Dat_sub08/sub8_Testing1.mat",
+            "Doorlock/Dat_sub08/sub08_Testing1.mat",  # padded for the loader
+        ),
+    ]
+
+    calls.clear()
+    # With a NEMAR store manifest present, the inventory is read from it and
+    # the upstream tree is never consulted.
+    store = tmp_path / "store"
+    store.mkdir()
+    (store / "sourcedata_provenance.json").write_text(
+        json.dumps({"files": [{"file": "Dat_sub01/sub01_Testing1.mat"}]})
+    )
+    dataset = Lee2024_DL()
+    monkeypatch.setattr(dataset, "_sourcedata_store", lambda: store)
+    monkeypatch.setattr(
+        Lee2024, "_upstream_tree", classmethod(lambda cls: pytest.fail("tree used"))
+    )
+    dataset.data_path(1, path=str(tmp_path))
+    assert [fname for _, fname in calls] == ["Doorlock/Dat_sub01/sub01_Testing1.mat"]

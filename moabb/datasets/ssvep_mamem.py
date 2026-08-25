@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import os.path as osp
+from pathlib import Path
 
 import numpy as np
 import pooch
@@ -192,6 +193,9 @@ class BaseMAMEM(BaseDataset):
         spath = []
         for f in fsn.keys():
             if f[2:4] == sub:
+                local_file = Path(path) / fsn[f]
+                if force_update and local_file.is_file():
+                    local_file.unlink()
                 spath.append(gb.fetch(fsn[f]))
         return spath
 

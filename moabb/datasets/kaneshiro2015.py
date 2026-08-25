@@ -75,7 +75,7 @@ class Kaneshiro2015(BaseDataset):
            https://doi.org/10.1371/journal.pone.0135697
     """
 
-    # nemar_id = "nm000263" pending: NEMAR deposit not yet public
+    nemar_id = "nm000263"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=62.5,
@@ -98,7 +98,7 @@ class Kaneshiro2015(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
-            paradigm="p300",
+            paradigm="imagery",  # 6-class visual ERP, no Target/NonTarget
             n_classes=6,
             class_labels=list(_EVENTS.keys()),
             trial_duration=0.496,
@@ -143,7 +143,7 @@ class Kaneshiro2015(BaseDataset):
             events=dict(_EVENTS),
             code="Kaneshiro2015",
             interval=[0, 0.496],
-            paradigm="p300",
+            paradigm="imagery",  # 6-class visual ERP, no Target/NonTarget
             doi=_DOI,
             selected_subjects=subjects,
             selected_sessions=sessions,
@@ -197,7 +197,7 @@ class Kaneshiro2015(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = Path(dl.get_dataset_path(_SIGN, None)) / f"MNE-{_SIGN}-data"
+        base = Path(dl.get_dataset_path(_SIGN, path)) / f"MNE-{_SIGN}-data"
         base.mkdir(parents=True, exist_ok=True)
 
         fname = f"S{subject}.mat"
@@ -206,7 +206,9 @@ class Kaneshiro2015(BaseDataset):
         url = f"{_BASE_URL}/{fname}"
 
         if not local.exists() or force_update:
-            downloaded = dl.data_dl(url, _SIGN, force_update=force_update)
+            downloaded = dl.data_dl(
+                url, _SIGN, path=path, force_update=force_update, verbose=verbose
+            )
             downloaded = Path(downloaded)
             if downloaded != local:
                 downloaded.rename(local)
