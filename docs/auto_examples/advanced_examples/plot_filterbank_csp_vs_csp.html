@@ -110,7 +110,7 @@
     <link rel="canonical" href="https://moabb.neurotechx.com/docs/auto_examples/advanced_examples/plot_filterbank_csp_vs_csp.html" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="GridSearch within a session" href="plot_grid_search_withinsession.html" />
+    <link rel="next" title="Comparing fitted and test-batch tangent-space references" href="plot_geometry_aware_recentering.html" />
     <link rel="prev" title="Euclidean Alignment for cross-subject transfer" href="plot_euclidean_alignment.html" />
     <link rel="canonical" href="https://moabb.neurotechx.com/docs/auto_examples/advanced_examples/plot_filterbank_csp_vs_csp.html" />
 
@@ -557,6 +557,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">FilterBank CSP versus CSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_geometry_aware_recentering.html">Comparing fitted and test-batch tangent-space references</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
@@ -770,7 +771,19 @@ points are in its quadrant.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" srcset="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" alt="plot filterbank csp vs csp" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.165 seconds)</p>
+<img src="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" srcset="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" alt="plot filterbank csp vs csp" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/examples/advanced_examples/plot_filterbank_csp_vs_csp.py:114: FutureWarning:
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.stripplot(
+/home/runner/work/moabb/moabb/examples/advanced_examples/plot_filterbank_csp_vs_csp.py:124: FutureWarning:
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], palette="Set1")
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.260 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cd325bfe64e15ce23db3b200e83ba9a2/plot_filterbank_csp_vs_csp.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_filterbank_csp_vs_csp.ipynb</span></code></a></p>
@@ -806,11 +819,11 @@ points are in its quadrant.</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_grid_search_withinsession.html"
+       href="plot_geometry_aware_recentering.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">GridSearch within a session</p>
+        <p class="prev-next-title">Comparing fitted and test-batch tangent-space references</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

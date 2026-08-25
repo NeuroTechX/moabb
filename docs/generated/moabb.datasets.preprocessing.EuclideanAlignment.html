@@ -15,10 +15,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://moabb.neurotechx.com/docs/generated/moabb.datasets.preprocessing.EuclideanAlignment.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
-<meta property="og:description" content="Examples using moabb.datasets.preprocessing.EuclideanAlignment: Euclidean Alignment for cross-subject transfer" />
+<meta property="og:description" content="Examples using moabb.datasets.preprocessing.EuclideanAlignment: Euclidean Alignment for cross-subject transfer Comparing fitted and test-batch tangent-space references" />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
-<meta name="description" content="Examples using moabb.datasets.preprocessing.EuclideanAlignment: Euclidean Alignment for cross-subject transfer" />
+<meta name="description" content="Examples using moabb.datasets.preprocessing.EuclideanAlignment: Euclidean Alignment for cross-subject transfer Comparing fitted and test-batch tangent-space references" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@NeuroTechX" />
 
@@ -1107,6 +1107,9 @@ possible to update each component of a nested object.</p>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="EEG covariance statistics drift from subject to subject (and session to session): the same mental task produces differently-shaped data on each recording. That domain shift is the main reason a decoder trained on one set of subjects transfers poorly to a new one. Euclidean Alignment (EA) removes it with a single, label-free whitening step — cheap enough to put in front of any model, deep or classical [1]_."><img alt="" src="../_images/sphx_glr_plot_euclidean_alignment_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/advanced_examples/plot_euclidean_alignment.html"><span class="doc">Euclidean Alignment for cross-subject transfer</span></a></p>
   <div class="sphx-glr-thumbnail-title">Euclidean Alignment for cross-subject transfer</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="The updated setting does not use evaluation labels, but it is transductive: each prediction depends on the other samples in the same evaluation batch. Its output can therefore depend on batch size and composition, and pyRiemann documents it as incompatible with online use. This example reports both settings for four subjects from one public motor-imagery dataset under MOABB&#x27;s within-session and cross-session protocols. It is an illustration, not a benchmark or evidence that either reference policy is generally better."><img alt="" src="../_images/sphx_glr_plot_geometry_aware_recentering_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_geometry_aware_recentering.html"><span class="doc">Comparing fitted and test-batch tangent-space references</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Comparing fitted and test-batch tangent-space references</div>
 </div></div><div style='clear:both'></div></section>
 </section>
 

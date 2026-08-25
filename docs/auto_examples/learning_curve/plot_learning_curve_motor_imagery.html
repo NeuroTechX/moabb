@@ -557,6 +557,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_geometry_aware_recentering.html">Comparing fitted and test-batch tangent-space references</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
@@ -728,14 +729,12 @@ be overwritten if necessary.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
-  dset.create_dataset(
-      score      time  ...  pipeline                  codecarbon_task_name
-0  0.880952  0.015138  ...   CSP+LDA  c92aa7b3-8ee0-4fa5-aedd-61cc06f317d6
-1  0.900000  0.021518  ...   CSP+LDA  57811f36-72c8-4a56-b34e-688d84de17a8
-2  0.871429  0.047370  ...   CSP+LDA  588da0b5-3140-44af-8fd7-fa193c455cb0
-3  0.885714  0.080719  ...   CSP+LDA  b3756c0a-a169-40c2-9f7e-5b2a78c9cd31
-4  0.857143  0.022355  ...   CSP+LDA  27a82cb3-2a3e-4509-9aef-6c65fb825989
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
+0  0.838095  0.019383  ...   CSP+LDA  02d65e10-d6c0-43c0-92f8-97eb92656939
+1  0.914286  0.027718  ...   CSP+LDA  300757f0-3cec-4ad0-a89f-5fb02d859d23
+2  0.895238  0.064537  ...   CSP+LDA  7199c948-c37d-4b94-a32b-d45970573e96
+3  0.866667  0.105886  ...   CSP+LDA  0acc9f47-5d50-4116-b94a-500dc6503966
+4  0.842857  0.029121  ...   CSP+LDA  1c124e73-78ef-4806-82fa-79560ae8fdc2
 
 [5 rows x 15 columns]
 </pre></div>
@@ -765,7 +764,7 @@ each pipeline</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.715 seconds)</p>
+<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.489 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5b1f506cd53838de0dd70e569a36f198/plot_learning_curve_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_learning_curve_motor_imagery.ipynb</span></code></a></p>

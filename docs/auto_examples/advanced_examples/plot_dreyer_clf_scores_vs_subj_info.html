@@ -557,6 +557,7 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Examples of analysis of a Dreyer2023 A dataset.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_geometry_aware_recentering.html">Comparing fitted and test-batch tangent-space references</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
@@ -674,16 +675,16 @@ subjects (gender and age) and experimenters (gender).</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
-9it [00:00, 11066.77it/s]
+9it [00:00, 11632.89it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 9576.04it/s]
+9it [00:00, 12516.16it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 9522.89it/s]
+9it [00:00, 10810.06it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 13277.78it/s]
+9it [00:00, 10769.97it/s]
 
 {1: {'0': {'0R1acquisition': &lt;RawEDF | sub-01_task-R1acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, '1R2acquisition': &lt;RawEDF | sub-01_task-R2acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, '2R3online': &lt;RawEDF | sub-01_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '3R4online': &lt;RawEDF | sub-01_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '4R5online': &lt;RawEDF | sub-01_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '5R6online': &lt;RawEDF | sub-01_task-R6online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 5: {'0': {'0R1acquisition': &lt;RawEDF | sub-05_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '1R2acquisition': &lt;RawEDF | sub-05_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '2R3online': &lt;RawEDF | sub-05_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '3R4online': &lt;RawEDF | sub-05_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '4R5online': &lt;RawEDF | sub-05_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '5R6online': &lt;RawEDF | sub-05_task-R6online_eeg.edf, 32 x 234496 (458.0 s), ~57.3 MiB, data loaded&gt;}}, 7: {'0': {'0R1acquisition': &lt;RawEDF | sub-07_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '1R2acquisition': &lt;RawEDF | sub-07_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '2R3online': &lt;RawEDF | sub-07_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '3R4online': &lt;RawEDF | sub-07_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '4R5online': &lt;RawEDF | sub-07_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '5R6online': &lt;RawEDF | sub-07_task-R6online_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;}}, 35: {'0': {'0R1acquisition': &lt;RawEDF | sub-35_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '1R2acquisition': &lt;RawEDF | sub-35_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '2R3online': &lt;RawEDF | sub-35_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '3R4online': &lt;RawEDF | sub-35_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '4R5online': &lt;RawEDF | sub-35_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, '5R6online': &lt;RawEDF | sub-35_task-R6online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}}
 </pre></div>
@@ -780,7 +781,7 @@ subjects (gender and age) and experimenters (gender).</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f4ae586c110&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f96d64a5790&gt;
 </pre></div>
 </div>
 <p>5.3 Plotting subject AUC ROC scores vs experimenter’s gender</p>
@@ -828,7 +829,7 @@ subjects (gender and age) and experimenters (gender).</p>
 <img alt="4_selected_subjects" class="align-center" src="../../_images/4_selected_subjects.png" />
 <p>Obtained results for all subjects correspond to the following figure.</p>
 <img alt="all_subjects" class="align-center" src="../../_images/all_subjects.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.535 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.890 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dreyer-clf-scores-vs-subj-info-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ae04c51e0e1c520116e934f140abe39b/plot_dreyer_clf_scores_vs_subj_info.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dreyer_clf_scores_vs_subj_info.ipynb</span></code></a></p>

@@ -558,6 +558,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_geometry_aware_recentering.html">Comparing fitted and test-batch tangent-space references</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
@@ -2502,7 +2503,7 @@ a.param-doc-link::before {
   justify-content: center;
   margin-top: 0.5em;
 }
-</style><body><div id="sk-container-id-1" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Epochs: FunctionTransformer -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-1" type="checkbox" ><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><body><div id="sk-container-id-4" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Epochs: FunctionTransformer -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-38" type="checkbox" ><label for="sk-estimator-id-38" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2552,7 +2553,7 @@ a.param-doc-link::before {
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-2" type="checkbox" ><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-39" type="checkbox" ><label for="sk-estimator-id-39" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
 events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
@@ -2583,7 +2584,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-3" type="checkbox" ><label for="sk-estimator-id-3" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (1–24 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-40" type="checkbox" ><label for="sk-estimator-id-40" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (1–24 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2623,7 +2624,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-4" type="checkbox" ><label for="sk-estimator-id-4" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-41" type="checkbox" ><label for="sk-estimator-id-41" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2673,7 +2674,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-5" type="checkbox" ><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epoching: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__">
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-42" type="checkbox" ><label for="sk-estimator-id-42" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epoching: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2723,7 +2724,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-6" type="checkbox" ><label for="sk-estimator-id-6" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__Extract events__">
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-43" type="checkbox" ><label for="sk-estimator-id-43" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__Extract events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2743,7 +2744,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-7" type="checkbox" ><label for="sk-estimator-id-7" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-8" type="checkbox" ><label for="sk-estimator-id-8" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEventsP300
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-44" type="checkbox" ><label for="sk-estimator-id-44" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-45" type="checkbox" ><label for="sk-estimator-id-45" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEventsP300
 [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__Extract events__events__">
         <div class="estimator-table">
             <details>
@@ -2784,7 +2785,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-9" type="checkbox" ><label for="sk-estimator-id-9" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
+    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-46" type="checkbox" ><label for="sk-estimator-id-46" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
 [Target, NonTarget] | tmin=0.0 | tmax=0.8</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Epoching__Create epochs__">
         <div class="estimator-table">
             <details>
@@ -2875,7 +2876,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-10" type="checkbox" ><label for="sk-estimator-id-10" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Resample (128 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Resample__">
+    </div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-47" type="checkbox" ><label for="sk-estimator-id-47" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Resample (128 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Resample__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2915,7 +2916,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-11" type="checkbox" ><label for="sk-estimator-id-11" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>improved_rpf_rejection</div><div class="caption">FunctionTransformer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.FunctionTransformer.html">?<span>Documentation for FunctionTransformer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+    </div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-48" type="checkbox" ><label for="sk-estimator-id-48" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>improved_rpf_rejection</div><div class="caption">FunctionTransformer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.FunctionTransformer.html">?<span>Documentation for FunctionTransformer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2937,7 +2938,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
             func: callable, default=None<br><br>The callable to use for the transformation. This will be passed<br>the same arguments as transform, with args and kwargs forwarded.<br>If func is None, then func will be the identity function.</span>
         </a>
     </td>
-            <td class="value">&lt;function imp...x7fe3c0bac180&gt;</td>
+            <td class="value">&lt;function imp...x7f96d5104b80&gt;</td>
         </tr>
 
 
@@ -3077,7 +3078,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-12" type="checkbox" ><label for="sk-estimator-id-12" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
+    </div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-49" type="checkbox" ><label for="sk-estimator-id-49" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3097,7 +3098,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-13" type="checkbox" ><label for="sk-estimator-id-13" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-50" type="checkbox" ><label for="sk-estimator-id-50" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3137,7 +3138,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-14" type="checkbox" ><label for="sk-estimator-id-14" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-51" type="checkbox" ><label for="sk-estimator-id-51" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3177,7 +3178,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-15" type="checkbox" ><label for="sk-estimator-id-15" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-52" type="checkbox" ><label for="sk-estimator-id-52" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3358,7 +3359,7 @@ function forceTheme(elementId) {
     }
 }
 
-forceTheme('sk-container-id-1');</script></body>
+forceTheme('sk-container-id-4');</script></body>
 </div>
 <br />
 <br /></section>
@@ -3438,42 +3439,42 @@ downstream classification performance.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:24&lt;00:24, 24.95s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:49&lt;00:00, 24.70s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:49&lt;00:00, 24.74s/it]
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:31&lt;00:31, 31.11s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:56&lt;00:00, 27.75s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:56&lt;00:00, 28.25s/it]
 
 BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]  RP: rejected 5/576 epochs
   RP: rejected 10/576 epochs
   RP: rejected 9/576 epochs
 
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:22&lt;00:22, 22.39s/it]  RP: rejected 12/576 epochs
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:24&lt;00:24, 24.88s/it]  RP: rejected 12/576 epochs
   RP: rejected 11/576 epochs
   RP: rejected 1/576 epochs
 
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:41&lt;00:00, 20.52s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:41&lt;00:00, 20.80s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:49&lt;00:00, 24.93s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:49&lt;00:00, 24.92s/it]
 
 BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]  RPF: rejected 30/576 epochs
   RPF: rejected 35/576 epochs
   RPF: rejected 23/576 epochs
 
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:34&lt;00:34, 34.92s/it]  RPF: rejected 26/576 epochs
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:45&lt;00:45, 45.08s/it]  RPF: rejected 26/576 epochs
   RPF: rejected 18/576 epochs
   RPF: rejected 29/576 epochs
 
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:09&lt;00:00, 34.62s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:09&lt;00:00, 34.66s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:29&lt;00:00, 44.93s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:29&lt;00:00, 44.95s/it]
 
 BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]  iRPF: GFRMS=9, RPF=39, union=48/576 epochs rejected
   iRPF: GFRMS=9, RPF=43, union=52/576 epochs rejected
   iRPF: GFRMS=9, RPF=41, union=50/576 epochs rejected
 
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:40&lt;00:40, 40.60s/it]  iRPF: GFRMS=9, RPF=37, union=46/576 epochs rejected
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:52&lt;00:52, 52.97s/it]  iRPF: GFRMS=9, RPF=37, union=46/576 epochs rejected
   iRPF: GFRMS=9, RPF=27, union=36/576 epochs rejected
   iRPF: GFRMS=9, RPF=29, union=38/576 epochs rejected
 
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:20&lt;00:00, 40.38s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:20&lt;00:00, 40.42s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:45&lt;00:00, 52.65s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [01:45&lt;00:00, 52.69s/it]
 </pre></div>
 </div>
 </section>
@@ -3675,7 +3676,7 @@ artifact cleaning in under 8 ms per epoch. The RP, RPF, and iRPF
 methods demonstrated here can be readily integrated into any MOABB
 analysis pipeline using the pipeline surgery approach shown in this
 tutorial.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (4 minutes 49.178 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 7.270 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-riemannian-artifact-rejection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7860f210d422090c0b7ae4e7200ef3d1/plot_riemannian_artifact_rejection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_riemannian_artifact_rejection.ipynb</span></code></a></p>

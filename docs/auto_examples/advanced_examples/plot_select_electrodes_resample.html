@@ -557,6 +557,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_geometry_aware_recentering.html">Comparing fitted and test-batch tangent-space references</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
@@ -701,14 +702,22 @@ a sampling rate of 200 Hz.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(subjects)
 This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 2 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(subjects)
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
       score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.930000  0.038198    100.0  ...  Zhou2016     ts+lr
-1  0.948000  0.040693    100.0  ...  Zhou2016     ts+lr
-2  0.851136  0.048580    119.0  ...  Zhou2016     ts+lr
-3  0.914000  0.039522    100.0  ...  Zhou2016     ts+lr
-4  0.932000  0.046022    100.0  ...  Zhou2016     ts+lr
+0  0.934000  0.065224    100.0  ...  Zhou2016     ts+lr
+1  0.855177  0.065832    119.0  ...  Zhou2016     ts+lr
+2  0.948000  0.066213    100.0  ...  Zhou2016     ts+lr
+3  0.910000  0.053999    100.0  ...  Zhou2016     ts+lr
+4  0.906000  0.062000    100.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -730,16 +739,26 @@ as well as the list of datasets with valid channels.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(subjects)
 This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(subjects)
 This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 2 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(subjects)
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
       score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.864773  0.057208    119.0  ...  Zhou2016     ts+lr
-1  0.930000  0.046114    100.0  ...  Zhou2016     ts+lr
-2  0.952000  0.039024    100.0  ...  Zhou2016     ts+lr
-3  0.819753  0.041219     90.0  ...  Zhou2016     ts+lr
-4  0.926000  0.045405    100.0  ...  Zhou2016     ts+lr
+0  0.926000  0.054667    100.0  ...  Zhou2016     ts+lr
+1  0.832099  0.048996     90.0  ...  Zhou2016     ts+lr
+2  0.932000  0.062871    100.0  ...  Zhou2016     ts+lr
+3  0.859596  0.066906    119.0  ...  Zhou2016     ts+lr
+4  0.912000  0.068011    100.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -755,7 +774,7 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 1.200 seconds)</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 50.220 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>
