@@ -188,8 +188,11 @@ Zenodo. https://doi.org/10.5281/zenodo.10034223
                   Gatti, Ramiro and
                   Goncharenko, Vladislav and
                   Andreev, Anton and
+                  Tates, Alberto and
+                  Kojima, Simon and
                   Thielen, Jordy and
                   Hajhassani, Davoud and
+                  Graignic, Paul-Adrien and
                   Begany, Katelyn and
                   Moreau, Thomas and
                   Roy, Yannick and
