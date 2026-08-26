@@ -50,6 +50,8 @@ BNCI_2025_001_URL = "https://lampx.tugraz.at/~bci/database/001-2025/"
 # ``read_raw_eeglab`` types anything it cannot recognise as ``eeg``, which would
 # feed the target position and hand velocity -- i.e. the labels -- to any
 # paradigm picking ``eeg``.
+_EOG_CHANNELS_001_2025 = ("EOGL1", "EOGL2", "EOGL3", "EOGR1")
+
 _NON_EEG_CHANNELS_001_2025 = (
     "x",
     "y",
@@ -58,6 +60,7 @@ _NON_EEG_CHANNELS_001_2025 = (
     "validity",
     "targetPosX",
     "targetPoxY",  # sic: the published files misspell targetPosY
+    "targetPosY",  # ...accept the corrected spelling too
 )
 
 
@@ -172,13 +175,17 @@ def _load_data_001_2025(
         return [str(set_file)]
 
     # Load the EEGLAB file
-    raw = mne.io.read_raw_eeglab(str(set_file), preload=True, verbose=verbose)
+    raw = mne.io.read_raw_eeglab(
+        str(set_file), eog=_EOG_CHANNELS_001_2025, preload=True, verbose=verbose
+    )
 
     # Type the non-EEG channels before the montage, so they are neither placed
     # on the scalp nor picked as EEG.
     # set_channel_types raises on a name that is not in info, so filter first.
     raw.set_channel_types(
-        {ch: "misc" for ch in _NON_EEG_CHANNELS_001_2025 if ch in raw.ch_names}
+        {ch: "misc" for ch in _NON_EEG_CHANNELS_001_2025 if ch in raw.ch_names},
+        on_unit_change="ignore",
+        verbose=False,
     )
 
     # Remap annotation descriptions from numeric codes to descriptive names

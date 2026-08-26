@@ -1225,7 +1225,9 @@ def _is_local(root, subject):
     return dl.nemar_sourcedata_is_local(root, subject)
 
 
-def test_nemar_sourcedata_is_local_settles_presence_per_subject(tmp_path):
+def test_nemar_sourcedata_is_local_settles_presence_per_subject(
+    tmp_path, _isolated_mne_config
+):
     """One subject in the store must not vouch for the others."""
     root = _fake_store(tmp_path)
     (root / dl.SOURCEDATA_PROVENANCE).write_text(
@@ -1250,7 +1252,9 @@ def test_nemar_sourcedata_is_local_settles_presence_per_subject(tmp_path):
     assert not _is_local(root, 2)
 
 
-def test_nemar_sourcedata_is_local_trusts_a_store_without_a_manifest(tmp_path):
+def test_nemar_sourcedata_is_local_trusts_a_store_without_a_manifest(
+    tmp_path, _isolated_mne_config
+):
     """Without a manifest there is nothing to reason with, so trust the store."""
     root = _fake_store(tmp_path)
     assert not _is_local(root, 1)

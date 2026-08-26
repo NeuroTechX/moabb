@@ -483,7 +483,7 @@ def _manifest_subject_files(record, subject):
     about this subject. Names are returned raw -- callers that feed them to a
     glob escape them themselves.
     """
-    entries = record.get("files") or []
+    entries = [entry for entry in (record.get("files") or []) if isinstance(entry, dict)]
     if not any("subject" in entry for entry in entries):
         return None
     candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
@@ -493,6 +493,21 @@ def _manifest_subject_files(record, subject):
         for entry in entries
         if entry.get("file") and str(entry.get("subject")) in wanted
     ]
+
+
+def _is_stored_file(sourcedata_dir, name):
+    """Whether ``name`` from a manifest names a real file inside the store.
+
+    Manifest names are data, so they are not trusted to stay relative: an
+    absolute name would make ``/`` discard the store root entirely, and a
+    directory must not pass for a downloaded file.
+    """
+    candidate = sourcedata_dir / name
+    try:
+        candidate.relative_to(sourcedata_dir)
+    except ValueError:
+        return False
+    return candidate.is_file()
 
 
 def nemar_sourcedata_is_local(target_dir, subject):
@@ -520,17 +535,21 @@ def nemar_sourcedata_is_local(target_dir, subject):
     bool
         True only when the subject's files are provably present.
     """
+    target_dir = Path(target_dir)
     try:
         record = json.loads(
             (target_dir / SOURCEDATA_PROVENANCE).read_text(encoding="utf-8")
         )
-    except (OSError, ValueError):
-        record = None
-    files = None if record is None else _manifest_subject_files(record, subject)
+        files = _manifest_subject_files(record, subject)
+    except (OSError, ValueError, AttributeError, TypeError):
+        # Unreadable, or a manifest whose schema has drifted -- either way it
+        # cannot answer, so degrade to the whole-store rule rather than raising
+        # out of get_data().
+        files = None
     if files is None:
         return _sourcedata_store_holds_data(target_dir)
     sourcedata_dir = target_dir / "sourcedata"
-    return bool(files) and all((sourcedata_dir / name).exists() for name in files)
+    return bool(files) and all(_is_stored_file(sourcedata_dir, name) for name in files)
 
 
 @verbose
