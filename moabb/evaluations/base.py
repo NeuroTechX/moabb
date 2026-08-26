@@ -25,6 +25,7 @@ from moabb.datasets.base import (  # noqa: F401 - CacheConfig used in type hints
     BaseDataset,
     CacheConfig,
 )
+from moabb.evaluations.splitters import _cv_keyword_capability, _ResolvedCV
 from moabb.evaluations.utils import (
     Emissions,
     _carbonfootprint,
@@ -452,6 +453,8 @@ class BaseEvaluation(ABC):
         self.n_splits = n_splits
         self.cv_class = cv_class
         self.cv_kwargs = {} if cv_kwargs is None else cv_kwargs
+        self._cv_internal_keys = frozenset()
+        self._cv_explicit_keys = frozenset(self.cv_kwargs)
         self.groups = groups
         self.save_model = save_model
         self.cache_config = cache_config
@@ -541,13 +544,18 @@ class BaseEvaluation(ABC):
 
     def _resolve_cv(self, default_class, default_kwargs=None):
         """Resolve the cross-validation class and kwargs for a splitter."""
-        if self.cv_class is None:
-            cv_class = default_class
-            cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
-        else:
-            cv_class = self.cv_class
-            cv_kwargs = dict(self.cv_kwargs)
-        return cv_class, cv_kwargs
+        cv_class = default_class if self.cv_class is None else self.cv_class
+        cv_kwargs = {} if default_kwargs is None else dict(default_kwargs)
+        if self.cv_class is not None:
+            cv_kwargs = {
+                name: value
+                for name, value in cv_kwargs.items()
+                if _cv_keyword_capability(cv_class, name) is True
+            }
+        cv_kwargs.update(self.cv_kwargs)
+        explicit_keys = frozenset(self.cv_kwargs) - self._cv_internal_keys
+        self._cv_explicit_keys = explicit_keys
+        return cv_class, _ResolvedCV(cv_kwargs, explicit_keys)
 
     def _load_data(
         self, dataset, run_pipes, process_pipeline, postprocess_pipeline, subjects=None

@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from sklearn.model_selection import (
+    GroupKFold,
     GroupShuffleSplit,
     KFold,
     LeaveOneGroupOut,
@@ -18,6 +19,7 @@ from sklearn.model_selection import (
 )
 from sklearn.utils import check_random_state
 
+import moabb.evaluations.splitters as splitters_module
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.splitters import (
     CrossDatasetSplitter,
@@ -37,6 +39,87 @@ def data():
     )
     paradigm = FakeImageryParadigm()
     return paradigm.get_data(dataset=dataset)
+
+
+@pytest.fixture(scope="module")
+def small_data():
+    dataset = FakeDataset(
+        ["left_hand", "right_hand"], n_subjects=2, n_sessions=2, n_runs=2, seed=12
+    )
+    return FakeImageryParadigm().get_data(dataset=dataset)
+
+
+class OpaqueLeaveOneGroupOut(LeaveOneGroupOut):
+    """Real group CV whose constructor signature cannot be inspected."""
+
+    __signature__ = object()
+
+
+class OpaqueGroupKFold(GroupKFold):
+    """Real shuffled group CV whose constructor signature is opaque."""
+
+    __signature__ = object()
+
+
+def _group_run(metadata):
+    return metadata["run"].to_numpy()
+
+
+def _group_session(metadata):
+    return metadata["session"].to_numpy()
+
+
+def _group_subject(metadata):
+    return metadata["subject"].to_numpy()
+
+
+def _group_dataset(metadata):
+    return metadata["dataset"].to_numpy()
+
+
+def _assert_same_split_arrays(first, second):
+    assert len(first) == len(second)
+    for (train_first, test_first), (train_second, test_second) in zip(first, second):
+        assert np.array_equal(train_first, train_second)
+        assert np.array_equal(test_first, test_second)
+
+
+def _assert_disjoint_split_groups(folds, metadata, group_callable):
+    for train, test in folds:
+        train_groups = set(group_callable(metadata.loc[train]).tolist())
+        test_groups = set(group_callable(metadata.loc[test]).tolist())
+        assert train_groups.isdisjoint(test_groups)
+
+
+def _canonical_dataset_assignments(folds, metadata):
+    return tuple(
+        sorted(
+            (tuple(sorted(set(metadata.loc[test, "dataset"]))) for _train, test in folds),
+            key=repr,
+        )
+    )
+
+
+def _direct_dataset_group_kfold_assignments(metadata, seed):
+    groups = metadata["dataset"].to_numpy()
+    splitter = GroupKFold(n_splits=3, shuffle=True, random_state=seed)
+    return tuple(
+        sorted(
+            (
+                tuple(sorted(set(groups[test])))
+                for _train, test in splitter.split(np.zeros(len(metadata)), groups=groups)
+            ),
+            key=repr,
+        )
+    )
+
+
+def _four_equal_dataset_groups(data):
+    _, y, metadata = data
+    selected_subjects = metadata["subject"].unique()[:4]
+    mask = metadata["subject"].isin(selected_subjects)
+    metadata = _metadata_with_dataset_column(metadata.loc[mask], n_datasets=4)
+    return y[mask.to_numpy()], metadata
 
 
 # Split done for the Within Session evaluation
@@ -603,6 +686,219 @@ def test_learning_curve_splitter_metadata():
         assert meta["permutation"] is not None
 
 
+def test_learning_curve_subsample_is_random_with_groups():
+    """Each permutation must draw its own training set when groups are passed.
+
+    ``== n_perms``, not ``> 1``: several training pools are possible, so the
+    ascending prefix already differs between some permutations and ``> 1`` passes
+    with or without the fix.
+    """
+    n_perms = 5
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "per_class", "value": [2, 5, 10]},
+        n_perms=n_perms,
+        test_size=0.2,
+        random_state=42,
+    )
+
+    trains = [
+        tuple(sorted(train))
+        for train, _ in splitter.split(np.arange(len(y)), y, groups=groups)
+    ]
+
+    by_size = {}
+    for train in trains:
+        by_size.setdefault(len(train), set()).add(train)
+    for size, distinct in by_size.items():
+        assert len(distinct) == n_perms, (
+            f"{n_perms} permutations produced {len(distinct)} distinct "
+            f"{size}-sample training sets"
+        )
+
+
+def test_learning_curve_subsample_keeps_test_folds_and_ungrouped_splits():
+    """The shuffle must move the training subsample and nothing else."""
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    kwargs = {
+        "data_size": {"policy": "per_class", "value": [2, 5, 10]},
+        "n_perms": 5,
+        "test_size": 0.2,
+        "random_state": 42,
+    }
+
+    def run(g, random_state=42):
+        splitter = LearningCurveSplitter(**(kwargs | {"random_state": random_state}))
+        return [
+            (tuple(sorted(train)), tuple(sorted(test)))
+            for train, test in splitter.split(np.arange(len(y)), y, groups=g)
+        ]
+
+    grouped, ungrouped = run(groups), run(None)
+
+    # Draining the grouped base splitter before subsampling must preserve its
+    # test folds, including when its random state is a shared mutable object.
+    for random_state_factory in (lambda: 42, lambda: np.random.RandomState(42)):
+        expected = [
+            tuple(sorted(test))
+            for _, test in GroupShuffleSplit(
+                n_splits=kwargs["n_perms"],
+                test_size=kwargs["test_size"],
+                random_state=random_state_factory(),
+            ).split(np.arange(len(y)), y, groups)
+        ]
+        actual = [
+            test
+            for _, test in run(groups, random_state_factory())[
+                :: len(kwargs["data_size"]["value"])
+            ]
+        ]
+        assert actual == expected
+
+    # Every group appears in exactly one side of each split.
+    for train, test in grouped:
+        assert not set(groups[list(train)]) & set(groups[list(test)])
+
+    # The ungrouped branch still draws distinct subsamples per permutation.
+    assert len({train for train, _ in ungrouped}) == len(ungrouped)
+
+
+def _assert_random_states_equal(left, right):
+    """Assert equality of the full NumPy RandomState state tuple."""
+    assert left[0] == right[0]
+    np.testing.assert_array_equal(left[1], right[1])
+    assert left[2:] == right[2:]
+
+
+def test_learning_curve_grouped_base_splitter_stays_lazy(monkeypatch):
+    """One requested split must consume only one grouped base permutation."""
+    base_yields = []
+
+    class CountingGroupShuffleSplit:
+        def __init__(self, n_splits, test_size, random_state):
+            self.n_splits = n_splits
+
+        def split(self, X, y, groups):
+            for perm_i in range(self.n_splits):
+                base_yields.append(perm_i)
+                test_mask = groups == perm_i % len(np.unique(groups))
+                yield np.flatnonzero(~test_mask), np.flatnonzero(test_mask)
+
+    monkeypatch.setattr(splitters_module, "GroupShuffleSplit", CountingGroupShuffleSplit)
+    y = np.array([0, 1] * 50)
+    groups = np.repeat(np.arange(5), 20)
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "ratio", "value": [1.0]},
+        n_perms=50,
+        test_size=0.2,
+        random_state=42,
+    )
+
+    iterator = splitter.split(np.arange(len(y)), y, groups=groups)
+    next(iterator)
+
+    assert base_yields == [0]
+
+
+@pytest.mark.parametrize("random_state_kind", ["shared", "global"])
+def test_learning_curve_partial_iteration_advances_only_one_base_fold(random_state_kind):
+    """Private subsampling must not pre-consume the caller-owned RNG stream."""
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    kwargs = {
+        "data_size": {"policy": "per_class", "value": [2, 5, 10]},
+        "n_perms": 5,
+        "test_size": 0.2,
+    }
+
+    if random_state_kind == "shared":
+        direct_rng = np.random.RandomState(42)
+        next(
+            GroupShuffleSplit(n_splits=5, test_size=0.2, random_state=direct_rng).split(
+                np.arange(len(y)), y, groups
+            )
+        )
+        expected_state = direct_rng.get_state()
+
+        actual_rng = np.random.RandomState(42)
+        next(
+            LearningCurveSplitter(**kwargs, random_state=actual_rng).split(
+                np.arange(len(y)), y, groups=groups
+            )
+        )
+        actual_state = actual_rng.get_state()
+    else:
+        np.random.seed(42)
+        next(
+            GroupShuffleSplit(n_splits=5, test_size=0.2, random_state=None).split(
+                np.arange(len(y)), y, groups
+            )
+        )
+        expected_state = np.random.get_state()
+
+        np.random.seed(42)
+        next(
+            LearningCurveSplitter(**kwargs, random_state=None).split(
+                np.arange(len(y)), y, groups=groups
+            )
+        )
+        actual_state = np.random.get_state()
+
+    _assert_random_states_equal(actual_state, expected_state)
+
+
+@pytest.mark.parametrize(
+    ("policy", "values", "expected_counts"),
+    [
+        ("ratio", [0.1, 0.25, 0.5], {16: 5, 40: 3, 80: 1}),
+        ("per_class", [2, 5, 10], {4: 5, 10: 3, 20: 1}),
+    ],
+)
+def test_learning_curve_grouped_vector_permutations_are_nested_and_reproducible(
+    policy, values, expected_counts
+):
+    """Both policies honor vector counts, nesting, grouping, and RNG modes."""
+    y = np.array([0, 1] * 100)
+    groups = np.repeat(np.arange(5), 40)
+    kwargs = {
+        "data_size": {"policy": policy, "value": values},
+        "n_perms": [5, 3, 1],
+        "test_size": 0.2,
+    }
+
+    def run(random_state):
+        splitter = LearningCurveSplitter(**kwargs, random_state=random_state)
+        result = []
+        for train, test in splitter.split(np.arange(len(y)), y, groups=groups):
+            metadata = splitter.get_metadata()
+            result.append((metadata["permutation"], tuple(train), tuple(test)))
+        return result
+
+    first = run(42)
+    assert first == run(42)
+    assert len(first) == sum(expected_counts.values())
+    assert {
+        size: sum(len(train) == size for _, train, _ in first) for size in expected_counts
+    } == expected_counts
+
+    by_permutation = {}
+    for permutation, train, test in first:
+        assert not set(groups[list(train)]) & set(groups[list(test)])
+        by_permutation.setdefault(permutation, []).append(set(train))
+    for subsets in by_permutation.values():
+        for smaller, larger in zip(subsets, subsets[1:]):
+            assert smaller < larger
+
+    shared = np.random.RandomState(42)
+    assert run(shared) != run(shared)
+    np.random.seed(42)
+    global_first = run(None)
+    np.random.seed(42)
+    assert global_first == run(None)
+
+
 @pytest.mark.parametrize(
     "splitter",
     [
@@ -785,6 +1081,95 @@ def test_cross_dataset_group_column_backcompat(data):
     meta = split.get_metadata()
     assert "test_dataset" in meta
     assert "train_datasets" in meta
+
+
+@pytest.mark.parametrize(
+    "splitter_class,groups,expected_folds",
+    [
+        (WithinSessionSplitter, _group_run, 8),
+        (WithinSubjectSplitter, _group_session, 4),
+        (CrossSessionSplitter, _group_session, 4),
+        (CrossSubjectSplitter, _group_subject, 2),
+        (CrossDatasetSplitter, _group_dataset, 3),
+    ],
+    ids=[
+        "within-session",
+        "within-subject",
+        "cross-session",
+        "cross-subject",
+        "cross-dataset",
+    ],
+)
+def test_known_false_random_state_remains_direct_splitter_only(
+    data, small_data, splitter_class, groups, expected_folds
+):
+    """A LOGO-incompatible public seed remains deterministic splitter state."""
+    if splitter_class is CrossDatasetSplitter:
+        _, y, metadata = data
+        metadata = _metadata_with_dataset_column(metadata)
+    else:
+        _, y, metadata = small_data
+
+    def create():
+        return splitter_class(cv_class=LeaveOneGroupOut, groups=groups, random_state=17)
+
+    splitter = create()
+    repeated_splitter = create()
+    folds = list(splitter.split(y, metadata))
+    repeated = list(repeated_splitter.split(y, metadata))
+    assert splitter.random_state == 17
+    assert len(folds) == expected_folds
+    _assert_disjoint_split_groups(folds, metadata, groups)
+    _assert_same_split_arrays(folds, repeated)
+
+
+def test_cross_dataset_opaque_cv_class_splits(data):
+    """Opaque LOGO executes real dataset-group splits without guessed defaults."""
+    _, y, metadata = data
+    metadata = _metadata_with_dataset_column(metadata)
+    splitter = CrossDatasetSplitter(
+        cv_class=OpaqueLeaveOneGroupOut, groups=_group_dataset
+    )
+    folds = list(splitter.split(y, metadata))
+    assert len(folds) == 3
+    _assert_disjoint_split_groups(folds, metadata, _group_dataset)
+
+
+def test_cross_dataset_group_kfold_seed_pair_changes_canonical_assignments(data):
+    """The fixed seed pair changes the direct four-dataset oracle."""
+    _, metadata = _four_equal_dataset_groups(data)
+    expected_17 = _direct_dataset_group_kfold_assignments(metadata, seed=17)
+    expected_18 = _direct_dataset_group_kfold_assignments(metadata, seed=18)
+    assert expected_17 != expected_18
+
+
+def test_cross_dataset_opaque_group_kfold_preserves_explicit_seed(data):
+    """Opaque direct dataset CV preserves a caller-selected non-None seed."""
+    y, metadata = _four_equal_dataset_groups(data)
+
+    def run(seed):
+        splitter = CrossDatasetSplitter(
+            cv_class=OpaqueGroupKFold,
+            groups=_group_dataset,
+            n_splits=3,
+            shuffle=True,
+            random_state=seed,
+        )
+        return list(splitter.split(y, metadata))
+
+    folds_17 = run(17)
+    folds_17_repeat = run(17)
+    folds_18 = run(18)
+    observed_17 = _canonical_dataset_assignments(folds_17, metadata)
+    observed_18 = _canonical_dataset_assignments(folds_18, metadata)
+    expected_17 = _direct_dataset_group_kfold_assignments(metadata, seed=17)
+    expected_18 = _direct_dataset_group_kfold_assignments(metadata, seed=18)
+    assert len(folds_17) == 3
+    assert len(folds_18) == 3
+    _assert_same_split_arrays(folds_17, folds_17_repeat)
+    assert observed_17 == expected_17
+    assert observed_18 == expected_18
+    assert observed_18 != observed_17
 
 
 def test_cross_session_groups_default_and_callable(data):
