@@ -77,8 +77,8 @@ class Cattan2019_PHMD(BaseDataset):
             filters="no digital filter",
             sensors=[
                 "Cz",
-                "Fc5",
-                "Fc6",
+                "FC5",
+                "FC6",
                 "Fp1",
                 "Fp2",
                 "Fz",
@@ -172,7 +172,7 @@ class Cattan2019_PHMD(BaseDataset):
             sessions_per_subject=1,
             events={"off": 1, "on": 2},
             code="Cattan2019-PHMD",  # Before: "PHMD-ML"
-            interval=[0, 1],
+            interval=[0, 60],
             paradigm="rstate",
             doi="10.5281/zenodo.2617084",
             selected_subjects=subjects,
@@ -181,9 +181,9 @@ class Cattan2019_PHMD(BaseDataset):
         self._chnames = [
             "Fp1",
             "Fp2",
-            "Fc5",
+            "FC5",
             "Fz",
-            "Fc6",
+            "FC6",
             "T7",
             "Cz",
             "T8",
@@ -216,6 +216,7 @@ class Cattan2019_PHMD(BaseDataset):
             ch_names=self._chnames, sfreq=512, ch_types=self._chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
+        raw.set_montage("standard_1020", on_missing="ignore")
         return {"0": {"0": raw}}
 
     def data_path(

@@ -48,6 +48,22 @@ BNCI_2025_001_URL = "https://lampx.tugraz.at/~bci/database/001-2025/"
 # Event code mapping for 001-2025 dataset
 # Format: XYZ where X=speed (1=slow, 2=fast), Y=distance (1=near, 2=far), Z=direction (1-4)
 # Direction codes: 1=up, 2=down, 3=left, 4=right
+# Channels the EEGLAB ``.set`` files carry alongside the EEG montage: hand
+# kinematics from the reaching task, the target position, and a validity flag.
+# ``read_raw_eeglab`` types anything it cannot recognise as ``eeg``, which would
+# feed the target position and hand velocity -- i.e. the labels -- to any
+# paradigm picking ``eeg``.
+_NON_EEG_CHANNELS_001_2025 = {
+    "x": "misc",
+    "y": "misc",
+    "vx": "misc",
+    "vy": "misc",
+    "validity": "misc",
+    "targetPosX": "misc",
+    "targetPoxY": "misc",  # sic: the published files misspell targetPosY
+}
+
+
 _EVENT_CODE_MAPPING_001_2025 = {
     "111": "up_slow_near",
     "112": "down_slow_near",
@@ -158,6 +174,16 @@ def _load_data_001_2025(
     # Load the EEGLAB file
     raw = mne.io.read_raw_eeglab(str(set_file), preload=True, verbose=verbose)
 
+    # Type the non-EEG channels before the montage, so they are neither placed
+    # on the scalp nor picked as EEG.
+    raw.set_channel_types(
+        {
+            ch: ch_type
+            for ch, ch_type in _NON_EEG_CHANNELS_001_2025.items()
+            if ch in raw.ch_names
+        }
+    )
+
     # Remap annotation descriptions from numeric codes to descriptive names
     # The data contains codes like "111", "112", etc. which we map to
     # descriptive names like "up_slow_near", "down_slow_near", etc.
@@ -266,8 +292,8 @@ class BNCI2025_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=67,
-            channel_types={"eeg": 67, "eog": 4},
+            n_channels=71,
+            channel_types={"eeg": 60, "eog": 4, "misc": 7},
             montage="af7 af3 afz af4 af8 f7 f5 f3 f1 fz f2 f4 f6 f8 ft7 fc5 fc3 fc1 fcz fc2 fc4 fc6 ft8 t7 c5 c3 c1 cz c2 c4 c6 t8 tp7 cp5 cp3 cp1 cpz cp2 cp4 cp6 tp8 p7 p5 p3 p1 pz p2 p4 p6 p8 ppo1h ppo2h po7 po3 poz po4 po8 o1 oz o2",
             sensor_type="EEG",
             hardware="BrainAmp",

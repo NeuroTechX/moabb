@@ -1106,15 +1106,12 @@ class BaseDataset(metaclass=MetaclassDataset):
         ``"upstream"`` skips NEMAR entirely, ``"nemar"`` treats a failure as
         fatal rather than silently reaching the host the caller opted out
         of, and ``"auto"`` warns per subject and leaves that subject to the
-        dataset's own downloader. A non-empty store is trusted as-is and
-        costs no network at all -- refresh or extend it with
-        :meth:`download` (``force_update=True`` to refetch).
+        dataset's own downloader. Subjects already in the store cost no
+        network at all -- :meth:`sourcedata_path` serves them from disk --
+        so refresh one with :meth:`download` (``force_update=True``).
         """
         provider = get_download_provider()
         if self.nemar_id is None or provider == "upstream":
-            return
-        store = self._sourcedata_store()
-        if store is not None and store.is_dir() and any(store.iterdir()):
             return
         for subject in subjects:
             try:
