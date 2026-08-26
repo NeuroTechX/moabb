@@ -40,3 +40,5 @@ def __getattr__(name):
             f"braindecode package instead."
             f"See https://braindecode.org/ for more information."
         )
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
