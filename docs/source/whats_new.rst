@@ -87,6 +87,7 @@ Requirements
 
 Bugs
 ~~~~
+- Restore the final ``AttributeError`` of the :mod:`moabb.pipelines` module-level ``__getattr__``, dropped in :gh:`692`. Unknown names evaluated to ``None`` instead of raising, so ``from moabb.pipelines import *`` failed with ``TypeError: 'NoneType' object is not iterable`` and a mistyped class name in a pipeline YAML surfaced as ``TypeError: 'NoneType' object is not callable`` (:gh:`1159` by `Iain`_)
 - Fix :mod:`moabb.analysis.meta_analysis` rejecting non-finite score inputs instead of letting ``NaN`` or infinite values leak into low-level statistics. :func:`moabb.analysis.meta_analysis.compute_pvals_wilcoxon`, :func:`moabb.analysis.meta_analysis.compute_pvals_perm`, and :func:`moabb.analysis.meta_analysis.compute_effect` now require finite score tables; the all-zero Wilcoxon case still reports a one-tailed ``p=0.5`` in both directions and keeps off-diagonal p-values strictly inside ``(0, 1)`` for Stouffer's method; :func:`moabb.analysis.meta_analysis.compute_effect` reports ``0`` for identical zero-spread pairs and signed infinity for constant nonzero offsets; and :func:`moabb.analysis.meta_analysis.compute_pvals_corrected_ttest` now rejects non-finite score differences and non-finite ``n_train``/``n_test`` instead of collapsing a non-finite statistic to ``p=0.5`` (:gh:`678` by `Aditya Singh`_)
 - Point :class:`moabb.datasets.Schrag2026Pediatric` at Zenodo version 3.0 and correct its licence. Versions 1.0 and 2 registered ``CC-BY-ND-4.0`` while the preprint stated CC-BY-4.0; the authors resolved that in version 3.0, whose Zenodo record registers ``CC-BY-4.0`` -- so the ``NoDerivatives`` term MOABB reported no longer applies. Version 3.0 also publishes one archive per subject, so loading a subject now downloads ~20-40 MB instead of the single ~1.2 GB archive that held all 47. (by `Bruno Aristimunha`_)
 - Fix the ``LogVariance+LDA`` row of the benchmark results page (:doc:`paper_results`) linking to ``pipelines/LogVar_grid.yml``, which is the ``Log Variance SVM grid`` pipeline and classifies with ``SVC``. It now links to ``pipelines/LogVar.yml``, the ``Log Variance LDA`` pipeline the row reports. The ``LogVariance+SVM`` row keeps ``LogVar_grid.yml`` and loses its ``#L7`` fragment, which highlighted the shared ``LogVariance`` step rather than the ``SVC`` one (by `Bhargav Kowshik`_).
@@ -979,3 +980,4 @@ API changes
 .. _Azra Bano: https://github.com/azrabano23
 .. _Michele Romani: https://github.com/BRomans
 .. _Barış Talar: https://github.com/baris-talar
+.. _Iain: https://github.com/NotAFlightRisk

@@ -5,6 +5,7 @@ import pytest
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.validation import NotFittedError, check_is_fitted
 
+import moabb.pipelines
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import SSVEP
 from moabb.pipelines import (
@@ -351,3 +352,12 @@ class TestSSVEP_TDCA(unittest.TestCase):
     def test_fit_predict_is_fitted(self):
         self.assertRaises(NotFittedError, self.clf.predict, self.X)
         self.assertRaises(NotFittedError, self.clf.predict_proba, self.X)
+
+
+@pytest.mark.parametrize(
+    "name,match", [("NotAPipeline", "no attribute"), ("KerasEEGNeX", "braindecode")]
+)
+def test_unknown_attribute_raises(name, match):
+    with pytest.raises(AttributeError, match=match):
+        getattr(moabb.pipelines, name)
+    assert not hasattr(moabb.pipelines, name)
