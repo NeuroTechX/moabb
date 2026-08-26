@@ -161,8 +161,11 @@ If you use MOABB in your experiments, please cite MOABB and the related publicat
 Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J.,
 Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R.,
 Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V.,
-Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Graignic, P.-A., Begany, K., Moreau, T., Roy, Y., Jayaram, V.,
-Barachant, A., & Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.6.0).
+Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Graignic, P.-A.,
+Begany, K., Leto, B., Davis, E., Munro, Z., Romani, M., Talar, B., Schrag, E.,
+Kowshik, B., Badang, R. A., Xu, G., Polychroniadou, D., Lefundes da Silva, H.,
+Bano, A., Singh, A., Rahimipour, M., Moreau, T., Roy, Y., Jayaram, V., Barachant, A.,
+& Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.6.0).
 Zenodo. https://doi.org/10.5281/zenodo.10034223
 ```
 
@@ -194,6 +197,20 @@ Zenodo. https://doi.org/10.5281/zenodo.10034223
                   Hajhassani, Davoud and
                   Graignic, Paul-Adrien and
                   Begany, Katelyn and
+                  Leto, Benedetto and
+                  Davis, Ethan and
+                  Munro, Zachary and
+                  Romani, Michele and
+                  Talar, Baris and
+                  Schrag, Emily and
+                  Kowshik, Bhargav and
+                  Badang, Ralph Angelo and
+                  Xu, Grace and
+                  Polychroniadou, Danae and
+                  Lefundes da Silva, Henrique and
+                  Bano, Azra and
+                  Singh, Aditya and
+                  Rahimipour, Meysam and
                   Moreau, Thomas and
                   Roy, Yannick and
                   Jayaram, Vinay and
