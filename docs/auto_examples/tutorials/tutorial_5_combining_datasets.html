@@ -68,7 +68,7 @@
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=ab0b086a"></script>
+    <script src="../../_static/documentation_options.js?v=7e3a615a"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -144,7 +144,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.7.0dev0" />
+  <meta name="docsearch:version" content="1.6.1dev0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -741,16 +741,82 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...         dataset  pipeline  codecarbon_task_name
-0  0.516192  5.429478   1356.0  ...  CustomDataset3       MDM
-1  0.560000  0.360622    120.0  ...  CustomDataset3       MDM
-2  0.637577  2.429482    768.0  ...  CustomDataset3       MDM
-3  0.647500  0.376000    120.0  ...  CustomDataset3       MDM
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
+  0%|                                     | 12.3k/46.4M [00:00&lt;10:23, 74.4kB/s]
+  0%|                                      | 37.9k/46.4M [00:00&lt;05:49, 133kB/s]
+  0%|                                      | 87.0k/46.4M [00:00&lt;03:23, 227kB/s]
+  0%|▏                                      | 175k/46.4M [00:00&lt;02:02, 379kB/s]
+  1%|▏                                      | 255k/46.4M [00:00&lt;01:43, 445kB/s]
+  1%|▎                                      | 387k/46.4M [00:00&lt;01:15, 609kB/s]
+  1%|▍                                      | 534k/46.4M [00:01&lt;01:01, 747kB/s]
+  2%|▌                                     | 763k/46.4M [00:01&lt;00:44, 1.02MB/s]
+  2%|▊                                    | 1.02M/46.4M [00:01&lt;00:35, 1.28MB/s]
+  3%|█▏                                   | 1.43M/46.4M [00:01&lt;00:25, 1.78MB/s]
+  4%|█▍                                   | 1.87M/46.4M [00:01&lt;00:20, 2.19MB/s]
+  6%|██                                   | 2.58M/46.4M [00:01&lt;00:14, 3.03MB/s]
+  7%|██▋                                  | 3.36M/46.4M [00:01&lt;00:11, 3.79MB/s]
+ 10%|███▋                                 | 4.65M/46.4M [00:02&lt;00:07, 5.40MB/s]
+ 13%|████▊                                | 6.08M/46.4M [00:02&lt;00:05, 6.80MB/s]
+ 18%|██████▊                              | 8.50M/46.4M [00:02&lt;00:03, 9.89MB/s]
+ 24%|████████▊                            | 11.1M/46.4M [00:02&lt;00:02, 12.4MB/s]
+ 30%|███████████                          | 13.9M/46.4M [00:02&lt;00:02, 14.7MB/s]
+ 38%|█████████████▉                       | 17.5M/46.4M [00:02&lt;00:01, 17.9MB/s]
+ 46%|█████████████████                    | 21.5M/46.4M [00:02&lt;00:01, 20.9MB/s]
+ 55%|████████████████████▍                | 25.6M/46.4M [00:03&lt;00:00, 22.8MB/s]
+ 64%|███████████████████████▋             | 29.7M/46.4M [00:03&lt;00:00, 24.4MB/s]
+ 69%|█████████████████████████▌           | 32.1M/46.4M [00:03&lt;00:00, 21.8MB/s]
+ 77%|████████████████████████████▍        | 35.7M/46.4M [00:03&lt;00:00, 23.0MB/s]
+ 86%|███████████████████████████████▋     | 39.8M/46.4M [00:03&lt;00:00, 24.3MB/s]
+ 93%|██████████████████████████████████▏  | 42.9M/46.4M [00:03&lt;00:00, 23.7MB/s]
+  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 46.4M/46.4M [00:00&lt;00:00, 223GB/s]
+
+  0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
+  0%|                                     | 12.3k/74.3M [00:00&lt;15:57, 77.5kB/s]
+  0%|                                      | 31.7k/74.3M [00:00&lt;11:09, 111kB/s]
+  0%|                                      | 93.2k/74.3M [00:00&lt;04:52, 254kB/s]
+  0%|                                       | 168k/74.3M [00:00&lt;03:26, 359kB/s]
+  0%|▏                                      | 292k/74.3M [00:00&lt;02:16, 542kB/s]
+  1%|▏                                      | 420k/74.3M [00:00&lt;01:51, 663kB/s]
+  1%|▎                                      | 633k/74.3M [00:01&lt;01:18, 934kB/s]
+  1%|▍                                     | 894k/74.3M [00:01&lt;01:00, 1.22MB/s]
+  2%|▋                                    | 1.30M/74.3M [00:01&lt;00:42, 1.74MB/s]
+  2%|▉                                    | 1.79M/74.3M [00:01&lt;00:32, 2.26MB/s]
+  3%|█▎                                   | 2.55M/74.3M [00:01&lt;00:22, 3.19MB/s]
+  5%|█▋                                   | 3.38M/74.3M [00:01&lt;00:17, 4.00MB/s]
+  6%|██▎                                  | 4.74M/74.3M [00:01&lt;00:12, 5.68MB/s]
+  8%|██▉                                  | 6.01M/74.3M [00:02&lt;00:10, 6.67MB/s]
+ 11%|████                                 | 8.27M/74.3M [00:02&lt;00:06, 9.44MB/s]
+ 13%|████▊                                | 9.76M/74.3M [00:02&lt;00:06, 9.75MB/s]
+ 19%|██████▉                              | 13.8M/74.3M [00:02&lt;00:03, 15.4MB/s]
+ 24%|████████▉                            | 17.9M/74.3M [00:02&lt;00:02, 19.0MB/s]
+ 28%|██████████▍                          | 20.9M/74.3M [00:02&lt;00:02, 18.7MB/s]
+ 32%|████████████                         | 24.1M/74.3M [00:02&lt;00:02, 19.9MB/s]
+ 38%|██████████████                       | 28.2M/74.3M [00:03&lt;00:02, 22.4MB/s]
+ 43%|████████████████                     | 32.3M/74.3M [00:03&lt;00:01, 24.0MB/s]
+ 49%|██████████████████                   | 36.4M/74.3M [00:03&lt;00:01, 25.2MB/s]
+ 54%|████████████████████▏                | 40.5M/74.3M [00:03&lt;00:01, 26.0MB/s]
+ 60%|██████████████████████▏              | 44.5M/74.3M [00:03&lt;00:01, 26.2MB/s]
+ 65%|████████████████████████▏            | 48.6M/74.3M [00:03&lt;00:00, 26.6MB/s]
+ 71%|██████████████████████████▎          | 52.7M/74.3M [00:03&lt;00:00, 27.1MB/s]
+ 76%|████████████████████████████▎        | 56.8M/74.3M [00:04&lt;00:00, 27.2MB/s]
+ 82%|██████████████████████████████▎      | 60.9M/74.3M [00:04&lt;00:00, 27.4MB/s]
+ 87%|████████████████████████████████▏    | 64.6M/74.3M [00:04&lt;00:00, 26.7MB/s]
+ 92%|██████████████████████████████████▏  | 68.7M/74.3M [00:04&lt;00:00, 27.1MB/s]
+ 98%|████████████████████████████████████▏| 72.8M/74.3M [00:04&lt;00:00, 27.4MB/s]
+  0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 74.3M/74.3M [00:00&lt;00:00, 519GB/s]
+      score      time  samples  ...         dataset  pipeline  codecarbon_task_name
+0  0.607500  0.270049    120.0  ...  CustomDataset3       MDM
+1  0.643983  1.790803    768.0  ...  CustomDataset3       MDM
+2  0.632500  0.276864    120.0  ...  CustomDataset3       MDM
+3  0.528679  3.902276   1356.0  ...  CustomDataset3       MDM
 
 [4 rows x 13 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.027 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 4.107 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  994 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-5-combining-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1d572f55de1f1c75feff109ca6a55fab/tutorial_5_combining_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_5_combining_datasets.ipynb</span></code></a></p>
