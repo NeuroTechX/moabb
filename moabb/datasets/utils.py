@@ -12,7 +12,6 @@ import tarfile
 import zipfile
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import mne
 import mne_bids
 import numpy as np
@@ -21,11 +20,6 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 import moabb.datasets as db
-from moabb.analysis.plotting import (
-    _get_dataset_parameters,
-    dataset_bubble_plot,
-    get_dataset_area,
-)
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
 from moabb.datasets.base import BaseDataset
@@ -792,6 +786,12 @@ class _BubbleChart:
 
 class _BaseDatasetPlotter:
     def __init__(self, datasets, meta_gap, kwargs, n_col=None):
+        # Imported here: moabb.analysis.plotting applies a seaborn theme to the
+        # global matplotlib rcParams at import time, which would restyle anyone
+        # who merely imports moabb.datasets.
+
+        from moabb.analysis.plotting import _get_dataset_parameters, get_dataset_area
+
         self.datasets = datasets = (
             datasets
             if datasets is not None
@@ -830,6 +830,13 @@ class _BaseDatasetPlotter:
         pass
 
     def plot(self):
+        # Imported here: moabb.analysis.plotting applies a seaborn theme to the
+        # global matplotlib rcParams at import time, which would restyle anyone
+        # who merely imports moabb.datasets.
+        import matplotlib.pyplot as plt
+
+        from moabb.analysis.plotting import dataset_bubble_plot
+
         centers = self._get_centers()
 
         rm = self.radii + self.meta_gap

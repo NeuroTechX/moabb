@@ -38,5 +38,4 @@ jobs:
       - name: Run download tests
         run: |
           echo "Running tests"
-          cd moabb/tests
-          pytest -vv -s --tb=long --durations=0 --maxfail=5 --log-cli-level=INFO --dl-data download.py
+          pytest -vv -s --tb=long --durations=0 --maxfail=5 --log-cli-level=INFO --dl-data moabb/tests/test_download.py
