@@ -446,10 +446,16 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     if files is None:
         return None
     if not files:
+        known = sorted(
+            {
+                str(entry["subject"])
+                for entry in record.get("files") or []
+                if isinstance(entry, dict) and entry.get("subject")
+            }
+        )
         raise NemarDownloadError(
             f"NEMAR dataset {nemar_id} lists no sourcedata for subject "
-            f"{subject!r}. Known subjects: "
-            f"{sorted({str(e.get('subject')) for e in (record.get('files') or []) if e.get('subject')})}."
+            f"{subject!r}. Known subjects: {known}."
         )
     # Manifest names are literal file paths, but they are consumed as glob
     # patterns (nemar's include and the local verification below) -- escape
@@ -499,15 +505,10 @@ def _is_stored_file(sourcedata_dir, name):
     """Whether ``name`` from a manifest names a real file inside the store.
 
     Manifest names are data, so they are not trusted to stay relative: an
-    absolute name would make ``/`` discard the store root entirely, and a
+    absolute one would make ``/`` discard the store root entirely, and a
     directory must not pass for a downloaded file.
     """
-    candidate = sourcedata_dir / name
-    try:
-        candidate.relative_to(sourcedata_dir)
-    except ValueError:
-        return False
-    return candidate.is_file()
+    return not Path(name).is_absolute() and (sourcedata_dir / name).is_file()
 
 
 def nemar_sourcedata_is_local(target_dir, subject):
@@ -529,11 +530,6 @@ def nemar_sourcedata_is_local(target_dir, subject):
         a per-subject caller would otherwise pay for on every subject.
     subject : int | str | list
         Subject identifier, or the identifiers a deposit may file it under.
-
-    Returns
-    -------
-    bool
-        True only when the subject's files are provably present.
     """
     target_dir = Path(target_dir)
     try:

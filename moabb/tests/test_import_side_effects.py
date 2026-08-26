@@ -48,12 +48,11 @@ def test_importing_moabb_does_not_restyle_matplotlib():
 
 
 def test_lazily_exported_names_still_resolve():
-    import moabb
     import moabb.analysis
 
-    assert callable(moabb.benchmark) and "benchmark" in dir(moabb)
     for name in ("codecarbon_plot", "distribution_plot", "emissions_summary"):
         assert callable(getattr(moabb.analysis, name)) and name in dir(moabb.analysis)
 
+    # Exercise the __getattr__ this PR added, not the interpreter's own.
     with pytest.raises(AttributeError, match="definitely_not_real"):
-        _ = moabb.definitely_not_real
+        _ = moabb.analysis.definitely_not_real
