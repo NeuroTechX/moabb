@@ -18,8 +18,8 @@ What's new
 
 .. _current:
 
-Version 1.7  (Source - GitHub)
--------------------------------
+Version 1.6.1  (Source - GitHub)
+---------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -36,6 +36,7 @@ Requirements
 Bugs
 ~~~~
 - Type the seven non-EEG channels of :class:`moabb.datasets.BNCI2025_001` as ``misc``. ``read_raw_eeglab`` types anything it does not recognise as ``eeg``, so ``x``/``y``/``vx``/``vy``/``validity``/``targetPosX``/``targetPoxY`` -- the hand kinematics and the target position of the reaching task -- were picked as EEG by every paradigm and fed to classifiers as features, leaking the labels they encode. The declared ``n_channels`` (67) also disagreed with the dataset's own 60-electrode montage; it is now 71 with ``channel_types={"eeg": 60, "eog": 4, "misc": 7}``. Accuracies on this dataset will fall, which is the point (by `Bruno Aristimunha`_).
+- Give :class:`moabb.datasets.Rodrigues2017` the montage :gh:`700` announced but never shipped, the same omission as :class:`moabb.datasets.Cattan2019_PHMD` below: both share the 16-electrode setup, both spelled ``Fc5``/``Fc6`` -- the only two names ``standard_1020`` cannot resolve -- and neither loader called ``set_montage``. Its ``METADATA`` also declared ``standard_1010``, which is not a montage MNE can build (by `Bruno Aristimunha`_).
 - Give :class:`moabb.datasets.Cattan2019_PHMD` the montage :gh:`700` announced but never shipped: that PR fixed only the unit scaling, leaving the loader with no ``set_montage`` call at all. Its channel list also spelled the two frontal-central electrodes ``Fc5``/``Fc6``, the only two of its sixteen names that ``standard_1020`` cannot resolve; they are now ``FC5``/``FC6`` (by `Bruno Aristimunha`_).
 - Correct :class:`moabb.datasets.Cattan2019_PHMD` ``interval`` from ``[0, 1]`` to ``[0, 60]``. Each marker starts a one-minute relaxation block -- as the dataset's own ``block_duration_s=60.0`` records -- but ``SetRawAnnotations`` derives annotation durations from ``interval``, so every block was annotated as lasting one second. ``interval[0]`` is unchanged, so onsets do not move (by `Bruno Aristimunha`_).
 - Prefetch the NEMAR sourcedata store per subject rather than per dataset. The guard returned early as soon as the store held anything, and the deposit's provenance manifest lands inside it -- so a caller loading one subject at a time fetched only the first and silently reached the upstream host for the rest, even with the provider pinned to ``"nemar"`` (by `Bruno Aristimunha`_).

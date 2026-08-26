@@ -1,5 +1,5 @@
 # flake8: noqa
-__version__ = "1.7.0dev0"
+__version__ = "1.6.1dev0"
 
 from .benchmark import benchmark
 from .utils import (
