@@ -34,6 +34,7 @@ from moabb.datasets.download import (
     active_sourcedata_store,
     nemar_dl,
     nemar_sourcedata_dl,
+    nemar_sourcedata_is_local,
     nemar_store,
 )
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
@@ -1106,17 +1107,19 @@ class BaseDataset(metaclass=MetaclassDataset):
         ``"upstream"`` skips NEMAR entirely, ``"nemar"`` treats a failure as
         fatal rather than silently reaching the host the caller opted out
         of, and ``"auto"`` warns per subject and leaves that subject to the
-        dataset's own downloader. A non-empty store is trusted as-is and
-        costs no network at all -- refresh or extend it with
-        :meth:`download` (``force_update=True`` to refetch).
+        dataset's own downloader. Subjects already in the store cost no
+        network at all: their presence is settled from the cached manifest,
+        without contacting NEMAR. Refresh one with :meth:`download`
+        (``force_update=True``).
         """
         provider = get_download_provider()
         if self.nemar_id is None or provider == "upstream":
             return
-        store = self._sourcedata_store()
-        if store is not None and store.is_dir() and any(store.iterdir()):
-            return
+        # Resolved once: nemar_store() re-reads MNE's config file each call.
+        store_root = nemar_store(self.code, self.nemar_id)
         for subject in subjects:
+            if nemar_sourcedata_is_local(store_root, self._nemar_subject_ids(subject)):
+                continue
             try:
                 self.sourcedata_path(subject=subject, verbose=verbose)
             except NemarDownloadError as exc:
@@ -1129,6 +1132,22 @@ class BaseDataset(metaclass=MetaclassDataset):
                     RuntimeWarning,
                     stacklevel=2,
                 )
+
+    def _nemar_subject_ids(self, subject):
+        """The identifiers a deposit may file this subject under.
+
+        Provenance manifests observed in the wild record raw MOABB ids, but a
+        dataset's ``nemar_subject_template`` documents how its deposit labels
+        subjects -- match both, exactly as :meth:`sourcedata_path` does.
+        """
+        label = self._nemar_subject(subject)
+        # Return the scalar untouched unless the deposit really files this
+        # subject under a second label: a None label would stringify to "None"
+        # and collide with manifest entries that carry no subject at all, and
+        # wrapping a lone id in a list would change what downstream callers see.
+        if label is None or str(label) == str(subject):
+            return subject
+        return [subject, label]
 
     def _sourcedata_store(self):
         """Local NEMAR sourcedata store to serve this dataset's loads from.
@@ -1184,9 +1203,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         # a dataset's nemar_subject_template documents how its deposit labels
         # subjects -- match both rather than betting on one convention.
         if subject is not None:
-            label = self._nemar_subject(subject)
-            if label is not None and str(label) != str(subject):
-                subject = [subject, label]
+            subject = self._nemar_subject_ids(subject)
         return nemar_sourcedata_dl(
             self.nemar_id,
             self.code,

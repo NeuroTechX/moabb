@@ -90,7 +90,7 @@ class Rodrigues2017(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 16},
-            montage="standard_1010",
+            montage="standard_1020",
             hardware="g.tec g.USBamp",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -98,8 +98,8 @@ class Rodrigues2017(BaseDataset):
             filters="no digital filter",
             sensors=[
                 "Cz",
-                "Fc5",
-                "Fc6",
+                "FC5",
+                "FC6",
                 "Fp1",
                 "Fp2",
                 "Fz",
@@ -205,9 +205,9 @@ class Rodrigues2017(BaseDataset):
         chnames = [
             "Fp1",
             "Fp2",
-            "Fc5",
+            "FC5",
             "Fz",
-            "Fc6",
+            "FC6",
             "T7",
             "Cz",
             "T8",
@@ -228,6 +228,7 @@ class Rodrigues2017(BaseDataset):
             ch_names=chnames, sfreq=512, ch_types=chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
+        raw.set_montage("standard_1020")
 
         return {"0": {"0": raw}}
 

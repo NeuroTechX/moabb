@@ -45,6 +45,25 @@ from .utils import (
 # Base URL for the BNCI 2025-001 dataset (hosted at TU Graz)
 BNCI_2025_001_URL = "https://lampx.tugraz.at/~bci/database/001-2025/"
 
+# Channels the EEGLAB ``.set`` files carry alongside the EEG montage: hand
+# kinematics from the reaching task, the target position, and a validity flag.
+# ``read_raw_eeglab`` types anything it cannot recognise as ``eeg``, which would
+# feed the target position and hand velocity -- i.e. the labels -- to any
+# paradigm picking ``eeg``.
+_EOG_CHANNELS_001_2025 = ("EOGL1", "EOGL2", "EOGL3", "EOGR1")
+
+_NON_EEG_CHANNELS_001_2025 = (
+    "x",
+    "y",
+    "vx",
+    "vy",
+    "validity",
+    "targetPosX",
+    "targetPoxY",  # sic: the published files misspell targetPosY
+    "targetPosY",  # ...accept the corrected spelling too
+)
+
+
 # Event code mapping for 001-2025 dataset
 # Format: XYZ where X=speed (1=slow, 2=fast), Y=distance (1=near, 2=far), Z=direction (1-4)
 # Direction codes: 1=up, 2=down, 3=left, 4=right
@@ -156,7 +175,18 @@ def _load_data_001_2025(
         return [str(set_file)]
 
     # Load the EEGLAB file
-    raw = mne.io.read_raw_eeglab(str(set_file), preload=True, verbose=verbose)
+    raw = mne.io.read_raw_eeglab(
+        str(set_file), eog=_EOG_CHANNELS_001_2025, preload=True, verbose=verbose
+    )
+
+    # Type the non-EEG channels before the montage, so they are neither placed
+    # on the scalp nor picked as EEG.
+    # set_channel_types raises on a name that is not in info, so filter first.
+    raw.set_channel_types(
+        {ch: "misc" for ch in _NON_EEG_CHANNELS_001_2025 if ch in raw.ch_names},
+        on_unit_change="ignore",
+        verbose=False,
+    )
 
     # Remap annotation descriptions from numeric codes to descriptive names
     # The data contains codes like "111", "112", etc. which we map to
@@ -266,8 +296,8 @@ class BNCI2025_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            channel_types={"eeg": 67, "eog": 4},
-            montage="af7 af3 afz af4 af8 f7 f5 f3 f1 fz f2 f4 f6 f8 ft7 fc5 fc3 fc1 fcz fc2 fc4 fc6 ft8 t7 c5 c3 c1 cz c2 c4 c6 t8 tp7 cp5 cp3 cp1 cpz cp2 cp4 cp6 tp8 p7 p5 p3 p1 pz p2 p4 p6 p8 ppo1h ppo2h po7 po3 poz po4 po8 o1 oz o2",
+            channel_types={"eeg": 60, "eog": 4, "misc": 7},
+            montage="standard_1005",
             sensor_type="EEG",
             hardware="BrainAmp",
             reference="common average",
@@ -1045,7 +1075,7 @@ class BNCI2025_002(BNCIBaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
             channel_types={"eeg": 60, "eog": 4},
-            montage="af7 af3 afz af4 af8 f7 f5 f3 f1 fz f2 f4 f6 f8 ft7 fc5 fc3 fc1 fcz fc2 fc4 fc6 ft8 t7 c5 c3 c1 cz c2 c4 c6 t8 tp7 cp5 cp3 cp1 cpz cp2 cp4 cp6 tp8 p7 p5 p3 p1 pz p2 p4 p6 p8 ppo1h ppo2h po7 po3 poz po4 po8 o1 oz o2",
+            montage="standard_1005",
             sensor_type="EEG",
             hardware="actiCAP, Brain Products GmbH",
             reference="right mastoid",

@@ -182,9 +182,9 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             chnames = [
                 "Fp1",
                 "Fp2",
-                "Fc5",
+                "FC5",
                 "Fz",
-                "Fc6",
+                "FC6",
                 "T7",
                 "Cz",
                 "T8",
@@ -209,10 +209,13 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
         info = mne.create_info(
             ch_names=chnames, sfreq=sfreq, ch_types=chtypes, verbose=False
         )
+        # Set it here rather than on each Raw: the Cattan2019-VR branch below
+        # builds many Raws from this Info, and used to leave them with no
+        # channel positions at all.
+        info.set_montage(make_standard_montage("standard_1020"), on_missing="ignore")
 
         if not ds.code == "Cattan2019-VR":
             raw = mne.io.RawArray(data=X, info=info, verbose=False)
-            raw.set_montage(make_standard_montage("standard_1020"))
 
             if ds.code == "BrainInvaders2012":
                 # get rid of the Fz channel (it is the ground)
@@ -938,7 +941,7 @@ class BI2014a(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 16},
-            montage="standard_1010",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="dry electrodes",
             reference="right earlobe",
@@ -1139,7 +1142,7 @@ class BI2014b(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 32},
-            montage="standard_1010",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -1351,7 +1354,7 @@ class BI2015a(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 32},
-            montage="10-10",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -1551,7 +1554,7 @@ class BI2015b(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 32},
-            montage="10-10",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet Silver/Silver Chloride electrodes",
             reference="right earlobe",
@@ -1762,7 +1765,7 @@ class Cattan2019_VR(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 16},
-            montage="10-10",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -1771,9 +1774,9 @@ class Cattan2019_VR(BaseDataset):
             sensors=[
                 "Fp1",
                 "Fp2",
-                "Fc5",
+                "FC5",
                 "Fz",
-                "Fc6",
+                "FC6",
                 "T7",
                 "Cz",
                 "T8",

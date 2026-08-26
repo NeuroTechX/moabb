@@ -1213,3 +1213,50 @@ def test_store_lookup_falls_back_to_url_tails_when_fname_differs(tmp_path, monke
 
     assert Path(path).read_text() == "mirrored"
     assert Path(path).name == "sub08_Testing1.mat"  # destination keeps fname
+
+
+def _fake_store(tmp_path):
+    root = dl.nemar_store("FAKE", "nm000902", str(tmp_path))
+    (root / "sourcedata").mkdir(parents=True)
+    return root
+
+
+def _is_local(root, subject):
+    return dl.nemar_sourcedata_is_local(root, subject)
+
+
+def test_nemar_sourcedata_is_local_settles_presence_per_subject(
+    tmp_path, _isolated_mne_config
+):
+    """One subject in the store must not vouch for the others."""
+    root = _fake_store(tmp_path)
+    (root / dl.SOURCEDATA_PROVENANCE).write_text(
+        json.dumps(
+            {
+                "files": [
+                    {"file": "sub-01/eeg.set", "subject": "1"},
+                    {"file": "sub-02/eeg.set", "subject": "2"},
+                ]
+            }
+        )
+    )
+
+    # The manifest lands inside the store, but it is not data.
+    assert not _is_local(root, 1)
+    assert not _is_local(root, 2)
+
+    # Fetching subject 1 must not make subject 2 look present.
+    (root / "sourcedata" / "sub-01").mkdir()
+    (root / "sourcedata" / "sub-01" / "eeg.set").write_text("mirrored")
+    assert _is_local(root, 1)
+    assert not _is_local(root, 2)
+
+
+def test_nemar_sourcedata_is_local_trusts_a_store_without_a_manifest(
+    tmp_path, _isolated_mne_config
+):
+    """Without a manifest there is nothing to reason with, so trust the store."""
+    root = _fake_store(tmp_path)
+    assert not _is_local(root, 1)
+    (root / "sourcedata" / "foo.mat").write_text("mirrored")
+    assert _is_local(root, 1)

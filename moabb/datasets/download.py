@@ -442,27 +442,109 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
         raise NemarDownloadError(
             f"NEMAR dataset {nemar_id} has an unreadable sourcedata manifest."
         ) from exc
-
-    entries = record.get("files") or []
-    if not any("subject" in entry for entry in entries):
+    files = _manifest_subject_files(record, subject)
+    if files is None:
         return None
-    candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
-    wanted = {str(candidate) for candidate in candidates}
-    files = [
-        entry["file"]
-        for entry in entries
-        if entry.get("file") and str(entry.get("subject")) in wanted
-    ]
     if not files:
+        known = sorted(
+            {
+                str(entry["subject"])
+                for entry in record.get("files") or []
+                if isinstance(entry, dict) and entry.get("subject")
+            }
+        )
         raise NemarDownloadError(
             f"NEMAR dataset {nemar_id} lists no sourcedata for subject "
-            f"{subject!r}. Known subjects: "
-            f"{sorted({str(e.get('subject')) for e in entries if e.get('subject')})}."
+            f"{subject!r}. Known subjects: {known}."
         )
     # Manifest names are literal file paths, but they are consumed as glob
     # patterns (nemar's include and the local verification below) -- escape
     # them so names containing [, ], * or ? still match.
     return ["sourcedata/" + glob_module.escape(name) for name in files]
+
+
+def _sourcedata_store_holds_data(target_dir):
+    """Whether a deposit's ``sourcedata/`` holds anything besides its manifest.
+
+    The manifest lands inside the store, so it does not count: a store holding
+    only a manifest is not a fetched one.
+
+    Uses :func:`os.walk` and looks only at ``filenames``. ``Path.rglob`` would
+    also match directories, so an interrupted fetch that left empty ``sub-*``
+    directories behind would count as a fetched store.
+    """
+    manifest_name = PurePosixPath(SOURCEDATA_PROVENANCE).name
+    for _root, _dirs, filenames in os.walk(target_dir / "sourcedata"):
+        if any(name != manifest_name for name in filenames):
+            return True
+    return False
+
+
+def _manifest_subject_files(record, subject):
+    """The files a provenance record attributes to ``subject``.
+
+    ``None`` when the manifest predates the ``subject`` field and so cannot
+    answer per subject; an empty list when it can answer but knows nothing
+    about this subject. Names are returned raw -- callers that feed them to a
+    glob escape them themselves.
+    """
+    entries = [entry for entry in (record.get("files") or []) if isinstance(entry, dict)]
+    if not any("subject" in entry for entry in entries):
+        return None
+    candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
+    wanted = {str(candidate) for candidate in candidates}
+    return [
+        entry["file"]
+        for entry in entries
+        if entry.get("file") and str(entry.get("subject")) in wanted
+    ]
+
+
+def _is_stored_file(sourcedata_dir, name):
+    """Whether ``name`` from a manifest names a real file inside the store.
+
+    Manifest names are data, so they are not trusted to stay relative: an
+    absolute one would make ``/`` discard the store root entirely, and a
+    directory must not pass for a downloaded file.
+    """
+    return not Path(name).is_absolute() and (sourcedata_dir / name).is_file()
+
+
+def nemar_sourcedata_is_local(target_dir, subject):
+    """Whether a subject's ``sourcedata/`` is already on disk, without any network.
+
+    Answering per subject is what lets a caller loading one subject at a time
+    skip only what it really has; when the manifest cannot answer, a store that
+    already holds data is trusted as-is.
+
+    This has to settle offline because ``nemar.download`` walks index, version,
+    metadata and manifest before it ever consults ``trust_existing`` -- a call
+    with nothing to do still costs four round-trips.
+
+    Parameters
+    ----------
+    target_dir : pathlib.Path
+        The deposit's local root, as returned by :func:`nemar_store`. Taken
+        already resolved because resolving it re-reads MNE's config file, which
+        a per-subject caller would otherwise pay for on every subject.
+    subject : int | str | list
+        Subject identifier, or the identifiers a deposit may file it under.
+    """
+    target_dir = Path(target_dir)
+    try:
+        record = json.loads(
+            (target_dir / SOURCEDATA_PROVENANCE).read_text(encoding="utf-8")
+        )
+        files = _manifest_subject_files(record, subject)
+    except (OSError, ValueError, AttributeError, TypeError):
+        # Unreadable, or a manifest whose schema has drifted -- either way it
+        # cannot answer, so degrade to the whole-store rule rather than raising
+        # out of get_data().
+        files = None
+    if files is None:
+        return _sourcedata_store_holds_data(target_dir)
+    sourcedata_dir = target_dir / "sourcedata"
+    return bool(files) and all(_is_stored_file(sourcedata_dir, name) for name in files)
 
 
 @verbose
@@ -580,10 +662,7 @@ def nemar_sourcedata_dl(
     else:
         # The manifest does not count: a deposit that publishes only its
         # provenance has no original distribution to offer.
-        manifest = target_dir / SOURCEDATA_PROVENANCE
-        fetched = sourcedata_dir.is_dir() and any(
-            entry != manifest for entry in sourcedata_dir.rglob("*")
-        )
+        fetched = _sourcedata_store_holds_data(target_dir)
     if not fetched:
         raise NemarDownloadError(missing)
     return str(sourcedata_dir)

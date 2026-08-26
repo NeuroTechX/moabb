@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 import platform
@@ -5,7 +6,6 @@ from datetime import datetime
 
 from mne.utils import _open_lock
 
-from moabb.analysis import plotting as plt
 from moabb.analysis.chance_level import (  # noqa: F401
     adjusted_chance_level,
     chance_by_chance,
@@ -13,11 +13,6 @@ from moabb.analysis.chance_level import (  # noqa: F401
 from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
     find_significant_differences,
-)
-from moabb.analysis.plotting import (  # noqa: F401
-    codecarbon_plot,
-    distribution_plot,
-    emissions_summary,
 )
 from moabb.analysis.results import Results  # noqa: F401
 from moabb.analysis.style import MOABB_PALETTE, apply_moabb_style  # noqa: F401
@@ -73,6 +68,8 @@ def analyze(results, out_path, name="analysis", plot=False):
     else:
         analysis_path = os.path.join(out_path, name)
 
+    from moabb.analysis import plotting as plt
+
     unique_ids = [plt._simplify_names(x) for x in results.pipeline.unique()]
     simplify = True
     if len(unique_ids) != len(set(unique_ids)):
@@ -97,3 +94,27 @@ def analyze(results, out_path, name="analysis", plot=False):
         fig.savefig(os.path.join(analysis_path, "scores.pdf"))
         fig = plt.summary_plot(P, T, simplify=simplify)
         fig.savefig(os.path.join(analysis_path, "ordering.pdf"))
+
+
+# ``plotting`` applies a seaborn theme to the global matplotlib rcParams at
+# import time. Re-exporting its names lazily keeps that off the path of anyone
+# who reaches this package for something else -- ``moabb.datasets`` imports
+# ``moabb.analysis.results`` for ``get_digest``, so an eager import here
+# restyled the figures of every caller who merely imported a dataset.
+_PLOTTING_EXPORTS = ("codecarbon_plot", "distribution_plot", "emissions_summary")
+
+
+def __getattr__(name):
+    # ``plotting`` itself is included: the eager import used to bind it as an
+    # attribute of this package, so ``moabb.analysis.plotting`` resolved without
+    # the caller importing the submodule. Dropping that would be a break.
+    if name == "plotting" or name in _PLOTTING_EXPORTS:
+        # import_module, not ``from . import plotting``: the latter falls back to
+        # getattr on this package, which re-enters __getattr__ forever.
+        plotting = importlib.import_module("moabb.analysis.plotting")
+        return plotting if name == "plotting" else getattr(plotting, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_PLOTTING_EXPORTS) | {"plotting"})

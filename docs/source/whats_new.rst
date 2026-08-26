@@ -18,8 +18,8 @@ What's new
 
 .. _current:
 
-Version 1.7  (Source - GitHub)
--------------------------------
+Version 1.6.1  (Source - GitHub)
+---------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -35,7 +35,13 @@ Requirements
 
 Bugs
 ~~~~
-- None yet.
+- Point the monthly download job at ``moabb/tests/test_download.py``; it ran ``download.py``, a file that does not exist, so it collected nothing and has been failing every month while no ``@pytest.mark.download`` test executed anywhere in CI (by `Bruno Aristimunha`_).
+- Stop importing moabb from restyling the caller's matplotlib. ``moabb.analysis.plotting`` applies a seaborn theme to the global ``rcParams`` when it is imported, and ``moabb/analysis/__init__.py`` imported it eagerly -- so ``import moabb.datasets`` alone changed ``font.family``, ``axes.grid`` and ``axes.spines.*`` for every figure the caller drew afterwards, values matplotlib reads at axes creation and a caller therefore cannot undo. The path was indirect: :mod:`moabb.datasets.bids_interface` imports ``moabb.analysis.results`` for ``get_digest``, which runs that ``__init__``. The plotting imports are now deferred to the functions that use them and to a module-level ``__getattr__`` for the three re-exported plotting helpers, so every public name still resolves and an explicit ``import moabb.analysis.plotting`` still applies the theme, leaving MOABB's own figures unchanged (by `Bruno Aristimunha`_).
+- Type the seven non-EEG channels of :class:`moabb.datasets.BNCI2025_001` as ``misc``. ``read_raw_eeglab`` types anything it does not recognise as ``eeg``, so ``x``/``y``/``vx``/``vy``/``validity``/``targetPosX``/``targetPoxY`` -- the hand kinematics and the target position of the reaching task -- were picked as EEG by every paradigm and fed to classifiers as features, leaking the labels they encode. The declared ``n_channels`` (67) also disagreed with the dataset's own 60-electrode montage; it is now 71 with ``channel_types={"eeg": 60, "eog": 4, "misc": 7}``. Accuracies on this dataset will fall, which is the point (by `Bruno Aristimunha`_).
+- Give :class:`moabb.datasets.Rodrigues2017` the montage :gh:`700` announced but never shipped, the same omission as :class:`moabb.datasets.Cattan2019_PHMD` below: both share the 16-electrode setup, both spelled ``Fc5``/``Fc6`` -- the only two names ``standard_1020`` cannot resolve -- and neither loader called ``set_montage``. Its ``METADATA`` also declared ``standard_1010``, which is not a montage MNE can build (by `Bruno Aristimunha`_).
+- Give :class:`moabb.datasets.Cattan2019_PHMD` the montage :gh:`700` announced but never shipped: that PR fixed only the unit scaling, leaving the loader with no ``set_montage`` call at all. Its channel list also spelled the two frontal-central electrodes ``Fc5``/``Fc6``, the only two of its sixteen names that ``standard_1020`` cannot resolve; they are now ``FC5``/``FC6`` (by `Bruno Aristimunha`_).
+- Correct :class:`moabb.datasets.Cattan2019_PHMD` ``interval`` from ``[0, 1]`` to ``[0, 60]``. Each marker starts a one-minute relaxation block -- as the dataset's own ``block_duration_s=60.0`` records -- but ``SetRawAnnotations`` derives annotation durations from ``interval``, so every block was annotated as lasting one second. ``interval[0]`` is unchanged, so onsets do not move (by `Bruno Aristimunha`_).
+- Prefetch the NEMAR sourcedata store per subject rather than per dataset. The guard returned as soon as the store held anything, and the deposit's provenance manifest lands inside it, so a store holding only a manifest counted as complete. Presence is now settled per subject from the cached manifest, at no network cost: :func:`nemar.download` walks index, version, metadata and manifest before it consults ``trust_existing``, so a call with nothing to do is still four round-trips. Note that deposits whose manifest predates the ``subject`` field -- which is every deposit today -- are fetched as a whole tree, so for those the older whole-store rule was already right and is kept; the per-subject check matters once manifests record subjects, and today for a store left partial by an interrupted fetch (by `Bruno Aristimunha`_).
 
 Code health
 ~~~~~~~~~~~
