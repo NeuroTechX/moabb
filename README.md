@@ -161,8 +161,8 @@ If you use MOABB in your experiments, please cite MOABB and the related publicat
 Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J.,
 Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R.,
 Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V.,
-Andreev, A., Thielen, J., Hajhassani, D., Begany, K., Moreau, T., Roy, Y., Jayaram, V.,
-Barachant, A., & Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.5.0).
+Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Graignic, P.-A., Begany, K., Moreau, T., Roy, Y., Jayaram, V.,
+Barachant, A., & Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.6.0).
 Zenodo. https://doi.org/10.5281/zenodo.10034223
 ```
 
@@ -199,7 +199,7 @@ Zenodo. https://doi.org/10.5281/zenodo.10034223
   title        = {Mother of all BCI Benchmarks},
   year         = 2026,
   publisher    = {Zenodo},
-  version      = {1.5.0},
+  version      = {1.6.0},
   url          = {https://github.com/NeuroTechX/moabb},
   doi          = {10.5281/zenodo.10034223},
 }

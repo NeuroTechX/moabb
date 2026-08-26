@@ -8,7 +8,7 @@ Citing MOABB and related publications
 If you use MOABB in your experiments, please cite this library when
 publishing a paper to increase the visibility of open science initiatives:
 
--  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Begany, K., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2026). Mother of all BCI Benchmarks (Version 1.5.0). Zenodo. `10.5281/zenodo.10034223 <https://doi.org/10.5281/zenodo.10034223>`__
+-  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Graignic, P.-A., Begany, K., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2026). Mother of all BCI Benchmarks (Version 1.6.0). Zenodo. `10.5281/zenodo.10034223 <https://doi.org/10.5281/zenodo.10034223>`__
 
 and here is the Bibtex version:
 
@@ -37,6 +37,7 @@ and here is the Bibtex version:
 	                      Kojima, Simon and
 	                      Thielen, Jordy and
 	                      Hajhassani, Davoud and
+	                      Graignic, Paul-Adrien and
 	                      Begany, Katelyn and
 	                      Moreau, Thomas and
 	                      Roy, Yannick and
@@ -46,7 +47,7 @@ and here is the Bibtex version:
             title        = {Mother of all BCI Benchmarks},
             year         = 2026,
             publisher    = {Zenodo},
-            version      = {1.5.0},
+            version      = {1.6.0},
             url = {https://github.com/NeuroTechX/moabb},
             doi = {10.5281/zenodo.10034223},
     }
