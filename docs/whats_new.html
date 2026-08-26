@@ -42,8 +42,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -62,10 +62,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -611,6 +611,7 @@
 <section id="bugs">
 <h3>Bugs<a class="headerlink" href="#bugs" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Restore the final <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">moabb.pipelines</span></code> module-level <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code>, dropped in <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/692">#692</a>. Unknown names evaluated to <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of raising, so <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">moabb.pipelines</span> <span class="pre">import</span> <span class="pre">*</span></code> failed with <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">'NoneType'</span> <span class="pre">object</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">iterable</span></code> and a mistyped class name in a pipeline YAML surfaced as <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">'NoneType'</span> <span class="pre">object</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">callable</span></code> (by <a class="reference external" href="https://github.com/NotAFlightRisk">Iain</a>)</p></li>
 <li><p>Fix <code class="xref py py-mod docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis</span></code> rejecting non-finite score inputs instead of letting <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or infinite values leak into low-level statistics. <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_wilcoxon()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_perm()</span></code>, and <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_effect()</span></code> now require finite score tables; the all-zero Wilcoxon case still reports a one-tailed <code class="docutils literal notranslate"><span class="pre">p=0.5</span></code> in both directions and keeps off-diagonal p-values strictly inside <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> for Stouffer’s method; <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_effect()</span></code> reports <code class="docutils literal notranslate"><span class="pre">0</span></code> for identical zero-spread pairs and signed infinity for constant nonzero offsets; and <a class="reference internal" href="generated/moabb.analysis.meta_analysis.compute_pvals_corrected_ttest.html#moabb.analysis.meta_analysis.compute_pvals_corrected_ttest" title="moabb.analysis.meta_analysis.compute_pvals_corrected_ttest"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_corrected_ttest()</span></code></a> now rejects non-finite score differences and non-finite <code class="docutils literal notranslate"><span class="pre">n_train</span></code>/<code class="docutils literal notranslate"><span class="pre">n_test</span></code> instead of collapsing a non-finite statistic to <code class="docutils literal notranslate"><span class="pre">p=0.5</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/678">#678</a> by <a class="reference external" href="https://github.com/adityasingh2400">Aditya Singh</a>)</p></li>
 <li><p>Point <a class="reference internal" href="generated/moabb.datasets.Schrag2026Pediatric.html#moabb.datasets.Schrag2026Pediatric" title="moabb.datasets.Schrag2026Pediatric"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Schrag2026Pediatric</span></code></a> at Zenodo version 3.0 and correct its licence. Versions 1.0 and 2 registered <code class="docutils literal notranslate"><span class="pre">CC-BY-ND-4.0</span></code> while the preprint stated CC-BY-4.0; the authors resolved that in version 3.0, whose Zenodo record registers <code class="docutils literal notranslate"><span class="pre">CC-BY-4.0</span></code> – so the <code class="docutils literal notranslate"><span class="pre">NoDerivatives</span></code> term MOABB reported no longer applies. Version 3.0 also publishes one archive per subject, so loading a subject now downloads ~20-40 MB instead of the single ~1.2 GB archive that held all 47. (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix the <code class="docutils literal notranslate"><span class="pre">LogVariance+LDA</span></code> row of the benchmark results page (<a class="reference internal" href="paper_results.html"><span class="doc">The largest EEG-based Benchmark for Open Science</span></a>) linking to <code class="docutils literal notranslate"><span class="pre">pipelines/LogVar_grid.yml</span></code>, which is the <code class="docutils literal notranslate"><span class="pre">Log</span> <span class="pre">Variance</span> <span class="pre">SVM</span> <span class="pre">grid</span></code> pipeline and classifies with <code class="docutils literal notranslate"><span class="pre">SVC</span></code>. It now links to <code class="docutils literal notranslate"><span class="pre">pipelines/LogVar.yml</span></code>, the <code class="docutils literal notranslate"><span class="pre">Log</span> <span class="pre">Variance</span> <span class="pre">LDA</span></code> pipeline the row reports. The <code class="docutils literal notranslate"><span class="pre">LogVariance+SVM</span></code> row keeps <code class="docutils literal notranslate"><span class="pre">LogVar_grid.yml</span></code> and loses its <code class="docutils literal notranslate"><span class="pre">#L7</span></code> fragment, which highlighted the shared <code class="docutils literal notranslate"><span class="pre">LogVariance</span></code> step rather than the <code class="docutils literal notranslate"><span class="pre">SVC</span></code> one (by <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a>).</p></li>
@@ -1698,8 +1699,8 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1725,7 +1726,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

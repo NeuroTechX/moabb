@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -702,22 +702,14 @@ a sampling rate of 200 Hz.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
-/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
-  self._prefetch_nemar_sourcedata(subjects)
 This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
-/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 2 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
-  self._prefetch_nemar_sourcedata(subjects)
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
-  dset.create_dataset(
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
-  dset.create_dataset(
       score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.934000  0.065944    100.0  ...  Zhou2016     ts+lr
-1  0.855177  0.085747    119.0  ...  Zhou2016     ts+lr
-2  0.948000  0.078607    100.0  ...  Zhou2016     ts+lr
-3  0.910000  0.061020    100.0  ...  Zhou2016     ts+lr
-4  0.906000  0.080191    100.0  ...  Zhou2016     ts+lr
+0  0.831944  0.042617    119.0  ...  Zhou2016     ts+lr
+1  0.926000  0.037636    100.0  ...  Zhou2016     ts+lr
+2  0.946000  0.039988    100.0  ...  Zhou2016     ts+lr
+3  0.827160  0.032988     90.0  ...  Zhou2016     ts+lr
+4  0.924000  0.035764    100.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -739,26 +731,16 @@ as well as the list of datasets with valid channels.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
-/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
-  self._prefetch_nemar_sourcedata(subjects)
 This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
-/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
-  self._prefetch_nemar_sourcedata(subjects)
 This is nemar-py 0.3.0.
 Preparing to download nm000115 from https://data.nemar.org/
-/home/runner/work/moabb/moabb/moabb/datasets/base.py:889: RuntimeWarning: Could not fetch Zhou2016 subject 2 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
-  self._prefetch_nemar_sourcedata(subjects)
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
-  dset.create_dataset(
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
-  dset.create_dataset(
       score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.926000  0.076025    100.0  ...  Zhou2016     ts+lr
-1  0.832099  0.065945     90.0  ...  Zhou2016     ts+lr
-2  0.932000  0.076911    100.0  ...  Zhou2016     ts+lr
-3  0.859596  0.092106    119.0  ...  Zhou2016     ts+lr
-4  0.912000  0.081570    100.0  ...  Zhou2016     ts+lr
+0  0.946000  0.036585    100.0  ...  Zhou2016     ts+lr
+1  0.934000  0.037252    100.0  ...  Zhou2016     ts+lr
+2  0.850631  0.043227    119.0  ...  Zhou2016     ts+lr
+3  0.934000  0.036048    100.0  ...  Zhou2016     ts+lr
+4  0.837037  0.034575     90.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -774,7 +756,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 51.664 seconds)</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 47.308 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1009 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>
@@ -919,8 +902,8 @@ regression computed in the tangent space of the covariance matrices.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -946,7 +929,7 @@ regression computed in the tangent space of the covariance matrices.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

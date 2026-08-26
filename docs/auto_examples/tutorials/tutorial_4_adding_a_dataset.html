@@ -41,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -61,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -813,10 +813,99 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
-0    1.0  0.016760     40.0  ...  ExampleDataset       MDM
-1    1.0  0.016638     40.0  ...  ExampleDataset       MDM
-2    1.0  0.016977     40.0  ...  ExampleDataset       MDM
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|▏                                    | 12.3k/2.77M [00:00&lt;00:33, 82.2kB/s]
+  1%|▌                                     | 39.9k/2.77M [00:00&lt;00:17, 159kB/s]
+  4%|█▎                                    | 98.3k/2.77M [00:00&lt;00:08, 297kB/s]
+  6%|██▌                                    | 178k/2.77M [00:00&lt;00:05, 432kB/s]
+  8%|███▏                                   | 223k/2.77M [00:00&lt;00:06, 409kB/s]
+ 11%|████▍                                  | 310k/2.77M [00:00&lt;00:04, 508kB/s]
+ 15%|█████▋                                 | 403k/2.77M [00:00&lt;00:04, 588kB/s]
+ 19%|███████▌                               | 535k/2.77M [00:01&lt;00:03, 737kB/s]
+ 23%|████████▉                              | 633k/2.77M [00:01&lt;00:02, 756kB/s]
+ 26%|██████████▎                            | 731k/2.77M [00:01&lt;00:02, 759kB/s]
+ 32%|████████████▌                          | 894k/2.77M [00:01&lt;00:02, 924kB/s]
+ 38%|██████████████▏                      | 1.06M/2.77M [00:01&lt;00:01, 1.04MB/s]
+ 42%|███████████████▉                      | 1.16M/2.77M [00:01&lt;00:01, 982kB/s]
+ 46%|█████████████████▍                    | 1.27M/2.77M [00:01&lt;00:01, 950kB/s]
+ 52%|███████████████████▍                 | 1.45M/2.77M [00:01&lt;00:01, 1.10MB/s]
+ 57%|█████████████████████▏               | 1.58M/2.77M [00:02&lt;00:01, 1.09MB/s]
+ 63%|███████████████████████▎             | 1.74M/2.77M [00:02&lt;00:00, 1.16MB/s]
+ 67%|████████████████████████▉            | 1.86M/2.77M [00:02&lt;00:00, 1.09MB/s]
+ 71%|██████████████████████████▍          | 1.97M/2.77M [00:02&lt;00:00, 1.03MB/s]
+ 75%|████████████████████████████▌         | 2.07M/2.77M [00:02&lt;00:00, 972kB/s]
+ 79%|█████████████████████████████▊        | 2.17M/2.77M [00:02&lt;00:00, 917kB/s]
+ 82%|███████████████████████████████       | 2.26M/2.77M [00:02&lt;00:00, 867kB/s]
+ 86%|████████████████████████████████▋     | 2.38M/2.77M [00:02&lt;00:00, 895kB/s]
+ 90%|██████████████████████████████████▎   | 2.50M/2.77M [00:02&lt;00:00, 902kB/s]
+ 94%|███████████████████████████████████▉  | 2.61M/2.77M [00:03&lt;00:00, 909kB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 14.7GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|                                     | 5.12k/2.77M [00:00&lt;01:06, 41.3kB/s]
+  1%|▍                                     | 30.7k/2.77M [00:00&lt;00:20, 134kB/s]
+  3%|█▎                                    | 94.2k/2.77M [00:00&lt;00:09, 295kB/s]
+  6%|██▌                                    | 178k/2.77M [00:00&lt;00:05, 432kB/s]
+  8%|███▏                                   | 227k/2.77M [00:00&lt;00:06, 411kB/s]
+ 11%|████▎                                  | 304k/2.77M [00:00&lt;00:05, 469kB/s]
+ 14%|█████▍                                 | 389k/2.77M [00:00&lt;00:04, 527kB/s]
+ 19%|███████▎                               | 520k/2.77M [00:01&lt;00:03, 675kB/s]
+ 23%|████████▉                              | 635k/2.77M [00:01&lt;00:02, 737kB/s]
+ 28%|██████████▊                            | 766k/2.77M [00:01&lt;00:02, 817kB/s]
+ 31%|████████████▏                          | 863k/2.77M [00:01&lt;00:02, 791kB/s]
+ 35%|█████████████▊                         | 978k/2.77M [00:01&lt;00:02, 814kB/s]
+ 41%|███████████████▍                      | 1.13M/2.77M [00:01&lt;00:01, 906kB/s]
+ 45%|█████████████████                     | 1.24M/2.77M [00:01&lt;00:01, 894kB/s]
+ 48%|██████████████████▎                   | 1.33M/2.77M [00:01&lt;00:01, 830kB/s]
+ 51%|███████████████████▍                  | 1.41M/2.77M [00:02&lt;00:01, 771kB/s]
+ 58%|█████████████████████▉                | 1.60M/2.77M [00:02&lt;00:01, 961kB/s]
+ 63%|███████████████████████▊              | 1.73M/2.77M [00:02&lt;00:01, 970kB/s]
+ 67%|█████████████████████████▌            | 1.86M/2.77M [00:02&lt;00:00, 977kB/s]
+ 71%|███████████████████████████▏          | 1.98M/2.77M [00:02&lt;00:00, 942kB/s]
+ 76%|████████████████████████████▉         | 2.11M/2.77M [00:02&lt;00:00, 957kB/s]
+ 80%|██████████████████████████████▎       | 2.20M/2.77M [00:02&lt;00:00, 889kB/s]
+ 83%|███████████████████████████████▍      | 2.29M/2.77M [00:03&lt;00:00, 825kB/s]
+ 88%|█████████████████████████████████▍    | 2.43M/2.77M [00:03&lt;00:00, 898kB/s]
+ 93%|███████████████████████████████████▏  | 2.56M/2.77M [00:03&lt;00:00, 926kB/s]
+ 96%|████████████████████████████████████▌ | 2.66M/2.77M [00:03&lt;00:00, 860kB/s]
+ 99%|█████████████████████████████████████▋| 2.74M/2.77M [00:03&lt;00:00, 797kB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 19.1GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|▏                                    | 11.3k/2.77M [00:00&lt;00:30, 91.4kB/s]
+  1%|▌                                     | 41.0k/2.77M [00:00&lt;00:15, 179kB/s]
+  4%|█▎                                    | 98.3k/2.77M [00:00&lt;00:08, 307kB/s]
+  6%|██▏                                    | 159k/2.77M [00:00&lt;00:06, 377kB/s]
+  8%|██▉                                    | 208k/2.77M [00:00&lt;00:06, 383kB/s]
+ 11%|████▏                                  | 297k/2.77M [00:00&lt;00:04, 495kB/s]
+ 14%|█████▍                                 | 389k/2.77M [00:00&lt;00:04, 545kB/s]
+ 20%|███████▋                               | 546k/2.77M [00:01&lt;00:02, 763kB/s]
+ 23%|████████▊                              | 624k/2.77M [00:01&lt;00:02, 721kB/s]
+ 26%|█████████▉                             | 709k/2.77M [00:01&lt;00:02, 708kB/s]
+ 29%|███████████▏                           | 791k/2.77M [00:01&lt;00:02, 693kB/s]
+ 32%|████████████▌                          | 889k/2.77M [00:01&lt;00:02, 721kB/s]
+ 39%|██████████████▉                       | 1.09M/2.77M [00:01&lt;00:01, 979kB/s]
+ 43%|████████████████▎                     | 1.18M/2.77M [00:01&lt;00:01, 921kB/s]
+ 46%|█████████████████▌                    | 1.28M/2.77M [00:01&lt;00:01, 869kB/s]
+ 50%|███████████████████▏                  | 1.40M/2.77M [00:02&lt;00:01, 895kB/s]
+ 56%|████████████████████▊                | 1.56M/2.77M [00:02&lt;00:01, 1.02MB/s]
+ 60%|██████████████████████▊               | 1.66M/2.77M [00:02&lt;00:01, 959kB/s]
+ 65%|████████████████████████▏            | 1.80M/2.77M [00:02&lt;00:00, 1.01MB/s]
+ 69%|██████████████████████████▏           | 1.91M/2.77M [00:02&lt;00:00, 956kB/s]
+ 72%|███████████████████████████▌          | 2.00M/2.77M [00:02&lt;00:00, 888kB/s]
+ 76%|████████████████████████████▊         | 2.10M/2.77M [00:02&lt;00:00, 848kB/s]
+ 79%|██████████████████████████████▏       | 2.20M/2.77M [00:02&lt;00:00, 825kB/s]
+ 83%|███████████████████████████████▌      | 2.29M/2.77M [00:03&lt;00:00, 812kB/s]
+ 87%|████████████████████████████████▉     | 2.39M/2.77M [00:03&lt;00:00, 804kB/s]
+ 93%|███████████████████████████████████▎  | 2.57M/2.77M [00:03&lt;00:00, 994kB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 18.5GB/s]
+   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
+0    1.0  0.017917     40.0  ...  ExampleDataset       MDM
+1    1.0  0.017591     40.0  ...  ExampleDataset       MDM
+2    1.0  0.017697     40.0  ...  ExampleDataset       MDM
 
 [3 rows x 13 columns]
 </pre></div>
@@ -940,7 +1029,8 @@ dataset’s own <code class="docutils literal notranslate"><span class="pre">dat
 <li><p>If a NEMAR download fails at runtime, MOABB emits a warning and
 automatically falls back to <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.028 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.807 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  552 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>
@@ -1092,8 +1182,8 @@ automatically falls back to <code class="docutils literal notranslate"><span cla
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1119,7 +1209,7 @@ automatically falls back to <code class="docutils literal notranslate"><span cla
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>
