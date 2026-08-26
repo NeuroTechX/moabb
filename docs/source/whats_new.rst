@@ -120,7 +120,7 @@ Bugs
 - Fix wrong paper reference in :class:`moabb.datasets.Thielen2021` (``associated_paper_doi`` pointed to the Ahmadi electrode-montage reference instead of the dataset's primary publication), restore Radboud data-repository DOI as ``__init__.doi``, and add regression test ``test_primary_paper_matches_dataset_code`` that validates every ``<Surname><Year>`` dataset against its cited primary paper (by `Bruno Aristimunha`_)
 - Fix ``UnicodeEncodeError`` when the GBK codec fails on ``'\xef'`` in BIDS metadata export by explicitly setting ``encoding="utf-8"`` on file writes in ``bids_interface`` (:gh:`1059` by `sli930`_)
 - Modified example usage and fixed epoch extraction with an adjustable buffer that prevents last epochs being dropped in :class:`moabb.datasets.RomaniBF2025ERP` (:gh:`1065` by `Michele Romani`_).
-- Fix zip extraction in :class:`moabb.datasets.Wairagkar2018` dataset loader.
+- Fix zip extraction in :class:`moabb.datasets.Wairagkar2018` dataset loader (:gh:`1066` by `Barış Talar`_).
 - Fix EEG layout corruption in :class:`moabb.datasets.BNCI2020_002`: the F-contiguous ``bciexp.data`` was reshaped in default C-order, producing a trial-fastest interleaved layout that disagreed with the per-trial stim markers and made every epoch sample the wrong trial. The reshape now transposes to trial-major before flattening (by `Bruno Aristimunha`_).
 - Fix ``stim_trial`` content in :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary`: the channel was carrying the per-recording trial index instead of the attended command id, breaking multiclass classification across recordings. The marker is now the command id (resolved via the new :func:`moabb.datasets.utils.resolve_cvep_command_ids` helper), and the ``_trial_meta`` annotation extras gain a ``command_id`` key alongside ``trial_id`` (by `Bruno Aristimunha`_).
 - Cache Figshare's file listing in :func:`moabb.datasets.download.fs_get_file_list` (process-level ``lru_cache``) and persist it on disk next to the data for MAMEM (:class:`moabb.datasets.MAMEM1`/``MAMEM2``/``MAMEM3``). Once a dataset has been downloaded, subsequent calls never contact Figshare; pass ``force_update=True`` to bypass both layers (by `Bruno Aristimunha`_).
@@ -978,3 +978,4 @@ API changes
 .. _Stanley C.: https://github.com/stanbot8
 .. _Azra Bano: https://github.com/azrabano23
 .. _Michele Romani: https://github.com/BRomans
+.. _Barış Talar: https://github.com/baris-talar
