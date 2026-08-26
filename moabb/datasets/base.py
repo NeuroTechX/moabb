@@ -34,6 +34,7 @@ from moabb.datasets.download import (
     active_sourcedata_store,
     nemar_dl,
     nemar_sourcedata_dl,
+    nemar_sourcedata_is_local,
     nemar_store,
 )
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
@@ -1107,13 +1108,18 @@ class BaseDataset(metaclass=MetaclassDataset):
         fatal rather than silently reaching the host the caller opted out
         of, and ``"auto"`` warns per subject and leaves that subject to the
         dataset's own downloader. Subjects already in the store cost no
-        network at all -- :meth:`sourcedata_path` serves them from disk --
-        so refresh one with :meth:`download` (``force_update=True``).
+        network at all: their presence is settled from the cached manifest,
+        without contacting NEMAR. Refresh one with :meth:`download`
+        (``force_update=True``).
         """
         provider = get_download_provider()
         if self.nemar_id is None or provider == "upstream":
             return
         for subject in subjects:
+            if nemar_sourcedata_is_local(
+                self.nemar_id, self.code, self._nemar_subject_ids(subject)
+            ):
+                continue
             try:
                 self.sourcedata_path(subject=subject, verbose=verbose)
             except NemarDownloadError as exc:
@@ -1126,6 +1132,18 @@ class BaseDataset(metaclass=MetaclassDataset):
                     RuntimeWarning,
                     stacklevel=2,
                 )
+
+    def _nemar_subject_ids(self, subject):
+        """The identifiers a deposit may file this subject under.
+
+        Provenance manifests observed in the wild record raw MOABB ids, but a
+        dataset's ``nemar_subject_template`` documents how its deposit labels
+        subjects -- match both, exactly as :meth:`sourcedata_path` does.
+        """
+        label = self._nemar_subject(subject)
+        if label is None or str(label) == str(subject):
+            return [subject]
+        return [subject, label]
 
     def _sourcedata_store(self):
         """Local NEMAR sourcedata store to serve this dataset's loads from.

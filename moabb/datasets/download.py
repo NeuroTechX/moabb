@@ -465,6 +465,55 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     return ["sourcedata/" + glob_module.escape(name) for name in files]
 
 
+def nemar_sourcedata_is_local(nemar_id, dataset_code, subject, path=None):
+    """Whether a subject's ``sourcedata/`` is already on disk, without any network.
+
+    When the deposit's provenance manifest is cached and attributes files to
+    subjects, this settles the question per subject: every file the manifest
+    lists for ``subject`` must exist locally. That is what lets a caller loading
+    one subject at a time skip only the subjects it really has.
+
+    When the manifest cannot answer -- not cached, unreadable, or predating the
+    ``subject`` field -- fall back to the older whole-store rule: a store that
+    already holds data is trusted as-is. The manifest itself does not count as
+    data, so a store containing only a manifest is not mistaken for a full one.
+
+    The offline check is needed because ``nemar.download`` walks index, version,
+    metadata and manifest before it ever consults ``trust_existing``: a call with
+    nothing to do still costs four round-trips.
+    """
+    target_dir = nemar_store(dataset_code, nemar_id, path)
+    sourcedata_dir = target_dir / "sourcedata"
+    provenance = target_dir / SOURCEDATA_PROVENANCE
+
+    def _store_holds_data():
+        if not sourcedata_dir.is_dir():
+            return False
+        return any(
+            entry.is_file() and entry != provenance for entry in sourcedata_dir.rglob("*")
+        )
+
+    if not provenance.is_file():
+        return _store_holds_data()
+    try:
+        record = json.loads(provenance.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return _store_holds_data()
+    entries = record.get("files") or []
+    if not any("subject" in entry for entry in entries):
+        return _store_holds_data()
+    candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
+    wanted = {str(candidate) for candidate in candidates}
+    files = [
+        entry["file"]
+        for entry in entries
+        if entry.get("file") and str(entry.get("subject")) in wanted
+    ]
+    if not files:
+        return False
+    return all((sourcedata_dir / name).exists() for name in files)
+
+
 @verbose
 def nemar_sourcedata_dl(
     nemar_id,
