@@ -53,6 +53,11 @@ def test_lazily_exported_names_still_resolve():
     for name in ("codecarbon_plot", "distribution_plot", "emissions_summary"):
         assert callable(getattr(moabb.analysis, name)) and name in dir(moabb.analysis)
 
+    # The eager import used to bind the submodule as an attribute; deferring it
+    # must not take that away.
+    assert moabb.analysis.plotting.__name__ == "moabb.analysis.plotting"
+    assert "plotting" in dir(moabb.analysis)
+
     # Exercise the __getattr__ this PR added, not the interpreter's own.
     with pytest.raises(AttributeError, match="definitely_not_real"):
         _ = moabb.analysis.definitely_not_real

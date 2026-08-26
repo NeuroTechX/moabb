@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 import platform
@@ -104,12 +105,16 @@ _PLOTTING_EXPORTS = ("codecarbon_plot", "distribution_plot", "emissions_summary"
 
 
 def __getattr__(name):
-    if name in _PLOTTING_EXPORTS:
-        from moabb.analysis import plotting
-
-        return getattr(plotting, name)
+    # ``plotting`` itself is included: the eager import used to bind it as an
+    # attribute of this package, so ``moabb.analysis.plotting`` resolved without
+    # the caller importing the submodule. Dropping that would be a break.
+    if name == "plotting" or name in _PLOTTING_EXPORTS:
+        # import_module, not ``from . import plotting``: the latter falls back to
+        # getattr on this package, which re-enters __getattr__ forever.
+        plotting = importlib.import_module("moabb.analysis.plotting")
+        return plotting if name == "plotting" else getattr(plotting, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def __dir__():
-    return sorted(set(globals()) | set(_PLOTTING_EXPORTS))
+    return sorted(set(globals()) | set(_PLOTTING_EXPORTS) | {"plotting"})

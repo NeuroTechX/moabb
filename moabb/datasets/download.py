@@ -469,10 +469,9 @@ def _sourcedata_store_holds_data(target_dir):
     The manifest lands inside the store, so it does not count: a store holding
     only a manifest is not a fetched one.
 
-    Walks depth-first via :func:`os.walk`, which reports files without a
-    ``stat`` per entry. ``Path.rglob`` would enumerate every directory in the
-    deposit before reaching the first file, which on an 87-subject store is
-    hundreds of syscalls to answer a question that is settled by the first leaf.
+    Uses :func:`os.walk` and looks only at ``filenames``. ``Path.rglob`` would
+    also match directories, so an interrupted fetch that left empty ``sub-*``
+    directories behind would count as a fetched store.
     """
     manifest_name = PurePosixPath(SOURCEDATA_PROVENANCE).name
     for _root, _dirs, filenames in os.walk(target_dir / "sourcedata"):
