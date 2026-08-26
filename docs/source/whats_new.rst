@@ -18,7 +18,30 @@ What's new
 
 .. _current:
 
-Version 1.6  (Source - GitHub)
+Version 1.7  (Source - GitHub)
+-------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- None yet.
+
+API changes
+~~~~~~~~~~~
+- None yet.
+
+Requirements
+~~~~~~~~~~~~
+- None yet.
+
+Bugs
+~~~~
+- None yet.
+
+Code health
+~~~~~~~~~~~
+- None yet.
+
+Version 1.6.0  (Stable - PyPi)
 -------------------------------
 
 Enhancements
@@ -36,7 +59,7 @@ Enhancements
 - Re-host :class:`moabb.datasets.Pressel2016` (from Google Drive) and :class:`moabb.datasets.Nguyen2017_V`/``_S``/``_L``/``_SL`` (from Dropbox) to Zenodo records ``10.5281/zenodo.19502780`` and ``10.5281/zenodo.19502794`` so automated download works without ``gdown``, Dropbox rate limits, or the 4 GB ZIP64 prefix bug in the upstream Nguyen archive. Metadata now points at the Zenodo DOI + repository (by `Bruno Aristimunha`_)
 - Mark artifact trials in :class:`moabb.datasets.Pressel2016` with ``BAD_artifact`` annotations instead of silently dropping them at load time, so downstream ``reject_by_annotation`` pipelines decide how to handle them. ~52 percent artifact rate on subject 1, matching the 10-52 percent range reported in the paper (by `Bruno Aristimunha`_)
 - Preserve :class:`moabb.datasets.BNCI2014_001` source artifact flags with optional ``artifact_handling`` annotation modes. ``SetRawAnnotations`` now keeps ``BAD_artifact``/``bnci_artifact`` (and any ``bad``-prefixed) annotations when it re-derives event annotations, so per-trial artifact flags survive the full ``get_data`` pipeline (this also makes the :class:`moabb.datasets.Pressel2016` ``BAD_artifact`` markers effective). ``reject_by_annotation`` is now exposed on all epoching paradigms (motor imagery, P300, SSVEP, c-VEP, resting state), letting users choose whether ``BAD_artifact`` trials are dropped during epoch generation (by `copilot-swe-agent`_ and `Bruno Aristimunha`_).
-- Add unified interactive macro table for dataset summary page with 58 metadata columns, SearchPanes filtering, paradigm distribution bar, and CSV export (:gh:`1043`).
+- Add unified interactive macro table for dataset summary page with 58 metadata columns, SearchPanes filtering, paradigm distribution bar, and CSV export (:gh:`1043` by `Bruno Aristimunha`_).
 - Add rich HTML repr for preprocessing pipeline transformers: pipelines now render as interactive sklearn diagrams in Jupyter notebooks and sphinx-gallery docs, showing the three-stage flow (Raw, Epochs, Array) with readable step names, event lists, and key parameters instead of raw dict dumps (by `Zach Munro`_ and `Bruno Aristimunha`_).
 - Expose ``motor_imagery`` and ``mental_arithmetic`` keyword-only parameters on :class:`moabb.datasets.Shin2017A` (default: MI=True, MA=False) and :class:`moabb.datasets.Shin2017B` (default: MI=False, MA=True), allowing users to load both conditions simultaneously while preserving backward compatibility (by `Bruno Aristimunha`_)
 - Add resting state annotations and EMG channel support to :class:`moabb.datasets.Lee2019` resting state runs for BIDS export compatibility (by `Bruno Aristimunha`_)
@@ -54,17 +77,17 @@ Enhancements
 
 API changes
 ~~~~~~~~~~~
-- None yet.
+- None.
 
 Requirements
 ~~~~~~~~~~~~
-- Bump minimum ``pyriemann`` to ``0.11`` to use :class:`pyriemann.clustering.PotatoField` per-potato metrics and the ``method_combination`` parameter (pyRiemann `PR #423 <https://github.com/pyRiemann/pyRiemann/pull/423>`_) used by the Riemannian Artifact Rejection tutorial (by `Bruno Aristimunha`_)
+- Use :class:`pyriemann.clustering.PotatoField` per-potato metrics and the ``method_combination`` parameter (pyRiemann `PR #423 <https://github.com/pyRiemann/pyRiemann/pull/423>`_) used by the Riemannian Artifact Rejection tutorial (by `Bruno Aristimunha`_)
 - Bump minimum supported Python to ``3.11`` (required by ``mne-bids >= 0.18``) (:gh:`1124` by `Bruno Aristimunha`_)
 - Bump minimum ``mne-bids`` to ``0.19`` for its cross-process file lock (``mne_bids._fileio._open_lock``), used to keep parallel BIDS caching (``get_data(n_jobs>1)``) consistent. This also lets the BIDS cache drop the module-level monkey-patch of ``mne_bids.dig._write_dig_bids`` (mne-bids >= 0.19 writes the ``*_electrodes.json`` ``SpatialReference`` sidecar itself) and derive the ``Keywords`` field via ``make_dataset_description(keywords=...)`` instead of a post-write patch (:gh:`1124` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
-- Restore the final ``AttributeError`` of the :mod:`moabb.pipelines` module-level ``__getattr__``, dropped in :gh:`692`. Unknown names evaluated to ``None`` instead of raising, so ``from moabb.pipelines import *`` failed with ``TypeError: 'NoneType' object is not iterable`` and a mistyped class name in a pipeline YAML surfaced as ``TypeError: 'NoneType' object is not callable`` (by `Iain`_)
+- Restore the final ``AttributeError`` of the :mod:`moabb.pipelines` module-level ``__getattr__``, dropped in :gh:`692`. Unknown names evaluated to ``None`` instead of raising, so ``from moabb.pipelines import *`` failed with ``TypeError: 'NoneType' object is not iterable`` and a mistyped class name in a pipeline YAML surfaced as ``TypeError: 'NoneType' object is not callable`` (:gh:`1159` by `Iain`_)
 - Fix :mod:`moabb.analysis.meta_analysis` rejecting non-finite score inputs instead of letting ``NaN`` or infinite values leak into low-level statistics. :func:`moabb.analysis.meta_analysis.compute_pvals_wilcoxon`, :func:`moabb.analysis.meta_analysis.compute_pvals_perm`, and :func:`moabb.analysis.meta_analysis.compute_effect` now require finite score tables; the all-zero Wilcoxon case still reports a one-tailed ``p=0.5`` in both directions and keeps off-diagonal p-values strictly inside ``(0, 1)`` for Stouffer's method; :func:`moabb.analysis.meta_analysis.compute_effect` reports ``0`` for identical zero-spread pairs and signed infinity for constant nonzero offsets; and :func:`moabb.analysis.meta_analysis.compute_pvals_corrected_ttest` now rejects non-finite score differences and non-finite ``n_train``/``n_test`` instead of collapsing a non-finite statistic to ``p=0.5`` (:gh:`678` by `Aditya Singh`_)
 - Point :class:`moabb.datasets.Schrag2026Pediatric` at Zenodo version 3.0 and correct its licence. Versions 1.0 and 2 registered ``CC-BY-ND-4.0`` while the preprint stated CC-BY-4.0; the authors resolved that in version 3.0, whose Zenodo record registers ``CC-BY-4.0`` -- so the ``NoDerivatives`` term MOABB reported no longer applies. Version 3.0 also publishes one archive per subject, so loading a subject now downloads ~20-40 MB instead of the single ~1.2 GB archive that held all 47. (by `Bruno Aristimunha`_)
 - Fix the ``LogVariance+LDA`` row of the benchmark results page (:doc:`paper_results`) linking to ``pipelines/LogVar_grid.yml``, which is the ``Log Variance SVM grid`` pipeline and classifies with ``SVC``. It now links to ``pipelines/LogVar.yml``, the ``Log Variance LDA`` pipeline the row reports. The ``LogVariance+SVM`` row keeps ``LogVar_grid.yml`` and loses its ``#L7`` fragment, which highlighted the shared ``LogVariance`` step rather than the ``SVC`` one (by `Bhargav Kowshik`_).
@@ -78,14 +101,14 @@ Bugs
 - Store :class:`moabb.datasets.ErpCore2021` as the single combined BIDS dataset it is, with components separated by the ``task-`` entity in one shared ``MNE-erpcore2021-data`` root, instead of seven standalone per-component BIDS datasets; likewise store Dreyer2023 in one shared ``MNE-dreyer2023-data`` root, since the A/B/C classes only select subject ranges of one globally numbered dataset. Pre-existing downloads in the legacy separated layouts are still read without re-fetching (:gh:`1146` by `Bruno Aristimunha`_)
 - Honor the download-flag contract across every dataset: ``CacheConfig.overwrite_*`` now erases the cache even when ``use=False`` (previously a silent no-op with the default config), :class:`moabb.datasets.CompoundDataset` forwards ``path``/``force_update``/``update_path``/``verbose`` to the wrapped dataset, ``data_path`` implementations that ignored ``path`` or ``force_update`` (14 datasets, including Kojima2024's narrowed signature that made ``download()`` raise ``TypeError``) now honor them, ``force_update`` also re-extracts stale archives, and a regression test enforces the contract for every future dataset. On the NEMAR side, :meth:`moabb.datasets.base.BaseDataset.download` falls back to the upstream host per failing subject instead of discarding the whole NEMAR batch, :meth:`~moabb.datasets.base.BaseDataset.sourcedata_path` matches provenance subjects by both the raw MOABB id and the dataset's ``nemar_subject_template`` label, transport failures are no longer misreported as "deposit publishes no sourcedata", and manifest filenames containing glob metacharacters are escaped before selection (:gh:`1146` by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.Brandl2020` downloading HTML error pages instead of data. DepositOnce migrated to DSpace 7, whose web host now answers every path - including ones that were files - with HTTP 200 and a 1306-byte application shell, so all 16 subjects and the montage were cached as byte-identical HTML under their ``.mat`` names, with no error raised. Downloads now go to the DSpace REST host that serves the bytes, addressed by the per-file bitstream UUIDs that were already present in the module but unused, and each download is rejected and removed unless it really begins with the MATLAB file banner, so an error page can no longer be cached as data. :func:`moabb.datasets.download.data_dl` gains an optional ``fname`` for APIs whose download URLs do not end in the filename (:gh:`1141` by `Bruno Aristimunha`_)
-- Fix dataset download paths that silently omitted files, returned nonexistent paths, or repeatedly extracted archives (:gh:`1135`).
-- Use NEMAR's OpenNeuro rehosts for :class:`moabb.datasets.TrianaGuzman2024` and :class:`moabb.datasets.Chailloux2020` (:gh:`1136`).
+- Fix dataset download paths that silently omitted files, returned nonexistent paths, or repeatedly extracted archives (:gh:`1135` by `Bruno Aristimunha`_).
+- Use NEMAR's OpenNeuro rehosts for :class:`moabb.datasets.TrianaGuzman2024` and :class:`moabb.datasets.Chailloux2020` (:gh:`1136` by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Schirrmeister2017` re-downloading every recording. ``data_path`` moved each freshly fetched EDF out of the directory that :func:`moabb.datasets.download.data_dl` owns and into ``MNE-schirrmeister2017-data/<train|test>/``, so the next call found the download cache empty and fetched the whole file again. The refetched copy was then left behind because the destination already existed, leaving two copies of a multi-gigabyte recording on disk. ``data_path`` now returns the path :func:`~moabb.datasets.download.data_dl` reports and only reads from the old location when a file is already there, so an existing local copy is still reused and never re-downloaded (:gh:`851` by `Aditya Singh`_)
 - Fix how the benchmark results page (:doc:`paper_results`) describes what its tables report. It stated that results are "mean accuracy and standard deviation across all folds for all sessions and subjects", and both halves are inaccurate: :class:`moabb.paradigms.MotorImagery` selects the metric from the number of classes, so two-class scenarios are scored with ROC-AUC rather than accuracy, and :class:`moabb.evaluations.WithinSessionEvaluation` averages the cross-validation folds within each session before returning a score, so the reported standard deviation is across (subject, session) pairs and not across individual folds (:gh:`1128` by `Bhargav Kowshik`_)
 - Fix datasets ignoring a change of download directory: datasets now inherit ``MNE_DATA`` without persisting a redundant per-dataset mirror, and :func:`moabb.utils.set_download_dir` removes legacy ``MNE_DATASETS_<SIGN>_PATH`` entries that still mirror the previous shared location while preserving explicit overrides. :class:`moabb.datasets.RomaniBF2025ERP` now uses the same path mechanism and honours ``path`` and ``force_update``. Adds isolated regression coverage across every dataset (:gh:`1115` by `Bruno Aristimunha`_).
 - Add a ``__repr__`` to :class:`moabb.datasets.base.BaseDataset` so datasets display by their code (e.g. ``BNCI2014-001``) when printed, instead of the verbose default ``<...object at 0x...>``. This declutters the output of ``print(paradigm.datasets)`` in the tutorials and of the paradigm and evaluation compatibility warnings (by `Danae`_)
 - Add ``age_median`` field to :class:`moabb.datasets.metadata.schema.ParticipantMetadata` and populate ``age_std`` / ``age_median`` / ``n_blocks`` metadata for :class:`moabb.datasets.Rodrigues2017` (Alphawaves), fixing a ``TypeError`` at import time (by `Grace Xu`_)
-- Fix :class:`moabb.datasets.BNCI2014_001` descriptive ``METADATA``, which had many fields copied from BCI Competition IV Data set 1. Correct ``n_subjects`` (4 → 9), ``n_classes`` (2 → 4), ``class_labels`` / ``events`` / ``imagery_tasks`` (now ``left_hand`` / ``right_hand`` / ``feet`` / ``tongue``), ``synchronicity`` (asynchronous → synchronous), ``sessions_per_subject`` (1 → 2), the per-session trial structure (288 trials, 6 runs of 48), the acquisition ``reference`` / ``ground`` / ``filters`` and the ``preprocessing`` band (0.5–100 Hz with a 50 Hz notch, no 100 Hz downsampling), and the dataset ``description`` so they all match the dataset's own constructor and docstring (by `YG-paaleee`_)
+- Fix :class:`moabb.datasets.BNCI2014_001` descriptive ``METADATA``, which had many fields copied from BCI Competition IV Data set 1. Correct ``n_subjects`` (4 → 9), ``n_classes`` (2 → 4), ``class_labels`` / ``events`` / ``imagery_tasks`` (now ``left_hand`` / ``right_hand`` / ``feet`` / ``tongue``), ``synchronicity`` (asynchronous → synchronous), ``sessions_per_subject`` (1 → 2), the per-session trial structure (288 trials, 6 runs of 48), the acquisition ``reference`` / ``ground`` / ``filters`` and the ``preprocessing`` band (0.5–100 Hz with a 50 Hz notch, no 100 Hz downsampling), and the dataset ``description`` so they all match the dataset's own constructor and docstring (:gh:`1094` by `YG-paaleee`_)
 - Fix :class:`moabb.datasets.BNCI2014_001` stimulus protocol timing in the generated documentation figure to show 2 s fixation, 1.25 s cue, and motor imagery through t=6 s (by `Bruno Aristimunha`_)
 - Fix stim-marker placement in :class:`moabb.datasets.BCIComp2020WalkingERP` (Track 5): ``build_raw_from_epochs`` was called with ``onset_sample=0``, which placed the event at sample 0 of each trial — the start of the pre-stim baseline (t=-190 ms), not the actual stimulus onset. With ``interval=[-0.19, 0.8]``, the paradigm was therefore reading the leading zero buffer as "pre-stim data" and missing the last 180 ms of real post-stim data. Now the loader passes ``onset_sample=19`` so the marker lands on t=0 and the interval picks the real 100-sample epoch as published (by `Bruno Aristimunha`_)
 - Fix session key off-by-one in :class:`moabb.datasets.Lee2019` that caused silent data loss when filtering sessions, and improve session filtering in :class:`moabb.datasets.base.BaseDataset` to match compound session keys (e.g., ``"0train"``) by integer prefix (:gh:`1046` by `Benedetto Leto`_ and `Bruno Aristimunha`_).
@@ -97,8 +120,8 @@ Bugs
 - Fix data path lookup in :class:`moabb.datasets.Forenzo2023` that makes MOABB unable to find the downloaded data (:gh:`1048` by `Ethan Davis`_).
 - Fix wrong paper reference in :class:`moabb.datasets.Thielen2021` (``associated_paper_doi`` pointed to the Ahmadi electrode-montage reference instead of the dataset's primary publication), restore Radboud data-repository DOI as ``__init__.doi``, and add regression test ``test_primary_paper_matches_dataset_code`` that validates every ``<Surname><Year>`` dataset against its cited primary paper (by `Bruno Aristimunha`_)
 - Fix ``UnicodeEncodeError`` when the GBK codec fails on ``'\xef'`` in BIDS metadata export by explicitly setting ``encoding="utf-8"`` on file writes in ``bids_interface`` (:gh:`1059` by `sli930`_)
-- Modified example usage and fixed epoch extraction with an adjustable buffer that prevents last epochs being dropped in :class:`moabb.datasets.RomaniBF2025ERP`.
-- Fix zip extraction in :class:`moabb.datasets.Wairagkar2018` dataset loader.
+- Modified example usage and fixed epoch extraction with an adjustable buffer that prevents last epochs being dropped in :class:`moabb.datasets.RomaniBF2025ERP` (:gh:`1065` by `Michele Romani`_).
+- Fix zip extraction in :class:`moabb.datasets.Wairagkar2018` dataset loader (:gh:`1066` by `Barış Talar`_).
 - Fix EEG layout corruption in :class:`moabb.datasets.BNCI2020_002`: the F-contiguous ``bciexp.data`` was reshaped in default C-order, producing a trial-fastest interleaved layout that disagreed with the per-trial stim markers and made every epoch sample the wrong trial. The reshape now transposes to trial-major before flattening (by `Bruno Aristimunha`_).
 - Fix ``stim_trial`` content in :class:`moabb.datasets.MartinezCagigal2023Checker` and :class:`moabb.datasets.MartinezCagigal2023Pary`: the channel was carrying the per-recording trial index instead of the attended command id, breaking multiclass classification across recordings. The marker is now the command id (resolved via the new :func:`moabb.datasets.utils.resolve_cvep_command_ids` helper), and the ``_trial_meta`` annotation extras gain a ``command_id`` key alongside ``trial_id`` (by `Bruno Aristimunha`_).
 - Cache Figshare's file listing in :func:`moabb.datasets.download.fs_get_file_list` (process-level ``lru_cache``) and persist it on disk next to the data for MAMEM (:class:`moabb.datasets.MAMEM1`/``MAMEM2``/``MAMEM3``). Once a dataset has been downloaded, subsequent calls never contact Figshare; pass ``force_update=True`` to bypass both layers (by `Bruno Aristimunha`_).
@@ -350,7 +373,7 @@ Enhancements
 
 Bugs
 ~~~~
-- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Griffin Keeler`_)
+- Fixing label swapped issue with  :class:`moabb.datasets.Kalunga2016` dataset (:gh:`814` by `Kosei Nakada`_)
 - Fix the :class:`moabb.datasets.Dreyer2023` (:gh:`828` by `Simon Kojima`_)
 
 API changes
@@ -955,4 +978,6 @@ API changes
 .. _pre-commit-ci: https://github.com/apps/pre-commit-ci
 .. _Stanley C.: https://github.com/stanbot8
 .. _Azra Bano: https://github.com/azrabano23
+.. _Michele Romani: https://github.com/BRomans
+.. _Barış Talar: https://github.com/baris-talar
 .. _Iain: https://github.com/NotAFlightRisk
