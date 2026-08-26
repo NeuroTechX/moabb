@@ -198,7 +198,6 @@ class Brandl2020(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=63,
             channel_types={"eeg": 63},
             hardware="2x BrainAmp (Brain Products)",
             reference="nose",

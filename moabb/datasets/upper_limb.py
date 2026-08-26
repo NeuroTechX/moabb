@@ -76,7 +76,6 @@ class Ofner2017(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=61,
             channel_types={"eeg": 61, "eog": 3, "misc": 32},
             hardware="g.tec medical engineering GmbH",
             sensor_type="active",

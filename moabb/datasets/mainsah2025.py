@@ -468,7 +468,6 @@ def _make_study_metadata(study):
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=config["n_eeg"],
             channel_types={"eeg": config["n_eeg"]},
             hardware="g.USBamp (g.tec)",
             montage="standard_1020",

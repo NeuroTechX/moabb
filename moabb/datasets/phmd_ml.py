@@ -66,7 +66,6 @@ class Cattan2019_PHMD(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1020",
             hardware="g.USBamp",

@@ -120,7 +120,6 @@ class Weibo2014(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=60,
             channel_types={"eeg": 60, "eog": 2, "misc": 2},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",

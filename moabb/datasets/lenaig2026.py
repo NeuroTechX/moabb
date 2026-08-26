@@ -152,7 +152,6 @@ class Lenaig2026(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500,
-            n_channels=28,
             channel_types={"eeg": 24, "misc": 3},
             sensor_type="EEG",
             electrode_material="Ag/AgCl",

@@ -54,7 +54,6 @@ class _Dreyer2023Base(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=27,
             channel_types={"eeg": 27, "emg": 2, "eog": 3},
             montage="10-20",
             hardware="g.USBAmp (g.tec, Austria)",

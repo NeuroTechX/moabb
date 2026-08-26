@@ -94,7 +94,6 @@ class Thielen2015(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=2048.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             montage="standard_1020",
             hardware="Biosemi ActiveTwo",

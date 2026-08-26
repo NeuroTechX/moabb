@@ -463,7 +463,6 @@ class BI2012(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1020",
             hardware="NeXus-32 (MindMedia/TMSi)",
@@ -705,7 +704,6 @@ class BI2013a(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
@@ -939,7 +937,6 @@ class BI2014a(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1010",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
@@ -1141,7 +1138,6 @@ class BI2014b(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="standard_1010",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
@@ -1354,7 +1350,6 @@ class BI2015a(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="10-10",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
@@ -1555,7 +1550,6 @@ class BI2015b(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="10-10",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
@@ -1767,7 +1761,6 @@ class Cattan2019_VR(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="10-10",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",

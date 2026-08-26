@@ -255,7 +255,6 @@ class BNCI2020_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=58,
             channel_types={"eeg": 58, "eog": 6},
             montage="5% grid system",
             hardware="g.tec USBamp/g.tec Ladybird",
@@ -826,7 +825,6 @@ class BNCI2020_002(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=30,
             channel_types={"eeg": 30, "eog": 2},
             montage="extended 10-20",
             hardware="BrainAmp DC Amplifier",

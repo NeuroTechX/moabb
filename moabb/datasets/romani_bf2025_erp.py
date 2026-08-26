@@ -131,7 +131,6 @@ class RomaniBF2025ERP(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1020",
             hardware="g.tec Unicorn Hybrid Black",

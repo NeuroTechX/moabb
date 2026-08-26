@@ -160,7 +160,6 @@ class Kojima2024B(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=64,
             channel_types={"eeg": 64, "eog": 2},
             sensors=[
                 "AF3",

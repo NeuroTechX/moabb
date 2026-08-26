@@ -75,7 +75,6 @@ class Cho2017(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=68,
             channel_types={"eeg": 64, "emg": 4},
             montage="standard_1005",
             hardware="Biosemi ActiveTwo",

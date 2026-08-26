@@ -334,7 +334,6 @@ class MAMEM1(BaseMAMEM):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=256,
             channel_types={"eeg": 256},
             montage="GSN-HydroCel-256",
             hardware="EGI 300 Geodesic EEG System (GES 300)",
@@ -837,7 +836,6 @@ class MAMEM2(BaseMAMEM):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=256,
             channel_types={"eeg": 256},
             montage="GSN-HydroCel-256",
             hardware="EGI 300 Geodesic EEG System (GES 300)",
@@ -1341,7 +1339,6 @@ class MAMEM3(BaseMAMEM):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,
-            n_channels=14,
             channel_types={"eeg": 14},
             montage="10-20",
             hardware="EGI 300 Geodesic EEG System (GES 300)",

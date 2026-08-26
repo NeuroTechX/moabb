@@ -326,7 +326,6 @@ class BNCI2014_001(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=25,
             channel_types={"eeg": 22, "eog": 3},
             montage="custom",
             hardware="BrainAmp MR plus",
@@ -607,7 +606,6 @@ class BNCI2014_002(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=15,
             channel_types={"eeg": 15},
             montage="Laplacian",
             hardware="g.USBamp",
@@ -794,7 +792,6 @@ class BNCI2014_004(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=3,
             channel_types={"eeg": 3, "eog": 3},
             montage="standard_1020",
             hardware="g.tec",
@@ -1034,7 +1031,6 @@ class BNCI2014_008(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="10-10",
             hardware="g.MOBILAB",
@@ -1216,7 +1212,6 @@ class BNCI2014_009(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="10-10",
             hardware="g.USBamp",

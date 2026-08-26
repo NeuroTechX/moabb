@@ -69,7 +69,6 @@ class Wang2021Combined(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=31,
             channel_types={"eeg": 31, "eog": 2},
             montage="standard_1005",
             hardware="eego mylab (ANT Neuro)",

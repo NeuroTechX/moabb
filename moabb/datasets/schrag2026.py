@@ -144,7 +144,6 @@ class Schrag2026Pediatric(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1020",
             hardware="g.tec g.GAMMAsys + g.USBamp + g.GAMMAcap",

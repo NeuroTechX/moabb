@@ -325,7 +325,6 @@ class Lee2019_MI(Lee2019):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
             montage="standard_1005",
             hardware="BrainAmp",
@@ -610,7 +609,6 @@ class Lee2019_ERP(Lee2019):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
             montage="standard_1005",
             hardware="BrainAmp",
@@ -858,7 +856,6 @@ class Lee2019_SSVEP(Lee2019):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
             montage="standard_1005",
             hardware="BrainAmp",

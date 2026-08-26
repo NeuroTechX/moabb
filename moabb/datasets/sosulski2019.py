@@ -93,7 +93,6 @@ class Sosulski2019(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=31,
             channel_types={"eeg": 31, "eog": 1, "misc": 5},
             montage="standard_1020",
             hardware="BrainProducts BrainAmp DC",

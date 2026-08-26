@@ -154,7 +154,6 @@ class AguileraRodriguez2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=24,
             channel_types={"eeg": 24},
             hardware="mBrainTrain Smarting",
             reference="FCz",

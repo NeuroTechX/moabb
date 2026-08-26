@@ -122,7 +122,6 @@ class TrianaGuzman2024(BaseBIDSDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=17,
             channel_types={"eeg": 17},
             montage="standard_1020",
             hardware="g.tec g.Nautilus PRO",

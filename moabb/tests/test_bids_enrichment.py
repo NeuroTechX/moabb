@@ -93,7 +93,7 @@ class TestEnrichRawInfoFromMetadata:
         raw = self._make_raw()
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}, line_freq=60.0
+                sampling_rate=256, channel_types={"eeg": 2}, line_freq=60.0
             ),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -106,9 +106,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_sex_all_male(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=5, gender={"male": 5}),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -118,9 +116,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_sex_all_female(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=5, gender={"female": 5}),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -130,9 +126,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_sex_mixed_not_set(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=10, gender={"male": 5, "female": 5}
             ),
@@ -145,9 +139,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_hand_all_right_dict(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=5, handedness={"right": 5}),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -157,9 +149,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_hand_string_right(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=5, handedness="right-handed"),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -169,9 +159,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_no_participants(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -181,9 +169,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_per_subject_sex(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=3, sexes=["male", "female", "male"]
             ),
@@ -196,9 +182,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_per_subject_handedness(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=3, handedness_list=["right", "left", "ambidextrous"]
             ),
@@ -216,9 +200,7 @@ class TestEnrichRawInfoFromMetadata:
     def test_per_subject_sex_overrides_aggregate(self):
         raw = self._make_raw()
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=3,
                 gender={"male": 3},  # aggregate says all male
@@ -244,7 +226,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 reference="left mastoid",
                 ground="AFz",
@@ -269,9 +250,7 @@ class TestBuildSidecarEnrichment:
 
     def test_filter_details_bandpass_dict(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
@@ -288,9 +267,7 @@ class TestBuildSidecarEnrichment:
 
     def test_filter_details_bandpass_list(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(bandpass=[0.5, 100.0]),
@@ -302,9 +279,7 @@ class TestBuildSidecarEnrichment:
 
     def test_filter_details_individual_hp_lp(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(highpass_hz=0.1, lowpass_hz=40.0),
@@ -316,9 +291,7 @@ class TestBuildSidecarEnrichment:
 
     def test_task_description(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
                 paradigm="imagery", study_design="Four-class motor imagery"
@@ -329,9 +302,7 @@ class TestBuildSidecarEnrichment:
 
     def test_institution(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(
@@ -344,10 +315,7 @@ class TestBuildSidecarEnrichment:
     def test_montage_fallback(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256,
-                n_channels=22,
-                channel_types={"eeg": 22},
-                montage="custom_montage",
+                sampling_rate=256, channel_types={"eeg": 22}, montage="custom_montage"
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -359,7 +327,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 cap_manufacturer="EasyCap",
                 cap_model="actiCAP snap",
@@ -373,9 +340,7 @@ class TestBuildSidecarEnrichment:
 
     def test_instructions(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
                 paradigm="imagery", instructions="Imagine moving your left or right hand."
@@ -386,9 +351,7 @@ class TestBuildSidecarEnrichment:
 
     def test_cog_atlas_explicit(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
                 paradigm="imagery",
@@ -403,9 +366,7 @@ class TestBuildSidecarEnrichment:
     def test_cog_atlas_fallback(self):
         # Motor imagery paradigm has a known fallback
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -417,9 +378,7 @@ class TestBuildSidecarEnrichment:
 
         # P300 paradigm has a known fallback
         metadata_p300 = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="p300"),
         )
@@ -431,9 +390,7 @@ class TestBuildSidecarEnrichment:
 
         # SSVEP has no fallback
         metadata_ssvep = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="ssvep"),
         )
@@ -442,9 +399,7 @@ class TestBuildSidecarEnrichment:
 
     def test_institution_address(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(
@@ -462,7 +417,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 sensor_type="Ag/AgCl",
                 # cap_manufacturer is None → should NOT fall back to sensor_type
@@ -477,7 +431,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 sensor_type="Ag/AgCl",
                 cap_manufacturer="EasyCap",
@@ -494,7 +447,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 filters="0.1-100 Hz bandpass",
             ),
@@ -509,7 +461,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 filters={"bandpass": [0.1, 100]},
             ),
@@ -524,7 +475,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 filters="0.1-100 Hz bandpass",
             ),
@@ -540,9 +490,7 @@ class TestBuildSidecarEnrichment:
     def test_filter_type_and_order_in_bandpass(self):
         """filter_type and filter_order enrich HardwareFilters Bandpass."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
@@ -557,9 +505,7 @@ class TestBuildSidecarEnrichment:
     def test_re_reference_fallback(self):
         """prep.re_reference used as EEGReference when acq.reference absent."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(re_reference="average"),
@@ -571,10 +517,7 @@ class TestBuildSidecarEnrichment:
         """acq.reference takes priority over prep.re_reference."""
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256,
-                n_channels=22,
-                channel_types={"eeg": 22},
-                reference="left mastoid",
+                sampling_rate=256, channel_types={"eeg": 22}, reference="left mastoid"
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -586,9 +529,7 @@ class TestBuildSidecarEnrichment:
     def test_preprocessing_steps_software_filters(self):
         """prep.preprocessing_steps builds SoftwareFilters dict."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             preprocessing=PreprocessingMetadata(
@@ -604,10 +545,7 @@ class TestBuildSidecarEnrichment:
         """acq.impedance_threshold_kohm scalar sets SubjectArtefactDescription."""
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256,
-                n_channels=22,
-                channel_types={"eeg": 22},
-                impedance_threshold_kohm=20,
+                sampling_rate=256, channel_types={"eeg": 22}, impedance_threshold_kohm=20
             ),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -620,7 +558,6 @@ class TestBuildSidecarEnrichment:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 impedance_threshold_kohm={"eeg": 20, "emg": 50},
             ),
@@ -636,9 +573,7 @@ class TestBuildSidecarEnrichment:
     def test_task_description_with_timing(self):
         """TaskDescription enriched with trial timing info."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
                 paradigm="imagery",
@@ -659,9 +594,7 @@ class TestBuildSidecarEnrichment:
     def test_task_description_with_task_type(self):
         """TaskDescription prepended with task_type."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
                 paradigm="imagery",
@@ -675,9 +608,7 @@ class TestBuildSidecarEnrichment:
     def test_task_description_with_ssvep_timing(self):
         """TaskDescription with SSVEP stimulus frequencies."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(
                 paradigm="ssvep", study_design="SSVEP BCI experiment"
@@ -694,9 +625,7 @@ class TestBuildSidecarEnrichment:
     def test_country_fallback_for_institution_address(self):
         """doc.country used as InstitutionAddress when address is absent."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(institution="TU Graz", country="Austria"),
@@ -707,9 +636,7 @@ class TestBuildSidecarEnrichment:
     def test_country_not_used_when_address_present(self):
         """doc.institution_address takes priority over doc.country."""
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(
@@ -746,9 +673,7 @@ class TestBuildDatasetDescriptionKwargs:
 
     def test_with_documentation(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(
@@ -772,9 +697,7 @@ class TestBuildDatasetDescriptionKwargs:
 
     def test_partial_documentation(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(license="MIT"),
@@ -793,9 +716,7 @@ class TestBuildDatasetDescriptionKwargs:
 
     def test_ethics_and_acknowledgements(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(
@@ -812,9 +733,7 @@ class TestBuildDatasetDescriptionKwargs:
 
     def test_source_datasets_with_url(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(
@@ -832,9 +751,7 @@ class TestBuildDatasetDescriptionKwargs:
 
     def test_publication_year_not_in_source_datasets(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(publication_year=2021),
@@ -846,9 +763,7 @@ class TestBuildDatasetDescriptionKwargs:
 
     def test_no_publication_year_no_url_keeps_default(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=22, channel_types={"eeg": 22}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 22}),
             participants=ParticipantMetadata(n_subjects=9),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(license="MIT"),
@@ -867,9 +782,7 @@ class TestBuildDatasetDescriptionKwargs:
 class TestUpdateParticipantsTsv:
     def test_no_tsv_file(self, tmp_path):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=3, ages=[25, 30, 35], health_status="healthy"
             ),
@@ -887,9 +800,7 @@ class TestUpdateParticipantsTsv:
             writer.writerow({"participant_id": "sub-1"})
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=1, ages=[25], health_status="healthy"
             ),
@@ -914,9 +825,7 @@ class TestUpdateParticipantsTsv:
             writer.writerow({"participant_id": "sub-1"})
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1, age_mean=27.5),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -938,9 +847,7 @@ class TestUpdateParticipantsTsv:
             writer.writerow({"participant_id": "sub-1", "age": "30"})
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=1, ages=[25], health_status="healthy"
             ),
@@ -964,9 +871,7 @@ class TestUpdateParticipantsTsv:
             writer.writerow({"participant_id": "sub-1"})
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=1, ages=[25], health_status="healthy"
             ),
@@ -990,9 +895,7 @@ class TestUpdateParticipantsTsv:
 
     def test_none_participants(self, tmp_path):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -1020,9 +923,7 @@ class TestUpdateParticipantsTsv:
             writer.writerow({"participant_id": "sub-2"})
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(
                 n_subjects=2, sexes=["male", "female"], handedness_list=["right", "left"]
             ),
@@ -1048,9 +949,7 @@ class TestUpdateParticipantsTsv:
             writer.writerow({"participant_id": "sub-1"})
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
@@ -1089,7 +988,6 @@ class TestUpdateElectrodesTsv:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=2,
                 channel_types={"eeg": 2},
                 electrode_type="cup",
                 electrode_material="Ag/AgCl",
@@ -1112,10 +1010,7 @@ class TestUpdateElectrodesTsv:
     def test_no_electrodes_file(self, tmp_path):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256,
-                n_channels=2,
-                channel_types={"eeg": 2},
-                electrode_type="cup",
+                sampling_rate=256, channel_types={"eeg": 2}, electrode_type="cup"
             ),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -1147,7 +1042,6 @@ class TestUpdateElectrodesTsv:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=2,
                 channel_types={"eeg": 2},
                 electrode_type="cup",
                 electrode_material="Ag/AgCl",
@@ -1178,7 +1072,6 @@ class TestUpdateElectrodesTsv:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
-                n_channels=2,
                 channel_types={"eeg": 2},
                 sensor_type="Tin",
                 # electrode_material is None → should fall back to sensor_type
@@ -1218,9 +1111,7 @@ class TestBuildDatasetDescriptionKeywords:
 
     def test_adds_keywords(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(keywords=["BCI", "EEG", "imagery"]),
@@ -1230,9 +1121,7 @@ class TestBuildDatasetDescriptionKeywords:
 
     def test_keywords_from_tags(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
@@ -1248,9 +1137,7 @@ class TestBuildDatasetDescriptionKeywords:
 
     def test_bci_applications_merged_into_keywords(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
@@ -1266,9 +1153,7 @@ class TestBuildDatasetDescriptionKeywords:
 
     def test_bci_applications_not_merged_when_explicit_keywords(self):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(keywords=["BCI", "EEG"]),
@@ -1285,9 +1170,7 @@ class TestUpdateDatasetDescriptionExtra:
 
     def test_no_description_file(self, tmp_path):
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(publication_year=2020),
@@ -1301,9 +1184,7 @@ class TestUpdateDatasetDescriptionExtra:
             json.dump({"Name": "Test"}, f)
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(publication_year=2021, keywords=["BCI"]),
@@ -1320,9 +1201,7 @@ class TestUpdateDatasetDescriptionExtra:
             json.dump({"Name": "Test", "PublicationYear": 2019}, f)
 
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery"),
             documentation=DocumentationMetadata(publication_year=2021),
@@ -1399,9 +1278,7 @@ class TestBuildHedSidecarAnnotations:
     def test_metadata_override(self):
         custom_tags = {"left_hand": "Custom-tag, Left", "right_hand": "Custom-tag, Right"}
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery", hed_tags=custom_tags),
         )
@@ -1417,9 +1294,7 @@ class TestBuildHedSidecarAnnotations:
         """Partial hed_tags override merges with paradigm defaults."""
         custom_tags = {"left_hand": "Custom-tag, Left"}
         metadata = DatasetMetadata(
-            acquisition=AcquisitionMetadata(
-                sampling_rate=256, n_channels=2, channel_types={"eeg": 2}
-            ),
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
             participants=ParticipantMetadata(n_subjects=1),
             experiment=ExperimentMetadata(paradigm="imagery", hed_tags=custom_tags),
         )
@@ -1964,7 +1839,6 @@ class TestBuildReadme:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=512.0,
-                n_channels=64,
                 channel_types={"eeg": 60, "eog": 4},
                 hardware="BrainAmp DC",
                 reference="FCz",
@@ -1988,7 +1862,7 @@ class TestBuildReadme:
     def test_readme_with_participants(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(
                 n_subjects=20,
@@ -2015,7 +1889,7 @@ class TestBuildReadme:
     def test_readme_with_experiment(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(
@@ -2039,7 +1913,7 @@ class TestBuildReadme:
     def test_readme_with_documentation(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -2068,7 +1942,7 @@ class TestBuildReadme:
     def test_readme_with_preprocessing(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -2088,7 +1962,7 @@ class TestBuildReadme:
     def test_readme_with_signal_processing(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -2105,7 +1979,7 @@ class TestBuildReadme:
     def test_readme_with_cross_validation(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -2123,7 +1997,7 @@ class TestBuildReadme:
     def test_readme_with_bci_application(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -2143,7 +2017,7 @@ class TestBuildReadme:
     def test_readme_with_tags(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -2163,7 +2037,7 @@ class TestBuildReadme:
     def test_readme_with_paradigm_specific(self):
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="ssvep"),
@@ -2198,7 +2072,7 @@ class TestBuildReadme:
         """Sections with no populated fields should not appear."""
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+                sampling_rate=256.0, channel_types={"eeg": 32}
             ),
             participants=ParticipantMetadata(n_subjects=10),
             experiment=ExperimentMetadata(paradigm="imagery"),
@@ -2216,7 +2090,6 @@ class TestBuildReadme:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256.0,
-                n_channels=32,
                 channel_types={"eeg": 32},
                 hardware="n/a",
                 ground="n/a",
@@ -2239,7 +2112,7 @@ def _minimal_metadata(**overrides):
     """Build a DatasetMetadata with only required fields plus overrides."""
     kwargs = {
         "acquisition": AcquisitionMetadata(
-            sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
+            sampling_rate=256.0, channel_types={"eeg": 32}
         ),
         "participants": ParticipantMetadata(n_subjects=10),
         "experiment": ExperimentMetadata(paradigm="imagery"),
@@ -2269,7 +2142,6 @@ class TestReadmeAcquisitionFields:
         "field,value,expected",
         [
             ("sampling_rate", 512.0, "512.0 Hz"),
-            ("n_channels", 64, "64"),
             ("channel_types", {"eeg": 60, "eog": 4}, "eeg=60, eog=4"),
             ("sensors", ["Fp1", "Fp2"], "Fp1, Fp2"),
             ("sensor_type", "Ag/AgCl wet", "Ag/AgCl wet"),
@@ -2288,11 +2160,20 @@ class TestReadmeAcquisitionFields:
         ],
     )
     def test_field_present(self, field, value, expected):
-        kwargs = {"sampling_rate": 256.0, "n_channels": 32, "channel_types": {"eeg": 32}}
+        kwargs = {"sampling_rate": 256.0, "channel_types": {"eeg": 32}}
         kwargs[field] = value
         meta = _minimal_metadata(acquisition=AcquisitionMetadata(**kwargs))
         readme = _build_readme(_mock_ds(meta))
         assert expected in readme
+
+    def test_derived_n_channels_present(self):
+        """``n_channels`` is no longer a field, but the README still shows it."""
+        meta = _minimal_metadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256.0, channel_types={"eeg": 60, "eog": 4}
+            )
+        )
+        assert "64" in _build_readme(_mock_ds(meta))
 
 
 class TestReadmeAuxiliaryChannelsFields:
@@ -2317,7 +2198,6 @@ class TestReadmeAuxiliaryChannelsFields:
     def test_aux_field(self, aux_kwargs, expected):
         acq = AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             auxiliary_channels=AuxiliaryChannelsMetadata(**aux_kwargs),
         )

@@ -209,7 +209,6 @@ class BCIComp2020WalkingERP(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
-            n_channels=len(_CH_NAMES),
             channel_types={
                 "eeg": len(_SCALP_CHANNELS) + len(_EAR_CHANNELS),
                 "eog": len(_EOG_CHANNELS),

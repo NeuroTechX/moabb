@@ -122,7 +122,6 @@ class Pressel2016(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=6,
             channel_types={"eeg": 6},
             montage="standard_1020",
             hardware="Grass 8-18-36 amplifier + DataTranslation DT9816 ADC",

@@ -72,7 +72,6 @@ class Hinss2021(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=62,
             channel_types={"eeg": 62},
             montage="standard_1020",
             hardware="ActiCHamp (Brain Products Gmbh)",

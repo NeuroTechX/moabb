@@ -195,7 +195,6 @@ class BCIComp2020UpperLimb(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=60,
             channel_types={"eeg": 60},
             montage="standard_1005",
             hardware="BrainAmp (BrainProducts GmbH)",

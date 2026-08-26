@@ -284,7 +284,6 @@ class Zuo2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=30,
             channel_types={"eeg": 30},
             hardware="ZhenTec EEG system",
             reference="CPz",

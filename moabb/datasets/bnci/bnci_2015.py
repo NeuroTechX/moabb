@@ -484,7 +484,6 @@ class BNCI2015_001(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=13,
             channel_types={"eeg": 13},
             montage="10-20",
             hardware="g.tec",
@@ -643,7 +642,6 @@ class BNCI2015_003(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1005",
             hardware="BrainAmp",
@@ -873,7 +871,6 @@ class BNCI2015_004(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=30,
             channel_types={"eeg": 30},
             montage="10-20",
             hardware="g.tec",
@@ -1100,7 +1097,6 @@ class BNCI2015_006(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             montage="10-10",
             hardware="Brain Products",
@@ -1469,7 +1465,6 @@ class BNCI2015_007(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,
-            n_channels=63,
             channel_types={"eeg": 63},
             montage="10-10",
             hardware="BrainAmp EEG amplifier",
@@ -1770,7 +1765,6 @@ class BNCI2015_008(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=63,
             channel_types={"eeg": 63},
             montage="10-10",
             hardware="Brain Products actiCAP",
@@ -2061,7 +2055,6 @@ class BNCI2015_009(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=60,
             channel_types={"eeg": 60, "eog": 2},
             montage="10-20",
             hardware="Brain Products 128-channel amplifier",
@@ -2251,7 +2244,6 @@ class BNCI2015_010(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=63,
             channel_types={"eeg": 63},
             montage="10-20",
             hardware="BrainAmp amplifiers",
@@ -2500,7 +2492,6 @@ class BNCI2015_012(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=63,
             channel_types={"eeg": 63},
             montage="10-20",
             hardware="Brain Products",
@@ -2786,7 +2777,6 @@ class BNCI2015_013(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             montage="standard_1020",
             hardware="Biosemi ActiveTwo",

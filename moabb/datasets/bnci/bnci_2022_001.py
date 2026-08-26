@@ -436,7 +436,6 @@ class BNCI2022_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=64,
             channel_types={"eeg": 64, "eog": 3},
             montage="10-10",
             hardware="Biosemi ActiveTwo",

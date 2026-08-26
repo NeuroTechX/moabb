@@ -88,7 +88,6 @@ class Beetl2021_A(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=63,
             channel_types={"eeg": 63},
             sensors=[
                 "Fp1",
@@ -583,7 +582,6 @@ class Beetl2021_B(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             sensors=[
                 "Fp1",

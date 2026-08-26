@@ -124,7 +124,6 @@ _CHANNELS = [
 
 _ACQUISITION = AcquisitionMetadata(
     sampling_rate=_SFREQ,
-    n_channels=62,
     channel_types={"eeg": 62},
     sensors=list(_CHANNELS),
     reference="midway between Cz and CPz",

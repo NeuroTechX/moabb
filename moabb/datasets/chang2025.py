@@ -104,7 +104,6 @@ class Chang2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=59,
             channel_types={"eeg": 59},
             montage="standard_1005",
             hardware="Neuracle BRK-NSW 2.0",

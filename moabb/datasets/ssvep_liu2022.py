@@ -158,7 +158,6 @@ class Liu2022EldBETA(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             montage="standard_1005",
             hardware="Synamps2 (Neuroscan)",

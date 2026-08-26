@@ -122,7 +122,6 @@ class Zhou2020(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=41,
             channel_types={"eeg": 41},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",

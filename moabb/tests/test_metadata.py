@@ -40,7 +40,7 @@ class TestAcquisitionMetadata:
     def test_required_fields_only(self):
         """Test instantiation with only required fields."""
         acq = AcquisitionMetadata(
-            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
+            sampling_rate=512.0, channel_types={"eeg": 60, "eog": 4}
         )
         assert acq.sampling_rate == 512.0
         assert acq.n_channels == 64
@@ -60,7 +60,6 @@ class TestAcquisitionMetadata:
         """Test instantiation with all fields."""
         acq = AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=128,
             channel_types={"eeg": 120, "eog": 4, "emg": 4},
             sensors=["Fp1", "Fp2", "F3", "F4"],
             sensor_type="Ag/AgCl wet",
@@ -83,12 +82,8 @@ class TestAcquisitionMetadata:
 
     def test_sensors_mutable_default(self):
         """Test that sensors default list is not shared between instances."""
-        acq1 = AcquisitionMetadata(
-            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 64}
-        )
-        acq2 = AcquisitionMetadata(
-            sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
-        )
+        acq1 = AcquisitionMetadata(sampling_rate=512.0, channel_types={"eeg": 64})
+        acq2 = AcquisitionMetadata(sampling_rate=256.0, channel_types={"eeg": 32})
         acq1.sensors.append("Cz")
         assert acq1.sensors == ["Cz"]
         assert acq2.sensors == []
@@ -214,7 +209,7 @@ class TestDatasetMetadata:
     def minimal_acquisition(self):
         """Create minimal AcquisitionMetadata for testing."""
         return AcquisitionMetadata(
-            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
+            sampling_rate=512.0, channel_types={"eeg": 60, "eog": 4}
         )
 
     @pytest.fixture
@@ -282,7 +277,6 @@ class TestMetadataIntegration:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=512.0,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 sensor_type="Ag/AgCl wet",
                 reference="left earlobe",
@@ -334,7 +328,6 @@ class TestMetadataIntegration:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256.0,
-                n_channels=64,
                 channel_types={"eeg": 64},
                 hardware="BioSemi ActiveTwo",
                 reference="CMS/DRL",
@@ -358,7 +351,6 @@ class TestMetadataIntegration:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=250.0,
-                n_channels=8,
                 channel_types={"eeg": 8},
                 sensors=["PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2"],
             ),
@@ -473,7 +465,9 @@ class TestMetadataCatalog:
         """Test Dreyer2023 metadata."""
         metadata = get_dataset_metadata("Dreyer2023")
         assert metadata.participants.n_subjects == 87
-        assert metadata.acquisition.n_channels == 27
+        # 27 EEG + 2 EMG + 3 EOG. ``n_channels`` is the total, matching this
+        # dataset's own 32-entry ``sensors`` list.
+        assert metadata.acquisition.n_channels == 32
         assert metadata.documentation.country == "FR"  # ISO alpha-2 code
         assert "10.1038/s41597-023-02445-z" in metadata.documentation.doi
 
@@ -868,7 +862,7 @@ class TestParticipantsResolutionOrdering:
         tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+                sampling_rate=128.0, channel_types={"eeg": 1}
             ),
             participants=ParticipantMetadata(
                 n_subjects=2, ages=[25, None], age_mean=44.0
@@ -887,7 +881,7 @@ class TestParticipantsResolutionOrdering:
         tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+                sampling_rate=128.0, channel_types={"eeg": 1}
             ),
             participants=ParticipantMetadata(
                 n_subjects=2,

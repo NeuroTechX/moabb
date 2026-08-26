@@ -148,7 +148,6 @@ class Kaya2018(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=19,
             channel_types={"eeg": 19},
             sensors=_EEG_CH_NAMES,
             montage="standard_1020",

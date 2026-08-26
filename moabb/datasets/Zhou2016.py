@@ -72,7 +72,6 @@ class Zhou2016(BaseBIDSDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=14,
             channel_types={"eeg": 14},
             montage="standard_1020",
             sensor_type="EEG",

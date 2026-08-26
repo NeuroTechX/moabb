@@ -170,9 +170,7 @@ class MartinezCagigal2023Pary(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256.0, n_channels=16, channel_types={"eeg": 16}
-        ),
+        acquisition=AcquisitionMetadata(sampling_rate=256.0, channel_types={"eeg": 16}),
         participants=ParticipantMetadata(n_subjects=16),
         experiment=ExperimentMetadata(paradigm="cvep"),
         documentation=DocumentationMetadata(

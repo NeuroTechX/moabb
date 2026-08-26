@@ -117,7 +117,6 @@ class Forenzo2024(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62},
             montage="standard_1005",
             hardware="Neuroscan Quik-Cap 64-ch, SynAmps/RT",
