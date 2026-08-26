@@ -216,7 +216,7 @@ class Cattan2019_PHMD(BaseDataset):
             ch_names=self._chnames, sfreq=512, ch_types=self._chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
-        raw.set_montage("standard_1020", on_missing="ignore")
+        raw.set_montage("standard_1020")
         return {"0": {"0": raw}}
 
     def data_path(

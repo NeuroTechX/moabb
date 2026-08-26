@@ -45,25 +45,25 @@ from .utils import (
 # Base URL for the BNCI 2025-001 dataset (hosted at TU Graz)
 BNCI_2025_001_URL = "https://lampx.tugraz.at/~bci/database/001-2025/"
 
-# Event code mapping for 001-2025 dataset
-# Format: XYZ where X=speed (1=slow, 2=fast), Y=distance (1=near, 2=far), Z=direction (1-4)
-# Direction codes: 1=up, 2=down, 3=left, 4=right
 # Channels the EEGLAB ``.set`` files carry alongside the EEG montage: hand
 # kinematics from the reaching task, the target position, and a validity flag.
 # ``read_raw_eeglab`` types anything it cannot recognise as ``eeg``, which would
 # feed the target position and hand velocity -- i.e. the labels -- to any
 # paradigm picking ``eeg``.
-_NON_EEG_CHANNELS_001_2025 = {
-    "x": "misc",
-    "y": "misc",
-    "vx": "misc",
-    "vy": "misc",
-    "validity": "misc",
-    "targetPosX": "misc",
-    "targetPoxY": "misc",  # sic: the published files misspell targetPosY
-}
+_NON_EEG_CHANNELS_001_2025 = (
+    "x",
+    "y",
+    "vx",
+    "vy",
+    "validity",
+    "targetPosX",
+    "targetPoxY",  # sic: the published files misspell targetPosY
+)
 
 
+# Event code mapping for 001-2025 dataset
+# Format: XYZ where X=speed (1=slow, 2=fast), Y=distance (1=near, 2=far), Z=direction (1-4)
+# Direction codes: 1=up, 2=down, 3=left, 4=right
 _EVENT_CODE_MAPPING_001_2025 = {
     "111": "up_slow_near",
     "112": "down_slow_near",
@@ -176,12 +176,9 @@ def _load_data_001_2025(
 
     # Type the non-EEG channels before the montage, so they are neither placed
     # on the scalp nor picked as EEG.
+    # set_channel_types raises on a name that is not in info, so filter first.
     raw.set_channel_types(
-        {
-            ch: ch_type
-            for ch, ch_type in _NON_EEG_CHANNELS_001_2025.items()
-            if ch in raw.ch_names
-        }
+        {ch: "misc" for ch in _NON_EEG_CHANNELS_001_2025 if ch in raw.ch_names}
     )
 
     # Remap annotation descriptions from numeric codes to descriptive names

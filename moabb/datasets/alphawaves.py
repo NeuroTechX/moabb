@@ -229,7 +229,7 @@ class Rodrigues2017(BaseDataset):
             ch_names=chnames, sfreq=512, ch_types=chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
-        raw.set_montage("standard_1020", on_missing="ignore")
+        raw.set_montage("standard_1020")
 
         return {"0": {"0": raw}}
 

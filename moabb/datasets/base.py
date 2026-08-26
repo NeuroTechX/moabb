@@ -1115,10 +1115,10 @@ class BaseDataset(metaclass=MetaclassDataset):
         provider = get_download_provider()
         if self.nemar_id is None or provider == "upstream":
             return
+        # Resolved once: nemar_store() re-reads MNE's config file each call.
+        store_root = nemar_store(self.code, self.nemar_id)
         for subject in subjects:
-            if nemar_sourcedata_is_local(
-                self.nemar_id, self.code, self._nemar_subject_ids(subject)
-            ):
+            if nemar_sourcedata_is_local(store_root, self._nemar_subject_ids(subject)):
                 continue
             try:
                 self.sourcedata_path(subject=subject, verbose=verbose)
@@ -1141,8 +1141,12 @@ class BaseDataset(metaclass=MetaclassDataset):
         subjects -- match both, exactly as :meth:`sourcedata_path` does.
         """
         label = self._nemar_subject(subject)
+        # Return the scalar untouched unless the deposit really files this
+        # subject under a second label: a None label would stringify to "None"
+        # and collide with manifest entries that carry no subject at all, and
+        # wrapping a lone id in a list would change what downstream callers see.
         if label is None or str(label) == str(subject):
-            return [subject]
+            return subject
         return [subject, label]
 
     def _sourcedata_store(self):
@@ -1199,9 +1203,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         # a dataset's nemar_subject_template documents how its deposit labels
         # subjects -- match both rather than betting on one convention.
         if subject is not None:
-            label = self._nemar_subject(subject)
-            if label is not None and str(label) != str(subject):
-                subject = [subject, label]
+            subject = self._nemar_subject_ids(subject)
         return nemar_sourcedata_dl(
             self.nemar_id,
             self.code,
