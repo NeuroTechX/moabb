@@ -17,7 +17,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://moabb.neurotechx.com/docs/whats_new.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
-<meta property="og:description" content="“Enhancements” for new features, “Bugs” for bug fixes, “API changes” for backward-incompatible changes. Version 1.6.1 (Source - GitHub): Enhancements: None yet.. API changes: None yet.. Requirement..." />
+<meta property="og:description" content="“Enhancements” for new features, “Bugs” for bug fixes, “API changes” for backward-incompatible changes. Version 1.6.1 (Source - GitHub): Enhancements: None yet.. API changes: moabb.datasets.metadat..." />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -570,7 +570,7 @@
 <section id="api-changes">
 <h3>API changes<a class="headerlink" href="#api-changes" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>None yet.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">moabb.datasets.metadata.AcquisitionMetadata.n_channels</span></code> is derived from <code class="docutils literal notranslate"><span class="pre">channel_types</span></code> instead of stored beside it. The two could disagree, and for 34 of the 147 catalogued datasets they did – the field was being used with two meanings, some counting EEG electrodes only and others every recorded channel. It now consistently means the total, which is what each dataset’s own <code class="docutils literal notranslate"><span class="pre">sensors</span></code> list and <code class="docutils literal notranslate"><span class="pre">test_n_channels_matches_raw_data</span></code> (which counts every non-<code class="docutils literal notranslate"><span class="pre">stim</span></code> channel) already assumed: <a class="reference internal" href="generated/moabb.datasets.Dreyer2023A.html#moabb.datasets.Dreyer2023A" title="moabb.datasets.Dreyer2023A"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Dreyer2023A</span></code></a>, for instance, reported 27 against its own 32 sensors and now reports 32. Passing <code class="docutils literal notranslate"><span class="pre">n_channels=</span></code> to the constructor is no longer accepted (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="requirements">

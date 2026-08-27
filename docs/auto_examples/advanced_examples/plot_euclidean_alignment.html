@@ -710,87 +710,6 @@ separate, because Euclidean Alignment is defined <strong>per recording</strong>.
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html#sklearn.preprocessing.LabelEncoder" title="sklearn.preprocessing.LabelEncoder" class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-class"><span class="n">LabelEncoder</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.0.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/75.2M [00:00&lt;?, ?B/s]
-S3:   1%|▏         | 1.00M/75.2M [00:00&lt;01:00, 1.29MB/s]
-S3:   4%|▍         | 3.00M/75.2M [00:00&lt;00:18, 4.11MB/s]
-S3:   9%|▉         | 7.00M/75.2M [00:01&lt;00:06, 10.3MB/s]
-S3:  17%|█▋        | 13.0M/75.2M [00:01&lt;00:03, 19.8MB/s]
-S3:  32%|███▏      | 24.0M/75.2M [00:01&lt;00:01, 38.4MB/s]
-S3:  51%|█████     | 38.0M/75.2M [00:01&lt;00:00, 62.7MB/s]
-S3:  69%|██████▉   | 52.0M/75.2M [00:01&lt;00:00, 79.2MB/s]
-S3:  90%|█████████ | 68.0M/75.2M [00:01&lt;00:00, 95.9MB/s]
-S3: 100%|██████████| 75.2M/75.2M [00:01&lt;00:00, 46.7MB/s]
-Finished downloading nm000139 v1.0.2.
-This is nemar-py 0.3.0.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/82.8M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/82.8M [00:00&lt;00:56, 1.53MB/s]
-S3:   4%|▎         | 3.00M/82.8M [00:00&lt;00:17, 4.71MB/s]
-S3:   7%|▋         | 6.00M/82.8M [00:00&lt;00:08, 9.49MB/s]
-S3:  14%|█▍        | 12.0M/82.8M [00:01&lt;00:03, 19.8MB/s]
-S3:  27%|██▋       | 22.0M/82.8M [00:01&lt;00:01, 37.2MB/s]
-S3:  46%|████▌     | 38.0M/82.8M [00:01&lt;00:00, 64.2MB/s]
-S3:  64%|██████▍   | 53.0M/82.8M [00:01&lt;00:00, 82.0MB/s]
-S3:  82%|████████▏ | 68.0M/82.8M [00:01&lt;00:00, 95.1MB/s]
-S3:  98%|█████████▊| 81.5M/82.8M [00:01&lt;00:00, 100MB/s]
-S3: 100%|██████████| 82.8M/82.8M [00:01&lt;00:00, 52.2MB/s]
-Finished downloading nm000139 v1.0.2.
-This is nemar-py 0.3.0.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/83.9M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/83.9M [00:00&lt;01:04, 1.35MB/s]
-S3:   4%|▎         | 3.00M/83.9M [00:00&lt;00:19, 4.25MB/s]
-S3:   7%|▋         | 6.00M/83.9M [00:01&lt;00:09, 8.93MB/s]
-S3:  11%|█         | 9.00M/83.9M [00:01&lt;00:06, 13.1MB/s]
-S3:  23%|██▎       | 19.0M/83.9M [00:01&lt;00:02, 31.8MB/s]
-S3:  36%|███▌      | 30.0M/83.9M [00:01&lt;00:01, 49.4MB/s]
-S3:  55%|█████▍    | 46.0M/83.9M [00:01&lt;00:00, 74.4MB/s]
-S3:  72%|███████▏  | 60.0M/83.9M [00:01&lt;00:00, 88.0MB/s]
-S3:  91%|█████████ | 76.0M/83.9M [00:01&lt;00:00, 102MB/s]
-S3: 100%|██████████| 83.9M/83.9M [00:01&lt;00:00, 49.5MB/s]
-Finished downloading nm000139 v1.0.2.
-This is nemar-py 0.3.0.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/81.1M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/81.1M [00:00&lt;00:57, 1.46MB/s]
-S3:   4%|▎         | 3.00M/81.1M [00:00&lt;00:17, 4.57MB/s]
-S3:   7%|▋         | 6.00M/81.1M [00:00&lt;00:08, 9.25MB/s]
-S3:  14%|█▎        | 11.0M/81.1M [00:01&lt;00:04, 17.4MB/s]
-S3:  25%|██▍       | 20.0M/81.1M [00:01&lt;00:01, 33.0MB/s]
-S3:  39%|███▉      | 32.0M/81.1M [00:01&lt;00:00, 54.5MB/s]
-S3:  57%|█████▋    | 46.0M/81.1M [00:01&lt;00:00, 73.0MB/s]
-S3:  76%|███████▋  | 62.0M/81.1M [00:01&lt;00:00, 90.9MB/s]
-S3:  94%|█████████▎| 76.0M/81.1M [00:01&lt;00:00, 99.2MB/s]
-S3: 100%|██████████| 81.1M/81.1M [00:01&lt;00:00, 50.3MB/s]
-Finished downloading nm000139 v1.0.2.
-This is nemar-py 0.3.0.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/87.1M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/87.1M [00:00&lt;01:00, 1.49MB/s]
-S3:   3%|▎         | 3.00M/87.1M [00:00&lt;00:19, 4.63MB/s]
-S3:   7%|▋         | 6.00M/87.1M [00:00&lt;00:09, 9.39MB/s]
-S3:  14%|█▍        | 12.0M/87.1M [00:01&lt;00:03, 19.8MB/s]
-S3:  25%|██▌       | 22.0M/87.1M [00:01&lt;00:01, 37.0MB/s]
-S3:  44%|████▎     | 38.0M/87.1M [00:01&lt;00:00, 63.9MB/s]
-S3:  61%|██████    | 53.0M/87.1M [00:01&lt;00:00, 82.6MB/s]
-S3:  78%|███████▊  | 68.0M/87.1M [00:01&lt;00:00, 95.5MB/s]
-S3:  95%|█████████▌| 83.0M/87.1M [00:01&lt;00:00, 105MB/s]
-S3: 100%|██████████| 87.1M/87.1M [00:01&lt;00:00, 54.1MB/s]
-Finished downloading nm000139 v1.0.2.
-</pre></div>
-</div>
 </section>
 <section id="euclidean-alignment-reduces-the-between-subject-covariance-shift">
 <h2>Euclidean Alignment reduces the between-subject covariance shift<a class="headerlink" href="#euclidean-alignment-reduces-the-between-subject-covariance-shift" title="Link to this heading">#</a></h2>
@@ -955,8 +874,7 @@ learning for EEG decoding. <em>Journal of Neural Engineering</em>, 21(3),
 036038. <a class="reference external" href="https://doi.org/10.1088/1741-2552/ad4f18">https://doi.org/10.1088/1741-2552/ad4f18</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 23.462 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2437 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 20.412 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-euclidean-alignment-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/62d1427c59b6e858abb862499636d357/plot_euclidean_alignment.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_euclidean_alignment.ipynb</span></code></a></p>
