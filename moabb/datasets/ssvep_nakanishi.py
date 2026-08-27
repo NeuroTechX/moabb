@@ -54,7 +54,6 @@ class Nakanishi2015(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             hardware="Biosemi ActiveTwo",
             reference="CMS/DRL",

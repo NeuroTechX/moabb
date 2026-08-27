@@ -250,7 +250,6 @@ class Zhang2017(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=17,
             channel_types={"eeg": 17},
             montage="GSN-HydroCel-32",
             hardware="EGI Geodesic Net Amps 400 series (N400)",

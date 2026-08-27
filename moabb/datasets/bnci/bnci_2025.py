@@ -296,7 +296,6 @@ class BNCI2025_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=71,
             channel_types={"eeg": 60, "eog": 4, "misc": 7},
             montage="standard_1005",
             sensor_type="EEG",
@@ -1075,7 +1074,6 @@ class BNCI2025_002(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=60,
             channel_types={"eeg": 60, "eog": 4},
             montage="standard_1005",
             sensor_type="EEG",

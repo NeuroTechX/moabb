@@ -162,7 +162,6 @@ def _nguyen_hed(label, unit="Word"):
 # Shared metadata sections identical across all 4 Nguyen conditions.
 _NGUYEN_ACQUISITION = AcquisitionMetadata(
     sampling_rate=256.0,
-    n_channels=64,
     channel_types={"eeg": 60, "eog": 4},
     montage="standard_1020",
     hardware="BrainProducts ActiCHamp",

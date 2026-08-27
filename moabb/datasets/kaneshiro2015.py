@@ -79,7 +79,6 @@ class Kaneshiro2015(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=62.5,
-            n_channels=124,
             channel_types={"eeg": 124},
             montage="GSN-HydroCel-128",
             hardware="EGI Net Amps 300",

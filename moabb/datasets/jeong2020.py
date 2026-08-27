@@ -162,7 +162,6 @@ class Jeong2020(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=71,
             channel_types={"eeg": 60, "eog": 4, "emg": 7},
             montage="standard_1005",
             hardware="BrainAmp (BrainProducts GmbH)",

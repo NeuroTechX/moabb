@@ -71,7 +71,6 @@ class GrosseWentrup2009(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=128,
             channel_types={"eeg": 128},
             montage="standard_1020",
             hardware="BrainAmp",

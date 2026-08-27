@@ -519,7 +519,6 @@ class Test_Datasets:
             METADATA = DatasetMetadata(
                 acquisition=AcquisitionMetadata(
                     sampling_rate=256.0,
-                    n_channels=8,
                     channel_types={"eeg": 8},
                     hardware="BrainAmp",
                     sensor_type="Ag/AgCl",
@@ -593,7 +592,7 @@ class Test_Datasets:
 
             METADATA = DatasetMetadata(
                 acquisition=AcquisitionMetadata(
-                    sampling_rate=256.0, n_channels=8, channel_types={"eeg": 8}
+                    sampling_rate=256.0, channel_types={"eeg": 8}
                 ),
                 participants=ParticipantMetadata(n_subjects=4, health_status="healthy"),
                 experiment=ExperimentMetadata(paradigm="imagery"),

@@ -146,7 +146,6 @@ def _make_metadata(experiment):
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=config["n_eeg"],
             channel_types={"eeg": config["n_eeg"]},
             montage="standard_1020",
             hardware="actiCHamp (Brain Products)",

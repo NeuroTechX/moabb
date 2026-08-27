@@ -57,7 +57,7 @@ Example
 ... )
 >>> metadata = DatasetMetadata(
 ...     acquisition=AcquisitionMetadata(
-...         sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
+...         sampling_rate=512.0, channel_types={"eeg": 60, "eog": 4}
 ...     ),
 ...     participants=ParticipantMetadata(n_subjects=20),
 ...     experiment=ExperimentMetadata(paradigm="imagery"),
@@ -166,9 +166,7 @@ def _apply_manual_overrides(name: str, metadata: DatasetMetadata) -> DatasetMeta
 
     if "acquisition" in overrides:
         if acquisition is None:
-            acquisition = AcquisitionMetadata(
-                sampling_rate=1.0, n_channels=1, channel_types={"eeg": 1}
-            )
+            acquisition = AcquisitionMetadata(sampling_rate=1.0, channel_types={"eeg": 1})
         acquisition = replace(acquisition, **overrides["acquisition"])
 
     if "experiment" in overrides:
@@ -214,9 +212,7 @@ def _build_minimal_metadata(dataset) -> DatasetMetadata:
     )
     experiment = ExperimentMetadata(paradigm=getattr(dataset, "paradigm", "imagery"))
     acquisition = AcquisitionMetadata(
-        sampling_rate=float(sampling_rate),
-        n_channels=int(n_channels),
-        channel_types=channel_types,
+        sampling_rate=float(sampling_rate), channel_types=channel_types
     )
 
     return DatasetMetadata(
@@ -239,9 +235,7 @@ def _build_fallback_metadata(dataset_name: str) -> DatasetMetadata:
         stacklevel=2,
     )
     return DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=1.0, n_channels=1, channel_types={"eeg": 1}
-        ),
+        acquisition=AcquisitionMetadata(sampling_rate=1.0, channel_types={"eeg": 1}),
         participants=ParticipantMetadata(n_subjects=1),
         experiment=ExperimentMetadata(paradigm="imagery"),
     )
@@ -290,11 +284,6 @@ def _merge_with_dataset(metadata: DatasetMetadata, dataset) -> DatasetMetadata:
                 acquisition.n_channels or getattr(dataset, "n_channels", None) or 1
             )
             acquisition = replace(acquisition, channel_types={"eeg": int(n_channels)})
-        if not acquisition.n_channels:
-            n_channels = getattr(
-                dataset, "n_channels", None
-            ) or acquisition.channel_types.get("eeg", 1)
-            acquisition = replace(acquisition, n_channels=int(n_channels))
         if not acquisition.sampling_rate or acquisition.sampling_rate <= 0:
             sampling_rate = (
                 getattr(dataset, "sampling_rate", None)
@@ -396,7 +385,6 @@ def _apply_dataset_family_defaults(
         acquisition = replace(
             acquisition,
             sampling_rate=1024.0,
-            n_channels=30,
             channel_types={"eeg": 30, "eog": 3},
             hardware="Biosemi ActiveTwo",
         )
@@ -433,9 +421,7 @@ def _apply_dataset_family_defaults(
     # MartinezCagigal cVEP defaults (documentation is set per-dataset in each class)
     if name.startswith("MartinezCagigal2023"):
         acquisition = metadata.acquisition or AcquisitionMetadata()
-        acquisition = replace(
-            acquisition, sampling_rate=256.0, n_channels=16, channel_types={"eeg": 16}
-        )
+        acquisition = replace(acquisition, sampling_rate=256.0, channel_types={"eeg": 16})
         participants = metadata.participants or ParticipantMetadata(n_subjects=16)
         participants = replace(participants, n_subjects=16)
         experiment = metadata.experiment or ExperimentMetadata(paradigm="cvep")
@@ -510,7 +496,6 @@ def _build_dataset_metadata_catalog():
                     metadata = DatasetMetadata(
                         acquisition=AcquisitionMetadata(
                             sampling_rate=1024.0,
-                            n_channels=30,
                             channel_types={"eeg": 30, "eog": 3},
                             hardware="Biosemi ActiveTwo",
                         ),

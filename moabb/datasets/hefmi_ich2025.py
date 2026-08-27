@@ -96,7 +96,6 @@ class HefmiIch2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="g.HIamp (g.tec medical engineering GmbH)",

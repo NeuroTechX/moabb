@@ -122,7 +122,6 @@ class Kumar2024(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=22,
             channel_types={"eeg": 22, "eog": 3},
             montage="standard_1020",
             hardware="ANT Neuro eego mylab",

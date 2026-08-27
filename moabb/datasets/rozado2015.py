@@ -92,7 +92,6 @@ class Rozado2015(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="BioSemi ActiveTwo",

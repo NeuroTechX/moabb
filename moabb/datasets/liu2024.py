@@ -94,7 +94,6 @@ class Liu2024(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=29,
             channel_types={"eeg": 29, "eog": 2},
             montage="10-10",
             hardware="ZhenTec NT1 wireless multichannel EEG acquisition system",

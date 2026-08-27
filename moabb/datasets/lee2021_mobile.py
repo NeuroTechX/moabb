@@ -72,7 +72,6 @@ class Lee2021Mobile(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,
-            n_channels=73,
             channel_types={"eeg": 73},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
@@ -394,7 +393,6 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,
-            n_channels=73,
             channel_types={"eeg": 73},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",

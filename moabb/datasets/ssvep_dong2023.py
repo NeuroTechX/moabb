@@ -76,7 +76,6 @@ class Dong2023(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1005",
             hardware="NeuSenW (Neuracle)",

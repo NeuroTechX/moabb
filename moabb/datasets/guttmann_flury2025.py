@@ -168,8 +168,7 @@ _PARTICIPANTS = ParticipantMetadata(
 # Shared acquisition metadata.
 _ACQUISITION = AcquisitionMetadata(
     sampling_rate=1000.0,
-    n_channels=66,
-    channel_types={"eeg": 64, "eog": 1, "stim": 1},
+    channel_types={"eeg": 64, "eog": 1},
     montage="standard_1005",
     hardware="Neuroscan Quik-Cap 65-ch, SynAmps2",
     sensor_type="Ag/AgCl",

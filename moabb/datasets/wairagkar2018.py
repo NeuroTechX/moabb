@@ -111,7 +111,6 @@ class Wairagkar2018(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=19,
             channel_types={"eeg": 19},
             montage="standard_1020",
             hardware="Deymed TruScan 32",

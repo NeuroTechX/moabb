@@ -75,7 +75,6 @@ class Kalunga2016(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1005",
             sensor_type="EEG",

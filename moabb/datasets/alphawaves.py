@@ -89,7 +89,6 @@ class Rodrigues2017(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1020",
             hardware="g.tec g.USBamp",

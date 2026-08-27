@@ -82,7 +82,6 @@ class EPFLP300(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=2048.0,
-            n_channels=32,
             channel_types={"eeg": 32, "misc": 2},
             montage="standard_1020",
             hardware="Biosemi ActiveTwo",

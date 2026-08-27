@@ -116,7 +116,6 @@ class Kim2025BetaRange(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=31,
             channel_types={"eeg": 31, "misc": 2},
             montage="standard_1005",
             hardware="BioSemi ActiveTwo",

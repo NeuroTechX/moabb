@@ -337,7 +337,6 @@ class Shin2017A(BaseShin2017):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=30,
             channel_types={"eeg": 30, "eog": 2},
             montage="10-5",
             hardware="BrainAmp",
@@ -665,7 +664,6 @@ class Shin2017B(BaseShin2017):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=30,
             channel_types={"eeg": 30, "eog": 2},
             montage="10-5",
             hardware="BrainAmp",

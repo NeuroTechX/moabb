@@ -102,7 +102,6 @@ class Zhang2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=57,
             channel_types={"eeg": 57},
             montage="standard_1020",
             hardware="Neuracle Neusen",

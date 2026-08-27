@@ -187,7 +187,6 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=31,
             channel_types={"eeg": 31, "misc": 6},
             montage="standard_1020",
             hardware="BrainAmp DC",
@@ -439,7 +438,6 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=31,
             channel_types={"eeg": 31, "misc": 6},
             montage="extended 10-20",
             hardware="BrainAmp DC",

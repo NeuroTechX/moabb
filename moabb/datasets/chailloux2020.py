@@ -85,7 +85,6 @@ class Chailloux2020(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1020",
             hardware="g.USBamp (g.tec)",

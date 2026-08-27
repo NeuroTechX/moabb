@@ -172,7 +172,6 @@ class BNCI2003_004(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,
-            n_channels=118,
             channel_types={"eeg": 118},
             hardware="BrainAmp",
             reference=None,

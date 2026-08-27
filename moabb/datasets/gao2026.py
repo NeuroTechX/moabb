@@ -157,7 +157,6 @@ class Gao2026(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="standard_1005",
             hardware="Neuracle NeuSenW32",

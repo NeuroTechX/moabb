@@ -64,7 +64,6 @@ class Nieto2022(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
-            n_channels=136,
             channel_types={"eeg": 128, "emg": 8},
             montage="biosemi128",
             hardware="BioSemi ActiveTwo high resolution biopotential measuring system",
