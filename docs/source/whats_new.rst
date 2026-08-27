@@ -46,7 +46,7 @@ Version 1.6.1  (Stable - PyPi)
 
 Enhancements
 ~~~~~~~~~~~~
-- None yet.
+- None.
 
 API changes
 ~~~~~~~~~~~
@@ -54,7 +54,7 @@ API changes
 
 Requirements
 ~~~~~~~~~~~~
-- None yet.
+- None.
 
 Bugs
 ~~~~
@@ -68,7 +68,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
-- None yet.
+- None.
 
 Version 1.6.0  (Stable - PyPi)
 -------------------------------
