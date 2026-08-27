@@ -18,8 +18,31 @@ What's new
 
 .. _current:
 
-Version 1.6.1  (Source - GitHub)
----------------------------------
+Version 1.7  (Source - GitHub)
+-------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- None yet.
+
+API changes
+~~~~~~~~~~~
+- None yet.
+
+Requirements
+~~~~~~~~~~~~
+- None yet.
+
+Bugs
+~~~~
+- None yet.
+
+Code health
+~~~~~~~~~~~
+- None yet.
+
+Version 1.6.1  (Stable - PyPi)
+-------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
