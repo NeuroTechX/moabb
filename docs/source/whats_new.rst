@@ -18,8 +18,8 @@ What's new
 
 .. _current:
 
-Version 1.6.1  (Source - GitHub)
----------------------------------
+Version 1.7  (Source - GitHub)
+-------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -27,11 +27,34 @@ Enhancements
 
 API changes
 ~~~~~~~~~~~
-- :attr:`moabb.datasets.metadata.AcquisitionMetadata.n_channels` is derived from ``channel_types`` instead of stored beside it. The two could disagree, and for 34 of the 147 catalogued datasets they did -- the field was being used with two meanings, some counting EEG electrodes only and others every recorded channel. It now consistently means the total, which is what each dataset's own ``sensors`` list and ``test_n_channels_matches_raw_data`` (which counts every non-``stim`` channel) already assumed: :class:`moabb.datasets.Dreyer2023A`, for instance, reported 27 against its own 32 sensors and now reports 32. Passing ``n_channels=`` to the constructor is no longer accepted (by `Bruno Aristimunha`_).
+- None yet.
 
 Requirements
 ~~~~~~~~~~~~
 - None yet.
+
+Bugs
+~~~~
+- None yet.
+
+Code health
+~~~~~~~~~~~
+- None yet.
+
+Version 1.6.1  (Stable - PyPi)
+-------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- None.
+
+API changes
+~~~~~~~~~~~
+- :attr:`moabb.datasets.metadata.AcquisitionMetadata.n_channels` is derived from ``channel_types`` instead of stored beside it. The two could disagree, and for 34 of the 147 catalogued datasets they did -- the field was being used with two meanings, some counting EEG electrodes only and others every recorded channel. It now consistently means the total, which is what each dataset's own ``sensors`` list and ``test_n_channels_matches_raw_data`` (which counts every non-``stim`` channel) already assumed: :class:`moabb.datasets.Dreyer2023A`, for instance, reported 27 against its own 32 sensors and now reports 32. Passing ``n_channels=`` to the constructor is no longer accepted (by `Bruno Aristimunha`_).
+
+Requirements
+~~~~~~~~~~~~
+- None.
 
 Bugs
 ~~~~
@@ -45,7 +68,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
-- None yet.
+- None.
 
 Version 1.6.0  (Stable - PyPi)
 -------------------------------
