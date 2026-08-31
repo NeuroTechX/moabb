@@ -165,7 +165,7 @@ Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Graignic, P.-A.
 Begany, K., Leto, B., Davis, E., Munro, Z., Romani, M., Talar, B., Schrag, E.,
 Kowshik, B., Badang, R. A., Xu, G., Polychroniadou, D., Lefundes da Silva, H.,
 Bano, A., Singh, A., Sokolova, A., Rahimipour, M., Moreau, T., Roy, Y., Jayaram, V., Barachant, A.,
-& Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.7.0).
+& Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.7.1).
 Zenodo. https://doi.org/10.5281/zenodo.10034223
 ```
 
@@ -220,7 +220,7 @@ Zenodo. https://doi.org/10.5281/zenodo.10034223
   title        = {Mother of all BCI Benchmarks},
   year         = 2026,
   publisher    = {Zenodo},
-  version      = {1.7.0},
+  version      = {1.7.1},
   url          = {https://github.com/NeuroTechX/moabb},
   doi          = {10.5281/zenodo.10034223},
 }

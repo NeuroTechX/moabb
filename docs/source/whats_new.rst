@@ -41,6 +41,29 @@ Code health
 ~~~~~~~~~~~
 - None yet.
 
+Version 1.7.1  (Stable - PyPi)
+-------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- None.
+
+API changes
+~~~~~~~~~~~
+- None.
+
+Requirements
+~~~~~~~~~~~~
+- None.
+
+Bugs
+~~~~
+- Let the ``"auto"`` download provider fall back when ``nemar-py`` leaks an ``httpx.TransportError``, such as a proxy failure, so locally cached upstream data remains usable when NEMAR is unreachable (by `Bruno Aristimunha`_).
+
+Code health
+~~~~~~~~~~~
+- None.
+
 Version 1.7  (Stable - PyPi)
 -----------------------------
 

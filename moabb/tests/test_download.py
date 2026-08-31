@@ -10,6 +10,7 @@ import zipfile
 from pathlib import Path, PurePath
 from types import SimpleNamespace
 
+import httpx
 import mne
 import pytest
 from mne import get_config, set_config
@@ -1192,6 +1193,25 @@ def test_get_data_prefetches_the_requested_subjects(monkeypatch):
 
     assert fetched == [1, 3]
     assert sorted(data) == [1, 3]
+
+
+def test_get_data_auto_falls_back_from_nemar_proxy_error(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    dataset = FakeDataset(n_subjects=1)
+    dataset.nemar_id = "nm000341"
+    set_download_dir(str(tmp_path))
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "auto")
+
+    def fail(**kwargs):
+        raise httpx.ProxyError("403 Forbidden")
+
+    monkeypatch.setattr(dl.nemar, "download", fail)
+
+    with pytest.warns(RuntimeWarning, match="own downloader"):
+        data = dataset.get_data(subjects=[1])
+
+    assert list(data) == [1]
 
 
 def test_get_data_uses_cache_before_nemar_prefetch(tmp_path, monkeypatch):
