@@ -68,7 +68,7 @@
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=ab0b086a"></script>
+    <script src="../../_static/documentation_options.js?v=797ada32"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -144,7 +144,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.7.0dev0" />
+  <meta name="docsearch:version" content="1.8.0dev0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -813,10 +813,96 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
-0    1.0  0.017996     40.0  ...  ExampleDataset       MDM
-1    1.0  0.017764     40.0  ...  ExampleDataset       MDM
-2    1.0  0.017804     40.0  ...  ExampleDataset       MDM
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|                                     | 1.02k/2.77M [00:00&lt;06:09, 7.47kB/s]
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:19, 138kB/s]
+  3%|█▏                                    | 89.1k/2.77M [00:00&lt;00:09, 273kB/s]
+  5%|█▉                                     | 138k/2.77M [00:00&lt;00:08, 305kB/s]
+  7%|██▊                                    | 204k/2.77M [00:00&lt;00:07, 365kB/s]
+ 11%|████▏                                  | 297k/2.77M [00:00&lt;00:05, 469kB/s]
+ 14%|█████▎                                 | 379k/2.77M [00:00&lt;00:04, 508kB/s]
+ 17%|██████▋                                | 477k/2.77M [00:01&lt;00:04, 551kB/s]
+ 20%|███████▉                               | 559k/2.77M [00:01&lt;00:03, 562kB/s]
+ 23%|████████▊                              | 624k/2.77M [00:01&lt;00:04, 531kB/s]
+ 27%|██████████▍                            | 738k/2.77M [00:01&lt;00:03, 619kB/s]
+ 31%|████████████▎                          | 869k/2.77M [00:01&lt;00:02, 714kB/s]
+ 35%|█████████████▋                         | 968k/2.77M [00:01&lt;00:02, 711kB/s]
+ 39%|██████████████▊                       | 1.08M/2.77M [00:01&lt;00:02, 744kB/s]
+ 46%|█████████████████▎                    | 1.26M/2.77M [00:02&lt;00:01, 906kB/s]
+ 53%|███████████████████▌                 | 1.46M/2.77M [00:02&lt;00:01, 1.05MB/s]
+ 59%|█████████████████████▋               | 1.62M/2.77M [00:02&lt;00:01, 1.09MB/s]
+ 72%|██████████████████████████▋          | 2.00M/2.77M [00:02&lt;00:00, 1.57MB/s]
+ 83%|██████████████████████████████▉      | 2.31M/2.77M [00:02&lt;00:00, 1.74MB/s]
+ 98%|████████████████████████████████████▎| 2.72M/2.77M [00:02&lt;00:00, 2.12MB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 16.7GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|                                     | 1.02k/2.77M [00:00&lt;05:22, 8.56kB/s]
+  1%|▍                                     | 30.7k/2.77M [00:00&lt;00:21, 125kB/s]
+  3%|█▎                                    | 96.3k/2.77M [00:00&lt;00:09, 280kB/s]
+  6%|██▍                                    | 174k/2.77M [00:00&lt;00:06, 411kB/s]
+ 10%|███▉                                   | 281k/2.77M [00:00&lt;00:04, 511kB/s]
+ 14%|█████▎                                 | 380k/2.77M [00:00&lt;00:04, 578kB/s]
+ 18%|███████                                | 500k/2.77M [00:00&lt;00:03, 665kB/s]
+ 21%|████████▏                              | 582k/2.77M [00:01&lt;00:03, 639kB/s]
+ 26%|██████████▎                            | 728k/2.77M [00:01&lt;00:02, 764kB/s]
+ 29%|███████████▍                           | 810k/2.77M [00:01&lt;00:02, 709kB/s]
+ 32%|████████████▍                          | 882k/2.77M [00:01&lt;00:02, 649kB/s]
+ 35%|█████████████▋                         | 974k/2.77M [00:01&lt;00:02, 649kB/s]
+ 39%|██████████████▋                       | 1.07M/2.77M [00:01&lt;00:02, 664kB/s]
+ 43%|████████████████▌                     | 1.20M/2.77M [00:01&lt;00:02, 743kB/s]
+ 46%|█████████████████▋                    | 1.28M/2.77M [00:02&lt;00:02, 694kB/s]
+ 49%|██████████████████▊                   | 1.37M/2.77M [00:02&lt;00:02, 661kB/s]
+ 55%|████████████████████▊                 | 1.51M/2.77M [00:02&lt;00:01, 777kB/s]
+ 59%|██████████████████████▍               | 1.63M/2.77M [00:02&lt;00:01, 789kB/s]
+ 62%|███████████████████████▍              | 1.71M/2.77M [00:02&lt;00:01, 726kB/s]
+ 64%|████████████████████████▍             | 1.78M/2.77M [00:02&lt;00:01, 664kB/s]
+ 67%|█████████████████████████▌            | 1.86M/2.77M [00:02&lt;00:01, 624kB/s]
+ 72%|███████████████████████████▌          | 2.00M/2.77M [00:03&lt;00:01, 751kB/s]
+ 76%|████████████████████████████▉         | 2.10M/2.77M [00:03&lt;00:00, 736kB/s]
+ 80%|██████████████████████████████▍       | 2.22M/2.77M [00:03&lt;00:00, 758kB/s]
+ 85%|████████████████████████████████▍     | 2.36M/2.77M [00:03&lt;00:00, 845kB/s]
+ 89%|█████████████████████████████████▋    | 2.45M/2.77M [00:03&lt;00:00, 773kB/s]
+ 92%|██████████████████████████████████▉   | 2.54M/2.77M [00:03&lt;00:00, 744kB/s]
+ 98%|█████████████████████████████████████▏| 2.71M/2.77M [00:03&lt;00:00, 871kB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 19.4GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|                                     | 1.02k/2.77M [00:00&lt;06:14, 7.37kB/s]
+  1%|▍                                     | 35.8k/2.77M [00:00&lt;00:18, 150kB/s]
+  4%|█▋                                     | 118k/2.77M [00:00&lt;00:07, 350kB/s]
+  7%|██▊                                    | 199k/2.77M [00:00&lt;00:05, 441kB/s]
+ 11%|████▏                                  | 297k/2.77M [00:00&lt;00:05, 436kB/s]
+ 13%|█████                                  | 362k/2.77M [00:00&lt;00:05, 445kB/s]
+ 17%|██████▍                                | 461k/2.77M [00:01&lt;00:04, 522kB/s]
+ 20%|███████▉                               | 559k/2.77M [00:01&lt;00:03, 575kB/s]
+ 23%|████████▊                              | 625k/2.77M [00:01&lt;00:03, 543kB/s]
+ 28%|██████████▉                            | 771k/2.77M [00:01&lt;00:02, 694kB/s]
+ 31%|████████████▎                          | 869k/2.77M [00:01&lt;00:02, 696kB/s]
+ 36%|█████████████▋                        | 1.00M/2.77M [00:01&lt;00:02, 766kB/s]
+ 40%|███████████████                       | 1.10M/2.77M [00:01&lt;00:02, 738kB/s]
+ 43%|████████████████▍                     | 1.20M/2.77M [00:02&lt;00:02, 724kB/s]
+ 49%|██████████████████▋                   | 1.36M/2.77M [00:02&lt;00:01, 853kB/s]
+ 52%|███████████████████▊                  | 1.45M/2.77M [00:02&lt;00:01, 781kB/s]
+ 57%|█████████████████████▌                | 1.57M/2.77M [00:02&lt;00:01, 818kB/s]
+ 62%|███████████████████████▍              | 1.70M/2.77M [00:02&lt;00:01, 852kB/s]
+ 66%|████████████████████████▉             | 1.82M/2.77M [00:02&lt;00:01, 839kB/s]
+ 69%|██████████████████████████▏           | 1.90M/2.77M [00:02&lt;00:01, 768kB/s]
+ 72%|███████████████████████████▏          | 1.98M/2.77M [00:03&lt;00:01, 703kB/s]
+ 76%|████████████████████████████▊         | 2.10M/2.77M [00:03&lt;00:00, 744kB/s]
+ 80%|██████████████████████████████▍       | 2.21M/2.77M [00:03&lt;00:00, 765kB/s]
+ 83%|███████████████████████████████▍      | 2.29M/2.77M [00:03&lt;00:00, 709kB/s]
+ 86%|████████████████████████████████▌     | 2.37M/2.77M [00:03&lt;00:00, 671kB/s]
+ 89%|█████████████████████████████████▋    | 2.46M/2.77M [00:03&lt;00:00, 646kB/s]
+ 92%|███████████████████████████████████   | 2.55M/2.77M [00:03&lt;00:00, 662kB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 16.8GB/s]
+   score      time  samples  ...         dataset  pipeline  codecarbon_task_name
+0    1.0  0.019111     40.0  ...  ExampleDataset       MDM
+1    1.0  0.018220     40.0  ...  ExampleDataset       MDM
+2    1.0  0.018320     40.0  ...  ExampleDataset       MDM
 
 [3 rows x 13 columns]
 </pre></div>
@@ -940,7 +1026,8 @@ dataset’s own <code class="docutils literal notranslate"><span class="pre">dat
 <li><p>If a NEMAR download fails at runtime, MOABB emits a warning and
 automatically falls back to <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.964 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.031 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  553 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>
