@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Make :func:`moabb.analysis.plotting.dataset_bubble_plot` layouts reproducible by default and add a ``random_state`` parameter for controlled alternative layouts.
+- None yet.
 
 API changes
 ~~~~~~~~~~~
@@ -46,7 +46,7 @@ Version 1.7  (Stable - PyPi)
 
 Enhancements
 ~~~~~~~~~~~~
-- None.
+- Make :func:`moabb.analysis.plotting.dataset_bubble_plot` layouts reproducible by default and add a ``random_state`` parameter for controlled alternative layouts (:gh:`1168` by `Anna Sokolova`_).
 
 API changes
 ~~~~~~~~~~~
@@ -1033,3 +1033,4 @@ API changes
 .. _Michele Romani: https://github.com/BRomans
 .. _Barış Talar: https://github.com/baris-talar
 .. _Iain: https://github.com/NotAFlightRisk
+.. _Anna Sokolova: https://github.com/ZyntZ
