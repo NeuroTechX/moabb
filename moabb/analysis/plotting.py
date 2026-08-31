@@ -1302,9 +1302,10 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     return fig
 
 
-def _get_hexa_grid(n, diameter, center):
-    x = np.arange(n) - n // 2 + np.random.rand()  # TODO
-    y = np.arange(n) - n // 2 + np.random.rand()
+def _get_hexa_grid(n, diameter, center, random_state=0):
+    rng = np.random.default_rng(random_state)
+    x = np.arange(n) - n // 2 + rng.random()
+    y = np.arange(n) - n // 2 + rng.random()
     x, y = np.meshgrid(x, y)
     x = x.flatten()
     y = y.flatten()
@@ -1314,8 +1315,8 @@ def _get_hexa_grid(n, diameter, center):
     )
 
 
-def _get_bubble_coordinates(n, diameter, center):
-    x, y = _get_hexa_grid(n, diameter, center)
+def _get_bubble_coordinates(n, diameter, center, random_state=0):
+    x, y = _get_hexa_grid(n, diameter, center, random_state=random_state)
     dist = np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
     dort_idx = dist.argsort()
     x = x[dort_idx]
@@ -1341,9 +1342,10 @@ def _plot_hexa_bubbles(
     shape: Literal["circle", "hexagon"] = "circle",
     gap: float = 0.0,
     gid: str | None = None,
+    random_state=0,
     **kwargs,
 ):
-    x, y = _get_bubble_coordinates(n, diameter + gap, center)
+    x, y = _get_bubble_coordinates(n, diameter + gap, center, random_state=random_state)
     bubbles = [
         _plot_shape(shape, (xi, yi), radius=diameter / 2, **kwargs)
         for xi, yi in zip(x, y)
@@ -1463,6 +1465,7 @@ def dataset_bubble_plot(
     n_sessions: int | None = None,
     n_trials: int | None = None,
     trial_len: float | None = None,
+    random_state: int | np.random.Generator | None = 0,
 ):
     """Plot a bubble plot for a dataset.
 
@@ -1529,6 +1532,10 @@ def dataset_bubble_plot(
         Number of trials per session. Required if ``dataset`` is None.
     trial_len: float | None
         Duration of one trial, in seconds. Required if ``dataset`` is None.
+    random_state: int | numpy.random.Generator | None
+        Controls the small offset used to arrange subjects on the hexagonal grid.
+        The default, 0, produces reproducible layouts. Pass ``None`` for a fresh,
+        non-deterministic layout on each call.
     """
     p = sea.color_palette("tab10", 5)
     color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
@@ -1569,6 +1576,7 @@ def dataset_bubble_plot(
         shape=shape,
         gap=gap,
         gid=f"bubbles/{dataset_name}",
+        random_state=random_state,
     )
     if title:
         ax.text(

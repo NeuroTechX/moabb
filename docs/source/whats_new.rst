@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- None yet.
+- Make :func:`moabb.analysis.plotting.dataset_bubble_plot` layouts reproducible by default and add a ``random_state`` parameter for controlled alternative layouts.
 
 API changes
 ~~~~~~~~~~~
