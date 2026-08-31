@@ -1180,6 +1180,9 @@ def test_get_data_prefetches_the_requested_subjects(monkeypatch):
 
     fetched = []
     monkeypatch.setattr(
+        base_module, "nemar_sourcedata_is_local", lambda root, subject: subject in fetched
+    )
+    monkeypatch.setattr(
         dataset,
         "sourcedata_path",
         lambda subject=None, verbose=None: fetched.append(subject),
@@ -1210,8 +1213,9 @@ def test_get_data_uses_cache_before_nemar_prefetch(tmp_path, monkeypatch):
     assert list(dataset.get_data(subjects=[1], cache_config=cache_config)) == [1]
 
 
-def test_get_data_does_not_fall_through_if_pinned_cache_disappears(tmp_path, monkeypatch):
-    """A concurrent cache removal must not bypass a pinned NEMAR provider."""
+@pytest.mark.parametrize("provider", ["auto", "nemar"])
+def test_get_data_rechecks_nemar_if_cache_disappears(tmp_path, monkeypatch, provider):
+    """A concurrent cache removal must preserve NEMAR-first behavior."""
     dataset = FakeDataset(n_subjects=1, n_sessions=1, n_runs=1)
     dataset.nemar_id = "nm000341"
     cache_config = {"save_raw": True, "use": True, "path": tmp_path}
@@ -1219,7 +1223,7 @@ def test_get_data_does_not_fall_through_if_pinned_cache_disappears(tmp_path, mon
     monkeypatch.setattr(base_module, "get_download_provider", lambda: "upstream")
     dataset.get_data(subjects=[1], cache_config=cache_config)
 
-    monkeypatch.setattr(base_module, "get_download_provider", lambda: "nemar")
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: provider)
     interface_class = base_module._interface_map[base_module.StepType.RAW]
     original_cache_paths = interface_class._cache_paths
 
@@ -1231,12 +1235,16 @@ def test_get_data_does_not_fall_through_if_pinned_cache_disappears(tmp_path, mon
 
     monkeypatch.setattr(interface_class, "_cache_paths", remove_after_check)
 
-    def offline(**kwargs):
-        raise dl.NemarDownloadError("NEMAR is offline")
+    class PrefetchCalled(Exception):
+        pass
 
-    monkeypatch.setattr(dataset, "sourcedata_path", offline)
+    def prefetch(subjects):
+        if subjects:
+            raise PrefetchCalled
 
-    with pytest.raises(dl.NemarDownloadError, match="NEMAR is offline"):
+    monkeypatch.setattr(dataset, "_prefetch_nemar_sourcedata", prefetch)
+
+    with pytest.raises(PrefetchCalled):
         dataset.get_data(subjects=[1], cache_config=cache_config)
 
 

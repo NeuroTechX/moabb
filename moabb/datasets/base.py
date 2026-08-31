@@ -1452,7 +1452,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             sessions_data = None
             # Load and eventually overwrite:
             if len(cached_steps) == 0:  # last option: we don't use cache
-                if get_download_provider() == "nemar":
+                if get_download_provider() != "upstream":
                     self._prefetch_nemar_sourcedata([subject])
                 with active_sourcedata_store(self._sourcedata_store()):
                     sessions_data = self._get_single_subject_data(subject)
