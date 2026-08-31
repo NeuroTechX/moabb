@@ -676,6 +676,10 @@ use the standard python logging commands through the top-level moabb module</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines.features</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">LogVariance</span></a>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
+</pre></div>
+</div>
 <p>In order to create pipelines within a script, you will likely need at least
 the make_pipeline function. They can also be specified via a .yml file. Here
 we will make a couple pipelines just for convenience</p>
@@ -751,18 +755,15 @@ subjects. This also is the correct place to specify multiple threads.</p>
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-08-27 07:41:16,577 INFO MainThread moabb.datasets.download Filling A01T.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A01T.mat.
-2026-08-27 07:41:17,256 INFO MainThread moabb.datasets.download Filling A01E.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A01E.mat.
-2026-08-27 07:41:19,315 INFO MainThread moabb.datasets.download Filling A02T.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A02T.mat.
-2026-08-27 07:41:19,975 INFO MainThread moabb.datasets.download Filling A02E.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A02E.mat.
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
-2026-08-27 07:41:24,015 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 16:18:26] Multiple instances of codecarbon are allowed to run at the same time.
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
+2026-08-31 16:18:29,021 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
 /home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
   dset.create_dataset(
 </pre></div>
@@ -774,17 +775,16 @@ provided, MOABB adds a primary <cite>score</cite> plus one column per metric
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
-0  0.729167  0.011666  ...    AM+LDA  8e726db5-6713-4cbf-8f7d-cdb2d2ddf051
-1  0.715278  0.012133  ...    AM+LDA  3f6252aa-66da-4cd3-82a2-c90e23279cc8
-2  0.597222  0.012423  ...    AM+LDA  486d1e59-1d8c-4e66-acce-9e7fd7a4dde1
-3  0.520833  0.012713  ...    AM+LDA  5464c983-cc11-46e7-8fee-d654720b7792
-4  0.743056  0.152501  ...    AM+SVM  eb5fa9a0-e396-46f8-88a1-8d980cfe5184
+0  0.729167  0.011608  ...    AM+LDA  7420bd98-dea9-4df6-a467-786bd0fd965f
+1  0.715278  0.015229  ...    AM+LDA  e23f4427-ad87-462b-bb1e-d5bbd36d8801
+2  0.597222  0.013408  ...    AM+LDA  730534ce-ac7d-480e-a2f2-3addce776013
+3  0.520833  0.012749  ...    AM+LDA  d606926a-04b9-4977-9d79-8cf34ea4fff2
+4  0.743056  0.161061  ...    AM+SVM  6525c32f-b38e-45a2-92c5-71368da72166
 
 [5 rows x 15 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.214 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1053 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.967 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-0-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc78b19f551dfa48627d09f644ea18ad/tutorial_0_plot_getting_started.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_0_plot_getting_started.ipynb</span></code></a></p>
