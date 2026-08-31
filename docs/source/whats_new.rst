@@ -18,12 +18,12 @@ What's new
 
 .. _current:
 
-Version 1.7  (Source - GitHub)
+Version 1.8  (Source - GitHub)
 -------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
-- Make :func:`moabb.analysis.plotting.dataset_bubble_plot` layouts reproducible by default and add a ``random_state`` parameter for controlled alternative layouts.
+- None yet.
 
 API changes
 ~~~~~~~~~~~
@@ -35,11 +35,34 @@ Requirements
 
 Bugs
 ~~~~
-- Let :meth:`moabb.datasets.base.BaseDataset.get_data` use a complete processing cache before prefetching NEMAR, so cached data remains available when NEMAR or the network is unavailable (by `Bruno Aristimunha`_).
+- None yet.
 
 Code health
 ~~~~~~~~~~~
 - None yet.
+
+Version 1.7  (Stable - PyPi)
+-----------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Make :func:`moabb.analysis.plotting.dataset_bubble_plot` layouts reproducible by default and add a ``random_state`` parameter for controlled alternative layouts (:gh:`1168` by `Anna Sokolova`_).
+
+API changes
+~~~~~~~~~~~
+- None.
+
+Requirements
+~~~~~~~~~~~~
+- None.
+
+Bugs
+~~~~
+- Let :meth:`moabb.datasets.base.BaseDataset.get_data` use a complete processing cache before prefetching NEMAR, so cached data remains available when NEMAR or the network is unavailable (by `Bruno Aristimunha`_).
+
+Code health
+~~~~~~~~~~~
+- None.
 
 Version 1.6.1  (Stable - PyPi)
 -------------------------------
@@ -1010,3 +1033,4 @@ API changes
 .. _Michele Romani: https://github.com/BRomans
 .. _Barış Talar: https://github.com/baris-talar
 .. _Iain: https://github.com/NotAFlightRisk
+.. _Anna Sokolova: https://github.com/ZyntZ

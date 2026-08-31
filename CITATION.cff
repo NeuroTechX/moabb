@@ -104,6 +104,8 @@ authors:
   orcid: "https://orcid.org/0009-0007-2584-4639"
 - family-names: "Singh"
   given-names: "Aditya"
+- family-names: "Sokolova"
+  given-names: "Anna"
 - family-names: "Rahimipour"
   given-names: "Meysam"
 - family-names: "Moreau"
@@ -122,7 +124,7 @@ authors:
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
 title: "Mother of all BCI Benchmarks"
-version: 1.6.1
+version: 1.7.0
 doi: 10.5281/zenodo.10034223
-date-released: 2026-08-27
+date-released: 2026-08-31
 url: "https://github.com/NeuroTechX/moabb"
