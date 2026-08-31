@@ -35,7 +35,7 @@ Requirements
 
 Bugs
 ~~~~
-- None yet.
+- Let :meth:`moabb.datasets.base.BaseDataset.get_data` use a complete processing cache before prefetching NEMAR, so cached data remains available when NEMAR or the network is unavailable (by `Bruno Aristimunha`_).
 
 Code health
 ~~~~~~~~~~~
