@@ -887,7 +887,9 @@ class BaseDataset(metaclass=MetaclassDataset):
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
 
-        self._prefetch_nemar_sourcedata(subjects)
+        self._prefetch_nemar_sourcedata(
+            self._subjects_without_cache(subjects, cache_config, process_pipeline)
+        )
 
         results = Parallel(n_jobs=n_jobs)(
             delayed(self._get_selected_subject_data)(
@@ -920,6 +922,32 @@ class BaseDataset(metaclass=MetaclassDataset):
                 or ((m := re.fullmatch(pat, k)) and m.group(1) in str_sessions)
             }
         return subject_data
+
+    def _subjects_without_cache(self, subjects, cache_config, process_pipeline):
+        """Return subjects whose source data must be loaded."""
+        if not cache_config.use:
+            return subjects
+
+        steps = list(process_pipeline.steps)
+        missing = []
+        for subject in subjects:
+            for end in range(len(steps), 0, -1):
+                cached_steps = steps[:end]
+                cache_type = cached_steps[-1][0]
+                if getattr(cache_config, f"overwrite_{cache_type.value}"):
+                    continue
+                interface = _interface_map[cache_type](
+                    self,
+                    subject,
+                    path=cache_config.path,
+                    process_pipeline=FixedPipeline(cached_steps),
+                    verbose=cache_config.verbose,
+                )
+                if interface._cache_paths():
+                    break
+            else:
+                missing.append(subject)
+        return missing
 
     def download(
         self,
@@ -1424,6 +1452,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             sessions_data = None
             # Load and eventually overwrite:
             if len(cached_steps) == 0:  # last option: we don't use cache
+                if get_download_provider() == "nemar":
+                    self._prefetch_nemar_sourcedata([subject])
                 with active_sourcedata_store(self._sourcedata_store()):
                     sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen

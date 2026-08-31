@@ -2337,13 +2337,28 @@ class BIDSInterfaceBase(abc.ABC):
         code_dir = self.root / "code"
         code_dir.mkdir(parents=True, exist_ok=True)
 
-        # Check for non-session-aware legacy lock files (backward compatibility)
-        legacy_lock_exists = (
-            self._migration_lock_file.exists() or self._legacy_lock_file.fpath.exists()
-        )
         # Ensure the legacy BIDSPath directory exists for mne_bids compatibility
         self._legacy_lock_file.mkdir(exist_ok=True)
 
+        paths = self._cache_paths()
+
+        if not paths:
+            log.info("No cache found at %s.", str(code_dir))
+            return None
+
+        sessions_data = {}
+        for path in paths:
+            session_moabb = path.session
+            session = sessions_data.setdefault(session_moabb, {})
+            run = self._load_file(path, preload=preload)
+            session[run_bids_to_moabb(path)] = run
+        log.info("Finished reading cache of %s", repr(self))
+        return sessions_data
+
+    def _cache_paths(self):
+        legacy_lock_exists = (
+            self._migration_lock_file.exists() or self._legacy_lock_file.fpath.exists()
+        )
         paths = mne_bids.find_matching_paths(
             root=self.root,
             subjects=subject_moabb_to_bids(self.subject),
@@ -2354,27 +2369,14 @@ class BIDSInterfaceBase(abc.ABC):
             suffixes=self._suffix,
         )
 
-        if not paths:
-            log.info("No cache found at %s.", str(code_dir))
-            return None
-
         # Check per-session lock files unless a legacy (non-session-aware) lock
         # file exists, which indicates the whole subject was already cached.
-        if not legacy_lock_exists:
+        if paths and not legacy_lock_exists:
             found_sessions = {path.session for path in paths}
             missing = [s for s in found_sessions if not self._lock_file(s).exists()]
             if missing:
-                log.info("No cache found at %s.", str(code_dir))
-                return None
-
-        sessions_data = {}
-        for path in paths:
-            session_moabb = path.session
-            session = sessions_data.setdefault(session_moabb, {})
-            run = self._load_file(path, preload=preload)
-            session[run_bids_to_moabb(path)] = run
-        log.info("Finished reading cache of %s", repr(self))
-        return sessions_data
+                return []
+        return paths
 
     def save(self, sessions_data):
         """Save the cache of the subject.

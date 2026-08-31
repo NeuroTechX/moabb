@@ -1191,6 +1191,55 @@ def test_get_data_prefetches_the_requested_subjects(monkeypatch):
     assert sorted(data) == [1, 3]
 
 
+def test_get_data_uses_cache_before_nemar_prefetch(tmp_path, monkeypatch):
+    """A complete processing cache must remain usable while NEMAR is offline."""
+    dataset = FakeDataset(n_subjects=1, n_sessions=1, n_runs=1)
+    dataset.nemar_id = "nm000341"
+    cache_config = {"save_raw": True, "use": True, "path": tmp_path}
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "upstream")
+    dataset.get_data(subjects=[1], cache_config=cache_config)
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "nemar")
+    monkeypatch.setattr(
+        dataset,
+        "sourcedata_path",
+        lambda **kwargs: pytest.fail("NEMAR was contacted for cached data"),
+    )
+
+    assert list(dataset.get_data(subjects=[1], cache_config=cache_config)) == [1]
+
+
+def test_get_data_does_not_fall_through_if_pinned_cache_disappears(tmp_path, monkeypatch):
+    """A concurrent cache removal must not bypass a pinned NEMAR provider."""
+    dataset = FakeDataset(n_subjects=1, n_sessions=1, n_runs=1)
+    dataset.nemar_id = "nm000341"
+    cache_config = {"save_raw": True, "use": True, "path": tmp_path}
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "upstream")
+    dataset.get_data(subjects=[1], cache_config=cache_config)
+
+    monkeypatch.setattr(base_module, "get_download_provider", lambda: "nemar")
+    interface_class = base_module._interface_map[base_module.StepType.RAW]
+    original_cache_paths = interface_class._cache_paths
+
+    def remove_after_check(interface):
+        paths = original_cache_paths(interface)
+        if paths:
+            interface.erase()
+        return paths
+
+    monkeypatch.setattr(interface_class, "_cache_paths", remove_after_check)
+
+    def offline(**kwargs):
+        raise dl.NemarDownloadError("NEMAR is offline")
+
+    monkeypatch.setattr(dataset, "sourcedata_path", offline)
+
+    with pytest.raises(dl.NemarDownloadError, match="NEMAR is offline"):
+        dataset.get_data(subjects=[1], cache_config=cache_config)
+
+
 def test_store_lookup_falls_back_to_url_tails_when_fname_differs(tmp_path, monkeypatch):
     """gh-1151 review: fname names the destination (experiment prefix, padded
     subject), the store keeps upstream names -- the URL tails must still hit."""
