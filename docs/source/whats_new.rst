@@ -18,7 +18,7 @@ What's new
 
 .. _current:
 
-Version 1.7  (Source - GitHub)
+Version 1.8  (Source - GitHub)
 -------------------------------
 
 Enhancements
@@ -35,11 +35,34 @@ Requirements
 
 Bugs
 ~~~~
-- Let :meth:`moabb.datasets.base.BaseDataset.get_data` use a complete processing cache before prefetching NEMAR, so cached data remains available when NEMAR or the network is unavailable (by `Bruno Aristimunha`_).
+- None yet.
 
 Code health
 ~~~~~~~~~~~
 - None yet.
+
+Version 1.7  (Stable - PyPi)
+-----------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- None.
+
+API changes
+~~~~~~~~~~~
+- None.
+
+Requirements
+~~~~~~~~~~~~
+- None.
+
+Bugs
+~~~~
+- Let :meth:`moabb.datasets.base.BaseDataset.get_data` use a complete processing cache before prefetching NEMAR, so cached data remains available when NEMAR or the network is unavailable (by `Bruno Aristimunha`_).
+
+Code health
+~~~~~~~~~~~
+- None.
 
 Version 1.6.1  (Stable - PyPi)
 -------------------------------
