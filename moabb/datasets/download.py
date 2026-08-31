@@ -19,6 +19,7 @@ from urllib.parse import urlparse
 import nemar
 import pandas as pd
 import requests
+from httpx import TransportError
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
@@ -383,7 +384,7 @@ def nemar_dl(
             trust_existing=not force_update,
             **bids_filters,
         )
-    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+    except (NemarError, TransportError, OSError, ValueError) as exc:
         raise NemarDownloadError(f"Could not download NEMAR dataset {nemar_id}.") from exc
     return str(target_dir)
 
@@ -432,7 +433,7 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
                 f"NEMAR dataset {nemar_id} publishes no sourcedata manifest -- "
                 "the original distribution is not mirrored there."
             ) from exc
-        except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+        except (NemarError, TransportError, OSError, ValueError) as exc:
             raise NemarDownloadError(
                 f"Could not fetch the sourcedata manifest for {nemar_id}: {exc}"
             ) from exc
@@ -644,7 +645,7 @@ def nemar_sourcedata_dl(
         # subject is not in it" both arrive here rather than as a successful
         # empty download.
         raise NemarDownloadError(missing) from exc
-    except (NemarError, OSError, ConnectionError, TimeoutError, ValueError) as exc:
+    except (NemarError, TransportError, OSError, ValueError) as exc:
         # Transport, verification, or S3 failures are not evidence that the
         # deposit publishes no sourcedata -- report them as what they are.
         raise NemarDownloadError(
