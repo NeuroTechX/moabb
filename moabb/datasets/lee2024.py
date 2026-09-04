@@ -5,6 +5,7 @@ DOI: 10.3389/fnhum.2024.1320457
 Data: https://github.com/jml226/Home-Appliance-Control-Dataset
 """
 
+import json
 import logging
 from functools import partialmethod
 from pathlib import Path
@@ -32,6 +33,10 @@ log = logging.getLogger(__name__)
 
 _GITHUB_RAW = (
     "https://raw.githubusercontent.com/jml226/Home-Appliance-Control-Dataset/main"
+)
+_GITHUB_API_TREE = (
+    "https://api.github.com/repos/jml226/Home-Appliance-Control-Dataset"
+    "/git/trees/main?recursive=1"
 )
 _DOI = "10.3389/fnhum.2024.1320457"
 _SIGN = "lee2024erp"
@@ -141,7 +146,6 @@ def _make_metadata(experiment):
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=config["n_eeg"],
             channel_types={"eeg": config["n_eeg"]},
             montage="standard_1020",
             hardware="actiCHamp (Brain Products)",
@@ -304,9 +308,9 @@ class Lee2024(BaseDataset):
 
         return {"0": runs} if runs else {}
 
-    def _subject_dir(self, subject):
+    def _subject_dir(self, subject, path=None):
         config = _EXPERIMENT_CONFIGS[self._experiment]
-        path = dl.get_dataset_path(_SIGN, None)
+        path = dl.get_dataset_path(_SIGN, path)
         base = Path(path) / f"MNE-{_SIGN}-data" / config["dir_name"]
         subj_str = self._subj_str(subject, config)
         return base / f"Dat_{subj_str}"
@@ -438,6 +442,45 @@ class Lee2024(BaseDataset):
 
         return raw
 
+    _upstream_paths = None
+
+    @classmethod
+    def _upstream_tree(cls):
+        """Blob paths of the upstream repo -- fetched once per process."""
+        if cls._upstream_paths is None:
+            import requests
+
+            resp = requests.get(_GITHUB_API_TREE, timeout=120)
+            resp.raise_for_status()
+            cls._upstream_paths = [
+                e["path"] for e in resp.json()["tree"] if e["type"] == "blob"
+            ]
+        return cls._upstream_paths
+
+    def _subject_files(self, config, subj_str):
+        """One subject's files, as upstream-relative paths under the experiment.
+
+        The NEMAR deposit's provenance manifest is the preferred inventory --
+        it mirrors the upstream names exactly and is already local after the
+        sourcedata store is fetched, so the NEMAR path never contacts the
+        upstream host at all. Without a store (provider ``"upstream"``), the
+        upstream git tree is the authoritative inventory (gh-1142: guessing
+        filename patterns silently dropped 345 files, e.g. subject 8's
+        unpadded ``sub8_*`` names and every ``param.mat``).
+        """
+        store = self._sourcedata_store()
+        manifest = store / "sourcedata_provenance.json" if store else None
+        if manifest and manifest.is_file():
+            rels = (f["file"] for f in json.loads(manifest.read_text())["files"])
+        else:
+            prefix = config["dir_name"] + "/"
+            rels = (
+                path[len(prefix) :]
+                for path in self._upstream_tree()
+                if path.startswith(prefix)
+            )
+        return sorted(r for r in rels if r.startswith(f"Dat_{subj_str}/"))
+
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -445,77 +488,53 @@ class Lee2024(BaseDataset):
             raise ValueError("Invalid subject number")
 
         config = _EXPERIMENT_CONFIGS[self._experiment]
-        subj_dir = self._subject_dir(subject)
         subj_str = self._subj_str(subject, config)
-
-        import requests as _requests
-
-        files_to_dl = []
-
-        # Testing blocks.
-        for i in range(1, 31):
-            files_to_dl.append(f"{subj_str}_Testing{i}.mat")
-
-        # Training blocks (per-block).
-        if config["has_training"] and not config["training_combined"]:
-            for i in range(1, 51):
-                files_to_dl.append(f"{subj_str}_Training{i}.mat")
-
-        # Combined training.
-        if config["has_training"] and config["training_combined"]:
-            files_to_dl.append(f"{subj_str}_Training.mat")
-
-        # Calibration signal.
-        files_to_dl.append("cal_sig.mat")
-
-        subj_dir.mkdir(parents=True, exist_ok=True)
-
-        for fname in files_to_dl:
-            local = subj_dir / fname
-            if local.exists() and not force_update:
-                continue
-            dir_name = config["dir_name"]
-            url = f"{_GITHUB_RAW}/{dir_name}/Dat_{subj_str}/{fname}"
-            log.info("Downloading %s ...", fname)
-            try:
-                resp = _requests.get(url, stream=True, timeout=120)
-                if resp.status_code == 404:
-                    continue
-                resp.raise_for_status()
-                with open(local, "wb") as fout:
-                    for chunk in resp.iter_content(chunk_size=8192):
-                        fout.write(chunk)
-            except Exception as e:
-                log.warning("Download failed for %s: %s", fname, e)
-
-        return str(subj_dir)
+        unpadded = self._subj_str(subject, {"zero_pad": False})
+        for rel in self._subject_files(config, subj_str):
+            # The loader constructs zero-padded names; subject 8's upstream
+            # files are unpadded (sub8_*), so normalize the local name.
+            local = rel.replace(f"{unpadded}_", f"{subj_str}_")
+            dl.data_dl(
+                f"{_GITHUB_RAW}/{config['dir_name']}/{rel}",
+                _SIGN,
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
+                fname=f"{config['dir_name']}/{local}",
+            )
+        return str(self._subject_dir(subject, path))
 
 
 class Lee2024_TV(Lee2024):
     """Television control experiment (30 subjects, 4 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000213"
     __init__ = partialmethod(Lee2024.__init__, "TV")
 
 
 class Lee2024_DL(Lee2024):
     """Door lock control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000208"
     __init__ = partialmethod(Lee2024.__init__, "DL")
 
 
 class Lee2024_EL(Lee2024):
     """Electric light control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000223"
     __init__ = partialmethod(Lee2024.__init__, "EL")
 
 
 class Lee2024_BS(Lee2024):
     """Bluetooth speaker experiment (14 subjects, 6 classes, 31 EEG ch)."""
 
+    nemar_id = "nm000204"
     __init__ = partialmethod(Lee2024.__init__, "BS")
 
 
 class Lee2024_AC(Lee2024):
     """Air conditioner control experiment (10 subjects, 4 classes, 25 EEG ch)."""
 
+    nemar_id = "nm000222"
     __init__ = partialmethod(Lee2024.__init__, "AC")

@@ -163,10 +163,10 @@ class Ma2020(BaseDataset):
        DOI: 10.1038/s41597-020-0535-2
     """
 
+    nemar_id = "nm000167"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",

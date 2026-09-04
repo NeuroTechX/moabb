@@ -135,10 +135,10 @@ class Stieger2021(BaseDataset):
     .. versionadded:: 1.1.0
     """
 
+    nemar_id = "nm000339"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62},
             montage="10-10",
             hardware="Neuroscan SynAmps RT amplifiers",
@@ -404,7 +404,7 @@ class Stieger2021(BaseDataset):
                 if self.sessions is not None and ses not in self.sessions:
                     continue
                 fpath = os.path.join(basepath, file_name)
-                if not os.path.exists(fpath):
+                if force_update or not os.path.exists(fpath):
                     pooch.retrieve(
                         url=BASE_URL + id_file_list[file_name],
                         known_hash=hash_file_list[id_file_list[file_name]],

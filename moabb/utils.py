@@ -11,6 +11,7 @@ import random
 import re
 import sys
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import filelock
@@ -183,6 +184,45 @@ def verbose(function):
     return wrapper
 
 
+def _paths_match(first, second):
+    """Return whether two path-like values refer to the same location."""
+    if first is None or second is None:
+        return first is second
+    try:
+        return Path(first).expanduser().resolve(strict=False) == Path(
+            second
+        ).expanduser().resolve(strict=False)
+    except (OSError, RuntimeError, TypeError):
+        return first == second
+
+
+def _clear_legacy_dataset_paths(old_path, new_path):
+    """Remove stale dataset keys created by older MOABB releases.
+
+    Older versions copied ``MNE_DATA`` into a
+    ``MNE_DATASETS_<SIGN>_PATH`` key on first access. Those copies prevented a
+    later change to the shared download directory from taking effect. Remove
+    only persisted keys that still mirror the previous shared path; explicit
+    per-dataset paths and environment overrides are preserved.
+    """
+    if old_path is None or new_path is None or _paths_match(old_path, new_path):
+        return
+    for key, value in (get_config(use_env=False) or {}).items():
+        if (
+            key.startswith("MNE_DATASETS_")
+            and key.endswith("_PATH")
+            and _paths_match(value, old_path)
+        ):
+            remove_environment_value = _paths_match(os.environ.get(key), old_path)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    message=r'Setting non-standard config type: "MNE_DATASETS_.*_PATH"',
+                    category=RuntimeWarning,
+                )
+                set_config(key, None, set_env=remove_environment_value)
+
+
 def set_download_dir(path):
     """Set the download directory if required to change from default mne path.
 
@@ -194,8 +234,9 @@ def set_download_dir(path):
         a warning is raised and the storage location is set to the MNE
         default directory.
     """
+    old_path = get_config("MNE_DATA")
     if path is None:
-        if get_config("MNE_DATA") is None:
+        if old_path is None:
             log.info(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
@@ -204,13 +245,115 @@ def set_download_dir(path):
                 "already downloaded, please move manually to this location"
             )
 
+            # No migration here: this branch only runs when MNE_DATA was
+            # unset, so there is no previous value for a per-dataset key to
+            # still be mirroring.
             set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
     else:
         # Check if the path exists, if not, create it
         if not osp.isdir(path):
             log.info("The path given does not exist, creating it..")
-            os.makedirs(path)
+            os.makedirs(path, exist_ok=True)
         set_config("MNE_DATA", path)
+        _clear_legacy_dataset_paths(old_path, path)
+
+
+def _set_moabb_config(key, value, **kwargs):
+    """Write a MOABB-owned config key without MNE's unknown-key warning.
+
+    MNE warns on every write to a key outside its own vocabulary, and offers no
+    flag to suppress it, so the filter is the only lever. Written once here
+    rather than at each call site.
+    """
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=rf'Setting non-standard config type: "{re.escape(key)}"',
+            category=RuntimeWarning,
+        )
+        set_config(key, value, **kwargs)
+
+
+#: Where MOABB may fetch dataset files from.
+#:
+#: ``"auto"``     try NEMAR first for datasets that declare a ``nemar_id``,
+#:                fall back to the dataset's own upstream downloader.
+#: ``"nemar"``    NEMAR only -- do not fall back to the upstream host.
+#: ``"upstream"`` never use NEMAR; always use the dataset's own downloader.
+DOWNLOAD_PROVIDERS = ("auto", "nemar", "upstream")
+
+
+def set_download_provider(provider):
+    """Choose where MOABB fetches dataset files from.
+
+    Many datasets are mirrored on NEMAR, which also republishes the original
+    pre-BIDS distribution under ``sourcedata/``. Pinning the provider to
+    ``"nemar"`` makes downloads reproducible and immune to upstream hosts that
+    are slow, rate-limited, behind a bot gate, or retired -- at the cost of
+    failing outright, rather than silently falling back, when NEMAR cannot
+    serve a dataset.
+
+    The provider governs where :meth:`~moabb.datasets.base.BaseDataset.download`
+    fetches from; loading then serves files from the fetched NEMAR store before
+    the URL-derived layout (pinning ``"upstream"`` opts loading out as well).
+
+    Parameters
+    ----------
+    provider : str | None
+        One of ``"auto"`` (default), ``"nemar"``, or ``"upstream"``. Passing
+        ``None`` restores the default.
+
+    Raises
+    ------
+    ValueError
+        If ``provider`` is not a recognised value.
+
+    Notes
+    -----
+    The choice is stored in the MNE config as ``MOABB_DOWNLOAD_PROVIDER`` and
+    can also be set for a single run via the environment variable of the same
+    name, which takes precedence.
+    """
+    if provider is not None:
+        normalized = str(provider).lower()
+        if normalized not in DOWNLOAD_PROVIDERS:
+            raise ValueError(
+                f"Unknown download provider {provider!r}; "
+                f"expected one of {', '.join(DOWNLOAD_PROVIDERS)}."
+            )
+    else:
+        normalized = None
+    _set_moabb_config("MOABB_DOWNLOAD_PROVIDER", normalized)
+
+
+def get_download_provider():
+    """Return the active download provider.
+
+    The environment variable ``MOABB_DOWNLOAD_PROVIDER`` wins over the stored
+    MNE config value, so a single run can override a persisted preference.
+    An unrecognised value falls back to ``"auto"`` with a warning rather than
+    raising, so a stale config cannot break every download.
+
+    Returns
+    -------
+    str
+        One of :data:`DOWNLOAD_PROVIDERS`.
+    """
+    # get_config consults os.environ first, so an env var set for one run wins
+    # over the stored preference without a second lookup here.
+    provider = get_config("MOABB_DOWNLOAD_PROVIDER")
+    if not provider:
+        return "auto"
+    normalized = str(provider).lower()
+    if normalized not in DOWNLOAD_PROVIDERS:
+        log.warning(
+            "Ignoring unknown MOABB_DOWNLOAD_PROVIDER %r; using 'auto'. "
+            "Expected one of %s.",
+            provider,
+            ", ".join(DOWNLOAD_PROVIDERS),
+        )
+        return "auto"
+    return normalized
 
 
 def make_process_pipelines(

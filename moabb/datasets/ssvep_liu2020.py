@@ -90,7 +90,6 @@ class Liu2020BETA(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             montage="standard_1005",
             hardware="Synamps2 (Neuroscan)",
@@ -180,6 +179,7 @@ class Liu2020BETA(BaseDataset):
     )
 
     _events = _EVENTS
+    nemar_id = "nm000129"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

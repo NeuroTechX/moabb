@@ -107,10 +107,10 @@ class Tavakolan2017(BaseDataset):
        DOI: 10.5061/dryad.6qs86
     """
 
+    nemar_id = "nm000151"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="GSN-HydroCel-32",
             hardware="EGI Geodesic Net Amps 400 series",

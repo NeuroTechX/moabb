@@ -158,7 +158,6 @@ class Liu2022EldBETA(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             montage="standard_1005",
             hardware="Synamps2 (Neuroscan)",
@@ -488,6 +487,7 @@ class Liu2022EldBETA(BaseDataset):
 
     # Derived from _TARGET_TO_FREQ: frequency string -> target index
     _events = {freq: int(idx) for idx, freq in _TARGET_TO_FREQ.items()}
+    nemar_id = "nm000130"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

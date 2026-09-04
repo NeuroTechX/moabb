@@ -68,10 +68,10 @@ class Hinss2021(BaseDataset):
             https://doi.org/10.1038/s41597-022-01898-y
     """
 
+    nemar_id = "nm000343"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=62,
             channel_types={"eeg": 62},
             montage="standard_1020",
             hardware="ActiCHamp (Brain Products Gmbh)",
@@ -342,13 +342,17 @@ class Hinss2021(BaseDataset):
         # check if has the .zip
         url = f"{URL}P{subject:02}.zip"
 
-        path_zip = dl.data_dl(url, "Neuroergonomics2021")
+        path_zip = dl.data_dl(
+            url,
+            "Neuroergonomics2021",
+            path=path,
+            force_update=force_update,
+            verbose=verbose,
+        )
         path_folder = path_zip.strip(f"P{subject:02}.zip")
 
         # check if has to unzip
-        if not (osp.isdir(path_folder + f"P{subject:02}")) and not (
-            osp.isdir(path_folder + f"P{subject:02}")
-        ):
+        if force_update or not (osp.isdir(path_folder + f"P{subject:02}")):
             zip_ref = z.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 

@@ -280,10 +280,10 @@ class Zuo2025(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
+    nemar_id = "nm000230"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=30,
             channel_types={"eeg": 30},
             hardware="ZhenTec EEG system",
             reference="CPz",

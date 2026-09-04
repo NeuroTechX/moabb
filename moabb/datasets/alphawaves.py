@@ -89,9 +89,8 @@ class Rodrigues2017(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
-            montage="standard_1010",
+            montage="standard_1020",
             hardware="g.tec g.USBamp",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -99,8 +98,8 @@ class Rodrigues2017(BaseDataset):
             filters="no digital filter",
             sensors=[
                 "Cz",
-                "Fc5",
-                "Fc6",
+                "FC5",
+                "FC6",
                 "Fp1",
                 "Fp2",
                 "Fz",
@@ -122,6 +121,8 @@ class Rodrigues2017(BaseDataset):
             health_status="healthy",
             gender={"female": 7, "male": 13},
             age_mean=25.8,
+            age_std=5.27,
+            age_median=25.5,
         ),
         experiment=ExperimentMetadata(
             events={"closed": 1, "open": 2},
@@ -170,9 +171,10 @@ class Rodrigues2017(BaseDataset):
         ),
         bci_application=BCIApplicationMetadata(applications=None),
         paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="rstate"),
-        data_structure=DataStructureMetadata(n_trials=10),
+        data_structure=DataStructureMetadata(n_trials=10, n_blocks=10),
         data_processed=False,
     )
+    nemar_id = "nm000221"
 
     def __init__(self, subjects=None, sessions=None):
         subject_list = list(range(1, 6 + 1)) + list(range(8, 20 + 1))
@@ -203,9 +205,9 @@ class Rodrigues2017(BaseDataset):
         chnames = [
             "Fp1",
             "Fp2",
-            "Fc5",
+            "FC5",
             "Fz",
-            "Fc6",
+            "FC6",
             "T7",
             "Cz",
             "T8",
@@ -226,6 +228,7 @@ class Rodrigues2017(BaseDataset):
             ch_names=chnames, sfreq=512, ch_types=chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
+        raw.set_montage("standard_1020")
 
         return {"0": {"0": raw}}
 
@@ -236,6 +239,8 @@ class Rodrigues2017(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = "{:s}subject_{:02d}.mat".format(ALPHAWAVES_URL, subject)
-        file_path = dl.data_path(url, "ALPHAWAVES")
+        file_path = dl.data_path(
+            url, "ALPHAWAVES", path=path, force_update=force_update, verbose=verbose
+        )
 
         return [file_path]

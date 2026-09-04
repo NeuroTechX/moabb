@@ -118,10 +118,10 @@ class Pressel2016(BaseDataset):
            https://doi.org/10.1117/12.2255697
     """
 
+    nemar_id = "nm000258"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=6,
             channel_types={"eeg": 6},
             montage="standard_1020",
             hardware="Grass 8-18-36 amplifier + DataTranslation DT9816 ADC",

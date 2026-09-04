@@ -161,15 +161,18 @@ If you use MOABB in your experiments, please cite MOABB and the related publicat
 Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J.,
 Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R.,
 Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V.,
-Andreev, A., Thielen, J., Hajhassani, D., Begany, K., Moreau, T., Roy, Y., Jayaram, V.,
-Barachant, A., & Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.5.0).
+Andreev, A., Tates, A., Kojima, S., Thielen, J., Hajhassani, D., Graignic, P.-A.,
+Begany, K., Leto, B., Davis, E., Munro, Z., Romani, M., Talar, B., Schrag, E.,
+Kowshik, B., Badang, R. A., Xu, G., Polychroniadou, D., Lefundes da Silva, H.,
+Bano, A., Singh, A., Sokolova, A., Rahimipour, M., Moreau, T., Roy, Y., Jayaram, V., Barachant, A.,
+& Chevallier, S. (2026). Mother of all BCI Benchmarks (MOABB) (Version 1.7.1).
 Zenodo. https://doi.org/10.5281/zenodo.10034223
 ```
 
 #### BibTeX Format
 
 ```bibtex
-@software{Aristimunha_Mother_of_all,
+@misc{Aristimunha_Mother_of_all,
   author       = {Aristimunha, Bruno and
                   Carrara, Igor and
                   Guetschel, Pierre and
@@ -188,9 +191,27 @@ Zenodo. https://doi.org/10.5281/zenodo.10034223
                   Gatti, Ramiro and
                   Goncharenko, Vladislav and
                   Andreev, Anton and
+                  Tates, Alberto and
+                  Kojima, Simon and
                   Thielen, Jordy and
                   Hajhassani, Davoud and
+                  Graignic, Paul-Adrien and
                   Begany, Katelyn and
+                  Leto, Benedetto and
+                  Davis, Ethan and
+                  Munro, Zachary and
+                  Romani, Michele and
+                  Talar, Baris and
+                  Schrag, Emily and
+                  Kowshik, Bhargav and
+                  Badang, Ralph Angelo and
+                  Xu, Grace and
+                  Polychroniadou, Danae and
+                  Lefundes da Silva, Henrique and
+                  Bano, Azra and
+                  Singh, Aditya and
+                  Sokolova, Anna and
+                  Rahimipour, Meysam and
                   Moreau, Thomas and
                   Roy, Yannick and
                   Jayaram, Vinay and
@@ -199,7 +220,7 @@ Zenodo. https://doi.org/10.5281/zenodo.10034223
   title        = {Mother of all BCI Benchmarks},
   year         = 2026,
   publisher    = {Zenodo},
-  version      = {1.5.0},
+  version      = {1.7.1},
   url          = {https://github.com/NeuroTechX/moabb},
   doi          = {10.5281/zenodo.10034223},
 }

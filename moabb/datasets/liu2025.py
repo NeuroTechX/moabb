@@ -100,10 +100,10 @@ class Liu2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-04618-4
     """
 
+    nemar_id = "nm000270"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=64,
             channel_types={"eeg": 60, "ecg": 1, "eog": 4},
             montage="standard_1020",
             hardware="NeuSen W (Neuracle, Inc.)",

@@ -67,10 +67,10 @@ class GrosseWentrup2009(BaseDataset):
            Engineering 56.4 (2009): 1209-1219.
     """
 
+    nemar_id = "nm000145"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=128,
             channel_types={"eeg": 128},
             montage="standard_1020",
             hardware="BrainAmp",

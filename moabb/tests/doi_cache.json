@@ -1,6 +1,42 @@
 {
     "_metadata": {
-        "total": 150
+        "total": 156
+    },
+    "10.1038/s41467-026-75435-5": {
+        "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41467-026-75435-5"
+    },
+    "10.1184/R1/32293995.v1": {
+        "title": "EEG Datasets for Sensory-Guided Joint Learning in Motor Imagery Brain-Computer Interfaces",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1184/R1/32293995.v1"
+    },
+    "10.1109/BCI69045.2026.11435072": {
+        "title": "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors.",
+        "authors": [
+            "Lena\u00efg Gu\u00e9ho",
+            "Laurent Bougrain",
+            "Cyril Plapous",
+            "Patrick H\u00e9naff",
+            "Rozenn Nicol"
+        ],
+        "year": 2026,
+        "doi": "10.1109/BCI69045.2026.11435072"
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -1006,6 +1042,17 @@
         "year": 2016,
         "doi": "10.1515/bmt-2014-0117"
     },
+    "10.21203/rs.3.rs-9347306/v1": {
+        "title": "A steady-state visual evoked potential-based brain-computer interface dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.21203/rs.3.rs-9347306/v1"
+    },
     "10.2312/vriphys.20181064": {
         "title": "The Impact of Passive Head-Mounted Virtual Reality Devices on the Quality of EEG Signals",
         "authors": [
@@ -1394,6 +1441,17 @@
         "year": 2016,
         "doi": "10.5281/zenodo.192684"
     },
+    "10.5281/zenodo.19440997": {
+        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.19440997"
+    },
     "10.5281/zenodo.2222268": {
         "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
         "authors": [
@@ -1780,5 +1838,16 @@
             "Shuang Qiu",
             "Huiguang He"
         ]
+    },
+    "10.5281/zenodo.20848097": {
+        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.20848097"
     }
 }

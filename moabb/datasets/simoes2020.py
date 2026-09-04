@@ -78,10 +78,10 @@ class Simoes2020(BaseDataset):
            https://doi.org/10.3389/fnins.2020.568104
     """
 
+    nemar_id = "nm000210"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1020",
             hardware="g.Nautilus (g.tec, wireless)",

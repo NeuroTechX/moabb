@@ -12,6 +12,7 @@ from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     _REST_LABEL,
     EpochsToEvents,
+    EuclideanAlignment,
     EventsToLabels,
     FixedPipeline,
     FixedTransformer,
@@ -27,6 +28,7 @@ from moabb.datasets.preprocessing import (
     _get_event_id_values,
     _insert_rest_events,
     _is_none_pipeline,
+    _is_preserved_annotation,
     _unsafe_pick_events,
     get_crop_pipeline,
     get_filter_pipeline,
@@ -395,6 +397,80 @@ def test_set_raw_annotations_extras():
     assert len(raw.annotations) >= 1
 
 
+@pytest.mark.parametrize(
+    "description, preserved",
+    [
+        ("BAD_artifact", True),
+        ("bad_artifact", True),
+        ("BAD boundary", True),
+        ("bnci_artifact", True),
+        ("left_hand", False),
+        ("Target", False),
+        ("rest", False),
+    ],
+)
+def test_is_preserved_annotation(description, preserved):
+    assert _is_preserved_annotation(description) is preserved
+
+
+def test_set_raw_annotations_preserves_bad_artifact():
+    """BAD_artifact survives event re-derivation (stim-channel dataset)."""
+    raw = _raw(stim_events=[(500, 1), (1500, 1), (2500, 1)], duration=15.0)
+    raw.set_annotations(
+        mne.Annotations(
+            onset=[6.0], duration=[1.0], description=["BAD_artifact"], extras=[{"t": 2}]
+        )
+    )
+    SetRawAnnotations(event_id={"l": 1}, interval=(0, 1)).transform(raw)
+
+    descs = list(map(str, raw.annotations.description))
+    assert descs.count("l") == 3  # event annotations re-derived
+    assert "BAD_artifact" in descs  # artifact flag kept
+    # the preserved annotation still carries its extras
+    bad_idx = descs.index("BAD_artifact")
+    assert raw.annotations.extras[bad_idx] == {"t": 2}
+
+
+def test_set_raw_annotations_preserves_bnci_artifact_no_stim():
+    """Non-rejecting bnci_artifact survives for annotation-based datasets."""
+    raw = _ann_raw(
+        descriptions=["left", "right"],
+        onsets=[1.0, 3.0],
+        event_id={"left": 1, "right": 2},
+    )
+    raw.set_annotations(
+        raw.annotations
+        + mne.Annotations(onset=[2.0], duration=[0.0], description=["bnci_artifact"])
+    )
+    SetRawAnnotations(event_id={"left": 1, "right": 2}, interval=(0, 1)).transform(raw)
+    assert "bnci_artifact" in list(map(str, raw.annotations.description))
+
+
+def test_set_raw_annotations_then_reject_by_annotation():
+    """End-to-end: SetRawAnnotations must keep BAD_artifact so RawToEpochs can drop it.
+
+    This is the exact pipeline order (raw annotations -> events -> epochs) that
+    silently dropped the artifact flags before the fix, making
+    ``reject_by_annotation`` a no-op.
+    """
+    raw = _raw(stim_events=[(500, 1), (1500, 1), (2500, 1)], duration=15.0)
+    # BAD span overlapping only the 2nd trial window (sample 1500 == 6.0 s)
+    raw.set_annotations(mne.Annotations([6.0], [0.5], ["BAD_artifact"]))
+
+    SetRawAnnotations(event_id={"l": 1}, interval=(0, 1)).transform(raw)
+    events = RawToEvents(event_id={"l": 1}, interval=(0, 1)).transform(raw)
+
+    kept = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=False
+    ).transform({"raw": raw, "events": events})
+    dropped = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=True
+    ).transform({"raw": raw, "events": events})
+
+    assert len(kept) == 3
+    assert len(dropped) == 2  # the artifact-flagged trial is rejected
+
+
 # ── RawToEvents ───────────────────────────────────────────────────────────────
 
 
@@ -561,6 +637,23 @@ def test_raw_to_epochs_with_channels():
     assert len(result.ch_names) == 2
 
 
+def test_raw_to_epochs_reject_by_annotation():
+    raw = _raw(stim_events=[(500, 1), (1500, 1)])
+    raw.set_annotations(mne.Annotations([6.0], [0.5], ["BAD_artifact"]))
+    ev = np.array([[500, 0, 1], [1500, 0, 1]], dtype="int32")
+
+    rejected = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=True
+    ).transform({"raw": raw, "events": ev})
+    kept = RawToEpochs(
+        event_id={"l": 1}, tmin=0, tmax=0.5, baseline=None, reject_by_annotation=False
+    ).transform({"raw": raw, "events": ev})
+
+    assert len(rejected) == 1
+    assert len(kept) == 2
+    assert kept.annotations.description.tolist() == ["BAD_artifact"]
+
+
 @pytest.mark.parametrize(
     "raw_val, events, match",
     [
@@ -642,6 +735,18 @@ def test_pipeline_helpers(factory, args, label):
     assert isinstance(t, NamedFunctionTransformer) and label in repr(t)
 
 
+def test_filter_pipeline_no_bandpass_is_noop():
+    raw = _raw()
+    data = raw.get_data().copy()
+    transformer = get_filter_pipeline(None, None)
+
+    transformed = transformer.fit_transform(raw)
+
+    assert repr(transformer) == "No Filter"
+    assert transformed is raw
+    np.testing.assert_allclose(transformed.get_data(), data)
+
+
 def test_fixed_pipeline_repr_html_with_steptype_keys():
     """FixedPipeline._repr_html_ must work with StepType enum keys."""
     pipeline = FixedPipeline(
@@ -656,3 +761,105 @@ def test_fixed_pipeline_repr_html_with_steptype_keys():
     # StepType enums must not leak into the HTML output
     assert "StepType.RAW" not in html
     assert "StepType.EPOCHS" not in html
+
+
+# ── EuclideanAlignment ────────────────────────────────────────────────────────
+
+
+def _trials(seed=0, scale=1.0, n_trials=24, n_chans=4, n_times=128):
+    """Random trials with a non-trivial spatial covariance (random mixing matrix)."""
+    rng = np.random.RandomState(seed)
+    mix = rng.randn(n_chans, n_chans) * scale
+    return np.matmul(mix, rng.randn(n_trials, n_chans, n_times))
+
+
+def _epochs_from_array(X):
+    info = mne.create_info(
+        ch_names=[f"EEG{i + 1}" for i in range(X.shape[1])], sfreq=128, ch_types="eeg"
+    )
+    return mne.EpochsArray(X, info, verbose=False)
+
+
+def _euclid_mean_cov(X, estimator="lwf"):
+    """Euclidean (arithmetic) mean of the per-trial covariances."""
+    from pyriemann.geometry.covariance import covariances
+
+    return covariances(X, estimator=estimator).mean(axis=0)
+
+
+def test_euclidean_alignment_cov_whitens_exactly():
+    """With the linear ``cov`` estimator, EA whitens exactly: the Euclidean mean
+    covariance of the aligned trials is the identity."""
+    X = _trials(seed=1)
+    Xa = EuclideanAlignment(estimator="cov").fit_transform(X)
+    assert Xa.shape == X.shape
+    np.testing.assert_allclose(_euclid_mean_cov(Xa, "cov"), np.eye(X.shape[1]), atol=1e-8)
+
+
+@pytest.mark.parametrize("estimator", ["lwf", "scm", "oas"])
+def test_euclidean_alignment_reduces_covariance_shift(estimator):
+    """For each covariance estimator, EA moves the mean covariance much closer to
+    the identity than the raw trials, and stays finite."""
+    X = _trials(seed=2)
+    eye = np.eye(X.shape[1])
+    orig = np.abs(_euclid_mean_cov(X, estimator) - eye).max()
+    Xa = EuclideanAlignment(estimator=estimator).fit_transform(X)
+    assert np.isfinite(Xa).all()
+    aligned = np.abs(_euclid_mean_cov(Xa, estimator) - eye).max()
+    assert aligned < orig
+
+
+def test_euclidean_alignment_whitener_is_spd():
+    W = EuclideanAlignment().fit(_trials(seed=3)).inv_sqrt_ref_
+    assert W.shape == (4, 4)
+    assert np.isfinite(W).all()
+    np.testing.assert_allclose(W, W.T, atol=1e-8)  # symmetric
+    assert np.all(np.linalg.eigvalsh(W) > 0)  # positive definite
+
+
+def test_euclidean_alignment_inductive_no_leakage():
+    """``transform`` reuses the train whitener; it must NOT re-fit on the test batch."""
+    al = EuclideanAlignment().fit(_trials(seed=4, scale=1.0))
+    test = _trials(seed=5, scale=3.0)  # different covariance from train
+    out = al.transform(test)
+    # transform is exactly the stored whitener applied to the test trials
+    np.testing.assert_allclose(out, np.matmul(al.inv_sqrt_ref_, test))
+    # and the train whitener does NOT whiten the (differently-scaled) test batch
+    assert not np.allclose(_euclid_mean_cov(out), np.eye(4), atol=0.05)
+
+
+def test_euclidean_alignment_fit_transform_is_transductive():
+    """``fit_transform`` equals ``fit(X).transform(X)`` (the per-recording form)."""
+    X = _trials(seed=6)
+    a = EuclideanAlignment().fit_transform(X)
+    b = EuclideanAlignment().fit(X).transform(X)
+    np.testing.assert_allclose(a, b)
+
+
+def test_euclidean_alignment_epochs_matches_ndarray():
+    X = _trials(seed=7)
+    from_arr = EuclideanAlignment().fit_transform(X)
+    from_epochs = EuclideanAlignment().fit_transform(_epochs_from_array(X))
+    np.testing.assert_allclose(from_arr, from_epochs, rtol=1e-6, atol=1e-9)
+
+
+def test_euclidean_alignment_transform_before_fit_raises():
+    from sklearn.exceptions import NotFittedError
+
+    with pytest.raises(NotFittedError):
+        EuclideanAlignment().transform(_trials())
+
+
+def test_euclidean_alignment_bad_ndim_raises():
+    with pytest.raises(ValueError, match="n_trials, n_channels, n_times"):
+        EuclideanAlignment().fit(np.random.RandomState(0).randn(4, 128))  # 2D, not 3D
+
+
+def test_euclidean_alignment_is_clonable():
+    """EuclideanAlignment follows the sklearn estimator contract (get_params / clone)."""
+    from sklearn.base import clone
+
+    al = EuclideanAlignment(estimator="scm")
+    assert al.get_params() == {"estimator": "scm"}
+    cloned = clone(al)
+    assert cloned.get_params() == al.get_params()

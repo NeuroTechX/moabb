@@ -205,10 +205,10 @@ class BCIComp2020WalkingERP(BaseDataset):
            16, 898300. https://doi.org/10.3389/fnhum.2022.898300
     """
 
+    nemar_id = "nm000184"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
-            n_channels=len(_CH_NAMES),
             channel_types={
                 "eeg": len(_SCALP_CHANNELS) + len(_EAR_CHANNELS),
                 "eog": len(_EOG_CHANNELS),

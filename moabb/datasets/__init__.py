@@ -96,6 +96,7 @@ from .kumar2024 import Kumar2024
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .lee2021_mobile import Lee2021Mobile_ERP, Lee2021Mobile_SSVEP
 from .lee2024 import Lee2024_AC, Lee2024_BS, Lee2024_DL, Lee2024_EL, Lee2024_TV
+from .lenaig2026 import Lenaig2026
 from .liu2024 import Liu2024
 from .liu2025 import Liu2025
 from .ma2020 import Ma2020
@@ -132,6 +133,7 @@ from .pressel2016 import Pressel2016
 from .romani_bf2025_erp import RomaniBF2025ERP
 from .rozado2015 import Rozado2015
 from .schirrmeister2017 import Schirrmeister2017
+from .schrag2026 import Schrag2026Pediatric
 from .simoes2020 import Simoes2020
 from .sosulski2019 import Sosulski2019
 from .speier2017 import Speier2017
@@ -154,6 +156,7 @@ from .triana_guzman2024 import TrianaGuzman2024
 from .upper_limb import Ofner2017
 from .utils import _init_dataset, dataset_dict
 from .wairagkar2018 import Wairagkar2018
+from .wang2026 import Wang2026
 from .Weibo2014 import Weibo2014
 from .wu2020 import Wu2020
 from .yang2025 import Yang2025

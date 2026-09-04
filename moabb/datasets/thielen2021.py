@@ -134,10 +134,10 @@ class Thielen2021(BaseDataset):
 
     """
 
+    nemar_id = "nm000214"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="custom",
             hardware="Biosemi ActiveTwo",

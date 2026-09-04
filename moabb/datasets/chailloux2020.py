@@ -81,10 +81,10 @@ class Chailloux2020(BaseDataset):
            https://doi.org/10.3390/s20247198
     """
 
+    nemar_id = "on003190"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1020",
             hardware="g.USBamp (g.tec)",
@@ -267,8 +267,8 @@ class Chailloux2020(BaseDataset):
 
         return raw
 
-    def _subject_base(self, subject):
-        path = dl.get_dataset_path("Chailloux2020", None)
+    def _subject_base(self, subject, path=None):
+        path = dl.get_dataset_path("Chailloux2020", path)
         return Path(path) / "MNE-chailloux2020-data" / _subject_str(subject)
 
     def data_path(
@@ -277,7 +277,7 @@ class Chailloux2020(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        base = self._subject_base(subject)
+        base = self._subject_base(subject, path)
         subj_str = _subject_str(subject)
 
         import requests as _requests

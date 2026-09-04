@@ -321,10 +321,10 @@ class Lee2019_MI(Lee2019):
            https://doi.org/10.1093/gigascience/giz002
     """
 
+    nemar_id = "nm000338"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
             montage="standard_1005",
             hardware="BrainAmp",
@@ -605,10 +605,10 @@ class Lee2019_ERP(Lee2019):
            https://doi.org/10.1093/gigascience/giz002
     """
 
+    nemar_id = "nm000323"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
             montage="standard_1005",
             hardware="BrainAmp",
@@ -852,10 +852,10 @@ class Lee2019_SSVEP(Lee2019):
            https://doi.org/10.1093/gigascience/giz002
     """
 
+    nemar_id = "nm000273"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62, "emg": 4},
             montage="standard_1005",
             hardware="BrainAmp",

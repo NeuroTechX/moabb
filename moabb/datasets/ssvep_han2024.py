@@ -110,7 +110,6 @@ class Han2024Fatigue(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             montage="standard_1005",
             hardware="Synamps2 (Neuroscan)",
@@ -193,6 +192,7 @@ class Han2024Fatigue(BaseDataset):
     )
 
     _events = _EVENTS
+    nemar_id = "nm000124"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

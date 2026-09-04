@@ -116,7 +116,6 @@ class Kim2025BetaRange(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=31,
             channel_types={"eeg": 31, "misc": 2},
             montage="standard_1005",
             hardware="BioSemi ActiveTwo",
@@ -290,6 +289,7 @@ class Kim2025BetaRange(BaseDataset):
         sessions_per_subject=6,
         file_format="MAT",
     )
+    nemar_id = "nm000127"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

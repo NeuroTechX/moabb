@@ -71,10 +71,10 @@ class Kalunga2016(BaseDataset):
 
     """
 
+    nemar_id = "nm000123"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1005",
             sensor_type="EEG",

@@ -90,10 +90,10 @@ class Liu2024(BaseDataset):
 
     """
 
+    nemar_id = "nm000158"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=29,
             channel_types={"eeg": 29, "eog": 2},
             montage="10-10",
             hardware="ZhenTec NT1 wireless multichannel EEG acquisition system",
@@ -366,12 +366,14 @@ class Liu2024(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download the zip file containing the data
-        path_zip = dl.data_dl(LIU2024_URL, self.code)
+        path_zip = dl.data_dl(
+            LIU2024_URL, self.code, path=path, force_update=force_update, verbose=verbose
+        )
         path_zip = Path(path_zip)
         path_folder = path_zip.parent
 
         # Extract the zip file if it hasn't been extracted yet
-        if not (path_folder / "edffile").is_dir():
+        if force_update or not (path_folder / "edffile").is_dir():
             try:
                 with z.ZipFile(path_zip, "r") as zip_ref:
                     zip_ref.extractall(path_folder)

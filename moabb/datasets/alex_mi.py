@@ -51,10 +51,10 @@ class AlexMI(BaseDataset):
            https://tel.archives-ouvertes.fr/tel-01196752
     """
 
+    nemar_id = "nm000138"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             reference="earlobe",
             software="Matlab/Simulink",

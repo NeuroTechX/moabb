@@ -144,10 +144,10 @@ class Kaya2018(BaseDataset):
        vol. 5, p. 180211, 2018. DOI: 10.1038/sdata.2018.211
     """
 
+    nemar_id = "nm000137"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=19,
             channel_types={"eeg": 19},
             sensors=_EEG_CH_NAMES,
             montage="standard_1020",

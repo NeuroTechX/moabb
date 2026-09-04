@@ -317,7 +317,6 @@ class BNCI2016_002(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=59,
             channel_types={"eeg": 59, "emg": 1, "eog": 2, "misc": 7},
             montage="extended 10-20",
             hardware="BrainAmp",
@@ -572,6 +571,7 @@ class BNCI2016_002(BNCIBaseDataset):
             trials_context="Emergency braking events with 20-40s inter-stimulus-interval, total ~225 events across 3 blocks per subject",
         ),
     )
+    nemar_id = "nm000243"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

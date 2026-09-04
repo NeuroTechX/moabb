@@ -299,8 +299,11 @@ def _convert_run_001_2022(
             255: "trajectory_end",
         }
 
-        # Find non-zero trigger positions
-        event_indices = np.where(trigger != 0)[0]
+        # The trigger is sampled continuously, so a pulse spans several
+        # samples; annotate only its onset (rising edge or value change).
+        event_indices = np.flatnonzero(
+            (trigger != 0) & (np.diff(trigger, prepend=0) != 0)
+        )
         if len(event_indices) > 0:
             event_times = event_indices / sfreq
             event_values = trigger[event_indices].astype(int)
@@ -381,6 +384,15 @@ class BNCI2022_001(BNCIBaseDataset):
     - waypoint_hit (48): Drone successfully passed through waypoint
     - trajectory_end (255): End of trajectory (3s after final waypoint)
 
+    Only ``trajectory_start`` is declared as a trial event (``events``), matching
+    the ~90 second trajectory ``interval``: paradigms therefore epoch the 32
+    trajectories per subject. The waypoint and trajectory-end codes mark
+    instantaneous point events (roughly a thousand per subject), so epoching
+    them with the 90 s trial window is not meaningful. They are still annotated
+    on the raw data returned by the loader; to analyse them, epoch the raw
+    annotations directly or pass a custom ``process_pipeline`` to
+    :meth:`~moabb.datasets.base.BaseDataset.get_data`.
+
     **Data Organization**
 
     - 1 session per subject (offline data only, online sessions not included)
@@ -424,7 +436,6 @@ class BNCI2022_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=64,
             channel_types={"eeg": 64, "eog": 3},
             montage="10-10",
             hardware="Biosemi ActiveTwo",
@@ -655,17 +666,15 @@ class BNCI2022_001(BNCIBaseDataset):
         abstract="Adaptively increasing the difficulty level in learning was shown to be beneficial than increasing the level after some fixed time intervals. To efficiently adapt the level, we aimed at decoding the subjective difficulty level based on Electroencephalography (EEG) signals. We designed a visuomotor learning task that one needed to pilot a simulated drone through a series of waypoints of different sizes, to investigate the effectiveness of the EEG decoder. The EEG decoder was compared with another condition that the subjects decided when to increase the difficulty level. We examined the decoding performance together with behavioral outcomes. The online accuracies were higher than the chance level for 16 out of 26 cases, and the behavioral results, such as task scores, skill curves, and learning patterns, of EEG condition were similar to the condition based on manual regulation of difficulty.",
         methodology="The study compared two conditions for difficulty regulation during a simulated drone piloting task: (1) EEG-based automatic difficulty adjustment using real-time decoding of perceived difficulty, and (2) Manual self-paced adjustment where subjects pressed a button when they found the level easy. Each subject participated in one offline session (for building subject-specific decoders) and two online sessions (each containing both EEG and Manual conditions in counterbalanced order). The task involved piloting a drone through circular waypoints with 16 difficulty levels defined by waypoint radius. Features were extracted using Thomson's multitaper algorithm with 2-second sliding windows, and classification used generalized linear models with elastic net regularization followed by LDA. The study evaluated both decoding accuracy and behavioral outcomes (task scores, skill curves, learning patterns).",
     )
+    nemar_id = "nm000249"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 14)),
             sessions_per_subject=1,
-            events={
-                "trajectory_start": 1,
-                "waypoint_miss": 16,
-                "waypoint_hit": 48,
-                "trajectory_end": 255,
-            },
+            # Waypoint/end codes (16/48/255) are instantaneous point markers,
+            # not 90 s trials; see the class docstring.
+            events={"trajectory_start": 1},
             code="BNCI2022-001",
             interval=[0, 90],  # Approximately 90 seconds per trajectory
             paradigm="imagery",  # For compatibility

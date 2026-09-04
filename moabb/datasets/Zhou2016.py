@@ -68,10 +68,10 @@ class Zhou2016(BaseBIDSDataset):
            https://doi.org/10.1371/journal.pone.0162657
     """
 
+    nemar_id = "nm000115"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=14,
             channel_types={"eeg": 14},
             montage="standard_1020",
             sensor_type="EEG",

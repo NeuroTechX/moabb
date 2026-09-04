@@ -93,7 +93,6 @@ class PhysionetMI(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=160.0,
-            n_channels=64,
             channel_types={"eeg": 64},
             hardware="Brain Products",
             reference="mastoid",
@@ -275,6 +274,8 @@ class PhysionetMI(BaseDataset):
         abstract="BCI2000 is a documented general-purpose brain-computer interface (BCI) research and development platform that can incorporate alone or in combination any brain signals, signal processing methods, output devices, and operating protocols. The system is based on a modular design consisting of four modules (operator, source, signal processing, and application) that communicate through a documented network-capable protocol. BCI2000 has been used to create BCI systems for a variety of brain signals (slow cortical potentials, P300 evoked potentials, sensorimotor rhythms, cortical surface potentials, and neuronal action potentials), processing methods (spectral estimation, spatial filtering, linear classification), and applications (cursor control, word processing, wheelchair control, neuroprosthesis control). The system satisfies stringent real-time requirements and facilitates systematic research and development of BCI technology.",
         methodology="The BCI2000 system implements a four-module architecture: 1) Source module digitizes and stores brain signals without preprocessing, 2) Signal processing module performs feature extraction (calibration, spatial filtering, temporal filtering) and feature translation (linear classification, normalization), 3) User application module receives control signals and drives applications with visual/auditory/haptic feedback, 4) Operator module defines system parameters and operation timing. Signal processing uses cascaded signal operators for flexible feature extraction including autoregressive spectral estimation, FIR filtering, slow wave filtering, peak detection, and evoked response averaging. Translation algorithms use linear classifiers and normalizers with optional real-time adaptive parameter updates. All system variables (parameters, event markers, signals) are stored in documented file format with ASCII header and binary data for comprehensive offline analysis.",
     )
+    nemar_id = "on004362"
+    nemar_subject_template = "{subject:03d}"
 
     def __init__(
         self,
@@ -383,7 +384,9 @@ class PhysionetMI(BaseDataset):
 
         sign = "EEGBCI"
         get_dataset_path(sign, None)
-        paths = self._load_data(subject, runs=runs, verbose=verbose)
+        paths = self._load_data(
+            subject, runs=runs, path=path, force_update=force_update, verbose=verbose
+        )
         return paths
 
     def _load_data(self, subject, runs, path=None, force_update=False, verbose=None):

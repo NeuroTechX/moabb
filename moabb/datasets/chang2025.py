@@ -104,7 +104,6 @@ class Chang2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=59,
             channel_types={"eeg": 59},
             montage="standard_1005",
             hardware="Neuracle BRK-NSW 2.0",
@@ -190,6 +189,7 @@ class Chang2025(BaseDataset):
         data_processed=False,
         file_format="SET (EEGLAB)",
     )
+    nemar_id = "nm000271"
 
     def __init__(
         self,

@@ -72,10 +72,10 @@ class Dong2023(BaseDataset):
        pp. 297-309, 2023. DOI: 10.26599/BSA.2023.9050020
     """
 
+    nemar_id = "nm000128"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=8,
             channel_types={"eeg": 8},
             montage="standard_1005",
             hardware="NeuSenW (Neuracle)",

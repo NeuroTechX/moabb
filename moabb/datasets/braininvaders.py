@@ -182,9 +182,9 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             chnames = [
                 "Fp1",
                 "Fp2",
-                "Fc5",
+                "FC5",
                 "Fz",
-                "Fc6",
+                "FC6",
                 "T7",
                 "Cz",
                 "T8",
@@ -209,10 +209,13 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
         info = mne.create_info(
             ch_names=chnames, sfreq=sfreq, ch_types=chtypes, verbose=False
         )
+        # Set it here rather than on each Raw: the Cattan2019-VR branch below
+        # builds many Raws from this Info, and used to leave them with no
+        # channel positions at all.
+        info.set_montage(make_standard_montage("standard_1020"), on_missing="ignore")
 
         if not ds.code == "Cattan2019-VR":
             raw = mne.io.RawArray(data=X, info=info, verbose=False)
-            raw.set_montage(make_standard_montage("standard_1020"))
 
             if ds.code == "BrainInvaders2012":
                 # get rid of the Fz channel (it is the ground)
@@ -406,7 +409,7 @@ def _bi_data_path(  # noqa: C901
             osp.join(
                 path_folder,
                 f"group_{(subject + 1) // 2:02}",
-                f"group_{(subject + 1) // 2:02}_s{i}",
+                f"group_{(subject + 1) // 2:02}_s{i}.mat",
             )
             for i in range(1, 5)
         ]
@@ -459,10 +462,10 @@ class BI2012(BaseDataset):
            arXiv preprint arXiv:1905.05182.
     """
 
+    nemar_id = "nm000260"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1020",
             hardware="NeXus-32 (MindMedia/TMSi)",
@@ -700,10 +703,10 @@ class BI2013a(BaseDataset):
            OpenViBE platform. Proc. IBCI Conf., Graz, Austria, 280-283.
     """
 
+    nemar_id = "nm000264"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
             montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
@@ -933,12 +936,12 @@ class BI2014a(BaseDataset):
            https://hal.archives-ouvertes.fr/hal-02171575
     """
 
+    nemar_id = "nm000244"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
-            montage="standard_1010",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="dry electrodes",
             reference="right earlobe",
@@ -1134,12 +1137,12 @@ class BI2014b(BaseDataset):
            https://hal.archives-ouvertes.fr/hal-02173958
     """
 
+    nemar_id = "nm000215"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
-            montage="standard_1010",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -1346,12 +1349,12 @@ class BI2015a(BaseDataset):
            https://hal.archives-ouvertes.fr/hal-02172347
     """
 
+    nemar_id = "nm000216"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
-            montage="10-10",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -1546,12 +1549,12 @@ class BI2015b(BaseDataset):
            https://hal.archives-ouvertes.fr/hal-02172347
     """
 
+    nemar_id = "nm000217"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
-            montage="10-10",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet Silver/Silver Chloride electrodes",
             reference="right earlobe",
@@ -1761,9 +1764,8 @@ class Cattan2019_VR(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=16,
             channel_types={"eeg": 16},
-            montage="10-10",
+            montage="standard_1020",
             hardware="g.USBamp (g.tec, Schiedlberg, Austria)",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -1772,9 +1774,9 @@ class Cattan2019_VR(BaseDataset):
             sensors=[
                 "Fp1",
                 "Fp2",
-                "Fc5",
+                "FC5",
                 "Fz",
-                "Fc6",
+                "FC6",
                 "T7",
                 "Cz",
                 "T8",
@@ -1891,6 +1893,7 @@ class Cattan2019_VR(BaseDataset):
         abstract="Dataset contains electroencephalographic recordings on 21 subjects doing a visual P300 experiment on PC and VR. The visual P300 is an event-related potential elicited by a visual stimulation, peaking 240–600 ms after stimulus onset. The experiment compares P300-based BCI on PC vs VR headset (passive HMD with smartphone) concerning physiological, subjective and performance aspects. EEG recorded with 16 electrodes. Experiment conducted at GIPSA-lab in 2018.",
         methodology="Two randomized sessions (PC and VR). Each session: 12 blocks of 5 repetitions. Each repetition: 12 flashes of groups of 6 symbols, ensuring each symbol flashes exactly 2 times. Target flashes twice per repetition (2 target flashes), non-target flashes 10 times. Random feedback given after each repetition (70% expected accuracy). P300 interface: 6x6 matrix of white flashing crosses with red-squared target. VR used passive HMD (VRElegiant) with Huawei Mate 7 smartphone. IMU deactivated to prevent drift. Unity engine used for identical visual stimulation across PC and VR.",
     )
+    nemar_id = "nm000236"
 
     def __init__(
         self,

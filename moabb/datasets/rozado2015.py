@@ -5,7 +5,6 @@ DOI: 10.1371/journal.pone.0121262
 Data DOI: 10.7910/DVN/28932
 """
 
-import importlib
 import logging
 from pathlib import Path
 
@@ -15,6 +14,7 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from . import download as dl
+from ._xdf import read_xdf
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
@@ -73,7 +73,7 @@ class Rozado2015(BaseDataset):
     - 6-12 s: micro-break
 
     Data is stored as XDF (eXtensible Data Format) files inside two RAR
-    archives on Harvard Dataverse. Loading requires the ``pyxdf`` library
+    archives on Harvard Dataverse.
     (install with ``pip install moabb[xdf]``) and a RAR extraction tool
     (``unar``, ``unrar``, or ``7z``).
 
@@ -88,10 +88,10 @@ class Rozado2015(BaseDataset):
        DOI: 10.1371/journal.pone.0121262
     """
 
+    nemar_id = "nm000148"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="BioSemi ActiveTwo",
@@ -225,15 +225,7 @@ class Rozado2015(BaseDataset):
 
         Events are placed on a stim channel aligned to EEG timestamps.
         """
-        try:
-            pyxdf = importlib.import_module("pyxdf")
-        except ImportError as exc:
-            raise ImportError(
-                "The 'pyxdf' package is required to load XDF data for "
-                "Rozado2015. Install it with `pip install moabb[xdf]`."
-            ) from exc
-
-        streams, _ = pyxdf.load_xdf(str(xdf_path))
+        streams, _ = read_xdf(str(xdf_path))
 
         # Find EEG and marker streams
         eeg_stream = None

@@ -12,7 +12,6 @@ import tarfile
 import zipfile
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import mne
 import mne_bids
 import numpy as np
@@ -21,11 +20,6 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 import moabb.datasets as db
-from moabb.analysis.plotting import (
-    _get_dataset_parameters,
-    dataset_bubble_plot,
-    get_dataset_area,
-)
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
 from moabb.datasets.base import BaseDataset
@@ -198,6 +192,22 @@ def find_intersecting_channels(datasets, verbose=False):
     return allchans, keep_datasets
 
 
+def set_neuroscan_montage(raw, montage_name="standard_1005"):
+    """Normalize Neuroscan ALL_CAPS labels and apply a standard montage.
+
+    Neuroscan caps label channels in upper case (``FP1``, ``FPZ``, ``CZ``)
+    whereas MNE's standard montages use mixed case (``Fp1``, ``Fpz``, ``Cz``);
+    without the rename :meth:`set_montage` silently matches no channels.
+    Non-EEG channels (stim/EOG/misc) are unaffected by the transform.
+
+    Modifies ``raw`` in place.
+    """
+    raw.rename_channels(
+        {ch: ch.replace("Z", "z").replace("FP", "Fp") for ch in raw.ch_names}
+    )
+    raw.set_montage(make_standard_montage(montage_name), on_missing="ignore")
+
+
 def _download_all(update_path=True, verbose=None):
     """Download all data.
 
@@ -217,6 +227,25 @@ def block_rep(block: int, rep: int, n_rep: int):
 
 def blocks_reps(blocks: list, reps: list, n_rep: int):
     return [block_rep(b, r, n_rep) for b in blocks for r in reps]
+
+
+def resolve_cvep_command_ids(cvep_data, trial_idx, first_idx, true_labels=None):
+    """Return the attended command id for each unique trial in ``trial_idx``.
+
+    Resolves train mode from ``cvep_data["command_idx"]`` and test mode from
+    ``cvep_data["commands_info"]`` + ``true_labels``.  ``first_idx`` is the
+    output of ``np.unique(trial_idx, return_index=True)`` (the row of the
+    first occurrence of each unique trial); callers compute it once and reuse
+    it for ``first_trial_onsets``.
+    """
+    if cvep_data["mode"] == "train":
+        return np.asarray(cvep_data["command_idx"], dtype=int)[first_idx]
+    assert true_labels is not None
+    label_to_cmd = {
+        item["label"]: int(c) for c, item in cvep_data["commands_info"][0].items()
+    }
+    unique_trials = np.asarray(trial_idx)[first_idx]
+    return np.array([label_to_cmd[true_labels[int(t)]] for t in unique_trials], dtype=int)
 
 
 def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"):
@@ -757,6 +786,12 @@ class _BubbleChart:
 
 class _BaseDatasetPlotter:
     def __init__(self, datasets, meta_gap, kwargs, n_col=None):
+        # Imported here: moabb.analysis.plotting applies a seaborn theme to the
+        # global matplotlib rcParams at import time, which would restyle anyone
+        # who merely imports moabb.datasets.
+
+        from moabb.analysis.plotting import _get_dataset_parameters, get_dataset_area
+
         self.datasets = datasets = (
             datasets
             if datasets is not None
@@ -795,6 +830,12 @@ class _BaseDatasetPlotter:
         pass
 
     def plot(self):
+        # Imported here: moabb.analysis.plotting applies a seaborn theme to the
+        # global matplotlib rcParams at import time, which would restyle anyone
+        # who merely imports moabb.datasets.
+        import matplotlib.pyplot as plt
+
+        from moabb.analysis.plotting import dataset_bubble_plot
 
         centers = self._get_centers()
 

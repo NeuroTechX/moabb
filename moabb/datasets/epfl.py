@@ -82,7 +82,6 @@ class EPFLP300(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=2048.0,
-            n_channels=32,
             channel_types={"eeg": 32, "misc": 2},
             montage="standard_1020",
             hardware="Biosemi ActiveTwo",
@@ -240,6 +239,7 @@ class EPFLP300(BaseDataset):
         data_processed=False,
         file_format="MATLAB",
     )
+    nemar_id = "nm000231"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -350,11 +350,15 @@ class EPFLP300(BaseDataset):
 
         # check if has the .zip
         url = "{:s}subject{:d}.zip".format(EPFLP300_URL, subject)
-        path_zip = dl.data_dl(url, "EPFLP300")
+        path_zip = dl.data_dl(
+            url, "EPFLP300", path=path, force_update=force_update, verbose=verbose
+        )
         path_folder = path_zip.strip("subject{:d}.zip".format(subject))
 
         # check if has to unzip
-        if not (os.path.isdir(path_folder + "subject{:d}".format(subject))):
+        if force_update or not (
+            os.path.isdir(path_folder + "subject{:d}".format(subject))
+        ):
             logger.info("unzip", path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)

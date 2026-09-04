@@ -72,10 +72,10 @@ class Ofner2017(BaseDataset):
            https://doi.org/10.1371/journal.pone.0182578
     """
 
+    nemar_id = "nm000173"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=61,
             channel_types={"eeg": 61, "eog": 3, "misc": 32},
             hardware="g.tec medical engineering GmbH",
             sensor_type="active",

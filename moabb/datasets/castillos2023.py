@@ -370,10 +370,10 @@ class CastillosBurstVEP100(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000344"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             sensors=[
                 "C3",
@@ -664,10 +664,10 @@ class CastillosBurstVEP40(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000345"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             sensors=[
                 "C3",
@@ -931,10 +931,10 @@ class CastillosCVEP100(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000346"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             sensors=[
                 "C3",
@@ -1189,10 +1189,10 @@ class CastillosCVEP40(BaseCastillos2023):
 
     """
 
+    nemar_id = "nm000342"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             sensors=[
                 "C3",

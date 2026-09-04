@@ -2,7 +2,9 @@
 
 import csv
 import dataclasses
+import importlib.util
 import json
+import re
 import typing
 from pathlib import Path
 from types import SimpleNamespace
@@ -29,6 +31,7 @@ from moabb.datasets.metadata import (
     get_dataset_metadata,
 )
 from moabb.datasets.utils import _init_dataset, build_raw_from_epochs, dataset_dict
+from scripts.generate_macro_table import _format_cell
 
 
 class TestAcquisitionMetadata:
@@ -37,7 +40,7 @@ class TestAcquisitionMetadata:
     def test_required_fields_only(self):
         """Test instantiation with only required fields."""
         acq = AcquisitionMetadata(
-            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
+            sampling_rate=512.0, channel_types={"eeg": 60, "eog": 4}
         )
         assert acq.sampling_rate == 512.0
         assert acq.n_channels == 64
@@ -57,7 +60,6 @@ class TestAcquisitionMetadata:
         """Test instantiation with all fields."""
         acq = AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=128,
             channel_types={"eeg": 120, "eog": 4, "emg": 4},
             sensors=["Fp1", "Fp2", "F3", "F4"],
             sensor_type="Ag/AgCl wet",
@@ -80,12 +82,8 @@ class TestAcquisitionMetadata:
 
     def test_sensors_mutable_default(self):
         """Test that sensors default list is not shared between instances."""
-        acq1 = AcquisitionMetadata(
-            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 64}
-        )
-        acq2 = AcquisitionMetadata(
-            sampling_rate=256.0, n_channels=32, channel_types={"eeg": 32}
-        )
+        acq1 = AcquisitionMetadata(sampling_rate=512.0, channel_types={"eeg": 64})
+        acq2 = AcquisitionMetadata(sampling_rate=256.0, channel_types={"eeg": 32})
         acq1.sensors.append("Cz")
         assert acq1.sensors == ["Cz"]
         assert acq2.sensors == []
@@ -211,7 +209,7 @@ class TestDatasetMetadata:
     def minimal_acquisition(self):
         """Create minimal AcquisitionMetadata for testing."""
         return AcquisitionMetadata(
-            sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
+            sampling_rate=512.0, channel_types={"eeg": 60, "eog": 4}
         )
 
     @pytest.fixture
@@ -279,7 +277,6 @@ class TestMetadataIntegration:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=512.0,
-                n_channels=22,
                 channel_types={"eeg": 22},
                 sensor_type="Ag/AgCl wet",
                 reference="left earlobe",
@@ -331,7 +328,6 @@ class TestMetadataIntegration:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256.0,
-                n_channels=64,
                 channel_types={"eeg": 64},
                 hardware="BioSemi ActiveTwo",
                 reference="CMS/DRL",
@@ -355,7 +351,6 @@ class TestMetadataIntegration:
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=250.0,
-                n_channels=8,
                 channel_types={"eeg": 8},
                 sensors=["PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2"],
             ),
@@ -470,7 +465,9 @@ class TestMetadataCatalog:
         """Test Dreyer2023 metadata."""
         metadata = get_dataset_metadata("Dreyer2023")
         assert metadata.participants.n_subjects == 87
-        assert metadata.acquisition.n_channels == 27
+        # 27 EEG + 2 EMG + 3 EOG. ``n_channels`` is the total, matching this
+        # dataset's own 32-entry ``sensors`` list.
+        assert metadata.acquisition.n_channels == 32
         assert metadata.documentation.country == "FR"  # ISO alpha-2 code
         assert "10.1038/s41597-023-02445-z" in metadata.documentation.doi
 
@@ -512,7 +509,7 @@ class TestMetadataCatalog:
 
     def test_catalog_dataset_count(self):
         """Test that catalog contains expected number of datasets."""
-        assert len(DATASET_METADATA_CATALOG) == 157
+        assert len(DATASET_METADATA_CATALOG) == 160
 
     def test_bnci2015_006_metadata(self):
         """Test BNCI2015_006 music BCI metadata."""
@@ -865,7 +862,7 @@ class TestParticipantsResolutionOrdering:
         tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+                sampling_rate=128.0, channel_types={"eeg": 1}
             ),
             participants=ParticipantMetadata(
                 n_subjects=2, ages=[25, None], age_mean=44.0
@@ -884,7 +881,7 @@ class TestParticipantsResolutionOrdering:
         tsv_path = self._write_participants_tsv(tmp_path, ["sub-1", "sub-2"])
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
-                sampling_rate=128.0, n_channels=1, channel_types={"eeg": 1}
+                sampling_rate=128.0, channel_types={"eeg": 1}
             ),
             participants=ParticipantMetadata(
                 n_subjects=2,
@@ -922,3 +919,90 @@ class TestParticipantsResolutionOrdering:
         total = cache["_metadata"]["total"]
         actual = sum(1 for key in cache if key != "_metadata")
         assert total == actual
+
+
+# ------------------------------------------------------------------------
+# Dataset country metadata must render as a flag in the docs macro table.
+# A missing/NaN country crashed the docs build (``country_flag`` called
+# ``len()`` on a float) because a new dataset shipped without one. These tests
+# guard both the data (every dataset resolves to a valid code) and the renderer.
+# ------------------------------------------------------------------------
+
+# Every dataset that carries metadata, listed from the catalog.
+DATASETS_WITH_METADATA = sorted(DATASET_METADATA_CATALOG)
+
+
+@pytest.fixture(scope="module")
+def country_constants():
+    """Load ``normalize_country``/``country_flag`` from the docs sphinxext."""
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "docs"
+        / "source"
+        / "sphinxext"
+        / "dataset_constants.py"
+    )
+    spec = importlib.util.spec_from_file_location("dataset_constants", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="module")
+def dataset_metadata():
+    """All MOABB dataset metadata, keyed by dataset name."""
+    return DATASET_METADATA_CATALOG
+
+
+@pytest.mark.parametrize("name", DATASETS_WITH_METADATA)
+def test_dataset_has_resolvable_country(name, dataset_metadata, country_constants):
+    # country may be a name ("France"), alpha-2 ("FR"), or alpha-3 ("USA"); it
+    # must resolve to a valid alpha-2 code (None means missing/unknown, which is
+    # what crashed the docs macro table).
+    meta = dataset_metadata[name]
+    assert meta.documentation is not None, f"{name} has no documentation metadata"
+    raw = meta.documentation.country
+    code = country_constants.normalize_country(raw)
+    assert code and re.fullmatch(r"[A-Z]{2}", code), (
+        f"{name} country {raw!r} does not resolve to an alpha-2 code"
+    )
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        (float("nan"), ""),  # crashed the docs build (len() on a float)
+        (None, ""),
+        ("USA", ""),  # not pre-normalized: country_flag wants a 2-char code
+        ("MX", "\U0001f1f2\U0001f1fd"),
+        ("fr", "\U0001f1eb\U0001f1f7"),  # lower-cased 2-letter still renders
+    ],
+)
+def test_country_flag_handles_bad_input(value, expected, country_constants):
+    assert country_constants.country_flag(value) == expected
+
+
+# A missing value arrives from the DataFrame as NaN (a truthy float), which
+# slipped past ``if not url`` guards and crashed html.escape in the docs build.
+# Covers every ``fmt`` in the _format_cell dispatch table, and both the raw NaN
+# and the None it is collapsed to -- "link"/"paradigm_tag" were the two branches
+# with no empty-value guard, so they raised AttributeError on html.escape(None).
+@pytest.mark.parametrize(
+    "fmt",
+    [
+        "link",
+        "paradigm_tag",
+        "health_tag",
+        "doi_link",
+        "data_url",
+        "country",
+        "year",
+        "int",
+        "num",
+        "bool",
+        "str",
+    ],
+)
+@pytest.mark.parametrize("missing", [float("nan"), None])
+def test_format_cell_handles_nan(fmt, missing):
+    assert _format_cell(missing, fmt) == ""

@@ -97,10 +97,10 @@ class Zheng2020(BaseDataset):
            https://doi.org/10.3389/fnins.2020.579469
     """
 
+    nemar_id = "nm000205"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62},
             montage="standard_1020",
             hardware="Neuroscan Synamps2",
@@ -256,7 +256,7 @@ class Zheng2020(BaseDataset):
             raise ValueError("Invalid subject number")
 
         group, _ = _SUBJECT_MAP[subject]
-        base = Path(dl.get_dataset_path(_SIGN, None)) / f"MNE-{_SIGN}-data"
+        base = Path(dl.get_dataset_path(_SIGN, path)) / f"MNE-{_SIGN}-data"
         group_dir = base / f"G{group}"
 
         # Check if already extracted.
@@ -268,7 +268,9 @@ class Zheng2020(BaseDataset):
         # Download zip from Figshare.
         file_id = _GROUP_FILES[group]
         url = f"https://ndownloader.figshare.com/files/{file_id}"
-        zip_path = dl.data_dl(url, _SIGN)
+        zip_path = dl.data_dl(
+            url, _SIGN, path=path, force_update=force_update, verbose=verbose
+        )
 
         # Extract.
         group_dir.mkdir(parents=True, exist_ok=True)

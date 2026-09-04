@@ -118,10 +118,10 @@ class Kumar2024(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
+    nemar_id = "nm000177"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
-            n_channels=22,
             channel_types={"eeg": 22, "eog": 3},
             montage="standard_1020",
             hardware="ANT Neuro eego mylab",

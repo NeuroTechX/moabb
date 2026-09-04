@@ -92,10 +92,10 @@ class HefmiIch2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-06100-7
     """
 
+    nemar_id = "nm000347"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=32,
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="g.HIamp (g.tec medical engineering GmbH)",
@@ -219,7 +219,8 @@ class HefmiIch2025(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
-        base = Path(self.data_path(subject))
+        self.data_path(subject)
+        base = Path(dl.get_dataset_path("HefmiIch2025", None)) / "MNE-hefmiich2025-data"
 
         # Find epoch files for this subject.
         manifest = self._get_manifest(base)
@@ -376,8 +377,22 @@ class HefmiIch2025(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path = dl.get_dataset_path("HefmiIch2025", path)
-        basepath = Path(path) / "MNE-hefmiich2025-data"
+        root = Path(dl.get_dataset_path("HefmiIch2025", path))
+        basepath = root / "MNE-hefmiich2025-data"
         basepath.mkdir(parents=True, exist_ok=True)
 
-        return str(basepath)
+        manifest = self._get_manifest(basepath)
+        if subject not in manifest:
+            raise FileNotFoundError(f"No EEG epoch files found for subject {subject}")
+
+        paths = []
+        for file_id, file_name in manifest[subject]:
+            local_path = basepath / file_name
+            if not local_path.exists() or force_update:
+                url = f"https://ndownloader.figshare.com/files/{file_id}"
+                downloaded = Path(dl.data_dl(url, self.code, root, force_update, verbose))
+                if downloaded != local_path:
+                    downloaded.replace(local_path)
+            paths.append(str(local_path))
+
+        return paths

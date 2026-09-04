@@ -84,10 +84,10 @@ class BNCI2019_001(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
+    nemar_id = "nm000149"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=61,
             channel_types={"eeg": 61, "eog": 3},
             montage="10-5",
             hardware="g.tec",

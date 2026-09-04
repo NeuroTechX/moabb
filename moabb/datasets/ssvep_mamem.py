@@ -1,7 +1,10 @@
 """SSVEP MAMEM1 dataset."""
 
+import json
 import logging
+import os
 import os.path as osp
+from pathlib import Path
 
 import numpy as np
 import pooch
@@ -126,7 +129,8 @@ class BaseMAMEM(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         fnames = self.data_path(subject)
-        filelist = fs_get_file_list(self.figshare_id)
+        # ``data_path`` already populated the filelist cache; reuse it here.
+        filelist = self._load_or_fetch_filelist(self._dataset_root())
         fsn = fs_get_file_name(filelist)
         sessions = {}
 
@@ -179,11 +183,9 @@ class BaseMAMEM(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         sub = f"{subject:02d}"
-        sign = self.code.split("-")[0]
-        key_dest = f"MNE-{sign.lower():s}-data"
-        path = osp.join(get_dataset_path(sign, path), key_dest)
+        path = self._dataset_root(path=path)
 
-        filelist = fs_get_file_list(self.figshare_id)
+        filelist = self._load_or_fetch_filelist(path, force_update=force_update)
         reg = fs_get_file_hash(filelist)
         fsn = fs_get_file_id(filelist)
         gb = pooch.create(path=path, base_url=MAMEM_URL, registry=reg)
@@ -191,8 +193,40 @@ class BaseMAMEM(BaseDataset):
         spath = []
         for f in fsn.keys():
             if f[2:4] == sub:
+                local_file = Path(path) / fsn[f]
+                if force_update and local_file.is_file():
+                    local_file.unlink()
                 spath.append(gb.fetch(fsn[f]))
         return spath
+
+    def _dataset_root(self, *, path=None):
+        sign = self.code.split("-")[0]
+        return osp.join(get_dataset_path(sign, path), f"MNE-{sign.lower()}-data")
+
+    def _filelist_cache_path(self, path):
+        return osp.join(path, f"figshare_filelist_{self.figshare_id}.json")
+
+    def _load_or_fetch_filelist(self, path, *, force_update=False):
+        """Disk-cached Figshare filelist; never re-pings once cached."""
+        cache_path = self._filelist_cache_path(path)
+        if not force_update:
+            try:
+                with open(cache_path, "r") as f:
+                    return json.load(f)
+            except FileNotFoundError:
+                pass
+            except (OSError, ValueError) as err:
+                log.warning(
+                    "Refetching unreadable filelist cache %s: %s", cache_path, err
+                )
+        filelist = fs_get_file_list(self.figshare_id)
+        os.makedirs(path, exist_ok=True)
+        try:
+            with open(cache_path, "w") as f:
+                json.dump(filelist, f)
+        except OSError as err:
+            log.warning("Could not persist filelist cache %s: %s", cache_path, err)
+        return filelist
 
 
 class MAMEM1(BaseMAMEM):
@@ -296,10 +330,10 @@ class MAMEM1(BaseMAMEM):
            `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738>`_
     """
 
+    nemar_id = "nm000119"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=256,
             channel_types={"eeg": 256},
             montage="GSN-HydroCel-256",
             hardware="EGI 300 Geodesic EEG System (GES 300)",
@@ -798,10 +832,10 @@ class MAMEM2(BaseMAMEM):
            `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931>`_
     """
 
+    nemar_id = "nm000120"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=256,
             channel_types={"eeg": 256},
             montage="GSN-HydroCel-256",
             hardware="EGI 300 Geodesic EEG System (GES 300)",
@@ -1301,10 +1335,10 @@ class MAMEM3(BaseMAMEM):
            `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851>`_
     """
 
+    nemar_id = "nm000121"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,
-            n_channels=14,
             channel_types={"eeg": 14},
             montage="10-20",
             hardware="EGI 300 Geodesic EEG System (GES 300)",

@@ -18,7 +18,11 @@ from moabb.datasets.metadata.schema import (
     ExperimentMetadata,
     ParticipantMetadata,
 )
-from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
+from moabb.datasets.utils import (
+    add_stim_channel_epoch,
+    add_stim_channel_trial,
+    resolve_cvep_command_ids,
+)
 from moabb.utils import _handle_deprecated_kwargs
 
 
@@ -139,9 +143,7 @@ class MartinezCagigal2023Checker(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=256.0, n_channels=16, channel_types={"eeg": 16}
-        ),
+        acquisition=AcquisitionMetadata(sampling_rate=256.0, channel_types={"eeg": 16}),
         participants=ParticipantMetadata(n_subjects=16),
         experiment=ExperimentMetadata(paradigm="cvep"),
         documentation=DocumentationMetadata(
@@ -174,6 +176,7 @@ class MartinezCagigal2023Checker(BaseDataset):
             ),
         ),
     )
+    nemar_id = "nm000240"
 
     def __init__(self, conditions=ALL_CONDITIONS, subjects=None, sessions=None, **kwargs):
         deprecated_renames = {"Conditions": "conditions"}
@@ -362,34 +365,32 @@ class MartinezCagigal2023Checker(BaseDataset):
         # Calculate trial onsets in samples
         trial_onsets_samples = (sample_onsets * sampling_freq).astype(int)
 
-        # Get unique trial indices and their labels
+        # ``stim_trial`` must carry the attended command id (matching
+        # ``Castillos*`` / ``Thielen*``) so markers are comparable across
+        # recordings; ``codes`` below stays indexed by per-recording trial id.
         trial_idx = np.array(cvep_data["trial_idx"])
-        unique_trials = np.unique(trial_idx)
+        unique_trials, first_idx = np.unique(trial_idx, return_index=True)
         trial_labels = unique_trials.astype(int)
+        command_ids = resolve_cvep_command_ids(
+            cvep_data, trial_idx, first_idx, true_labels
+        )
+        first_trial_onsets = trial_onsets_samples[first_idx]
 
-        # Find the first onset for each trial
-        first_trial_onsets = []
-        for t in unique_trials:
-            mask = trial_idx == t
-            first_onset_idx = np.where(mask)[0][0]
-            first_trial_onsets.append(trial_onsets_samples[first_onset_idx])
-        first_trial_onsets = np.array(first_trial_onsets)
-
-        # Add trial-level annotations so trial identity survives BIDS export.
-        # SetRawAnnotations transfers extras by sample position to the first
-        # bit event of each trial, which then appear as columns in events.tsv.
+        # Trial-level annotations carry trial_id + command_id through BIDS.
         trial_onsets_sec = first_trial_onsets / sampling_freq
         trial_annotations = mne.Annotations(
             onset=trial_onsets_sec,
             duration=[0.0] * len(trial_onsets_sec),
             description=["_trial_meta"] * len(trial_onsets_sec),
         )
-        trial_annotations.extras = [{"trial_id": int(lbl)} for lbl in trial_labels]
+        trial_annotations.extras = [
+            {"trial_id": int(lbl), "command_id": int(cid)}
+            for lbl, cid in zip(trial_labels, command_ids)
+        ]
         raw_data.set_annotations(raw_data.annotations + trial_annotations)
 
-        # The stim_trial channel is kept for backward compat with paradigm code.
         raw_data = add_stim_channel_trial(
-            raw_data, first_trial_onsets, trial_labels, offset=200
+            raw_data, first_trial_onsets, command_ids, offset=200
         )
 
         # Build a codebook from the sequences (shape: n_bits x n_codes)

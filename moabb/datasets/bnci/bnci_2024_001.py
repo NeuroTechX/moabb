@@ -298,7 +298,6 @@ class BNCI2024_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=60,
             channel_types={"eeg": 60, "eog": 4},
             montage="eogl1 eogl2 eogl3 eogr1 af7 af3 afz af4 af8 f7 f5 f3 f1 fz f2 f4 f6 f8 ft7 fc5 fc3 fc1 fcz fc2 fc4 fc6 ft8 t7 c5 c3 c1 cz c2 c4 c6 t8 tp7 cp5 cp3 cp1 cpz cp2 cp4 cp6 tp8 p7 p5 p3 p1 pz p2 p4 p6 p8 ppo1h ppo2h po7 po3 poz po4 po8 o1 oz o2",
             hardware="BrainVision",
@@ -529,6 +528,7 @@ class BNCI2024_001(BNCIBaseDataset):
         abstract="This study explores the classification of ten letters (a,d,e,f,j,n,o,s,t,v) from non-invasive neural signals of 20 participants. Letters were classified with direct classification from low-frequency and broadband EEG, and a two-step approach comprising continuous decoding of hand kinematics followed by classification. The two-step approach yielded significantly higher performances of 26.2% for ten letters and 46.7% for five letters. Hand kinematics could be reconstructed with correlation of 0.10 to 0.57 (average chance level: 0.04). Results suggest movement speed as the most informative kinematic for decoding short hand movements.",
         methodology="Participants wrote 10 letters using right index finger with motion capture tracking (30 Hz, 2D positions). Two-round session with 7 runs (round 1) and 8 runs (round 2), 40 trials per run, 8.5s per trial. Training phase included 4 steps: observation, guided following, unguided following, and execution without feedback. Classification using sliding-window approach with sLDA and EEGNet CNN. Trajectory decoding using EEGNet architecture adapted for regression of position-based (px, py, vx, vy), distance-based (d, ḋ, θ, θ̇), and speed-based (s) kinematics.",
     )
+    nemar_id = "nm000161"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

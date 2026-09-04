@@ -103,7 +103,7 @@ We report the results of the benchmark study performed in:
 
 This study conducts an extensive Brain-computer interfaces (BCI) reproducibility analysis on open electroencephalography datasets,
 aiming to assess existing solutions and establish open and reproducible benchmarks for effective comparison within the field. Please note that the results are obtained using `Within-Session evaluation <https://moabb.neurotechx.com/docs/generated/moabb.evaluations.WithinSessionEvaluation.html>`_.
-The results are reported regarding mean accuracy and standard deviation across all folds for all sessions and subjects.
+The score depends on the number of classes in the scenario: two-class scenarios are scored with ROC-AUC and scenarios with more than two classes with accuracy, as :class:`~moabb.paradigms.MotorImagery` selects the metric. The results below are reported as the mean and standard deviation of that score over all sessions and subjects. Note that Within-Session evaluation averages the cross-validation folds within each session before returning a score, so the standard deviation is computed across (subject, session) pairs rather than across individual folds.
 
 If you use the same evaluation procedure, you should expect similar results if you use the same pipelines and datasets, with some minor variations due to the randomness of the cross-validation procedure.
 

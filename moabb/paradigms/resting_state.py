@@ -56,6 +56,7 @@ class RestingStateToP300Adapter(BaseP300):
         resample=128,
         ignore_relabelling=False,
         scorer=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=[[fmin, fmax]],
@@ -67,10 +68,11 @@ class RestingStateToP300Adapter(BaseP300):
             resample=resample,
             ignore_relabelling=ignore_relabelling,
             scorer=scorer,
+            reject_by_annotation=reject_by_annotation,
         )
 
     def used_events(self, dataset):
-        return {ev: dataset.event_id[ev] for ev in self.events}
+        return {ev: dataset.event_id[ev] for ev in self.events or dataset.event_id}
 
     def is_valid(self, dataset):
         ret = True

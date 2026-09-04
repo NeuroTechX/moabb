@@ -69,7 +69,6 @@ class Wang2021Combined(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=31,
             channel_types={"eeg": 31, "eog": 2},
             montage="standard_1005",
             hardware="eego mylab (ANT Neuro)",
@@ -138,6 +137,7 @@ class Wang2021Combined(BaseDataset):
         "31": "9.44",  # Direction 3 (right) -> 85/9 Hz
         "41": "7.73",  # Direction 4 (left) -> 85/11 Hz
     }
+    nemar_id = "nm000131"
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

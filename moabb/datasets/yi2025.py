@@ -129,10 +129,10 @@ class Yi2025(BaseDataset):
     .. versionadded:: 1.2.0
     """
 
+    nemar_id = "nm000160"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=62,
             channel_types={"eeg": 62},
             hardware="Neuroscan SynAmps2",
             reference="left mastoid (M1)",

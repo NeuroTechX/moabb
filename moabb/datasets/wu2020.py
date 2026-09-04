@@ -74,10 +74,10 @@ class Wu2020(BaseDataset):
            https://doi.org/10.1088/1741-2552/abc1b6
     """
 
+    nemar_id = "nm000142"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=122,
             channel_types={"eeg": 122, "misc": 10},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",

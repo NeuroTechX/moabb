@@ -226,6 +226,9 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         is used, windows may cross event boundaries; such windows are kept and
         labeled using a majority vote over the events they cover.
         Defaults to ``None``.
+    reject_by_annotation : bool
+        If True, reject epochs overlapping annotations whose description starts
+        with ``bad``. Defaults to ``True``.
     """
 
     def __init__(
@@ -237,6 +240,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         channels: Optional[List[str]] = None,
         resample: Optional[float] = None,
         overlap: Optional[float] = None,
+        reject_by_annotation: bool = True,
     ):
         if tmax is not None:
             if tmin >= tmax:
@@ -249,6 +253,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         self.tmax = tmax
         self.interpolate_missing_channels = False
         self.overlap = overlap
+        self.reject_by_annotation = reject_by_annotation
 
     @property
     @abc.abstractmethod
@@ -400,6 +405,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         postprocess_pipeline=None,
         process_pipelines=None,
         additional_metadata: Literal["all"] | list[str] = None,
+        n_jobs=1,
     ):
         """
         Return the data for a list of subject.
@@ -447,6 +453,11 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             select these columns in addition to the three default values mentioned
             before. This parameter works regardless of the return type
             (epochs, raws, or array).
+        n_jobs: int
+            Number of jobs to run in parallel over subjects when loading and
+            preprocessing the data. Default ``1`` (sequential). Per-subject
+            processing is independent, so this gives a near-linear speedup for
+            datasets with many subjects, with identical numerical results.
 
         Returns
         -------
@@ -493,6 +504,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                 subjects=subjects,
                 cache_config=cache_config,
                 process_pipeline=process_pipeline,
+                n_jobs=n_jobs,
             )
             for process_pipeline in process_pipelines
         ]
@@ -654,6 +666,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                                 channels=self.channels,
                                 interpolate_missing_channels=self.interpolate_missing_channels,
                                 return_all_modalities=dataset.return_all_modalities,
+                                reject_by_annotation=self.reject_by_annotation,
                             ),
                         ),
                     ]
@@ -802,6 +815,7 @@ class BaseParadigm(BaseProcessing):
         resample=None,
         overlap=None,
         scorer=None,
+        reject_by_annotation=True,
     ):
         super().__init__(
             filters=filters,
@@ -811,6 +825,7 @@ class BaseParadigm(BaseProcessing):
             tmin=tmin,
             tmax=tmax,
             overlap=overlap,
+            reject_by_annotation=reject_by_annotation,
         )
         self.events = events
 

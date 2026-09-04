@@ -320,10 +320,9 @@ class AcquisitionMetadata:
     ----------
     sampling_rate : float
         Sampling frequency in Hz.
-    n_channels : int
-        Total number of recorded channels.
     channel_types : Dict[str, int]
-        Channel type counts, e.g., {"eeg": 60, "eog": 4}.
+        Channel type counts, e.g., {"eeg": 60, "eog": 4}. ``n_channels`` is
+        derived from this, so the two cannot disagree.
     sensors : List[str], optional
         List of sensor/channel names. Default is empty list.
     sensor_type : str, optional
@@ -359,7 +358,6 @@ class AcquisitionMetadata:
     """
 
     sampling_rate: float
-    n_channels: int
     channel_types: Dict[str, int]
     sensors: List[str] = field(default_factory=list)
     sensor_type: Optional[str] = None
@@ -377,6 +375,16 @@ class AcquisitionMetadata:
     cap_model: Optional[str] = None
     electrode_type: Optional[str] = None
     electrode_material: Optional[str] = None
+
+    @property
+    def n_channels(self) -> int:
+        """Total number of recorded channels.
+
+        Derived from ``channel_types`` rather than stored: when it was a field
+        of its own, 34 of the catalogue's datasets declared a count that
+        disagreed with their own channel breakdown.
+        """
+        return sum(self.channel_types.values())
 
 
 @dataclass
@@ -474,6 +482,8 @@ class ParticipantMetadata:
         Mean age of participants in years.
     age_std : float, optional
         Standard deviation of participant ages.
+    age_median : float, optional
+        Median age of participants in years.
     age_min : float, optional
         Minimum age (EEGDash field).
     age_max : float, optional
@@ -503,6 +513,7 @@ class ParticipantMetadata:
     gender: Optional[Dict[str, int]] = None
     age_mean: Optional[float] = None
     age_std: Optional[float] = None
+    age_median: Optional[float] = None
     # EEGDash additional fields
     age_min: Optional[float] = None
     age_max: Optional[float] = None
@@ -671,7 +682,7 @@ class DatasetMetadata:
     ... )
     >>> metadata = DatasetMetadata(
     ...     acquisition=AcquisitionMetadata(
-    ...         sampling_rate=512.0, n_channels=64, channel_types={"eeg": 60, "eog": 4}
+    ...         sampling_rate=512.0, channel_types={"eeg": 60, "eog": 4}
     ...     ),
     ...     participants=ParticipantMetadata(n_subjects=20),
     ...     experiment=ExperimentMetadata(
@@ -759,7 +770,10 @@ def validate_metadata_against_dataset(dataset, metadata: DatasetMetadata) -> Lis
 
     # Validate n_subjects
     if hasattr(dataset, "subject_list"):
-        n_subjects = len(dataset.subject_list)
+        # Constructor filters are views over a release, not new dataset
+        # populations. Prefer the unfiltered IDs when a dataset exposes them.
+        subjects = getattr(dataset, "all_subjects", dataset.subject_list)
+        n_subjects = len(subjects)
         if metadata.participants.n_subjects != n_subjects:
             errors.append(
                 f"n_subjects mismatch: metadata={metadata.participants.n_subjects}, "

@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
 from sklearn.utils import Bunch
+from sklearn.utils.validation import check_is_fitted
 
 from moabb.datasets._channel_pick import pick_channels_for_modalities
 
@@ -587,6 +588,25 @@ def _compute_events_desc(event_id):
     return ret
 
 
+def _is_preserved_annotation(description) -> bool:
+    """Return True for annotations that must survive event re-derivation.
+
+    :class:`SetRawAnnotations` rebuilds annotations from the trial triggers and
+    therefore drops every annotation already present on the raw. Some
+    annotations, however, carry information that is *not* encoded in the
+    triggers and must be kept:
+
+    - any "bad" segment (description starting with ``"bad"``, case-insensitive),
+      which is MNE's convention for spans excluded by ``reject_by_annotation``
+      (e.g. ``"BAD_artifact"`` from the BNCI loaders, ``"BAD boundary"`` from
+      run concatenation);
+    - the non-rejecting ``"bnci_artifact"`` marker added in ``annotate`` mode,
+      kept so downstream code can still inspect flagged trials.
+    """
+    desc = str(description)
+    return desc.lower().startswith("bad") or desc == "bnci_artifact"
+
+
 class SetRawAnnotations(FixedTransformer):
     """Derive trial markers on ``Raw`` and set them as MNE :class:`mne.Annotations`.
 
@@ -633,6 +653,21 @@ class SetRawAnnotations(FixedTransformer):
                 sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
                 extras_by_sample[sample] = extra
 
+        # Preserve artifact / bad-segment annotations (e.g. per-trial BNCI
+        # artifact flags). ``set_annotations`` below replaces every annotation
+        # with the event-derived ones, so capture these first (keeping their
+        # onset, duration, description and extras) and re-attach them afterwards
+        # so ``reject_by_annotation`` still sees them at epoching time.
+        preserved = None
+        if raw.annotations:
+            keep_idx = [
+                i
+                for i, desc in enumerate(raw.annotations.description)
+                if _is_preserved_annotation(desc)
+            ]
+            if keep_idx:
+                preserved = raw.annotations[keep_idx]
+
         if len(stim_channels) == 0:
             if raw.annotations is None:
                 log.warning(
@@ -670,6 +705,11 @@ class SetRawAnnotations(FixedTransformer):
                 annotations.extras = new_extras
 
             raw.set_annotations(annotations)
+            # Re-attach the preserved artifact / bad-segment annotations. Both
+            # share the raw's ``orig_time`` (its measurement date), so the
+            # onsets stay aligned with the event annotations just set.
+            if preserved is not None:
+                raw.set_annotations(raw.annotations + preserved)
         else:
             log.warning("No events found, skipping setting annotations.")
         return raw
@@ -892,6 +932,7 @@ class RawToEpochs(FixedTransformer):
         channels: List[str] = None,
         interpolate_missing_channels: bool = False,
         return_all_modalities=False,
+        reject_by_annotation: bool = True,
     ):
         super().__init__()
         assert isinstance(event_id, dict)  # not None
@@ -902,6 +943,7 @@ class RawToEpochs(FixedTransformer):
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
         self.return_all_modalities = return_all_modalities
+        self.reject_by_annotation = reject_by_annotation
 
     def __repr__(self):
         return f"RawToEpochs(tmin={self.tmin}, tmax={self.tmax})"
@@ -984,6 +1026,7 @@ class RawToEpochs(FixedTransformer):
             picks=picks,
             event_repeated="drop",
             on_missing="ignore",
+            reject_by_annotation=self.reject_by_annotation,
         )
         return epochs
 
@@ -1016,6 +1059,10 @@ class NamedFunctionTransformer(FunctionTransformer):
         )
 
 
+def _identity(raw):
+    return raw
+
+
 def get_filter_pipeline(fmin, fmax):
     """Return a pipeline step that applies MNE band-pass filtering to ``Raw``.
 
@@ -1030,6 +1077,9 @@ def get_filter_pipeline(fmin, fmax):
     fmax : float
         High cutoff frequency (Hz) passed as ``h_freq``.
     """
+    if fmin is None and fmax is None:
+        return NamedFunctionTransformer(func=_identity, display_name="No Filter")
+
     # methodcaller: forwards to mne.io.BaseRaw.filter when the pipeline passes a Raw.
     return NamedFunctionTransformer(
         func=methodcaller(
@@ -1053,3 +1103,113 @@ def get_resample_pipeline(sfreq):
         func=methodcaller("resample", sfreq=sfreq, verbose=False),
         display_name=f"Resample ({sfreq} Hz)",
     )
+
+
+class EuclideanAlignment(TransformerMixin, BaseEstimator):
+    r"""Euclidean Alignment of trials (He & Wu, 2020).
+
+    Euclidean Alignment (EA) removes the per-domain (subject / session /
+    recording) covariance shift that makes a model trained on one set of
+    recordings transfer poorly to another. It is the simplest member of a
+    larger family of trial-alignment methods — others recenter on the
+    Riemannian or log-Euclidean mean — and is the one most used with deep
+    networks because it is cheap, label-free, and leaves the data as raw trials
+    a network can ingest [He2020]_ [Junqueira2024]_.
+
+    Each trial is whitened by the inverse square root of a single reference
+    covariance,
+
+    .. math::
+
+        \bar{C} = \frac{1}{N} \sum_{i=1}^{N} C_i, \qquad
+        \tilde{X}_i = \bar{C}^{-1/2} X_i ,
+
+    where :math:`C_i` is the spatial covariance of trial :math:`X_i` and
+    :math:`\bar{C}` is their **arithmetic (Euclidean) mean**. After alignment
+    the trials share an identity-like average covariance, so the domain shift
+    that lived in the second-order statistics is gone.
+
+    The transformer is **inductive** by default: :meth:`fit` learns
+    :math:`\bar{C}^{-1/2}` from the *training* trials and :meth:`transform`
+    re-applies that same whitener to unseen trials, so no test information leaks
+    into the alignment (the leakage that the transductive, fit-on-everything
+    form silently introduces). Calling :meth:`fit_transform` on a single
+    recording recovers the usual transductive, per-recording EA people
+    hand-roll — same object, no second class.
+
+    Unlike :class:`pyriemann.transfer.TLCenter` (with ``metric="euclid"``),
+    which recenters covariance *matrices* for a Riemannian classifier, this
+    operates directly on the ``(n_trials, n_channels, n_times)`` trials, so it
+    drops in front of any time-series model (CSP, EEGNet, ...).
+
+    Parameters
+    ----------
+    estimator : str, default "lwf"
+        Covariance estimator passed to
+        :func:`pyriemann.geometry.covariance.covariances`. The shrinkage default
+        ``"lwf"`` (Ledoit-Wolf) keeps the per-trial covariances symmetric
+        positive-definite — and hence the reference mean invertible — even on
+        short or noisy trials, where the plain sample covariance (``"scm"`` /
+        ``"cov"``) can be ill-conditioned.
+
+    Attributes
+    ----------
+    inv_sqrt_ref_ : ndarray, shape (n_channels, n_channels)
+        Inverse square root :math:`\bar{C}^{-1/2}` of the reference mean
+        covariance learned in :meth:`fit`; the whitening matrix applied in
+        :meth:`transform`.
+
+    See Also
+    --------
+    pyriemann.transfer.TLCenter
+
+    Notes
+    -----
+    Accepts an :class:`mne.BaseEpochs` (read via ``get_data``) or an ndarray of
+    shape ``(n_trials, n_channels, n_times)``; :meth:`transform` returns an
+    ndarray of the same shape. ``pyriemann >= 0.11`` is already a hard moabb
+    dependency, so this adds no new requirement.
+
+    References
+    ----------
+    .. [He2020] He, H., & Wu, D. (2020). Transfer learning for brain-computer
+       interfaces: A Euclidean space data alignment approach. *IEEE
+       Transactions on Biomedical Engineering*, 67(2), 399-410.
+       https://doi.org/10.1109/TBME.2019.2913914
+    .. [Junqueira2024] Junqueira, B., Aristimunha, B., Chevallier, S., &
+       de Camargo, R. Y. (2024). A systematic evaluation of Euclidean alignment
+       with deep learning for EEG decoding. *Journal of Neural Engineering*,
+       21(3), 036038. https://doi.org/10.1088/1741-2552/ad4f18
+    """
+
+    def __init__(self, estimator="lwf"):
+        self.estimator = estimator
+
+    @staticmethod
+    def _array(X):
+        """Return trials as a float ``(n_trials, n_channels, n_times)`` ndarray."""
+        if hasattr(X, "get_data"):  # mne Epochs
+            X = X.get_data(copy=False)
+        X = np.asarray(X, dtype=float)
+        if X.ndim != 3:
+            raise ValueError(
+                "EuclideanAlignment expects trials shaped "
+                f"(n_trials, n_channels, n_times), got a {X.ndim}D input."
+            )
+        return X
+
+    def fit(self, X, y=None):
+        # Lazy import so only EuclideanAlignment users pay the import cost. The
+        # Euclidean mean is the arithmetic mean of the per-trial covariances, so
+        # no mean_covariance() call is needed.
+        from pyriemann.geometry.base import invsqrtm
+        from pyriemann.geometry.covariance import covariances
+
+        covs = covariances(self._array(X), estimator=self.estimator)
+        self.inv_sqrt_ref_ = invsqrtm(covs.mean(axis=0))
+        return self
+
+    def transform(self, X):
+        check_is_fitted(self, "inv_sqrt_ref_")
+        # (n_chans, n_chans) @ (n_trials, n_chans, n_times) -> (n_trials, n_chans, n_times)
+        return np.matmul(self.inv_sqrt_ref_, self._array(X))

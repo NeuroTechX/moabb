@@ -45,6 +45,25 @@ from .utils import (
 # Base URL for the BNCI 2025-001 dataset (hosted at TU Graz)
 BNCI_2025_001_URL = "https://lampx.tugraz.at/~bci/database/001-2025/"
 
+# Channels the EEGLAB ``.set`` files carry alongside the EEG montage: hand
+# kinematics from the reaching task, the target position, and a validity flag.
+# ``read_raw_eeglab`` types anything it cannot recognise as ``eeg``, which would
+# feed the target position and hand velocity -- i.e. the labels -- to any
+# paradigm picking ``eeg``.
+_EOG_CHANNELS_001_2025 = ("EOGL1", "EOGL2", "EOGL3", "EOGR1")
+
+_NON_EEG_CHANNELS_001_2025 = (
+    "x",
+    "y",
+    "vx",
+    "vy",
+    "validity",
+    "targetPosX",
+    "targetPoxY",  # sic: the published files misspell targetPosY
+    "targetPosY",  # ...accept the corrected spelling too
+)
+
+
 # Event code mapping for 001-2025 dataset
 # Format: XYZ where X=speed (1=slow, 2=fast), Y=distance (1=near, 2=far), Z=direction (1-4)
 # Direction codes: 1=up, 2=down, 3=left, 4=right
@@ -156,7 +175,18 @@ def _load_data_001_2025(
         return [str(set_file)]
 
     # Load the EEGLAB file
-    raw = mne.io.read_raw_eeglab(str(set_file), preload=True, verbose=verbose)
+    raw = mne.io.read_raw_eeglab(
+        str(set_file), eog=_EOG_CHANNELS_001_2025, preload=True, verbose=verbose
+    )
+
+    # Type the non-EEG channels before the montage, so they are neither placed
+    # on the scalp nor picked as EEG.
+    # set_channel_types raises on a name that is not in info, so filter first.
+    raw.set_channel_types(
+        {ch: "misc" for ch in _NON_EEG_CHANNELS_001_2025 if ch in raw.ch_names},
+        on_unit_change="ignore",
+        verbose=False,
+    )
 
     # Remap annotation descriptions from numeric codes to descriptive names
     # The data contains codes like "111", "112", etc. which we map to
@@ -266,9 +296,8 @@ class BNCI2025_001(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            n_channels=67,
-            channel_types={"eeg": 67, "eog": 4},
-            montage="af7 af3 afz af4 af8 f7 f5 f3 f1 fz f2 f4 f6 f8 ft7 fc5 fc3 fc1 fcz fc2 fc4 fc6 ft8 t7 c5 c3 c1 cz c2 c4 c6 t8 tp7 cp5 cp3 cp1 cpz cp2 cp4 cp6 tp8 p7 p5 p3 p1 pz p2 p4 p6 p8 ppo1h ppo2h po7 po3 poz po4 po8 o1 oz o2",
+            channel_types={"eeg": 60, "eog": 4, "misc": 7},
+            montage="standard_1005",
             sensor_type="EEG",
             hardware="BrainAmp",
             reference="common average",
@@ -508,6 +537,7 @@ class BNCI2025_001(BNCIBaseDataset):
         abstract="Objective. The complicated processes of carrying out a hand reach are still far from fully understood. In order to further the understanding of the kinematics of hand movement, the simultaneous representation of speed, distance, and direction in the brain is explored. Approach. We utilized electroencephalography (EEG) signals and hand position recorded during a four-direction center-out reaching task with either quick or slow speed, near and far distance. Linear models were employed in two modes: decoding and encoding. First, to test the discriminability of speed, distance, and direction. Second, to find the contribution of the cortical sources via the source localization. Additionally, we compared the decoding accuracy when using features obtained from EEG signals and source-localized EEG signals based on the results from the encoding model. Main results. Speed, distance, and direction can be classified better than chance. The accuracy of the speed was also higher than the distance, indicating a stronger representation of the speed than the distance. The speed and distance showed similar significant sources in the central regions related to the movement initiation, while the direction indicated significant sources in the parieto-occipital regions related to the movement preparation. The combination of the features from EEG and source localized signals improved the classification. Significance. Directional and non-directional information are represented in two separate networks. The quick movement resulted in improvement in the direction classification. Our results enhance our understanding of hand movement in the brain and help us make informed decisions when designing an improved paradigm in the future.",
         methodology="Participants performed discrete reaching movements in four directions (up, down, left, right) with two speeds (quick: 0.4-0.8s cue duration, slow: 1.2-2.4s cue duration) and two distances (near: ~5cm/8.7cm actual, far: ~10cm/15.6cm actual). Each trial consisted of outward and inward movements. Visual cue moved from center to target position. Participants waited ≥1s after cue stop before mimicking movement with eyes fixated on cue. Hand position tracked via camera with pink marker on right index finger. 32 conditions (2 speed × 2 distance × 4 direction × 2 inward/outward) with 30 trials per class = 960 trials total per participant. After rejection, ~852 trials remained. EEG processed with EEGLAB on MATLAB R2019b. Signals epoched in two alignments: cue stop aligned (CStp: -3 to 4s) and movement onset aligned (MOn: -3 to 3s). Analysis included MRCP analysis, point-wise classification with instantaneous and windowed (500ms) features, encoding model using GLM, source localization using BEM with ICBM152 template and sLORETA inverse solution via Brainstorm, and source-space classification using data-driven ROIs derived from encoding model. Classification performed with shrinkage LDA. Permutation testing (1000 repetitions) used for significance. FDR controlled using Benjamini-Hochberg procedures.",
     )
+    nemar_id = "nm000162"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -1044,9 +1074,8 @@ class BNCI2025_002(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            n_channels=60,
             channel_types={"eeg": 60, "eog": 4},
-            montage="af7 af3 afz af4 af8 f7 f5 f3 f1 fz f2 f4 f6 f8 ft7 fc5 fc3 fc1 fcz fc2 fc4 fc6 ft8 t7 c5 c3 c1 cz c2 c4 c6 t8 tp7 cp5 cp3 cp1 cpz cp2 cp4 cp6 tp8 p7 p5 p3 p1 pz p2 p4 p6 p8 ppo1h ppo2h po7 po3 poz po4 po8 o1 oz o2",
+            montage="standard_1005",
             sensor_type="EEG",
             hardware="actiCAP, Brain Products GmbH",
             reference="right mastoid",
@@ -1264,6 +1293,7 @@ class BNCI2025_002(BNCIBaseDataset):
         data_processed=True,
         file_format="gdf",
     )
+    nemar_id = "nm000170"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

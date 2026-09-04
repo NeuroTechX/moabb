@@ -99,10 +99,10 @@ class Yang2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-04826-y
     """
 
+    nemar_id = "nm000348"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=59,
             channel_types={"eeg": 59, "ecg": 1, "eog": 4},
             montage="standard_1005",
             hardware="Neuracle NeuSen W",
@@ -330,7 +330,9 @@ class Yang2025(BaseDataset):
 
         # Check if data already extracted (look for the extracted directory)
         extracted_dir = basepath / "WBCIC_SHU Motor Imagery dataset"
-        already_extracted = extracted_dir.is_dir() and any(extracted_dir.rglob("*.mat"))
+        already_extracted = extracted_dir.is_dir() and any(
+            extracted_dir.rglob("data.bdf")
+        )
 
         # Single 65.6 GB ZIP - download if needed.
         zip_path = basepath / "WBCIC_SHU_Motor_Imagery_dataset.zip"

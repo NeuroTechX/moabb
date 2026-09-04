@@ -336,8 +336,10 @@ def _build_summary_cards(df: pd.DataFrame) -> str:
     )
 
 
-def _paradigm_tag(paradigm: str) -> str:
+def _paradigm_tag(paradigm: str | None) -> str:
     """Render a color-coded paradigm pill."""
+    if not paradigm:
+        return ""
     label = _PARADIGM_LABELS.get(paradigm, paradigm)
     color = _PARADIGM_COLORS.get(paradigm, "#757575")
     return (
@@ -381,8 +383,10 @@ def _doi_link(doi: str | None) -> str:
     )
 
 
-def _dataset_link(name: str) -> str:
+def _dataset_link(name: str | None) -> str:
     """Link to the auto-generated dataset documentation page."""
+    if not name:
+        return ""
     url = f"generated/moabb.datasets.{name}.html"
     return f'<a class="mt-dataset-link" href="{html.escape(url)}">{html.escape(name)}</a>'
 
@@ -490,6 +494,10 @@ def _truncate(text: str, max_len: int = _TRUNCATE_LEN) -> str:
 
 def _format_cell(value, fmt: str, row=None) -> str:
     """Format a single cell value according to its type."""
+    # Missing values arrive as NaN (a truthy float) from the DataFrame; collapse
+    # them to None so every branch below can treat "empty" uniformly.
+    if isinstance(value, float) and pd.isna(value):
+        value = None
     if fmt == "link":
         return _dataset_link(value)
     if fmt == "paradigm_tag":

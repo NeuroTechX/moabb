@@ -16,26 +16,36 @@ level, derived from the inverse survival function of the binomial
 distribution, gives the minimum accuracy needed to claim statistically
 significant decoding at a given alpha level.
 
+Finally, we show how to compare pipelines on the folds of a cross-validation
+with the corrected resampled t-test of Nadeau & Bengio (2003), which accounts
+for the dependence between folds that share training examples.
+
 """
 
 # Authors: Vinay Jayaram <vinayjayaram13@gmail.com>
 #
 # License: BSD (3-clause)
-# sphinx_gallery_thumbnail_number = -2
+# sphinx_gallery_thumbnail_number = -3
 
 import matplotlib.pyplot as plt
+import pandas as pd
 from mne.decoding import CSP
 from pyriemann.estimation import Covariances
 from pyriemann.tangentspace import TangentSpace
+from scipy.stats import ttest_rel
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import RepeatedKFold, cross_val_score
 from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import LabelEncoder
 
 import moabb
 import moabb.analysis.plotting as moabb_plt
 from moabb.analysis.chance_level import adjusted_chance_level, chance_by_chance
 from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
+    compute_effect,
+    compute_pvals_corrected_ttest,
     find_significant_differences,
 )
 from moabb.datasets import BNCI2014_001
@@ -218,4 +228,62 @@ plt.show()
 # that the algorithm on the y-axis significantly outperformed the algorithm on
 # the x-axis over all datasets.
 moabb_plt.summary_plot(P, T)
+plt.show()
+
+###############################################################################
+# Corrected Resampled t-test on Cross-Validation Folds
+# ------------------------------------------------------
+#
+# The statistics above compare pipelines across subjects, which are
+# independent samples. Pipelines are also often compared on the folds of a
+# (repeated) k-fold cross-validation within a single subject, and fold scores
+# are **not** independent: every pair of folds shares most of its training
+# examples, so a standard paired t-test underestimates the variance of the
+# score differences and produces overconfident (too small) p-values. Nadeau &
+# Bengio (2003) proposed the *corrected resampled t-test*, which inflates the
+# variance estimate by ``n_test / n_train``, the test/train ratio of each
+# split, restoring reasonable type-I error rates.
+# ``compute_pvals_corrected_ttest`` implements this test with the same k x k
+# one-tailed convention as the other MOABB statistical tests.
+#
+# Here we compare all four pipelines on a repeated 5-fold cross-validation of
+# the first subject's data (already downloaded above). Like the MOABB
+# evaluations, we encode the labels before scoring.
+
+X, labels, _ = paradigm.get_data(dataset, subjects=[1])
+y = LabelEncoder().fit_transform(labels)
+
+n_splits, n_repeats = 5, 3
+cv = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=42)
+fold_scores = pd.DataFrame(
+    {
+        name: cross_val_score(pipe, X, y, scoring=paradigm.scoring, cv=cv)
+        for name, pipe in pipelines.items()
+    }
+)
+
+n_test = len(y) // n_splits
+n_train = len(y) - n_test
+pvals = compute_pvals_corrected_ttest(fold_scores, n_train=n_train, n_test=n_test)
+
+###############################################################################
+# On the same fold scores, the naive paired t-test is systematically more
+# confident than the corrected one: the correction shrinks the t-statistic
+# towards zero, pulling the one-tailed p-value towards 0.5.
+
+naive = ttest_rel(fold_scores["CSP+LDA"], fold_scores["RG+LDA"], alternative="greater")
+
+algs = list(fold_scores.columns)
+i, j = algs.index("CSP+LDA"), algs.index("RG+LDA")
+print(f"CSP+LDA > RG+LDA over {len(fold_scores)} folds")
+print(f"  naive paired t-test:        p = {naive.pvalue:.3f}")
+print(f"  corrected resampled t-test: p = {pvals[i, j]:.3f}")
+
+###############################################################################
+# The corrected p-values can be visualized with the same summary plot as
+# above, together with the standardized mean difference of the fold scores.
+
+P_folds = pd.DataFrame(pvals, index=algs, columns=algs)
+T_folds = pd.DataFrame(compute_effect(fold_scores, algs), index=algs, columns=algs)
+moabb_plt.summary_plot(P_folds, T_folds)
 plt.show()

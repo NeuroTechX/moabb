@@ -191,10 +191,10 @@ class BCIComp2020UpperLimb(BaseDataset):
            16, 898300. https://doi.org/10.3389/fnhum.2022.898300
     """
 
+    nemar_id = "nm000233"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=60,
             channel_types={"eeg": 60},
             montage="standard_1005",
             hardware="BrainAmp (BrainProducts GmbH)",

@@ -158,10 +158,10 @@ class Jeong2020(BaseDataset):
            https://doi.org/10.1093/gigascience/giaa098
     """
 
+    nemar_id = "nm000311"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            n_channels=71,
             channel_types={"eeg": 60, "eog": 4, "emg": 7},
             montage="standard_1005",
             hardware="BrainAmp (BrainProducts GmbH)",

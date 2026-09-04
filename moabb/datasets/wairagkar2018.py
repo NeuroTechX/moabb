@@ -6,6 +6,7 @@ Data DOI: 10.17864/1947.117
 """
 
 import logging
+import zipfile
 from pathlib import Path
 
 import mne
@@ -106,10 +107,10 @@ class Wairagkar2018(BaseDataset):
            https://doi.org/10.1371/journal.pone.0193722
     """
 
+    nemar_id = "nm000141"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
-            n_channels=19,
             channel_types={"eeg": 19},
             montage="standard_1020",
             hardware="Deymed TruScan 32",
@@ -334,7 +335,8 @@ class Wairagkar2018(BaseDataset):
 
         # Extract all .mat files from the ZIP.
         if zip_path is not None and zip_path.exists() and not mat_file.exists():
-            safe_extract_zip(str(zip_path), str(basepath))
+            with zipfile.ZipFile(zip_path) as zf:
+                safe_extract_zip(zf, basepath)
 
         # Move mat files from subfolders to basepath.
         for mat in basepath.rglob("Participant*.mat"):

@@ -251,10 +251,10 @@ class BNCI2020_001(BNCIBaseDataset):
     movement paradigms. Data is available under CC BY 4.0 license.
     """
 
+    nemar_id = "nm000178"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
-            n_channels=58,
             channel_types={"eeg": 58, "eog": 6},
             montage="5% grid system",
             hardware="g.tec USBamp/g.tec Ladybird",
@@ -656,9 +656,9 @@ def _convert_attention_shift(filename, verbose=None):
     ch_names_full = ch_names + ["HEOG", "VEOG", "STI"]
     ch_types_full = ch_types + ["eog", "eog", "stim"]
 
-    # Reshape data: concatenate trials
-    # Original: (channels, samples, trials) -> (channels, samples * trials)
-    eeg_data = bciexp.data.reshape(n_channels, -1)
+    # ``bciexp.data`` is F-contiguous from ``loadmat``; transpose to trial-major
+    # before C-order reshape so per-trial markers align with the EEG samples.
+    eeg_data = bciexp.data.transpose(0, 2, 1).reshape(n_channels, -1)
 
     # Get EOG data: (samples, trials) -> (samples * trials)
     heog_data = bciexp.heog.T.reshape(1, -1)
@@ -825,7 +825,6 @@ class BNCI2020_002(BNCIBaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
-            n_channels=30,
             channel_types={"eeg": 30, "eog": 2},
             montage="extended 10-20",
             hardware="BrainAmp DC Amplifier",
@@ -998,6 +997,7 @@ class BNCI2020_002(BNCIBaseDataset):
         file_format="MAT",
         data_processed=False,
     )
+    nemar_id = "nm000219"
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
