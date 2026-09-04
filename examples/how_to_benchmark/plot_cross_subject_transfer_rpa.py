@@ -31,10 +31,9 @@ import numpy as np
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pyriemann.estimation import Covariances
-from pyriemann.preprocessing import Whitening
 from pyriemann.tangentspace import TangentSpace
+from pyriemann.transfer import TLCenter
 from sklearn import config_context
-from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
@@ -121,7 +120,7 @@ plt.show()
 # ``transform``.
 
 
-class RiemannianAlignment(TransformerMixin, BaseEstimator):
+class RiemannianAlignment(TLCenter):
     """Recenter source and target covariance matrices by domain."""
 
     def fit(self, X, y=None, *, subjects=None, X_target_unlabeled=None):
@@ -130,30 +129,17 @@ class RiemannianAlignment(TransformerMixin, BaseEstimator):
                 "RiemannianAlignment needs `subjects` and `X_target_unlabeled` metadata."
             )
 
-        X = np.asarray(X)
-        subjects = np.asarray(subjects)
-        self.source_whiteners_ = {
-            subject: Whitening(metric="riemann").fit(X[subjects == subject])
-            for subject in np.unique(subjects)
-        }
-        self.target_whitener_ = Whitening(metric="riemann").fit(
-            np.asarray(X_target_unlabeled)
-        )
+        X_target_unlabeled = np.asarray(X_target_unlabeled)
+        X_ = np.vstack((np.asarray(X), X_target_unlabeled))
+        sub = np.repeat(self.target_domain, X_target_unlabeled.shape[0])
+        subjects_ = np.concatenate((np.asarray(subjects), sub))
+        self = super().fit(X_, subjects_ + "/0")
         return self
 
     def fit_transform(self, X, y=None, *, subjects=None, X_target_unlabeled=None):
         """Fit domain references and align the source training trials."""
         self.fit(X, y, subjects=subjects, X_target_unlabeled=X_target_unlabeled)
-        subjects = np.asarray(subjects)
-        X_aligned = np.empty_like(X)
-        for subject, whitener in self.source_whiteners_.items():
-            mask = subjects == subject
-            X_aligned[mask] = whitener.transform(X[mask])
-        return X_aligned
-
-    def transform(self, X):
-        """Align unseen trials with the target reference."""
-        return self.target_whitener_.transform(X)
+        return super().transform(X)
 
 
 ###############################################################################
@@ -175,7 +161,7 @@ class RiemannianAlignment(TransformerMixin, BaseEstimator):
 # ``transform_input``.
 
 with config_context(enable_metadata_routing=True):
-    alignment = RiemannianAlignment().set_fit_request(
+    alignment = RiemannianAlignment("target_unlabeled").set_fit_request(
         subjects=True, X_target_unlabeled=True
     )
 
