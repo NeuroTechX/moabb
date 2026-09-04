@@ -188,11 +188,13 @@ def compute_pvals_wilcoxon(df, order=None):
                     # method already yields.
                     out[i, j] = 0.5
                     continue
-                p = stats.wilcoxon(df.loc[:, pipe1], df.loc[:, pipe2])[1]
-                p /= 2
-                # we want the one-tailed p-value
-                if diffs.mean() < 0:
-                    p = 1 - p  # was in the other side of the distribution
+                # One-tailed p-value that pipe1 scores higher than pipe2. The
+                # direction of the signed-rank test is given by its rank sums,
+                # not by the sign of the mean difference, so ask SciPy for the
+                # one-sided test rather than halving the two-sided p-value.
+                p = stats.wilcoxon(
+                    df.loc[:, pipe1], df.loc[:, pipe2], alternative="greater"
+                )[1]
                 # Keep p strictly inside (0, 1) so Stouffer's method stays
                 # finite, as the permutation branch already does. The normal
                 # approximation can underflow to an exact 0, which the one-tailed
