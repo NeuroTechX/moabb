@@ -207,6 +207,7 @@ Bugs
 - Evaluations now apply ``cv_kwargs`` to the default cross-validation class. Caller settings override splitter defaults, and splitter construction forwards each setting without duplicate keyword arguments (by `Stanley C.`_).
 - Fix numeric sorting in the dataset summary tables (:doc:`dataset_summary`): columns containing the ``varies`` sentinel (e.g. ``Total_trials``) were auto-detected as strings by DataTables and sorted lexicographically (``11000 < 1114 < 11496``). A custom ``num-varies`` column type now treats such columns as numeric, sorting sentinel rows last while keeping their displayed text unchanged (:gh:`1118` by `Bhargav Kowshik`_).
 - Fix ``make html`` crash in ``scripts/generate_macro_table.py`` when a dataset has a missing (``NaN``) value in an optional metadata column (country, DOI, data URL, ...): the float ``NaN`` is truthy, so it slipped past the ``if not value`` guards and crashed the string formatters (``TypeError: object of type 'float' has no len()``). ``_format_cell`` now normalizes ``NaN`` to ``None`` before dispatching, and ``_dataset_link``/``_paradigm_tag`` -- the only two format branches without an empty-value guard, which raised ``AttributeError`` on ``html.escape(None)`` -- guard it too, so all eleven branches render a missing cell as empty (:gh:`1117` by `Bhargav Kowshik`_).
+- Fix ``extra_runs`` parameter behaviour in :class:`moabb.datasets.RomaniBF2025ERP`, and defaulted to `False` for fair cross-subject comparability.(by `Michele Romani`_).
 
 Code health
 ~~~~~~~~~~~
