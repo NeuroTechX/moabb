@@ -100,6 +100,7 @@ from .lenaig2026 import Lenaig2026
 from .liu2024 import Liu2024
 from .liu2025 import Liu2025
 from .ma2020 import Ma2020
+from .ma2022 import Ma2022
 from .mainsah2025 import (
     Mainsah2025_A,
     Mainsah2025_B,

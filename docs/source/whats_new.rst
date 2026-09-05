@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- None yet.
+- Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset (Ma et al. 2022, Scientific Data): 25 BCI-naive subjects performing cued left- vs right-hand grasping imagery over five sessions recorded on five different days, 32 EEG channels at 250 Hz, 11,988 retained 4 s trials. The loader downloads the open version-1 figshare archive cited by the data paper (later record versions re-uploaded the same recordings inside AES-encrypted zips) (:gh:`1178` by `LiQing`_)
 
 API changes
 ~~~~~~~~~~~
@@ -982,6 +982,7 @@ API changes
 .. _Ethan Davis: https://github.com/davisethan
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
+.. _LiQing: https://github.com/qinxwew
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
