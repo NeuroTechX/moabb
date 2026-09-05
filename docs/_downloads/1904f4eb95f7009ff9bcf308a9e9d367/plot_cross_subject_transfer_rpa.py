@@ -99,7 +99,7 @@ plt.show()
 # ------------------------------
 #
 # A trial with :math:`p` EEG channels is summarized by a
-# :math:`p \\times p` symmetric positive-definite (SPD) covariance matrix
+# :math:`p \times p` symmetric positive-definite (SPD) covariance matrix
 # :math:`C`. SPD matrices do not form a flat Euclidean space, so their average
 # is represented by a Riemannian mean.
 #
