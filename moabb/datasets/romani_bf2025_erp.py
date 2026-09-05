@@ -263,7 +263,7 @@ class RomaniBF2025ERP(BaseDataset):
         t_target: int = 1,
         nt_target: int = 2,
         interval: tuple = [-0.1, 1.0],
-        extra_runs: bool = True,
+        extra_runs: bool = False,
         include_inference: bool = False,
         load_failed: bool = False,
         montage: str = "standard_1020",
@@ -535,6 +535,10 @@ class RomaniBF2025ERP(BaseDataset):
                     continue
             else:
                 logging.info(f"Including failed session: {ses_name}")
+
+            if not self.extra_runs and "Extra" in ses_name:
+                logging.info(f"Skipping extra session: {ses_name}")
+                continue
 
             eeg_dir = os.path.join(ses_path, "eeg")
             if not os.path.exists(eeg_dir):
