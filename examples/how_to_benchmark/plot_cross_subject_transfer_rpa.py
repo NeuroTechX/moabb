@@ -139,7 +139,12 @@ class RiemannianAlignment(TLCenter):
     def fit_transform(self, X, y=None, *, subjects=None, X_target_unlabeled=None):
         """Fit domain references and align the source training trials."""
         self.fit(X, y, subjects=subjects, X_target_unlabeled=X_target_unlabeled)
-        return super().transform(X)
+        subjects = np.asarray(subjects)
+        X_aligned = np.empty_like(X)
+        for subject in np.unique(subjects):
+            mask = subjects == subject
+            X_aligned[mask] = self.centers_[str(subject)].transform(X[mask])
+        return X_aligned
 
 
 ###############################################################################
