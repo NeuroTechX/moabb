@@ -147,21 +147,28 @@ def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
 def compute_pvals_wilcoxon(df, order=None):
     """Compute Wilcoxon rank-sum test on aggregated results.
 
-    Returns kxk matrix of p-values computed via the Wilcoxon rank-sum test,
-    order defines the order of rows and columns
+    Returns a square matrix of p-values computed via the Wilcoxon rank-sum test,
+    order defines the order of rows and columns.
+
+    Entry ``[i, j]`` is the one-sided p-value for the hypothesis that pipeline
+    ``order[i]`` scores higher than pipeline ``order[j]`` (SciPy's
+    ``alternative="greater"``); the opposite direction is tested at ``[j, i]``.
+    The p-values are not corrected for multiple comparisons: with ``k``
+    pipelines this function performs ``k * (k - 1)`` tests, so apply a
+    correction (for example Bonferroni or Holm) before interpreting them.
 
     Parameters
     ----------
     df: :class:`pandas.DataFrame`
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
-    order: list
-        list of length (num algorithms) with names corresponding to df columns
+    order: list of length (n_pipelines)
+        Names corresponding to df columns
 
     Returns
     -------
     pvals: ndarray of shape (n_pipelines, n_pipelines)
-        array of pvalues
+        pvalues
     """
     _validate_finite_scores(df)
     if order is None:
