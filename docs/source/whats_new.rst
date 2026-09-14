@@ -35,13 +35,20 @@ Requirements
 
 Bugs
 ~~~~
-- Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
+- None yet.
 
 Code health
 ~~~~~~~~~~~
 - None yet.
 
-Version 1.7.1  (Stable - PyPi)
+Version 1.7.2  (Stable - PyPi)
+-------------------------------
+
+Bugs
+~~~~
+- Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
+
+Version 1.7.1
 -------------------------------
 
 Enhancements
