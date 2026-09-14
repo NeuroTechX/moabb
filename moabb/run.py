@@ -34,10 +34,11 @@ def parser_init():
         "-e",
         "--evaluations",
         dest="evaluations",
-        type=list,
+        type=str,
+        nargs="+",
         default=None,
-        help="Evaluation types to be run. Must be given as a list. "
-        'Options - ["WithinSession","CrossSession","CrossSubject"]'
+        help="Evaluation types to be run, space separated. "
+        'Options - "WithinSession", "CrossSession", "CrossSubject". '
         "By default, all 3 types of evaluations will be done",
     )
     parser.add_argument(
