@@ -899,10 +899,10 @@ This helper does not recompute subject-level F1 scores from predictions.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – results obtained by an evaluation, with at least the <code class="docutils literal notranslate"><span class="pre">dataset</span></code>,
 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">subject</span></code> and <code class="docutils literal notranslate"><span class="pre">score</span></code> columns</p></li>
-<li><p><strong>reference_pipeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Pipeline whose per-subject scores define the lowest-performing cohort
+<li><p><strong>reference_pipeline</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Pipeline whose per-subject scores define the lowest-performing cohort
 separately for each dataset. Every pipeline in a dataset must contain
 exactly the same subjects as this reference.</p></li>
-<li><p><strong>percentile</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=20</em>) – percentage of subjects to keep, in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100]</span></code>. The number of
+<li><p><strong>percentile</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=20</em>) – percentage of subjects to keep, in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100]</span></code>. The number of
 retained subjects is rounded up, and is at least one, so a value
 small enough always falls back to the single worst subject.</p></li>
 </ul>

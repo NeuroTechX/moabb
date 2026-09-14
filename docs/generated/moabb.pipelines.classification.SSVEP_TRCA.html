@@ -939,13 +939,13 @@ sub-bands using a filter bank. The correlation coefficient for sub-band <span cl
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_fbands</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of sub-bands <span class="math notranslate nohighlight">\(N_m\)</span> for the filter bank decomposition.
+<li><p><strong>n_fbands</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of sub-bands <span class="math notranslate nohighlight">\(N_m\)</span> for the filter bank decomposition.
 Each sub-band captures different harmonic components of the SSVEP.
 Defaults to <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p></li>
-<li><p><strong>is_ensemble</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, use ensemble TRCA which combines spatial filters from all
+<li><p><strong>is_ensemble</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, use ensemble TRCA which combines spatial filters from all
 stimulus frequencies for improved robustness. If False, use only
 the class-specific spatial filter. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – <p>Method for computing the inter-trial covariance matrix <span class="math notranslate nohighlight">\(\mathbf{S}\)</span>.
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – <p>Method for computing the inter-trial covariance matrix <span class="math notranslate nohighlight">\(\mathbf{S}\)</span>.
 Defaults to <code class="docutils literal notranslate"><span class="pre">'original'</span></code>.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">'original'</span></code>: Euclidean mean as in the original paper <a class="reference internal" href="#rdaa19db1b521-1" id="id2">[1]</a>.</p></li>
@@ -955,7 +955,7 @@ but sensitive to ill-conditioned matrices.</p></li>
 alternative to the Riemannian mean.</p></li>
 </ul>
 </p></li>
-<li><p><strong>estimator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – <p>Covariance estimator for regularization. Defaults to <code class="docutils literal notranslate"><span class="pre">'scm'</span></code>.
+<li><p><strong>estimator</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – <p>Covariance estimator for regularization. Defaults to <code class="docutils literal notranslate"><span class="pre">'scm'</span></code>.
 Options include:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">'scm'</span></code>: Sample covariance matrix (no regularization, as in <a class="reference internal" href="#rdaa19db1b521-1" id="id3">[1]</a>).</p></li>
@@ -974,7 +974,7 @@ Options include:</p>
 of length <code class="docutils literal notranslate"><span class="pre">n_fbands</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -997,7 +997,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(n_classes
 <dd><p>Number of unique stimulus frequencies/classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1032,7 +1032,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(n_fbands,
 <dd><p>List of stimulus frequencies from training data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)">list</a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1055,7 +1055,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(n_classes
 <dd><p>Sampling frequency of the training data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1098,7 +1098,7 @@ data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>) – Training data. Trials are grouped by class, divided in n_fbands bands by
+<li><p><strong>X</strong> (<a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>) – Training data. Trials are grouped by class, divided in n_fbands bands by
 the filterbank approach and then used to calculate weight vectors and
 templates for each class and band.</p></li>
 <li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>numpy.ndarray</em></a>) – Label vector in respect to X, of shape <code class="docutils literal notranslate"><span class="pre">(n_trials,)</span></code>.</p></li>
@@ -1122,7 +1122,7 @@ with weights previously extracted and compared to the templates to assess
 similarity with each of them and select a class based on the maximal value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>) – Testing data. This will be divided in self.n_fbands using the filterbank approach,
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>) – Testing data. This will be divided in self.n_fbands using the filterbank approach,
 then it will be transformed by the different spatial filters and compared to the
 previously fit templates according to the selected method for analysis (ensemble or
 not). Finally, correlation scores for all sub-bands of each class will be combined,
@@ -1166,7 +1166,7 @@ identified as the predicted class of the data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_TRCA.set_score_request">
-<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><span class="pre">SSVEP_TRCA</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.11/site-packages/sklearn/utils/_metadata_requests.py#L1434-L1479"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.set_score_request" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><span class="pre">SSVEP_TRCA</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.11/site-packages/sklearn/utils/_metadata_requests.py#L1440-L1485"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.set_score_request" title="Link to this definition">#</a></dt>
 <dd><p>Configure whether metadata should be requested to be passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
 <p>Note that this method is only relevant when this estimator is used as a
 sub-estimator within a <a class="reference external" href="https://scikit-learn.org/stable/glossary.html#term-meta-estimator" title="(in scikit-learn v1.9)"><span class="xref std std-term">meta-estimator</span></a> and metadata routing is enabled
@@ -1188,13 +1188,13 @@ parameters and not others.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – The updated object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)">object</a></p>
 </dd>
 </dl>
 </dd></dl>

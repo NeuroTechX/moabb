@@ -908,7 +908,7 @@ using for example the following code:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pipelines</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – <p>Folder containing the pipelines to evaluate or path to a single pipeline file,
+<li><p><strong>pipelines</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – <p>Folder containing the pipelines to evaluate or path to a single pipeline file,
 or a list of scikit-learn pipelines with format:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pipelines</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -928,31 +928,31 @@ or a list of scikit-learn pipelines with format:</p>
 </div>
 <p>Each entry is a dictionary with 3 keys: “name”, “pipeline”, “paradigms”.</p>
 </p></li>
-<li><p><strong>evaluations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – If to restrict the types of evaluations to be run. By default, all 3 base types are run.
+<li><p><strong>evaluations</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – If to restrict the types of evaluations to be run. By default, all 3 base types are run.
 Can be a list of these elements [“WithinSession”, “CrossSession”, “CrossSubject”].</p></li>
-<li><p><strong>paradigms</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – To restrict the paradigms on which evaluations should be run.
+<li><p><strong>paradigms</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – To restrict the paradigms on which evaluations should be run.
 Can be a list of these elements [‘LeftRightImagery’, ‘MotorImagery’, ‘FilterBankSSVEP’, ‘SSVEP’,
 ‘FilterBankMotorImagery’, ‘P300’].</p></li>
-<li><p><strong>results</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Folder to store the results.</p></li>
-<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Force evaluation of cached pipelines.</p></li>
-<li><p><strong>output</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Folder to store the analysis results.</p></li>
-<li><p><strong>suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Suffix for the results file. Use this to differentiate results from
+<li><p><strong>results</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Folder to store the results.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Force evaluation of cached pipelines.</p></li>
+<li><p><strong>output</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Folder to store the analysis results.</p></li>
+<li><p><strong>suffix</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Suffix for the results file. Use this to differentiate results from
 different benchmark runs that use the same paradigm and evaluation.</p></li>
-<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of threads to use for running parallel jobs.</p></li>
-<li><p><strong>n_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>None</em>) – This parameter only works for CrossSubjectEvaluation. It defines the
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of threads to use for running parallel jobs.</p></li>
+<li><p><strong>n_splits</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>None</em>) – This parameter only works for CrossSubjectEvaluation. It defines the
 number of splits to be done in the cross-validation. If None,
 the number of splits is equal to the number of subjects in the dataset.
 Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Plot results after computing.</p></li>
-<li><p><strong>contexts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – File path to context.yml file that describes context parameters.
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Plot results after computing.</p></li>
+<li><p><strong>contexts</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – File path to context.yml file that describes context parameters.
 If none, assumes all defaults. Must contain an entry for all
 paradigms described in the pipelines.</p></li>
-<li><p><strong>include_datasets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Dataset codes or Dataset objects to include in the benchmark run.
+<li><p><strong>include_datasets</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Dataset codes or Dataset objects to include in the benchmark run.
 By default, all suitable datasets are included. If both include_datasets
 and exclude_datasets are specified, raise an error.</p></li>
-<li><p><strong>exclude_datasets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Dataset codes or Dataset objects to exclude from the benchmark run.</p></li>
-<li><p><strong>optuna</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Enable Optuna for the hyperparameter search.</p></li>
-<li><p><strong>codecarbon_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> or </em><em>None</em>) – Configuration dictionary for CodeCarbon emissions tracking.
+<li><p><strong>exclude_datasets</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Dataset codes or Dataset objects to exclude from the benchmark run.</p></li>
+<li><p><strong>optuna</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Enable Optuna for the hyperparameter search.</p></li>
+<li><p><strong>codecarbon_config</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> or </em><em>None</em>) – Configuration dictionary for CodeCarbon emissions tracking.
 If None, uses CodeCarbon defaults. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Available options include:
 - save_to_file (bool): Save emissions to CSV file

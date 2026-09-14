@@ -709,7 +709,7 @@ Here, we will use the BNCI2014_001 dataset and the LeftRightImagery paradigm.</p
 
 <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a><span class="p">()</span>
 <span class="c1"># Select one subject for the example. You can use the dataset for all subjects</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
 
 <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a><span class="p">()</span>
 </pre></div>
@@ -1303,6 +1303,14 @@ a.param-doc-link::before {
     width: 14px;
     height: 14px;
     cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+.copy-paste-icon:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 1px;
 }
 
 .features {
@@ -1361,7 +1369,6 @@ a.param-doc-link::before {
 }
 
 .features .features-container {
-  max-width: 15em;
   max-height: 10em;
   overflow: auto;
   scrollbar-width: thin;
@@ -1425,7 +1432,7 @@ a.param-doc-link::before {
   justify-content: center;
   margin-top: 0.5em;
 }
-</style><body><div id="sk-container-id-1" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-1" type="checkbox" ><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><body><div id="sk-container-id-2" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-4" type="checkbox" ><label for="sk-estimator-id-4" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1433,40 +1440,44 @@ a.param-doc-link::before {
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy steps to clipboard"
                  onclick="copyToClipboard('steps',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">steps</td>
             <td class="value">[(&#x27;Raw&#x27;, ...), (&#x27;Raw&#x27;, ...), ...]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transform_input to clipboard"
                  onclick="copyToClipboard('transform_input',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transform_input</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy memory to clipboard"
                  onclick="copyToClipboard('memory',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">memory</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy verbose to clipboard"
                  onclick="copyToClipboard('verbose',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">verbose</td>
             <td class="value">False</td>
         </tr>
@@ -1475,7 +1486,7 @@ a.param-doc-link::before {
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-2" type="checkbox" ><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-5" type="checkbox" ><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
 events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
@@ -1484,20 +1495,22 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;feet&#x27;: 3, &#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2, &#x27;tongue&#x27;: 4}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interval to clipboard"
                  onclick="copyToClipboard('interval',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interval</td>
             <td class="value">[2, 6]</td>
         </tr>
@@ -1506,7 +1519,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-3" type="checkbox" ><label for="sk-estimator-id-3" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-6" type="checkbox" ><label for="sk-estimator-id-6" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1514,30 +1527,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth...verbose=False)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Band Pass Filter (8–32 Hz)&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -1546,7 +1562,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-4" type="checkbox" ><label for="sk-estimator-id-4" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-7" type="checkbox" ><label for="sk-estimator-id-7" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1554,40 +1570,44 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy steps to clipboard"
                  onclick="copyToClipboard('steps',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">steps</td>
             <td class="value">[(&#x27;Epoching&#x27;, ...)]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transform_input to clipboard"
                  onclick="copyToClipboard('transform_input',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transform_input</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy memory to clipboard"
                  onclick="copyToClipboard('memory',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">memory</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy verbose to clipboard"
                  onclick="copyToClipboard('verbose',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">verbose</td>
             <td class="value">False</td>
         </tr>
@@ -1596,7 +1616,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-5" type="checkbox" ><label for="sk-estimator-id-5" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-8" type="checkbox" ><label for="sk-estimator-id-8" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1604,10 +1624,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transformers to clipboard"
                  onclick="copyToClipboard('transformers',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transformers</td>
             <td class="value">[(&#x27;raw&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
         </tr>
@@ -1616,7 +1637,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-6" type="checkbox" ><label for="sk-estimator-id-6" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-7" type="checkbox" ><label for="sk-estimator-id-7" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-9" type="checkbox" ><label for="sk-estimator-id-9" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-10" type="checkbox" ><label for="sk-estimator-id-10" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
 [left_hand, right_hand] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__events__">
         <div class="estimator-table">
             <details>
@@ -1625,50 +1646,55 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interval to clipboard"
                  onclick="copyToClipboard('interval',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interval</td>
             <td class="value">[2, 6]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy overlap to clipboard"
                  onclick="copyToClipboard('overlap',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">overlap</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy window_length to clipboard"
                  onclick="copyToClipboard('window_length',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">window_length</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmin to clipboard"
                  onclick="copyToClipboard('tmin',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmin</td>
             <td class="value">0.0</td>
         </tr>
@@ -1677,7 +1703,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-8" type="checkbox" ><label for="sk-estimator-id-8" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
+    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-11" type="checkbox" ><label for="sk-estimator-id-11" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
 [left_hand, right_hand] | tmin=2.0 | tmax=6</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Create epochs__">
         <div class="estimator-table">
             <details>
@@ -1686,80 +1712,88 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmin to clipboard"
                  onclick="copyToClipboard('tmin',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmin</td>
             <td class="value">2.0</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmax to clipboard"
                  onclick="copyToClipboard('tmax',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmax</td>
             <td class="value">6</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy baseline to clipboard"
                  onclick="copyToClipboard('baseline',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">baseline</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy channels to clipboard"
                  onclick="copyToClipboard('channels',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">channels</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interpolate_missing_channels to clipboard"
                  onclick="copyToClipboard('interpolate_missing_channels',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interpolate_missing_channels</td>
             <td class="value">False</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy return_all_modalities to clipboard"
                  onclick="copyToClipboard('return_all_modalities',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">return_all_modalities</td>
             <td class="value">False</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy reject_by_annotation to clipboard"
                  onclick="copyToClipboard('reject_by_annotation',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">reject_by_annotation</td>
             <td class="value">True</td>
         </tr>
@@ -1768,7 +1802,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-9" type="checkbox" ><label for="sk-estimator-id-9" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
+    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-12" type="checkbox" ><label for="sk-estimator-id-12" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1776,10 +1810,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transformers to clipboard"
                  onclick="copyToClipboard('transformers',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transformers</td>
             <td class="value">[(&#x27;X&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
         </tr>
@@ -1788,7 +1823,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-10" type="checkbox" ><label for="sk-estimator-id-10" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-13" type="checkbox" ><label for="sk-estimator-id-13" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1796,30 +1831,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth...er(&#x27;get_data&#x27;)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Epochs to Array&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -1828,7 +1866,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-11" type="checkbox" ><label for="sk-estimator-id-11" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-14" type="checkbox" ><label for="sk-estimator-id-14" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1836,30 +1874,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth..._&#x27;, 1000000.0)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Scale (x1e+06)&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -1868,7 +1909,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-12" type="checkbox" ><label for="sk-estimator-id-12" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-15" type="checkbox" ><label for="sk-estimator-id-15" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2049,7 +2090,7 @@ function forceTheme(elementId) {
     }
 }
 
-forceTheme('sk-container-id-1');</script></body>
+forceTheme('sk-container-id-2');</script></body>
 </div>
 <br />
 <br /></section>
@@ -2057,11 +2098,11 @@ forceTheme('sk-container-id-1');</script></body>
 <h2>Filter Bank Paradigm<a class="headerlink" href="#filter-bank-paradigm" title="Link to this heading">#</a></h2>
 <p>On the filterbank paradigm, we have n branches in the case of multiple filters:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.FilterBankLeftRightImagery.html#moabb.paradigms.FilterBankLeftRightImagery" title="moabb.paradigms.FilterBankLeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm_filterbank</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.FilterBankLeftRightImagery.html#moabb.paradigms.FilterBankLeftRightImagery" title="moabb.paradigms.FilterBankLeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">FilterBankLeftRightImagery</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.make_process_pipelines" title="moabb.paradigms.base.BaseProcessing.make_process_pipelines" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm_filterbank</span><span class="o">.</span><span class="n">make_process_pipelines</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.make_process_pipelines" title="moabb.paradigms.base.BaseProcessing.make_process_pipelines" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm_filterbank</span><span class="o">.</span><span class="n">make_process_pipelines</span></a><span class="p">(</span><a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
 
 <span class="c1"># By default, we have six filter banks, and each filter bank has the same steps.</span>
 <span class="c1"># Let's display the first one:</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pre_procesing_filter_bank_steps</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -2641,6 +2682,14 @@ a.param-doc-link::before {
     width: 14px;
     height: 14px;
     cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+.copy-paste-icon:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 1px;
 }
 
 .features {
@@ -2699,7 +2748,6 @@ a.param-doc-link::before {
 }
 
 .features .features-container {
-  max-width: 15em;
   max-height: 10em;
   overflow: auto;
   scrollbar-width: thin;
@@ -2763,7 +2811,7 @@ a.param-doc-link::before {
   justify-content: center;
   margin-top: 0.5em;
 }
-</style><body><div id="sk-container-id-2" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-13" type="checkbox" ><label for="sk-estimator-id-13" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><body><div id="sk-container-id-3" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-16" type="checkbox" ><label for="sk-estimator-id-16" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2771,40 +2819,44 @@ a.param-doc-link::before {
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy steps to clipboard"
                  onclick="copyToClipboard('steps',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">steps</td>
             <td class="value">[(&#x27;Raw&#x27;, ...), (&#x27;Raw&#x27;, ...), ...]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transform_input to clipboard"
                  onclick="copyToClipboard('transform_input',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transform_input</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy memory to clipboard"
                  onclick="copyToClipboard('memory',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">memory</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy verbose to clipboard"
                  onclick="copyToClipboard('verbose',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">verbose</td>
             <td class="value">False</td>
         </tr>
@@ -2813,7 +2865,7 @@ a.param-doc-link::before {
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-14" type="checkbox" ><label for="sk-estimator-id-14" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-17" type="checkbox" ><label for="sk-estimator-id-17" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
 events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
@@ -2822,20 +2874,22 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;feet&#x27;: 3, &#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2, &#x27;tongue&#x27;: 4}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interval to clipboard"
                  onclick="copyToClipboard('interval',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interval</td>
             <td class="value">[2, 6]</td>
         </tr>
@@ -2844,7 +2898,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-15" type="checkbox" ><label for="sk-estimator-id-15" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–12 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-18" type="checkbox" ><label for="sk-estimator-id-18" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–12 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2852,30 +2906,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth...verbose=False)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Band Pass Filter (8–12 Hz)&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -2884,7 +2941,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-16" type="checkbox" ><label for="sk-estimator-id-16" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-19" type="checkbox" ><label for="sk-estimator-id-19" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2892,40 +2949,44 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy steps to clipboard"
                  onclick="copyToClipboard('steps',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">steps</td>
             <td class="value">[(&#x27;Epoching&#x27;, ...)]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transform_input to clipboard"
                  onclick="copyToClipboard('transform_input',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transform_input</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy memory to clipboard"
                  onclick="copyToClipboard('memory',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">memory</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy verbose to clipboard"
                  onclick="copyToClipboard('verbose',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">verbose</td>
             <td class="value">False</td>
         </tr>
@@ -2934,7 +2995,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-17" type="checkbox" ><label for="sk-estimator-id-17" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-20" type="checkbox" ><label for="sk-estimator-id-20" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -2942,10 +3003,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transformers to clipboard"
                  onclick="copyToClipboard('transformers',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transformers</td>
             <td class="value">[(&#x27;raw&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
         </tr>
@@ -2954,7 +3016,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-18" type="checkbox" ><label for="sk-estimator-id-18" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-19" type="checkbox" ><label for="sk-estimator-id-19" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-21" type="checkbox" ><label for="sk-estimator-id-21" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-22" type="checkbox" ><label for="sk-estimator-id-22" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
 [left_hand, right_hand] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__events__">
         <div class="estimator-table">
             <details>
@@ -2963,50 +3025,55 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interval to clipboard"
                  onclick="copyToClipboard('interval',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interval</td>
             <td class="value">[2, 6]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy overlap to clipboard"
                  onclick="copyToClipboard('overlap',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">overlap</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy window_length to clipboard"
                  onclick="copyToClipboard('window_length',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">window_length</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmin to clipboard"
                  onclick="copyToClipboard('tmin',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmin</td>
             <td class="value">0.0</td>
         </tr>
@@ -3015,7 +3082,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-20" type="checkbox" ><label for="sk-estimator-id-20" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
+    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-23" type="checkbox" ><label for="sk-estimator-id-23" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
 [left_hand, right_hand] | tmin=2.0 | tmax=6</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Create epochs__">
         <div class="estimator-table">
             <details>
@@ -3024,80 +3091,88 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmin to clipboard"
                  onclick="copyToClipboard('tmin',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmin</td>
             <td class="value">2.0</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmax to clipboard"
                  onclick="copyToClipboard('tmax',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmax</td>
             <td class="value">6</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy baseline to clipboard"
                  onclick="copyToClipboard('baseline',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">baseline</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy channels to clipboard"
                  onclick="copyToClipboard('channels',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">channels</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interpolate_missing_channels to clipboard"
                  onclick="copyToClipboard('interpolate_missing_channels',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interpolate_missing_channels</td>
             <td class="value">False</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy return_all_modalities to clipboard"
                  onclick="copyToClipboard('return_all_modalities',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">return_all_modalities</td>
             <td class="value">False</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy reject_by_annotation to clipboard"
                  onclick="copyToClipboard('reject_by_annotation',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">reject_by_annotation</td>
             <td class="value">True</td>
         </tr>
@@ -3106,7 +3181,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-21" type="checkbox" ><label for="sk-estimator-id-21" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
+    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-24" type="checkbox" ><label for="sk-estimator-id-24" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3114,10 +3189,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transformers to clipboard"
                  onclick="copyToClipboard('transformers',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transformers</td>
             <td class="value">[(&#x27;X&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
         </tr>
@@ -3126,7 +3202,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-22" type="checkbox" ><label for="sk-estimator-id-22" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-25" type="checkbox" ><label for="sk-estimator-id-25" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3134,30 +3210,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth...er(&#x27;get_data&#x27;)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Epochs to Array&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -3166,7 +3245,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-23" type="checkbox" ><label for="sk-estimator-id-23" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-26" type="checkbox" ><label for="sk-estimator-id-26" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3174,30 +3253,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth..._&#x27;, 1000000.0)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Scale (x1e+06)&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -3206,7 +3288,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-24" type="checkbox" ><label for="sk-estimator-id-24" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-27" type="checkbox" ><label for="sk-estimator-id-27" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -3387,7 +3469,7 @@ function forceTheme(elementId) {
     }
 }
 
-forceTheme('sk-container-id-2');</script></body>
+forceTheme('sk-container-id-3');</script></body>
 </div>
 <br />
 <br /></section>
@@ -3999,6 +4081,14 @@ a.param-doc-link::before {
     width: 14px;
     height: 14px;
     cursor: pointer;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+.copy-paste-icon:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 1px;
 }
 
 .features {
@@ -4057,7 +4147,6 @@ a.param-doc-link::before {
 }
 
 .features .features-container {
-  max-width: 15em;
   max-height: 10em;
   overflow: auto;
   scrollbar-width: thin;
@@ -4121,7 +4210,7 @@ a.param-doc-link::before {
   justify-content: center;
   margin-top: 0.5em;
 }
-</style><body><div id="sk-container-id-3" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Raw: FunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-25" type="checkbox" ><label for="sk-estimator-id-25" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><body><div id="sk-container-id-4" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>FixedPipeline([Raw: SetRawAnnotations -&gt; Raw: NamedFunctionTransformer -&gt; Raw: FunctionTransformer -&gt; Epochs: FixedPipeline -&gt; Array: ForkPipelines])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-28" type="checkbox" ><label for="sk-estimator-id-28" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>FixedPipeline</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4129,40 +4218,44 @@ a.param-doc-link::before {
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy steps to clipboard"
                  onclick="copyToClipboard('steps',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">steps</td>
             <td class="value">[(&#x27;Raw&#x27;, ...), (&#x27;Raw&#x27;, ...), ...]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transform_input to clipboard"
                  onclick="copyToClipboard('transform_input',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transform_input</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy memory to clipboard"
                  onclick="copyToClipboard('memory',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">memory</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy verbose to clipboard"
                  onclick="copyToClipboard('verbose',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">verbose</td>
             <td class="value">False</td>
         </tr>
@@ -4171,7 +4264,7 @@ a.param-doc-link::before {
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-26" type="checkbox" ><label for="sk-estimator-id-26" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
+    </div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-29" type="checkbox" ><label for="sk-estimator-id-29" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>SetRawAnnotations
 events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
@@ -4180,20 +4273,22 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;feet&#x27;: 3, &#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2, &#x27;tongue&#x27;: 4}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interval to clipboard"
                  onclick="copyToClipboard('interval',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interval</td>
             <td class="value">[2, 6]</td>
         </tr>
@@ -4202,7 +4297,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-27" type="checkbox" ><label for="sk-estimator-id-27" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-30" type="checkbox" ><label for="sk-estimator-id-30" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Band Pass Filter (8–32 Hz)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4210,30 +4305,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth...verbose=False)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Band Pass Filter (8–32 Hz)&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -4242,7 +4340,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-28" type="checkbox" ><label for="sk-estimator-id-28" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>minmax_raw</div><div class="caption">FunctionTransformer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.FunctionTransformer.html">?<span>Documentation for FunctionTransformer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-31" type="checkbox" ><label for="sk-estimator-id-31" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>minmax_raw</div><div class="caption">FunctionTransformer</div></div><div><a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.9/modules/generated/sklearn.preprocessing.FunctionTransformer.html">?<span>Documentation for FunctionTransformer</span></a></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Raw__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4250,10 +4348,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-func;"
@@ -4264,15 +4363,16 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
             func: callable, default=None<br><br>The callable to use for the transformation. This will be passed<br>the same arguments as transform, with args and kwargs forwarded.<br>If func is None, then func will be the identity function.</span>
         </a>
     </td>
-            <td class="value">&lt;function min...x7f1aadb95940&gt;</td>
+            <td class="value">&lt;function min...x7f451735e660&gt;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy inverse_func to clipboard"
                  onclick="copyToClipboard('inverse_func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-inverse_func;"
@@ -4288,10 +4388,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-validate;"
@@ -4307,10 +4408,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy accept_sparse to clipboard"
                  onclick="copyToClipboard('accept_sparse',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-accept_sparse;"
@@ -4326,10 +4428,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy check_inverse to clipboard"
                  onclick="copyToClipboard('check_inverse',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-check_inverse;"
@@ -4345,10 +4448,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy feature_names_out to clipboard"
                  onclick="copyToClipboard('feature_names_out',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-feature_names_out;"
@@ -4364,10 +4468,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy kw_args to clipboard"
                  onclick="copyToClipboard('kw_args',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-kw_args;"
@@ -4383,10 +4488,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy inv_kw_args to clipboard"
                  onclick="copyToClipboard('inv_kw_args',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">
         <a class="param-doc-link"
             style="anchor-name: --doc-link-inv_kw_args;"
@@ -4404,7 +4510,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-29" type="checkbox" ><label for="sk-estimator-id-29" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
+    </div></div></div><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-32" type="checkbox" ><label for="sk-estimator-id-32" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs: FixedPipeline</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4412,40 +4518,44 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy steps to clipboard"
                  onclick="copyToClipboard('steps',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">steps</td>
             <td class="value">[(&#x27;Epoching&#x27;, ...)]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transform_input to clipboard"
                  onclick="copyToClipboard('transform_input',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transform_input</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy memory to clipboard"
                  onclick="copyToClipboard('memory',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">memory</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy verbose to clipboard"
                  onclick="copyToClipboard('verbose',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">verbose</td>
             <td class="value">False</td>
         </tr>
@@ -4454,7 +4564,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-30" type="checkbox" ><label for="sk-estimator-id-30" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
+    </div></div></div><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-33" type="checkbox" ><label for="sk-estimator-id-33" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract events: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4462,10 +4572,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transformers to clipboard"
                  onclick="copyToClipboard('transformers',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transformers</td>
             <td class="value">[(&#x27;raw&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
         </tr>
@@ -4474,7 +4585,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-31" type="checkbox" ><label for="sk-estimator-id-31" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-32" type="checkbox" ><label for="sk-estimator-id-32" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>raw (passthrough)</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-34" type="checkbox" ><label for="sk-estimator-id-34" class="sk-toggleable__label fitted "><div><div>passthrough</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__raw (passthrough)__"><pre></pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-35" type="checkbox" ><label for="sk-estimator-id-35" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEvents
 [left_hand, right_hand] | interval: [2, 6]</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Extract events__events__">
         <div class="estimator-table">
             <details>
@@ -4483,50 +4594,55 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interval to clipboard"
                  onclick="copyToClipboard('interval',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interval</td>
             <td class="value">[2, 6]</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy overlap to clipboard"
                  onclick="copyToClipboard('overlap',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">overlap</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy window_length to clipboard"
                  onclick="copyToClipboard('window_length',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">window_length</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmin to clipboard"
                  onclick="copyToClipboard('tmin',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmin</td>
             <td class="value">0.0</td>
         </tr>
@@ -4535,7 +4651,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-33" type="checkbox" ><label for="sk-estimator-id-33" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
+    </div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-36" type="checkbox" ><label for="sk-estimator-id-36" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>RawToEpochs
 [left_hand, right_hand] | tmin=2.0 | tmax=6</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Epochs__Create epochs__">
         <div class="estimator-table">
             <details>
@@ -4544,80 +4660,88 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy event_id to clipboard"
                  onclick="copyToClipboard('event_id',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">event_id</td>
             <td class="value">{&#x27;left_hand&#x27;: 1, &#x27;right_hand&#x27;: 2}</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmin to clipboard"
                  onclick="copyToClipboard('tmin',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmin</td>
             <td class="value">2.0</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy tmax to clipboard"
                  onclick="copyToClipboard('tmax',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">tmax</td>
             <td class="value">6</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy baseline to clipboard"
                  onclick="copyToClipboard('baseline',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">baseline</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy channels to clipboard"
                  onclick="copyToClipboard('channels',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">channels</td>
             <td class="value">None</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy interpolate_missing_channels to clipboard"
                  onclick="copyToClipboard('interpolate_missing_channels',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">interpolate_missing_channels</td>
             <td class="value">False</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy return_all_modalities to clipboard"
                  onclick="copyToClipboard('return_all_modalities',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">return_all_modalities</td>
             <td class="value">False</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy reject_by_annotation to clipboard"
                  onclick="copyToClipboard('reject_by_annotation',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">reject_by_annotation</td>
             <td class="value">True</td>
         </tr>
@@ -4626,7 +4750,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-34" type="checkbox" ><label for="sk-estimator-id-34" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
+    </div></div></div></div></div><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-37" type="checkbox" ><label for="sk-estimator-id-37" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Array: ForkPipelines</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4634,10 +4758,11 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy transformers to clipboard"
                  onclick="copyToClipboard('transformers',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">transformers</td>
             <td class="value">[(&#x27;X&#x27;, ...), (&#x27;events&#x27;, ...)]</td>
         </tr>
@@ -4646,7 +4771,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-35" type="checkbox" ><label for="sk-estimator-id-35" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>X</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-38" type="checkbox" ><label for="sk-estimator-id-38" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Epochs to Array</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Get_data__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4654,30 +4779,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth...er(&#x27;get_data&#x27;)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Epochs to Array&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -4686,7 +4814,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-36" type="checkbox" ><label for="sk-estimator-id-36" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
+    </div></div></div><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-39" type="checkbox" ><label for="sk-estimator-id-39" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Scale (x1e+06)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__X__Scaling__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4694,30 +4822,33 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                   <tbody>
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy func to clipboard"
                  onclick="copyToClipboard('func',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">func</td>
             <td class="value">operator.meth..._&#x27;, 1000000.0)</td>
         </tr>
 
 
         <tr class="user-set">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy display_name to clipboard"
                  onclick="copyToClipboard('display_name',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">display_name</td>
             <td class="value">&#x27;Scale (x1e+06)&#x27;</td>
         </tr>
 
 
         <tr class="default">
-            <td><i class="copy-paste-icon"
+            <td><button type="button" class="copy-paste-icon"
+                 aria-label="Copy validate to clipboard"
                  onclick="copyToClipboard('validate',
                           this.parentElement.nextElementSibling)"
-            ></i></td>
+            ></button></td>
             <td class="param">validate</td>
             <td class="value">False</td>
         </tr>
@@ -4726,7 +4857,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
                 </table>
             </details>
         </div>
-    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-37" type="checkbox" ><label for="sk-estimator-id-37" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
+    </div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label fitted sk-toggleable"><label>events</label></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-40" type="checkbox" ><label for="sk-estimator-id-40" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>Extract Labels (y)</div></div></label><div class="sk-toggleable__content fitted" data-param-prefix="Array__events__">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -4907,38 +5038,38 @@ function forceTheme(elementId) {
     }
 }
 
-forceTheme('sk-container-id-3');</script></body>
+forceTheme('sk-container-id-4');</script></body>
 </div>
 <br />
 <br /><p>Now that you have defined some special pre-processing, you will need to run with
 <cite>evaluation</cite> function to get the results.
 Here, we will use the <cite>DummyClassifier</cite> from sklearn to run the evaluation.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classifier_pipeline</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classifier_pipeline</span></a><span class="p">[</span><span class="s2">"dummy"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html#sklearn.dummy.DummyClassifier" title="sklearn.dummy.DummyClassifier" class="sphx-glr-backref-module-sklearn-dummy sphx-glr-backref-type-py-class"><span class="n">DummyClassifier</span></a><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classifier_pipeline</span></a> <span class="o">=</span> <span class="p">{}</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classifier_pipeline</span></a><span class="p">[</span><span class="s2">"dummy"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html#sklearn.dummy.DummyClassifier" title="sklearn.dummy.DummyClassifier" class="sphx-glr-backref-module-sklearn-dummy sphx-glr-backref-type-py-class"><span class="n">DummyClassifier</span></a><span class="p">()</span>
 
 <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a><span class="p">(</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">)</span>
 
 <span class="n">generator_results</span> <span class="o">=</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation.evaluate" title="moabb.evaluations.CrossSessionEvaluation.evaluate" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">evaluate</span></a><span class="p">(</span>
     <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span>
-    <span class="n">pipelines</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classifier_pipeline</span></a><span class="p">,</span>
+    <span class="n">pipelines</span><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">classifier_pipeline</span></a><span class="p">,</span>
     <span class="n">param_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">process_pipeline</span><span class="o">=</span><span class="n">process_pipeline</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="c1"># The evaluation function will return a generator object that contains the results</span>
 <span class="c1"># of the evaluation. You can use the `list` function to convert it to a list.</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">generator_results</span><span class="p">)</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">generator_results</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-CrossSession:   0%|          | 0/1 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:03&lt;00:00,  3.46s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:03&lt;00:00,  3.46s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:02&lt;00:00,  2.00s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:02&lt;00:00,  2.00s/it]
 </pre></div>
 </div>
 </section>
 <section id="plot-results">
 <h2>Plot Results<a class="headerlink" href="#plot-results" title="Link to this heading">#</a></h2>
 <p>Then you can follow the common procedure for analyzing the results.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">df_results</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">df_results</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">(</span><a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">results</span></a><span class="p">)</span>
 
 <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">df_results</span></a><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="s2">"pipeline"</span><span class="p">,</span>
@@ -4953,7 +5084,8 @@ BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:03&lt;00
 <img src="../../_images/sphx_glr_plot_pre_processing_steps_001.png" srcset="../../_images/sphx_glr_plot_pre_processing_steps_001.png" alt="Results of the evaluation with custom pre-processing steps" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={'center': 'Results of the evaluation with custom pre-processing steps'}, xlabel='Pipeline', ylabel='Score'&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.604 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.260 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  828 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-pre-processing-steps-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5c253279cf67626fd4e913feb6c12336/plot_pre_processing_steps.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_pre_processing_steps.ipynb</span></code></a></p>
