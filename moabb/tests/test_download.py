@@ -1337,3 +1337,46 @@ def test_nemar_sourcedata_is_local_trusts_a_store_without_a_manifest(
     assert not _is_local(root, 1)
     (root / "sourcedata" / "foo.mat").write_text("mirrored")
     assert _is_local(root, 1)
+
+
+def test_sanitize_path_maps_tilde_components():
+    """URL-path components starting with '~' must not become local dirs.
+
+    https://lampx.tugraz.at/~bci/... mirrors the server's '~bci' user
+    component verbatim into the cache, producing a literal '~bci' directory
+    that shell expansion and '~'-aware tools misinterpret.
+    """
+    p = dl._sanitize_path(
+        Path("/home/u/mne_data/MNE-bnci-data/~bci/database/013-2015/f.mat")
+    )
+    assert "~bci" not in p.parts
+    assert "-bci" in p.parts
+
+
+def test_data_dl_migrates_tilde_ghost_without_network(tmp_path):
+    """A pre-fix '~bci' ghost file is migrated to the sanitized path in-place."""
+    url = "https://lampx.tugraz.at/~bci/database/013-2015/Subject01_s1.mat"
+    ghost = (
+        tmp_path
+        / "MNE-bnci-data"
+        / "~bci"
+        / "database"
+        / "013-2015"
+        / "Subject01_s1.mat"
+    )
+    ghost.parent.mkdir(parents=True)
+    ghost.write_bytes(b"payload")
+
+    out = dl.data_dl(url, "BNCI", path=str(tmp_path))
+
+    out_path = Path(out[0] if isinstance(out, (list, tuple)) else out).resolve()
+    assert out_path == (
+        tmp_path.resolve()
+        / "MNE-bnci-data"
+        / "-bci"
+        / "database"
+        / "013-2015"
+        / "Subject01_s1.mat"
+    )
+    assert out_path.read_bytes() == b"payload"
+    assert not ghost.exists()
