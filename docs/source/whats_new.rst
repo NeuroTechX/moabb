@@ -36,6 +36,7 @@ Requirements
 Bugs
 ~~~~
 - Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
+- Fix the ``-e``/``--evaluations`` flag of ``python -m moabb.run``, which used ``type=list`` and so split its value into single characters: ``-e WithinSession`` reached :func:`moabb.benchmark` as ``['W', 'i', 't', ...]`` and raised ``KeyError: 'W'``. It now takes one or more evaluation names, space separated (by `Iain`_)
 
 Code health
 ~~~~~~~~~~~
