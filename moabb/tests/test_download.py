@@ -1357,12 +1357,7 @@ def test_data_dl_migrates_tilde_ghost_without_network(tmp_path):
     """A pre-fix '~bci' ghost file is migrated to the sanitized path in-place."""
     url = "https://lampx.tugraz.at/~bci/database/013-2015/Subject01_s1.mat"
     ghost = (
-        tmp_path
-        / "MNE-bnci-data"
-        / "~bci"
-        / "database"
-        / "013-2015"
-        / "Subject01_s1.mat"
+        tmp_path / "MNE-bnci-data" / "~bci" / "database" / "013-2015" / "Subject01_s1.mat"
     )
     ghost.parent.mkdir(parents=True)
     ghost.write_bytes(b"payload")
