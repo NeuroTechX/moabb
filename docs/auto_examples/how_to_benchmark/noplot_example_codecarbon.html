@@ -46,7 +46,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -652,26 +652,24 @@ dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets. Due to limitation of online documentation
 generation, the results are computed on a local cluster but could be easily
 replicated on your infrastructure.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Igor Carrara &lt;igor.carrara@inria.fr&gt;</span>
-<span class="c1">#          Bruno Aristimunha &lt;b.aristimunha@gmail.com&gt;</span>
-<span class="c1">#          Ethan Davis &lt;davise5@uw.edu&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD (3-clause)</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html#scipy.spatial.ConvexHull" title="scipy.spatial.ConvexHull" class="sphx-glr-backref-module-scipy-spatial sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ConvexHull</span></a>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">,</span> <a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">codecarbon_plot</span><span class="p">,</span> <span class="n">emissions_summary</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BNCI2014_001</span></a><span class="p">,</span> <a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Zhou2016</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LeftRightImagery</span></a>
-
-
-<a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">"info"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Authors: Igor Carrara &lt;igor.carrara&#64;inria.fr&gt;</span><span class="w">
+</span><span class="c1">#          Bruno Aristimunha &lt;b.aristimunha&#64;gmail.com&gt;</span><span class="w">
+</span><span class="c1">#          Ethan Davis &lt;davise5&#64;uw.edu&gt;</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1"># License: BSD (3-clause)</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="nn">.</span><span class="nn">spatial</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-scipy-spatial sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html#scipy.spatial.ConvexHull" title="scipy.spatial.ConvexHull"><span class="n">ConvexHull</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark"><span class="n">benchmark</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level"><span class="n">set_log_level</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">analysis</span><span class="nn">.</span><span class="nn">plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">codecarbon_plot</span><span class="p">,</span> <span class="n">emissions_summary</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><span class="n">BNCI2014_001</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><span class="n">Zhou2016</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">paradigms</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">LeftRightImagery</span></a><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">info</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <section id="loading-the-pipelines">
 <h2>Loading the pipelines<a class="headerlink" href="#loading-the-pipelines" title="Link to this heading">#</a></h2>
 <p>To run this example we use several pipelines, ML and DL (Keras) and also
@@ -685,11 +683,10 @@ All this different pipelines are stored in <code class="docutils literal notrans
 to provide the dataset’s object, or a dataset’s code. To get the list of
 available dataset’s code for a given paradigm, you can use the following
 command:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LeftRightImagery</span></a><span class="p">()</span>
-<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">paradigm</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">LeftRightImagery</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">code</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <p>In this example, we will use only the last dataset, ‘Zhou 2016’, considering
 only the first subject.</p>
 </section>
@@ -706,13 +703,12 @@ benchmark, you can set the <code class="docutils literal notranslate"><span clas
 save the analysis &amp; figures. By default, the results are saved in the
 <code class="docutils literal notranslate"><span class="pre">results</span></code> folder, and the analysis &amp; figures are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code>
 folder.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Zhou2016</span></a><span class="p">()</span>
-<span class="n">dataset2</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BNCI2014_001</span></a><span class="p">()</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">dataset2</span><span class="o">.</span><span class="n">subject_list</span> <span class="o">=</span> <span class="n">dataset2</span><span class="o">.</span><span class="n">subject_list</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">datasets</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">,</span> <span class="n">dataset2</span><span class="p">]</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">dataset</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><span class="n">Zhou2016</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="n">dataset2</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><span class="n">BNCI2014_001</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">[</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span><span class="w">
+</span><span class="n">dataset2</span><span class="o">.</span><span class="n">subject_list</span> <span class="o">=</span> <span class="n">dataset2</span><span class="o">.</span><span class="n">subject_list</span><span class="p">[</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span><span class="w">
+</span><span class="n">datasets</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">,</span> <span class="n">dataset2</span><span class="p">]</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="configuring-codecarbon-tracking">
 <h2>Configuring CodeCarbon Tracking<a class="headerlink" href="#configuring-codecarbon-tracking" title="Link to this heading">#</a></h2>
@@ -757,35 +753,33 @@ emissions are tracked and reported.</p>
 </dl>
 <p>Example 1: Basic configuration with CSV output and verbose logging
 Note: Using ‘process’ tracking mode requires fewer system permissions than ‘machine’ mode</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">"save_to_file"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">"log_level"</span><span class="p">:</span> <span class="s2">"error"</span><span class="p">,</span>
-    <span class="s2">"output_file"</span><span class="p">:</span> <span class="s2">"emissions_results.csv"</span><span class="p">,</span>
-    <span class="s2">"experiment_name"</span><span class="p">:</span> <span class="s2">"MOABB_Benchmark_Zhou2016"</span><span class="p">,</span>
-    <span class="s2">"tracking_mode"</span><span class="p">:</span> <span class="s2">"process"</span><span class="p">,</span>  <span class="c1"># Use process-level tracking to reduce permission requirements</span>
-<span class="p">}</span>
-
-<span class="n">results</span> <span class="o">=</span> <a href="../../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">(</span>
-    <span class="n">pipelines</span><span class="o">=</span><span class="s2">"./pipelines_codecarbon/"</span><span class="p">,</span>
-    <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">"WithinSession"</span><span class="p">],</span>
-    <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">"LeftRightImagery"</span><span class="p">],</span>
-    <span class="n">include_datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
-    <span class="n">results</span><span class="o">=</span><span class="s2">"./results/"</span><span class="p">,</span>
-    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">output</span><span class="o">=</span><span class="s2">"./benchmark/"</span><span class="p">,</span>
-    <span class="n">codecarbon_config</span><span class="o">=</span><span class="n">codecarbon_config</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">save_to_file</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">log_level</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">error</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">output_file</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">emissions_results.csv</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">experiment_name</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">MOABB_Benchmark_Zhou2016</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">tracking_mode</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">process</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># Use process-level tracking to reduce permission requirements</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="n">results</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark"><span class="n">benchmark</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">pipelines</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">./pipelines_codecarbon/</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">WithinSession</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">LeftRightImagery</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">include_datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span><span class="w">
+</span>    <span class="n">results</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">./results/</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span>    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span>    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">./benchmark/</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">codecarbon_config</span><span class="o">=</span><span class="n">codecarbon_config</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <p>Benchmark prints a summary of the results. Detailed results are saved in a
 pandas dataframe, and can be used to generate figures. The analysis &amp; figures
 are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-
-<span class="n">order_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"CSP + SVM"</span><span class="p">,</span> <span class="s2">"Tangent Space LR"</span><span class="p">,</span> <span class="s2">"EN Grid"</span><span class="p">,</span> <span class="s2">"CSP + LDA Grid"</span><span class="p">]</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">order_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">CSP + SVM</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Tangent Space LR</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">EN Grid</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">CSP + LDA Grid</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span></pre></div></div>
 <section id="comprehensive-codecarbon-visualization-analysis">
 <h3>Comprehensive CodeCarbon Visualization Analysis<a class="headerlink" href="#comprehensive-codecarbon-visualization-analysis" title="Link to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">codecarbon_plot</span></code> function provides multiple visualization modes to
@@ -806,9 +800,8 @@ emissions.</p>
 </dd>
 </dl>
 <p><strong>Best for:</strong> Understanding overall emissions impact</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig1</span> <span class="o">=</span> <span class="n">codecarbon_plot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">order_list</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s2">"(France)"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">fig1</span> <span class="o">=</span> <span class="n">codecarbon_plot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">order_list</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">(France)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="visualization-mode-2-energy-efficiency-analysis">
 <h3>Visualization Mode 2: Energy Efficiency Analysis<a class="headerlink" href="#visualization-mode-2-energy-efficiency-analysis" title="Link to this heading">#</a></h3>
@@ -826,9 +819,8 @@ carbon cost. This is the key metric for sustainable machine learning.</p>
 </dl>
 <p><strong>Best for:</strong> Identifying which pipelines are most sustainable
 <strong>Use case:</strong> When you care about accuracy-to-emissions ratio</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig2</span> <span class="o">=</span> <span class="n">codecarbon_plot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">order_list</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s2">"(France)"</span><span class="p">,</span> <span class="n">include_efficiency</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">fig2</span> <span class="o">=</span> <span class="n">codecarbon_plot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">order_list</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">(France)</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">include_efficiency</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="visualization-mode-3-complete-analysis-with-pareto-frontier">
 <h3>Visualization Mode 3: Complete Analysis with Pareto Frontier<a class="headerlink" href="#visualization-mode-3-complete-analysis-with-pareto-frontier" title="Link to this heading">#</a></h3>
@@ -853,159 +845,150 @@ or vice versa).</p>
 </dl>
 <p><strong>Best for:</strong> Complete sustainability analysis and informed decision-making
 <strong>Use case:</strong> Selecting the best pipeline considering both performance and environmental impact</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig3</span> <span class="o">=</span> <span class="n">codecarbon_plot</span><span class="p">(</span>
-    <span class="n">results</span><span class="p">,</span>
-    <span class="n">order_list</span><span class="p">,</span>
-    <span class="n">country</span><span class="o">=</span><span class="s2">"(France)"</span><span class="p">,</span>
-    <span class="n">include_efficiency</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">include_power_vs_score</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Mode 3 created: Complete analysis with Pareto frontier visualization"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">fig3</span> <span class="o">=</span> <span class="n">codecarbon_plot</span><span class="p">(</span><span class="w">
+</span>    <span class="n">results</span><span class="p">,</span><span class="w">
+</span>    <span class="n">order_list</span><span class="p">,</span><span class="w">
+</span>    <span class="n">country</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">(France)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">include_efficiency</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="n">include_power_vs_score</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Mode 3 created: Complete analysis with Pareto frontier visualization</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 </section>
 <section id="codecarbon-configuration-examples">
 <h2>CodeCarbon Configuration Examples<a class="headerlink" href="#codecarbon-configuration-examples" title="Link to this heading">#</a></h2>
 <p>Below are additional configuration examples for different use cases:</p>
 <p><strong>Example 2: Process-level tracking with custom tracking interval</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'tracking_mode'</span><span class="p">:</span> <span class="s1">'process'</span><span class="p">,</span>
-    <span class="s1">'measure_power_secs'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
-    <span class="s1">'save_to_file'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">'log_level'</span><span class="p">:</span> <span class="s1">'debug'</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">tracking_mode</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">process</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">measure_power_secs</span><span class="s1">'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">save_to_file</span><span class="s1">'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">log_level</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">debug</span><span class="s1">'</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></pre></div></div>
 <p><strong>Example 3: GPU tracking with specific IDs</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'gpu_ids'</span><span class="p">:</span> <span class="s1">'0,1,2'</span><span class="p">,</span>  <span class="c1"># Track GPUs 0, 1, 2</span>
-    <span class="s1">'save_to_file'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">'experiment_name'</span><span class="p">:</span> <span class="s1">'multi_gpu_benchmark'</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">gpu_ids</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">0,1,2</span><span class="s1">'</span><span class="p">,</span>  <span class="c1"># Track GPUs 0, 1, 2</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">save_to_file</span><span class="s1">'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">experiment_name</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">multi_gpu_benchmark</span><span class="s1">'</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></pre></div></div>
 <p><strong>Example 4: Real-time carbon intensity data with Electricity Maps API</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'electricitymaps_api_token'</span><span class="p">:</span> <span class="s1">'your-token-here'</span><span class="p">,</span>
-    <span class="s1">'country_2letter_iso_code'</span><span class="p">:</span> <span class="s1">'FR'</span><span class="p">,</span>
-    <span class="s1">'save_to_file'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">'output_file'</span><span class="p">:</span> <span class="s1">'emissions_real_time.csv'</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">electricitymaps_api_token</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">your-token-here</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">country_2letter_iso_code</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">FR</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">save_to_file</span><span class="s1">'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">output_file</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">emissions_real_time.csv</span><span class="s1">'</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></pre></div></div>
 <p><strong>Example 5: API-based tracking and reporting</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'save_to_api'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">'api_endpoint'</span><span class="p">:</span> <span class="s1">'https://api.codecarbon.io'</span><span class="p">,</span>
-    <span class="s1">'api_key'</span><span class="p">:</span> <span class="s1">'your-api-key'</span><span class="p">,</span>
-    <span class="s1">'project_name'</span><span class="p">:</span> <span class="s1">'MOABB_Project'</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">save_to_api</span><span class="s1">'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">api_endpoint</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">https://api.codecarbon.io</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">api_key</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">your-api-key</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">project_name</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">MOABB_Project</span><span class="s1">'</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></pre></div></div>
 <p><strong>Example 6: Prometheus metrics export</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'save_to_prometheus'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">'prometheus_url'</span><span class="p">:</span> <span class="s1">'http://localhost:9091'</span><span class="p">,</span>
-    <span class="s1">'experiment_name'</span><span class="p">:</span> <span class="s1">'moabb_metrics'</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">save_to_prometheus</span><span class="s1">'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">prometheus_url</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">http://localhost:9091</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">experiment_name</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="s1">moabb_metrics</span><span class="s1">'</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></pre></div></div>
 <p><strong>Example 7: Custom data center with manual power specifications</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'force_cpu_power'</span><span class="p">:</span> <span class="mf">150.0</span><span class="p">,</span>  <span class="c1"># Watts</span>
-    <span class="s1">'force_ram_power'</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>   <span class="c1"># Watts</span>
-    <span class="s1">'pue'</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>                <span class="c1"># Data center PUE</span>
-    <span class="s1">'save_to_file'</span><span class="p">:</span> <span class="kc">True</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="n">codecarbon_config</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">force_cpu_power</span><span class="s1">'</span><span class="p">:</span> <span class="mf">150.0</span><span class="p">,</span>  <span class="c1"># Watts</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">force_ram_power</span><span class="s1">'</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>   <span class="c1"># Watts</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">pue</span><span class="s1">'</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>                <span class="c1"># Data center PUE</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">save_to_file</span><span class="s1">'</span><span class="p">:</span> <span class="kc">True</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></pre></div></div>
 <section id="emissions-summary-report-and-analysis">
 <h3>Emissions Summary Report and Analysis<a class="headerlink" href="#emissions-summary-report-and-analysis" title="Link to this heading">#</a></h3>
 <p>Beyond visualizations, you can generate a detailed summary report using
 the <code class="docutils literal notranslate"><span class="pre">emissions_summary</span></code> function. This provides comprehensive metrics
 for data-driven decision making.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="n">emissions_summary</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">order_list</span><span class="o">=</span><span class="n">order_list</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">summary</span> <span class="o">=</span> <span class="n">emissions_summary</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">order_list</span><span class="o">=</span><span class="n">order_list</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="creating-summary-visualizations">
 <h3>Creating Summary Visualizations<a class="headerlink" href="#creating-summary-visualizations" title="Link to this heading">#</a></h3>
 <p>Instead of text summaries, we create comprehensive visualizations that
 show the relationships between accuracy, efficiency, and emissions.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig_summary</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-<span class="n">fig_summary</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span>
-    <span class="s2">"Emissions Summary: Accuracy, Efficiency, and Environmental Impact"</span><span class="p">,</span>
-    <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
-    <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="c1"># Plot 1: Pipeline Efficiency Rankings</span>
-<span class="n">ax1</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="n">summary_sorted</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"efficiency"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdYlGn</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">summary_sorted</span><span class="p">[</span><span class="s2">"efficiency"</span><span class="p">]</span> <span class="o">-</span> <span class="n">summary_sorted</span><span class="p">[</span><span class="s2">"efficiency"</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
-    <span class="o">/</span> <span class="p">(</span><span class="n">summary_sorted</span><span class="p">[</span><span class="s2">"efficiency"</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">summary_sorted</span><span class="p">[</span><span class="s2">"efficiency"</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
-<span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted</span><span class="p">)),</span> <span class="n">summary_sorted</span><span class="p">[</span><span class="s2">"efficiency"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted</span><span class="p">)))</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">summary_sorted</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Efficiency (Accuracy / kg CO2)"</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Pipeline Efficiency Ranking</span><span class="se">\n</span><span class="s2">(Higher is Better)"</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Plot 2: Average Emissions Comparison</span>
-<span class="n">ax2</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">summary_sorted_emissions</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"avg_emissions"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">colors_emissions</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Blues</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="p">)))</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
-    <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="p">)),</span>
-    <span class="n">summary_sorted_emissions</span><span class="p">[</span><span class="s2">"avg_emissions"</span><span class="p">],</span>
-    <span class="n">color</span><span class="o">=</span><span class="n">colors_emissions</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="p">)))</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"right"</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Average CO2 Emissions (kg/eval)"</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Carbon Footprint per Pipeline</span><span class="se">\n</span><span class="s2">(Lower is Better)"</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Plot 3: Accuracy Distribution with Standard Deviation</span>
-<span class="n">ax3</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="n">summary_sorted_score</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"avg_score"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">x_pos</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_score</span><span class="p">))</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
-    <span class="n">x_pos</span><span class="p">,</span>
-    <span class="n">summary_sorted_score</span><span class="p">[</span><span class="s2">"avg_score"</span><span class="p">],</span>
-    <span class="n">yerr</span><span class="o">=</span><span class="n">summary_sorted_score</span><span class="p">[</span><span class="s2">"std_score"</span><span class="p">],</span>
-    <span class="n">capsize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">color</span><span class="o">=</span><span class="s2">"steelblue"</span><span class="p">,</span>
-    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">x_pos</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">summary_sorted_score</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"right"</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Average Score"</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Accuracy Performance with Variability</span><span class="se">\n</span><span class="s2">(Higher is Better)"</span><span class="p">)</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
-<span class="n">ax3</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Plot 4: Total Emissions Summary</span>
-<span class="n">ax4</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">summary_sorted_total</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"total_emissions"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">colors_total</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Oranges</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="p">)))</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
-    <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="p">)),</span>
-    <span class="n">summary_sorted_total</span><span class="p">[</span><span class="s2">"total_emissions"</span><span class="p">],</span>
-    <span class="n">color</span><span class="o">=</span><span class="n">colors_total</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="p">)))</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"right"</span><span class="p">)</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Total CO2 Emissions (kg)"</span><span class="p">)</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Total Carbon Footprint per Pipeline</span><span class="se">\n</span><span class="s2">(Lower is Better)"</span><span class="p">)</span>
-<span class="n">ax4</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">fig_summary</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">fig_summary</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">Emissions Summary: Accuracy, Efficiency, and Environmental Impact</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span><span class="w">
+</span>    <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">bold</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Plot 1: Pipeline Efficiency Rankings</span><span class="w">
+</span><span class="n">ax1</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span><span class="n">summary_sorted</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">efficiency</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span><span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdYlGn</span><span class="p">(</span><span class="w">
+</span>    <span class="p">(</span><span class="n">summary_sorted</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">efficiency</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">summary_sorted</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">efficiency</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span>    <span class="o">/</span> <span class="p">(</span><span class="n">summary_sorted</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">efficiency</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="p">)</span> <span class="o">-</span> <span class="n">summary_sorted</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">efficiency</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">ax1</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted</span><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">summary_sorted</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">efficiency</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span><span class="w">
+</span><span class="n">ax1</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted</span><span class="p">)</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">summary_sorted</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="w">
+</span><span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Efficiency (Accuracy / kg CO2)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Pipeline Efficiency Ranking</span><span class="se">\n</span><span class="s2">(Higher is Better)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">x</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Plot 2: Average Emissions Comparison</span><span class="w">
+</span><span class="n">ax2</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="w">
+</span><span class="n">summary_sorted_emissions</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">avg_emissions</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="w">
+</span><span class="n">colors_emissions</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Blues</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="p">)</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">ax2</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="w">
+</span>    <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="p">)</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">summary_sorted_emissions</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">avg_emissions</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">color</span><span class="o">=</span><span class="n">colors_emissions</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">ax2</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="p">)</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">ax2</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">summary_sorted_emissions</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">right</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Average CO2 Emissions (kg/eval)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Carbon Footprint per Pipeline</span><span class="se">\n</span><span class="s2">(Lower is Better)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Plot 3: Accuracy Distribution with Standard Deviation</span><span class="w">
+</span><span class="n">ax3</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="w">
+</span><span class="n">summary_sorted_score</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">avg_score</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="w">
+</span><span class="n">x_pos</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_score</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">ax3</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="w">
+</span>    <span class="n">x_pos</span><span class="p">,</span><span class="w">
+</span>    <span class="n">summary_sorted_score</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">avg_score</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">yerr</span><span class="o">=</span><span class="n">summary_sorted_score</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">std_score</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">capsize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="w">
+</span>    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">steelblue</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">ax3</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">x_pos</span><span class="p">)</span><span class="w">
+</span><span class="n">ax3</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">summary_sorted_score</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">right</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Average Score</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Accuracy Performance with Variability</span><span class="se">\n</span><span class="s2">(Higher is Better)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax3</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="n">ax3</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Plot 4: Total Emissions Summary</span><span class="w">
+</span><span class="n">ax4</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="w">
+</span><span class="n">summary_sorted_total</span> <span class="o">=</span> <span class="n">summary</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">total_emissions</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="w">
+</span><span class="n">colors_total</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Oranges</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="p">)</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">ax4</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="w">
+</span>    <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="p">)</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">summary_sorted_total</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">total_emissions</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">color</span><span class="o">=</span><span class="n">colors_total</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">ax4</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="p">)</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="n">ax4</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">summary_sorted_total</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">right</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Total CO2 Emissions (kg)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax4</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Total Carbon Footprint per Pipeline</span><span class="se">\n</span><span class="s2">(Lower is Better)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">ax4</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="matplotlib.pyplot.tight_layout"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="pareto-frontier-for-decision-making">
 <h3>Pareto Frontier for Decision Making<a class="headerlink" href="#pareto-frontier-for-decision-making" title="Link to this heading">#</a></h3>
@@ -1013,68 +996,66 @@ show the relationships between accuracy, efficiency, and emissions.</p>
 between accuracy and environmental impact. Points on the frontier are
 Pareto-optimal: you cannot improve accuracy without increasing emissions
 or vice versa.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fig_pareto</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-
-<span class="c1"># Calculate Pareto frontier</span>
-<span class="n">points</span> <span class="o">=</span> <span class="n">summary</span><span class="p">[[</span><span class="s2">"avg_score"</span><span class="p">,</span> <span class="s2">"avg_emissions"</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
-<span class="n">hull</span> <span class="o">=</span> <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html#scipy.spatial.ConvexHull" title="scipy.spatial.ConvexHull" class="sphx-glr-backref-module-scipy-spatial sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ConvexHull</span></a><span class="p">(</span><span class="n">points</span><span class="p">)</span>
-<span class="n">frontier_indices</span> <span class="o">=</span> <span class="n">hull</span><span class="o">.</span><span class="n">vertices</span>
-
-<span class="c1"># Plot all pipelines</span>
-<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">frontier_indices</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
-            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">"avg_emissions"</span><span class="p">],</span>
-            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">"avg_score"</span><span class="p">],</span>
-            <span class="n">s</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-            <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"darkgreen"</span><span class="p">,</span>
-            <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="n">pipeline</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
-            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">"avg_emissions"</span><span class="p">],</span>
-            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">"avg_score"</span><span class="p">],</span>
-            <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
-        <span class="n">pipeline</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">"avg_emissions"</span><span class="p">],</span> <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">"avg_score"</span><span class="p">]),</span>
-        <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-        <span class="n">textcoords</span><span class="o">=</span><span class="s2">"offset points"</span><span class="p">,</span>
-        <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
-    <span class="p">)</span>
-
-<span class="c1"># Highlight Pareto frontier</span>
-<span class="n">frontier_points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">frontier_indices</span><span class="p">]</span>
-<span class="n">frontier_points</span> <span class="o">=</span> <span class="n">frontier_points</span><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.argsort.html#numpy.argsort" title="numpy.argsort" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">argsort</span></a><span class="p">(</span><span class="n">frontier_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])]</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">frontier_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
-    <span class="n">frontier_points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-    <span class="s2">"g--"</span><span class="p">,</span>
-    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">label</span><span class="o">=</span><span class="s2">"Pareto Frontier"</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Average CO2 Emissions (kg/eval)"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Average Accuracy Score"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
-    <span class="s2">"Pareto Frontier: Accuracy vs Emissions Trade-off"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span>
-<span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"best"</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">fig_pareto</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Calculate Pareto frontier</span><span class="w">
+</span><span class="n">points</span> <span class="o">=</span> <span class="n">summary</span><span class="p">[</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">avg_score</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">avg_emissions</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="w">
+</span><span class="n">hull</span> <span class="o">=</span> <a class="sphx-glr-backref-module-scipy-spatial sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html#scipy.spatial.ConvexHull" title="scipy.spatial.ConvexHull"><span class="n">ConvexHull</span></a><span class="p">(</span><span class="n">points</span><span class="p">)</span><span class="w">
+</span><span class="n">frontier_indices</span> <span class="o">=</span> <span class="n">hull</span><span class="o">.</span><span class="n">vertices</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Plot all pipelines</span><span class="w">
+</span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">frontier_indices</span><span class="p">:</span><span class="w">
+</span>        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="w">
+</span>            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">avg_emissions</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">avg_score</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <span class="n">s</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="w">
+</span>            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="w">
+</span>            <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">darkgreen</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
+</span>            <span class="n">label</span><span class="o">=</span><span class="n">pipeline</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span>    <span class="k">else</span><span class="p">:</span><span class="w">
+</span>        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="w">
+</span>            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">avg_emissions</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">avg_score</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span><span class="w">
+</span>            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="w">
+</span>            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">gray</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span>    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="w">
+</span>        <span class="n">pipeline</span><span class="p">,</span><span class="w">
+</span>        <span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">avg_emissions</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">avg_score</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>        <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">offset points</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Highlight Pareto frontier</span><span class="w">
+</span><span class="n">frontier_points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">frontier_indices</span><span class="p">]</span><span class="w">
+</span><span class="n">frontier_points</span> <span class="o">=</span> <span class="n">frontier_points</span><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argsort.html#numpy.argsort" title="numpy.argsort"><span class="n">np</span><span class="o">.</span><span class="n">argsort</span></a><span class="p">(</span><span class="n">frontier_points</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="p">]</span><span class="w">
+</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="w">
+</span>    <span class="n">frontier_points</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">frontier_points</span><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">g--</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
+</span>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Pareto Frontier</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Average CO2 Emissions (kg/eval)</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="w">
+</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Average Accuracy Score</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="w">
+</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">Pareto Frontier: Accuracy vs Emissions Trade-off</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">bold</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span><span class="w">
+</span><span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">best</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <dl>
 <dt>The result expected will be the following image, but varying depending on the</dt><dd><p>machine and the country used to run the example.</p>
 <img alt="carbon_example" class="align-center" src="../../_images/example_codecarbon.png" />
 </dd>
 </dl>
 <hr class="docutils" />
-<p><strong>Estimated memory usage:</strong>  0 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-noplot-example-codecarbon-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7e3275e56234e80f0d709a351bcde49d/noplot_example_codecarbon.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">noplot_example_codecarbon.ipynb</span></code></a></p>

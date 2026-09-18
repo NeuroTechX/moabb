@@ -15,10 +15,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_5_combining_datasets.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
-<meta property="og:description" content="Initialization: This tutorial illustrates how to use the CompoundDataset to: 1) Select a few subjects/sessions/runs in an existing dataset 2) Merge two CompoundDataset into a new one 3) … and final..." />
+<meta property="og:description" content="# Author: Gregoire Cattan## https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019 from pyriemann. classification import MDM from pyriemann. estimation import ERPCovariances from sklearn. pip..." />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
-<meta name="description" content="Initialization: This tutorial illustrates how to use the CompoundDataset to: 1) Select a few subjects/sessions/runs in an existing dataset 2) Merge two CompoundDataset into a new one 3) … and final..." />
+<meta name="description" content="# Author: Gregoire Cattan## https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019 from pyriemann. classification import MDM from pyriemann. estimation import ERPCovariances from sklearn. pip..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@NeuroTechX" />
 
@@ -46,7 +46,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -645,22 +645,21 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="tutorial-5-combining-multiple-datasets-into-a-single-dataset">
 <span id="sphx-glr-auto-examples-tutorials-tutorial-5-combining-datasets-py"></span><h1>Tutorial 5: Combining Multiple Datasets into a Single Dataset<a class="headerlink" href="#tutorial-5-combining-multiple-datasets-into-a-single-dataset" title="Link to this heading">#</a></h1>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Gregoire Cattan</span>
-<span class="c1">#</span>
-<span class="c1"># https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.classification</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Cattan2019_VR</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.braininvaders</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BI2014a</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.compound_dataset</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">blocks_reps</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms.p300</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Author: Gregoire Cattan</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1"># https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019</span><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann</span><span class="nn">.</span><span class="nn">classification</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator"><span class="n">MDM</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann</span><span class="nn">.</span><span class="nn">estimation</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin"><span class="n">ERPCovariances</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="nn">.</span><span class="nn">pipeline</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="nn">datasets</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><span class="n">Cattan2019_VR</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="nn">datasets</span></a><span class="nn">.</span><span class="nn">braininvaders</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><span class="n">BI2014a</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="nn">datasets</span></a><span class="nn">.</span><span class="nn">compound_dataset</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CompoundDataset</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="nn">datasets</span></a><span class="nn">.</span><span class="nn">utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">blocks_reps</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">evaluations</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><span class="n">WithinSessionEvaluation</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">paradigms</span><span class="nn">.</span><span class="nn">p300</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300"><span class="n">P300</span></a><span class="w">
+</span></pre></div></div>
 <section id="initialization">
 <h2>Initialization<a class="headerlink" href="#initialization" title="Link to this heading">#</a></h2>
 <p>This tutorial illustrates how to use the CompoundDataset to:
@@ -669,11 +668,10 @@ to download the full example code.</p>
 3) … and finally use this new dataset on a pipeline
 (this steps is not specific to CompoundDataset)</p>
 <p>Let’s define a paradigm and a pipeline for evaluation first.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">"MDM"</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ERPCovariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">"lwf"</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">"riemann"</span><span class="p">))</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300"><span class="n">paradigm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300"><span class="n">P300</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">MDM</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin"><span class="n">ERPCovariances</span></a><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">lwf</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">riemann</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="creation-a-selection-of-subject">
 <h2>Creation a selection of subject<a class="headerlink" href="#creation-a-selection-of-subject" title="Link to this heading">#</a></h2>
@@ -692,25 +690,24 @@ It is a list of tuple. A tuple contains 4 values:</p>
 </li>
 <li><p>the runs. As for sessions, it can be a single run name, a list or <cite>None`</cite> (to select all runs).</p></li>
 </ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset1</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">biVR</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Cattan2019_VR</span></a><span class="p">(</span><span class="n">virtual_reality</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">screen_display</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">runs</span> <span class="o">=</span> <span class="n">blocks_reps</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">biVR</span><span class="o">.</span><span class="n">n_repetitions</span><span class="p">)</span>
-        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">biVR</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"0VR"</span><span class="p">,</span> <span class="n">runs</span><span class="p">),</span> <span class="p">(</span><span class="n">biVR</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"0VR"</span><span class="p">,</span> <span class="n">runs</span><span class="p">)]</span>
-        <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s2">"CustomDataset1"</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-        <span class="p">)</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset2</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">bi2014</span> <span class="o">=</span> <a href="../../generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BI2014a</span></a><span class="p">()</span>
-        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">bi2014</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="n">bi2014</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
-        <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s2">"CustomDataset2"</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-        <span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">class</span><span class="w"> </span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="nc">CustomDataset1</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CompoundDataset</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="n">biVR</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><span class="n">Cattan2019_VR</span></a><span class="p">(</span><span class="n">virtual_reality</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">screen_display</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span>        <span class="n">runs</span> <span class="o">=</span> <span class="n">blocks_reps</span><span class="p">(</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span><span class="p">,</span> <span class="n">biVR</span><span class="o">.</span><span class="n">n_repetitions</span><span class="p">)</span><span class="w">
+</span>        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="p">(</span><span class="n">biVR</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">0VR</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">runs</span><span class="p">)</span><span class="p">,</span> <span class="p">(</span><span class="n">biVR</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">0VR</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">runs</span><span class="p">)</span><span class="p">]</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="w">
+</span>            <span class="bp">self</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">CustomDataset1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">class</span><span class="w"> </span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="nc">CustomDataset2</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CompoundDataset</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="n">bi2014</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><span class="n">BI2014a</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span>        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="p">(</span><span class="n">bi2014</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="p">,</span> <span class="p">(</span><span class="n">bi2014</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="p">]</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="w">
+</span>            <span class="bp">self</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">CustomDataset2</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="merging-the-datasets">
 <h2>Merging the datasets<a class="headerlink" href="#merging-the-datasets" title="Link to this heading">#</a></h2>
@@ -718,396 +715,28 @@ It is a list of tuple. A tuple contains 4 values:</p>
 The implementation is straight forward. Instead of providing a list of subjects,
 you should provide a list of CompoundDataset.
 subjects_list = [CustomDataset1(), CustomDataset2()]</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomDataset3</span><span class="p">(</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset1</span></a><span class="p">(),</span> <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset2</span></a><span class="p">()]</span>
-        <a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s2">"CustomDataset3"</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-        <span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">class</span><span class="w"> </span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="nc">CustomDataset3</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CompoundDataset</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CustomDataset1</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CustomDataset2</span></a><span class="p">(</span><span class="p">)</span><span class="p">]</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CompoundDataset</span></a><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="w">
+</span>            <span class="bp">self</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">CustomDataset3</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="evaluate-and-display">
 <h2>Evaluate and display<a class="headerlink" href="#evaluate-and-display" title="Link to this heading">#</a></h2>
 <p>Let’s use a WithinSessionEvaluation to evaluate our new dataset.
 If you already new how to do this, nothing changed:
 The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><a href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class"><span class="n">CustomDataset3</span></a><span class="p">()]</span>
-<a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">evaluation</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span>
-    <a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><a href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="p">,</span> <a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">"newdataset"</span>
-<span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
-  0%|                                     | 12.3k/46.4M [00:00&lt;12:32, 61.7kB/s]
-  0%|                                      | 33.8k/46.4M [00:00&lt;06:43, 115kB/s]
-  0%|                                       | 104k/46.4M [00:00&lt;02:34, 300kB/s]
-  0%|▏                                      | 197k/46.4M [00:00&lt;01:39, 465kB/s]
-  1%|▏                                      | 247k/46.4M [00:00&lt;01:43, 445kB/s]
-  1%|▎                                      | 324k/46.4M [00:00&lt;01:31, 503kB/s]
-  1%|▎                                      | 389k/46.4M [00:00&lt;01:30, 511kB/s]
-  1%|▍                                      | 487k/46.4M [00:01&lt;01:16, 599kB/s]
-  1%|▍                                      | 553k/46.4M [00:01&lt;01:21, 561kB/s]
-  1%|▌                                      | 618k/46.4M [00:01&lt;01:26, 531kB/s]
-  2%|▋                                      | 781k/46.4M [00:01&lt;00:59, 762kB/s]
-  2%|▊                                      | 945k/46.4M [00:01&lt;00:48, 930kB/s]
-  3%|█                                    | 1.27M/46.4M [00:01&lt;00:31, 1.44MB/s]
-  3%|█▏                                   | 1.55M/46.4M [00:01&lt;00:26, 1.69MB/s]
-  5%|█▋                                   | 2.19M/46.4M [00:01&lt;00:16, 2.73MB/s]
-  6%|██▏                                  | 2.81M/46.4M [00:02&lt;00:12, 3.44MB/s]
-  7%|██▌                                  | 3.20M/46.4M [00:02&lt;00:13, 3.32MB/s]
-  8%|██▊                                  | 3.54M/46.4M [00:02&lt;00:13, 3.14MB/s]
-  8%|███                                  | 3.87M/46.4M [00:02&lt;00:14, 3.00MB/s]
-  9%|███▎                                 | 4.20M/46.4M [00:02&lt;00:15, 2.72MB/s]
- 10%|███▌                                 | 4.53M/46.4M [00:02&lt;00:15, 2.66MB/s]
- 10%|███▊                                 | 4.85M/46.4M [00:02&lt;00:15, 2.66MB/s]
- 11%|████▏                                | 5.18M/46.4M [00:02&lt;00:15, 2.62MB/s]
- 12%|████▍                                | 5.52M/46.4M [00:03&lt;00:15, 2.60MB/s]
- 13%|████▋                                | 5.85M/46.4M [00:03&lt;00:15, 2.56MB/s]
- 13%|████▊                                | 6.11M/46.4M [00:03&lt;00:16, 2.43MB/s]
- 14%|█████▏                               | 6.44M/46.4M [00:03&lt;00:16, 2.48MB/s]
- 14%|█████▎                               | 6.71M/46.4M [00:03&lt;00:16, 2.41MB/s]
- 15%|█████▌                               | 7.04M/46.4M [00:03&lt;00:15, 2.47MB/s]
- 16%|█████▊                               | 7.37M/46.4M [00:03&lt;00:15, 2.52MB/s]
- 17%|██████▏                              | 7.71M/46.4M [00:03&lt;00:14, 2.60MB/s]
- 18%|██████▍                              | 8.15M/46.4M [00:04&lt;00:13, 2.85MB/s]
- 18%|██████▊                              | 8.48M/46.4M [00:04&lt;00:13, 2.77MB/s]
- 19%|███████                              | 8.81M/46.4M [00:04&lt;00:13, 2.73MB/s]
- 20%|███████▎                             | 9.15M/46.4M [00:04&lt;00:13, 2.72MB/s]
- 20%|███████▌                             | 9.43M/46.4M [00:04&lt;00:14, 2.49MB/s]
- 21%|███████▊                             | 9.74M/46.4M [00:04&lt;00:14, 2.47MB/s]
- 22%|███████▉                             | 9.99M/46.4M [00:04&lt;00:15, 2.34MB/s]
- 22%|████████▏                            | 10.3M/46.4M [00:05&lt;00:14, 2.41MB/s]
- 23%|████████▌                            | 10.7M/46.4M [00:05&lt;00:13, 2.60MB/s]
- 24%|████████▊                            | 11.0M/46.4M [00:05&lt;00:13, 2.62MB/s]
- 24%|████████▉                            | 11.3M/46.4M [00:05&lt;00:14, 2.48MB/s]
- 25%|█████████▏                           | 11.6M/46.4M [00:05&lt;00:14, 2.44MB/s]
- 25%|█████████▍                           | 11.8M/46.4M [00:05&lt;00:15, 2.27MB/s]
- 26%|█████████▋                           | 12.2M/46.4M [00:05&lt;00:14, 2.35MB/s]
- 27%|█████████▉                           | 12.5M/46.4M [00:05&lt;00:14, 2.38MB/s]
- 27%|██████████▏                          | 12.8M/46.4M [00:06&lt;00:14, 2.29MB/s]
- 28%|██████████▍                          | 13.1M/46.4M [00:06&lt;00:13, 2.45MB/s]
- 29%|██████████▋                          | 13.4M/46.4M [00:06&lt;00:14, 2.32MB/s]
- 29%|██████████▊                          | 13.6M/46.4M [00:06&lt;00:23, 1.39MB/s]
- 30%|██████████▉                          | 13.8M/46.4M [00:06&lt;00:23, 1.42MB/s]
- 30%|███████████▏                         | 14.0M/46.4M [00:06&lt;00:20, 1.59MB/s]
- 31%|███████████▍                         | 14.4M/46.4M [00:07&lt;00:16, 1.92MB/s]
- 32%|███████████▋                         | 14.7M/46.4M [00:07&lt;00:15, 2.11MB/s]
- 32%|███████████▉                         | 15.1M/46.4M [00:07&lt;00:14, 2.24MB/s]
- 33%|████████████▏                        | 15.3M/46.4M [00:07&lt;00:14, 2.15MB/s]
- 34%|████████████▌                        | 15.7M/46.4M [00:07&lt;00:12, 2.48MB/s]
- 35%|████████████▊                        | 16.0M/46.4M [00:07&lt;00:12, 2.51MB/s]
- 35%|█████████████                        | 16.3M/46.4M [00:07&lt;00:11, 2.53MB/s]
- 36%|█████████████▎                       | 16.7M/46.4M [00:07&lt;00:11, 2.66MB/s]
- 37%|█████████████▌                       | 17.0M/46.4M [00:08&lt;00:11, 2.65MB/s]
- 37%|█████████████▊                       | 17.4M/46.4M [00:08&lt;00:10, 2.68MB/s]
- 38%|██████████████▏                      | 17.8M/46.4M [00:08&lt;00:12, 2.28MB/s]
- 39%|██████████████▍                      | 18.1M/46.4M [00:08&lt;00:12, 2.36MB/s]
- 40%|██████████████▌                      | 18.3M/46.4M [00:08&lt;00:12, 2.30MB/s]
- 40%|██████████████▊                      | 18.6M/46.4M [00:08&lt;00:12, 2.21MB/s]
- 41%|███████████████                      | 18.9M/46.4M [00:08&lt;00:11, 2.37MB/s]
- 41%|███████████████▎                     | 19.2M/46.4M [00:08&lt;00:12, 2.24MB/s]
- 42%|███████████████▌                     | 19.5M/46.4M [00:09&lt;00:11, 2.27MB/s]
- 43%|███████████████▊                     | 19.8M/46.4M [00:09&lt;00:12, 2.21MB/s]
- 43%|████████████████                     | 20.1M/46.4M [00:09&lt;00:11, 2.24MB/s]
- 44%|████████████████▎                    | 20.5M/46.4M [00:09&lt;00:11, 2.31MB/s]
- 45%|████████████████▌                    | 20.7M/46.4M [00:09&lt;00:11, 2.19MB/s]
- 45%|████████████████▋                    | 20.9M/46.4M [00:09&lt;00:12, 2.09MB/s]
- 46%|████████████████▉                    | 21.3M/46.4M [00:09&lt;00:11, 2.25MB/s]
- 47%|█████████████████▏                   | 21.6M/46.4M [00:10&lt;00:10, 2.37MB/s]
- 47%|█████████████████▍                   | 21.9M/46.4M [00:10&lt;00:09, 2.46MB/s]
- 48%|█████████████████▊                   | 22.3M/46.4M [00:10&lt;00:09, 2.53MB/s]
- 49%|██████████████████                   | 22.6M/46.4M [00:10&lt;00:09, 2.60MB/s]
- 49%|██████████████████▎                  | 22.9M/46.4M [00:10&lt;00:08, 2.62MB/s]
- 50%|██████████████████▍                  | 23.2M/46.4M [00:10&lt;00:09, 2.42MB/s]
- 51%|██████████████████▋                  | 23.5M/46.4M [00:10&lt;00:09, 2.36MB/s]
- 51%|██████████████████▉                  | 23.8M/46.4M [00:10&lt;00:09, 2.33MB/s]
- 52%|███████████████████▏                 | 24.1M/46.4M [00:11&lt;00:09, 2.27MB/s]
- 53%|███████████████████▍                 | 24.4M/46.4M [00:11&lt;00:09, 2.38MB/s]
- 53%|███████████████████▋                 | 24.7M/46.4M [00:11&lt;00:08, 2.49MB/s]
- 54%|███████████████████▉                 | 25.0M/46.4M [00:11&lt;00:09, 2.36MB/s]
- 55%|████████████████████▏                | 25.4M/46.4M [00:11&lt;00:08, 2.54MB/s]
- 55%|████████████████████▍                | 25.7M/46.4M [00:11&lt;00:08, 2.56MB/s]
- 56%|████████████████████▊                | 26.0M/46.4M [00:11&lt;00:07, 2.61MB/s]
- 57%|█████████████████████                | 26.4M/46.4M [00:11&lt;00:07, 2.57MB/s]
- 58%|█████████████████████▎               | 26.7M/46.4M [00:12&lt;00:08, 2.44MB/s]
- 58%|█████████████████████▌               | 27.0M/46.4M [00:12&lt;00:08, 2.37MB/s]
- 59%|█████████████████████▊               | 27.3M/46.4M [00:12&lt;00:08, 2.32MB/s]
- 60%|██████████████████████               | 27.7M/46.4M [00:12&lt;00:07, 2.39MB/s]
- 60%|██████████████████████▎              | 28.0M/46.4M [00:12&lt;00:07, 2.45MB/s]
- 61%|██████████████████████▌              | 28.3M/46.4M [00:12&lt;00:07, 2.51MB/s]
- 62%|██████████████████████▊              | 28.6M/46.4M [00:12&lt;00:06, 2.55MB/s]
- 62%|███████████████████████              | 28.9M/46.4M [00:13&lt;00:07, 2.41MB/s]
- 63%|███████████████████████▎             | 29.2M/46.4M [00:13&lt;00:06, 2.49MB/s]
- 64%|███████████████████████▌             | 29.6M/46.4M [00:13&lt;00:06, 2.65MB/s]
- 65%|███████████████████████▉             | 30.0M/46.4M [00:13&lt;00:06, 2.68MB/s]
- 65%|████████████████████████▏            | 30.3M/46.4M [00:13&lt;00:06, 2.65MB/s]
- 66%|████████████████████████▍            | 30.6M/46.4M [00:13&lt;00:05, 2.66MB/s]
- 67%|████████████████████████▋            | 31.0M/46.4M [00:13&lt;00:05, 2.82MB/s]
- 68%|█████████████████████████            | 31.4M/46.4M [00:13&lt;00:05, 2.87MB/s]
- 68%|█████████████████████████▎           | 31.7M/46.4M [00:14&lt;00:05, 2.78MB/s]
- 69%|█████████████████████████▋           | 32.2M/46.4M [00:14&lt;00:04, 2.93MB/s]
- 70%|█████████████████████████▉           | 32.5M/46.4M [00:14&lt;00:04, 2.85MB/s]
- 71%|██████████████████████████▏          | 32.8M/46.4M [00:14&lt;00:04, 2.79MB/s]
- 71%|██████████████████████████▍          | 33.2M/46.4M [00:14&lt;00:04, 2.75MB/s]
- 72%|██████████████████████████▋          | 33.5M/46.4M [00:14&lt;00:04, 2.64MB/s]
- 73%|██████████████████████████▉          | 33.8M/46.4M [00:14&lt;00:04, 2.62MB/s]
- 73%|███████████████████████████▏         | 34.1M/46.4M [00:14&lt;00:04, 2.51MB/s]
- 74%|███████████████████████████▍         | 34.4M/46.4M [00:15&lt;00:04, 2.55MB/s]
- 75%|███████████████████████████▋         | 34.8M/46.4M [00:15&lt;00:04, 2.62MB/s]
- 76%|███████████████████████████▉         | 35.1M/46.4M [00:15&lt;00:04, 2.63MB/s]
- 76%|████████████████████████████▏        | 35.4M/46.4M [00:15&lt;00:04, 2.46MB/s]
- 78%|████████████████████████████▉        | 36.3M/46.4M [00:15&lt;00:02, 4.02MB/s]
- 81%|█████████████████████████████▊       | 37.5M/46.4M [00:15&lt;00:01, 5.94MB/s]
- 84%|██████████████████████████████▉      | 38.9M/46.4M [00:15&lt;00:00, 8.04MB/s]
- 89%|████████████████████████████████▊    | 41.1M/46.4M [00:15&lt;00:00, 12.0MB/s]
- 91%|█████████████████████████████████▊   | 42.4M/46.4M [00:16&lt;00:00, 7.82MB/s]
- 94%|██████████████████████████████████▌  | 43.4M/46.4M [00:16&lt;00:00, 6.16MB/s]
- 95%|███████████████████████████████████▎ | 44.2M/46.4M [00:16&lt;00:00, 5.08MB/s]
- 97%|███████████████████████████████████▊ | 44.9M/46.4M [00:16&lt;00:00, 4.14MB/s]
- 98%|████████████████████████████████████▏| 45.4M/46.4M [00:17&lt;00:00, 4.10MB/s]
- 99%|████████████████████████████████████▌| 45.9M/46.4M [00:17&lt;00:00, 3.82MB/s]
-100%|████████████████████████████████████▉| 46.4M/46.4M [00:17&lt;00:00, 3.31MB/s]
-  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 46.4M/46.4M [00:00&lt;00:00, 324GB/s]
-
-  0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
-  0%|                                   | 1.02k/74.3M [00:00&lt;5:36:27, 3.68kB/s]
-  0%|                                     | 32.8k/74.3M [00:00&lt;12:28, 99.2kB/s]
-  0%|                                      | 98.3k/74.3M [00:00&lt;05:03, 244kB/s]
-  0%|                                       | 164k/74.3M [00:00&lt;03:47, 326kB/s]
-  0%|                                       | 229k/74.3M [00:00&lt;03:19, 371kB/s]
-  0%|▏                                      | 295k/74.3M [00:00&lt;03:02, 405kB/s]
-  0%|▏                                      | 364k/74.3M [00:01&lt;02:50, 433kB/s]
-  1%|▏                                      | 429k/74.3M [00:01&lt;02:43, 452kB/s]
-  1%|▎                                      | 511k/74.3M [00:01&lt;02:27, 501kB/s]
-  1%|▎                                      | 608k/74.3M [00:01&lt;02:09, 570kB/s]
-  1%|▎                                      | 690k/74.3M [00:01&lt;02:05, 586kB/s]
-  1%|▍                                      | 788k/74.3M [00:01&lt;01:56, 628kB/s]
-  1%|▍                                      | 854k/74.3M [00:01&lt;02:05, 586kB/s]
-  1%|▍                                      | 920k/74.3M [00:02&lt;02:11, 556kB/s]
-  1%|▌                                      | 985k/74.3M [00:02&lt;02:16, 538kB/s]
-  1%|▌                                     | 1.07M/74.3M [00:02&lt;02:18, 530kB/s]
-  2%|▌                                     | 1.13M/74.3M [00:02&lt;02:21, 515kB/s]
-  2%|▋                                     | 1.23M/74.3M [00:02&lt;02:06, 579kB/s]
-  2%|▋                                     | 1.31M/74.3M [00:02&lt;02:03, 589kB/s]
-  2%|▋                                     | 1.43M/74.3M [00:02&lt;01:48, 671kB/s]
-  2%|▊                                     | 1.49M/74.3M [00:02&lt;01:56, 624kB/s]
-  2%|▊                                     | 1.59M/74.3M [00:03&lt;01:51, 654kB/s]
-  2%|▊                                     | 1.66M/74.3M [00:03&lt;01:59, 609kB/s]
-  2%|▉                                     | 1.75M/74.3M [00:03&lt;01:52, 645kB/s]
-  2%|▉                                     | 1.84M/74.3M [00:03&lt;01:53, 639kB/s]
-  3%|▉                                     | 1.93M/74.3M [00:03&lt;01:48, 670kB/s]
-  3%|█                                     | 2.02M/74.3M [00:03&lt;01:50, 652kB/s]
-  3%|█                                     | 2.13M/74.3M [00:03&lt;01:40, 716kB/s]
-  3%|█▏                                    | 2.21M/74.3M [00:04&lt;01:45, 682kB/s]
-  3%|█▏                                    | 2.34M/74.3M [00:04&lt;01:34, 760kB/s]
-  3%|█▏                                    | 2.42M/74.3M [00:04&lt;01:40, 712kB/s]
-  3%|█▎                                    | 2.52M/74.3M [00:04&lt;01:39, 720kB/s]
-  4%|█▎                                    | 2.62M/74.3M [00:04&lt;01:38, 724kB/s]
-  4%|█▍                                    | 2.75M/74.3M [00:04&lt;01:29, 799kB/s]
-  4%|█▍                                    | 2.83M/74.3M [00:04&lt;01:36, 743kB/s]
-  4%|█▌                                    | 2.93M/74.3M [00:05&lt;01:36, 738kB/s]
-  4%|█▌                                    | 3.06M/74.3M [00:05&lt;01:27, 811kB/s]
-  4%|█▋                                    | 3.18M/74.3M [00:05&lt;01:25, 830kB/s]
-  4%|█▋                                    | 3.28M/74.3M [00:05&lt;01:29, 793kB/s]
-  5%|█▋                                    | 3.36M/74.3M [00:05&lt;01:36, 737kB/s]
-  5%|█▊                                    | 3.45M/74.3M [00:05&lt;01:38, 722kB/s]
-  5%|█▊                                    | 3.55M/74.3M [00:05&lt;01:39, 711kB/s]
-  5%|█▊                                    | 3.65M/74.3M [00:05&lt;01:38, 716kB/s]
-  5%|█▉                                    | 3.73M/74.3M [00:06&lt;01:45, 666kB/s]
-  5%|█▉                                    | 3.83M/74.3M [00:06&lt;01:42, 687kB/s]
-  5%|██                                    | 3.96M/74.3M [00:06&lt;01:31, 772kB/s]
-  6%|██▏                                   | 4.16M/74.3M [00:06&lt;01:11, 978kB/s]
-  6%|██▏                                   | 4.29M/74.3M [00:06&lt;01:11, 978kB/s]
-  6%|██▏                                   | 4.39M/74.3M [00:06&lt;01:16, 908kB/s]
-  6%|██▎                                   | 4.49M/74.3M [00:06&lt;01:22, 847kB/s]
-  6%|██▎                                   | 4.58M/74.3M [00:07&lt;01:26, 807kB/s]
-  6%|██▍                                   | 4.68M/74.3M [00:07&lt;01:29, 778kB/s]
-  6%|██▍                                   | 4.78M/74.3M [00:07&lt;01:31, 761kB/s]
-  7%|██▍                                   | 4.88M/74.3M [00:07&lt;01:32, 754kB/s]
-  7%|██▌                                   | 5.01M/74.3M [00:07&lt;01:31, 754kB/s]
-  7%|██▌                                   | 5.11M/74.3M [00:07&lt;01:32, 746kB/s]
-  7%|██▋                                   | 5.18M/74.3M [00:07&lt;01:39, 695kB/s]
-  7%|██▋                                   | 5.32M/74.3M [00:08&lt;01:28, 782kB/s]
-  7%|██▊                                   | 5.42M/74.3M [00:08&lt;01:33, 733kB/s]
-  7%|██▊                                   | 5.52M/74.3M [00:08&lt;01:34, 731kB/s]
-  8%|██▊                                   | 5.61M/74.3M [00:08&lt;01:34, 730kB/s]
-  8%|██▉                                   | 5.73M/74.3M [00:08&lt;01:33, 730kB/s]
-  8%|██▉                                   | 5.83M/74.3M [00:08&lt;01:36, 713kB/s]
-  8%|███                                   | 5.92M/74.3M [00:08&lt;01:35, 714kB/s]
-  8%|███                                   | 6.02M/74.3M [00:09&lt;01:34, 721kB/s]
-  8%|███▏                                  | 6.14M/74.3M [00:09&lt;01:30, 753kB/s]
-  8%|███▏                                  | 6.24M/74.3M [00:09&lt;01:31, 743kB/s]
-  9%|███▏                                  | 6.33M/74.3M [00:09&lt;01:33, 730kB/s]
-  9%|███▎                                  | 6.43M/74.3M [00:09&lt;01:36, 706kB/s]
-  9%|███▎                                  | 6.53M/74.3M [00:09&lt;01:35, 709kB/s]
-  9%|███▍                                  | 6.60M/74.3M [00:09&lt;01:42, 659kB/s]
-  9%|███▍                                  | 6.69M/74.3M [00:10&lt;01:41, 663kB/s]
-  9%|███▌                                  | 6.86M/74.3M [00:10&lt;01:23, 805kB/s]
- 10%|███▌                                 | 7.18M/74.3M [00:10&lt;00:52, 1.28MB/s]
- 10%|███▊                                 | 7.54M/74.3M [00:10&lt;00:39, 1.70MB/s]
- 11%|████                                 | 8.13M/74.3M [00:10&lt;00:26, 2.51MB/s]
- 12%|████▎                                | 8.77M/74.3M [00:10&lt;00:20, 3.20MB/s]
- 13%|████▊                                | 9.63M/74.3M [00:10&lt;00:15, 4.15MB/s]
- 14%|█████▏                               | 10.3M/74.3M [00:10&lt;00:15, 4.20MB/s]
- 14%|█████▎                               | 10.7M/74.3M [00:11&lt;00:16, 3.85MB/s]
- 15%|█████▌                               | 11.1M/74.3M [00:11&lt;00:18, 3.38MB/s]
- 15%|█████▋                               | 11.4M/74.3M [00:11&lt;00:19, 3.15MB/s]
- 16%|█████▊                               | 11.8M/74.3M [00:11&lt;00:22, 2.82MB/s]
- 16%|█████▉                               | 12.0M/74.3M [00:11&lt;00:23, 2.61MB/s]
- 17%|██████▏                              | 12.3M/74.3M [00:11&lt;00:25, 2.44MB/s]
- 17%|██████▎                              | 12.6M/74.3M [00:11&lt;00:26, 2.32MB/s]
- 17%|██████▍                              | 12.9M/74.3M [00:12&lt;00:26, 2.32MB/s]
- 18%|██████▌                              | 13.3M/74.3M [00:12&lt;00:27, 2.26MB/s]
- 18%|██████▋                              | 13.5M/74.3M [00:12&lt;00:29, 2.07MB/s]
- 19%|██████▉                              | 13.8M/74.3M [00:12&lt;00:28, 2.11MB/s]
- 19%|███████                              | 14.2M/74.3M [00:12&lt;00:27, 2.19MB/s]
- 19%|███████▏                             | 14.4M/74.3M [00:12&lt;00:27, 2.15MB/s]
- 20%|███████▎                             | 14.8M/74.3M [00:12&lt;00:27, 2.13MB/s]
- 20%|███████▌                             | 15.1M/74.3M [00:13&lt;00:27, 2.12MB/s]
- 21%|███████▋                             | 15.4M/74.3M [00:13&lt;00:27, 2.17MB/s]
- 21%|███████▊                             | 15.7M/74.3M [00:13&lt;00:26, 2.24MB/s]
- 22%|████████                             | 16.1M/74.3M [00:13&lt;00:25, 2.32MB/s]
- 22%|████████▎                            | 16.6M/74.3M [00:13&lt;00:20, 2.77MB/s]
- 23%|████████▍                            | 16.9M/74.3M [00:13&lt;00:21, 2.67MB/s]
- 23%|████████▌                            | 17.2M/74.3M [00:13&lt;00:23, 2.46MB/s]
- 23%|████████▋                            | 17.5M/74.3M [00:14&lt;00:24, 2.30MB/s]
- 24%|████████▊                            | 17.7M/74.3M [00:14&lt;00:26, 2.16MB/s]
- 24%|████████▉                            | 18.0M/74.3M [00:14&lt;00:25, 2.25MB/s]
- 25%|█████████▏                           | 18.4M/74.3M [00:14&lt;00:24, 2.24MB/s]
- 25%|█████████▎                           | 18.7M/74.3M [00:14&lt;00:24, 2.23MB/s]
- 26%|█████████▍                           | 19.0M/74.3M [00:14&lt;00:24, 2.24MB/s]
- 26%|█████████▋                           | 19.4M/74.3M [00:14&lt;00:23, 2.30MB/s]
- 27%|█████████▉                           | 19.8M/74.3M [00:15&lt;00:22, 2.47MB/s]
- 27%|██████████                           | 20.2M/74.3M [00:15&lt;00:21, 2.47MB/s]
- 28%|██████████▎                          | 20.7M/74.3M [00:15&lt;00:18, 2.91MB/s]
- 28%|██████████▍                          | 21.0M/74.3M [00:15&lt;00:19, 2.78MB/s]
- 29%|██████████▋                          | 21.4M/74.3M [00:15&lt;00:18, 2.80MB/s]
- 29%|██████████▊                          | 21.8M/74.3M [00:15&lt;00:19, 2.73MB/s]
- 30%|██████████▉                          | 22.0M/74.3M [00:15&lt;00:21, 2.48MB/s]
- 30%|███████████                          | 22.3M/74.3M [00:16&lt;00:23, 2.19MB/s]
- 30%|███████████▏                         | 22.5M/74.3M [00:16&lt;00:24, 2.15MB/s]
- 31%|███████████▎                         | 22.8M/74.3M [00:16&lt;00:23, 2.15MB/s]
- 31%|███████████▍                         | 23.0M/74.3M [00:16&lt;00:23, 2.18MB/s]
- 31%|███████████▌                         | 23.2M/74.3M [00:16&lt;00:25, 2.03MB/s]
- 32%|███████████▊                         | 23.6M/74.3M [00:16&lt;00:22, 2.27MB/s]
- 32%|███████████▉                         | 23.9M/74.3M [00:16&lt;00:22, 2.28MB/s]
- 33%|████████████                         | 24.2M/74.3M [00:16&lt;00:21, 2.32MB/s]
- 33%|████████████▏                        | 24.6M/74.3M [00:17&lt;00:21, 2.36MB/s]
- 33%|████████████▎                        | 24.8M/74.3M [00:17&lt;00:21, 2.35MB/s]
- 34%|████████████▌                        | 25.1M/74.3M [00:17&lt;00:22, 2.19MB/s]
- 34%|████████████▋                        | 25.5M/74.3M [00:17&lt;00:22, 2.18MB/s]
- 35%|████████████▊                        | 25.8M/74.3M [00:17&lt;00:23, 2.09MB/s]
- 35%|████████████▉                        | 26.1M/74.3M [00:17&lt;00:21, 2.26MB/s]
- 35%|█████████████                        | 26.3M/74.3M [00:17&lt;00:22, 2.13MB/s]
- 36%|█████████████▏                       | 26.5M/74.3M [00:18&lt;00:22, 2.12MB/s]
- 36%|█████████████▎                       | 26.8M/74.3M [00:18&lt;00:25, 1.87MB/s]
- 36%|█████████████▌                       | 27.1M/74.3M [00:18&lt;00:23, 2.05MB/s]
- 37%|█████████████▋                       | 27.5M/74.3M [00:18&lt;00:20, 2.26MB/s]
- 37%|█████████████▊                       | 27.8M/74.3M [00:18&lt;00:20, 2.30MB/s]
- 38%|██████████████                       | 28.2M/74.3M [00:18&lt;00:19, 2.36MB/s]
- 38%|██████████████▏                      | 28.5M/74.3M [00:18&lt;00:19, 2.37MB/s]
- 39%|██████████████▍                      | 28.9M/74.3M [00:19&lt;00:18, 2.40MB/s]
- 39%|██████████████▍                      | 29.1M/74.3M [00:19&lt;00:20, 2.23MB/s]
- 39%|██████████████▌                      | 29.3M/74.3M [00:19&lt;00:20, 2.18MB/s]
- 40%|██████████████▋                      | 29.5M/74.3M [00:19&lt;00:21, 2.04MB/s]
- 40%|██████████████▉                      | 29.9M/74.3M [00:19&lt;00:21, 2.03MB/s]
- 41%|███████████████                      | 30.2M/74.3M [00:19&lt;00:20, 2.10MB/s]
- 41%|███████████████▏                     | 30.6M/74.3M [00:19&lt;00:20, 2.18MB/s]
- 42%|███████████████▍                     | 30.9M/74.3M [00:19&lt;00:19, 2.23MB/s]
- 42%|███████████████▌                     | 31.2M/74.3M [00:20&lt;00:18, 2.29MB/s]
- 42%|███████████████▋                     | 31.6M/74.3M [00:20&lt;00:19, 2.23MB/s]
- 43%|███████████████▉                     | 31.9M/74.3M [00:20&lt;00:17, 2.49MB/s]
- 44%|████████████████▏                    | 32.4M/74.3M [00:20&lt;00:13, 3.10MB/s]
- 46%|████████████████▉                    | 33.9M/74.3M [00:20&lt;00:06, 6.01MB/s]
- 49%|██████████████████                   | 36.1M/74.3M [00:20&lt;00:03, 10.4MB/s]
- 50%|██████████████████▌                  | 37.3M/74.3M [00:20&lt;00:05, 7.39MB/s]
- 51%|███████████████████                  | 38.2M/74.3M [00:21&lt;00:06, 5.53MB/s]
- 52%|███████████████████▍                 | 38.9M/74.3M [00:21&lt;00:07, 4.50MB/s]
- 53%|███████████████████▋                 | 39.5M/74.3M [00:21&lt;00:08, 4.32MB/s]
- 54%|███████████████████▉                 | 40.1M/74.3M [00:21&lt;00:08, 4.18MB/s]
- 55%|████████████████████▏                | 40.6M/74.3M [00:22&lt;00:10, 3.35MB/s]
- 55%|████████████████████▍                | 41.0M/74.3M [00:22&lt;00:09, 3.39MB/s]
- 56%|████████████████████▋                | 41.4M/74.3M [00:22&lt;00:09, 3.38MB/s]
- 56%|████████████████████▉                | 41.9M/74.3M [00:22&lt;00:09, 3.36MB/s]
- 57%|█████████████████████                | 42.3M/74.3M [00:22&lt;00:10, 3.17MB/s]
- 58%|█████████████████████▎               | 42.8M/74.3M [00:22&lt;00:09, 3.22MB/s]
- 58%|█████████████████████▍               | 43.1M/74.3M [00:22&lt;00:10, 3.00MB/s]
- 59%|█████████████████████▋               | 43.6M/74.3M [00:23&lt;00:09, 3.08MB/s]
- 59%|█████████████████████▉               | 44.1M/74.3M [00:23&lt;00:09, 3.10MB/s]
- 60%|██████████████████████▏              | 44.5M/74.3M [00:23&lt;00:09, 3.31MB/s]
- 60%|██████████████████████▎              | 44.8M/74.3M [00:23&lt;00:09, 3.18MB/s]
- 61%|██████████████████████▍              | 45.1M/74.3M [00:23&lt;00:09, 2.98MB/s]
- 61%|██████████████████████▋              | 45.4M/74.3M [00:23&lt;00:10, 2.75MB/s]
- 62%|██████████████████████▊              | 45.8M/74.3M [00:23&lt;00:10, 2.80MB/s]
- 62%|███████████████████████              | 46.3M/74.3M [00:23&lt;00:09, 2.99MB/s]
- 63%|███████████████████████▎             | 46.8M/74.3M [00:24&lt;00:08, 3.18MB/s]
- 64%|███████████████████████▌             | 47.3M/74.3M [00:24&lt;00:08, 3.36MB/s]
- 64%|███████████████████████▊             | 47.8M/74.3M [00:24&lt;00:07, 3.49MB/s]
- 65%|███████████████████████▉             | 48.1M/74.3M [00:24&lt;00:08, 3.20MB/s]
- 65%|████████████████████████▏            | 48.4M/74.3M [00:24&lt;00:08, 2.93MB/s]
- 66%|████████████████████████▎            | 48.9M/74.3M [00:24&lt;00:08, 3.03MB/s]
- 67%|████████████████████████▌            | 49.4M/74.3M [00:24&lt;00:07, 3.16MB/s]
- 67%|████████████████████████▊            | 49.9M/74.3M [00:25&lt;00:07, 3.12MB/s]
- 68%|█████████████████████████            | 50.3M/74.3M [00:25&lt;00:07, 3.15MB/s]
- 68%|█████████████████████████▎           | 50.7M/74.3M [00:25&lt;00:07, 3.12MB/s]
- 69%|█████████████████████████▌           | 51.2M/74.3M [00:25&lt;00:07, 3.27MB/s]
- 70%|█████████████████████████▊           | 51.7M/74.3M [00:25&lt;00:07, 3.21MB/s]
- 70%|██████████████████████████           | 52.2M/74.3M [00:25&lt;00:06, 3.29MB/s]
- 71%|██████████████████████████▎          | 52.7M/74.3M [00:25&lt;00:06, 3.36MB/s]
- 71%|██████████████████████████▍          | 53.0M/74.3M [00:26&lt;00:06, 3.12MB/s]
- 72%|██████████████████████████▌          | 53.4M/74.3M [00:26&lt;00:07, 2.91MB/s]
- 72%|██████████████████████████▊          | 53.8M/74.3M [00:26&lt;00:07, 2.81MB/s]
- 73%|██████████████████████████▉          | 54.1M/74.3M [00:26&lt;00:07, 2.66MB/s]
- 74%|███████████████████████████▏         | 54.6M/74.3M [00:26&lt;00:06, 2.90MB/s]
- 74%|███████████████████████████▍         | 55.0M/74.3M [00:26&lt;00:06, 2.90MB/s]
- 75%|███████████████████████████▋         | 55.5M/74.3M [00:26&lt;00:06, 3.01MB/s]
- 75%|███████████████████████████▉         | 56.0M/74.3M [00:27&lt;00:05, 3.19MB/s]
- 76%|████████████████████████████         | 56.4M/74.3M [00:27&lt;00:05, 3.24MB/s]
- 77%|████████████████████████████▎        | 56.8M/74.3M [00:27&lt;00:05, 3.18MB/s]
- 77%|████████████████████████████▌        | 57.3M/74.3M [00:27&lt;00:05, 3.32MB/s]
- 78%|████████████████████████████▊        | 57.8M/74.3M [00:27&lt;00:05, 3.27MB/s]
- 78%|████████████████████████████▉        | 58.2M/74.3M [00:27&lt;00:06, 2.32MB/s]
- 79%|█████████████████████████████▏       | 58.6M/74.3M [00:28&lt;00:06, 2.52MB/s]
- 79%|█████████████████████████████▍       | 59.0M/74.3M [00:28&lt;00:05, 2.59MB/s]
- 81%|█████████████████████████████▉       | 60.1M/74.3M [00:28&lt;00:03, 4.26MB/s]
- 82%|██████████████████████████████▎      | 61.0M/74.3M [00:28&lt;00:02, 5.01MB/s]
- 83%|██████████████████████████████▋      | 61.5M/74.3M [00:28&lt;00:02, 4.47MB/s]
- 84%|██████████████████████████████▉      | 62.0M/74.3M [00:28&lt;00:02, 4.22MB/s]
- 84%|███████████████████████████████▏     | 62.5M/74.3M [00:28&lt;00:02, 3.98MB/s]
- 85%|███████████████████████████████▎     | 62.9M/74.3M [00:28&lt;00:02, 3.95MB/s]
- 85%|███████████████████████████████▌     | 63.3M/74.3M [00:29&lt;00:03, 3.12MB/s]
- 86%|███████████████████████████████▋     | 63.7M/74.3M [00:29&lt;00:03, 2.98MB/s]
- 86%|███████████████████████████████▉     | 64.0M/74.3M [00:29&lt;00:03, 2.84MB/s]
- 87%|████████████████████████████████     | 64.4M/74.3M [00:29&lt;00:03, 2.84MB/s]
- 87%|████████████████████████████████▎    | 64.9M/74.3M [00:29&lt;00:03, 3.04MB/s]
- 88%|████████████████████████████████▌    | 65.3M/74.3M [00:29&lt;00:02, 3.02MB/s]
- 89%|████████████████████████████████▊    | 65.7M/74.3M [00:30&lt;00:02, 3.02MB/s]
- 89%|████████████████████████████████▉    | 66.2M/74.3M [00:30&lt;00:02, 3.19MB/s]
- 90%|█████████████████████████████████▏   | 66.7M/74.3M [00:30&lt;00:02, 3.29MB/s]
- 90%|█████████████████████████████████▍   | 67.2M/74.3M [00:30&lt;00:02, 3.35MB/s]
- 91%|█████████████████████████████████▋   | 67.7M/74.3M [00:30&lt;00:01, 3.45MB/s]
- 92%|█████████████████████████████████▉   | 68.0M/74.3M [00:30&lt;00:01, 3.41MB/s]
- 92%|██████████████████████████████████   | 68.4M/74.3M [00:30&lt;00:01, 3.21MB/s]
- 93%|██████████████████████████████████▎  | 68.9M/74.3M [00:31&lt;00:01, 2.82MB/s]
- 93%|██████████████████████████████████▌  | 69.4M/74.3M [00:31&lt;00:01, 2.96MB/s]
- 94%|██████████████████████████████████▊  | 69.9M/74.3M [00:31&lt;00:01, 3.11MB/s]
- 95%|███████████████████████████████████  | 70.4M/74.3M [00:31&lt;00:01, 3.30MB/s]
- 95%|███████████████████████████████████▎ | 70.9M/74.3M [00:31&lt;00:01, 3.37MB/s]
- 96%|███████████████████████████████████▌ | 71.4M/74.3M [00:31&lt;00:00, 3.49MB/s]
- 97%|███████████████████████████████████▊ | 71.9M/74.3M [00:31&lt;00:00, 3.52MB/s]
- 97%|████████████████████████████████████ | 72.4M/74.3M [00:31&lt;00:00, 3.50MB/s]
- 98%|████████████████████████████████████▎| 72.8M/74.3M [00:32&lt;00:00, 3.53MB/s]
- 99%|████████████████████████████████████▌| 73.3M/74.3M [00:32&lt;00:00, 3.50MB/s]
- 99%|████████████████████████████████████▋| 73.7M/74.3M [00:32&lt;00:00, 3.38MB/s]
-100%|████████████████████████████████████▉| 74.2M/74.3M [00:32&lt;00:00, 3.41MB/s]
-  0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 74.3M/74.3M [00:00&lt;00:00, 697GB/s]
-      score      time  samples  ...         dataset  pipeline  codecarbon_task_name
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><a class="sphx-glr-backref-module-moabb-datasets-compound_dataset sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.compound_dataset.base.CompoundDataset.html#moabb.datasets.compound_dataset.base.CompoundDataset" title="moabb.datasets.compound_dataset.CompoundDataset"><span class="n">CustomDataset3</span></a><span class="p">(</span><span class="p">)</span><span class="p">]</span><span class="w">
+</span><a class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><span class="n">evaluation</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300"><span class="n">paradigm</span></a><span class="o">=</span><a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300"><span class="n">paradigm</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">datasets</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">datasets</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">newdataset</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">scores</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">scores</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...         dataset  pipeline  codecarbon_task_name
 0  0.639885  1.710833    768.0  ...  CustomDataset3       MDM
 1  0.550619  3.698742   1356.0  ...  CustomDataset3       MDM
 2  0.652500  0.253676    120.0  ...  CustomDataset3       MDM
@@ -1116,8 +745,7 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
 [4 rows x 13 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 50.561 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  946 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.032 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-5-combining-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1d572f55de1f1c75feff109ca6a55fab/tutorial_5_combining_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_5_combining_datasets.ipynb</span></code></a></p>
