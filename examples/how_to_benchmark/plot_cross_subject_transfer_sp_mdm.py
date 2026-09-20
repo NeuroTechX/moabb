@@ -50,8 +50,7 @@ from moabb.paradigms import LeftRightImagery
 #
 # .. math::
 #
-#    D_k(C) = \\frac{1}{|S_k|}
-#             \\sum_{s \\in S_k} d_R(C, G_{s,k}),
+#    D_k(C) = \frac{1}{|S_k|} \sum_{s \in S_k} d_R(C, G_{s,k}),
 #
 # where :math:`d_R` is the affine-invariant Riemannian distance and :math:`S_k`
 # contains the source subjects for which class :math:`k` is available. The

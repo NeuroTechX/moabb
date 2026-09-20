@@ -35,7 +35,8 @@ Requirements
 
 Bugs
 ~~~~
-- None yet.
+- Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
+- Fix the ``-e``/``--evaluations`` flag of ``python -m moabb.run``, which used ``type=list`` and so split its value into single characters: ``-e WithinSession`` reached :func:`moabb.benchmark` as ``['W', 'i', 't', ...]`` and raised ``KeyError: 'W'``. It now takes one or more evaluation names, space separated (by `Iain`_)
 
 Code health
 ~~~~~~~~~~~
@@ -207,6 +208,7 @@ Bugs
 - Evaluations now apply ``cv_kwargs`` to the default cross-validation class. Caller settings override splitter defaults, and splitter construction forwards each setting without duplicate keyword arguments (by `Stanley C.`_).
 - Fix numeric sorting in the dataset summary tables (:doc:`dataset_summary`): columns containing the ``varies`` sentinel (e.g. ``Total_trials``) were auto-detected as strings by DataTables and sorted lexicographically (``11000 < 1114 < 11496``). A custom ``num-varies`` column type now treats such columns as numeric, sorting sentinel rows last while keeping their displayed text unchanged (:gh:`1118` by `Bhargav Kowshik`_).
 - Fix ``make html`` crash in ``scripts/generate_macro_table.py`` when a dataset has a missing (``NaN``) value in an optional metadata column (country, DOI, data URL, ...): the float ``NaN`` is truthy, so it slipped past the ``if not value`` guards and crashed the string formatters (``TypeError: object of type 'float' has no len()``). ``_format_cell`` now normalizes ``NaN`` to ``None`` before dispatching, and ``_dataset_link``/``_paradigm_tag`` -- the only two format branches without an empty-value guard, which raised ``AttributeError`` on ``html.escape(None)`` -- guard it too, so all eleven branches render a missing cell as empty (:gh:`1117` by `Bhargav Kowshik`_).
+- Fix ``extra_runs`` parameter behaviour in :class:`moabb.datasets.RomaniBF2025ERP`, and defaulted to `False` for fair cross-subject comparability.(by `Michele Romani`_).
 
 Code health
 ~~~~~~~~~~~
