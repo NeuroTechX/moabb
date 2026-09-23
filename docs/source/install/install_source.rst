@@ -68,7 +68,7 @@ For contributors or those who want to work on MOABB’s codebase, follow these s
 
    .. code-block:: bash
 
-      pip install -e .[deeplearning,carbonemission,docs,optuna,tests,external]
+      pip install -e .[deeplearning,carbonemission,docs,optuna,tests]
 
    For a complete list of optional dependencies, consult the `pyproject.toml` file.
 
