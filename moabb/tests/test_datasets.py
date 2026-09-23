@@ -60,6 +60,7 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
+    "Ma2022",
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here

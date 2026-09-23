@@ -98,6 +98,7 @@ Motor Imagery Datasets
     Kumar2024
     Liu2025
     Ma2020
+    Ma2022
     Rozado2015
     Tavakolan2017
     TrianaGuzman2024
