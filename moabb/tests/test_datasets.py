@@ -1807,24 +1807,3 @@ def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monke
     )
     dataset.data_path(1, path=str(tmp_path))
     assert [fname for _, fname in calls] == ["Doorlock/Dat_sub01/sub01_Testing1.mat"]
-
-
-def test_ma2022_data_path_serves_the_nemar_store(tmp_path, monkeypatch):
-    """With a NEMAR store holding the subject's sessions, figshare is skipped."""
-    from moabb.datasets import Ma2022
-
-    store = tmp_path / "store"
-    (store / "mat").mkdir(parents=True)
-    for name in Ma2022._session_filenames(3):
-        (store / "mat" / name).write_bytes(b"")
-    dataset = Ma2022()
-    monkeypatch.setattr(dataset, "_sourcedata_store", lambda: store)
-    monkeypatch.setattr(
-        "moabb.datasets.ma2022.dl.data_dl",
-        lambda *a, **k: pytest.fail("figshare archive downloaded"),
-    )
-    assert dataset.data_path(3, path=str(tmp_path)) == str(store / "mat")
-
-    # A subject the store does not hold still goes to figshare.
-    with pytest.raises(pytest.fail.Exception, match="figshare archive downloaded"):
-        dataset.data_path(4, path=str(tmp_path))

@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset (Ma et al. 2022, Scientific Data): 25 BCI-naive subjects performing cued left- vs right-hand grasping imagery over five sessions recorded on five different days, 32 EEG channels at 250 Hz, 11,988 retained 4 s trials. The loader downloads the open version-1 figshare archive cited by the data paper (later record versions re-uploaded the same recordings inside AES-encrypted zips), mirrored on NEMAR as ``nm000288`` so single subjects are served from there (:gh:`1178` by `LiQing`_ and `Bruno Aristimunha`_)
+- Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset: 25 subjects, five sessions, 32 EEG channels at 250 Hz and 11,988 retained 4 s trials. Read the authors' EDF release and BIDS events from NEMAR ``nm000288`` (publication pending), preserving bad-channel flags. These are authors-preprocessed, concatenated imagery windows, not continuous amplifier recordings. The ``Ma-edf2022`` code prevents reuse of legacy MATLAB caches; there is no MATLAB fallback (:gh:`1178` by `LiQing`_ and `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~

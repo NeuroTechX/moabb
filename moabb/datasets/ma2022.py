@@ -5,18 +5,11 @@ DOI: 10.1038/s41597-022-01647-1
 Data DOI: 10.6084/m9.figshare.19228725
 """
 
-import logging
-import zipfile
-from pathlib import Path
+import pandas as pd
+from mne.channels import get_builtin_montages, make_standard_montage
+from mne_bids import events_file_to_annotation_kwargs
 
-import numpy as np
-import scipy.io as sio
-from mne import Annotations, create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
-
-from . import download as dl
-from .base import BaseDataset
+from .base import BaseBIDSDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -32,18 +25,6 @@ from .metadata.schema import (
     Tags,
 )
 
-
-log = logging.getLogger(__name__)
-
-# The SHU dataset is distributed as figshare record 19228725. Only version 1
-# of the record exposes the data archives without password protection;
-# versions 2 and 3 re-uploaded the same recordings inside AES-encrypted zips
-# (the record description asks users to email the author for the password).
-# The data paper itself cites version 1 as "open access for free download",
-# so this loader targets the open version-1 ``mat.zip`` archive
-# (figshare file id 36324114).
-_MAT_ZIP_URL = "https://ndownloader.figshare.com/files/36324114"
-_MAT_ZIP_MD5 = "f577fbd4ddcad5e358f941d27bb7c393"
 
 # Sampling rate (Hz), from the BIDS ``task-motorimagery_eeg.json`` sidecar.
 _SFREQ = 250.0
@@ -64,7 +45,7 @@ MA2022_CH_NAMES = [
 ]
 # fmt: on
 
-# Trial labels stored in each .mat file (1 = left hand, 2 = right hand),
+# Trial labels in the BIDS events sidecars (1 = left hand, 2 = right hand),
 # consistent with the ``task-motorimagery_events.json`` sidecar.
 MA2022_EVENTS = {"left_hand": 1, "right_hand": 2}
 
@@ -99,7 +80,7 @@ _DEMOGRAPHICS = {
 }
 
 
-class Ma2022(BaseDataset):
+class Ma2022(BaseBIDSDataset):
     """Cross-session motor imagery dataset (SHU) from Ma et al. 2022.
 
     Dataset from [1]_.
@@ -126,26 +107,31 @@ class Ma2022(BaseDataset):
        the baseline was corrected, and a 0.5-40 Hz FIR band-pass filter was
        applied by the authors before disclosure.
 
-    The data are distributed as MATLAB ``.mat`` files (one per subject and
-    session, named ``sub-XXX_ses-YY_task_motorimagery_eeg.mat``) bundled in
-    a single figshare archive. Each file contains a ``data`` array of shape
-    ``(n_trials, n_channels, n_samples)`` in microvolts and a ``labels``
-    vector (1 = left hand, 2 = right hand).
+    This loader reads the authors' EDF release, hosted in BIDS form on
+    NEMAR (``nm000288``). Each EDF contains the retained 4 s windows
+    concatenated in time, **not continuous amplifier recordings**. BIDS
+    ``DatasetType: raw`` describes the deposit layout, not its processing
+    state. Events and bad-channel flags are read from the BIDS sidecars;
+    MNE converts the EDF microvolt calibration to SI volts.
+
+    Nine sessions contain a channel zeroed by the authors. The deposit
+    repairs only that channel's otherwise unreadable physical-range header
+    and marks it bad; the untouched EDF is preserved under ``sourcedata/``.
+    Bad channels remain flagged, without interpolation or deletion. Since
+    MOABB's default EEG selection excludes bads, full-dataset analyses must
+    use a common good-channel set (exclude F3, T6 and A2). Explicitly picking
+    a bad channel includes the authors' zeroed signal. Channel positions
+    are template estimates from ``standard_1020`` (called ``colin27_1020``
+    in newer MNE versions), not measured locations.
 
     .. note::
 
-       Only version 1 of the figshare record exposes the archives without
-       password protection; versions 2 and 3 re-uploaded the same
-       recordings inside AES-encrypted zips (the record description asks
-       users to email the author for the password). The data paper cites
-       version 1 as open access, so this loader downloads the open
-       version-1 archive.
-
-       The archive is mirrored on NEMAR (``nm000288``): its ``.mat``
-       members are kept byte-for-byte under ``sourcedata/``, so MOABB
-       fetches a single subject from NEMAR instead of the whole 1.4 GB
-       figshare archive, and falls back to figshare when NEMAR is
-       unreachable.
+       NEMAR is the only download source for this EDF/BIDS loader, including
+       when the provider is set to ``upstream``. Failures propagate: there is
+       no fallback to the scientifically different MATLAB representation.
+       ``data_path`` returns the five EDF paths; sessions are numbered
+       ``"0"`` to ``"4"`` in MOABB. The code ``Ma-edf2022`` isolates downloads,
+       caches and evaluation results from the former MATLAB loader.
 
        This dataset is from the same laboratory as :class:`Yang2025`
        (WBCIC-SHU, a distinct 2025 multi-day recording) and is unrelated
@@ -164,11 +150,13 @@ class Ma2022(BaseDataset):
     """
 
     nemar_id = "nm000288"
+    nemar_subject_template = "{subject:03d}"
+    nemar_bids_filters = {"task": "motorimagery", "suffix": "eeg"}
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
             channel_types={"eeg": 32},
-            montage="10-20",
+            montage="standard_1020",
             hardware="Wuhan Greentech 32-channel Ag/AgCl cap, Brickcom wireless amplifier",
             sensor_type="Ag/AgCl",
             reference="M1 (unipolar)",
@@ -225,8 +213,8 @@ class Ma2022(BaseDataset):
                 "Research Center of Brain-Computer Engineering"
             ),
             country="CN",
-            repository="figshare",
-            data_url="https://doi.org/10.6084/m9.figshare.19228725",
+            repository="NEMAR",
+            data_url="https://nemar.org/dataexplorer/detail?dataset_id=nm000288",
             license="CC-BY-4.0",
             publication_year=2022,
             ethics_approval=[
@@ -242,7 +230,7 @@ class Ma2022(BaseDataset):
         sessions_per_subject=5,
         runs_per_session=1,
         data_processed=True,
-        file_format="MAT",
+        file_format="EDF",
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -274,7 +262,8 @@ class Ma2022(BaseDataset):
             trials_context=(
                 "25 subjects x 5 sessions x up to 100 trials "
                 "(74-100 retained per session after bad-segment rejection) "
-                "= 11988 trials in total"
+                "= 11988 trials in total; the summary table reports the mean "
+                "239.76 retained trials per class per subject, not a balanced count"
             ),
         ),
         signal_processing=SignalProcessingMetadata(
@@ -307,7 +296,7 @@ class Ma2022(BaseDataset):
             subjects=list(range(1, 26)),
             sessions_per_subject=5,
             events=dict(MA2022_EVENTS),
-            code="Ma2022",
+            code="Ma-edf2022",
             interval=[0.0, 4.0 - 1.0 / _SFREQ],
             paradigm="imagery",
             doi="10.1038/s41597-022-01647-1",
@@ -316,145 +305,77 @@ class Ma2022(BaseDataset):
             return_all_modalities=return_all_modalities,
         )
 
-    @staticmethod
-    def _session_filenames(subject):
-        """Build the five BIDS-style session filenames for one subject."""
-        return [
-            f"sub-{subject:03d}_ses-{session:02d}_task_motorimagery_eeg.mat"
-            for session in range(1, 6)
-        ]
+    def _prefetch_nemar_sourcedata(self, subjects, verbose=None):
+        # Unlike mirrored upstream loaders, we consume the BIDS EDFs directly.
+        # BaseDataset's prefetch would download unused original EDFs instead.
+        pass
 
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    def download(
+        self,
+        subject_list=None,
+        path=None,
+        force_update=False,
+        update_path=None,
+        accept=False,
+        verbose=None,
     ):
+        """Download BIDS EDFs, not the original sourcedata distribution."""
+        for subject in self.subject_list if subject_list is None else subject_list:
+            self.data_path(subject, path, force_update, update_path, verbose)
+
+    def _download_subject(self, subject, path, force_update, update_path, verbose):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
+        return self._download_nemar(subject, path, force_update, update_path, verbose)
 
-        path = dl.get_dataset_path(self.code, path)
-        basepath = Path(path) / "MNE-ma2022-data"
-        basepath.mkdir(parents=True, exist_ok=True)
-        mat_dir = basepath / "mat"
+    def _get_path_search_params(self, subject):
+        return {
+            "subjects": self._nemar_subject(subject),
+            "tasks": "motorimagery",
+            "suffixes": "eeg",
+            "datatypes": "eeg",
+            "extensions": ".edf",
+        }
 
-        subject_files = [
-            mat_dir / filename for filename in self._session_filenames(subject)
-        ]
-
-        # The NEMAR deposit mirrors the archive's members under sourcedata/
-        # (same ``mat/`` paths), so a subject fetched from NEMAR needs neither
-        # the 1.4 GB archive nor figshare.
-        store = self._sourcedata_store()
-        if store is not None and not force_update:
-            stored = [Path(store) / "mat" / f.name for f in subject_files]
-            if all(f.is_file() for f in stored):
-                return str(Path(store) / "mat")
-
-        if force_update or not all(f.exists() for f in subject_files):
-            zip_path = basepath / "mat_files.zip"
-            if force_update or not zip_path.exists():
-                log.info("Downloading Ma2022 (SHU) archive (~1.4 GB) from figshare...")
-                downloaded = dl.data_dl(
-                    _MAT_ZIP_URL,
-                    self.code,
-                    path=str(basepath),
-                    force_update=force_update,
-                    verbose=verbose,
-                )
-                downloaded = Path(downloaded)
-                if downloaded != zip_path:
-                    downloaded.replace(zip_path)
-            log.info("Extracting Ma2022 (SHU) archive...")
-            with zipfile.ZipFile(str(zip_path), "r") as zf:
-                zf.extractall(str(basepath))
-
-        missing = [str(f) for f in subject_files if not f.exists()]
-        if missing:
+    def bids_paths(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        paths = super().bids_paths(subject, path, force_update, update_path, verbose)
+        if len(paths) != 5 or {p.session for p in paths} != {
+            f"{i:02d}" for i in range(1, 6)
+        }:
             raise FileNotFoundError(
-                f"Missing session files for subject {subject}: {missing}"
+                f"Expected five EDF sessions (01-05) for Ma2022 subject {subject}"
             )
-        return str(mat_dir)
-
-    # Map the stored integer label to the MOABB event name.
-    _CODE_TO_NAME = {code: name for name, code in MA2022_EVENTS.items()}
+        return sorted(paths, key=lambda p: p.session)
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject as {session: {run: Raw}}."""
-        mat_dir = Path(self.data_path(subject))
-
-        sex, age = _DEMOGRAPHICS.get(subject, (None, None))
-        _sex_map = {"male": 1, "female": 2}
-
-        sessions = {}
-        for session_idx, filename in enumerate(self._session_filenames(subject)):
-            file_path = mat_dir / filename
-            if not file_path.exists():
-                log.warning("Missing %s", file_path)
-                continue
-
-            raw = self._mat_to_raw(file_path)
-
-            # Attach demographics
-            if sex is not None:
-                raw.info["subject_info"] = {
-                    "sex": _sex_map.get(sex, 0),
-                    "his_id": str(subject),
-                }
-
-            sessions[str(session_idx)] = {"0": raw}
-
-        if not sessions:
-            raise FileNotFoundError(
-                f"No .mat files found for subject {subject} in {mat_dir}"
-            )
-        return sessions
-
-    @classmethod
-    def _mat_to_raw(cls, file_path):
-        """Load one ``.mat`` session file into a continuous ``mne.io.RawArray``.
-
-        Epoched trials ``(n_trials, n_channels, n_samples)`` are concatenated
-        along time. Each trial's imagery onset (t = 0) is marked with an MNE
-        annotation whose description is the class name (``left_hand`` /
-        ``right_hand``). Annotations are used rather than a stim channel so
-        that the very first trial, which starts at sample 0, is not dropped
-        by ``mne.find_events`` (which cannot detect a trigger on the first
-        sample).
-        """
-        mat = sio.loadmat(file_path)
-        data = np.asarray(mat["data"], dtype=float)  # (trials, channels, samples)
-        labels = np.asarray(mat["labels"]).ravel().astype(int)
-
-        n_trials, n_channels, n_samples = data.shape
-        if n_channels != len(MA2022_CH_NAMES):
-            raise ValueError(
-                f"Expected {len(MA2022_CH_NAMES)} channels, got {n_channels} "
-                f"in {file_path}"
-            )
-        if n_samples != int(round(4.0 * _SFREQ)):
-            raise ValueError(
-                f"Expected {int(round(4.0 * _SFREQ))} samples per trial, "
-                f"got {n_samples} in {file_path}"
-            )
-
-        # Concatenate trials along time: (n_channels, n_trials * n_samples).
-        cont = np.transpose(data, (1, 0, 2)).reshape(n_channels, n_trials * n_samples)
-        # Convert from microvolts to volts.
-        cont = cont * 1e-6
-
-        mne_info = create_info(
-            ch_names=list(MA2022_CH_NAMES), sfreq=_SFREQ, ch_types=["eeg"] * n_channels
+        sessions = super()._get_single_subject_data(subject)
+        montage_name = (
+            "colin27_1020"
+            if "colin27_1020" in get_builtin_montages()
+            else "standard_1020"
         )
-        raw = RawArray(data=cont, info=mne_info, verbose=False)
+        montage = make_standard_montage(montage_name)
+        for runs in sessions.values():
+            for raw in runs.values():
+                # Covers the legacy temporal and mastoid names too. Never clear
+                # BIDS bad-channel flags or rescale data already read in volts.
+                raw.set_montage(montage)
+        return {str(int(session) - 1): runs for session, runs in sessions.items()}
 
-        trial_len_s = n_samples / _SFREQ
-        onsets = np.arange(n_trials) * trial_len_s
-        durations = np.full(n_trials, trial_len_s)
-        descriptions = [cls._CODE_TO_NAME[int(label)] for label in labels[:n_trials]]
-        raw.set_annotations(
-            Annotations(onset=onsets, duration=durations, description=descriptions)
+    def get_additional_metadata(self, subject, session, run):
+        # Unlike BaseBIDSDataset's generic implementation, match zero-based
+        # MOABB sessions to BIDS labels and handle the absent run entity.
+        bids_path = next(
+            p for p in self.bids_paths(subject) if int(p.session) == int(session) + 1
         )
-
-        # T3/T4/T5/T6 and A1/A2 use the older 10-20 nomenclature and are not
-        # part of the standard 10-05 montage.
-        montage = make_standard_montage("standard_1005")
-        raw.set_montage(montage, on_missing="ignore", verbose=False)
-        return raw
+        events_file = bids_path.find_matching_sidecar(suffix="events", extension=".tsv")
+        annotations = events_file_to_annotation_kwargs(events_file)
+        return pd.DataFrame(
+            {
+                "onset": annotations["onset"],
+                "duration": annotations["duration"],
+                "trial_type": annotations["description"],
+            }
+        ).assign(subject=subject, session=session, run=run)
