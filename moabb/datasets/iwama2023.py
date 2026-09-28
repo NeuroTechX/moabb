@@ -233,6 +233,19 @@ class Iwama2023(BaseBIDSDataset):
         for bids_path in bids_paths:
             edf_path = Path(bids_path.fpath)
             raw = mne.io.read_raw_edf(edf_path, preload=True, verbose=False)
+            # The EDF carries its own ``Status`` trigger channel, whose codes do
+            # not follow events.tsv: code 1 marks both the rest onsets and a
+            # point ~1 s before each task onset. Left in, it is read alongside
+            # the stim channel built below and adds 20 spurious ``rest``
+            # epochs per session that overlap the imagery. events.tsv is the
+            # documented event source, so the native trigger is dropped.
+            native_stim = [
+                ch
+                for ch, kind in zip(raw.ch_names, raw.get_channel_types())
+                if kind == "stim"
+            ]
+            if native_stim:
+                raw.drop_channels(native_stim)
 
             events_tsv = edf_path.with_name(
                 edf_path.name.replace("_eeg.edf", "_events.tsv")
