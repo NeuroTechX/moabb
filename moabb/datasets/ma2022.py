@@ -96,10 +96,12 @@ class Ma2022(BaseBIDSDataset):
     randomized order). The released files retain 74 to 100 trials per
     session after the source-side bad-segment rejection described in the
     data paper, for 11,988 trials in total. Signals were recorded from 32
-    EEG channels (10-20 system, unipolar reference on M1, ground on AFz)
-    at 250 Hz. Every trial lasted 8 s (0-2 s rest, 2-4 s cue, 4-8 s motor
-    imagery) but only the 4 s motor imagery window is stored (1000 samples
-    per trial), so the analysis interval spans the full stored window.
+    EEG channels (10-10 according to the paper, called 10-20 in the source
+    sidecar; unipolar reference on M1, ground on AFz) at 250 Hz. Only the
+    4 s motor imagery window is stored (1000 samples per trial), so the
+    analysis interval spans the full stored window. The source sidecar
+    describes an 8 s protocol whereas the paper text states 7.5 s; missing
+    preparation and cue segments are not reconstructed.
 
     .. important::
 
@@ -254,7 +256,6 @@ class Ma2022(BaseBIDSDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
             imagery_tasks=["left_hand", "right_hand"],
-            cue_duration_s=2.0,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
