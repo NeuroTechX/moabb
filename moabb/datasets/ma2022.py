@@ -157,7 +157,10 @@ class Ma2022(BaseBIDSDataset):
 
     nemar_id = "nm000288"
     nemar_subject_template = "{subject:03d}"
-    nemar_bids_filters = {"task": "motorimagery", "suffix": "eeg"}
+    # Fetch the subject's complete BIDS tree: suffix="eeg" drops events
+    # and channel-status sidecars, while task filtering drops scans and
+    # other task-independent metadata. Explicit scope excludes sourcedata.
+    nemar_bids_filters = {"scope": "raw"}
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,

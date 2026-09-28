@@ -1,8 +1,10 @@
 """Offline regressions for the authors' EDF/BIDS Ma2022 release."""
 
+import hashlib
 import json
 from unittest.mock import Mock
 
+import httpx
 import mne
 import numpy as np
 import pytest
@@ -95,8 +97,7 @@ def test_download_uses_bids_and_forwards_flags(bids_root, monkeypatch, provider)
         force_update=True,
         subject="003",
         verbose=False,
-        task="motorimagery",
-        suffix="eeg",
+        scope="raw",
     )
     paths = dataset.data_path(3)
     assert len(paths) == 5
@@ -130,6 +131,78 @@ def test_missing_session_is_not_silently_skipped(bids_root, offline_dataset):
     next(bids_root.glob("sub-003/ses-05/eeg/*.edf")).unlink()
     with pytest.raises(FileNotFoundError, match="five EDF sessions"):
         offline_dataset.data_path(3)
+
+
+def test_fresh_download_keeps_sidecars(bids_root, tmp_path, monkeypatch):
+    """Exercise NEMAR selection and transfer, mocking only the HTTP server."""
+    files = {
+        p.relative_to(bids_root).as_posix(): p.read_bytes()
+        for p in bids_root.rglob("*")
+        if p.is_file()
+    }
+    # Session metadata has no task entity; original sourcedata and other
+    # subjects must not be fetched with the selected subject's BIDS files.
+    scans = "sub-003/ses-01/sub-003_ses-01_scans.tsv"
+    files[scans] = (
+        b"filename\tacq_time\neeg/sub-003_ses-01_task-motorimagery_eeg.edf\tn/a\n"
+    )
+    unwanted = {
+        "sourcedata/sub-003/ses-01/eeg/sub-003_ses-01_task-motorimagery_eeg.edf",
+        "sub-004/ses-01/eeg/sub-004_ses-01_task-motorimagery_eeg.edf",
+    }
+    files.update(dict.fromkeys(unwanted, b"unused"))
+    manifest = [
+        {
+            "path": name,
+            "url": f"https://data.nemar.org/files/{name}",
+            "size": len(content),
+            "sha256": hashlib.sha256(content).hexdigest(),
+        }
+        for name, content in files.items()
+    ]
+    fetched = set()
+
+    def respond(request):
+        path = request.url.path
+        if path == "/nm000288/":
+            return httpx.Response(
+                200,
+                json={
+                    "dataset_id": "nm000288",
+                    "latest": "1.0.0",
+                    "versions": [
+                        {"version": "1.0.0", "manifest_url": "/nm000288/manifest.json"}
+                    ],
+                },
+            )
+        if path == "/nm000288/manifest.json":
+            return httpx.Response(200, json=manifest)
+        assert path.startswith("/files/"), path
+        name = path.removeprefix("/files/")
+        fetched.add(name)
+        return httpx.Response(200, content=files[name])
+
+    client_init = httpx.Client.__init__
+
+    def init_client(self, *args, **kwargs):
+        kwargs.update(transport=httpx.MockTransport(respond), trust_env=False)
+        client_init(self, *args, **kwargs)
+
+    monkeypatch.setattr(httpx.Client, "__init__", init_client)
+    (tmp_path / "download").mkdir()
+    monkeypatch.setenv("MNE_DATASETS_MA-EDF2022_PATH", str(tmp_path / "download"))
+    dataset = Ma2022(subjects=[3])
+    # Keep the real selection/verification pipeline, using HTTPS rather
+    # than nemar-py's optional S3 backend for this in-memory HTTP fixture.
+    dataset.nemar_bids_filters = {**dataset.nemar_bids_filters, "downloader": "python"}
+    sessions = dataset.get_data([3], cache_config={"use": False})[3]
+    assert fetched == set(files) - unwanted
+    for session, runs in sessions.items():
+        raw = runs["0"]
+        assert raw.info["bads"] == (["F3"] if session == "1" else [])
+        events, _ = mne.events_from_annotations(raw, event_id=dataset.event_id)
+        assert_array_equal(events[:, 0], [0, 1000, 2000])
+        assert_array_equal(events[:, 2], [2, 1, 2])
 
 
 def test_edf_units_annotations_montage_and_bads(offline_dataset):
