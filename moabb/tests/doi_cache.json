@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 160
+        "total": 161
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1903,5 +1903,19 @@
         ],
         "year": 2023,
         "doi": "10.1038/s41597-023-02260-6"
+    },
+    "10.3389/fnhum.2017.00193": {
+        "title": "Unimodal versus bimodal EEG-fMRI neurofeedback of a motor imagery task",
+        "authors": [
+            "Lorraine Perronnet",
+            "Anatole Lecuyer",
+            "Marsel Mano",
+            "Elise Bannier",
+            "Fabien Lotte",
+            "Maureen Clerc",
+            "Christian Barillot"
+        ],
+        "year": 2017,
+        "doi": "10.3389/fnhum.2017.00193"
     }
 }
