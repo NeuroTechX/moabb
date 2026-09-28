@@ -497,14 +497,22 @@ def _score_and_update(res, scorer, model, X, y_true):
 
 def _pipeline_requires_epochs(pipeline):
     """Check if any step in the pipeline requires MNE Epochs objects."""
-    from moabb.pipelines.classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
+    from moabb.pipelines.classification import (
+        SSVEP_CCA,
+        SSVEP_TRCA,
+        SSVEP_eCCA,
+        SSVEP_itCCA,
+        SSVEP_MsetCCA,
+    )
+
+    epochs_classifiers = (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA, SSVEP_itCCA, SSVEP_eCCA)
 
     # Handle non-pipeline classifiers (like DummyClassifier)
     if not hasattr(pipeline, "steps"):
-        return isinstance(pipeline, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA))
+        return isinstance(pipeline, epochs_classifiers)
 
     for _name, step in pipeline.steps:
-        if isinstance(step, (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA)):
+        if isinstance(step, epochs_classifiers):
             return True
     return False
 
