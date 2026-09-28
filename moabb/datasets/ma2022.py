@@ -114,7 +114,9 @@ class Ma2022(BaseBIDSDataset):
     concatenated in time, **not continuous amplifier recordings**. BIDS
     ``DatasetType: raw`` describes the deposit layout, not its processing
     state. Events and bad-channel flags are read from the BIDS sidecars;
-    MNE converts the EDF microvolt calibration to SI volts.
+    MNE converts the EDF microvolt calibration to SI volts. Zero-duration
+    ``EDGE boundary`` annotations mark the joins between stored windows, so
+    MNE's default filtering does not mix neighboring, discontinuous trials.
 
     Nine sessions contain a channel zeroed by the authors. The deposit
     repairs only that channel's otherwise unreadable physical-range header
@@ -363,6 +365,21 @@ class Ma2022(BaseBIDSDataset):
                 # Covers the legacy temporal and mastoid names too. Never clear
                 # BIDS bad-channel flags or rescale data already read in volts.
                 raw.set_montage(montage)
+                # The stored windows are discontinuous. MNE's default filter
+                # splits at EDGE annotations, without rejecting either trial.
+                onsets = sorted(
+                    onset
+                    for onset, description in zip(
+                        raw.annotations.onset, raw.annotations.description
+                    )
+                    if description in self.event_id
+                )
+                boundaries = onsets[1:]
+                raw.annotations.append(
+                    boundaries,
+                    [0.0] * len(boundaries),
+                    ["EDGE boundary"] * len(boundaries),
+                )
         return {str(int(session) - 1): runs for session, runs in sessions.items()}
 
     def get_additional_metadata(self, subject, session, run):

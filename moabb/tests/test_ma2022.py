@@ -212,3 +212,25 @@ def test_selected_sessions_preserve_zero_based_labels(offline_dataset):
     sessions = offline_dataset.get_data([3], cache_config={"use": False})[3]
     assert list(sessions) == ["1"]
     assert sessions["1"]["0"].info["bads"] == ["F3"]
+
+
+def test_filtering_respects_discontinuous_trial_boundaries(offline_dataset):
+    raw = offline_dataset.get_data([3], cache_config={"use": False})[3]["0"]["0"]
+    edges = raw.annotations.description == "EDGE boundary"
+    assert_array_equal(raw.annotations.onset[edges], [4, 8])
+    assert_array_equal(raw.annotations.duration[edges], [0, 0])
+    # Deliberately dissimilar neighboring trials expose cross-window filtering.
+    rng = np.random.default_rng(7)
+    raw._data[:] = rng.normal(scale=10e-6, size=raw._data.shape)
+    raw._data[:, 1000:2000] += 100e-6
+    filtered = raw.copy().filter(8, 30, verbose=False)
+    for start in (0, 1000, 2000):
+        independent = mne.io.RawArray(
+            raw.get_data(start=start, stop=start + 1000), raw.info.copy(), verbose=False
+        ).filter(8, 30, verbose=False)
+        assert_allclose(
+            filtered.get_data(start=start, stop=start + 1000),
+            independent.get_data(),
+            rtol=1e-12,
+            atol=1e-15,
+        )
