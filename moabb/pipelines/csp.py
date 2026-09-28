@@ -1,5 +1,5 @@
 import numpy as np
-from pyriemann.geometry.mean import mean_covariance
+from pyriemann.geometry.mean import gmean
 from pyriemann.spatialfilters import CSP
 from scipy import linalg
 
@@ -37,7 +37,7 @@ class TRCSP(CSP):
         # estimate class means
         C = []
         for c in classes:
-            C.append(mean_covariance(X[y == c], self.metric))
+            C.append(gmean(X[y == c], metric=self.metric))
         C = np.array(C)
 
         # regularize CSP

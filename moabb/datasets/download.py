@@ -122,7 +122,7 @@ def _set_user_agent(downloader):
 
 def _sanitize_path(path: Path) -> Path:
     path = Path(path)
-    table = {ord(c): "-" for c in ':*?"<>|'}
+    table = {ord(c): "-" for c in '~:*?"<>|'}
 
     if path.anchor:
         return Path(path.anchor, *(part.translate(table) for part in path.parts[1:]))
@@ -286,7 +286,11 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
         destination = _sanitize_path(root / fname)
     else:
         destination = _sanitize_path(_normalize_destination(url, root))
-        legacy_destination = _sanitize_path(Path(_url_to_local_path(url, root)))
+        # Raw (unsanitized) on purpose: this lookup exists to FIND
+        # pre-sanitization files -- e.g. the literal '~bci' components
+        # mirrored from https://lampx.tugraz.at/~bci/... URLs -- and
+        # migrate them to the sanitized destination below.
+        legacy_destination = Path(_url_to_local_path(url, root))
         if legacy_destination.exists() and not destination.exists():
             destination.parent.mkdir(parents=True, exist_ok=True)
             try:

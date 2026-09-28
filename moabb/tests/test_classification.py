@@ -18,6 +18,28 @@ from moabb.pipelines import (
     SSVEP_itCCA,
     SSVEP_MsetCCA,
 )
+from moabb.pipelines.csp import TRCSP
+
+
+@pytest.mark.parametrize("metric", ["euclid", "riemann", "logeuclid"])
+def test_trcsp_fit_transform(metric):
+    rng = np.random.default_rng(42)
+    A = rng.standard_normal((8, 4, 4))
+    X = A @ A.transpose(0, 2, 1) + np.eye(4)
+    y = np.repeat([0, 1], 4)
+    transformed = TRCSP(nfilter=2, metric=metric).fit_transform(X, y)
+    assert transformed.shape == (8, 2)
+    assert np.isfinite(transformed).all()
+
+
+@pytest.mark.parametrize("method", ["riemann", "logeuclid"])
+def test_trca_riemannian_covariance_mean(method):
+    X = np.random.default_rng(42).standard_normal((5, 3, 100))
+    S, Q = SSVEP_TRCA(method=method)._Q_S_estim_riemann(X)
+    assert S.shape == Q.shape == (3, 3)
+    assert np.isfinite(S).all()
+    np.testing.assert_allclose(S, S.T, atol=1e-12)
+    assert (np.linalg.eigvalsh(S) > 0).all()
 
 
 @pytest.fixture(scope="module")
