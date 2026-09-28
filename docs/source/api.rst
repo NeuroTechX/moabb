@@ -93,9 +93,13 @@ Motor Imagery Datasets
     GuttmannFlury2025_ME
     GuttmannFlury2025_MI
     HefmiIch2025
+    Iwama2023
     Jeong2020
     Kaya2018
     Kumar2024
+    Lee2022
+    Lioi2020
+    LioiXP1
     Liu2025
     Ma2020
     Rozado2015
