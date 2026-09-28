@@ -118,13 +118,15 @@ class Ma2022(BaseBIDSDataset):
     ``EDGE boundary`` annotations mark the joins between stored windows, so
     MNE's default filtering does not mix neighboring, discontinuous trials.
 
-    Nine sessions contain a channel zeroed by the authors. The deposit
-    repairs only that channel's otherwise unreadable physical-range header
-    and marks it bad; the untouched EDF is preserved under ``sourcedata/``.
+    Nine sessions contain a channel numerically near zero in the authors'
+    MATLAB release, with blank EDF calibration fields. The deposit assigns
+    a small replacement physical range and marks the channel bad; this is
+    not a recovery of the missing calibration. The untouched EDF is preserved
+    under ``sourcedata/``.
     Bad channels remain flagged, without interpolation or deletion. Since
     MOABB's default EEG selection excludes bads, full-dataset analyses must
     use a common good-channel set (exclude F3, T6 and A2). Explicitly picking
-    a bad channel includes the authors' zeroed signal. Channel positions
+    a bad channel includes its replacement-calibrated signal. Channel positions
     are template estimates from ``standard_1020`` (called ``colin27_1020``
     in newer MNE versions), not measured locations.
 
