@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add four OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Lee2022` (ds004022, 7 orthopedic-impairment patients, 4 upper-limb MI tasks), :class:`moabb.datasets.LioiXP1` (ds002336) and :class:`moabb.datasets.Lioi2020` (ds002338), the two EEG-fMRI right-hand MI / neurofeedback experiments of Lioi et al., and :class:`moabb.datasets.Iwama2023` (ds004444, 30 subjects, 129-channel HD-EEG, up to 16 sessions) (by `Bruno Aristimunha`_).
+- Add four OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Lee2022` (ds004022, 7 orthopedic-impairment patients, 4 upper-limb MI tasks), :class:`moabb.datasets.LioiXP1` (ds002336) and :class:`moabb.datasets.Lioi2020` (ds002338), the two EEG-fMRI right-hand MI / neurofeedback experiments of Lioi et al., and :class:`moabb.datasets.Iwama2023` (ds004444, 30 subjects, 129-channel HD-EEG, up to 16 sessions) (:gh:`1186` by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
