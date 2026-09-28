@@ -141,6 +141,12 @@ class Ma2022(BaseDataset):
        version 1 as open access, so this loader downloads the open
        version-1 archive.
 
+       The archive is mirrored on NEMAR (``nm000288``): its ``.mat``
+       members are kept byte-for-byte under ``sourcedata/``, so MOABB
+       fetches a single subject from NEMAR instead of the whole 1.4 GB
+       figshare archive, and falls back to figshare when NEMAR is
+       unreachable.
+
        This dataset is from the same laboratory as :class:`Yang2025`
        (WBCIC-SHU, a distinct 2025 multi-day recording) and is unrelated
        to :class:`Ma2020` (different team, different recording).
@@ -157,6 +163,7 @@ class Ma2022(BaseDataset):
     .. versionadded:: 1.8.0
     """
 
+    nemar_id = "nm000288"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
@@ -331,6 +338,15 @@ class Ma2022(BaseDataset):
         subject_files = [
             mat_dir / filename for filename in self._session_filenames(subject)
         ]
+
+        # The NEMAR deposit mirrors the archive's members under sourcedata/
+        # (same ``mat/`` paths), so a subject fetched from NEMAR needs neither
+        # the 1.4 GB archive nor figshare.
+        store = self._sourcedata_store()
+        if store is not None and not force_update:
+            stored = [Path(store) / "mat" / f.name for f in subject_files]
+            if all(f.is_file() for f in stored):
+                return str(Path(store) / "mat")
 
         if force_update or not all(f.exists() for f in subject_files):
             zip_path = basepath / "mat_files.zip"
