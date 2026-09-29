@@ -1,5 +1,6 @@
 """Offline source-format regression tests (no dataset downloads)."""
 
+import zipfile
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -58,7 +59,7 @@ def test_stored_windows(tmp_path, cls, samples, offset):
 
 @pytest.mark.parametrize("cls", [Pan2023, Pan2025])
 def test_download_flags(cls):
-    with patch(f"{cls.__module__}.dl.data_dl", return_value="fixture") as download:
+    with patch("moabb.datasets.download.data_dl", return_value="fixture") as download:
         assert cls().data_path(1, path="custom", force_update=True, verbose=False) == [
             "fixture",
             "fixture",
@@ -88,23 +89,16 @@ def test_polo_units_and_both_conditions(rest, imagery):
 
 
 def test_polo_transport_flags(tmp_path):
-    import zipfile
-
-    ds = PoloHortiguela2025()
     archives = []
     for condition in ("STATIC", "MOTION"):
-        path = tmp_path / f"{condition}.zip"
-        with zipfile.ZipFile(path, "w") as archive:
+        archives.append(tmp_path / f"B01_S1_{condition}.zip")
+        with zipfile.ZipFile(archives[-1], "w") as archive:
             archive.writestr(f"B01_S1_{condition}/run.mat", b"synthetic")
-        archives.append(str(path))
-    with patch(
-        "moabb.datasets.polohortiguela2025.dl.data_dl", side_effect=archives
-    ) as download:
-        folders = ds.data_path(1, path=str(tmp_path), force_update=True, verbose=False)
-    assert len(folders) == 2
-    for call in download.call_args_list:
-        assert call.kwargs == {
-            "path": str(tmp_path),
-            "force_update": True,
-            "verbose": False,
-        }
+    with patch("moabb.datasets.download.data_dl", side_effect=archives) as download:
+        folders = PoloHortiguela2025().data_path(1, "custom", True, verbose=False)
+    # Named downloads: every Zenodo "/content" URL would otherwise share one cache file.
+    assert folders == [str(p.with_suffix("")) for p in archives]
+    assert [c.kwargs for c in download.call_args_list] == [
+        {"fname": p.name} for p in archives
+    ]
+    assert all(c.args[2:] == ("custom", True, False) for c in download.call_args_list)

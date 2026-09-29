@@ -1,5 +1,6 @@
 """Pan2023 cross-session motor imagery dataset."""
 
+import h5py
 import mne
 import numpy as np
 from mne import create_info
@@ -19,12 +20,8 @@ from moabb.datasets.metadata.schema import (
 
 
 # Harvard Dataverse "A cross-session motor imagery EEG dataset" (doi:10.7910/DVN/251NOW).
-# Distinct from Pan2025 (doi:10.7910/DVN/GH74ZG): 14 subjects vs 10, 120 trials per
-# session vs 180, and a different on-disk layout. Files carry no persistent id, so
-# they are addressed by their numeric Dataverse datafile id. The published dataset
-# (versions 1.0-1.3, all RELEASED) distributes the recordings as MATLAB v7.3 (HDF5)
-# ".mat" files, which are read here with h5py.
-PAN2023_BASE_URL = "https://dataverse.harvard.edu/api/access/datafile/"
+# Files carry no persistent id, so they are addressed by their numeric datafile id.
+DATAVERSE_URL = "https://dataverse.harvard.edu/api/access/datafile/"
 
 # subject -> {session_index: datafile_id}, resolved from the Dataverse files API
 # (file names S<subject>D<day>.mat; D1 -> session 0, D2 -> session 1).
@@ -45,81 +42,83 @@ PAN2023_FILE_IDS = {
     14: {0: 7574490, 1: 7574465},
 }
 
-# 28 sensorimotor electrodes (FC, C, CP and P rows of the 10-10 system), as reported
-# by the dataset author's own loader (github.com/PLC-TJU/moabb, pan2023.py). The
-# stored ".mat" files do not carry channel names, so this fixed order is used.
-PAN2023_CHANNELS = [
-    "FC5",
-    "FC3",
-    "FC1",
-    "FCz",
-    "FC2",
-    "FC4",
-    "FC6",
-    "C5",
-    "C3",
-    "C1",
-    "Cz",
-    "C2",
-    "C4",
-    "C6",
-    "CP5",
-    "CP3",
-    "CP1",
-    "CPz",
-    "CP2",
-    "CP4",
-    "CP6",
-    "P5",
-    "P3",
-    "P1",
-    "Pz",
-    "P2",
-    "P4",
-    "P6",
-]
 
-# Each stored epoch spans -3 s to +4 s (7 s, 1750 samples at 250 Hz) around the
-# motor-imagery task onset: 2 s rest, 1 s preparation, then 4 s task. The task cue
-# (t = 0) therefore sits 3 s into every epoch.
-PAN2023_TASK_ONSET_S = 3.0
+# 28 sensorimotor electrodes (FC, C, CP and P rows of the 10-10 system), in the order
+# of the dataset author's own loader; the v7.3 ".mat" files carry no channel names.
+PAN2023_CHANNELS = (
+    "FC5 FC3 FC1 FCz FC2 FC4 FC6 C5 C3 C1 Cz C2 C4 C6 "
+    "CP5 CP3 CP1 CPz CP2 CP4 CP6 P5 P3 P1 Pz P2 P4 P6"
+).split()
 
 
-class Pan2023(BaseDataset):
+def _trials_to_raw(data, labels, ch_names, sfreq, cue_offset):
+    """Concatenate ``(n_channels, n_trials, n_samples)`` microvolt trials into a Raw.
+
+    A stim channel marks each trial's cue (t = 0, ``cue_offset`` samples into the
+    stored epoch) with its class code (1 = left hand, 2 = right hand), and a
+    non-rejecting ``EDGE boundary`` annotation marks every stored-trial join.
+    """
+    n_channels, n_trials, n_samples = data.shape
+    if len(ch_names) != n_channels:
+        raise ValueError(f"Expected {len(ch_names)} channels, got {n_channels}")
+    if len(labels) != n_trials or not np.isin(labels, [1, 2]).all():
+        raise ValueError("Expected one valid class label per stored trial")
+    if cue_offset < 0 or cue_offset + round(4 * sfreq) > n_samples:
+        raise ValueError("Stored trial does not contain the imagery window")
+
+    stim = np.zeros((1, n_trials * n_samples))
+    stim[0, np.arange(n_trials) * n_samples + cue_offset] = labels
+    info = create_info(
+        list(ch_names) + ["STI 014"], sfreq, ["eeg"] * n_channels + ["stim"]
+    )
+    cont = data.reshape(n_channels, n_trials * n_samples) * 1e-6
+    raw = RawArray(np.vstack([cont, stim]), info, verbose=False)
+    montage = make_standard_montage("standard_1005")
+    raw.set_montage(montage, on_missing="ignore", verbose=False)
+    joins = np.arange(1, n_trials) * n_samples / sfreq
+    raw.set_annotations(
+        mne.Annotations(joins, np.zeros(len(joins)), ["EDGE boundary"] * len(joins))
+    )
+    return raw
+
+
+class _PanDataverse(BaseDataset):
+    """Shared download/session layout of the two Pan Dataverse deposits."""
+
+    _file_ids = {}
+
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        """Return the local paths of a single subject's two session files."""
+        if subject not in self.subject_list:
+            raise ValueError("Invalid subject number")
+        return [
+            dl.data_dl(
+                f"{DATAVERSE_URL}{file_id}", self.code, path, force_update, verbose
+            )
+            for file_id in self._file_ids[subject].values()
+        ]
+
+    def _get_single_subject_data(self, subject):
+        """Return the data of a single subject as {session: {run: Raw}}."""
+        return {
+            str(session): {"0": self._mat_to_raw(file_path)}
+            for session, file_path in enumerate(self.data_path(subject))
+        }
+
+
+class Pan2023(_PanDataverse):
     """Cross-session motor imagery dataset from Pan et al. 2023.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Pan2023         14       28           2                 60            4s            250 Hz            2
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    **Dataset description**
-
-    Electroencephalography (EEG) recordings from 14 healthy subjects (five female,
-    aged 22-25, two left-handed) performing a cued left- vs right-hand motor imagery
-    task across two experimental sessions (recorded on two separate days, D1 and D2),
-    designed to study cross-session variability in brain-computer interface
-    applications.
-
-    Each session provides 120 trials (60 left-hand, 60 right-hand). Signals were
-    recorded with a Neuroscan SynAmps2 amplifier from 28 EEG channels covering the
-    sensorimotor cortex (FC, C, CP and P rows of the 10-10 system), acquired at
-    1000 Hz with a 0.01-200 Hz band-pass and a 50 Hz notch, then downsampled to
-    250 Hz. Each stored epoch spans -3 s to +4 s around the imagery cue (1750
-    samples); the 2 s rest and 1 s preparation periods precede the cue and the 4 s
-    motor-imagery task window runs from 0 to 4 s.
-
-    The data are distributed as MATLAB v7.3 (HDF5) ``.mat`` files (one per subject
-    and session) on Harvard Dataverse, each containing a ``data`` array of shape
-    ``(n_channels, n_samples, n_trials)`` (MATLAB order), an integer ``label``
-    vector (1 = left hand, 2 = right hand) and the sampling rate ``fs``. Per-trial
-    class labels are therefore data-borne in the ``label`` array.
-
-    This dataset is the companion of, but distinct from, :class:`Pan2025`
-    (doi:10.7910/DVN/GH74ZG, 10 subjects, 180 trials per session).
+    EEG from 14 healthy subjects performing cued left- vs right-hand motor imagery
+    on two separate days (D1, D2 -> sessions ``"0"``, ``"1"``), 120 trials per
+    session. The deposit stores epochs from -3 s to +4 s around the cue (2 s rest,
+    1 s preparation, 4 s imagery) as MATLAB v7.3 ``.mat`` files; the loader
+    concatenates them, converts microvolts to volts, places each class event at the
+    cue and marks every trial join with a non-rejecting ``EDGE boundary``
+    annotation. Distinct from :class:`Pan2025` (doi:10.7910/DVN/GH74ZG, 10
+    subjects, 180 trials per session).
 
     References
     ----------
@@ -137,6 +136,8 @@ class Pan2023(BaseDataset):
     .. versionadded:: 1.2.1
 
     """
+
+    _file_ids = PAN2023_FILE_IDS
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
@@ -210,93 +211,14 @@ class Pan2023(BaseDataset):
             doi="10.7910/DVN/251NOW",
         )
 
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return the local paths of a single subject's two session files."""
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
-
-        paths = []
-        for session in (0, 1):
-            file_id = PAN2023_FILE_IDS[subject][session]
-            url = f"{PAN2023_BASE_URL}{file_id}"
-            local = dl.data_dl(url, self.code, path, force_update, verbose)
-            paths.append(local)
-        return paths
-
-    def _get_single_subject_data(self, subject):
-        """Return the data of a single subject as {session: {run: Raw}}."""
-        file_paths = self.data_path(subject)
-
-        sessions = {}
-        for session_idx, file_path in enumerate(file_paths):
-            raw = self._mat_to_raw(file_path)
-            sessions[str(session_idx)] = {"0": raw}
-        return sessions
-
     @staticmethod
     def _mat_to_raw(file_path):
-        """Load one v7.3 (HDF5) ``.mat`` session file into a continuous Raw.
-
-        Epoched trials are concatenated along time; a stim channel marks each
-        trial's motor-imagery cue onset (t = 0, i.e. ``PAN2023_TASK_ONSET_S``
-        seconds into the 7 s epoch) with its class code (1 = left hand,
-        2 = right hand).
-        """
-        try:
-            import h5py
-        except ImportError as exc:  # pragma: no cover - optional dependency
-            raise ImportError(
-                "Reading the Pan2023 v7.3 .mat files requires h5py (`pip install h5py`)."
-            ) from exc
-
+        """Load one v7.3 (HDF5) ``.mat`` session file into a continuous Raw."""
         with h5py.File(file_path, "r") as f:
             sfreq = float(np.asarray(f["fs"]).ravel()[0])
-            # MATLAB stores ``data`` as (n_channels, n_samples, n_trials); h5py
-            # returns the transposed view (n_trials, n_samples, n_channels).
-            data = np.asarray(f["data"], dtype=float)
+            # h5py returns MATLAB's (n_channels, n_samples, n_trials) transposed.
+            data = np.asarray(f["data"], dtype=float).transpose(2, 0, 1)
             labels = np.asarray(f["label"]).ravel().astype(int)
-
-        n_trials, n_samples, n_channels = data.shape
-        if n_channels != len(PAN2023_CHANNELS):
-            raise ValueError(
-                f"Pan2023: expected {len(PAN2023_CHANNELS)} channels, "
-                f"got {n_channels} in {file_path}"
-            )
-
-        # (n_trials, n_samples, n_channels) -> (n_channels, n_trials, n_samples)
-        data = np.transpose(data, (2, 0, 1))
-        # Concatenate trials along time and convert microvolts to volts.
-        cont = data.reshape(n_channels, n_trials * n_samples) * 1e-6
-
-        # Sample offset of the motor-imagery cue (t = 0) within each epoch.
-        cue_offset = int(round(PAN2023_TASK_ONSET_S * sfreq))
-
-        if len(labels) != n_trials or not np.isin(labels, [1, 2]).all():
-            raise ValueError("Expected one valid class label per stored trial")
-        if cue_offset < 0 or cue_offset + round(4 * sfreq) > n_samples:
-            raise ValueError("Stored trial does not contain the imagery window")
-
-        stim = np.zeros((1, cont.shape[1]))
-        for trial_idx, label in enumerate(labels[:n_trials]):
-            onset = trial_idx * n_samples + cue_offset
-            stim[0, onset] = label
-
-        full = np.vstack([cont, stim])
-        mne_info = create_info(
-            ch_names=list(PAN2023_CHANNELS) + ["STI 014"],
-            sfreq=sfreq,
-            ch_types=["eeg"] * n_channels + ["stim"],
-        )
-        raw = RawArray(data=full, info=mne_info, verbose=False)
-        montage = make_standard_montage("standard_1005")
-        raw.set_montage(montage, on_missing="ignore", verbose=False)
-        raw.set_annotations(
-            mne.Annotations(
-                np.arange(1, n_trials) * n_samples / sfreq,
-                np.zeros(max(0, n_trials - 1)),
-                ["EDGE boundary"] * max(0, n_trials - 1),
-            )
-        )
-        return raw
+        # Each stored epoch starts 3 s before the motor-imagery cue.
+        cue_offset = int(round(3.0 * sfreq))
+        return _trials_to_raw(data, labels, PAN2023_CHANNELS, sfreq, cue_offset)
