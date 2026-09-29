@@ -16,8 +16,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 # Mendeley Data public-api record; the ``files`` array of the returned JSON
 # carries a (long-lived) signed ``download_url`` for every file.
@@ -184,9 +182,7 @@ class KMIHandGrip2025(BaseDataset):
         info = mne.create_info(ch_names, KMI_HANDGRIP2025_SFREQ, ch_types="eeg")
         # microvolts -> volts
         raw = mne.io.RawArray(df.to_numpy(dtype=float).T * 1e-6, info, verbose=False)
-        raw.set_montage(
-            resolve_montage_name("colin27_1020"), on_missing="ignore", verbose=False
-        )
+        raw.set_montage("colin27_1020", on_missing="ignore", verbose=False)
         n_trials = len(KMI_HANDGRIP2025_ONSETS)
         annotations = mne.Annotations(
             onset=KMI_HANDGRIP2025_ONSETS,

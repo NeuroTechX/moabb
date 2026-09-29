@@ -8,6 +8,7 @@ import mne
 import numpy as np
 import pandas as pd
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -22,11 +23,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import (
-    download_and_extract_zip,
-    edge_boundary_annotations,
-    resolve_montage_name,
-)
+from .utils import download_and_extract_subject_zip
 
 
 # Mendeley Data record 10.17632/x8psbz3f6x.2. The whole-record archive is served
@@ -205,15 +202,15 @@ class MILimbEEG(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        extract_dir = download_and_extract_zip(
-            MILIMBEEG_URL,
-            self.code,
-            ".",
-            path,
-            force_update,
-            verbose,
-            extract_to="MILimbEEG",
+        extract_dir = (
+            Path(dl.get_dataset_path(self.code, path))
+            / f"MNE-{self.code.lower()}-data"
+            / "MILimbEEG"
         )
+        if force_update or not extract_dir.exists():
+            download_and_extract_subject_zip(
+                MILIMBEEG_URL, self.code, extract_dir, path, force_update, verbose
+            )
 
         # Subject folders may sit at the archive root or under a single wrapper
         # directory; resolve both layouts.
@@ -231,7 +228,7 @@ class MILimbEEG(BaseDataset):
         columns, x time-sample rows, in microvolts; some exports add a header row.
         """
         frame = pd.read_csv(csv_file, header=None)
-        if frame.iloc[0].map(lambda v: isinstance(v, str)).any():
+        if any(isinstance(v, str) for v in frame.iloc[0]):
             frame = pd.read_csv(csv_file)
         data = frame.to_numpy(dtype=float)
         if data.shape[1] != len(CHANNELS) and data.shape[0] == len(CHANNELS):
@@ -278,15 +275,13 @@ class MILimbEEG(BaseDataset):
                 continue
 
             raw = mne.io.RawArray(np.concatenate(segments, axis=1), info, verbose=False)
-            raw.set_montage(
-                resolve_montage_name("colin27_1020"), on_missing="ignore", verbose=False
-            )
+            raw.set_montage("colin27_1020", on_missing="ignore", verbose=False)
             events = np.asarray(events)
             raw.set_annotations(
                 mne.annotations_from_events(
                     events, sfreq=SFREQ, event_desc=code_to_name, verbose=False
                 )
-                + edge_boundary_annotations(events[1:, 0] / SFREQ)
+                + mne.Annotations(events[1:, 0] / SFREQ, 0.0, "EDGE boundary")
             )
             sessions[str(sess_idx)] = {"0": raw}
         return sessions
