@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 159
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,55 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.1038/s41597-026-08237-5": {
+        "title": "Understanding Brain-Computer Interfaces training:a longitudinal and multimodal dataset",
+        "authors": [
+            "Marie-Constance Corsi",
+            "Christophe Gitton",
+            "Juliana Gonzalez-Astudillo",
+            "Ari E. Kahn",
+            "Laurent Hugueville",
+            "Denis Schwartz",
+            "Nathalie George",
+            "Mario Chavez",
+            "Sophie Dupont",
+            "Danielle S. Bassett",
+            "Fabrizio De Vico Fallani"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41597-026-08237-5"
+    },
+    "10.57745/RBJRC7": {
+        "title": "Understanding Brain-Computer Interfaces training: a longitudinal and multimodal dataset",
+        "authors": [
+            "Marie-Constance Corsi",
+            "Christophe Gitton",
+            "Juliana Gonzalez-Astudillo",
+            "Ari E. Kahn",
+            "Laurent Hugueville",
+            "Denis Schwartz",
+            "Nathalie George",
+            "Mario Chavez",
+            "Sophie Dupont",
+            "Danielle S. Bassett",
+            "Fabrizio De Vico Fallani"
+        ],
+        "year": 2026,
+        "doi": "10.57745/RBJRC7"
+    },
+    "10.1142/S0129065718500144": {
+        "title": "Integrating EEG and MEG Signals to Improve Motor Imagery Classification in Brain\u2013Computer Interface",
+        "authors": [
+            "Marie-Constance Corsi",
+            "Mario Chavez",
+            "Denis Schwartz",
+            "Laurent Hugueville",
+            "Ankit N. Khambhati",
+            "Danielle S. Bassett",
+            "Fabrizio De Vico Fallani"
+        ],
+        "year": 2019,
+        "doi": "10.1142/S0129065718500144"
     }
 }

@@ -63,6 +63,7 @@ from .castillos2023 import (
 )
 from .chailloux2020 import Chailloux2020
 from .chang2025 import Chang2025
+from .corsi2026 import Corsi2026
 from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .erpcore2021 import (
