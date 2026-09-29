@@ -27,6 +27,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -499,7 +500,7 @@ class Zuo2025(BaseDataset):
         full_data = np.concatenate([eeg_data, stim], axis=0)
         raw = mne.io.RawArray(data=full_data, info=info, verbose=False)
 
-        montage = mne.channels.make_standard_montage("standard_1005")
+        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
         raw.set_montage(montage, on_missing="ignore")
 
         return raw
