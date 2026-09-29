@@ -1,11 +1,8 @@
 """PardoGarcia2026 mu/beta motor-imagery EEG dataset in chronic MCA stroke."""
 
-import re
-import tempfile
 import warnings
 from pathlib import Path
 
-import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
@@ -18,6 +15,8 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+
+from .utils import read_raw_brainvision_repaired, resolve_montage_name
 
 
 # Zenodo record 19599466 (version of concept record 19599465). Each recording is
@@ -243,13 +242,13 @@ class PardoGarcia2026(BaseDataset):
         """Read one BrainVision recording and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = self._read_brainvision(vhdr_path)
+            raw = read_raw_brainvision_repaired(vhdr_path)
             raw.set_channel_types(
                 {ch: "eog" for ch in PARDOGARCIA2026_EOG if ch in raw.ch_names}
             )
             # Map upper-case header names (e.g. "CZ", "FCZ") to the 10-05
             # template spelling so the montage resolves the midline electrodes.
-            montage = make_standard_montage("standard_1005")
+            montage = make_standard_montage(resolve_montage_name("colin27_1005"))
             canonical = {name.lower(): name for name in montage.ch_names}
             raw.rename_channels(
                 {ch: canonical.get(ch.lower(), ch) for ch in raw.ch_names}
@@ -266,48 +265,6 @@ class PardoGarcia2026(BaseDataset):
             )
             raw.set_montage(montage, on_missing="ignore", verbose=False)
         return raw
-
-    @staticmethod
-    def _read_brainvision(vhdr_path):
-        """Read a header, repairing an unambiguous stale sibling reference."""
-        vhdr_path = Path(vhdr_path)
-        header = vhdr_path.read_text(encoding="utf-8")
-        repaired_any = False
-
-        def repair_reference(match):
-            nonlocal repaired_any
-            key, filename = match.groups()
-            suffix = {"DataFile": ".eeg", "MarkerFile": ".vmrk"}[key]
-            sibling = vhdr_path.with_suffix(suffix)
-            if (vhdr_path.parent / filename).is_file() or not sibling.is_file():
-                return match.group(0)
-            repaired_any = True
-            return f"{key}={sibling.name}"
-
-        repaired = re.sub(
-            r"(?m)^(DataFile|MarkerFile)=([^\r\n]+)", repair_reference, header
-        )
-        if not repaired_any:
-            return mne.io.read_raw_brainvision(
-                str(vhdr_path), preload=True, verbose=False
-            )
-
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            suffix=".vhdr",
-            prefix=f".{vhdr_path.stem}-",
-            dir=vhdr_path.parent,
-            delete=False,
-        ) as stream:
-            stream.write(repaired)
-            repaired_path = Path(stream.name)
-        try:
-            return mne.io.read_raw_brainvision(
-                str(repaired_path), preload=True, verbose=False
-            )
-        finally:
-            repaired_path.unlink(missing_ok=True)
 
     def _get_single_subject_data(self, subject):
         # Session keys start with an integer index: "0pre", "1post".

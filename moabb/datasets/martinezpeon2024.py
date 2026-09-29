@@ -14,6 +14,8 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
+from .utils import resolve_montage_name
+
 
 # Figshare article 25773342 hosts 60 plain-text files, one per
 # (subject, force-level, attempt). File names encode the class:
@@ -195,7 +197,9 @@ class MartinezPeon2024(BaseDataset):
         raw = mne.io.RawArray(data.T * 1e-6, info, verbose=False)
         # All 14 Emotiv EPOC channels are standard 10-20 sites; "raise" makes a
         # future name mismatch fail loudly instead of dropping locations.
-        raw.set_montage("standard_1020", on_missing="raise", verbose=False)
+        raw.set_montage(
+            resolve_montage_name("colin27_1020"), on_missing="raise", verbose=False
+        )
 
         duration = raw.n_times / MARTINEZPEON2024_SFREQ
         onsets = [o for o in MARTINEZPEON2024_ONSETS if o < duration]

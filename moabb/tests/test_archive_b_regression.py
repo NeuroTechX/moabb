@@ -1,7 +1,6 @@
 """Offline signal, event and transport contracts for the archive B loaders."""
 
 import bz2
-import importlib
 import zipfile
 from pathlib import Path
 
@@ -19,19 +18,20 @@ from moabb.datasets import (
     li2026,
     openvibe,
 )
+from moabb.datasets import download as dl
 from moabb.datasets.leeuwis2021 import LEEUWIS2021_EEG_CHANNELS
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
-def _capture_transport(monkeypatch, module, local_path_for):
-    """Replace ``module.dl.data_dl`` with a recorder returning ``local_path_for(url)``."""
+def _capture_transport(monkeypatch, local_path_for):
+    """Replace ``download.data_dl`` with a recorder returning ``local_path_for(url)``."""
     calls = []
 
     def transport(url, sign, path=None, force_update=False, verbose=None):
         calls.append((path, force_update, verbose))
         return str(local_path_for(url))
 
-    monkeypatch.setattr(module.dl, "data_dl", transport)
+    monkeypatch.setattr(dl, "data_dl", transport)
     return calls
 
 
@@ -40,10 +40,7 @@ def _capture_transport(monkeypatch, module, local_path_for):
     [(Leeuwis2021, 4), (MartinezPeon2024, 6), (OpenViBE, 1), (PardoGarcia2026, 6)],
 )
 def test_transport_flags(cls, count, tmp_path, monkeypatch):
-    module = importlib.import_module(cls.__module__)
-    calls = _capture_transport(
-        monkeypatch, module, lambda url: tmp_path / url.rsplit("/", 1)[-1]
-    )
+    calls = _capture_transport(monkeypatch, lambda url: tmp_path / url.rsplit("/", 1)[-1])
     dataset = cls()
     dataset.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
     assert calls == [(tmp_path, True, "ERROR")] * count
@@ -59,7 +56,7 @@ def test_li2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
                 stream.writestr(
                     f"MI_A_Dataset/MI_A_Dataset/Raw_data/{task}/Sub_{subject}.cdt", b""
                 )
-    calls = _capture_transport(monkeypatch, li2026, lambda url: archive)
+    calls = _capture_transport(monkeypatch, lambda url: archive)
     paths = Li2026().data_path(5, path=tmp_path, force_update=True, verbose="ERROR")
     assert len(paths) == 5
     assert all(path.endswith("Sub_200.cdt") for path in paths)
@@ -175,26 +172,35 @@ def test_pardo_missing_post_is_not_duplicated(subject, expected, monkeypatch):
     ]
 
 
-def test_pardo_stale_marker_reference_uses_unambiguous_sibling(tmp_path, monkeypatch):
-    vhdr = tmp_path / "PAC03-POST.vhdr"
-    original = "[Common Infos]\nDataFile=PAC03-POST.eeg\nMarkerFile=PAC02-POST.vmrk\n"
-    vhdr.write_text(original, encoding="utf-8")
-    vhdr.with_suffix(".eeg").touch()
-    vhdr.with_suffix(".vmrk").touch()
-    seen = {}
-
-    def fake_reader(path, *, preload, verbose):
-        temporary = Path(path)
-        seen["path"] = temporary
-        seen["header"] = temporary.read_text(encoding="utf-8")
-        return object()
-
-    monkeypatch.setattr(
-        "moabb.datasets.pardogarcia2026.mne.io.read_raw_brainvision", fake_reader
+def _named_raw(ch_names, descriptions):
+    raw = mne.io.RawArray(
+        np.zeros((len(ch_names), 100)), mne.create_info(ch_names, 100.0, "eeg")
     )
+    raw.set_annotations(mne.Annotations([0.1, 0.2, 0.3], 0, descriptions))
+    return raw
 
-    assert PardoGarcia2026._read_brainvision(vhdr) is not None
-    assert seen["path"] != vhdr
-    assert "MarkerFile=PAC03-POST.vmrk" in seen["header"]
-    assert vhdr.read_text(encoding="utf-8") == original
-    assert not seen["path"].exists()
+
+def test_pardo_load_raw_standardizes_channels_and_cues(monkeypatch):
+    raw = _named_raw(["CZ", "FCZ", "HEOGn"], ["Stimulus/S  1", "Stimulus/S  2", "S 11"])
+    monkeypatch.setattr(
+        "moabb.datasets.pardogarcia2026.read_raw_brainvision_repaired", lambda p: raw
+    )
+    out = PardoGarcia2026()._load_raw("run.vhdr")
+    assert out.ch_names == ["Cz", "FCz", "HEOGn"]
+    assert out.get_channel_types() == ["eeg", "eeg", "eog"]
+    assert list(out.annotations.description) == ["pinch", "fist", "S 11"]
+    assert not np.isnan(out.get_montage().get_positions()["ch_pos"]["FCz"]).any()
+
+
+def test_li2026_labels_each_task_side_cues(monkeypatch):
+    monkeypatch.setattr(
+        mne.io,
+        "read_raw_curry",
+        lambda *a, **k: _named_raw(["Cz", "HEO"], ["1", "2", "3"]),
+    )
+    ds = Li2026()
+    monkeypatch.setattr(ds, "data_path", lambda subject: list(li2026._TASKS))
+    runs = ds._get_single_subject_data(1)["0"]
+    assert list(runs) == [run for run, *_ in li2026._TASKS.values()]
+    assert list(runs["1foot"].annotations.description) == ["left_foot", "right_foot", "3"]
+    assert runs["1foot"].get_channel_types() == ["eeg", "eog"]

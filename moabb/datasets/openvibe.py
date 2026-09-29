@@ -16,6 +16,8 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
 )
 
+from .utils import resolve_montage_name
+
 
 # Base URL for the current (v2.0) merged signal+labels CSV files hosted on the
 # OpenViBE download server. The original nicolas.brodu.net link is dead (404);
@@ -145,5 +147,7 @@ class OpenViBE(BaseDataset):
                     np.array(events, dtype=int), 512.0, mapping, verbose=False
                 )
             )
-        raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
+        raw.set_montage(
+            resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
+        )
         return {"0": {"0": raw}}

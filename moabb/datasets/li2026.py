@@ -2,13 +2,11 @@
 
 import logging
 import re
-import zipfile
 from pathlib import Path
 
 import mne
 import numpy as np
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -22,6 +20,8 @@ from moabb.datasets.metadata.schema import (
     PreprocessingMetadata,
     Tags,
 )
+
+from .utils import download_and_extract_zip
 
 
 log = logging.getLogger(__name__)
@@ -214,15 +214,15 @@ class Li2026(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        zip_path = Path(dl.data_dl(LI2026_URL, self.code, path, force_update, verbose))
-        extract_dir = zip_path.parent
-
         # The archive nests everything under MI_A_Dataset/MI_A_Dataset/Raw_data/.
-        raw_dir = extract_dir / "MI_A_Dataset" / "MI_A_Dataset" / "Raw_data"
-        if not raw_dir.is_dir():
-            log.info("Extracting %s ...", zip_path.name)
-            with zipfile.ZipFile(zip_path, "r") as zf:
-                zf.extractall(extract_dir)
+        raw_dir = download_and_extract_zip(
+            LI2026_URL,
+            self.code,
+            "MI_A_Dataset/MI_A_Dataset/Raw_data",
+            path,
+            force_update,
+            verbose,
+        )
 
         paths = []
         for task in _TASKS:
