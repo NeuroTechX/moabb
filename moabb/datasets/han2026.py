@@ -22,8 +22,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 # OpenNeuro dataset ID and public S3 mirror (no auth required).
 _OPENNEURO_ID = "ds007327"
@@ -230,9 +228,7 @@ class Han2026(BaseDataset):
 
         # standard_1005 places 63/64 scalp channels ("Oz_1" stays unplaced).
         raw.set_montage(
-            make_standard_montage(resolve_montage_name("colin27_1005")),
-            on_missing="ignore",
-            match_case=False,
+            make_standard_montage("colin27_1005"), on_missing="ignore", match_case=False
         )
         return {"0": {"0": raw}}
 

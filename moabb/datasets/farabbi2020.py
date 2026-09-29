@@ -6,6 +6,7 @@ from pathlib import Path
 import mne
 from mne.channels import make_standard_montage
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.batista2022 import _EEG_CHANNELS
 from moabb.datasets.metadata.schema import (
@@ -23,7 +24,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import download_and_extract_zip, resolve_montage_name
+from .utils import download_and_extract_subject_zip
 
 
 # Per-subject ZIPs (01.zip .. 12.zip). The plain /files/<name> endpoint yields a
@@ -178,14 +179,17 @@ class Farabbi2020(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
         url = f"{ZENODO_BASE}/{subject:02d}.zip"
-        folder = f"{subject:02d}"  # the ZIP holds a top-level "NN/" folder
-        return [
-            str(
-                download_and_extract_zip(
-                    url, self.code, folder, path, force_update, verbose
-                )
+        # The ZIP holds a top-level "NN/" folder.
+        subject_dir = (
+            Path(dl.get_dataset_path(self.code, path))
+            / f"MNE-{self.code.lower()}-data"
+            / f"{subject:02d}"
+        )
+        if force_update or not subject_dir.exists():
+            download_and_extract_subject_zip(
+                url, self.code, subject_dir.parent, path, force_update, verbose
             )
-        ]
+        return [str(subject_dir)]
 
     def _get_single_subject_data(self, subject):
         """Return ``{session: {run: Raw}}`` with the four motor-imagery runs."""
@@ -194,7 +198,7 @@ class Farabbi2020(BaseDataset):
         session_dirs = sorted(
             d for d in subject_dir.iterdir() if d.is_dir() and "session" in d.name
         )
-        montage = make_standard_montage(resolve_montage_name("colin27_1020"))
+        montage = make_standard_montage("colin27_1020")
         sessions = {}
         for sess_idx, sess_dir in enumerate(session_dirs):
             gdf_files = sorted(

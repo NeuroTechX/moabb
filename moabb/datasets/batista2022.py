@@ -4,8 +4,10 @@ import logging
 import warnings
 from pathlib import Path
 
+import mne
 from mne.channels import make_standard_montage
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -22,12 +24,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import (
-    download_and_extract_zip,
-    read_raw_brainvision_repaired,
-    rename_stimulus_codes,
-    resolve_montage_name,
-)
+from .utils import download_and_extract_subject_zip, rename_stimulus_codes
 
 
 log = logging.getLogger(__name__)
@@ -226,18 +223,19 @@ class Batista2022(BaseDataset):
             raise ValueError("Invalid subject number")
         stem = _SUBJECT_MAP[subject]
         url = f"{ZENODO_BASE}/{stem}.zip"
-        return [
-            str(
-                download_and_extract_zip(
-                    url, self.code, stem, path, force_update, verbose
-                )
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
+        )
+        if force_update or not (data_dir / stem).exists():
+            download_and_extract_subject_zip(
+                url, self.code, data_dir, path, force_update, verbose
             )
-        ]
+        return [str(data_dir / stem)]
 
     def _get_single_subject_data(self, subject):
         """Return ``{session: {run: Raw}}`` with one run per imagery condition."""
         subject_dir = Path(self.data_path(subject)[0])
-        montage = make_standard_montage(resolve_montage_name("colin27_1020"))
+        montage = make_standard_montage("colin27_1020")
         sessions = {}
         ses_dirs = sorted(
             d for d in subject_dir.iterdir() if d.is_dir() and d.name.startswith("ses-")
@@ -274,7 +272,16 @@ class Batista2022(BaseDataset):
         """Read one BrainVision run and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = read_raw_brainvision_repaired(vhdr)
+            # Some headers still name the pre-BIDS DataFile/MarkerFile.
+            raw = mne.io.read_raw_brainvision(
+                vhdr,
+                preload=True,
+                verbose=False,
+                overrides={
+                    "data_fname": vhdr.with_suffix(".eeg").name,
+                    "marker_fname": vhdr.with_suffix(".vmrk").name,
+                },
+            )
 
         aux = {ch: _AUX[ch] for ch in raw.ch_names if ch in _AUX}
         raw.rename_channels({ch: name for ch, (name, _) in aux.items()})

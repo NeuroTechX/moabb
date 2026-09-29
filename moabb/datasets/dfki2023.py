@@ -5,6 +5,7 @@ from pathlib import Path
 
 import mne
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -17,7 +18,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import download_and_extract_zip, resolve_montage_name
+from .utils import download_and_extract_subject_zip
 
 
 # Single zip on Zenodo (record 10229480), ~3.1 GB, BrainVision format.
@@ -165,15 +166,20 @@ class DFKI2023(BaseDataset):
         """Return the list of BrainVision header paths for a single subject."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-        root = download_and_extract_zip(
-            DFKI2023_URL,
-            self.code,
-            "EEG_dataset",
-            path,
-            force_update,
-            verbose,
-            redownload_corrupted=True,
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
+        root = data_dir / "EEG_dataset"
+        if force_update or not root.exists():
+            download_and_extract_subject_zip(
+                DFKI2023_URL,
+                self.code,
+                data_dir,
+                path,
+                force_update,
+                verbose,
+                redownload_corrupted=True,
+            )
         code = SUBJECT_CODES[subject - 1]
         return [
             str(p)
@@ -203,10 +209,6 @@ class DFKI2023(BaseDataset):
             )
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                raw.set_montage(
-                    resolve_montage_name("colin27_1020"),
-                    match_case=False,
-                    on_missing="ignore",
-                )
+                raw.set_montage("colin27_1020", match_case=False, on_missing="ignore")
             runs[f"{run_idx}{condition}"] = raw
         return {"0": runs}

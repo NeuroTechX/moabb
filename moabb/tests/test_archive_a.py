@@ -51,7 +51,8 @@ def test_download_flags_and_extraction(cls, folder, tmp_path, monkeypatch):
     ds = cls()
     ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
     assert data_dl.call_args.args[2:] == (tmp_path, True, "ERROR")
-    assert (tmp_path / folder / "payload.txt").read_text() == "synthetic"
+    data_dir = tmp_path / f"MNE-{ds.code.lower()}-data"
+    assert (data_dir / folder / "payload.txt").read_text() == "synthetic"
     _assert_invalid_subject_rejected(ds)
 
 
@@ -61,7 +62,7 @@ def test_batista_excludes_execution(tmp_path, monkeypatch):
     for task in ["grazMI", "grazME", "neurowMIMOVR"]:
         (session / f"sub-01_task-{task}.vhdr").touch()
     ds = Batista2022()
-    monkeypatch.setattr(ds, "data_path", lambda subject: [str(tmp_path)])
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=[str(tmp_path)]))
     reader = Mock(return_value="raw")
     monkeypatch.setattr(ds, "_load_run", reader)
     runs = ds._get_single_subject_data(1)["0lab1"]
@@ -71,12 +72,15 @@ def test_batista_excludes_execution(tmp_path, monkeypatch):
 
 def test_batista_annotations_units_and_bads(monkeypatch):
     data = raw(["C3", "C4", "Aux1"], ["Stimulus/S  7", "Stimulus/S  8"])
-    monkeypatch.setattr(
-        "moabb.datasets.batista2022.read_raw_brainvision_repaired", lambda *args: data
-    )
+    reader = Mock(return_value=data)
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", reader)
     result = Batista2022()._load_run(
-        Path("test.vhdr"), mne.channels.make_standard_montage("standard_1020")
+        Path("test.vhdr"), mne.channels.make_standard_montage("colin27_1020")
     )
+    assert reader.call_args.kwargs["overrides"] == {
+        "data_fname": "test.eeg",
+        "marker_fname": "test.vmrk",
+    }
     assert list(result.annotations.description) == ["left_hand", "right_hand"]
     assert result.ch_names == ["C3", "C4"]
     assert result.info["bads"] == ["C3"]
@@ -86,14 +90,15 @@ def test_batista_annotations_units_and_bads(monkeypatch):
 def test_dfki_exact_markers_and_run_classes(monkeypatch):
     ds = DFKI2023()
     monkeypatch.setattr(
-        ds, "data_path", lambda subject: ["unilateral/test.vhdr", "bilateral/test.vhdr"]
+        ds,
+        "data_path",
+        Mock(return_value=["unilateral/test.vhdr", "bilateral/test.vhdr"]),
     )
+    markers = ["Stimulus/S 100", "Stimulus/S 1000", "Stimulus/S 101"]
     monkeypatch.setattr(
         mne.io,
         "read_raw_brainvision",
-        lambda *a, **kw: raw(
-            ["C3"], ["Stimulus/S 100", "Stimulus/S 1000", "Stimulus/S 101"], [0, 3, 6]
-        ),
+        Mock(side_effect=[raw(["C3"], markers, [0, 3, 6]) for _ in range(2)]),
     )
     runs = ds._get_single_subject_data(1)["0"]
     for name, onset in [("0unilateral", 0), ("1bilateral", 6)]:
@@ -105,10 +110,10 @@ def test_dfki_exact_markers_and_run_classes(monkeypatch):
 def test_farabbi_gdf_event_mapping_and_modalities(monkeypatch):
     channels = farabbi2020._EEG_CHANNELS + farabbi2020._ACC_CHANNELS
     monkeypatch.setattr(
-        mne.io, "read_raw_gdf", lambda *a, **kw: raw(channels, ["769", "770"])
+        mne.io, "read_raw_gdf", Mock(return_value=raw(channels, ["769", "770"]))
     )
     result = Farabbi2020()._load_gdf(
-        "test.gdf", mne.channels.make_standard_montage("standard_1020")
+        "test.gdf", mne.channels.make_standard_montage("colin27_1020")
     )
     assert len(result.ch_names) == 32
     assert result.annotations.description.tolist() == ["left_hand", "right_hand"]
@@ -118,11 +123,13 @@ def test_farabbi_gdf_event_mapping_and_modalities(monkeypatch):
 
 def test_han_deduplicates_only_exact_trial_markers(monkeypatch):
     ds = Han2026()
-    monkeypatch.setattr(ds, "data_path", lambda subject: ["synthetic.set"])
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=["synthetic.set"]))
     monkeypatch.setattr(
         mne.io,
         "read_raw_eeglab",
-        lambda *a, **kw: raw(["C3", "BIP1"], ["A11", "A11", "A22", "A11"], [0, 0, 6, 6]),
+        Mock(
+            return_value=raw(["C3", "BIP1"], ["A11", "A11", "A22", "A11"], [0, 0, 6, 6])
+        ),
     )
     result = ds._get_single_subject_data(1)["0"]["0"]
     assert result.annotations.description.tolist() == [
@@ -151,7 +158,7 @@ def test_kodera_shared_channels_preserve_units_and_bads(monkeypatch):
     monkeypatch.setattr(
         mne.io,
         "read_raw_brainvision",
-        lambda *a, **kw: raw(channels + ["Fp1"], ["Stimulus/S  1", "Stimulus/S  1"]),
+        Mock(return_value=raw(channels + ["Fp1"], ["Stimulus/S  1", "Stimulus/S  1"])),
     )
     result = Kodera2023()._read_run("synthetic_lh1.vhdr")
     assert result.ch_names == channels
@@ -162,7 +169,7 @@ def test_kodera_shared_channels_preserve_units_and_bads(monkeypatch):
 
 def test_missing_sessions_fail_explicitly(tmp_path, monkeypatch):
     for ds in [Batista2022(), Farabbi2020()]:
-        monkeypatch.setattr(ds, "data_path", lambda subject: [str(tmp_path)])
+        monkeypatch.setattr(ds, "data_path", Mock(return_value=[str(tmp_path)]))
         with pytest.raises(FileNotFoundError):
             ds._get_single_subject_data(1)
 
