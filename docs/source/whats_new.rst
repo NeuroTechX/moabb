@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add Pan2023, Pan2025, PoloHortiguela2025 dataset loaders with synthetic regression coverage (by `Bruno Aristimunha`_).
+- Add Pan2023, Pan2025, PoloHortiguela2025 dataset loaders with synthetic regression coverage ({gh}`1197` by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
