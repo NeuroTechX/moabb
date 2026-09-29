@@ -1,6 +1,7 @@
 """Damm2026 finger motor imagery dataset (OpenNeuro ds008446)."""
 
 import warnings
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -8,6 +9,7 @@ import pandas as pd
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
+from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -56,7 +58,7 @@ _CH_NAMES = [
 _NON_EEG = ["Ref1", "Ref2", "Marker"]
 
 
-class Damm2026(BaseDataset):
+class Damm2026(OpenNeuroMirrorMixin, BaseDataset):
     """Random and sequential order finger motor imagery dataset [1]_.
 
     **Dataset description**
@@ -105,7 +107,8 @@ class Damm2026(BaseDataset):
            DOI: https://doi.org/10.18112/openneuro.ds008446.v1.0.1
     """
 
-    nemar_id = "ds008446"
+    nemar_id = "on008446"
+    nemar_subject_template = "{subject:02d}"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -216,6 +219,19 @@ class Damm2026(BaseDataset):
             The local paths to the subject's four EDF files. The matching
             ``_events.tsv`` sidecars are downloaded alongside them.
         """
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            sub = f"sub-{subject:02d}"
+            return [
+                str(
+                    Path(mirror_root)
+                    / sub
+                    / "eeg"
+                    / f"{sub}_task-{task}_run-{run:02d}_eeg.edf"
+                )
+                for task in _TASKS
+                for run in _RUNS
+            ]
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 

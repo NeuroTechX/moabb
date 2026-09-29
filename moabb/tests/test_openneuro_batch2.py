@@ -28,6 +28,7 @@ def test_bids_flag_contract(cls, subject, monkeypatch, tmp_path):
 )
 def test_bids_transport_only_mock(module, cls, subject, n_files, monkeypatch, tmp_path):
     """Exercise the real download manifest and root creation, mocking transport only."""
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
     transport = Mock()
     monkeypatch.setattr(f"moabb.datasets.{module}.data_dl", transport)
     root = cls()._download_subject(subject, tmp_path, True, False, "ERROR")
@@ -43,6 +44,7 @@ def test_bids_transport_only_mock(module, cls, subject, n_files, monkeypatch, tm
 
 
 def test_damm_download_flags(monkeypatch, tmp_path):
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
     transport = Mock(return_value="dummy.edf")
     monkeypatch.setattr("moabb.datasets.damm2026.dl.data_dl", transport)
     assert len(Damm2026().data_path(1, tmp_path, True, False, "ERROR")) == 4
