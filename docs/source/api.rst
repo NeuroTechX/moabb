@@ -54,6 +54,11 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    Batista2022
+    DFKI2023
+    Farabbi2020
+    Han2026
+    Kodera2023
     BNCI2003_004
     BNCI2014_001
     BNCI2014_002
