@@ -103,8 +103,8 @@ def test_milimb_transport_flags(tmp_path):
     with zipfile.ZipFile(archive_path, "w") as archive:
         archive.writestr("S1/synthetic.csv", "fixture")
     with patch(
-        "moabb.datasets.milimbeeg.dl.data_dl", return_value=str(archive_path)
+        "moabb.datasets.download.data_dl", return_value=str(archive_path)
     ) as download:
         paths = MILimbEEG().data_path(1, **FLAGS)
     assert paths == [str(tmp_path / "MILimbEEG" / "S1")]
-    assert download.call_args.kwargs == FLAGS
+    assert download.call_args.args[2:] == tuple(FLAGS.values())  # path, force, verbose

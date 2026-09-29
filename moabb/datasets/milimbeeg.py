@@ -2,14 +2,12 @@
 
 import glob
 import re
-import zipfile as z
 from pathlib import Path
 
 import mne
 import numpy as np
 import pandas as pd
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -22,6 +20,12 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     PreprocessingMetadata,
     Tags,
+)
+
+from .utils import (
+    download_and_extract_zip,
+    edge_boundary_annotations,
+    resolve_montage_name,
 )
 
 
@@ -201,19 +205,15 @@ class MILimbEEG(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path_zip = Path(
-            dl.data_dl(
-                MILIMBEEG_URL,
-                self.code,
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
-            )
+        extract_dir = download_and_extract_zip(
+            MILIMBEEG_URL,
+            self.code,
+            ".",
+            path,
+            force_update,
+            verbose,
+            extract_to="MILimbEEG",
         )
-        extract_dir = path_zip.parent / "MILimbEEG"
-        if force_update or not extract_dir.is_dir():
-            with z.ZipFile(path_zip, "r") as zip_ref:
-                zip_ref.extractall(extract_dir)
 
         # Subject folders may sit at the archive root or under a single wrapper
         # directory; resolve both layouts.
@@ -278,13 +278,15 @@ class MILimbEEG(BaseDataset):
                 continue
 
             raw = mne.io.RawArray(np.concatenate(segments, axis=1), info, verbose=False)
-            raw.set_montage("standard_1020", on_missing="ignore", verbose=False)
+            raw.set_montage(
+                resolve_montage_name("colin27_1020"), on_missing="ignore", verbose=False
+            )
             events = np.asarray(events)
             raw.set_annotations(
                 mne.annotations_from_events(
                     events, sfreq=SFREQ, event_desc=code_to_name, verbose=False
                 )
-                + mne.Annotations(events[1:, 0] / SFREQ, 0, "EDGE boundary")
+                + edge_boundary_annotations(events[1:, 0] / SFREQ)
             )
             sessions[str(sess_idx)] = {"0": raw}
         return sessions
