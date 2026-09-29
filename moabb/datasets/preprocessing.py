@@ -602,7 +602,7 @@ def _is_preserved_annotation(description) -> bool:
       run concatenation);
     - zero-duration ``"EDGE boundary"`` markers (case-insensitive), which
       loaders put at the joins between stored trials so that filtering does
-      not cross them (see :func:`moabb.datasets.utils.edge_boundary_annotations`);
+      not cross them;
     - the non-rejecting ``"bnci_artifact"`` marker added in ``annotate`` mode,
       kept so downstream code can still inspect flagged trials.
     """

@@ -41,7 +41,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
-- Add shared loader helpers to :mod:`moabb.datasets.utils` so dataset loaders stop carrying private copies: :func:`~moabb.datasets.utils.download_and_extract_zip` (download once, extract unless a marker exists, optional re-download of a corrupted archive), :func:`~moabb.datasets.utils.read_raw_brainvision_repaired` (read a BrainVision header whose ``DataFile``/``MarkerFile`` still names a renamed sibling, without touching the download), :func:`~moabb.datasets.utils.rename_stimulus_codes` and :func:`~moabb.datasets.utils.edge_boundary_annotations`. ``SetRawAnnotations`` now keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once instead of in each dataset PR (:gh:`1200` by `Bruno Aristimunha`_).
+- Share loader code across the new dataset PRs instead of private copies: :func:`~moabb.datasets.utils.download_and_extract_subject_zip` gains ``fname`` and ``redownload_corrupted`` (one warned re-download of a corrupted archive), :func:`~moabb.datasets.utils.rename_stimulus_codes` maps BrainVision ``Stimulus/S <n>`` markers to class labels, ``SetRawAnnotations`` keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once (:gh:`1200` by `Bruno Aristimunha`_).
 
 Version 1.7.1  (Stable - PyPi)
 -------------------------------
