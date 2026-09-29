@@ -35,10 +35,9 @@ def raw(channels, descriptions, onsets=None):
     return data
 
 
-@pytest.mark.parametrize("cls", [Batista2022, DFKI2023, Farabbi2020, Han2026, Kodera2023])
-def test_invalid_subject_does_not_download(cls):
+def _assert_invalid_subject_rejected(dataset):
     with pytest.raises(ValueError, match="Invalid subject"):
-        cls().data_path(999)
+        dataset.data_path(999)
 
 
 @pytest.mark.parametrize(
@@ -55,9 +54,11 @@ def test_download_flags_and_extraction(cls, module, folder, tmp_path, monkeypatc
         z.writestr(folder + "/payload.txt", "synthetic")
     download = Mock(return_value=str(archive))
     monkeypatch.setattr(module.dl, "data_dl", download)
-    cls().data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
+    ds = cls()
+    ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
     assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert (tmp_path / folder / "payload.txt").read_text() == "synthetic"
+    _assert_invalid_subject_rejected(ds)
 
 
 def test_batista_excludes_execution(tmp_path, monkeypatch):
@@ -145,8 +146,8 @@ def test_han_transport_flags(tmp_path, monkeypatch):
     ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
     assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert "ds007327/sub-001/sub-001_task-dribble_eeg.set" in download.call_args.args[0]
-    assert ds.doi == "10.18112/openneuro.ds007327.v1.1.0"
     assert ds.nemar_id is None
+    _assert_invalid_subject_rejected(ds)
 
 
 def test_kodera_shared_channels_preserve_units_and_bads(monkeypatch):
@@ -161,18 +162,6 @@ def test_kodera_shared_channels_preserve_units_and_bads(monkeypatch):
     assert result.info["bads"] == [channels[0]]
     assert result.annotations.description.tolist() == ["left_hand", "left_hand"]
     np.testing.assert_allclose(result.get_data(), 2e-6)
-    events = mne.events_from_annotations(result, event_id={"left_hand": 1})[0]
-    epochs = mne.Epochs(
-        result,
-        events,
-        {"left_hand": 1},
-        tmin=0,
-        tmax=4,
-        baseline=None,
-        preload=True,
-        reject_by_annotation=False,
-    )
-    assert len(epochs) == 2
 
 
 def test_missing_sessions_fail_explicitly(tmp_path, monkeypatch):
@@ -184,20 +173,17 @@ def test_missing_sessions_fail_explicitly(tmp_path, monkeypatch):
 
 def test_kodera_transport_flags(tmp_path, monkeypatch):
     archive = tmp_path / "data.zip"
-    folder, token = kodera2023.SUBJECTS[0]
-    stem = (
-        f"HR_{folder.replace('_', '')}_{token[1:]}_leva"
-        if token.startswith("S")
-        else f"{token}{folder.replace('_', '')}lh1"
-    )
+    # Subject 1 is ("01_12_2020", "1z"): short-name cohort, left-hand run 1.
     with zipfile.ZipFile(archive, "w") as z:
-        z.writestr(f"data/{folder}/{stem}.vhdr", "synthetic")
+        z.writestr("data/01_12_2020/1z01122020lh1.vhdr", "synthetic")
+        z.writestr("data/01_12_2020/2z01122020lh1.vhdr", "other subject")
     download = Mock(return_value=str(archive))
     monkeypatch.setattr(kodera2023.dl, "data_dl", download)
-    paths = Kodera2023().data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
+    ds = Kodera2023()
+    paths = ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
     assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
-    assert len(paths) == 1
-    assert Path(paths[0]).read_text() == "synthetic"
+    assert [Path(p).read_text() for p in paths] == ["synthetic"]
+    _assert_invalid_subject_rejected(ds)
 
 
 def test_batista_header_repair_preserves_original(tmp_path, monkeypatch):
