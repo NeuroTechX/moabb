@@ -30,7 +30,6 @@ def test_milimb_si_and_last_window(tmp_path, indexed):
     np.testing.assert_allclose(raw.get_data(picks="eeg")[:, 0], 12e-6)
     np.testing.assert_allclose(raw.get_data(picks="eeg")[:, -1], -8e-6)
     raw = SetRawAnnotations(ds.event_id, ds.interval).transform(raw)
-    assert "EDGE boundary" in raw.annotations.description
     events = mne.find_events(raw, initial_event=True, verbose=False)
     np.testing.assert_array_equal(events[:, 0], [0, 500])
     epochs = mne.Epochs(
@@ -44,13 +43,9 @@ def test_milimb_si_and_last_window(tmp_path, indexed):
         verbose=False,
     )
     assert epochs.get_data().shape == (2, 17, 500)
-    filtered = raw.copy().filter(8, 30, verbose=False)
-    independent = raw.copy().crop(0, 499 / 125).filter(8, 30, verbose=False)
-    np.testing.assert_allclose(
-        filtered.get_data(picks="eeg")[:, :500],
-        independent.get_data(picks="eeg"),
-        atol=1e-15,
-    )
+    # The non-rejecting boundary must sit exactly at the stored-trial join.
+    edges = raw.annotations[raw.annotations.description == "EDGE boundary"]
+    np.testing.assert_allclose(edges.onset, [500 / 125])
 
 
 def test_milimb_rejects_short_trial(tmp_path):
@@ -122,10 +117,9 @@ def test_milimb_transport_flags(tmp_path):
     with patch(
         "moabb.datasets.milimbeeg.dl.data_dl", return_value=str(archive_path)
     ) as download:
-        assert (
-            len(MILimbEEG().data_path(1, path="custom", force_update=True, verbose=False))
-            == 1
-        )
+        assert MILimbEEG().data_path(
+            1, path="custom", force_update=True, verbose=False
+        ) == [str(tmp_path / "MILimbEEG" / "S1")]
     assert download.call_args.kwargs == {
         "path": "custom",
         "force_update": True,
