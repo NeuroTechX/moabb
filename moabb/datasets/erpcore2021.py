@@ -22,6 +22,8 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.utils import _handle_deprecated_kwargs
 
+from .utils import resolve_montage_name
+
 
 OSF_BASE_URL = "https://files.osf.io/v1/resources/"
 
@@ -189,7 +191,7 @@ class ErpCore2021(BaseDataset):
             # Read the subject's raw data and set the montage
             raw = read_raw_bids(bids_path=file_path, verbose=False)
             raw.load_data()  # Preload the data because read_raw_bids does not load it
-            raw = raw.set_montage("standard_1020", match_case=False)
+            raw = raw.set_montage(resolve_montage_name("colin27_1020"), match_case=False)
 
         # Shift the stimulus event codes forward in time
         # to account for the LCD monitor delay

@@ -30,6 +30,7 @@ from moabb.utils import _handle_deprecated_kwargs
 
 from .base import BaseDataset
 from .download import get_dataset_path
+from .utils import resolve_montage_name
 
 
 LOGGER = logging.getLogger(__name__)
@@ -452,7 +453,9 @@ class Stieger2021(BaseDataset):
                 ch.replace("Z", "z").replace("FP", "Fp") for ch in eeg_ch_names
             ]
             # extract all standard EEG channels
-            montage = mne.channels.make_standard_montage("standard_1005")
+            montage = mne.channels.make_standard_montage(
+                resolve_montage_name("colin27_1005")
+            )
             channel_mask = np.isin(eeg_ch_names, montage.ch_names)
             ch_names = [ch for ch, found in zip(eeg_ch_names, channel_mask) if found] + [
                 "stim"
