@@ -18,6 +18,8 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
+from .utils import resolve_montage_name
+
 
 # Zenodo raw record (per-subject zips, each holding two session .mat files).
 SITSTAND_BASE_URL = "https://zenodo.org/records/20348444/files/"
@@ -239,7 +241,7 @@ class SitStand2026(BaseDataset):
         # Normalise casing against the 10-05 montage so channels are recognised,
         # and derive the MNE channel type from each (case-insensitive) name.
         # Unknown EEG labels are upper-cased as a best-effort fallback.
-        montage = mne.channels.make_standard_montage("standard_1005")
+        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
         lower_to_std = {ch.lower(): ch for ch in montage.ch_names}
 
         ch_names, ch_types = [], []

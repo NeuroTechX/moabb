@@ -1,16 +1,11 @@
 """Vagaja2023 motor-imagery EEG dataset (embodiment priming + MI-BCI in VR)."""
 
 import logging
-import re
-import tempfile
 import warnings
-import zipfile
 from pathlib import Path
 
-import mne
 from mne.channels import make_standard_montage
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -25,6 +20,13 @@ from moabb.datasets.metadata.schema import (
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
+)
+
+from .utils import (
+    download_and_extract_zip,
+    read_raw_brainvision_repaired,
+    rename_stimulus_codes,
+    resolve_montage_name,
 )
 
 
@@ -241,18 +243,17 @@ class Vagaja2023(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        zip_path = Path(dl.data_dl(ZENODO_URL, self.code, path, force_update, verbose))
-        extract_dir = zip_path.parent
-
-        group = _SUBJECT_GROUP[subject]
-        subject_dir = extract_dir / group / f"SUB{subject:02d}"
-
         # The archive extracts "Control/" and "Embodied/" directly into the
         # parent dir; extract the whole archive on first access.
-        if force_update or not subject_dir.is_dir():
-            log.info("Extracting %s ...", zip_path.name)
-            with zipfile.ZipFile(zip_path, "r") as zf:
-                zf.extractall(extract_dir)
+        group = _SUBJECT_GROUP[subject]
+        subject_dir = download_and_extract_zip(
+            ZENODO_URL,
+            self.code,
+            f"{group}/SUB{subject:02d}",
+            path,
+            force_update,
+            verbose,
+        )
 
         if not subject_dir.is_dir():
             raise FileNotFoundError(f"Missing subject directory: {subject_dir}")
@@ -268,56 +269,19 @@ class Vagaja2023(BaseDataset):
                 f"No motor-imagery BrainVision run found for subject {subject} at {vhdr}"
             )
 
-        return {"0": {"0": self._load_run(vhdr, make_standard_montage("standard_1020"))}}
-
-    @staticmethod
-    def _read_brainvision(vhdr):
-        """Read BrainVision data, repairing a stale same-stem BIDS header.
-
-        The published subject-31 MI header retains lower-case acquisition
-        names with an extra underscore, while the archive contains the
-        adjacent `SUB31_MI.eeg` and `SUB31_MI.vmrk` files.  Only a missing
-        reference with an existing same-stem sibling is repaired, in a
-        temporary header, leaving the downloaded archive untouched.
-        """
-        vhdr = Path(vhdr)
-        header = vhdr.read_text(encoding="utf-8")
-        repaired = header
-        for field, suffix in (("DataFile", ".eeg"), ("MarkerFile", ".vmrk")):
-            match = re.search(rf"(?m)^{field}=(.+)$", repaired)
-            if match is None:
-                raise ValueError(f"Missing {field} entry in BrainVision header {vhdr}")
-            referenced = vhdr.parent / match.group(1).strip()
-            if referenced.exists():
-                continue
-            sibling = vhdr.with_suffix(suffix)
-            if not sibling.exists():
-                raise FileNotFoundError(
-                    f"{vhdr} references missing {referenced.name}; expected BIDS "
-                    f"sibling {sibling.name} is also absent."
+        return {
+            "0": {
+                "0": self._load_run(
+                    vhdr, make_standard_montage(resolve_montage_name("colin27_1020"))
                 )
-            repaired = re.sub(rf"(?m)^{field}=.+$", f"{field}={sibling.name}", repaired)
-
-        temporary = None
-        try:
-            path = vhdr
-            if repaired != header:
-                with tempfile.NamedTemporaryFile(
-                    "w", suffix=".vhdr", dir=vhdr.parent, encoding="utf-8", delete=False
-                ) as fout:
-                    fout.write(repaired)
-                    temporary = Path(fout.name)
-                path = temporary
-            return mne.io.read_raw_brainvision(path, preload=True, verbose=False)
-        finally:
-            if temporary is not None:
-                temporary.unlink(missing_ok=True)
+            }
+        }
 
     def _load_run(self, vhdr, montage):
         """Read one BrainVision run and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = self._read_brainvision(vhdr)
+            raw = read_raw_brainvision_repaired(vhdr, strict=True)
 
         raw.rename_channels({k: v for k, v in _AUX_RENAME.items() if k in raw.ch_names})
         raw.set_channel_types({k: v for k, v in _AUX_TYPES.items() if k in raw.ch_names})
@@ -328,11 +292,6 @@ class Vagaja2023(BaseDataset):
         raw.set_montage(montage, on_missing="ignore")
 
         # Rename the data-borne class markers to MOABB class labels.
-        rename_ann = {}
-        for desc in set(raw.annotations.description):
-            match = re.search(r"S\s*(\d+)\s*$", desc)
-            if match and int(match.group(1)) in _CLASS_CODES:
-                rename_ann[desc] = _CLASS_CODES[int(match.group(1))]
-        raw.annotations.rename(rename_ann)
+        rename_stimulus_codes(raw, _CLASS_CODES)
 
         return raw

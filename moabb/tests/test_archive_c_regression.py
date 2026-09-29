@@ -1,7 +1,6 @@
 """Offline signal and transport contracts for the archive-C datasets."""
 
 import zipfile
-from pathlib import Path
 from unittest.mock import patch
 
 import mne
@@ -68,7 +67,9 @@ def test_vagaja_annotation_mapping_units_and_bad_channel_preserved(monkeypatch):
     raw.set_annotations(
         mne.Annotations([0, 14], [0, 0], ["Stimulus/S 7", "Stimulus/S 8"])
     )
-    monkeypatch.setattr(Vagaja2023, "_read_brainvision", staticmethod(lambda p: raw))
+    monkeypatch.setattr(
+        "moabb.datasets.vagaja2023.read_raw_brainvision_repaired", lambda *a, **k: raw
+    )
     dataset = Vagaja2023()
     result = dataset._load_run(
         "unused", mne.channels.make_standard_montage("standard_1020")
@@ -127,9 +128,7 @@ def test_vagaja_force_update_reextracts_archive(tmp_path):
     target.write_text("old")
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("Embodied/SUB03/SUB03_MI.vhdr", "new")
-    with patch(
-        "moabb.datasets.vagaja2023.dl.data_dl", return_value=str(archive)
-    ) as download:
+    with patch("moabb.datasets.download.data_dl", return_value=str(archive)) as download:
         Vagaja2023().data_path(3, path=tmp_path, force_update=True, verbose="ERROR")
         assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert target.read_text() == "new"
@@ -153,11 +152,7 @@ def test_perez_figshare_transport_flags(tmp_path):
             1, path=tmp_path, force_update=True, verbose="ERROR"
         )
     assert len(paths) == 1
-    assert download.call_args.kwargs == {
-        "path": tmp_path,
-        "force_update": True,
-        "verbose": "ERROR",
-    }
+    assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
 
 
 def test_sitstand_nested_archive_is_extracted_only_once(tmp_path, monkeypatch):
@@ -180,25 +175,17 @@ def test_sitstand_nested_archive_is_extracted_only_once(tmp_path, monkeypatch):
     assert len(calls) == 1
 
 
-def test_vagaja_stale_subject31_header_uses_bids_siblings(tmp_path, monkeypatch):
-    vhdr = tmp_path / "SUB31_MI.vhdr"
-    original = "[Common Infos]\nDataFile=SUB31_mi_.eeg\nMarkerFile=SUB31_mi_.vmrk\n"
-    vhdr.write_text(original, encoding="utf-8")
-    vhdr.with_suffix(".eeg").touch()
-    vhdr.with_suffix(".vmrk").touch()
-    seen = {}
-
-    def fake_reader(path, **kwargs):
-        seen["path"] = Path(path)
-        seen["header"] = Path(path).read_text(encoding="utf-8")
-        return object()
-
-    monkeypatch.setattr(
-        "moabb.datasets.vagaja2023.mne.io.read_raw_brainvision", fake_reader
-    )
-    assert Vagaja2023._read_brainvision(vhdr) is not None
-    assert seen["path"] != vhdr
-    assert "DataFile=SUB31_MI.eeg" in seen["header"]
-    assert "MarkerFile=SUB31_MI.vmrk" in seen["header"]
-    assert vhdr.read_text(encoding="utf-8") == original
-    assert not seen["path"].exists()
+def test_vagaja_missing_subject_or_run_fails_explicitly(tmp_path, monkeypatch):
+    archive = tmp_path / "GROUPS.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("Embodied/SUB03/notes.txt", "no MI run")
+    ds = Vagaja2023()
+    with patch("moabb.datasets.download.data_dl", return_value=str(archive)):
+        with pytest.raises(FileNotFoundError, match="Missing subject directory"):
+            ds.data_path(5, path=tmp_path)
+        with pytest.raises(FileNotFoundError, match="No motor-imagery BrainVision"):
+            ds._get_single_subject_data(3)
+    (tmp_path / "Embodied/SUB03/SUB03_MI.vhdr").touch()
+    monkeypatch.setattr(ds, "data_path", lambda subject: [tmp_path / "Embodied/SUB03"])
+    monkeypatch.setattr(ds, "_load_run", lambda vhdr, montage: vhdr.name)
+    assert ds._get_single_subject_data(3) == {"0": {"0": "SUB03_MI.vhdr"}}

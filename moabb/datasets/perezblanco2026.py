@@ -1,7 +1,6 @@
 """Perez-Blanco 2026 wrist-motion motor-execution EEG-EMG dataset."""
 
 import warnings
-import zipfile as z
 from pathlib import Path
 
 import mne
@@ -23,7 +22,9 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.datasets.utils import resolve_montage_name, stim_channels_with_selected_ids
+
+from .utils import download_and_extract_zip
 
 
 # Figshare article hosting the BIDS data (data DOI 10.6084/m9.figshare.29666735).
@@ -228,17 +229,9 @@ class PerezBlanco2026(BaseDataset):
             raise ValueError(f"{zip_name} not found in Figshare article")
         url = f"https://ndownloader.figshare.com/files/{file_id[zip_name]}"
 
-        path_zip = Path(
-            dl.data_dl(
-                url, self.code, path=path, force_update=force_update, verbose=verbose
-            )
+        eeg_dir = download_and_extract_zip(
+            url, self.code, f"{sub}/eeg", path, force_update, verbose
         )
-        path_folder = path_zip.parent
-
-        eeg_dir = path_folder / sub / "eeg"
-        if not eeg_dir.is_dir() or force_update:
-            with z.ZipFile(path_zip, "r") as zip_ref:
-                zip_ref.extractall(path_folder)
 
         edf_files = sorted(eeg_dir.glob(f"{sub}_task-*_run-*_eeg.edf"))
         if not edf_files:
@@ -309,7 +302,9 @@ class PerezBlanco2026(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw.set_montage(
-                make_standard_montage("standard_1005"), on_missing="ignore", verbose=False
+                make_standard_montage(resolve_montage_name("colin27_1005")),
+                on_missing="ignore",
+                verbose=False,
             )
 
         annotations = mne.annotations_from_events(
