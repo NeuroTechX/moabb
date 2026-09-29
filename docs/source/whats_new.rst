@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2022`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (by `Bruno Aristimunha`_).
+- Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2022`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
