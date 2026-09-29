@@ -8,7 +8,7 @@ import mne
 import pandas as pd
 import requests
 
-from ._openneuro_mirror import OpenNeuroMirrorMixin, drop_native_stim
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
@@ -184,7 +184,13 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             raw = mne.io.read_raw_edf(edf_path, preload=True, verbose=False)
             # The native ``Status`` code 1 marks rest onsets *and* ~1 s before
             # each task onset; kept, it would add 20 spurious rest epochs.
-            drop_native_stim(raw)
+            raw.drop_channels(
+                [
+                    ch
+                    for ch, kind in zip(raw.ch_names, raw.get_channel_types())
+                    if kind == "stim"
+                ]
+            )
 
             events_tsv = edf_path.with_name(
                 edf_path.name.replace("_eeg.edf", "_events.tsv")

@@ -7,7 +7,7 @@ import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
-from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin, relabel_annotations
+from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.lioi2020 import _AUTHORS, _CH_NAMES
 from moabb.datasets.metadata.schema import (
@@ -21,7 +21,7 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from moabb.datasets.utils import resolve_montage_name, stim_channels_with_selected_ids
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
@@ -194,11 +194,16 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             raw = mne.io.read_raw_brainvision(match[0], preload=True, verbose=False)
             if "ECG" in raw.ch_names:
                 raw.set_channel_types({"ECG": "ecg"})
-            relabel_annotations(raw, _MARKER_TO_LABEL)
+            raw.annotations.rename(
+                {
+                    k: v
+                    for k, v in _MARKER_TO_LABEL.items()
+                    if k in raw.annotations.description
+                }
+            )
             with mne.utils.use_log_level("error"):
                 raw.set_montage(
-                    make_standard_montage(resolve_montage_name("colin27_1005")),
-                    on_missing="ignore",
+                    make_standard_montage("colin27_1005"), on_missing="ignore"
                 )
             runs[f"{idx}{task}"] = stim_channels_with_selected_ids(raw, self.event_id)
         return {"0": runs}

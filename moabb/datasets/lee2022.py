@@ -21,7 +21,7 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from moabb.datasets.utils import resolve_montage_name, stim_channels_with_selected_ids
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
 _S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds004022"
@@ -213,11 +213,7 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
                 raw = mne.io.read_raw_eeglab(set_path, preload=True, verbose=False)
             raw.rename_channels({name: name.strip() for name in raw.ch_names})
             raw.set_annotations(self._imagery_annotations(raw.annotations))
-            raw.set_montage(
-                resolve_montage_name("colin27_1020"),
-                match_case=False,
-                on_missing="ignore",
-            )
+            raw.set_montage("colin27_1020", match_case=False, on_missing="ignore")
             runs[str(run_idx)] = stim_channels_with_selected_ids(raw, self.event_id)
         return {"0": runs}
 

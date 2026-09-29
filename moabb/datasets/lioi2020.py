@@ -6,11 +6,7 @@ from pathlib import Path
 import mne_bids
 import requests
 
-from ._openneuro_mirror import (
-    OpenNeuroMirrorMixin,
-    relabel_annotations,
-    write_dataset_description,
-)
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
@@ -25,7 +21,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from .utils import resolve_montage_name, stim_channels_with_selected_ids
+from .utils import stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
@@ -267,10 +263,14 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             raw.load_data()
             if "ECG" in raw.ch_names:
                 raw.set_channel_types({"ECG": "ecg"})
-            relabel_annotations(raw, _TRIALTYPE_TO_LABEL)
-            raw.set_montage(
-                resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
+            raw.annotations.rename(
+                {
+                    k: v
+                    for k, v in _TRIALTYPE_TO_LABEL.items()
+                    if k in raw.annotations.description
+                }
             )
+            raw.set_montage("colin27_1005", on_missing="ignore", verbose=False)
             if not self.return_all_modalities:
                 raw.pick("eeg")
             result.setdefault("0", {})[key] = stim_channels_with_selected_ids(
@@ -287,14 +287,16 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         sid = self._sid(subject)
         bids_root = Path(get_dataset_path("Lioi2020", path)) / "MNE-lioi2020-data"
         bids_root.mkdir(parents=True, exist_ok=True)
-        write_dataset_description(
-            bids_root,
-            "A multi-modal human neuroimaging dataset for data integration: "
+        mne_bids.make_dataset_description(
+            path=bids_root,
+            name="A multi-modal human neuroimaging dataset for data integration: "
             "simultaneous EEG and fMRI acquisition during a motor imagery "
             "neurofeedback task: XP2",
-            "1.2.0",
-            "10.18112/openneuro.ds002338.v2.0.1",
-            _AUTHORS,
+            authors=list(_AUTHORS),
+            doi="doi:10.18112/openneuro.ds002338.v2.0.1",
+            data_license="CC0",
+            overwrite=False,
+            verbose=False,
         )
 
         subj_dir = bids_root / f"sub-{sid}" / "eeg"

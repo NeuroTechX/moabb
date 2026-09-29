@@ -7,6 +7,7 @@ contract run once through a real loader, via ``MIXIN_CASE``.
 
 import hashlib
 import json
+from functools import partial
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -49,68 +50,69 @@ def test_mirror_flags(cls, nemar_id, subject, label, monkeypatch, tmp_path):
     ds._prefetch_nemar_sourcedata([subject])
 
 
+_MIXIN_PREFIX = f"sub-{MIXIN_CASE[3]}/eeg/sub-{MIXIN_CASE[3]}_task-test"
+_PAYLOADS = {
+    "dataset_description.json": json.dumps(
+        {"Name": "Synthetic", "BIDSVersion": "1.9.0"}
+    ).encode(),
+    f"{_MIXIN_PREFIX}_eeg.edf": b"synthetic EEG transport fixture, not a recording",
+    f"{_MIXIN_PREFIX}_events.tsv": b"onset\tduration\ttrial_type\n0\t1\tright_hand\n",
+    f"{_MIXIN_PREFIX}_channels.tsv": b"name\ttype\tunits\tstatus\nC3\tEEG\tuV\tbad\n",
+    f"sub-{MIXIN_CASE[3]}/eeg/sub-{MIXIN_CASE[3]}_electrodes.tsv": (
+        b"name\tx\ty\tz\nC3\t0\t0\t0\n"
+    ),
+    "sub-other/eeg/sub-other_task-test_eeg.edf": b"exclude other subject",
+    "sourcedata/original.edf": b"exclude sourcedata",
+}
+
+
+def _nemar_handler(request):
+    """Serve the synthetic NEMAR index, manifest and bytes for ``MIXIN_CASE``."""
+    nemar_id, path = MIXIN_CASE[1], request.url.path
+    if path == f"/{nemar_id}/":
+        return httpx.Response(
+            200,
+            json={
+                "dataset_id": nemar_id,
+                "latest": "v1.0.0",
+                "versions": [
+                    {"version": "v1.0.0", "manifest_url": f"/{nemar_id}/manifest.json"}
+                ],
+            },
+        )
+    if path == f"/{nemar_id}/manifest.json":
+        return httpx.Response(
+            200,
+            json=[
+                {
+                    "path": p,
+                    "url": f"https://data.nemar.org/bytes/{p}",
+                    "size": len(b),
+                    "sha256": hashlib.sha256(b).hexdigest(),
+                }
+                for p, b in _PAYLOADS.items()
+            ],
+        )
+    if path.startswith("/bytes/"):
+        return httpx.Response(200, content=_PAYLOADS[path.removeprefix("/bytes/")])
+    raise AssertionError(f"Unexpected HTTP request: {request.url}")
+
+
 def test_http_only_raw_selection(monkeypatch, tmp_path):
     """Leave SDK selection, transfer and hash verification real; no live HTTP."""
-    cls, nemar_id, subject, label = MIXIN_CASE
+    cls, _, subject, _ = MIXIN_CASE
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
-    prefix = f"sub-{label}/eeg/sub-{label}_task-test"
-    payloads = {
-        "dataset_description.json": json.dumps(
-            {"Name": "Synthetic", "BIDSVersion": "1.9.0"}
-        ).encode(),
-        f"{prefix}_eeg.edf": b"synthetic EEG transport fixture, not a recording",
-        f"{prefix}_events.tsv": b"onset\tduration\ttrial_type\n0\t1\tright_hand\n",
-        f"{prefix}_channels.tsv": b"name\ttype\tunits\tstatus\nC3\tEEG\tuV\tbad\n",
-        f"sub-{label}/eeg/sub-{label}_electrodes.tsv": b"name\tx\ty\tz\nC3\t0\t0\t0\n",
-        "sub-other/eeg/sub-other_task-test_eeg.edf": b"exclude other subject",
-        "sourcedata/original.edf": b"exclude sourcedata",
-    }
-    manifest = [
-        {
-            "path": p,
-            "url": f"https://data.nemar.org/bytes/{p}",
-            "size": len(b),
-            "sha256": hashlib.sha256(b).hexdigest(),
-        }
-        for p, b in payloads.items()
-    ]
-    seen = []
-
-    def handler(request):
-        path = request.url.path
-        seen.append(path)
-        if path == f"/{nemar_id}/":
-            return httpx.Response(
-                200,
-                json={
-                    "dataset_id": nemar_id,
-                    "latest": "v1.0.0",
-                    "versions": [
-                        {
-                            "version": "v1.0.0",
-                            "manifest_url": f"/{nemar_id}/manifest.json",
-                        }
-                    ],
-                },
-            )
-        if path == f"/{nemar_id}/manifest.json":
-            return httpx.Response(200, json=manifest)
-        if path.startswith("/bytes/"):
-            return httpx.Response(200, content=payloads[path.removeprefix("/bytes/")])
-        raise AssertionError(f"Unexpected HTTP request: {request.url}")
-
-    original = httpx.Client
+    handler = Mock(side_effect=_nemar_handler)
     monkeypatch.setattr(
-        httpx,
-        "Client",
-        lambda *a, **kw: original(*a, **dict(kw, transport=httpx.MockTransport(handler))),
+        httpx, "Client", partial(httpx.Client, transport=httpx.MockTransport(handler))
     )
     ds = cls()
     # Select the SDK HTTPS backend explicitly; retain real selection, transfer
     # and verification while mocking its HTTP transport only.
     ds.nemar_bids_filters = dict(ds.nemar_bids_filters, downloader="python")
     root = Path(ds._mirror_root(subject, tmp_path, False, False, None))
-    for path, data in payloads.items():
+    seen = [call.args[0].url.path for call in handler.call_args_list]
+    for path, data in _PAYLOADS.items():
         target = root / path
         if path.startswith(("sub-other/", "sourcedata/")):
             assert not target.exists()
@@ -124,7 +126,7 @@ def test_get_data_does_not_prefetch_sourcedata(monkeypatch):
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
     ds = cls()
     monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
-    monkeypatch.setattr(ds, "_get_selected_subject_data", lambda *args: {})
+    monkeypatch.setattr(ds, "_get_selected_subject_data", Mock(return_value={}))
     assert ds.get_data([subject]) == {subject: {}}
 
 
@@ -152,9 +154,9 @@ def test_iwama2023_ignores_the_native_status_trigger(tmp_path, monkeypatch):
     edf = tmp_path / "sub-001_ses-01_task-smrbmi_eeg.edf"
     ds = Iwama2023(subjects=[1])
     bids_path = SimpleNamespace(fpath=str(edf), session="01", run=None)
-    monkeypatch.setattr(ds, "bids_paths", lambda subject: [bids_path])
+    monkeypatch.setattr(ds, "bids_paths", Mock(return_value=[bids_path]))
     monkeypatch.setattr(
-        "moabb.datasets.iwama2023.mne.io.read_raw_edf", lambda *a, **k: raw.copy()
+        "moabb.datasets.iwama2023.mne.io.read_raw_edf", Mock(return_value=raw)
     )
     loaded = ds._get_single_subject_data(1)["01"]["0"]
     assert "Status" not in loaded.ch_names
@@ -169,9 +171,10 @@ def test_lioixp1_maps_block_markers_and_skips_absent_runs(monkeypatch):
     raw = _raw(["Cz", "ECG"], ["eeg", "eeg"], zip([1, 21, 22, 41], markers))
     ds = LioiXP1()
     runs = ["sub-xp102_task-eegNF_eeg.vhdr", "sub-xp102_task-MIpost_eeg.vhdr"]
-    monkeypatch.setattr(ds, "data_path", lambda subject: runs)
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=runs))
     monkeypatch.setattr(
-        "moabb.datasets.lioixp1.mne.io.read_raw_brainvision", lambda *a, **k: raw.copy()
+        "moabb.datasets.lioixp1.mne.io.read_raw_brainvision",
+        Mock(side_effect=[raw.copy() for _ in range(2)]),
     )
     loaded = ds._get_single_subject_data(2)["0"]
     assert list(loaded) == ["1eegNF", "4MIpost"]
@@ -188,7 +191,7 @@ def test_lioi2020_upstream_manifest_transport_only(monkeypatch, tmp_path):
     ds = Lioi2020(imagery_only=True)
     root = Path(ds._download_subject(4, str(tmp_path), False, None, None))
     description = json.loads((root / "dataset_description.json").read_text())
-    assert description["DatasetDOI"] == "10.18112/openneuro.ds002338.v2.0.1"
+    assert description["DatasetDOI"] == "doi:10.18112/openneuro.ds002338.v2.0.1"
     assert description["Authors"] == ds.METADATA.documentation.investigators
     urls = [call.args[0].split("/ds002338/")[1] for call in get.call_args_list]
     stem = "sub-xp204/eeg/sub-xp204_task-{}_eeg"
