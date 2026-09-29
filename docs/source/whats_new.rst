@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add KMIHandGrip2025, MILimbEEG dataset loaders with synthetic regression coverage (by `Bruno Aristimunha`_).
+- Add KMIHandGrip2025, MILimbEEG dataset loaders with synthetic regression coverage ({gh}`1198` by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
