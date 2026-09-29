@@ -23,8 +23,6 @@ from moabb.datasets.metadata.schema import (
 from moabb.datasets.utils import stim_channels_with_selected_ids
 from moabb.utils import _handle_deprecated_kwargs
 
-from .utils import resolve_montage_name
-
 
 BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
 
@@ -336,9 +334,7 @@ class PhysionetMI(BaseDataset):
         }
         # fmt: on
         raw.rename_channels(renames)
-        raw.set_montage(
-            mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
-        )
+        raw.set_montage(mne.channels.make_standard_montage("colin27_1005"))
         return raw
 
     def _get_single_subject_data(self, subject):
