@@ -145,7 +145,8 @@ def test_han_transport_flags(tmp_path, monkeypatch):
     ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
     assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert "ds007327/sub-001/sub-001_task-dribble_eeg.set" in download.call_args.args[0]
-    assert ds.nemar_id == "ds007327"
+    assert ds.doi == "10.18112/openneuro.ds007327.v1.1.0"
+    assert ds.nemar_id is None
 
 
 def test_kodera_shared_channels_preserve_units_and_bads(monkeypatch):

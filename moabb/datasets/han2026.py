@@ -121,8 +121,8 @@ class Han2026(BaseDataset):
 
     """
 
-    nemar_id = "ds007327"
-    nemar_subject_template = "{subject:03d}"
+    # OpenNeuro ds007327 is the upstream source, not a verified NEMAR mirror.
+    # Leave nemar_id unset until a genuine NEMAR ID is independently verified.
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
