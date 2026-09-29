@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 160
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,40 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.7910/DVN/GH74ZG": {
+        "title": "Cross-Session Motor Imagery EEG dataset",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2025,
+        "doi": "10.7910/DVN/GH74ZG"
+    },
+    "10.5281/zenodo.14672334": {
+        "title": "EEG Signal Dataset During Dorsiflexion and Plantar Flexion Movements",
+        "authors": [
+            "Cristina Polo-Hortiguela",
+            "Mario Ortiz",
+            "Eduardo Ianez",
+            "Jose M. Azorin"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.14672334"
+    },
+    "10.1088/1741-2552/ad0a01": {
+        "title": "Riemannian geometric and ensemble learning for decoding cross-session motor imagery electroencephalography signals",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2023,
+        "doi": "10.1088/1741-2552/ad0a01"
+    },
+    "10.7910/DVN/251NOW": {
+        "title": "A cross-session motor imagery EEG dataset",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2023,
+        "doi": "10.7910/DVN/251NOW"
     }
 }
