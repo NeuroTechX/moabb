@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add the offline calibration subsets of Perdikis2018 and SpinalStim2025 (by `Bruno Aristimunha`_).
+- Add the offline calibration subsets of Perdikis2018 and SpinalStim2025 (:gh:`1191`) (by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
