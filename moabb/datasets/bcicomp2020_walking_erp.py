@@ -406,7 +406,7 @@ class BCIComp2020WalkingERP(BaseDataset):
                 ch_names,
                 _SFREQ,
                 labels,
-                montage_name="standard_1005",
+                montage_name="colin27_1005",
                 ch_types=_CH_TYPES,
                 onset_sample=_STIM_ONSET_SAMPLE,
             )

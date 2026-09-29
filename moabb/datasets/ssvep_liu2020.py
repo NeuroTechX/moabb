@@ -217,7 +217,7 @@ class Liu2020BETA(BaseDataset):
 
         event_ids = np.repeat(np.arange(1, n_classes + 1), n_blocks)
         raw = build_raw_from_epochs(
-            data, TSINGHUA_64CH_NAMES, 250, event_ids, "standard_1005"
+            data, TSINGHUA_64CH_NAMES, 250, event_ids, "colin27_1005"
         )
 
         # Set subject_info for BIDS export (sex, his_id are MNE-supported keys)
