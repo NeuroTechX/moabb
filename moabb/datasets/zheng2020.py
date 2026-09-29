@@ -28,7 +28,6 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -241,7 +240,7 @@ class Zheng2020(BaseDataset):
                 ch_types = ["eeg"] * 62 + ["stim"]
                 info = mne.create_info(ch_names, 1000.0, ch_types)
                 raw = mne.io.RawArray(all_data, info, verbose=False)
-                raw.set_montage(resolve_montage_name("colin27_1020"), on_missing="warn")
+                raw.set_montage("colin27_1020", on_missing="warn")
 
                 runs[str(block_idx)] = raw
 
