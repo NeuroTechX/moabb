@@ -26,7 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import extract_rar, resolve_montage_name
+from .utils import extract_rar
 
 
 log = logging.getLogger(__name__)
@@ -146,8 +146,7 @@ def _bci2000_to_raw(fpath, event_mapping):
     # labels, or the EGI HydroCel-32 geometry for the assumed E# order.
     if ch_source == "header":
         raw.set_montage(
-            mne.channels.make_standard_montage(resolve_montage_name("colin27_1005")),
-            on_missing="ignore",
+            mne.channels.make_standard_montage("colin27_1005"), on_missing="ignore"
         )
     elif ch_source == "egi":
         raw.set_montage(

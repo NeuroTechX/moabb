@@ -4,14 +4,12 @@ import configparser
 import json
 import warnings
 import zipfile
-from pathlib import Path
 from unittest.mock import Mock
 
 import mne
 import numpy as np
 import pytest
 
-from moabb.datasets import _montage
 from moabb.datasets import utils as dsu
 from moabb.datasets._openneuro_mirror import (
     OpenNeuroMirrorMixin,
@@ -24,32 +22,6 @@ from moabb.datasets.preprocessing import _is_preserved_annotation
 
 
 # --------------------------------------------------------------------------- montage
-@pytest.mark.parametrize("name", ["standard_1005", "colin27_1005"])
-def test_resolve_montage_name_matches_installed_mne(name):
-    """Either spelling resolves to a name the installed MNE builds silently."""
-    resolved = dsu.resolve_montage_name(name)
-    assert resolved in mne.channels.get_builtin_montages()
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        montage = mne.channels.make_standard_montage(resolved)
-    assert "Cz" in montage.ch_names
-
-
-@pytest.mark.parametrize(
-    "builtin, expected",
-    [
-        (["colin27_1020", "standard_1020"], "colin27_1020"),
-        (["standard_1020"], "standard_1020"),
-    ],
-)
-def test_resolve_montage_name_per_mne_version(monkeypatch, builtin, expected):
-    """MNE >= 1.13 gets the colin27 name, older MNE the legacy one."""
-    monkeypatch.setattr(mne.channels, "get_builtin_montages", lambda: builtin)
-    assert _montage.resolve_montage_name("standard_1020") == expected
-    assert _montage.resolve_montage_name("colin27_1020") == expected
-    assert _montage.resolve_montage_name("biosemi64") == "biosemi64"
-
-
 def test_montage_helpers_emit_no_deprecation_warning():
     raw = mne.io.RawArray(
         np.zeros((3, 10)), mne.create_info(["FP1", "CZ", "STI"], 100.0, "eeg")
@@ -58,7 +30,7 @@ def test_montage_helpers_emit_no_deprecation_warning():
         warnings.simplefilter("error")
         dsu.set_neuroscan_montage(raw)
         built = dsu.build_raw_from_epochs(
-            np.ones((2, 2, 4)), ["C3", "Cz"], 100.0, [1, 2], "standard_1020"
+            np.ones((2, 2, 4)), ["C3", "Cz"], 100.0, [1, 2], "colin27_1020"
         )
     assert raw.ch_names[:2] == ["Fp1", "Cz"]
     assert not np.isnan(raw.get_montage().get_positions()["ch_pos"]["Cz"]).any()
@@ -293,8 +265,3 @@ def test_mirror_mixin_download_iterates_data_path():
     ds.data_path.reset_mock()
     ds.download([2])
     ds.data_path.assert_called_once_with(2, None, False, None, None)
-
-
-def test_helpers_are_reexported():
-    assert dsu.resolve_montage_name is _montage.resolve_montage_name
-    assert Path(dsu.__file__).name == "utils.py"

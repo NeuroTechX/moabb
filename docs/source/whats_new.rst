@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*``, warns on the old names and MNE 1.14 removes them. The new :func:`moabb.datasets.utils.resolve_montage_name` returns the spelling the installed MNE knows (the electrode files are identical), and every ``make_standard_montage``/``set_montage`` call in MOABB now goes through it, so loaders keep working on MNE 1.10-1.14 without a ``FutureWarning``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
+- Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
@@ -31,7 +31,7 @@ API changes
 
 Requirements
 ~~~~~~~~~~~~
-- None yet.
+- Require ``mne>=1.13`` for the ``colin27_*`` montage names and :func:`mne.io.read_raw_brainvision`'s ``overrides`` (:gh:`1200` by `Bruno Aristimunha`_).
 
 Bugs
 ~~~~

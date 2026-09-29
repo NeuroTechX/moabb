@@ -327,7 +327,6 @@ Utilities
     utils.find_intersecting_channels
     utils.plot_datasets_grid
     utils.plot_datasets_cluster
-    utils.resolve_montage_name
     utils.download_and_extract_zip
     utils.read_raw_brainvision_repaired
     utils.rename_stimulus_codes

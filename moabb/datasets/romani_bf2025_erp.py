@@ -27,8 +27,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 BRAINFORM_URL = "https://zenodo.org/records/17225966/files/BIDS.zip"
 
@@ -268,7 +266,7 @@ class RomaniBF2025ERP(BaseDataset):
         extra_runs: bool = False,
         include_inference: bool = False,
         load_failed: bool = False,
-        montage: str = "standard_1020",
+        montage: str = "colin27_1020",
         sessions: Optional[List[str]] = None,
         calibration_buffer=1.5,
     ):
@@ -567,9 +565,7 @@ class RomaniBF2025ERP(BaseDataset):
                 raw.load_data()
 
                 # Set montage
-                montage = mne.channels.make_standard_montage(
-                    resolve_montage_name(self.montage)
-                )
+                montage = mne.channels.make_standard_montage(self.montage)
                 raw.set_montage(montage)
 
                 # Extract events

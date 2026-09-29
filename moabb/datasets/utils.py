@@ -25,7 +25,6 @@ from mne.io import RawArray
 import moabb.datasets as db
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
-from moabb.datasets._montage import resolve_montage_name
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
 
@@ -209,9 +208,7 @@ def set_neuroscan_montage(raw, montage_name="colin27_1005"):
     raw.rename_channels(
         {ch: ch.replace("Z", "z").replace("FP", "Fp") for ch in raw.ch_names}
     )
-    raw.set_montage(
-        make_standard_montage(resolve_montage_name(montage_name)), on_missing="ignore"
-    )
+    raw.set_montage(make_standard_montage(montage_name), on_missing="ignore")
 
 
 def download_and_extract_zip(
@@ -674,8 +671,7 @@ def build_raw_from_epochs(
     event_ids : ndarray
         Integer event code for each trial, of shape ``(n_trials,)``.
     montage_name : str
-        Name of a standard MNE montage (e.g. "colin27_1005", "biosemi32");
-        legacy ``standard_*`` names are resolved by :func:`resolve_montage_name`.
+        Name of a standard MNE montage (e.g. "colin27_1005", "biosemi32").
     ch_types : list of str or None
         Channel types for each signal channel in ``ch_names``. If None, all
         channels are treated as ``"eeg"``.
@@ -765,7 +761,7 @@ def build_raw_from_epochs(
     ch_types_full = list(ch_types) + ["stim"]
     info = create_info(ch_names_full, sfreq, ch_types_full)
     raw = RawArray(data=continuous, info=info, verbose=False)
-    montage = make_standard_montage(resolve_montage_name(montage_name))
+    montage = make_standard_montage(montage_name)
     raw.set_montage(montage, on_missing="ignore")
     return raw
 
