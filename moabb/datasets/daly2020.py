@@ -3,14 +3,10 @@
 import logging
 from pathlib import Path
 
+import mne_bids
 import numpy as np
 
-from ._openneuro_mirror import (
-    OpenNeuroMirrorMixin,
-    drop_native_stim,
-    relabel_annotations,
-    write_dataset_description,
-)
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .download import data_dl, get_dataset_path
 from .metadata.schema import (
@@ -42,6 +38,11 @@ _CH_NAMES = "FP1 FP2 F7 F3 Fz F4 F8 T3 C3 Cz C4 T4 T5 P3 Pz P4 T6 O1 O2".split()
 _N_RUNS = 9
 _CALIBRATION_RUN = 1
 _RUN_SUFFIXES = "eeg.edf eeg.json channels.tsv events.tsv events.json".split()
+
+
+def _run_number(bids_path):
+    """Run number carried by the BIDS ``task-runN`` entity."""
+    return int("".join(c for c in bids_path.task if c.isdigit()))
 
 
 class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
@@ -162,9 +163,6 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         the default loader would collapse all files onto one key.
         """
 
-        def _run_number(bids_path):
-            return int("".join(c for c in bids_path.task if c.isdigit()))
-
         ordered = sorted(self.bids_paths(subject), key=_run_number)
         run_numbers = [_run_number(p) for p in ordered]
         if len(run_numbers) != len(set(run_numbers)):
@@ -174,8 +172,21 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         for bids_path in ordered:
             if _run_number(bids_path) == _CALIBRATION_RUN:
                 continue
-            raw = drop_native_stim(self._read_raw_bids(bids_path))
-            relabel_annotations(raw, _VALUE_TO_NAME)
+            raw = self._read_raw_bids(bids_path)
+            raw.drop_channels(
+                [
+                    ch
+                    for ch, kind in zip(raw.ch_names, raw.get_channel_types())
+                    if kind == "stim"
+                ]
+            )
+            raw.annotations.rename(
+                {
+                    k: v
+                    for k, v in _VALUE_TO_NAME.items()
+                    if k in raw.annotations.description
+                }
+            )
             if not np.isin(raw.annotations.description, list(self.event_id)).any():
                 log.warning(
                     "Skipping Daly2020 subject %02d %s: no motor-imagery events",
@@ -192,8 +203,6 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         return {"0": runs}
 
     def _read_raw_bids(self, bids_path):
-        import mne_bids
-
         raw = mne_bids.read_raw_bids(
             bids_path, extra_params=self._get_read_extra_params(None), verbose=False
         )
@@ -221,12 +230,14 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
                     verbose=verbose,
                     fname=rel_path,
                 )
-        write_dataset_description(
-            bids_root,
-            "A dataset recorded during development of a tempo-based "
+        mne_bids.make_dataset_description(
+            path=bids_root,
+            name="A dataset recorded during development of a tempo-based "
             "brain-computer music interface",
-            "1.0.2",
-            "10.18112/openneuro.ds002720.v1.0.1",
-            self.METADATA.documentation.investigators,
+            authors=list(self.METADATA.documentation.investigators),
+            doi="doi:10.18112/openneuro.ds002720.v1.0.1",
+            data_license="CC0",
+            overwrite=False,
+            verbose=False,
         )
         return str(bids_root)

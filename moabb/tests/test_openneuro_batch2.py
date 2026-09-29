@@ -107,9 +107,7 @@ def _assert_loaded(raw, expected, event_id=None, tmax=None):
 def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
     raw = _raw(["OVTK_GDF_Right", "OVTK_GDF_Tongue"])
     monkeypatch.setattr(
-        BaseBIDSDataset,
-        "_get_single_subject_data",
-        lambda self, subject: {"0": {"1": raw}},
+        BaseBIDSDataset, "_get_single_subject_data", Mock(return_value={"0": {"1": raw}})
     )
     ds = Peterson2022()
     assert ds._get_read_extra_params(2) == {"units": "uV"}
@@ -124,20 +122,20 @@ def test_peterson_get_data_builds_pipeline_without_sourcedata(monkeypatch):
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
     ds = Peterson2022()
     monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
-    monkeypatch.setattr(ds, "_get_selected_subject_data", lambda *args: {})
+    monkeypatch.setattr(ds, "_get_selected_subject_data", Mock(return_value={}))
     assert ds.get_data([2]) == {2: {}}
 
 
 def test_daly_native_stim_units_and_missing_runs(monkeypatch):
     ds = Daly2020()
-    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(9))
-    monkeypatch.setattr(ds, "_read_raw_bids", lambda path: _raw(["1", "2"]))
+    monkeypatch.setattr(ds, "bids_paths", Mock(return_value=_daly_paths(9)))
+    monkeypatch.setattr(ds, "_read_raw_bids", Mock(return_value=_raw(["1", "2"])))
     _assert_loaded(ds._get_single_subject_data(1)["0"]["0"], [[0, 1], [600, 2]])
 
 
 def test_daly_duplicate_runs_rejected(monkeypatch):
     ds = Daly2020()
-    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(2, 2))
+    monkeypatch.setattr(ds, "bids_paths", Mock(return_value=_daly_paths(2, 2)))
     with pytest.raises(ValueError, match="duplicate"):
         ds._get_single_subject_data(1)
 
@@ -145,10 +143,11 @@ def test_daly_duplicate_runs_rejected(monkeypatch):
 def test_daly_skips_only_targetless_noncalibration_runs(monkeypatch):
     """A released empty events.tsv is skipped and valid runs stay re-indexed."""
     ds = Daly2020()
-    raws = {"run2": _raw([]), "run3": _raw(["1", "2"]), "run4": _raw(["2"])}
-    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(1, 2, 3, 4))
-    monkeypatch.setattr(ds, "_read_raw_bids", lambda path: raws[path.task])
+    reader = Mock(side_effect=[_raw([]), _raw(["1", "2"]), _raw(["2"])])
+    monkeypatch.setattr(ds, "bids_paths", Mock(return_value=_daly_paths(1, 2, 3, 4)))
+    monkeypatch.setattr(ds, "_read_raw_bids", reader)
     runs = ds._get_single_subject_data(5)["0"]
+    assert [c.args[0].task for c in reader.call_args_list] == ["run2", "run3", "run4"]
     assert list(runs) == ["0", "1"]
     assert list(runs["0"].annotations.description) == ["right_hand", "relax"]
     assert list(runs["1"].annotations.description) == ["relax"]
@@ -156,10 +155,12 @@ def test_daly_skips_only_targetless_noncalibration_runs(monkeypatch):
 
 def test_daly_raises_when_no_noncalibration_run_has_targets(monkeypatch):
     ds = Daly2020()
-    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(1, 2, 3))
+    monkeypatch.setattr(ds, "bids_paths", Mock(return_value=_daly_paths(1, 2, 3)))
     # Also cover a release file without a native stim channel.
     monkeypatch.setattr(
-        ds, "_read_raw_bids", lambda path: _raw([]).drop_channels(["native"])
+        ds,
+        "_read_raw_bids",
+        Mock(side_effect=[_raw([]).drop_channels(["native"]) for _ in range(2)]),
     )
     with pytest.raises(ValueError, match="subject 5 has no usable motor-imagery runs"):
         ds._get_single_subject_data(5)
@@ -178,13 +179,13 @@ def test_damm_block_onsets_first_last_and_empty(tmp_path):
 
 def test_damm_loader_native_stim_and_si_units(monkeypatch):
     ds = Damm2026()
-    monkeypatch.setattr(ds, "data_path", lambda subject: ["test_eeg.edf"] * 4)
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=["test_eeg.edf"] * 4))
     monkeypatch.setattr(
         "moabb.datasets.damm2026.mne.io.read_raw_edf",
-        lambda *args, **kwargs: _raw(["ignored", "ignored"]),
+        Mock(side_effect=[_raw(["ignored", "ignored"]) for _ in range(4)]),
     )
     monkeypatch.setattr(
-        ds, "_read_events", lambda *args: np.array([[0, 0, 3], [400, 0, 7]])
+        ds, "_read_events", Mock(return_value=np.array([[0, 0, 3], [400, 0, 7]]))
     )
     runs = ds._get_single_subject_data(1)["0"]
     assert len(runs) == 4

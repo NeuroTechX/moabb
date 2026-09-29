@@ -2,12 +2,9 @@
 
 from pathlib import Path
 
-from ._openneuro_mirror import (
-    OpenNeuroMirrorMixin,
-    drop_native_stim,
-    relabel_annotations,
-    write_dataset_description,
-)
+import mne_bids
+
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .bids_interface import StepType
 from .download import data_dl, get_dataset_path
@@ -213,7 +210,20 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
         result = {}
         for sess_key, session_runs in super()._get_single_subject_data(subject).items():
             for run_key, raw in session_runs.items():
-                relabel_annotations(drop_native_stim(raw), _ANNOT_TO_NAME)
+                raw.drop_channels(
+                    [
+                        ch
+                        for ch, kind in zip(raw.ch_names, raw.get_channel_types())
+                        if kind == "stim"
+                    ]
+                )
+                raw.annotations.rename(
+                    {
+                        k: v
+                        for k, v in _ANNOT_TO_NAME.items()
+                        if k in raw.annotations.description
+                    }
+                )
                 result.setdefault(sess_key, {})[run_key] = (
                     stim_channels_with_selected_ids(raw, self.event_id)
                 )
@@ -241,11 +251,13 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
                     verbose=verbose,
                     fname=rel_path,
                 )
-        write_dataset_description(
-            bids_root,
-            "Motor Imagery vs Rest - Low-Cost EEG System",
-            "1.1.1",
-            "10.18112/openneuro.ds003810.v2.0.2",
-            self.METADATA.documentation.investigators,
+        mne_bids.make_dataset_description(
+            path=bids_root,
+            name="Motor Imagery vs Rest - Low-Cost EEG System",
+            authors=list(self.METADATA.documentation.investigators),
+            doi="doi:10.18112/openneuro.ds003810.v2.0.2",
+            data_license="CC0",
+            overwrite=False,
+            verbose=False,
         )
         return str(bids_root)
