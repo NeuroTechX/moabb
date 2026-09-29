@@ -30,7 +30,6 @@ from moabb.datasets.metadata.schema import (
 
 from .base import BaseDataset
 from .download import get_dataset_path
-from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -373,7 +372,7 @@ class Weibo2014(BaseDataset):
             struct_as_record=False,
             verify_compressed_data_integrity=False,
         )
-        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
+        montage = mne.channels.make_standard_montage("colin27_1005")
 
         # fmt: off
         ch_names = [
