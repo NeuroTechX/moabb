@@ -1,9 +1,4 @@
-"""Freewill reach-and-grasp motor-execution EEG dataset (Thapa et al. 2025).
-
-Thapa, Boggess and Bae (2025), Scientific Data.
-Article DOI: 10.1038/s41597-025-06039-9
-Data: Figshare article 28632599 (single BIDS archive, CC BY 4.0).
-"""
+"""Freewill reach-and-grasp motor-execution EEG dataset (Thapa et al. 2025)."""
 
 import csv
 import re
@@ -105,11 +100,9 @@ class Thapa2025(BaseDataset):
     Summary-table trials per class are the cohort mean (6808 / 23 / 4 = 74),
     not a balanced design: participants freely selected targets.
 
-    Notes on events: the ``.vmrk`` marker files contain only a "New Segment"
-    marker; the per-trial target selection lives in the BIDS ``events.tsv``
-    sidecar, from which ``read_raw_bids`` builds the annotations. The exact
-    ``trial_type`` label strings for the four cups are not documented, so the
-    loader normalises common variants to ``Tgt1``..``Tgt4``.
+    The ``.vmrk`` files hold only a "New Segment" marker; targets are read from
+    the BIDS ``events.tsv`` sidecar, normalising label variants to
+    ``Tgt1``..``Tgt4``.
 
     References
     ----------
@@ -272,17 +265,8 @@ class Thapa2025(BaseDataset):
         root = self._bids_root(path, force_update=force_update, verbose=verbose)
         subj = f"{subject:02d}"
 
-        # get_entity_vals() has no positive session= filter kwarg (only
-        # ignore_sessions); take the dataset-wide union of session/run labels
-        # and keep only the combinations that actually exist for this subject.
-        #
-        # Subjects have different numbers of sessions (e.g. sub-01 has ses-01
-        # and ses-02 but no ses-03, sub-02 has only ses-01), so a session from
-        # the dataset-wide union may be absent for this subject. Resolving a
-        # BIDSPath into a missing session directory makes mne_bids os.scandir a
-        # non-existent path and raise FileNotFoundError, so skip any session
-        # whose directory is absent before scanning, and guard the per-run
-        # existence check defensively.
+        # Dataset-wide session/run labels; keep only combinations present for
+        # this subject (sessions vary, and mne_bids raises on a missing dir).
         sessions = get_entity_vals(root, "session") or [None]
         all_runs = get_entity_vals(root, "run") or [None]
         bids_paths = []
@@ -363,51 +347,28 @@ class Thapa2025(BaseDataset):
     def _annotations_from_events(events_path):
         """Read BIDS events without assuming rectangular optional columns.
 
-        The source's sub-13/run-0001 events.tsv has one target row without an
-        empty ``stim_file`` field and the following row has an extra trailing
-        tab. ``mne_bids`` delegates this to ``numpy.loadtxt`` and rejects the
-        whole run. ``csv.DictReader`` preserves the required onset and target
-        fields in both rows, so no protocol event needs to be discarded.
+        sub-13/run-0001 events.tsv has a row missing the empty ``stim_file``
+        field and a row with an extra trailing tab, which ``mne_bids``
+        (``numpy.loadtxt``) rejects; ``csv.DictReader`` keeps every event.
         """
-        events_path = Path(events_path)
-        onsets, durations, descriptions = [], [], []
-        with events_path.open(encoding="utf-8", newline="") as fin:
-            reader = csv.DictReader(fin, delimiter="\t")
-            required = {"onset", "duration", "trial_type"}
-            if reader.fieldnames is None or not required.issubset(reader.fieldnames):
-                raise ValueError(
-                    f"Thapa2025 events file {events_path} lacks required columns "
-                    f"{sorted(required)}; found {reader.fieldnames}."
-                )
-            for line_number, row in enumerate(reader, start=2):
-                onset = (row.get("onset") or "").strip()
-                trial_type = (row.get("trial_type") or "").strip()
-                if not onset or not trial_type:
-                    raise ValueError(
-                        f"Thapa2025 events file {events_path} has no onset or "
-                        f"trial_type at line {line_number}."
-                    )
-                try:
-                    onset_value = float(onset)
-                except ValueError as exc:
-                    raise ValueError(
-                        f"Invalid onset {onset!r} in {events_path} line {line_number}."
-                    ) from exc
-                duration = (row.get("duration") or "").strip()
-                if duration.lower() in {"", "n/a", "na"}:
-                    duration_value = 0.0
-                else:
-                    try:
-                        duration_value = float(duration)
-                    except ValueError as exc:
-                        raise ValueError(
-                            f"Invalid duration {duration!r} in {events_path} "
-                            f"line {line_number}."
-                        ) from exc
-                onsets.append(onset_value)
-                durations.append(duration_value)
-                descriptions.append(_target_from_description(trial_type) or trial_type)
-        return mne.Annotations(onsets, durations, descriptions)
+        with Path(events_path).open(encoding="utf-8", newline="") as fin:
+            rows = list(csv.DictReader(fin, delimiter="\t"))
+        try:
+            onsets = [float(row["onset"]) for row in rows]
+            durations = [
+                0.0
+                if (row["duration"] or "").strip().lower() in {"", "n/a", "na"}
+                else float(row["duration"])
+                for row in rows
+            ]
+            types = [row["trial_type"].strip() for row in rows]
+            if not all(types):
+                raise ValueError("empty trial_type")
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError(f"Malformed Thapa2025 events file {events_path}") from exc
+        return mne.Annotations(
+            onsets, durations, [_target_from_description(t) or t for t in types]
+        )
 
     @staticmethod
     def _events_path_for_header(vhdr_path):
@@ -427,19 +388,15 @@ class Thapa2025(BaseDataset):
         ses_key = {s: str(i) for i, s in enumerate(ses_ids)}
 
         sessions = {}
-        run_counter = {}
         for bids_path in bids_paths:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 raw = self._read_brainvision(bids_path.fpath)
 
             # Type the auxiliary channels and (by default) keep EEG only.
-            type_map = {ch: "eog" for ch in _EOG_CHANNELS if ch in raw.ch_names}
-            for ch in _AUX_DROP:
-                if ch in raw.ch_names:
-                    type_map[ch] = "misc"
-            if type_map:
-                raw.set_channel_types(type_map)
+            types = {ch: "eog" for ch in _EOG_CHANNELS if ch in raw.ch_names}
+            types.update({ch: "misc" for ch in _AUX_DROP if ch in raw.ch_names})
+            raw.set_channel_types(types)
 
             events_path = self._events_path_for_header(bids_path.fpath)
             raw.set_annotations(self._annotations_from_events(events_path))
@@ -448,9 +405,7 @@ class Thapa2025(BaseDataset):
                 raw.pick("eeg")
             raw.set_montage("standard_1020", on_missing="ignore", verbose=False)
 
-            skey = ses_key[bids_path.session]
-            rkey = str(run_counter.get(skey, 0))
-            run_counter[skey] = run_counter.get(skey, 0) + 1
-            sessions.setdefault(skey, {})[rkey] = raw
+            runs = sessions.setdefault(ses_key[bids_path.session], {})
+            runs[str(len(runs))] = raw
 
         return sessions

@@ -24,40 +24,10 @@ MOVING2024_URL = "https://zenodo.org/records/12804784/files/edf.rar"
 
 # 32 EEG channels in the order stored in the EDF header. Trailing X, Y, Z are
 # the Enobio accelerometer axes (set to ``misc``, not EEG).
-MOVING2024_EEG_CHANNELS = [
-    "P7",
-    "P4",
-    "Cz",
-    "Pz",
-    "P3",
-    "P8",
-    "O1",
-    "O2",
-    "T8",
-    "F8",
-    "C4",
-    "F4",
-    "Fp2",
-    "Fz",
-    "C3",
-    "F3",
-    "Fp1",
-    "T7",
-    "F7",
-    "Oz",
-    "PO4",
-    "FC6",
-    "FC2",
-    "AF4",
-    "CP6",
-    "CP2",
-    "CP1",
-    "CP5",
-    "FC1",
-    "FC5",
-    "AF3",
-    "PO3",
-]
+MOVING2024_EEG_CHANNELS = (
+    "P7 P4 Cz Pz P3 P8 O1 O2 T8 F8 C4 F4 Fp2 Fz C3 F3 Fp1 T7 F7 Oz PO4 FC6 FC2 AF4 "
+    "CP6 CP2 CP1 CP5 FC1 FC5 AF3 PO3"
+).split()
 
 
 class MOVING2024(BaseDataset):
@@ -225,28 +195,7 @@ class MOVING2024(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the path to a single subject's EDF file.
-
-        Downloads and extracts ``edf.rar`` from Zenodo if needed.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for (1-11).
-        path : None | str
-            Location of where to look for the data storing location.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level.
-
-        Returns
-        -------
-        list
-            A one-element list with the path to the subject's EDF file.
-        """
+        """Return ``[edf_path]``, downloading and extracting ``edf.rar`` if needed."""
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number {subject}. Must be in 1-11.")
 
@@ -295,18 +244,7 @@ class MOVING2024(BaseDataset):
         return matches
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-
-        Returns
-        -------
-        dict
-            ``{"0": {"0": raw}}`` for the single session and run.
-        """
+        """Return ``{"0": {"0": raw}}`` with class-labelled trigger annotations."""
         file_path = self.data_path(subject)[0]
 
         with warnings.catch_warnings():
@@ -316,9 +254,9 @@ class MOVING2024(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             # Mark the three accelerometer axes as non-EEG.
-            misc = {ch: "misc" for ch in ("X", "Y", "Z") if ch in raw.ch_names}
-            if misc:
-                raw.set_channel_types(misc)
+            raw.set_channel_types(
+                {ch: "misc" for ch in ("X", "Y", "Z") if ch in raw.ch_names}
+            )
             raw.set_montage("standard_1020", on_missing="ignore", verbose=False)
 
         # Relabel numbered triggers into class labels; drop everything else
@@ -330,9 +268,7 @@ class MOVING2024(BaseDataset):
             raise RuntimeError(
                 f"MOVING2024 subject {subject}: no annotation matched the "
                 f"expected trigger labels {sorted(self._trigger_map)}. Found "
-                f"annotation descriptions: {found}. The EDF trigger naming may "
-                f"differ from the assumed 'Trigger#<N>' scheme; without a match "
-                f"the paradigm would silently yield zero epochs."
+                f"annotation descriptions: {found}."
             )
         new_desc = [self._trigger_map[ann.description[i]] for i in keep]
         new_ann = mne.Annotations(

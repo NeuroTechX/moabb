@@ -1,10 +1,4 @@
-"""MIND multimodal fNIRS-EEG four-class directional motor imagery dataset.
-
-Feng, Xu, Zhang, Lin, Deng, Tao, Liu, Jia, Duan, and Jia (2026).
-*MIND: A Multimodal fNIRS-EEG Dataset for Unilateral Limb Motor Imagery.*
-Preprint: arXiv 2602.04299.
-Data DOI: 10.57760/sciencedb.34326 (ScienceDB).
-"""
+"""MIND multimodal fNIRS-EEG four-class directional motor imagery dataset."""
 
 import csv
 import logging
@@ -245,10 +239,7 @@ class MIND2026(BaseDataset):
     )
 
     def __init__(self, subjects=None, sessions=None):
-        # This loader is EEG-only: it reads just the BrainVision EEG blocks and never
-        # touches the separate fNIRS modality. A ``return_all_modalities`` flag
-        # would only pick channels within an already-loaded recording, so it
-        # could not surface fNIRS here; it is therefore not exposed.
+        # EEG-only: fNIRS is a separate recording, so no return_all_modalities.
         super().__init__(
             subjects=list(range(1, 31)),
             sessions_per_subject=1,
@@ -358,9 +349,10 @@ class MIND2026(BaseDataset):
         if len(mi_events) == _N_MI_EVENTS_PER_RUN and counts == expected_counts:
             return mi_events
 
-        counts_text = ", ".join(
-            f"{code}:{counts.get(code, 0)}" for code in sorted(mi_codes)
-        )
+        def fmt(c):
+            return ", ".join(f"{code}:{c.get(code, 0)}" for code in sorted(mi_codes))
+
+        counts_text = fmt(counts)
         context = f"{recording} from {source}"
         if len(mi_events) <= _N_MI_EVENTS_PER_RUN:
             raise RuntimeError(
@@ -385,29 +377,21 @@ class MIND2026(BaseDataset):
             if code in mi_codes
         ]
         suffix_counts = Counter(code for _, code in suffix)
-        suffix_counts_text = ", ".join(
-            f"{code}:{suffix_counts.get(code, 0)}" for code in sorted(mi_codes)
-        )
         if len(suffix) != _N_MI_EVENTS_PER_RUN or suffix_counts != expected_counts:
             raise RuntimeError(
                 f"MIND2026: the events after the final code 1 restart marker in "
                 f"{context} are not one complete run; expected "
                 f"{_N_MI_EVENTS_PER_RUN} MI events "
                 f"({_N_MI_EVENTS_PER_CLASS} per class), found {len(suffix)} "
-                f"({suffix_counts_text})."
+                f"({fmt(suffix_counts)})."
             )
 
-        first_half = [code for _, code in suffix[:20]]
-        second_half = [code for _, code in suffix[20:]]
-        if not all(code in {4, 5} for code in first_half):
+        halves = [code in {4, 5} for _, code in suffix[:20]]
+        halves += [code in {6, 7} for _, code in suffix[20:]]
+        if not all(halves):
             raise RuntimeError(
-                f"MIND2026: the first 20 MI events after the final code 1 restart "
-                f"marker in {context} must use only codes 4/5."
-            )
-        if not all(code in {6, 7} for code in second_half):
-            raise RuntimeError(
-                f"MIND2026: the last 20 MI events after the final code 1 restart "
-                f"marker in {context} must use only codes 6/7."
+                f"MIND2026: the MI events after the final code 1 restart marker in "
+                f"{context} must be 20 codes 4/5 followed by 20 codes 6/7."
             )
         return suffix
 

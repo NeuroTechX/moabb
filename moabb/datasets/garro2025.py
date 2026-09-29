@@ -33,47 +33,18 @@ _ROOT_FILE_IDS = {
     "participants.tsv": 49987440,
     "README.txt": 49987452,
 }
+# fmt: off
 _SUBJECT_FILE_IDS = {
-    1: 49987455,
-    2: 49987458,
-    3: 49987461,
-    4: 49987464,
-    5: 49987467,
-    6: 49987473,
-    7: 49987476,
-    8: 49987482,
-    9: 49987485,
-    10: 49987488,
-    11: 49987491,
-    12: 49987494,
-    13: 49987497,
-    14: 49987500,
-    15: 49987503,
-    16: 49987506,
-    17: 49987509,
-    18: 49987512,
-    19: 49987515,
-    20: 49987518,
-    21: 49987521,
-    22: 49987536,
-    23: 49987539,
-    24: 49987545,
-    25: 49987554,
-    26: 49987560,
-    27: 49987563,
-    29: 49987575,
-    30: 49987578,
-    31: 49987581,
-    32: 49987584,
-    33: 49987587,
-    34: 49987599,
-    35: 49987605,
-    36: 49987608,
-    37: 49987611,
-    38: 49987614,
-    39: 49987617,
-    40: 49987632,
+    1: 49987455, 2: 49987458, 3: 49987461, 4: 49987464, 5: 49987467,
+    6: 49987473, 7: 49987476, 8: 49987482, 9: 49987485, 10: 49987488,
+    11: 49987491, 12: 49987494, 13: 49987497, 14: 49987500, 15: 49987503,
+    16: 49987506, 17: 49987509, 18: 49987512, 19: 49987515, 20: 49987518,
+    21: 49987521, 22: 49987536, 23: 49987539, 24: 49987545, 25: 49987554,
+    26: 49987560, 27: 49987563, 29: 49987575, 30: 49987578, 31: 49987581,
+    32: 49987584, 33: 49987587, 34: 49987599, 35: 49987605, 36: 49987608,
+    37: 49987611, 38: 49987614, 39: 49987617, 40: 49987632,
 }
+# fmt: on
 
 # 127 recorded EEG channels (actiCHamp 128-cap, FCz used as online reference and
 # therefore not stored). Order matches the BrainVision header.
@@ -133,29 +104,14 @@ class Garro2025(BaseDataset):
     when a target light turned on, at a comfortable pace, and returned the hand
     to a resting position on the right leg.
 
-    Each participant performed the task under three assistance levels, provided
-    here as three runs:
-
-    - ``free``: no robot, free reaching movement.
-    - ``low``: movement assisted by an exoskeleton at assistance level 1.
-    - ``high``: movement assisted by an exoskeleton at assistance level 2.
-
-    Within every run, trials cover three reaching movement types (three target
-    positions), which define the three decoding classes. The BrainVision markers
-    encode a trial as ``StartTrial`` -> ``G n`` (go cue / target illumination)
-    -> ``R n`` (target reached) -> ``EndTrial``, where ``n`` in {1, 2, 3} is the
-    movement type. The authors' technical-validation code used -0.5 to 2
-    seconds relative to the Go cue ``G n``. This loader uses the complete
-    post-cue interval from 0 to 2 seconds, because some released recordings do
-    not contain the full pre-cue baseline before their first trial.
-
-    EEG was acquired with a 128-channel Brain Products actiCHamp system at
-    1000 Hz using FCz as the online reference (127 channels are stored). Surface
-    EMG from 11 selected upper-limb muscles (Cometa Wave Plus) is available as a
-    non-EEG modality and is not returned by the imagery paradigm.
-
-    40 participants have demographic entries; subject 28 has no released
-    recording, so 39 subjects provide usable data.
+    The three assistance levels (``free``: no robot; ``low``/``high``:
+    exoskeleton assistance level 1/2) are the three runs. The three target
+    positions are the classes: events are the Go cues ``G n`` (``n`` in 1-3).
+    The authors used -0.5 to 2 s around ``G n``; this loader uses 0 to 2 s
+    because some recordings lack the full pre-cue baseline before the first
+    trial. EEG: 127 stored channels (FCz online reference) at 1000 Hz; the
+    11-muscle surface EMG is not returned. Subject 28 has no released
+    recording, so 39 of 40 subjects are usable.
 
     References
     ----------
@@ -323,30 +279,7 @@ class Garro2025(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the BIDS paths (one per assistance-level run) for one subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-        path : None | str
-            Location of where to look for the data storing location. If None,
-            the environment variable or config parameter MNE_(dataset) is used.
-            If it doesn't exist, the "~/mne_data" directory is used. If the
-            dataset is not found under the given path, the data will be
-            automatically downloaded to the specified folder.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for signature compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see mne.verbose()).
-
-        Returns
-        -------
-        list
-            A list of :class:`mne_bids.BIDSPath` objects, one per run.
-        """
+        """Return one :class:`mne_bids.BIDSPath` per assistance-level run."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -355,23 +288,19 @@ class Garro2025(BaseDataset):
         )
 
         tasks = get_entity_vals(root / f"sub-{subject:02d}", "task")
-        # Keep a deterministic run order: free, low, high.
-        ordered = [t for t in ("free", "low", "high") if t in tasks]
-
-        bids_paths = []
-        for task in ordered:
-            bids_paths.append(
-                BIDSPath(
-                    subject=f"{subject:02d}",
-                    task=task,
-                    suffix="eeg",
-                    datatype="eeg",
-                    extension=".vhdr",
-                    root=root,
-                    check=True,
-                )
+        return [
+            BIDSPath(
+                subject=f"{subject:02d}",
+                task=task,
+                suffix="eeg",
+                datatype="eeg",
+                extension=".vhdr",
+                root=root,
+                check=True,
             )
-        return bids_paths
+            for task in ("free", "low", "high")  # deterministic run order
+            if task in tasks
+        ]
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as {session: {run: raw}}."""
@@ -388,9 +317,9 @@ class Garro2025(BaseDataset):
                 # Go cues carry the target class used for epoching; keep only
                 # those present in each recording.
                 present = set(raw.annotations.description)
-                rename = {k: v for k, v in _ANNOT_RENAME.items() if k in present}
-                if rename:
-                    raw.annotations.rename(rename)
+                raw.annotations.rename(
+                    {k: v for k, v in _ANNOT_RENAME.items() if k in present}
+                )
 
                 raw.set_montage(montage, on_missing="ignore", verbose=False)
 
