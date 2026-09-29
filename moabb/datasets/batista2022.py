@@ -1,16 +1,11 @@
 """Batista2022 motor-imagery EEG dataset (NeuRow VR/haptics BCI training)."""
 
 import logging
-import re
-import tempfile
 import warnings
-import zipfile
 from pathlib import Path
 
-import mne
 from mne.channels import make_standard_montage
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -25,6 +20,13 @@ from moabb.datasets.metadata.schema import (
     PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
+)
+
+from .utils import (
+    download_and_extract_zip,
+    read_raw_brainvision_repaired,
+    rename_stimulus_codes,
+    resolve_montage_name,
 )
 
 
@@ -60,20 +62,6 @@ _AUX = {
 
 # Data-borne class markers in the BrainVision .vmrk: S 7 -> left, S 8 -> right hand.
 _CLASS_CODES = {7: "left_hand", 8: "right_hand"}
-
-
-def _download_and_extract(url, sign, folder, path=None, force_update=False, verbose=None):
-    """Download a zip and extract it beside itself unless ``folder`` already exists.
-
-    Returns the path of ``folder`` (the archive's top-level directory).
-    """
-    zip_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
-    target = zip_path.parent / folder
-    if force_update or not target.is_dir():
-        log.info("Extracting %s ...", zip_path.name)
-        with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(zip_path.parent)
-    return target
 
 
 class Batista2022(BaseDataset):
@@ -239,13 +227,17 @@ class Batista2022(BaseDataset):
         stem = _SUBJECT_MAP[subject]
         url = f"{ZENODO_BASE}/{stem}.zip"
         return [
-            str(_download_and_extract(url, self.code, stem, path, force_update, verbose))
+            str(
+                download_and_extract_zip(
+                    url, self.code, stem, path, force_update, verbose
+                )
+            )
         ]
 
     def _get_single_subject_data(self, subject):
         """Return ``{session: {run: Raw}}`` with one run per imagery condition."""
         subject_dir = Path(self.data_path(subject)[0])
-        montage = make_standard_montage("standard_1020")
+        montage = make_standard_montage(resolve_montage_name("colin27_1020"))
         sessions = {}
         ses_dirs = sorted(
             d for d in subject_dir.iterdir() if d.is_dir() and d.name.startswith("ses-")
@@ -282,7 +274,7 @@ class Batista2022(BaseDataset):
         """Read one BrainVision run and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = self._read_brainvision(vhdr)
+            raw = read_raw_brainvision_repaired(vhdr)
 
         aux = {ch: _AUX[ch] for ch in raw.ch_names if ch in _AUX}
         raw.rename_channels({ch: name for ch, (name, _) in aux.items()})
@@ -292,55 +284,5 @@ class Batista2022(BaseDataset):
         raw.set_montage(montage, on_missing="ignore")
 
         # Rename the data-borne class markers to MOABB class labels.
-        rename = {}
-        for desc in set(raw.annotations.description):
-            match = re.search(r"S\s*(\d+)\s*$", desc)
-            if match and int(match.group(1)) in _CLASS_CODES:
-                rename[desc] = _CLASS_CODES[int(match.group(1))]
-        raw.annotations.rename(rename)
+        rename_stimulus_codes(raw, _CLASS_CODES)
         return raw
-
-    @staticmethod
-    def _read_brainvision(vhdr):
-        """Read a BrainVision header, repairing a bad marker reference in-memory.
-
-        Two pilot recordings on the Zenodo record name the data and marker
-        files from a different session.  The corresponding ``.eeg`` and
-        ``.vmrk`` files are present beside the header with the same stem, so
-        use a short-lived corrected header rather than changing downloaded
-        source files.
-        """
-        vhdr = Path(vhdr)
-        header = vhdr.read_text(encoding="utf-8")
-        repaired_any = False
-
-        def repair_reference(match):
-            nonlocal repaired_any
-            key, filename = match.groups()
-            expected = vhdr.with_suffix({"DataFile": ".eeg", "MarkerFile": ".vmrk"}[key])
-            if (vhdr.parent / filename).is_file() or not expected.is_file():
-                return match.group(0)
-            repaired_any = True
-            return f"{key}={expected.name}"
-
-        repaired = re.sub(
-            r"(?m)^(DataFile|MarkerFile)=([^\r\n]+)", repair_reference, header
-        )
-        if not repaired_any:
-            return mne.io.read_raw_brainvision(str(vhdr), preload=True, verbose=False)
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            suffix=".vhdr",
-            prefix=f".{vhdr.stem}-",
-            dir=vhdr.parent,
-            delete=False,
-        ) as tmp:
-            tmp.write(repaired)
-            repaired_vhdr = Path(tmp.name)
-        try:
-            return mne.io.read_raw_brainvision(
-                str(repaired_vhdr), preload=True, verbose=False
-            )
-        finally:
-            repaired_vhdr.unlink(missing_ok=True)

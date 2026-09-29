@@ -7,7 +7,7 @@ import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.batista2022 import _EEG_CHANNELS, _download_and_extract
+from moabb.datasets.batista2022 import _EEG_CHANNELS
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -22,6 +22,8 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+
+from .utils import download_and_extract_zip, resolve_montage_name
 
 
 # Per-subject ZIPs (01.zip .. 12.zip). The plain /files/<name> endpoint yields a
@@ -179,7 +181,9 @@ class Farabbi2020(BaseDataset):
         folder = f"{subject:02d}"  # the ZIP holds a top-level "NN/" folder
         return [
             str(
-                _download_and_extract(url, self.code, folder, path, force_update, verbose)
+                download_and_extract_zip(
+                    url, self.code, folder, path, force_update, verbose
+                )
             )
         ]
 
@@ -190,7 +194,7 @@ class Farabbi2020(BaseDataset):
         session_dirs = sorted(
             d for d in subject_dir.iterdir() if d.is_dir() and "session" in d.name
         )
-        montage = make_standard_montage("standard_1020")
+        montage = make_standard_montage(resolve_montage_name("colin27_1020"))
         sessions = {}
         for sess_idx, sess_dir in enumerate(session_dirs):
             gdf_files = sorted(

@@ -8,7 +8,6 @@ import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.batista2022 import _download_and_extract
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
@@ -17,6 +16,8 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+
+from .utils import download_and_extract_zip, resolve_montage_name
 
 
 # Single Zenodo archive (concept DOI 10.5281/zenodo.7893846 -> version 7893847).
@@ -195,7 +196,7 @@ class Kodera2023(BaseDataset):
         """Return the BrainVision header paths of a single subject's labelled runs."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-        data_dir = _download_and_extract(
+        data_dir = download_and_extract_zip(
             KODERA2023_URL, self.code, "data", path, force_update, verbose
         )
         date_folder, token = SUBJECTS[subject - 1]
@@ -229,7 +230,9 @@ class Kodera2023(BaseDataset):
             )
         raw.pick(list(_COMMON_EEG_CHANNELS))
         raw.set_montage(
-            make_standard_montage("standard_1020"), on_missing="ignore", match_case=False
+            make_standard_montage(resolve_montage_name("colin27_1020")),
+            on_missing="ignore",
+            match_case=False,
         )
 
         # Keep only the S 1 imagery-cue onsets, relabelled with the run's class.

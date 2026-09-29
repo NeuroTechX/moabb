@@ -2,12 +2,10 @@
 
 import warnings
 from pathlib import Path
-from zipfile import BadZipFile
 
 import mne
 
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.batista2022 import _download_and_extract
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -18,6 +16,8 @@ from moabb.datasets.metadata.schema import (
     PreprocessingMetadata,
     Tags,
 )
+
+from .utils import download_and_extract_zip, resolve_montage_name
 
 
 # Single zip on Zenodo (record 10229480), ~3.1 GB, BrainVision format.
@@ -165,12 +165,15 @@ class DFKI2023(BaseDataset):
         """Return the list of BrainVision header paths for a single subject."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-        args = (DFKI2023_URL, self.code, "EEG_dataset", path)
-        try:
-            root = _download_and_extract(*args, force_update, verbose)
-        except BadZipFile:
-            warnings.warn("Corrupted zip file detected, re-downloading...", stacklevel=2)
-            root = _download_and_extract(*args, True, verbose)
+        root = download_and_extract_zip(
+            DFKI2023_URL,
+            self.code,
+            "EEG_dataset",
+            path,
+            force_update,
+            verbose,
+            redownload_corrupted=True,
+        )
         code = SUBJECT_CODES[subject - 1]
         return [
             str(p)
@@ -200,6 +203,10 @@ class DFKI2023(BaseDataset):
             )
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                raw.set_montage("standard_1020", match_case=False, on_missing="ignore")
+                raw.set_montage(
+                    resolve_montage_name("colin27_1020"),
+                    match_case=False,
+                    on_missing="ignore",
+                )
             runs[f"{run_idx}{condition}"] = raw
         return {"0": runs}

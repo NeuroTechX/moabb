@@ -71,7 +71,9 @@ def test_batista_excludes_execution(tmp_path, monkeypatch):
 
 def test_batista_annotations_units_and_bads(monkeypatch):
     data = raw(["C3", "C4", "Aux1"], ["Stimulus/S  7", "Stimulus/S  8"])
-    monkeypatch.setattr(Batista2022, "_read_brainvision", lambda *args: data)
+    monkeypatch.setattr(
+        "moabb.datasets.batista2022.read_raw_brainvision_repaired", lambda *args: data
+    )
     result = Batista2022()._load_run(
         Path("test.vhdr"), mne.channels.make_standard_montage("standard_1020")
     )
@@ -178,22 +180,3 @@ def test_kodera_transport_flags(tmp_path, monkeypatch):
     assert data_dl.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert [Path(p).read_text() for p in paths] == ["synthetic"]
     _assert_invalid_subject_rejected(ds)
-
-
-def test_batista_header_repair_preserves_original(tmp_path, monkeypatch):
-    header = tmp_path / "run.vhdr"
-    original = "DataFile=wrong.eeg\nMarkerFile=wrong.vmrk\n"
-    header.write_text(original)
-    header.with_suffix(".eeg").touch()
-    header.with_suffix(".vmrk").touch()
-
-    def reader(path, **kwargs):
-        text = Path(path).read_text()
-        assert "DataFile=run.eeg" in text
-        assert "MarkerFile=run.vmrk" in text
-        return "raw"
-
-    monkeypatch.setattr(mne.io, "read_raw_brainvision", reader)
-    assert Batista2022._read_brainvision(header) == "raw"
-    assert header.read_text() == original
-    assert list(tmp_path.glob(".*.vhdr")) == []
