@@ -13,6 +13,7 @@ import mne_bids
 import numpy as np
 import requests
 
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
@@ -120,7 +121,7 @@ _DATASET_DESCRIPTION = {
 }
 
 
-class Lioi2020(BaseBIDSDataset):
+class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Right-hand motor imagery EEG-fMRI neurofeedback dataset (XP2) [1]_.
 
     EEG recorded simultaneously with fMRI (only the EEG is exposed here) from
@@ -168,7 +169,7 @@ class Lioi2020(BaseBIDSDataset):
            Neuroscience, 11, 193.
     """
 
-    nemar_id = "ds002338"
+    nemar_id = "on002338"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=5000.0,
@@ -242,6 +243,9 @@ class Lioi2020(BaseBIDSDataset):
         data_processed=False,
         file_format="BrainVision (BIDS)",
     )
+
+    def _nemar_subject(self, subject):
+        return self._sid(subject)
 
     def __init__(
         self,
@@ -364,6 +368,10 @@ class Lioi2020(BaseBIDSDataset):
 
     def _download_subject(self, subject, path, force_update, update_path, verbose):
         """Download BIDS BrainVision data from OpenNeuro S3, return BIDS root."""
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            return mirror_root
+
         sid = self._sid(subject)
 
         bids_root = Path(get_dataset_path("Lioi2020", path))

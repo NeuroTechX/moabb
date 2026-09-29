@@ -1,11 +1,13 @@
 """Lee2022 orthopedic-impairment upper-limb motor imagery dataset (ds004022)."""
 
 import warnings
+from pathlib import Path
 
 import mne
 import numpy as np
 
 from moabb.datasets import download as dl
+from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -55,7 +57,7 @@ _IMAGERY_ONSET_MARKER = "S  8"
 _EVENTS = {"reaching": 1, "grasping": 2, "lifting": 3, "twisting": 4}
 
 
-class Lee2022(BaseDataset):
+class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
     """Upper-limb motor imagery dataset from Lee et al. 2022 (ds004022).
 
     .. admonition:: Dataset summary
@@ -99,7 +101,8 @@ class Lee2022(BaseDataset):
            OpenNeuro. https://doi.org/10.18112/openneuro.ds004022.v1.0.0
     """
 
-    nemar_id = "ds004022"
+    nemar_id = "on004022"
+    nemar_subject_template = "{subject:02d}"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -208,6 +211,18 @@ class Lee2022(BaseDataset):
 
         Returns a list of the local ``.set`` file paths (one per run).
         """
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            sub = f"sub-{subject:02d}"
+            return [
+                str(
+                    Path(mirror_root)
+                    / sub
+                    / "eeg"
+                    / f"{sub}_task-motorimagery_run-{run}_eeg.set"
+                )
+                for run in range(1, _N_RUNS + 1)
+            ]
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 

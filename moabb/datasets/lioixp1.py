@@ -14,11 +14,13 @@ Data descriptor:
 """
 
 import logging
+from pathlib import Path
 
 import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
+from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -70,7 +72,7 @@ _EEG_CHANNELS = [
 # fmt: on
 
 
-class LioiXP1(BaseDataset):
+class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
     """XP1 simultaneous EEG-fMRI motor imagery / neurofeedback dataset [1]_ [2]_.
 
     Ten healthy subjects performed right-hand kinaesthetic motor imagery inside
@@ -109,7 +111,7 @@ class LioiXP1(BaseDataset):
            Neuroscience, 11, 193. https://doi.org/10.3389/fnhum.2017.00193
     """
 
-    nemar_id = "ds002336"
+    nemar_id = "on002336"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=5000.0,
@@ -201,6 +203,9 @@ class LioiXP1(BaseDataset):
         data_processed=False,
     )
 
+    def _nemar_subject(self, subject):
+        return self._subject_id(subject)
+
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -222,6 +227,19 @@ class LioiXP1(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            sub = f"sub-{self._subject_id(subject)}"
+            return [
+                str(candidate)
+                for task in _TASKS
+                if (
+                    candidate := Path(mirror_root)
+                    / sub
+                    / "eeg"
+                    / f"{sub}_task-{task}_eeg.vhdr"
+                ).is_file()
+            ]
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 

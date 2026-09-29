@@ -15,6 +15,7 @@ import mne
 import pandas as pd
 import requests
 
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
@@ -72,7 +73,7 @@ _ROOT_FILES = [
 _DOWNLOAD_ATTEMPTS = 3
 
 
-class Iwama2023(BaseBIDSDataset):
+class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """High-density (128ch) SMR-BMI motor imagery dataset, Dataset 1 [1]_.
 
     This is *Dataset 1* of the BMI-HDEEG collection released with the data
@@ -114,7 +115,8 @@ class Iwama2023(BaseBIDSDataset):
            https://doi.org/10.1038/s41597-023-02260-6
     """
 
-    nemar_id = "ds004444"
+    nemar_id = "on004444"
+    nemar_subject_template = "{subject:03d}"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
@@ -280,6 +282,10 @@ class Iwama2023(BaseBIDSDataset):
 
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject's BIDS files from OpenNeuro S3 and return the root."""
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            return mirror_root
+
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
