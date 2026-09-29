@@ -147,21 +147,28 @@ def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
 def compute_pvals_wilcoxon(df, order=None):
     """Compute Wilcoxon rank-sum test on aggregated results.
 
-    Returns kxk matrix of p-values computed via the Wilcoxon rank-sum test,
-    order defines the order of rows and columns
+    Returns a square matrix of p-values computed via the Wilcoxon rank-sum test,
+    order defines the order of rows and columns.
+
+    Entry ``[i, j]`` is the one-sided p-value for the hypothesis that pipeline
+    ``order[i]`` scores higher than pipeline ``order[j]`` (SciPy's
+    ``alternative="greater"``); the opposite direction is tested at ``[j, i]``.
+    The p-values are not corrected for multiple comparisons: with ``k``
+    pipelines this function performs ``k * (k - 1)`` tests, so apply a
+    correction (for example Bonferroni or Holm) before interpreting them.
 
     Parameters
     ----------
     df: :class:`pandas.DataFrame`
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
-    order: list
-        list of length (num algorithms) with names corresponding to df columns
+    order: list of length (n_pipelines)
+        Names corresponding to df columns
 
     Returns
     -------
     pvals: ndarray of shape (n_pipelines, n_pipelines)
-        array of pvalues
+        pvalues
     """
     _validate_finite_scores(df)
     if order is None:
@@ -188,11 +195,13 @@ def compute_pvals_wilcoxon(df, order=None):
                     # method already yields.
                     out[i, j] = 0.5
                     continue
-                p = stats.wilcoxon(df.loc[:, pipe1], df.loc[:, pipe2])[1]
-                p /= 2
-                # we want the one-tailed p-value
-                if diffs.mean() < 0:
-                    p = 1 - p  # was in the other side of the distribution
+                # One-tailed p-value that pipe1 scores higher than pipe2. The
+                # direction of the signed-rank test is given by its rank sums,
+                # not by the sign of the mean difference, so ask SciPy for the
+                # one-sided test rather than halving the two-sided p-value.
+                p = stats.wilcoxon(
+                    df.loc[:, pipe1], df.loc[:, pipe2], alternative="greater"
+                )[1]
                 # Keep p strictly inside (0, 1) so Stouffer's method stays
                 # finite, as the permutation branch already does. The normal
                 # approximation can underflow to an exact 0, which the one-tailed
