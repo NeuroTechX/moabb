@@ -1,12 +1,4 @@
-"""NETBCI longitudinal right-hand motor imagery dataset (Corsi 2026).
-
-Corsi, M.-C., Gitton, C., Gonzalez-Astudillo, J., Kahn, A. E., Hugueville, L.,
-Schwartz, D., George, N., Chavez, M., Dupont, S., Bassett, D. S. and
-De Vico Fallani, F. Understanding Brain-Computer Interfaces training: a
-longitudinal and multimodal dataset. Sci Data (2026).
-DOI: 10.1038/s41597-026-08237-5
-Data DOI: 10.57745/RBJRC7 (Recherche Data Gouv, CC-BY 4.0)
-"""
+"""NETBCI longitudinal right-hand motor imagery dataset (Corsi et al., 2026)."""
 
 import hashlib
 import io
@@ -70,13 +62,8 @@ _N_SESSIONS = 4
 _N_RUNS = 6
 
 # Every EEG BIDS file of one motor-imagery run.
-_RUN_SUFFIXES = (
-    "eeg.vhdr",
-    "eeg.vmrk",
-    "eeg.eeg",
-    "eeg.json",
-    "channels.tsv",
-    "events.tsv",
+_RUN_SUFFIXES = tuple(
+    "eeg.vhdr eeg.vmrk eeg.eeg eeg.json channels.tsv events.tsv".split()
 )
 
 _DOWNLOAD_ATTEMPTS = 4
@@ -92,34 +79,27 @@ _HEADER_SLACK = 1024
 class _HTTPRangeFile(io.RawIOBase):
     """Read-only, seekable, *unbuffered* view of a remote file via HTTP ranges.
 
-    Used by :class:`zipfile.ZipFile` only to read the archive's end records and
-    central directory (about 1 MB for 7,449 members); members are then fetched
-    one exact byte range each (:meth:`read_range`). The access URL redirects
-    to a presigned S3 URL, which is resolved once and refreshed on expiry or
-    on a 401/403, so the Dataverse API is not hit on every request.
+    :class:`zipfile.ZipFile` uses it only for the end records and central
+    directory (about 1 MB); members are then fetched with one exact byte range
+    each (:meth:`read_range`). The access URL redirects to a presigned S3 URL,
+    resolved once and refreshed on expiry or after a failed request.
     """
 
-    def __init__(self, url, session=None, timeout=300, size=None):
+    def __init__(self, url, session, size, timeout=300):
         super().__init__()
-        self._url = url
-        self._session = session or requests.Session()
-        self._timeout = timeout
-        self._pos = 0
-        self._signed = None
-        self._signed_at = 0.0
-        self.bytes_fetched = 0
-        self.n_requests = 0
+        self._url, self._session, self._timeout = url, session, timeout
+        self._pos, self._signed, self._signed_at = 0, None, 0.0
         response = self._get(0, 0)
         content_range = response.headers.get("Content-Range", "")
         if response.status_code != 206 or "/" not in content_range:
             raise OSError(f"{url} does not support HTTP range requests")
         self._size = int(content_range.rsplit("/", 1)[1])
-        if size is not None and self._size != size:
+        if self._size != size:
             raise OSError(
                 f"{url} is {self._size} bytes, expected {size}: the deposit changed"
             )
 
-    def _resolve(self, force=False):
+    def _resolve(self, force):
         """Return the presigned storage URL behind the access endpoint."""
         fresh = time.monotonic() - self._signed_at < _SIGNED_URL_TTL_S
         if self._signed is not None and fresh and not force:
@@ -140,7 +120,6 @@ class _HTTPRangeFile(io.RawIOBase):
         return self._signed
 
     def _get(self, start, end):
-        last_exc = None
         for attempt in range(1, _DOWNLOAD_ATTEMPTS + 1):
             try:
                 url = self._resolve(force=attempt > 1)
@@ -153,8 +132,6 @@ class _HTTPRangeFile(io.RawIOBase):
                     raise requests.RequestException(
                         f"short read: {len(response.content)} of {expected} bytes"
                     )
-                self.n_requests += 1
-                self.bytes_fetched += len(response.content)
                 return response
             except requests.RequestException as exc:
                 last_exc = exc
@@ -177,28 +154,20 @@ class _HTTPRangeFile(io.RawIOBase):
     def readable(self):
         return True
 
-    def seekable(self):
-        return True
+    seekable = readable
 
     def tell(self):
         return self._pos
 
     def seek(self, offset, whence=io.SEEK_SET):
-        if whence == io.SEEK_SET:
-            self._pos = offset
-        elif whence == io.SEEK_CUR:
-            self._pos += offset
-        elif whence == io.SEEK_END:
-            self._pos = self._size + offset
-        else:
-            raise ValueError(f"invalid whence {whence!r}")
+        base = {io.SEEK_SET: 0, io.SEEK_CUR: self._pos, io.SEEK_END: self._size}
+        self._pos = base[whence] + offset
         return self._pos
 
     def readinto(self, buffer):
         if self._pos >= self._size:
             return 0
-        end = min(self._pos + len(buffer), self._size) - 1
-        data = self._get(self._pos, end).content
+        data = self.read_range(self._pos, len(buffer))
         buffer[: len(data)] = data
         self._pos += len(data)
         return len(data)
@@ -207,65 +176,33 @@ class _HTTPRangeFile(io.RawIOBase):
 class Corsi2026(BaseBIDSDataset):
     """NETBCI: longitudinal right-hand motor imagery vs rest BCI training [1]_.
 
-    .. admonition:: Dataset summary
+    Networks for BCI (NETBCI), Paris Brain Institute: 19 healthy right-handed
+    adults trained a one-dimensional, two-target cursor task over four
+    sessions on four days, six online feedback runs per session. The *up*
+    target is reached by sustained kinesthetic motor imagery of right-hand
+    grasping (``right_hand``), the *down* target by resting with eyes open
+    (``rest``). A trial is a 1 s inter-stimulus interval then a 5 s target
+    presentation; ``events.tsv`` onsets mark the target and the epoch covers
+    those 5 s. Only the 74-channel EEG (recorded with simultaneous MEG, both
+    downsampled to 250 Hz) is exposed.
 
-        ============  =======  =======  ========  ===============  ============  =========
-        Name          #Subj    #Chan    #Classes  #Trials / class  Trial length  #Sessions
-        ============  =======  =======  ========  ===============  ============  =========
-        Corsi2026     19       74       2         357-384          5 s           4
-        ============  =======  =======  ========  ===============  ============  =========
+    The released events keep the authors' checked trials (29-32 per run,
+    14,431 in total). The last ``rest`` cue of sub-03 ses-01 run-03 ends after
+    the recording, so :class:`~moabb.paradigms.MotorImagery` returns 14,430
+    epochs.
 
-    Networks for BCI (NETBCI) was recorded at the Paris Brain Institute (ICM,
-    CENIR MEG-EEG platform). 19 healthy right-handed adults (7 female, aged
-    19-35) trained over four sessions on four different days (two sessions a
-    week for two weeks). EEG (74 Ag/AgCl passive electrodes, Easycap, 10-10
-    montage, mastoid reference, ground on the left scapula) was recorded
-    simultaneously with 306-channel Elekta MEG; both were downsampled to
-    250 Hz. This loader exposes the EEG only.
+    Notes
+    -----
+    The ``events.tsv`` events *replace* the BrainVision markers (same two
+    codes), so no trial is counted twice. Sixteen runs are not stored at
+    250 Hz (ten at 249.9 Hz, the six of sub-09 ses-02 at 1000 Hz); they are
+    resampled to 250 Hz after the annotations (in seconds) are set.
 
-    The task is a one-dimensional, two-target box task: a cursor moves
-    rightward at constant speed and the participant controls its vertical
-    position. To hit the *up* target the participant performs sustained
-    kinesthetic motor imagery of right-hand grasping (``right_hand``); to hit
-    the *down* target they stay at rest with eyes open (``rest``). Each trial
-    has a 1 s inter-stimulus interval followed by a 5 s target presentation,
-    with online cursor feedback from 3 to 6 s after trial start. Event onsets
-    in ``events.tsv`` mark the target presentation, and the epoch window here
-    covers the 5 s target period.
-
-    Each session has six feedback runs (the released ``task-MotorImageryRest``
-    runs), each with a balanced mix of the two targets. The protocol specifies
-    32 trials per run (16 per class). The released event files hold the
-    authors' checked trials: 375 of the 456 runs keep all 32, the rest keep
-    29-31, giving 717-768 trials per subject (357-384 per class) and 14,431
-    trials in total (7,224 ``right_hand``, 7,207 ``rest``).
-    One of them cannot be epoched: the last ``rest`` cue of sub-03 ses-01
-    run-03 is at 224.03 s but the recording ends at 227.69 s, before the 5 s
-    window closes, so :class:`~moabb.paradigms.MotorImagery` returns 14,430
-    epochs (7,206 ``rest``).
-
-    Events are read from the BIDS ``events.tsv``. The BrainVision marker file
-    carries the same two codes; the loader *replaces* those annotations with
-    the events.tsv ones rather than adding to them, so no trial is counted
-    twice.
-
-    The EEG of 440 of the 456 runs is stored at 250 Hz. Ten runs are stored at
-    249.9 Hz (sub-01 ses-01 run-04, sub-03 ses-03 run-05, all of sub-06 ses-04,
-    sub-17 ses-01 run-04, sub-19 ses-02 run-02) and the six runs of sub-09
-    ses-02 at 1000 Hz (not downsampled). Their events.tsv samples follow the
-    stored rate, so the headers are genuine. The loader resamples these runs
-    to 250 Hz after setting the annotations (in seconds), so that every epoch
-    has the same length and event timing is kept.
-
-    The data are distributed on Recherche Data Gouv (doi:10.57745/RBJRC7,
-    version 2.2) as one 49.0 GB zip64 archive holding the whole BIDS tree
-    (EEG and MEG), plus small root files. The archive has not changed since
-    version 1.0; the loader pins its datafile id, size and MD5, and checks the
-    MD5 of each root file. It reads the archive's central directory, then
-    fetches only the requested subject's EEG members, each with one HTTP
-    range request, inflates them and checks each member's CRC-32. That is
-    about 386 MB per subject; neither the full archive nor the MEG is
-    downloaded.
+    The data (Recherche Data Gouv, doi:10.57745/RBJRC7, version 2.2) are one
+    49 GB zip64 archive of the whole BIDS tree plus small MD5-checked root
+    files. The loader reads the archive's central directory, then fetches
+    only the subject's EEG members, one HTTP range request each, and checks
+    each member's CRC-32 (about 386 MB per subject).
 
     References
     ----------
@@ -402,24 +339,26 @@ class Corsi2026(BaseBIDSDataset):
 
     def _get_single_subject_data(self, subject):
         """Read each run's BrainVision file and set the events.tsv annotations."""
-        bids_paths = self.bids_paths(subject)
         inv_events = {code: label for label, code in self.event_id.items()}
         montage = mne.channels.make_standard_montage("standard_1005")
-
         sessions = {}
-        for bids_path in bids_paths:
+        for bids_path in self.bids_paths(subject):
             vhdr = Path(bids_path.fpath)
             raw = mne.io.read_raw_brainvision(vhdr, preload=True, verbose=False)
-            events_tsv = vhdr.with_name(vhdr.name.replace("_eeg.vhdr", "_events.tsv"))
-            # set_annotations *replaces* the BrainVision markers (same codes),
-            # so every trial appears exactly once.
-            raw.set_annotations(self._build_annotations(events_tsv, inv_events))
-            # 16 of the 456 runs are not at 250 Hz: ten at 249.9 Hz and the
-            # six of sub-09 ses-02 at 1000 Hz; their events.tsv samples follow
-            # the stored rate. Their epochs would differ in length from the
-            # rest, so resample them to the nominal rate. Annotations are in
-            # seconds, so event timing is kept.
-            if abs(raw.info["sfreq"] - _SFREQ) > 1e-6:
+            # The released events.tsv files start with a UTF-8 byte-order mark.
+            events = pd.read_csv(
+                vhdr.with_name(vhdr.name.replace("_eeg.vhdr", "_events.tsv")),
+                sep="\t",
+                encoding="utf-8-sig",
+            )
+            events = events[events["value"].isin(inv_events.keys())]
+            # Replaces (not adds to) the BrainVision markers: see Notes.
+            raw.set_annotations(
+                mne.Annotations(
+                    events["onset"], events["duration"], events["value"].map(inv_events)
+                )
+            )
+            if abs(raw.info["sfreq"] - _SFREQ) > 1e-6:  # off-rate run, see Notes
                 log.info(
                     "%s is at %.4f Hz; resampling to %.0f Hz",
                     vhdr.name,
@@ -430,25 +369,9 @@ class Corsi2026(BaseBIDSDataset):
             # O9 and O10 have no standard_1005 position; they stay unplaced.
             raw.set_montage(montage, match_case=False, on_missing="ignore")
             raw = stim_channels_with_selected_ids(raw, self.event_id)
-
-            session = bids_path.session if bids_path.session is not None else "0"
-            run = bids_path.run if bids_path.run is not None else "0"
-            sessions.setdefault(session, {})[run] = raw
+            sessions.setdefault(bids_path.session, {})[bids_path.run] = raw
         return sessions
 
-    @staticmethod
-    def _build_annotations(events_tsv, inv_events):
-        """Annotations from a BIDS events.tsv (onsets already in seconds)."""
-        # The released events.tsv files start with a UTF-8 byte-order mark.
-        df = pd.read_csv(events_tsv, sep="\t", encoding="utf-8-sig")
-        df = df[df["value"].isin(inv_events.keys())]
-        return mne.Annotations(
-            onset=df["onset"].astype(float).to_numpy(),
-            duration=df["duration"].astype(float).to_numpy(),
-            description=df["value"].map(inv_events).to_numpy(),
-        )
-
-    # ------------------------------------------------------------------ download --
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Fetch one subject's EEG runs from the archive and return the BIDS root."""
         if subject not in self.subject_list:
@@ -486,13 +409,6 @@ class Corsi2026(BaseBIDSDataset):
                 continue
             log.info("Extracting %s ...", info.filename)
             self._atomic_write(target, self._read_member(remote, info))
-        log.info(
-            "Corsi2026 subject %02d: %d members, %.0f MB in %d range requests",
-            subject,
-            len(infos),
-            remote.bytes_fetched / 1e6,
-            remote.n_requests,
-        )
         return str(bids_root)
 
     @staticmethod
@@ -523,41 +439,32 @@ class Corsi2026(BaseBIDSDataset):
 
     @staticmethod
     def _subject_members(infos, subject):
-        """EEG members of one subject (MI runs + session sidecars), in archive order.
+        """EEG members of one subject (MI runs + session sidecars), in archive order."""
 
-        Accepts :class:`zipfile.ZipInfo` objects or plain names; names are
-        returned sorted, infos in ``header_offset`` order.
-        """
-        prefix = f"sub-{subject:02d}/"
-        members = []
-        for info in infos:
-            name = getattr(info, "filename", info)
-            if not name.startswith(prefix) or name.endswith("/"):
-                continue
-            parts = name.split("/")
-            if len(parts) != 4 or parts[2] != "eeg":
-                continue
-            fname = parts[3]
-            if f"_task-{_TASK}_" in fname or fname.endswith(
-                ("_electrodes.tsv", "_coordsystem.json")
-            ):
-                members.append(info)
-        if members and isinstance(members[0], str):
-            return sorted(members)
-        return sorted(members, key=lambda i: i.header_offset)
+        def keep(parts):  # sub-XX/ses-YY/eeg/<file>
+            return (
+                len(parts) == 4
+                and parts[0] == f"sub-{subject:02d}"
+                and parts[2] == "eeg"
+                and (
+                    f"_task-{_TASK}_" in parts[3]
+                    or parts[3].endswith(("_electrodes.tsv", "_coordsystem.json"))
+                )
+            )
+
+        members = [info for info in infos if keep(info.filename.split("/"))]
+        return sorted(members, key=lambda info: info.header_offset)
 
     @staticmethod
     def _staged_subject_is_complete(bids_root, subject):
         """True when all 4 x 6 runs of the subject have every EEG sidecar."""
         subject_dir = Path(bids_root) / f"sub-{subject:02d}"
         vhdrs = sorted(subject_dir.glob(f"ses-*/eeg/*_task-{_TASK}_run-*_eeg.vhdr"))
-        if len(vhdrs) != _N_SESSIONS * _N_RUNS:
-            return False
-        for vhdr in vhdrs:
-            prefix = vhdr.name.removesuffix("eeg.vhdr")
-            if not all((vhdr.parent / f"{prefix}{s}").is_file() for s in _RUN_SUFFIXES):
-                return False
-        return True
+        return len(vhdrs) == _N_SESSIONS * _N_RUNS and all(
+            (vhdr.parent / (vhdr.name.removesuffix("eeg.vhdr") + suffix)).is_file()
+            for vhdr in vhdrs
+            for suffix in _RUN_SUFFIXES
+        )
 
     @staticmethod
     def _atomic_write(target, data):

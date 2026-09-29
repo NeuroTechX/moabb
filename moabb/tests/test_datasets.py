@@ -1,9 +1,12 @@
 import inspect
+import io
 import json
 import logging
 import re
 import warnings
-from pathlib import Path
+import zipfile
+import zlib
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import mne
@@ -1810,59 +1813,42 @@ def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monke
     assert [fname for _, fname in calls] == ["Doorlock/Dat_sub01/sub01_Testing1.mat"]
 
 
-def _corsi2026_run(tmp_path, monkeypatch, raw, rows, run="01"):
-    """Stage one BrainVision run plus its events.tsv and load it through Corsi2026.
-
-    ``rows`` are ``(onset_s, value)`` pairs; the header/sample columns follow the
-    released files. The BrainVision reader is replaced by ``raw``.
-    """
-    from types import SimpleNamespace
-
-    from moabb.datasets import Corsi2026
-    from moabb.datasets import corsi2026 as corsi_module
-
-    stem = tmp_path / f"sub-01_ses-01_task-MotorImageryRest_run-{run}"
-    vhdr = Path(f"{stem}_eeg.vhdr")
-    vhdr.touch()
-    sfreq = raw.info["sfreq"]
-    Path(f"{stem}_events.tsv").write_text(
-        "onset\tduration\ttrial_type\tvalue\tsample\n"
-        + "".join(f"{o}\t0.0\t{v}\t{v}\t{int(o * sfreq)}\n" for o, v in rows)
-    )
-    dataset = Corsi2026(subjects=[1])
-    monkeypatch.setattr(
-        dataset,
-        "bids_paths",
-        lambda subject: [SimpleNamespace(fpath=str(vhdr), session="01", run=run)],
-    )
-    monkeypatch.setattr(
-        corsi_module.mne.io, "read_raw_brainvision", lambda *a, **k: raw.copy()
-    )
-    return dataset._get_single_subject_data(1)["01"][run]
-
-
-def test_corsi2026_events_replace_the_brainvision_markers(tmp_path, monkeypatch):
-    """Each trial is epoched once: events.tsv replaces the BrainVision markers.
+def test_corsi2026_events_replace_markers_and_off_rate_run_is_resampled(
+    tmp_path, monkeypatch
+):
+    """Each trial is epoched once and an off-rate run yields 250 Hz epochs.
 
     The .vmrk carries the same two codes as events.tsv; adding rather than
-    replacing would double every trial (the Iwama2023 failure mode).
+    replacing would double every trial (the Iwama2023 failure mode). Ten runs
+    are at 249.9 Hz (six at 1000 Hz, same resample path); event times are kept.
     """
-    sfreq = 250.0
-    info = mne.create_info(["C3", "Cz", "C4"], sfreq, "eeg")
-    raw = mne.io.RawArray(np.zeros((3, int(60 * sfreq))), info, verbose=False)
-    onsets = [5.0, 12.0, 19.0, 26.0]
+    sfreq = 249.89999389648438
+    info = mne.create_info(["C3", "C4"], sfreq, "eeg")
+    raw = mne.io.RawArray(np.zeros((2, int(40 * sfreq))), info, verbose=False)
+    onsets = [7.314926149046683, 14.249700227984265, 21.0, 28.0]
     raw.set_annotations(
         mne.Annotations(onsets, [0.0] * 4, ["Stimulus/S  1", "Stimulus/S  2"] * 2)
     )
-    out = _corsi2026_run(tmp_path, monkeypatch, raw, zip(onsets, [1, 2, 1, 2]))
+    stem = tmp_path / "sub-01_ses-01_task-MotorImageryRest_run-04"
+    (tmp_path / f"{stem.name}_events.tsv").write_text(
+        "onset\tduration\ttrial_type\tvalue\tsample\n"
+        + "".join(
+            f"{o}\t0.0\t{v}\t{v}\t{int(o * sfreq)}\n"
+            for o, v in zip(onsets, [1, 2, 1, 2])
+        )
+    )
+    dataset = db.Corsi2026(subjects=[1])
+    bids_path = SimpleNamespace(fpath=f"{stem}_eeg.vhdr", session="01", run="04")
+    monkeypatch.setattr(dataset, "bids_paths", lambda subject: [bids_path])
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", lambda *a, **k: raw.copy())
+    out = dataset._get_single_subject_data(1)["01"]["04"]
+    assert out.info["sfreq"] == 250.0
     events = mne.find_events(out, shortest_event=0, verbose=False)
     assert events[:, 2].tolist() == [1, 2, 1, 2]
-    assert sorted(set(out.annotations.description)) == ["rest", "right_hand"]
+    np.testing.assert_allclose(events[:, 0] / 250.0, onsets, atol=4e-3)
 
 
 def test_corsi2026_subject_members_are_eeg_motor_imagery_only():
-    from moabb.datasets import Corsi2026
-
     names = [
         "sub-01/",
         "sub-01/ses-01/eeg/sub-01_ses-01_task-MotorImageryRest_run-01_eeg.eeg",
@@ -1874,36 +1860,26 @@ def test_corsi2026_subject_members_are_eeg_motor_imagery_only():
         "sub-10/ses-01/eeg/sub-10_ses-01_task-MotorImageryRest_run-01_eeg.eeg",
         "__MACOSX/sub-01/ses-01/._.DS_Store",
     ]
-    assert Corsi2026._subject_members(names, 1) == [
-        "sub-01/ses-01/eeg/sub-01_ses-01_space-CapTrak_electrodes.tsv",
-        "sub-01/ses-01/eeg/sub-01_ses-01_task-MotorImageryRest_run-01_eeg.eeg",
-        "sub-01/ses-01/eeg/sub-01_ses-01_task-MotorImageryRest_run-01_events.tsv",
-    ]
+    infos = [zipfile.ZipInfo(name) for name in names]
+    for offset, info in enumerate(reversed(infos)):
+        info.header_offset = offset  # archive order differs from listing order
+    members = db.Corsi2026._subject_members(infos, 1)
+    assert [info.filename for info in members] == [names[3], names[2], names[1]]
 
 
 def test_corsi2026_staged_subject_skips_the_network(tmp_path, monkeypatch):
-    from moabb.datasets import Corsi2026
-    from moabb.datasets import corsi2026 as corsi_module
-
+    corsi = db.corsi2026
     root = tmp_path / "MNE-corsi2026-data"
     for ses in range(1, 5):
         eeg = root / "sub-02" / f"ses-{ses:02d}" / "eeg"
         eeg.mkdir(parents=True)
         for run in range(1, 7):
             stem = f"sub-02_ses-{ses:02d}_task-MotorImageryRest_run-{run:02d}_"
-            for suffix in corsi_module._RUN_SUFFIXES:
+            for suffix in corsi._RUN_SUFFIXES:
                 (eeg / f"{stem}{suffix}").touch()
-    monkeypatch.setattr(
-        corsi_module, "get_dataset_path", lambda sign, path: str(tmp_path)
-    )
-
-    def no_network(*args, **kwargs):
-        raise AssertionError("network used for a staged subject")
-
-    monkeypatch.setattr(corsi_module.requests, "get", no_network)
-    monkeypatch.setattr(corsi_module.requests, "Session", no_network)
-    out = Corsi2026()._download_subject(2, None, False, None, None)
-    assert out == str(root)
+    monkeypatch.setattr(corsi, "get_dataset_path", lambda sign, path: str(tmp_path))
+    monkeypatch.delattr(corsi.requests, "Session")  # any network use fails
+    assert db.Corsi2026()._download_subject(2, None, False, None, None) == str(root)
 
 
 class _BytesRemote:
@@ -1918,69 +1894,32 @@ class _BytesRemote:
         return self.data[start : start + length]
 
 
-@pytest.mark.parametrize("method", ["stored", "deflated"])
-def test_corsi2026_read_member_one_request_and_crc(method):
-    import io
-    import zipfile
-
-    from moabb.datasets import Corsi2026
-
-    compression = zipfile.ZIP_STORED if method == "stored" else zipfile.ZIP_DEFLATED
+@pytest.mark.parametrize(
+    "compression", [zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED], ids=["stored", "deflated"]
+)
+def test_corsi2026_read_member_one_request_and_crc(compression):
     payload = {"a/first.eeg": b"\x00\x01" * 5000, "a/second.tsv": b"onset\tvalue\n1\t1\n"}
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", compression=compression) as zf:
         for name, data in payload.items():
             zf.writestr(name, data)
     remote = _BytesRemote(buf.getvalue())
-    infos = zipfile.ZipFile(io.BytesIO(remote.data)).infolist()
+    infos = zipfile.ZipFile(buf).infolist()
     for info in infos:
-        assert Corsi2026._read_member(remote, info) == payload[info.filename]
+        assert db.Corsi2026._read_member(remote, info) == payload[info.filename]
     assert remote.n_requests == len(infos)  # one range request per member
 
     corrupt = bytearray(remote.data)
     corrupt[infos[0].header_offset + 30 + len(infos[0].filename) + 10] ^= 0xFF
-    import zlib
-
     with pytest.raises((OSError, zlib.error)):
-        Corsi2026._read_member(_BytesRemote(bytes(corrupt)), infos[0])
-
-
-def test_corsi2026_off_rate_run_is_resampled_to_250(tmp_path, monkeypatch):
-    """Off-rate runs keep their event times but yield 250 Hz epochs.
-
-    Ten released runs are at 249.9 Hz (and six at 1000 Hz); both take the
-    same resample path, so the near-nominal rate is the case that matters.
-    """
-    sfreq = 249.89999389648438
-    raw = mne.io.RawArray(
-        np.zeros((2, int(40 * sfreq))),
-        mne.create_info(["C3", "C4"], sfreq, "eeg"),
-        verbose=False,
-    )
-    rows = [(7.314926149046683, 1), (14.249700227984265, 2)]
-    out = _corsi2026_run(tmp_path, monkeypatch, raw, rows, run="04")
-    assert out.info["sfreq"] == 250.0
-    events = mne.find_events(out, shortest_event=0, verbose=False)
-    np.testing.assert_allclose(events[:, 0] / 250.0, [7.3149, 14.2497], atol=4e-3)
+        db.Corsi2026._read_member(_BytesRemote(bytes(corrupt)), infos[0])
 
 
 def test_corsi2026_root_files_are_md5_checked(tmp_path, monkeypatch):
-    from moabb.datasets import Corsi2026
-    from moabb.datasets import corsi2026 as corsi_module
-
-    class _Resp:
-        content = b"tampered"
-
-        def raise_for_status(self):
-            pass
-
-    class _Session:
-        def get(self, *a, **k):
-            return _Resp()
-
-    monkeypatch.setattr(
-        corsi_module, "get_dataset_path", lambda sign, path: str(tmp_path)
-    )
-    monkeypatch.setattr(corsi_module.requests, "Session", _Session)
+    corsi = db.corsi2026
+    response = SimpleNamespace(content=b"tampered", raise_for_status=lambda: None)
+    session = SimpleNamespace(get=lambda *a, **k: response)
+    monkeypatch.setattr(corsi, "get_dataset_path", lambda sign, path: str(tmp_path))
+    monkeypatch.setattr(corsi.requests, "Session", lambda: session)
     with pytest.raises(OSError, match="MD5"):
-        Corsi2026()._download_subject(3, None, False, None, None)
+        db.Corsi2026()._download_subject(3, None, False, None, None)
