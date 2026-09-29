@@ -8,6 +8,7 @@ import mne
 import numpy as np
 from scipy.io import loadmat
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -19,7 +20,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import download_and_extract_zip, resolve_montage_name
+from .utils import download_and_extract_subject_zip
 
 
 # Single Figshare archive (article 21185362, v2) holding the whole database.
@@ -176,17 +177,22 @@ class Ortiz2023(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        experience = download_and_extract_zip(
-            ORTIZ2023_URL,
-            self.code,
-            "EXPERIENCE",
-            path,
-            force_update,
-            verbose,
-            extract_to="MI_walking_figshare21185362",
-            redownload_corrupted=True,
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path))
+            / f"MNE-{self.code.lower()}-data"
+            / "MI_walking_figshare21185362"
         )
-        return str(experience.parent)
+        if force_update or not (data_dir / "EXPERIENCE").exists():
+            download_and_extract_subject_zip(
+                ORTIZ2023_URL,
+                self.code,
+                data_dir,
+                path,
+                force_update,
+                verbose,
+                redownload_corrupted=True,
+            )
+        return str(data_dir)
 
     def _make_raw(self, mat_file):
         """Build a continuous mne.Raw from one open-loop task .mat file."""
@@ -209,9 +215,7 @@ class Ortiz2023(BaseDataset):
         raw = mne.io.RawArray(data, info, verbose=False)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw.set_montage(
-                resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
-            )
+            raw.set_montage("colin27_1005", on_missing="ignore", verbose=False)
 
         # Build annotations from the sample-wise task code channel.
         task = np.asarray(mat.task_EEG).ravel()

@@ -22,8 +22,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import edge_boundary_annotations, resolve_montage_name
-
 
 _DOI = "10.1007/s00521-024-10917-5"
 
@@ -265,7 +263,7 @@ class Yilmaz2024(BaseDataset):
         ch_types = ["eeg"] * n_ch + ["stim"]
         info = mne.create_info(ch_names, _SFREQ, ch_types)
         raw = mne.io.RawArray(all_data, info, verbose=False)
-        raw.set_montage(resolve_montage_name("colin27_1020"), on_missing="warn")
+        raw.set_montage("colin27_1020", on_missing="warn")
 
         boundaries = (
             np.concatenate(
@@ -276,5 +274,5 @@ class Yilmaz2024(BaseDataset):
             )
             / _SFREQ
         )
-        raw.set_annotations(edge_boundary_annotations(boundaries))
+        raw.set_annotations(mne.Annotations(boundaries, 0.0, "EDGE boundary"))
         return raw

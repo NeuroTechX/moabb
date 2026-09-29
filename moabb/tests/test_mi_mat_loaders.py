@@ -1,7 +1,7 @@
 """Offline synthetic regression tests for the MATLAB MI loader batch."""
 
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock, call
 
 import h5py
 import mne
@@ -20,24 +20,21 @@ from moabb.datasets.preprocessing import SetRawAnnotations
 def test_invalid_subject_and_download_flags(cls, count, monkeypatch, tmp_path):
     with pytest.raises(ValueError, match="Invalid subject"):
         cls().data_path(999)
-    calls = []
-
-    def download(url, sign, path=None, force_update=False, verbose=None):
-        calls.append((path, force_update, verbose))
-        return str(tmp_path / "archive")
-
-    monkeypatch.setattr(dl, "data_dl", download)
-    monkeypatch.setattr(dl, "fs_get_file_list", lambda _: [])
+    data_dl = Mock(return_value=str(tmp_path / "archive"))
+    monkeypatch.setattr(dl, "data_dl", data_dl)
+    monkeypatch.setattr(dl, "fs_get_file_list", Mock(return_value=[]))
     monkeypatch.setattr(
         dl,
         "fs_get_file_id",
-        lambda _: {"exp1-S1-left.mat": "1", "exp1-S1-right.mat": "2"},
+        Mock(return_value={"exp1-S1-left.mat": "1", "exp1-S1-right.mat": "2"}),
     )
     if cls is Ortiz2023:
+        (tmp_path / "archive").touch()
         monkeypatch.setattr("zipfile.ZipFile", MagicMock())
     cls().data_path(
         1, path=str(tmp_path), force_update=True, update_path=False, verbose=False
     )
+    calls = [c.args[2:] for c in data_dl.call_args_list]
     assert calls == [(str(tmp_path), True, False)] * count
 
 
@@ -94,7 +91,7 @@ def test_ortiz_codes_units(monkeypatch):
     task = np.repeat([402, 404, 406, 402], 2000)
     mat = SimpleNamespace(data_EEG=np.full((31, len(task)), 6.0), task_EEG=task)
     monkeypatch.setattr(
-        "moabb.datasets.ortiz2023.loadmat", lambda *a, **k: {"session": mat}
+        "moabb.datasets.ortiz2023.loadmat", Mock(return_value={"session": mat})
     )
     raw = Ortiz2023()._make_raw("synthetic.mat")
     labels = "relax motor_imagery regressive_count relax".split()
@@ -105,7 +102,7 @@ def test_ortiz_codes_units(monkeypatch):
 
 def test_ortiz_missing_duplicate_sessions(monkeypatch, tmp_path):
     ds = Ortiz2023()
-    monkeypatch.setattr(ds, "data_path", lambda _: tmp_path)
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=tmp_path))
     with pytest.raises(ValueError, match="No EXPERIENCE"):
         ds._get_single_subject_data(1)
     folder = tmp_path / "EXPERIENCE"
@@ -123,13 +120,17 @@ def test_ortiz_missing_duplicate_sessions(monkeypatch, tmp_path):
 @pytest.mark.parametrize("cls,count", [(Yilmaz2024, 4), (ZjuMI2025, 4)])
 def test_session_mapping(cls, count, monkeypatch):
     ds = cls()
-    monkeypatch.setattr(ds, "data_path", lambda _: list(range(count)))
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=list(range(count))))
     if cls is Yilmaz2024:
-        monkeypatch.setattr(ds, "_reconstruct_raw", lambda a, b: (a, b))
-        assert ds._get_single_subject_data(1) == {"0": {"0": (0, 1)}, "1": {"0": (2, 3)}}
+        reader = Mock(side_effect=["s0", "s1"])
+        monkeypatch.setattr(ds, "_reconstruct_raw", reader)
+        assert ds._get_single_subject_data(1) == {"0": {"0": "s0"}, "1": {"0": "s1"}}
+        assert reader.call_args_list == [call(0, 1), call(2, 3)]
     else:
-        monkeypatch.setattr(ds, "_load_raw", lambda p: p)
+        reader = Mock(side_effect=["r0", "r1", "r2", "r3"])
+        monkeypatch.setattr(ds, "_load_raw", reader)
         assert ds._get_single_subject_data(1) == {
-            "0": {"0calibration": 0, "1feedback": 1},
-            "1": {"0calibration": 2, "1feedback": 3},
+            "0": {"0calibration": "r0", "1feedback": "r1"},
+            "1": {"0calibration": "r2", "1feedback": "r3"},
         }
+        assert reader.call_args_list == [call(p) for p in range(4)]
