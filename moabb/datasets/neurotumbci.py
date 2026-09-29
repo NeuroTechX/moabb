@@ -18,8 +18,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 # Base URL for the individual files of the Zenodo record.
 NEUROTUMBCI_BASE = "https://zenodo.org/records/18087806/files/"
@@ -221,7 +219,7 @@ class neuroTUMBCI(BaseDataset):
         *data_files, mapping_path = self.data_path(subject)
         label_map = self._load_mapping(mapping_path)
         info = mne.create_info(NEUROTUMBCI_CHANNELS, sfreq=250.0, ch_types="eeg")
-        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1020"))
+        montage = mne.channels.make_standard_montage("colin27_1020")
 
         sessions = {}
         for idx, fpath in enumerate(data_files):
