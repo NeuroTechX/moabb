@@ -455,12 +455,12 @@ def find_license(text: str):
 # Paradigm / class labels / free-text presence
 # ---------------------------------------------------------------------------
 PARADIGM_KEYWORDS = {
-    "imagery": r"motor imagery|imagined movement|imagin\w+ (?:movement|motor)|kinesthetic imagery|imagery task|\bMI\b",  # codespell:ignore imagin
-    "p300": r"P300|P3\b|oddball|event-related potentials?|ERPs?\b|speller",
+    "imagery": r"motor imagery|motor imagination|imagined movement|imagin\w+ (?:movement|motor|of|the)|kinesthetic imagery|imagery task|\bMI\b",  # codespell:ignore imagin
+    "p300": r"P300|P3b\b|oddball|speller|event-related potential",
     "ssvep": r"SSVEP|steady[- ]state visual",
     "cvep": r"c-?VEP|code[- ]modulated",
     "rstate": r"resting[- ]state|eyes (?:open|closed)",
-    "erp": r"event-related potentials?|ERPs?\b|P300|N400|N170|MMN",
+    "erp": r"event-related potential|\bERPs?\b|P300|N400|N170|\bMMN\b|N2pc",
     "movement": r"motor execution|executed movement|actual movement|movement execution|reach\w*|grasp\w*",
 }
 
