@@ -17,8 +17,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 # Files carry no persistent id; they are addressed by Harvard Dataverse datafile id.
 WRCC2023_BASE_URL = "https://dataverse.harvard.edu/api/access/datafile/"
@@ -87,9 +85,7 @@ class _WRCC2023(BaseDataset):
         if len(labels) != len(data) or not np.isin(labels, [1, 2, 3]).all():
             raise ValueError("WRCC labels must match trials and use codes 1, 2, 3")
         info = create_info(WRCC2023_CHANNELS, 1000.0, "eeg")
-        info.set_montage(
-            resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
-        )
+        info.set_montage("colin27_1005", on_missing="ignore", verbose=False)
         runs = {}
         for i, (trial, label) in enumerate(zip(data, labels)):
             run = RawArray(trial, info.copy(), verbose=False)

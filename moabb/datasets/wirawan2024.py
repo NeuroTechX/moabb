@@ -1,9 +1,12 @@
 """Wirawan2024 MIMED Motor Imagery / Motor Execution dataset."""
 
+from pathlib import Path
+
 import mne
 import numpy as np
 import scipy.io as sio
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -14,7 +17,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import download_and_extract_zip, resolve_montage_name
+from .utils import download_and_extract_subject_zip
 
 
 # Direct download URL of the "Motor Imagery.zip" archive of the Mendeley
@@ -153,15 +156,20 @@ class Wirawan2024(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        root = download_and_extract_zip(
-            WIRAWAN2024_MI_URL,
-            self.code,
-            "Motor Imagery",
-            path,
-            force_update,
-            verbose,
-            redownload_corrupted=True,
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
+        root = data_dir / "Motor Imagery"
+        if force_update or not root.exists():
+            download_and_extract_subject_zip(
+                WIRAWAN2024_MI_URL,
+                self.code,
+                data_dir,
+                path,
+                force_update,
+                verbose,
+                redownload_corrupted=True,
+            )
         sub = f"P{subject:02d}"
         return [str(root / scenario / f"{sub}.mat") for scenario in WIRAWAN2024_SCENARIOS]
 
@@ -189,7 +197,7 @@ class Wirawan2024(BaseDataset):
                     raise ValueError("Malformed or truncated MIMED recording block")
                 info = mne.create_info(WIRAWAN2024_CHANNELS, 128, "eeg")
                 raw = mne.io.RawArray(trial.T * 1e-6, info, verbose=False)
-                raw.set_montage(resolve_montage_name("colin27_1020"))
+                raw.set_montage("colin27_1020")
                 raw.set_annotations(
                     mne.Annotations([3.0], [0.0], [WIRAWAN2024_SCENARIOS[scenario]])
                 )

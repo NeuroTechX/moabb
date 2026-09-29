@@ -1,5 +1,7 @@
 """Offline scientific and transport contracts for the WRCC/MIMED loaders."""
 
+from unittest.mock import Mock
+
 import mne
 import numpy as np
 import pytest
@@ -13,7 +15,7 @@ def _wrcc_subject(tmp_path, monkeypatch, cls, data, labels, **extra):
     path = tmp_path / "subject.mat"
     savemat(path, {"data": data, "label": labels, **extra})
     ds = cls()
-    monkeypatch.setattr(ds, "data_path", lambda subject: str(path))
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=str(path)))
     return ds
 
 
@@ -64,14 +66,12 @@ def test_invalid_source_files_fail(tmp_path, monkeypatch, labels, extra, match):
 
 @pytest.mark.parametrize("cls", [WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C])
 def test_download_flags_and_subject_validation(tmp_path, monkeypatch, cls):
-    calls = []
-    monkeypatch.setattr(
-        "moabb.datasets.download.data_dl", lambda *args: calls.append(args) or "file.mat"
-    )
+    data_dl = Mock(return_value="file.mat")
+    monkeypatch.setattr("moabb.datasets.download.data_dl", data_dl)
     ds = cls()
     ds.data_path(1, path=tmp_path, force_update=True, update_path=False, verbose=False)
-    assert calls[0][0].endswith(f"/{cls.FILE_IDS[1]}")
-    assert calls[0][1:] == (ds.code, tmp_path, True, False)
+    assert data_dl.call_args_list[0].args[0].endswith(f"/{cls.FILE_IDS[1]}")
+    assert data_dl.call_args_list[0].args[1:] == (ds.code, tmp_path, True, False)
     with pytest.raises(ValueError):
         ds.data_path(0)
 
@@ -86,7 +86,7 @@ def test_mimed_sessions_runs_units_and_missing_blocks(tmp_path, monkeypatch):
         path = tmp_path / f"scenario{scenario}.mat"
         savemat(path, {"joined_data": joined, "Fs": 128})
         files.append(str(path))
-    monkeypatch.setattr(ds, "data_path", lambda subject: files)
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=files))
     sessions = ds._get_single_subject_data(1)
     assert list(sessions) == ["0", "1"]
     for day, runs in sessions.items():
@@ -108,18 +108,24 @@ def test_mimed_download_flags(tmp_path, monkeypatch):
     archive = tmp_path / "fixture.zip"
     with zipfile.ZipFile(archive, "w") as z:
         z.writestr("Motor Imagery/fixture.txt", "fixture")
-    calls = []
-    monkeypatch.setattr(
-        "moabb.datasets.download.data_dl",
-        lambda *args: calls.append(args) or str(archive),
-    )
+    data_dl = Mock(return_value=str(archive))
+    monkeypatch.setattr("moabb.datasets.download.data_dl", data_dl)
     paths = Wirawan2024().data_path(1, tmp_path, True, False, False)
     assert len(paths) == 3
-    assert calls == [(WIRAWAN2024_MI_URL, "Wirawan2024", tmp_path, True, False)]
+    extracted = tmp_path / "MNE-wirawan2024-data" / "Motor Imagery" / "fixture.txt"
+    assert extracted.read_text() == "fixture"
+    assert data_dl.call_count == 1
+    assert data_dl.call_args.args == (
+        WIRAWAN2024_MI_URL,
+        "Wirawan2024",
+        tmp_path,
+        True,
+        False,
+    )
 
 
 def test_mimed_duplicate_scenarios_rejected(monkeypatch):
     ds = Wirawan2024()
-    monkeypatch.setattr(ds, "data_path", lambda subject: ["same.mat"] * 3)
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=["same.mat"] * 3))
     with pytest.raises(ValueError, match="Duplicate"):
         ds._get_single_subject_data(1)
