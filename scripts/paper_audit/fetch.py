@@ -135,6 +135,28 @@ class FetchResult:
             notes=d.get("notes", []),
         )
 
+    @classmethod
+    def from_cache(cls, cache_root: Path | str, name: str) -> "FetchResult | None":
+        """Rebuild the result of a previous ``fetch_dataset`` from its cache dir."""
+        ds_dir = Path(cache_root) / name
+        record_json = ds_dir / "record.json"
+        if not record_json.exists():
+            return None
+        d = json.loads(record_json.read_text(encoding="utf-8"))
+        dois = d.get("dois", {})
+        return cls(
+            name=name,
+            access=d.get("access", "missing"),
+            paper_text_paths=[Path(p) for p in d.get("paper_text_paths", [])],
+            repository_files=[Path(p) for p in d.get("repository_files", [])],
+            record_json=record_json,
+            provenance=ds_dir / "provenance.json",
+            paper_dois=[k for k, v in dois.items() if v.get("kind") == "paper"],
+            dataset_dois=[k for k, v in dois.items() if v.get("kind") == "dataset"],
+            unsupported=d.get("unsupported", False),
+            notes=d.get("notes", []),
+        )
+
 
 # ---------------------------------------------------------------------------
 # Per-DOI resolution
