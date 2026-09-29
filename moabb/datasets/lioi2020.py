@@ -25,7 +25,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from .utils import stim_channels_with_selected_ids
+from .utils import resolve_montage_name, stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
@@ -268,7 +268,9 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             if "ECG" in raw.ch_names:
                 raw.set_channel_types({"ECG": "ecg"})
             relabel_annotations(raw, _TRIALTYPE_TO_LABEL)
-            raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
+            raw.set_montage(
+                resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
+            )
             if not self.return_all_modalities:
                 raw.pick("eeg")
             result.setdefault("0", {})[key] = stim_channels_with_selected_ids(

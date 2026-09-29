@@ -21,7 +21,7 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.datasets.utils import resolve_montage_name, stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
@@ -197,7 +197,8 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             relabel_annotations(raw, _MARKER_TO_LABEL)
             with mne.utils.use_log_level("error"):
                 raw.set_montage(
-                    make_standard_montage("standard_1005"), on_missing="ignore"
+                    make_standard_montage(resolve_montage_name("colin27_1005")),
+                    on_missing="ignore",
                 )
             runs[f"{idx}{task}"] = stim_channels_with_selected_ids(raw, self.event_id)
         return {"0": runs}

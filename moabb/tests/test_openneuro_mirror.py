@@ -1,7 +1,8 @@
 """Offline raw-mirror routing, real SDK HTTP-transport and loader regressions.
 
-Owner of the shared ``OpenNeuroMirrorMixin`` contract: only ``test_mirror_flags``
-is dataset-specific; the mixin contract runs once, via ``MIXIN_CASE``.
+The ``OpenNeuroMirrorMixin`` provider policy is unit-tested with the shared
+helpers (``test_loader_utils.py``); here the SDK transport and the no-prefetch
+contract run once through a real loader, via ``MIXIN_CASE``.
 """
 
 import hashlib
@@ -16,7 +17,6 @@ import numpy as np
 import pytest
 
 from moabb.datasets import Iwama2023, Lee2022, Lioi2020, LioiXP1
-from moabb.datasets.download import NemarDownloadError
 
 
 CASES = [
@@ -47,23 +47,6 @@ def test_mirror_flags(cls, nemar_id, subject, label, monkeypatch, tmp_path):
     # Raw mirror loaders must never prefetch converted sourcedata.
     monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
     ds._prefetch_nemar_sourcedata([subject])
-
-
-def test_provider_policy(monkeypatch, tmp_path):
-    cls, _, subject, _ = MIXIN_CASE
-    ds = cls()
-    transport = Mock(side_effect=NemarDownloadError("offline"))
-    monkeypatch.setattr(ds, "_download_nemar", transport)
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
-    with pytest.raises(NemarDownloadError):
-        ds._mirror_root(subject, tmp_path, False, False, None)
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
-    with pytest.warns(RuntimeWarning, match="OpenNeuro"):
-        assert ds._mirror_root(subject, tmp_path, False, False, None) is None
-    transport.reset_mock()
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
-    assert ds._mirror_root(subject, tmp_path, False, False, None) is None
-    transport.assert_not_called()
 
 
 def test_http_only_raw_selection(monkeypatch, tmp_path):
