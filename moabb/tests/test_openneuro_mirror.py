@@ -1,4 +1,8 @@
-"""Offline raw-mirror routing and real SDK HTTP-transport regressions."""
+"""Offline raw-mirror routing and real SDK HTTP-transport regressions.
+
+Owner of the shared ``OpenNeuroMirrorMixin`` contract: only ``test_mirror_flags``
+is dataset-specific; the mixin contract runs once, via ``MIXIN_CASE``.
+"""
 
 import hashlib
 import json
@@ -18,6 +22,7 @@ CASES = [
     (Lioi2020, "on002338", 17, "xp222"),
     (LioiXP1, "on002336", 10, "xp110"),
 ]
+MIXIN_CASE = CASES[0]
 
 
 @pytest.mark.parametrize("cls,nemar_id,subject,label", CASES)
@@ -41,8 +46,8 @@ def test_mirror_flags(cls, nemar_id, subject, label, monkeypatch, tmp_path):
     ds._prefetch_nemar_sourcedata([subject])
 
 
-@pytest.mark.parametrize("cls,nemar_id,subject,label", CASES)
-def test_provider_policy(cls, nemar_id, subject, label, monkeypatch, tmp_path):
+def test_provider_policy(monkeypatch, tmp_path):
+    cls, _, subject, _ = MIXIN_CASE
     ds = cls()
     transport = Mock(side_effect=NemarDownloadError("offline"))
     monkeypatch.setattr(ds, "_download_nemar", transport)
@@ -58,9 +63,9 @@ def test_provider_policy(cls, nemar_id, subject, label, monkeypatch, tmp_path):
     transport.assert_not_called()
 
 
-@pytest.mark.parametrize("cls,nemar_id,subject,label", CASES)
-def test_http_only_raw_selection(cls, nemar_id, subject, label, monkeypatch, tmp_path):
+def test_http_only_raw_selection(monkeypatch, tmp_path):
     """Leave SDK selection, transfer and hash verification real; no live HTTP."""
+    cls, nemar_id, subject, label = MIXIN_CASE
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
     prefix = f"sub-{label}/eeg/sub-{label}_task-test"
     payloads = {
@@ -128,10 +133,8 @@ def test_http_only_raw_selection(cls, nemar_id, subject, label, monkeypatch, tmp
             assert target.read_bytes() == data
 
 
-@pytest.mark.parametrize("cls,nemar_id,subject,label", CASES)
-def test_get_data_does_not_prefetch_sourcedata(
-    cls, nemar_id, subject, label, monkeypatch
-):
+def test_get_data_does_not_prefetch_sourcedata(monkeypatch):
+    cls, _, subject, _ = MIXIN_CASE
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
     ds = cls()
     monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
